@@ -1,0 +1,21 @@
+name: Swift
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-15:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v2
+      - name: Resolve dependencies
+        run: swift package resolve
+      - uses: sersoft-gmbh/xcodebuild-action@v3
+        with:
+          spm-package: .
+          scheme: Scout
+          destination: platform=iOS Simulator,name=iPhone 16
+          action: test
