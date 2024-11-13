@@ -82,8 +82,6 @@ struct MessageView: View {
     let text: String
     let level: Message.Level
 
-    @Environment(\.colorScheme) var colorScheme
-
     var body: some View {
 
         Text(text)
@@ -93,7 +91,7 @@ struct MessageView: View {
             .padding(.horizontal)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, minHeight: 44)
-            .background(level.color.opacity(colorScheme == .light ? 0.2 : 0.3))
+            .background(level.color.opacity(0.2))
             .background()
             .cornerRadius(16)
             .overlay {
