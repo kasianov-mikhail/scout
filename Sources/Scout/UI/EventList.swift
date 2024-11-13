@@ -80,7 +80,7 @@ struct EventList: View {
             }
             .opacity(0)
         }
-        .listRowBackground(event.level?.color?.opacity(0.1) ?? .white)
+        .listRowBackground(event.level?.color?.opacity(0.12) ?? .clear)
         .alignmentGuide(.listRowSeparatorTrailing) { dimension in
             dimension[.trailing]
         }
