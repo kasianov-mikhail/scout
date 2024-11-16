@@ -7,31 +7,30 @@
 
 import CloudKit
 
-/// Converts an `EventModel` instance to a `CKRecord` for CloudKit storage.
-///
-/// This function takes an `EventModel` object and creates a new `CKRecord`
-/// with the corresponding fields populated from the event.
-///
-/// - Parameter event: The `EventModel` instance to convert.
-/// - Returns: A `CKRecord` populated with the event's data.
-///
-/// Note: The `version` field is set to 1 to indicate the initial version of the record.
-/// This can be useful for handling migrations or updates to the record schema in the future.
-///
-func toRecord(event: EventModel) -> CKRecord {
-    let record = CKRecord(recordType: "Event")
+extension CKRecord {
 
-    record["params"] = event.params
-    record["param_count"] = event.paramCount
-    record["name"] = event.name
-    record["level"] = event.level
-    record["date"] = event.date
-    record["hour"] = event.hour
-    record["week"] = event.week
-    record["uuid"] = event.uuid?.uuidString
-    record["version"] = 1
-    record["user_id"] = event.userID?.uuidString
-    record["session_id"] = event.sessionID?.uuidString
+    /// Initializes a new `CKRecord` instance with the specified `EventModel`.
+    ///
+    /// This convenience initializer populates the record fields with the event data.
+    /// The `version` field is set to 1 to indicate the initial version of the record.
+    /// This can be useful for handling migrations or updates to the record schema in the future.
+    ///
+    /// - Parameter event: The `EventModel` instance to use for populating the record.
+    /// - Returns: A new `CKRecord` instance populated with the event data.
+    ///
+    convenience init(event: EventModel) {
+        self.init(recordType: "Event")
 
-    return record
+        self["params"] = event.params
+        self["param_count"] = event.paramCount
+        self["name"] = event.name
+        self["level"] = event.level
+        self["date"] = event.date
+        self["hour"] = event.hour
+        self["week"] = event.week
+        self["uuid"] = event.uuid?.uuidString
+        self["version"] = 1
+        self["user_id"] = event.userID?.uuidString
+        self["session_id"] = event.sessionID?.uuidString
+    }
 }
