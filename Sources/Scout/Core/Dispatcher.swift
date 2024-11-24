@@ -27,7 +27,7 @@ actor Dispatcher {
     /// - Parameter block: The asynchronous block to be executed.
     /// - Throws: Rethrows any error thrown by the block.
     ///
-    func execute(_ block: @escaping () async throws -> Void) async throws {
+    func execute(_ block: @escaping () async throws -> Void) async rethrows {
         guard !isRunning else {
             return
         }

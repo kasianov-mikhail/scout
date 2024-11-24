@@ -36,10 +36,12 @@ public func sync(in container: CKContainer) async throws {
         throw SyncError.notLoggedIn
     }
 
-    try await sync(
-        database: container.publicCloudDatabase,
-        context: persistentContainer.viewContext
-    )
+    try await dispatcher.execute {
+        try await sync(
+            database: container.publicCloudDatabase,
+            context: persistentContainer.viewContext
+        )
+    }
 }
 
 @MainActor func sync(database: Database, context: NSManagedObjectContext) async throws {
