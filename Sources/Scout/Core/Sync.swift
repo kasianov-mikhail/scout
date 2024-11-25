@@ -36,6 +36,8 @@ public func sync(in container: CKContainer) async throws {
         throw SyncError.notLoggedIn
     }
 
+    /// Because CloudKit network requests are executed sequentially, there is no point in running multiple
+    /// synchronisation cycles in parallel. Instead, the initial loop rechecks for unuploaded events after each execution.
     try await dispatcher.execute {
         try await sync(
             database: container.publicCloudDatabase,
