@@ -5,7 +5,7 @@ Scout is a robust logging framework designed to provide comprehensive logging ca
 
 ## Table of Contents
 - [CloudKit Integration](#cloudkit-integration)
-- [`swift-log` API](#swift-log-api)
+- [SwiftLog API](#swiftlog-api)
 - [Installation](#installation)
 - [Visualizing the Logs](#visualizing-the-logs)
 - [Example Project](#example-project)
@@ -19,10 +19,9 @@ Scout offers seamless integration with [CloudKit](https://developer.apple.com/ic
 - **📈 Scalability**: Benefit from [CloudKit](https://developer.apple.com/icloud/cloudkit/)'s scalability to handle large volumes of log data without compromising performance.
 - **🔒 Security**: Ensure your logs are securely stored and transmitted, adhering to industry-standard security practices.
 
-## `swift-log` API
-Scout leverages the power of [swift-log](https://github.com/apple/swift-log), Apple's official logging API, to provide a flexible and efficient logging solution. By using [swift-log](https://github.com/apple/swift-log), Scout ensures compatibility with other  libraries and tools, making it easier to integrate into your existing projects.
+## SwiftLog API
+Scout leverages the power of [swift-log](https://github.com/apple/swift-log), Apple's official logging API, to provide a flexible and efficient logging solution. By using [swift-log](https://github.com/apple/swift-log), Scout ensures compatibility with other  libraries and tools, making it easier to integrate into your existing projects. Benefits of Using [swift-log](https://github.com/apple/swift-log) with Scout:
 
-### Benefits of Using `swift-log` with Scout
 - **📏 Standardization**: Utilize a standardized logging API that is widely adopted in the Swift community.
 - **🔧 Flexibility**: Customize log handlers and formats to suit your specific needs.
 
