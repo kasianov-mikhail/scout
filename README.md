@@ -30,35 +30,9 @@ By integrating [swift-log](https://github.com/apple/swift-log) with Scout, you c
 
 
 ## Installation
-To integrate CloudKit with Scout, follow the steps below:
+For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki/Home).
 
-1. **Enable CloudKit**: Ensure CloudKit is enabled in your Apple Developer account and configured for your project [Enabling CloudKit in Your App](https://developer.apple.com/documentation/cloudkit/enabling_cloudkit_in_your_app)
-
-    > It may take some time for the database to become fully operational.
-2. **Upload you database scheme**:
-To upload your database schema to CloudKit, follow these steps:
-
-- Navigate to the [CloudKit Dashboard](https://icloud.developer.apple.com/dashboard/) and sign in with your Apple Developer account.
-
-- Choose the CloudKit container associated with your project.
-
-- In the CloudKit Dashboard, navigate to the "Schema" section and use the "Import Schema" option to upload your exported [schema file](Schema). 
-
-- Once your schema is defined, deploy it to the production environment by clicking the "Deploy to Production" button. This ensures that your schema changes are applied and available for use in your application.
-
-3. **Configure Scout**: Update Scout's configuration to include your CloudKit container identifier and any necessary authentication details.
-```swift
-import Scout
-import Logging
-
-let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
-
-LoggingSystem.bootstrap { label in
-    CKLogHandler(label: label, container: container)
-}
-```
-
-4. **Usage**: 
+## Usage
 
 ```swift
 import Logging
