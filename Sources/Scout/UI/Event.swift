@@ -120,7 +120,7 @@ extension EventLevel {
 /// This can be used to filter events based on various criteria.
 ///
 /// The `EventQuery` structure allows you to specify different criteria to filter events,
-/// such as event levels, text, name, user ID, and session ID. It provides a method to
+/// such as event levels, text, name, date range, user ID, and session ID. It provides a method to
 /// generate an `NSPredicate` object based on the specified criteria, which can be used
 /// to filter events in a database or collection.
 ///
@@ -130,6 +130,7 @@ struct EventQuery {
     var name = ""
     var userID: UUID?
     var sessionID: UUID?
+    var dates: Range<Date>?
 
     /// Generates an `NSPredicate` object based on the current filter criteria.
     func buildPredicate() -> NSPredicate {
@@ -149,6 +150,13 @@ struct EventQuery {
         }
         if let sessionID = sessionID?.uuidString {
             predicates.append(.init(format: "session_id == %@", sessionID))
+        }
+        if let dates {
+            predicates.append(.init(
+                format: "date >= %@ AND date < %@",
+                dates.lowerBound as NSDate,
+                dates.upperBound as NSDate
+            ))
         }
 
         return NSCompoundPredicate(type: .and, subpredicates: predicates)
@@ -189,6 +197,9 @@ extension EventQuery: CustomStringConvertible {
         }
         if let sessionID {
             components.append("sessionID: \(sessionID)")
+        }
+        if let dates {
+            components.append("dates: \(dates.lowerBound) - \(dates.upperBound)")
         }
 
         return components.joined(separator: ", \n")

@@ -24,7 +24,7 @@ struct EventList: View {
     var body: some View {
         if let events = provider.events {
             if events.isEmpty {
-                Placeholder(text: "No results")
+                Placeholder(text: "No results").frame(maxHeight: .infinity)
             } else {
                 List {
                     ForEach(events) { event in
