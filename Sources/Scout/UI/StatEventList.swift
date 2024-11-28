@@ -19,13 +19,7 @@ struct StatEventList: View {
 
     var body: some View {
         VStack {
-            Picker("", selection: $period) {
-                ForEach(StatPeriod.allCases) { period in
-                    Text(period.shortTitle)
-                }
-            }
-            .padding(.horizontal)
-            .pickerStyle(.segmented)
+            PeriodPicker(period: $period)
 
             EventList(provider: provider)
                 .task {
