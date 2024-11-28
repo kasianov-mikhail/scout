@@ -20,7 +20,7 @@ enum StatPeriod: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
-// MARK: - Titles
+// MARK: - Title
 
 extension StatPeriod {
 
@@ -37,22 +37,6 @@ extension StatPeriod {
             "Last 30 days"
         case .year:
             "Last 365 days"
-        }
-    }
-
-    /// A short title for each statistical period.
-    var shortTitle: String {
-        switch self {
-        case .today:
-            "T"
-        case .yesterday:
-            "Y"
-        case .week:
-            "7"
-        case .month:
-            "30"
-        case .year:
-            "365"
         }
     }
 }
