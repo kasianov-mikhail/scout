@@ -31,10 +31,12 @@ struct StatView: View {
             .pickerStyle(.segmented)
 
             if let points = data?[period] {
-                VStack {
+                List {
                     chart(points: points)
-                    Spacer()
+                    total(points: points)
                 }
+                .listStyle(.plain)
+                .scrollDisabled(true)
             } else {
                 ProgressView().tint(nil).frame(maxHeight: .infinity)
             }
@@ -67,6 +69,29 @@ struct StatView: View {
         }
         .aspectRatio(4 / 3, contentMode: .fit)
         .padding()
+        .padding(.bottom)
+        .listRowInsets(EdgeInsets())
+    }
+
+    func total(points: [ChartPoint]) -> some View {
+        ZStack {
+            HStack {
+                Text("Total")
+                Spacer()
+                Text("\(points.map(\.count).reduce(0, +))")
+            }
+            .foregroundColor(.blue)
+
+            NavigationLink {
+                StatEventList(period: $period)
+            } label: {
+                EmptyView()
+            }
+            .opacity(0)
+        }
+        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
+            dimension[.trailing]
+        }
     }
 }
 
@@ -88,4 +113,5 @@ struct StatView: View {
         StatView(data: data, period: .month)
     }
     .environmentObject(Tint())
+    .environmentObject(DatabaseController())
 }
