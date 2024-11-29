@@ -150,7 +150,7 @@ extension EventView {
                     .foregroundStyle(.blue)
 
                     NavigationLink {
-                        StatView(data: stat.data, period: period)
+                        StatView(stat: stat, period: period)
                     } label: {
                         EmptyView()
                     }

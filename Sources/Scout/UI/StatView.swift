@@ -10,13 +10,12 @@ import CloudKit
 import SwiftUI
 
 struct StatView: View {
-    let data: ChartData?
-
     @State var period: StatPeriod
+    @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(data: ChartData?, period: StatPeriod) {
-        self.data = data
+    init(stat: StatProvider, period: StatPeriod) {
+        self.stat = stat
         self._period = State(wrappedValue: period)
     }
 
@@ -24,10 +23,17 @@ struct StatView: View {
         VStack {
             PeriodPicker(period: $period)
 
-            if let points = data?[period] {
+            if let points = stat.data?[period] {
                 List {
-                    chart(points: points)
-                    total(points: points)
+                    let count = points.map(\.count).reduce(0, +)
+
+                    chart(points: points).chartBackground { proxy in
+                        if count == 0 {
+                            Placeholder(text: "No results")
+                        }
+                    }
+
+                    total(count: count)
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
@@ -56,28 +62,23 @@ struct StatView: View {
                 AxisMarks()
             }
         }
-        .chartBackground { proxy in
-            if points.map(\.count).reduce(0, +) == 0 {
-                Placeholder(text: "No results")
-            }
-        }
         .aspectRatio(4 / 3, contentMode: .fit)
         .padding()
         .padding(.bottom)
         .listRowInsets(EdgeInsets())
     }
 
-    func total(points: [ChartPoint]) -> some View {
+    func total(count: Int) -> some View {
         ZStack {
             HStack {
-                Text("Total")
+                Text("Events")
                 Spacer()
-                Text("\(points.map(\.count).reduce(0, +))")
+                Text(count == 0 ? "—" : "\(count)")
             }
             .foregroundColor(.blue)
 
             NavigationLink {
-                StatEventList(period: $period)
+                StatEventList(eventName: stat.eventName, period: $period)
             } label: {
                 EmptyView()
             }
@@ -104,7 +105,9 @@ struct StatView: View {
             return (period, points)
         }
         let data = Dictionary(uniqueKeysWithValues: arrays)
-        StatView(data: data, period: .month)
+        let stat = StatProvider(eventName: "Event")
+        stat.data = data
+        return StatView(stat: stat, period: .month)
     }
     .environmentObject(Tint())
     .environmentObject(DatabaseController())
