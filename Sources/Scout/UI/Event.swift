@@ -140,7 +140,7 @@ struct EventQuery {
             predicates.append(.init(format: "level IN %@", levels.map(\.rawValue)))
         }
         if !text.isEmpty {
-            predicates.append(.init(format: "name BEGINSWITH %@", text.lowercased()))
+            predicates.append(.init(format: "name BEGINSWITH %@", text))
         }
         if !name.isEmpty {
             predicates.append(.init(format: "name == %@", name))
