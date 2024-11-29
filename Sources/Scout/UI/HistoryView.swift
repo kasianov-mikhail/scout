@@ -31,7 +31,6 @@ struct HistoryView: View {
 
             EventList(provider: provider)
                 .frame(maxHeight: .infinity)
-                .environment(\.eventHistory, false)
         }
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

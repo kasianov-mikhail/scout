@@ -10,14 +10,8 @@ import SwiftUI
 
 struct EventView: View {
     let event: Event
-    let showHistory: Bool
 
     @EnvironmentObject var tint: Tint
-
-    init(event: Event, showHistory: Bool) {
-        self.event = event
-        self.showHistory = showHistory
-    }
 
     var body: some View {
         let color = event.level?.color
@@ -33,10 +27,7 @@ struct EventView: View {
             }
 
             StatSection(eventName: event.name)
-
-            if showHistory {
-                HistorySection(event: event)
-            }
+            HistorySection(event: event)
         }
         .onAppear {
             tint.value = color
@@ -223,7 +214,7 @@ extension EventView {
             userID: UUID(),
             sessionID: UUID()
         )
-        EventView(event: event, showHistory: true)
+        EventView(event: event)
     }
     .environmentObject(Tint())
     .environmentObject(DatabaseController())

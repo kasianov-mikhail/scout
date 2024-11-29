@@ -12,7 +12,6 @@ struct EventList: View {
     let timeline = Date()
 
     @ObservedObject var provider: EventProvider
-    @Environment(\.eventHistory) var showHistory: Bool
     @EnvironmentObject var database: DatabaseController
 
     let dateFormatter: RelativeDateTimeFormatter = {
@@ -74,7 +73,7 @@ struct EventList: View {
             }
 
             NavigationLink {
-                EventView(event: event, showHistory: true)
+                EventView(event: event)
             } label: {
                 EmptyView()
             }
