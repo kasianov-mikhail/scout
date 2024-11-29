@@ -163,20 +163,6 @@ struct EventQuery {
     }
 }
 
-// MARK: - EventQuery
-
-// TODO: Remove. Use the bool property directly.
-struct EventHistory: EnvironmentKey {
-    static let defaultValue = true
-}
-
-extension EnvironmentValues {
-    var eventHistory: Bool {
-        get { self[EventHistory.self] }
-        set { self[EventHistory.self] = newValue }
-    }
-}
-
 // MARK: -
 
 extension EventQuery: CustomStringConvertible {
