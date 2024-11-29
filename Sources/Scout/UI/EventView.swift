@@ -14,12 +14,6 @@ struct EventView: View {
 
     @EnvironmentObject var tint: Tint
 
-    let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd.MM.y, HH:mm"
-        return formatter
-    }()
-
     init(event: Event, showHistory: Bool) {
         self.event = event
         self.showHistory = showHistory
@@ -29,25 +23,7 @@ struct EventView: View {
         let color = event.level?.color
 
         List {
-            VStack(alignment: .leading) {
-                if let date = event.date {
-                    Text(dateFormatter.string(from: date))
-                        .font(.system(size: 16))
-                        .monospaced()
-                }
-
-                Spacer().frame(height: 10)
-
-                if let level = event.level {
-                    Group {
-                        Text("LEVEL:   ")
-                            + Text(level.description.uppercased()).foregroundColor(
-                                level.color ?? .blue)
-                    }
-                    .fontWeight(.bold)
-                }
-            }
-            .padding(.vertical, 4)
+            EventHeader(event: event)
 
             if let paramCount = event.paramCount, paramCount > 0 {
                 ParamSection(
@@ -72,6 +48,42 @@ struct EventView: View {
         .toolbarBackground(color?.opacity(0.12) ?? .clear, for: .navigationBar)
         .toolbarBackground(color == nil ? .automatic : .visible, for: .navigationBar)
         .navigationTitle(event.name)
+    }
+}
+
+// MARK: - Header
+
+extension EventView {
+    static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "dd.MM.y, HH:mm"
+        return formatter
+    }()
+
+    struct EventHeader: View {
+        let event: Event
+
+        var body: some View {
+            VStack(alignment: .leading) {
+                if let date = event.date {
+                    Text(dateFormatter.string(from: date))
+                        .font(.system(size: 16))
+                        .monospaced()
+                }
+
+                Spacer().frame(height: 10)
+
+                if let level = event.level {
+                    Group {
+                        Text("LEVEL:   ")
+                            + Text(level.description.uppercased()).foregroundColor(
+                                level.color ?? .blue)
+                    }
+                    .fontWeight(.bold)
+                }
+            }
+            .padding(.vertical, 4)
+        }
     }
 }
 
