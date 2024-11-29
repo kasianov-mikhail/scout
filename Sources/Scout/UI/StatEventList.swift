@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct StatEventList: View {
+    let eventName: String
+    @Binding private var period: StatPeriod
+
     @StateObject private var provider = EventProvider()
     @EnvironmentObject private var database: DatabaseController
 
-    @Binding private var period: StatPeriod
-
-    init(period: Binding<StatPeriod>) {
-        _period = period
+    init(eventName: String, period: Binding<StatPeriod>) {
+        self.eventName = eventName
+        self._period = period
     }
 
     var body: some View {
@@ -34,13 +36,14 @@ struct StatEventList: View {
                         await fetch()
                     }
                 }
-                .navigationTitle(period.title)
+                .navigationTitle("Events")
         }
     }
 
     func fetch() async {
         var query = EventQuery()
         query.dates = period.range
+        query.name = eventName
         await provider.fetch(for: query, in: database)
     }
 }
@@ -52,7 +55,7 @@ struct StatEventList: View {
     @Previewable @State var period = StatPeriod.week
 
     NavigationStack {
-        StatEventList(period: $period)
+        StatEventList(eventName: "Event", period: $period)
             .environmentObject(DatabaseController())
     }
 }
