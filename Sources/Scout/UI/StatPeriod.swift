@@ -41,7 +41,7 @@ extension StatPeriod {
     }
 }
 
-// MARK: - Grouping
+// MARK: - Components
 
 extension StatPeriod {
 
@@ -54,22 +54,32 @@ extension StatPeriod {
 
         return switch self {
         case .today:
-            today..<today.addingDay()
-        case .yesterday:
-            today.addingDay(-1)..<today
-        case .week:
-            today.addingWeek(-1)..<today
-        case .month:
-            today.addingMonth(-1)..<today
-        case .year:
-            today.addingYear(-1)..<today
+            today..<today.adding(rangeComponent)
+        default:
+            today.adding(rangeComponent, value: -1)..<today
         }
     }
 
-    /// The calendar component associated with the statistical period.
-    /// This property helps in determining the unit of time for each period.
+    /// The calendar component used to calculate the date range for each statistical period.
+    /// This property helps in determining the length of the date range for each period.
     ///
-    var component: Calendar.Component {
+    var rangeComponent: Calendar.Component {
+        switch self {
+        case .today, .yesterday:
+            .day
+        case .week:
+            .weekOfYear
+        case .month:
+            .month
+        case .year:
+            .year
+        }
+    }
+
+    /// The calendar component used to group data points within the statistical period.
+    /// This property helps in determining the granularity of the data points for each period.
+    ///
+    var pointComponent: Calendar.Component {
         switch self {
         case .today, .yesterday:
             .hour
@@ -79,6 +89,11 @@ extension StatPeriod {
             .month
         }
     }
+}
+
+// MARK: - Grouping
+
+extension StatPeriod {
 
     /// Groups an array of `ChartPoint` objects into a new array of `ChartPoint` objects
     /// based on a specified date component.
@@ -92,7 +107,7 @@ extension StatPeriod {
         var date = range.lowerBound
 
         while range.contains(date) {
-            let next = date.adding(component)
+            let next = date.adding(pointComponent)
 
             let count = counts.filter { item in
                 (date..<next).contains(item.date)
