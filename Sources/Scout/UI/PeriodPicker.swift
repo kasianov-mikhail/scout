@@ -9,15 +9,21 @@ import SwiftUI
 
 struct PeriodPicker: View {
     @Binding private var period: StatPeriod
+    let accent: Bool
 
-    init(period: Binding<StatPeriod>) {
-        _period = period
+    init(period: Binding<StatPeriod>, accent: Bool = false) {
+        self._period = period
+        self.accent = accent
     }
 
     var body: some View {
         Picker("", selection: $period) {
             ForEach(StatPeriod.allCases) { period in
-                Text(period.shortTitle)
+                if period == self.period, accent {
+                    Text(period.shortTitle + "*")
+                } else {
+                    Text(period.shortTitle)
+                }
             }
         }
         .padding(.horizontal)
