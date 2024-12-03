@@ -50,7 +50,7 @@ struct StatView: View {
     func chart(points: [ChartPoint]) -> some View {
         Chart(points, id: \.date) { point in
             BarMark(
-                x: .value("X", point.date, unit: period.component),
+                x: .value("X", point.date, unit: period.pointComponent),
                 y: .value("Y", point.count)
             )
             .foregroundStyle(.blue)
