@@ -20,27 +20,6 @@ enum StatPeriod: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
-// MARK: - Title
-
-extension StatPeriod {
-
-    /// A human-readable title for each statistical period.
-    var title: String {
-        switch self {
-        case .today:
-            "Today"
-        case .yesterday:
-            "Yesterday"
-        case .week:
-            "Last 7 days"
-        case .month:
-            "Last 30 days"
-        case .year:
-            "Last 365 days"
-        }
-    }
-}
-
 // MARK: - Components
 
 extension StatPeriod {
@@ -127,6 +106,6 @@ extension StatPeriod {
 
 extension StatPeriod: CustomStringConvertible {
     var description: String {
-        title
+        rawValue.capitalized
     }
 }
