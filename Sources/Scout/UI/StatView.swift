@@ -11,17 +11,24 @@ import SwiftUI
 
 struct StatView: View {
     @State var period: StatPeriod
+    @State var range: Range<Date>
+
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
     init(stat: StatProvider, period: StatPeriod) {
         self.stat = stat
         self._period = State(wrappedValue: period)
+        self._range = State(wrappedValue: period.range)
     }
 
     var body: some View {
-        VStack {
-            PeriodPicker(period: $period)
+        VStack(spacing: 0) {
+            PeriodPicker(period: $period, accent: period.range != range)
+
+            RangeControl(period: period, range: $range).onChange(of: period) { period in
+                range = period.range
+            }
 
             if let points = stat.data?[period] {
                 List {
