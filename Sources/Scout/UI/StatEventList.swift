@@ -9,20 +9,20 @@ import SwiftUI
 
 struct StatEventList: View {
     let eventName: String
-    @Binding private var period: StatPeriod
+    let range: Range<Date>
 
     @StateObject private var provider = EventProvider()
     @EnvironmentObject private var database: DatabaseController
 
-    init(eventName: String, period: Binding<StatPeriod>) {
-        self.eventName = eventName
-        self._period = period
-    }
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.dateFormat = "d MMM"
+        return formatter
+    }()
 
     var body: some View {
         VStack {
-            PeriodPicker(period: $period)
-
             EventList(provider: provider)
                 .task {
                     await fetch()
@@ -30,19 +30,14 @@ struct StatEventList: View {
                 .refreshable {
                     await fetch()
                 }
-                .onChange(of: period) { _ in
-                    Task {
-                        provider.events = nil
-                        await fetch()
-                    }
-                }
-                .navigationTitle("Events")
+                .navigationTitle(range.rangeLabel(formatter: formatter))
+                .font(.system(size: 12))
         }
     }
 
     func fetch() async {
         var query = EventQuery()
-        query.dates = period.range
+        query.dates = range
         query.name = eventName
         await provider.fetch(for: query, in: database)
     }
@@ -50,12 +45,9 @@ struct StatEventList: View {
 
 // MARK: - Preview
 
-@available(iOS 17.0, *)
 #Preview {
-    @Previewable @State var period = StatPeriod.week
-
     NavigationStack {
-        StatEventList(eventName: "Event", period: $period)
+        StatEventList(eventName: "Event", range: StatPeriod.week.range)
             .environmentObject(DatabaseController())
     }
 }
