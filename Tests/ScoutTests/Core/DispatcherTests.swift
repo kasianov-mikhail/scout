@@ -17,10 +17,10 @@ struct DispatcherTests {
     let dispatcher = Dispatcher()
 
     @Test("Doesn't execute concurrent blocks") func testNotExecuteConcurrentBlocks() async throws {
-        try await confirmation { confirmation in
-            try await dispatcher.execute {
+        await confirmation { confirmation in
+            await dispatcher.execute {
                 confirmation()
-                try await dispatcher.execute {
+                await dispatcher.execute {
                     confirmation()
                 }
             }
@@ -28,23 +28,23 @@ struct DispatcherTests {
     }
 
     @Test("Execute serial blocks") func testExecuteSerialBlocks() async throws {
-        try await confirmation(expectedCount: 2) { confirmation in
-            try await dispatcher.execute {
+        await confirmation(expectedCount: 2) { confirmation in
+            await dispatcher.execute {
                 confirmation()
             }
-            try await dispatcher.execute {
+            await dispatcher.execute {
                 confirmation()
             }
         }
     }
 
     @Test("Error doesn't prevent execution") func testErrorNotPreventExecution() async throws {
-        try await confirmation(expectedCount: 2) { confirmation in
+        await confirmation(expectedCount: 2) { confirmation in
             try? await dispatcher.execute {
                 confirmation()
                 throw TestError.test
             }
-            try await dispatcher.execute {
+            await dispatcher.execute {
                 confirmation()
             }
         }
