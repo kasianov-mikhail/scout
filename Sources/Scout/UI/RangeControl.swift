@@ -11,6 +11,12 @@ struct RangeControl: View {
     let period: StatPeriod
     @Binding var range: Range<Date>
 
+    let formatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        return formatter
+    }()
+
     var body: some View {
         HStack {
             let leftRange = range.moved(by: period.rangeComponent, value: -1)
@@ -21,7 +27,7 @@ struct RangeControl: View {
             }
             .disabled(leftRange.lowerBound < yearRange.lowerBound)
 
-            Text(range.rangeText)
+            Text(range.rangeLabel(formatter: formatter))
                 .font(.system(size: 16))
                 .monospaced()
                 .frame(height: 44)
@@ -53,23 +59,9 @@ struct RangeControl: View {
     }
 }
 
-// MARK: - Range Extensions
+// MARK: - Moving
 
 extension Range<Date> {
-
-    var rangeText: String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-
-        let from = formatter.string(from: lowerBound)
-        let to = formatter.string(from: upperBound.addingDay(-1))
-
-        if from == to {
-            return from
-        } else {
-            return "\(from) - \(to)"
-        }
-    }
 
     mutating func move(by component: Calendar.Component, value: Int) {
         self = moved(by: component, value: value)
