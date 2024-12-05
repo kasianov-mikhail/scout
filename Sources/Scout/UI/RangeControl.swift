@@ -16,7 +16,7 @@ struct RangeControl: View {
             let leftRange = range.moved(by: period.rangeComponent, value: -1)
             let yearRange = StatPeriod.year.range
 
-            button(image: "chevron.left") {
+            MoveButton(image: "chevron.left") {
                 range.move(by: period.rangeComponent, value: -1)
             }
             .disabled(leftRange.lowerBound < yearRange.lowerBound)
@@ -27,7 +27,7 @@ struct RangeControl: View {
                 .frame(height: 44)
                 .frame(maxWidth: .infinity)
 
-            button(image: "chevron.right") {
+            MoveButton(image: "chevron.right") {
                 range.move(by: period.rangeComponent, value: 1)
             }
             .simultaneousGesture(
@@ -37,16 +37,19 @@ struct RangeControl: View {
             )
             .disabled(range == period.range)
         }
-        .padding(.top)
-        .padding(.horizontal)
     }
 
-    func button(image: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            Image(systemName: image)
+    struct MoveButton: View {
+        let image: String
+        let action: () -> Void
+
+        var body: some View {
+            Button(action: action) {
+                Image(systemName: image)
+            }
+            .font(.system(size: 16))
+            .frame(width: 44, height: 44)
         }
-        .fontWeight(.medium)
-        .frame(width: 44, height: 44)
     }
 }
 

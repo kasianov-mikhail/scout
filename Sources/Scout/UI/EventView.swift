@@ -142,9 +142,10 @@ extension EventView {
                 ZStack {
                     HStack {
                         Text(period.title).monospaced(false)
+
                         Spacer()
 
-                        if let count = stat.data?[period]?.map(\.count).reduce(0, +) {
+                        if let count = count(for: period) {
                             Text(count == 0 ? "—" : "\(count)")
                         } else {
                             Redacted(length: 5)
@@ -163,6 +164,13 @@ extension EventView {
                     dimension[.trailing]
                 }
             }
+        }
+
+        func count(for period: StatPeriod) -> Int? {
+            stat.data?[period.pointComponent]?.filter {
+                period.range.contains($0.date)
+            }
+            .map(\.count).reduce(0, +)
         }
     }
 

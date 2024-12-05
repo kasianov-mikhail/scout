@@ -67,7 +67,7 @@ extension StatProvider {
         let yearAgo = today.addingYear(-1).addingWeek(-1)
         let predicate = NSPredicate(
             format: "date >= %@ AND name == %@",
-            yearAgo.addingWeek(-1) as NSDate,
+            yearAgo as NSDate,
             eventName
         )
         return predicate
@@ -78,15 +78,46 @@ extension StatProvider {
 
 extension [ChartPoint] {
 
-    /// Converts the current `Stat` instance into `ChartData` by grouping the data
-    /// according to all cases of `StatPeriod`.
-    ///
-    /// - Returns: A dictionary where the keys are `StatPeriod` cases and the values
-    ///   are the grouped data for each period.
+    /// Converts the current data to a `ChartData` object.
+    /// 
+    /// This computed property processes the existing data and transforms it into a format
+    /// suitable for chart representation. The resulting `ChartData` can then be used for
+    /// rendering charts within the UI.
     ///
     var toChartData: ChartData {
-        StatPeriod.allCases.reduce(into: [:]) { dict, period in
-            dict[period] = period.group(self)
+        let components = StatPeriod.allCases.map(\.pointComponent)
+
+        return Set(components).reduce(into: [:]) { dict, component in
+            dict[component] = group(by: component)
         }
+    }
+
+    /// Groups chart points by the specified calendar component.
+    ///
+    /// - Parameter component: The calendar component to group by (e.g., .day, .month, .year).
+    /// - Returns: An array of `ChartPoint` objects grouped by the specified calendar component.
+    ///
+    func group(by component: Calendar.Component) -> [ChartPoint] {
+        var result: [ChartPoint] = []
+
+        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
+        let tomorrow = today.addingDay(1)
+
+        var date = today.addingYear(-1).addingWeek(-1)
+
+        while date < tomorrow {
+            let next = date.adding(component)
+
+            let count = filter { item in
+                (date..<next).contains(item.date)
+            }.reduce(0) {
+                $0 + $1.count
+            }
+
+            result.append(ChartPoint(date: date, count: count))
+            date = next
+        }
+
+        return result
     }
 }

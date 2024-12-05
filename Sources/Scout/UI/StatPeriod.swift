@@ -70,38 +70,6 @@ extension StatPeriod {
     }
 }
 
-// MARK: - Grouping
-
-extension StatPeriod {
-
-    /// Groups an array of `ChartPoint` objects into a new array of `ChartPoint` objects
-    /// based on a specified date component.
-    ///
-    /// - Parameter counts: An array of `ChartPoint` objects to be grouped.
-    /// - Returns: A new array of `ChartPoint` objects where each point represents the sum of
-    ///   counts within a specific date range.
-    ///
-    func group(_ counts: [ChartPoint]) -> [ChartPoint] {
-        var result: [ChartPoint] = []
-        var date = range.lowerBound
-
-        while range.contains(date) {
-            let next = date.adding(pointComponent)
-
-            let count = counts.filter { item in
-                (date..<next).contains(item.date)
-            }.reduce(0) {
-                $0 + $1.count
-            }
-
-            result.append(ChartPoint(date: date, count: count))
-            date = next
-        }
-
-        return result
-    }
-}
-
 // MARK: -
 
 extension StatPeriod: CustomStringConvertible {

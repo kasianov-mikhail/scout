@@ -8,9 +8,9 @@
 import CloudKit
 
 /// This typealias is used to organize and manage chart data points
-/// associated with different statistical periods.
+/// associated with different calendar components.
 ///
-typealias ChartData = [StatPeriod: [ChartPoint]]
+typealias ChartData = [Calendar.Component: [ChartPoint]]
 
 /// A structure representing a point in a chart.
 struct ChartPoint: Identifiable {
