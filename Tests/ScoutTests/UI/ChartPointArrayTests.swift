@@ -10,30 +10,32 @@ import Testing
 
 @testable import Scout
 
-struct StatPeriodTests {
+struct ChartPointArrayTests {
     let calendar = Calendar(identifier: .iso8601)
 
-    @Test("Group by today") func testGroupToday() async throws {
+    @Test("Group by hour") func testGroupHour() async throws {
         let today = calendar.startOfDay(for: Date())
         let points = createPoints(for: today)
+        let grouped = points.group(by: .hour)
 
-        let groupedToday = StatPeriod.today.group(points)
         let expected = [
             1, 2, 3, 0, 0, 0,
             0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0
+            0, 0, 0, 0, 0, 0,
         ]
-        #expect(groupedToday.map(\.count) == expected)
+        #expect(Array(grouped.map(\.count).suffix(24)) == expected)
     }
 
-    @Test("Group by week") func testGroupWeek() async throws {
-        let calendar = Calendar(identifier: .iso8601)
+    @Test("Group by day") func testGroupDay() async throws {
         let yesterday = calendar.startOfDay(for: Date()).addingDay(-1)
         let points = createPoints(for: yesterday)
+        let grouped = points.group(by: .day)
 
-        let groupedWeek = StatPeriod.week.group(points)
-        #expect(groupedWeek.map(\.count) == [0, 0, 0, 0, 0, 0, 6])
+        let expected = [
+            0, 0, 0, 0, 0, 6, 0,
+        ]
+        #expect(Array(grouped.map(\.count).suffix(7)) == expected)
     }
 
     func createPoints(for date: Date) -> [ChartPoint] {

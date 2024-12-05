@@ -24,13 +24,19 @@ struct StatView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodPicker(period: $period, accent: period.range != range)
+            PeriodPicker(
+                period: $period,
+                accent: period.range != range
+            )
 
-            RangeControl(period: period, range: $range).onChange(of: period) { period in
-                range = period.range
-            }
+            RangeControl(period: period, range: $range)
+                .onChange(of: period) { period in
+                    range = period.range
+                }
+                .padding(.top)
+                .padding(.horizontal)
 
-            if let points = stat.data?[period] {
+            if let points {
                 List {
                     let count = points.map(\.count).reduce(0, +)
 
@@ -54,6 +60,12 @@ struct StatView: View {
         }
     }
 
+    var points: [ChartPoint]? {
+        stat.data?[period.pointComponent]?.filter {
+            range.contains($0.date)
+        }
+    }
+
     func chart(points: [ChartPoint]) -> some View {
         Chart(points, id: \.date) { point in
             BarMark(
@@ -64,7 +76,7 @@ struct StatView: View {
         }
         .chartXAxis {
             if period == .month {
-                AxisMarks(values: [-28, -21, -14, -7].map(period.range.upperBound.addingDay))
+                AxisMarks(values: [-28, -21, -14, -7].map(range.upperBound.addingDay))
             } else {
                 AxisMarks()
             }
@@ -101,7 +113,8 @@ struct StatView: View {
 
 #Preview {
     NavigationStack {
-        let arrays = StatPeriod.allCases.map { period in
+        let components = Array(Set(StatPeriod.allCases.map(\.pointComponent)))
+        let arrays = components.map { period in
             let points = (0..<30).map { i in
                 ChartPoint(
                     date: Date().startOfHour.addingDay(-i),
