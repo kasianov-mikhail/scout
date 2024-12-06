@@ -21,25 +21,61 @@ import CloudKit
         self.eventName = eventName
     }
 
-    /// Fetches the statistical data if it has not been fetched yet.
-    /// - Parameter container: The CloudKit container from which to fetch the data.
+    /// Fetches data if needed from the provided database.
+    ///
+    /// This asynchronous function checks if the data needs to be fetched and performs the fetch operation
+    /// using the given `DatabaseController` instance.
+    ///
+    /// - Parameter database: The `DatabaseController` instance used to fetch the data.
+    /// - Returns: An asynchronous operation that fetches the data if needed.
     ///
     func fetchIfNeeded(in database: DatabaseController) async {
         if data == nil {
             await fetch(in: database)
         }
     }
+}
 
-    /// Fetches the statistical data from the CloudKit container.
-    /// - Parameter container: The CloudKit container from which to fetch the data.
+// MARK: - Fetching Data
+
+extension StatProvider {
+
+    /// Fetches data from the specified database asynchronously.
+    ///
+    /// - Parameter database: The `DatabaseController` instance from which to fetch data.
     ///
     private func fetch(in database: DatabaseController) async {
         let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
         let yearAgo = today.addingYear(-1).addingWeek(-1)
 
+        do {
+            let records = try await database.allRecords(
+                matching: query(from: yearAgo),
+                desiredKeys: nil
+            )
+
+            let rawPoints = try records.map(Matrix.init)
+                .mergeDuplicates()
+                .flatMap(ChartPoint.fromIntMatrix)
+
+            let rawData = RawPointData(
+                from: yearAgo,
+                to: today.addingDay(),
+                points: rawPoints
+            )
+
+            data = rawData.chartData(for: StatPeriod.components)
+
+        } catch {
+            print(error.localizedDescription)
+            data = nil
+        }
+    }
+
+    private func query(from date: Date) async throws -> CKQuery {
         let predicate = NSPredicate(
             format: "date >= %@ AND name == %@",
-            yearAgo as NSDate,
+            date as NSDate,
             eventName
         )
 
@@ -48,30 +84,11 @@ import CloudKit
             predicate: predicate
         )
 
-        do {
-            let records = try await database.allRecords(
-                matching: query,
-                desiredKeys: nil
-            )
-
-            let points = try records.map(Matrix.init)
-                .mergeDuplicates()
-                .flatMap(ChartPoint.fromIntMatrix)
-
-            let series = RawPointData(
-                from: yearAgo,
-                to: today.addingDay(),
-                points: points
-            )
-
-            data = series.chartData(for: StatPeriod.components)
-
-        } catch {
-            print(error.localizedDescription)
-            data = nil
-        }
+        return query
     }
 }
+
+// MARK: - Calendar Components
 
 extension StatPeriod {
 
