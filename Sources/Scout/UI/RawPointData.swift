@@ -7,20 +7,24 @@
 
 import Foundation
 
-/// A structure representing a series of points.
-///
-/// This structure is used to manage and manipulate a collection of points.
-/// It provides various functionalities to work with the series of points.
-///
+/// A structure representing raw point data.
+/// 
+/// This structure is used to store and manage raw data points.
+/// It can be used in various contexts where point data is required,
+/// such as in graphical representations.
+/// 
+/// - SeeAlso: `ChartPoint`
+/// 
 struct RawPointData {
 
-    /// The date from which the event or period starts.
+    /// The starting date for the data range.
     let from: Date
 
-    /// The date to which the event or action is targeted.
+    /// The end date for the data range.
+    /// This date represents the upper bound of the time period for which data points are considered.
     let to: Date
 
-    /// An array of `ChartPoint` representing the points in the chart.
+    /// An array of `ChartPoint` objects representing the raw data points.
     let points: [ChartPoint]
 }
 
@@ -37,6 +41,11 @@ extension RawPointData {
         }
     }
 
+    /// Groups the points by the specified calendar component.
+    ///
+    /// - Parameter component: The calendar component to group the points by.
+    /// - Returns: An array of `ChartPoint` grouped by the specified calendar component.
+    ///
     private func group(by component: Calendar.Component) -> [ChartPoint] {
         var result: [ChartPoint] = []
         var date = from
