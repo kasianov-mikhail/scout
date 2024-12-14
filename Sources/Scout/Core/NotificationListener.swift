@@ -8,6 +8,10 @@
 import CoreData
 import UIKit
 
+/// `NotificationListener` is an actor that listens for specific notifications and performs associated actions asynchronously.
+///
+/// - Note: This class is designed to be used as a singleton with a shared instance `activity`.
+///
 public actor NotificationListener {
 
     typealias Action = @Sendable () async throws -> Void
@@ -15,20 +19,26 @@ public actor NotificationListener {
 
     private let table: ActionTable
 
+    /// Initializes a new `NotificationListener` with the provided action table.
+    ///
+    /// - Parameter table: A dictionary mapping notification names to actions.
+    ///
     init(table: ActionTable) {
         self.table = table
     }
 
-    // MARK: - Shared Instance
+    // MARK: - Activity Listener
 
-     public static let activity = NotificationListener(table: [
-         UIApplication.didBecomeActiveNotification: {
-             try await persistentContainer.performBackgroundTask(SessionMonitor.trigger)
-         },
-         UIApplication.willResignActiveNotification: {
-             try await persistentContainer.performBackgroundTask(SessionMonitor.complete)
-         },
-     ])
+    /// Shared instance of `NotificationListener` for handling application activity notifications.
+    ///
+    public static let activity = NotificationListener(table: [
+        UIApplication.didBecomeActiveNotification: {
+            try await persistentContainer.performBackgroundTask(SessionMonitor.trigger)
+        },
+        UIApplication.willResignActiveNotification: {
+            try await persistentContainer.performBackgroundTask(SessionMonitor.complete)
+        },
+    ])
 
     // MARK: - Error
 
@@ -47,6 +57,10 @@ public actor NotificationListener {
 
     private var isSetup = false
 
+    /// Sets up the notification listener by adding observers for the notifications in the action table.
+    ///
+    /// - Throws: `NotificationListener.Error.alreadySetup` if the listener has already been set up.
+    ///
     public func setup() throws {
         guard !isSetup else {
             throw Error.alreadySetup
@@ -57,6 +71,7 @@ public actor NotificationListener {
         observeTable()
     }
 
+    /// Adds observers for each notification in the action table.
     private func observeTable() {
         for (name, action) in table {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
