@@ -16,6 +16,13 @@ import CoreData
 ///
 let persistentContainer: NSPersistentContainer = {
     let container = NSPersistentContainer.newContainer(named: "Scout")
+
+//    if ProcessInfo.processInfo.environment["XCTestSessionIdentifier"] != nil {
+//        let description = NSPersistentStoreDescription()
+//        description.type = NSInMemoryStoreType
+//        container.persistentStoreDescriptions = [description]
+//    }
+
     container.loadPersistentStores { _, error in
         if let error {
             print("Error loading Core Data store: \(error.localizedDescription)")
