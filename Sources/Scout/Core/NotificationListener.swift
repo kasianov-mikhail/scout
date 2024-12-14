@@ -48,7 +48,7 @@ public actor NotificationListener {
         var errorDescription: String? {
             switch self {
             case .alreadySetup:
-                return "ActivityListener is already setup"
+                return "NotificationListener is already setup"
             }
         }
     }
@@ -67,21 +67,19 @@ public actor NotificationListener {
         }
 
         isSetup = true
-
-        observeTable()
+        table.observe()
     }
+}
 
-    /// Adds observers for each notification in the action table.
-    private func observeTable() {
-        for (name, action) in table {
+// MARK: - Observe
+
+extension NotificationListener.ActionTable {
+
+    /// Observes the notifications in the action table and performs the associated actions.
+    fileprivate func observe() {
+        for (name, action) in self {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
-                Task {
-                    do {
-                        try await action()
-                    } catch {
-                        print(error.localizedDescription)
-                    }
-                }
+                Task(operation: action)
             }
         }
     }
