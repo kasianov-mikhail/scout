@@ -15,13 +15,11 @@ struct SessionMonitor {
     /// within the application. It sets up necessary configurations and ensures
     /// that the session is properly tracked and managed.
     ///
-    static func trigger() async throws {
-        try await persistentContainer.performBackgroundTask { context in
-            let session = Session(context: context)
-            session.startDate = Date()
-            session.uuid = UUID()
-            try context.save()
-        }
+    static func trigger(in context: NSManagedObjectContext) throws {
+        let session = Session(context: context)
+        session.startDate = Date()
+        session.uuid = UUID()
+        try context.save()
     }
 
     /// An error that occurs when completing a session.
@@ -41,19 +39,17 @@ struct SessionMonitor {
     /// Completes the current session by performing necessary cleanup and finalization tasks.
     /// This method should be called when the session is ready to be terminated.
     ///
-    static func complete() async throws {
-        try await persistentContainer.performBackgroundTask { context in
-            let request = NSFetchRequest<Session>(entityName: "Session")
-            request.predicate = NSPredicate(format: "endDate == nil")
-            request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: false)]
-            request.fetchLimit = 1
+    static func complete(in context: NSManagedObjectContext) throws {
+        let request = NSFetchRequest<Session>(entityName: "Session")
+        request.predicate = NSPredicate(format: "endDate == nil")
+        request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
+        request.fetchLimit = 1
 
-            guard let session = try context.fetch(request).first else {
-                throw CompleteError.sessionNotFound
-            }
-
-            session.endDate = Date()
-            try context.save()
+        guard let session = try context.fetch(request).first else {
+            throw CompleteError.sessionNotFound
         }
+
+        session.endDate = Date()
+        try context.save()
     }
 }
