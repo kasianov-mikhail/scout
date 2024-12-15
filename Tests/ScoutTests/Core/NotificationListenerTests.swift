@@ -29,9 +29,9 @@ struct NotificationListenerTests {
     }
 }
 
-class NotificationListenerTableTests: XCTestCase {
+class NotificationListenerTestCase: XCTestCase {
 
-    // Special case not covering by SwiftTesting
+    // Special case not covering with SwiftTesting
     func testNotificationHandling() async throws {
         let expectation = XCTestExpectation(description: "Notification handling")
         let listener = NotificationListener(table: [
