@@ -14,7 +14,10 @@ import UIKit
 ///
 public actor NotificationListener {
 
+    /// An asynchronous action that can be performed in response to a notification.
     typealias Action = @Sendable () async throws -> Void
+
+    /// A table mapping notification names to actions.
     typealias ActionTable = [Notification.Name: Action]
 
     private let table: ActionTable

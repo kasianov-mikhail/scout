@@ -53,8 +53,6 @@ import Testing
         event.week = Date()
         event.date = Date()
         event.uuid = UUID()
-        event.sessionID = UUID()
-        event.userID = UUID()
         event.level = EventLevel.info.rawValue
 
         return event
