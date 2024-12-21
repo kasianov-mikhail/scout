@@ -65,7 +65,9 @@ public struct AnalyticsView: View {
             .navigationTitle("Events")
         }
         .onPreferenceChange(Message.Key.self) { message in
-            provider.message = message
+            MainActor.assumeIsolated {
+                provider.message = message
+            }
         }
         .message($provider.message)
         .environmentObject(database)
