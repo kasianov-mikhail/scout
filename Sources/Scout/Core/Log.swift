@@ -41,9 +41,6 @@ func log(
         event.paramCount = Int64(params.count)
     }
 
-    event.userID = IDs.user
-    event.sessionID = IDs.session
-
     try context.save()
 }
 
