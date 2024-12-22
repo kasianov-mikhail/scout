@@ -19,7 +19,8 @@ import Testing
         let names = ["1", "2", "2"]
 
         for name in names {
-            let event = EventModel(context: context)
+            let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
+            let event = EventModel(entity: entity, insertInto: context)
             event.name = name
             event.date = Date()
             event.hour = fixedDate
