@@ -23,7 +23,7 @@ struct SessionMonitorTests {
 
         let session = sessions[0]
         #expect(session.startDate != nil)
-        #expect(session.uuid != nil)
+        #expect(session.endDate == nil)
     }
 
     @Test("Session complete") func testComplete() throws {
@@ -62,6 +62,18 @@ struct SessionMonitorTests {
 
     @Test("Complete with no active session") func testCompleteNoActiveSession() throws {
         #expect(throws: SessionMonitor.CompleteError.sessionNotFound) {
+            try SessionMonitor.complete(in: context)
+        }
+    }
+
+    @Test("Complete an already completed session") func testCompleteAlreadyCompleted() throws {
+        // First, trigger a session
+        try SessionMonitor.trigger(in: context)
+
+        // Then, complete the session
+        try SessionMonitor.complete(in: context)
+
+        #expect(throws: SessionMonitor.CompleteError.alreadyCompleted) {
             try SessionMonitor.complete(in: context)
         }
     }

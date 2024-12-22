@@ -19,20 +19,28 @@ struct SessionMonitor {
         let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
         let session = Session(entity: entity, insertInto: context)
         session.startDate = Date()
-        session.uuid = UUID()
         try context.save()
     }
+}
+
+// MARK: - Completion
+
+extension SessionMonitor {
 
     /// An error that occurs when completing a session.
     /// - sessionNotFound: The session to be completed was not found.
+    /// - alreadyCompleted: The session has already been completed.
     ///
     enum CompleteError: LocalizedError {
         case sessionNotFound
+        case alreadyCompleted
 
         var errorDescription: String? {
             switch self {
             case .sessionNotFound:
                 return "Session not found"
+            case .alreadyCompleted:
+                return "Session already completed"
             }
         }
     }
@@ -42,12 +50,16 @@ struct SessionMonitor {
     ///
     static func complete(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<Session>(entityName: "Session")
-        request.predicate = NSPredicate(format: "endDate == nil")
         request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
+        request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
         request.fetchLimit = 1
 
         guard let session = try context.fetch(request).first else {
             throw CompleteError.sessionNotFound
+        }
+
+        if let _ = session.endDate {
+            throw CompleteError.alreadyCompleted
         }
 
         session.endDate = Date()
