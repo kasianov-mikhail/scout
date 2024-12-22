@@ -31,16 +31,27 @@ extension SessionMonitor {
     /// - sessionNotFound: The session to be completed was not found.
     /// - alreadyCompleted: The session has already been completed.
     ///
-    enum CompleteError: LocalizedError {
+    enum CompleteError: LocalizedError, Equatable {
         case sessionNotFound
-        case alreadyCompleted
+        case alreadyCompleted(Date)
 
         var errorDescription: String? {
             switch self {
             case .sessionNotFound:
                 return "Session not found"
-            case .alreadyCompleted:
-                return "Session already completed"
+            case .alreadyCompleted(let date):
+                return "Session already completed on \(date)"
+            }
+        }
+
+        static func == (lhs: CompleteError, rhs: CompleteError) -> Bool {
+            switch (lhs, rhs) {
+            case (.sessionNotFound, .sessionNotFound):
+                return true
+            case (.alreadyCompleted, .alreadyCompleted):
+                return true
+            default:
+                return false
             }
         }
     }
@@ -58,8 +69,8 @@ extension SessionMonitor {
             throw CompleteError.sessionNotFound
         }
 
-        if let _ = session.endDate {
-            throw CompleteError.alreadyCompleted
+        if let endDate = session.endDate {
+            throw CompleteError.alreadyCompleted(endDate)
         }
 
         session.endDate = Date()

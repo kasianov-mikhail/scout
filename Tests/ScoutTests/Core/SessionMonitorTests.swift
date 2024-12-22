@@ -73,7 +73,7 @@ struct SessionMonitorTests {
         // Then, complete the session
         try SessionMonitor.complete(in: context)
 
-        #expect(throws: SessionMonitor.CompleteError.alreadyCompleted) {
+        #expect(throws: SessionMonitor.CompleteError.alreadyCompleted(Date())) {
             try SessionMonitor.complete(in: context)
         }
     }
