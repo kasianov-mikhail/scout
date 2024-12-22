@@ -27,7 +27,8 @@ func log(
     _ name: String, level: Logger.Level, metadata: Logger.Metadata?, date: Date,
     context: NSManagedObjectContext
 ) throws {
-    let event = EventModel(context: context)
+    let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
+    let event = EventModel(entity: entity, insertInto: context)
 
     event.date = date
     event.hour = date.startOfHour

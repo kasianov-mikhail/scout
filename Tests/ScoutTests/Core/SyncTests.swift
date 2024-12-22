@@ -47,7 +47,8 @@ import Testing
     @discardableResult func createEvent(name: String, in context: NSManagedObjectContext)
         -> EventModel
     {
-        let event = EventModel(context: context)
+        let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
+        let event = EventModel(entity: entity, insertInto: context)
         event.name = name
         event.hour = Date()
         event.week = Date()

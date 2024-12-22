@@ -16,7 +16,8 @@ struct SessionMonitor {
     /// that the session is properly tracked and managed.
     ///
     static func trigger(in context: NSManagedObjectContext) throws {
-        let session = Session(context: context)
+        let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
+        let session = Session(entity: entity, insertInto: context)
         session.startDate = Date()
         session.uuid = UUID()
         try context.save()
