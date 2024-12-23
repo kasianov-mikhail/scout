@@ -35,16 +35,30 @@ enum IDs {
     static let user: UUID = {
         let userKey = "scout_log_user_id"
 
-        if let string = UserDefaults.standard.string(forKey: userKey),
-            let userID = UUID(uuidString: string)
-        {
+        if let userID = UserDefaults.standard.uuid(forKey: userKey) {
             return userID
         }
 
         let userID = UUID()
-        UserDefaults.standard.set(userID.uuidString, forKey: userKey)
+        UserDefaults.standard.set(userID, forKey: userKey)
         return userID
     }()
+}
+
+// MARK: - UUID
+
+extension UserDefaults {
+
+    /// Sets a UUID value in the user defaults for the specified key.
+    fileprivate func set(_ value: UUID, forKey key: String) {
+        set(value.uuidString, forKey: key)
+    }
+
+    /// Retrieves a UUID value from the user defaults for the specified key.
+    fileprivate func uuid(forKey key: String) -> UUID? {
+        guard let string = string(forKey: key) else { return nil }
+        return UUID(uuidString: string)
+    }
 }
 
 // MARK: - Default Values
