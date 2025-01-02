@@ -56,10 +56,20 @@ public func sync(in container: CKContainer) async throws {
 
         try await coordinator.upload()
 
-        for event in group.events {
-            context.delete(event)
+        for id in group.objectIDs {
+            context.deleteObject(with: id)
         }
         try context.save()
+    }
+}
+
+// MARK: - Core Data
+
+extension NSManagedObjectContext {
+
+    /// Deletes the object with the specified object ID.
+    fileprivate func deleteObject(with objectID: NSManagedObjectID) {
+        delete(object(with: objectID))
     }
 }
 
