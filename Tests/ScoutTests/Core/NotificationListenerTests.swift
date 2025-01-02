@@ -15,16 +15,16 @@ struct NotificationListenerTests {
 
     @Test("Success setup") func testSuccessSetup() async throws {
         let listener = NotificationListener(table: [:])
-        await #expect(throws: Never.self) {
-            try await listener.setup()
+        #expect(throws: Never.self) {
+            try listener.setup()
         }
     }
 
     @Test("Failure setup") func testFailureSetup() async throws {
         let listener = NotificationListener(table: [:])
-        await #expect(throws: NotificationListener.Error.alreadySetup) {
-            try await listener.setup()
-            try await listener.setup()
+        #expect(throws: NotificationListener.Error.alreadySetup) {
+            try listener.setup()
+            try listener.setup()
         }
     }
 }
@@ -37,7 +37,7 @@ class NotificationListenerTestCase: XCTestCase {
         let listener = NotificationListener(table: [
             UIApplication.didBecomeActiveNotification: expectation.fulfill
         ])
-        try await listener.setup()
+        try listener.setup()
         NotificationCenter.default.post(
             name: UIApplication.didBecomeActiveNotification,
             object: nil

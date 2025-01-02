@@ -8,11 +8,11 @@
 import CoreData
 import UIKit
 
-/// `NotificationListener` is an actor that listens for specific notifications and performs associated actions asynchronously.
+/// `NotificationListener` is a class that listens for notifications and performs actions in response.
 ///
 /// - Note: This class is designed to be used as a singleton with a shared instance `activity`.
 ///
-public actor NotificationListener {
+public class NotificationListener {
 
     /// An asynchronous action that can be performed in response to a notification.
     typealias Action = @Sendable () async throws -> Void
@@ -34,11 +34,11 @@ public actor NotificationListener {
 
     /// Shared instance of `NotificationListener` for handling application activity notifications.
     ///
-    public static let activity = NotificationListener(table: [
-        UIApplication.didBecomeActiveNotification: {
+    @MainActor public static let activity = NotificationListener(table: [
+        UIApplication.willEnterForegroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionMonitor.trigger)
         },
-        UIApplication.willResignActiveNotification: {
+        UIApplication.didEnterBackgroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionMonitor.complete)
         },
     ])
