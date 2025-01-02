@@ -99,7 +99,7 @@ extension SyncCoordinator {
             try await database.save(matrix)
 
             try await database.modifyRecords(
-                saving: group.events.map(CKRecord.init),
+                saving: group.records,
                 deleting: []
             )
 

@@ -29,8 +29,8 @@ import Testing
 
         let group = try #require(try SyncGroup.group(in: context))
 
-        #expect(group.events.count == 2)
-        #expect(group.events.allSatisfy { $0.name == "2" })
+        #expect(group.records.count == 2)
+        #expect(group.records.allSatisfy { $0["name"] == "2" })
     }
 
     @Test("Create a new matrix") func testNewMatrix() async throws {

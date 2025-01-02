@@ -20,8 +20,11 @@ struct SyncGroup: Equatable, @unchecked Sendable {
     /// The date representing the week of the synchronization group.
     let week: Date
 
-    /// An array of `EventModel` objects associated with the synchronization group.
-    let events: [EventModel]
+    /// An array of Core Data object IDs associated with the synchronization group.
+    let objectIDs: [NSManagedObjectID]
+
+    /// An array of `CKRecord` objects associated with the synchronization group.
+    let records: [CKRecord]
 
     /// A dictionary mapping field names to their corresponding count values.
     let fields: [String: Int]
@@ -35,12 +38,11 @@ extension SyncGroup {
     /// storing the result in the `fields` property.
     /// 
     init(name: String, week: Date, events: [EventModel]) {
-        self.init(
-            name: name,
-            week: week,
-            events: events,
-            fields: Dictionary(grouping: events, by: \.hour!.field).mapValues(\.count)
-        )
+        self.name = name
+        self.week = week
+        self.objectIDs = events.map(\.objectID)
+        self.records = events.map(CKRecord.init)
+        self.fields = Dictionary(grouping: events, by: \.hour!.field).mapValues(\.count)
     }
 }
 
