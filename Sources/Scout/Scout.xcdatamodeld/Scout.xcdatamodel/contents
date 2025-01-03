@@ -15,9 +15,11 @@
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES" codeGenerationType="class">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hour" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="startDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="week" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
 </model>

@@ -73,7 +73,10 @@ extension SessionMonitor {
             throw CompleteError.alreadyCompleted(endDate)
         }
 
-        session.endDate = Date()
+        let date = Date()
+        session.endDate = date
+        session.hour = date.startOfHour
+        session.week = date.startOfWeek
         try context.save()
     }
 }
