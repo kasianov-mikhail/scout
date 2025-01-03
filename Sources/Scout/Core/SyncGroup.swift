@@ -27,7 +27,9 @@ struct SyncGroup: Equatable, @unchecked Sendable {
     let records: [CKRecord]
 
     /// A dictionary mapping field names to their corresponding count values.
-    let fields: [String: Int]
+    var fields: [String: Int] {
+        Dictionary(grouping: records, by: \.hourField).mapValues(\.count)
+    }
 }
 
 extension SyncGroup {
@@ -42,22 +44,6 @@ extension SyncGroup {
         self.week = week
         self.objectIDs = events.map(\.objectID)
         self.records = events.map(CKRecord.init)
-        self.fields = Dictionary(grouping: events, by: \.hour!.field).mapValues(\.count)
-    }
-}
-
-extension Date {
-
-    /// A computed property that generates a string identifier based on the current date and time.
-    ///
-    /// - Returns: A string in the format `cell_week_hour`, where `week` is the current weekday
-    ///   and `hour` is the current hour formatted as a two-digit number.
-    ///
-    fileprivate var field: String {
-        let week = Calendar.UTC.component(.weekday, from: self)
-        let hour = Calendar.UTC.component(.hour, from: self)
-        let components = ["cell", String(week), String(format: "%02d", hour)]
-        return components.joined(separator: "_")
     }
 }
 
