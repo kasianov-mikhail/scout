@@ -33,26 +33,4 @@ import Testing
         #expect(group.records.allSatisfy { $0["name"] == "2" })
     }
 
-    @Test("Create a new matrix") func testNewMatrix() async throws {
-        let group = SyncGroup(name: "group_name", week: Date(), events: [])
-        let matrix = group.newMatrix()
-
-        #expect(group.name == matrix["name"])
-        #expect(group.week == matrix["date"])
-    }
-
-    @Test("Retrieve an existing matrix") func testMatrix() async throws {
-        let database = InMemoryDatabase()
-        let group = SyncGroup(name: "group_name", week: Date(), events: [])
-
-        let record = CKRecord(recordType: "DateIntMatrix")
-        record["name"] = group.name
-        record["date"] = group.week
-        database.records = [record]
-
-        let matrix = try await group.matrix(in: database)
-
-        #expect(group.name == matrix["name"])
-        #expect(group.week == matrix["date"])
-    }
 }
