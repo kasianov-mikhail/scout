@@ -10,10 +10,16 @@ import CloudKit
 
 @testable import Scout
 
-struct SyncGroupMatrixTests {
+struct MatrixProviderTests {
+    struct TestProvider: MatrixProvider {
+        let name: String
+        let week: Date
+        let keys: [String] = []
+    }
+
+    let group = TestProvider(name: "group_name", week: Date())
 
     @Test("Create a new matrix") func testNewMatrix() async throws {
-        let group = SyncGroup(name: "group_name", week: Date(), objectIDs: [], records: [])
         let matrix = group.newMatrix()
 
         #expect(group.name == matrix["name"])
@@ -22,7 +28,6 @@ struct SyncGroupMatrixTests {
 
     @Test("Retrieve an existing matrix") func testMatrix() async throws {
         let database = InMemoryDatabase()
-        let group = SyncGroup(name: "group_name", week: Date(), objectIDs: [], records: [])
 
         let record = CKRecord(recordType: "DateIntMatrix")
         record["name"] = group.name

@@ -7,11 +7,28 @@
 
 import CloudKit
 
-extension SyncGroup {
+/// A provider of a matrix.
+///
+/// The matrix is a two-dimensional array of integers.
+///  The provider defines the matrix's name, week, and keys to retrieve from the remote database.
+///
+protocol MatrixProvider {
+
+    /// The name of the matrix
+    var name: String { get }
+
+    /// The week of the matrix
+    var week: Date { get }
+
+    /// The keys to retrieve from the remote database
+    var keys: [String] { get }
+}
+
+extension MatrixProvider {
 
     /// Creates a new `CKRecord` instance representing a matrix.
     ///
-    /// The matrix will include the `name` and `week` properties of the `SyncGroup`.
+    /// The matrix will include the `name` and `week` properties of the `MatrixProvider`.
     ///
     /// - Returns: A new `CKRecord` instance.
     ///
@@ -24,7 +41,9 @@ extension SyncGroup {
 
     /// Asynchronously retrieves a CKRecord from the specified database or creates a new one if the database doesn't contain a required matrix.
     ///
-    /// - Parameter database: The database conforming to `Database` from which to retrieve the CKRecord.
+    /// - Parameters:
+    ///   - database: The database conforming to `Database` from which to retrieve the CKRecord.
+    ///   - fields: The fields to retrieve from the matrix.
     /// - Returns: A `CKRecord` retrieved from the specified database or a newly created one.
     /// - Throws: An error if the operation fails.
     ///
@@ -35,9 +54,8 @@ extension SyncGroup {
             type: .and, subpredicates: [namePredicate, datePredicate])
 
         let query = CKQuery(recordType: "DateIntMatrix", predicate: predicate)
-        let desiredKeys = fields.map(\.key)
 
-        let allMatrices = try await database.allRecords(matching: query, desiredKeys: desiredKeys)
+        let allMatrices = try await database.allRecords(matching: query, desiredKeys: keys)
         let matrix = allMatrices.randomElement() ?? newMatrix()
 
         return matrix

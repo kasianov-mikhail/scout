@@ -31,3 +31,13 @@ struct SyncGroup: Equatable, @unchecked Sendable {
         Dictionary(grouping: records, by: \.hourField).mapValues(\.count)
     }
 }
+
+// MARK: - Matrix Provider
+
+extension SyncGroup: MatrixProvider {
+
+    /// Used to define desired fields for a matrix.
+    var keys: [String] {
+        fields.map { key, _ in key }
+    }
+}
