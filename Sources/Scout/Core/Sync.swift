@@ -47,7 +47,9 @@ public func sync(in container: CKContainer) async throws {
 }
 
 @MainActor func sync(database: Database, context: NSManagedObjectContext) async throws {
-    while let group = try SyncGroup.group(in: context) {
+    let syncables: [Syncable.Type] = [EventModel.self, Session.self]
+
+    while let group = try syncables.group(in: context) {
         let coordinator = SyncCoordinator(
             database: database,
             maxRetry: 3,
