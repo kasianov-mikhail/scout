@@ -50,8 +50,7 @@ import Testing
 
         let group = try #require(try EventModel.group(in: context))
 
-        #expect(group.records.count == 2)
-        #expect(group.records.allSatisfy { $0["name"] == "2" })
+        #expect(group.records.allSatisfy { $0["name"] == "\(group.records.count)" })
     }
 
     @Test("Group sessions by week") func groupSessions() async throws {

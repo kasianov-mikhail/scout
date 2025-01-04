@@ -31,18 +31,3 @@ struct SyncGroup: Equatable, @unchecked Sendable {
         Dictionary(grouping: records, by: \.hourField).mapValues(\.count)
     }
 }
-
-extension SyncGroup {
-
-    /// Initializes a new instance of `SyncGroup`.
-    ///
-    /// This initializer also groups the events by their `hour` field and counts the occurrences,
-    /// storing the result in the `fields` property.
-    ///
-    init(name: String, week: Date, events: [EventModel]) {
-        self.name = name
-        self.week = week
-        self.objectIDs = events.map(\.objectID)
-        self.records = events.map(CKRecord.init)
-    }
-}
