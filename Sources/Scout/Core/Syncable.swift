@@ -78,7 +78,7 @@ extension CKRecord {
     /// The `version` field is set to 1 to indicate the initial version of the record.
     /// This can be useful for handling migrations or updates to the record schema in the future.
     ///
-    convenience init(event: EventModel) {
+    fileprivate convenience init(event: EventModel) {
         self.init(recordType: "Event")
 
         self["name"] = event.name
@@ -141,7 +141,7 @@ extension CKRecord {
     /// The `version` field is set to 1 to indicate the initial version of the record.
     /// This can be useful for handling migrations or updates to the record schema in the future.
     ///
-    convenience init(session: Session) {
+    fileprivate convenience init(session: Session) {
         self.init(recordType: "Session")
 
         self["start_date"] = session.startDate

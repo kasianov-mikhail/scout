@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
+import CoreData
 import Foundation
 import Testing
 
@@ -13,20 +14,15 @@ import Testing
 
 @MainActor struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
-    let event = EventModel(context: .inMemoryContext())
-
-    let group: SyncGroup
+    let context = NSManagedObjectContext.inMemoryContext()
     let coordinator: SyncCoordinator
 
-    init() {
+    init() throws {
+        let event = EventModel(context: context)
         event.name = "event_name"
         event.hour = Date()
-
-        group = SyncGroup(
-            name: "test",
-            week: Date(),
-            events: [event]
-        )
+        event.week = Date()
+        let group = try EventModel.group(in: context)!
 
         coordinator = SyncCoordinator(
             database: database,
@@ -51,7 +47,9 @@ import Testing
         #expect(database.events.first?["name"] == "event_name")
     }
 
-    @Test("Create a new matrix, if there are repeating merge errors") func testNewMatrix() async throws {
+    @Test("Create a new matrix, if there are repeating merge errors") func testNewMatrix()
+        async throws
+    {
         database.errors.append(contentsOf: Array(repeating: createMergeError(), count: 4))
 
         try await coordinator.upload()
