@@ -41,3 +41,11 @@ extension SyncGroup: MatrixProvider {
         fields.map { key, _ in key }
     }
 }
+
+// MARK: -
+
+extension SyncGroup: CustomStringConvertible {
+    var description: String {
+        "\(name) – \(week), \(records.count) records, \(fields)"
+    }
+}

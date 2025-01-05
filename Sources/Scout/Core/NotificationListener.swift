@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 import UIKit
 
@@ -40,6 +41,7 @@ public class NotificationListener {
         },
         UIApplication.didEnterBackgroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionMonitor.complete)
+            try await sync(in: container)
         },
     ])
 
