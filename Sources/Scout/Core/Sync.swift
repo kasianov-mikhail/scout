@@ -11,15 +11,6 @@ import CoreData
 /// A private instance of `Dispatcher` used for managing and coordinating tasks.
 private let dispatcher = Dispatcher()
 
-/// An error type that represents a synchronization error.
-enum SyncError {
-
-    /// The user is not logged in to iCloud.
-    case notLoggedIn
-}
-
-// MARK: - Synchronization
-
 /// Synchronizes data with the specified CloudKit container.
 ///
 /// This function checks the account status of the CloudKit container and ensures that the user is logged in.
@@ -31,7 +22,10 @@ enum SyncError {
 /// - Throws: An error of type `SyncError.notLoggedIn` if the user is not logged in to iCloud,
 ///           or any error encountered during the synchronization process.
 ///
-public func sync(in container: CKContainer) async throws {
+public func sync(in container: CKContainer?) async throws {
+    guard let container else {
+        throw SyncError.containerNotFound
+    }
     guard try await container.accountStatus() == .available else {
         throw SyncError.notLoggedIn
     }
@@ -40,15 +34,16 @@ public func sync(in container: CKContainer) async throws {
     /// synchronisation cycles in parallel. Instead, the initial loop rechecks for unuploaded events after each execution.
     try await dispatcher.execute {
         try await sync(
+            syncables: [EventModel.self, Session.self],
             database: container.publicCloudDatabase,
             context: persistentContainer.viewContext
         )
     }
 }
 
-@MainActor func sync(database: Database, context: NSManagedObjectContext) async throws {
-    let syncables: [Syncable.Type] = [EventModel.self, Session.self]
-
+@MainActor func sync(
+    syncables: [Syncable.Type], database: Database, context: NSManagedObjectContext
+) async throws {
     while let group = try syncables.group(in: context) {
         let coordinator = SyncCoordinator(
             database: database,
@@ -65,6 +60,28 @@ public func sync(in container: CKContainer) async throws {
     }
 }
 
+// MARK: - Errors
+
+/// An error type that represents a synchronization error.
+enum SyncError: Error {
+
+    /// The CloudKit container was not found.
+    case containerNotFound
+
+    /// The user is not logged in to iCloud.
+    case notLoggedIn
+
+    var localizedDescription: String {
+        switch self {
+        case .containerNotFound:
+            return
+                "CloudKit container not found. Call `setup(container:)` while initializing the app."
+        case .notLoggedIn:
+            return "User is not logged in to iCloud"
+        }
+    }
+}
+
 // MARK: - Core Data
 
 extension NSManagedObjectContext {
@@ -72,16 +89,5 @@ extension NSManagedObjectContext {
     /// Deletes the object with the specified object ID.
     fileprivate func deleteObject(with objectID: NSManagedObjectID) {
         delete(object(with: objectID))
-    }
-}
-
-// MARK: -
-
-extension SyncError: LocalizedError {
-    var errorDescription: String? {
-        switch self {
-        case .notLoggedIn:
-            return "User is not logged in to iCloud account."
-        }
     }
 }

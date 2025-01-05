@@ -110,8 +110,6 @@ extension SyncCoordinator {
                 as? CKRecord
             {
                 try await upload(matrix: serverMatrix, retry: retry + 1)
-            } else {
-                throw error
             }
         }
     }
