@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RangeControl: View {
-    let period: StatPeriod
+    let period: Period
     @Binding var range: Range<Date>
 
     let formatter: DateFormatter = {
@@ -20,7 +20,7 @@ struct RangeControl: View {
     var body: some View {
         HStack {
             let leftRange = range.moved(by: period.rangeComponent, value: -1)
-            let yearRange = StatPeriod.year.range
+            let yearRange = Period.year.range
 
             MoveButton(image: "chevron.left") {
                 range.move(by: period.rangeComponent, value: -1)

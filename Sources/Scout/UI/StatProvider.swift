@@ -13,12 +13,16 @@ import CloudKit
     /// The name of the event for which the statistics are being fetched.
     let eventName: String
 
+    /// The periods for which the statistics are fetched.
+    let periods: [Period]
+
     /// The statistical data fetched from the cloud, published to notify observers of changes.
     @Published var data: ChartData?
 
-    /// Initializes a new instance of `StatProvider` with the specified event name.
-    init(eventName: String) {
+    /// Initializes a new instance of `StatProvider` with the specified event name and periods.
+    init(eventName: String, periods: [Period]) {
         self.eventName = eventName
+        self.periods = periods
     }
 
     /// Fetches data if needed from the provided database.
@@ -64,7 +68,7 @@ extension StatProvider {
                 points: rawPoints
             )
 
-            data = rawData.chartData(for: StatPeriod.components)
+            data = rawData.chartData(for: periods.components)
 
         } catch {
             print(error.localizedDescription)
@@ -90,10 +94,10 @@ extension StatProvider {
 
 // MARK: - Calendar Components
 
-extension StatPeriod {
+extension [Period] {
 
     /// A set of calendar components used for date calculations.
-    fileprivate static var components: Set<Calendar.Component> {
-        Set(StatPeriod.allCases.map(\.pointComponent))
+    fileprivate var components: Set<Calendar.Component> {
+        Set(map(\.pointComponent))
     }
 }
