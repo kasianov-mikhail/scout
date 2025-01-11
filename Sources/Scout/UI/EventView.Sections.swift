@@ -57,7 +57,12 @@ extension EventView {
         @EnvironmentObject var database: DatabaseController
 
         init(eventName: String) {
-            _stat = StateObject(wrappedValue: StatProvider(eventName: eventName))
+            _stat = StateObject(
+                wrappedValue: StatProvider(
+                    eventName: eventName,
+                    periods: Period.all
+                )
+            )
         }
 
         var body: some View {
@@ -65,7 +70,7 @@ extension EventView {
                 await stat.fetchIfNeeded(in: database)
             }
 
-            ForEach(StatPeriod.allCases) { period in
+            ForEach(Period.all) { period in
                 ZStack {
                     HStack {
                         Text(period.title).monospaced(false)
@@ -93,7 +98,7 @@ extension EventView {
             }
         }
 
-        func count(for period: StatPeriod) -> Int? {
+        func count(for period: Period) -> Int? {
             stat.data?[period.pointComponent]?.filter {
                 period.range.contains($0.date)
             }
@@ -131,27 +136,6 @@ extension EventView {
             .alignmentGuide(.listRowSeparatorTrailing) { dimension in
                 dimension[.trailing]
             }
-        }
-    }
-}
-
-// MARK: - Title
-
-extension StatPeriod {
-
-    /// A human-readable title for each statistical period.
-    fileprivate var title: String {
-        switch self {
-        case .today:
-            "Today"
-        case .yesterday:
-            "Yesterday"
-        case .week:
-            "Last 7 days"
-        case .month:
-            "Last 30 days"
-        case .year:
-            "Last 365 days"
         }
     }
 }

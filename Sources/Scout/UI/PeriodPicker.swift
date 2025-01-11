@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct PeriodPicker: View {
-    @Binding private var period: StatPeriod
+    @Binding private var period: Period
     let accent: Bool
 
-    init(period: Binding<StatPeriod>, accent: Bool = false) {
+    init(period: Binding<Period>, accent: Bool = false) {
         self._period = period
         self.accent = accent
     }
 
     var body: some View {
         Picker("", selection: $period) {
-            ForEach(StatPeriod.allCases) { period in
+            ForEach(Period.all) { period in
                 if period == self.period, accent {
                     Text(period.shortTitle + "*")
                 } else {
@@ -31,7 +31,7 @@ struct PeriodPicker: View {
     }
 }
 
-extension StatPeriod {
+extension Period {
 
     /// A short title for each statistical period.
     fileprivate var shortTitle: String {

@@ -7,10 +7,19 @@
 
 import Foundation
 
-/// An enumeration representing different statistical periods.
-/// This can be used to categorize or filter data based on different time periods.
+/// An enumeration of statistical periods used to analyze data.
+/// Each period represents a specific timeframe for the statistics being analyzed.
 ///
-enum StatPeriod: String, CaseIterable, Identifiable {
+/// - Note: The period is used to group data points and visualize trends over time.
+///
+enum Period: String, Identifiable {
+
+    /// An array of all statistical periods. The same as 'CaseIterable.allCases', but as a constant.
+    static let all = [Period.today, .yesterday, .week, .month, .year]
+
+    /// An array of all session-based statistical periods.
+    static let sessions = [Period.week, .month, .year]
+
     case today
     case yesterday
     case week
@@ -20,9 +29,30 @@ enum StatPeriod: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
+// MARK: - Title
+
+extension Period {
+
+    /// A human-readable title for each statistical period.
+    var title: String {
+        switch self {
+        case .today:
+            "Today"
+        case .yesterday:
+            "Yesterday"
+        case .week:
+            "Last 7 days"
+        case .month:
+            "Last 30 days"
+        case .year:
+            "Last 365 days"
+        }
+    }
+}
+
 // MARK: - Components
 
-extension StatPeriod {
+extension Period {
 
     /// A computed property that returns the date range for each statistical period.
     /// This property is used to visualize data for a specific period,
@@ -72,7 +102,7 @@ extension StatPeriod {
 
 // MARK: -
 
-extension StatPeriod: CustomStringConvertible {
+extension Period: CustomStringConvertible {
     var description: String {
         rawValue.capitalized
     }

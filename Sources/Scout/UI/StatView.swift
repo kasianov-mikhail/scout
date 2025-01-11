@@ -10,13 +10,13 @@ import CloudKit
 import SwiftUI
 
 struct StatView: View {
-    @State var period: StatPeriod
+    @State var period: Period
     @State var range: Range<Date>
 
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(stat: StatProvider, period: StatPeriod) {
+    init(stat: StatProvider, period: Period) {
         self.stat = stat
         self._period = State(wrappedValue: period)
         self._range = State(wrappedValue: period.range)
@@ -113,7 +113,7 @@ struct StatView: View {
 
 #Preview {
     NavigationStack {
-        let components = Array(Set(StatPeriod.allCases.map(\.pointComponent)))
+        let components = Period.all.map(\.pointComponent)
         let arrays = components.map { period in
             let points = (0..<30).map { i in
                 ChartPoint(
@@ -125,7 +125,7 @@ struct StatView: View {
             return (period, points)
         }
         let data = Dictionary(uniqueKeysWithValues: arrays)
-        let stat = StatProvider(eventName: "Event")
+        let stat = StatProvider(eventName: "Event", periods: Period.all)
         stat.data = data
         return StatView(stat: stat, period: .month)
     }
