@@ -102,7 +102,7 @@ extension EventView {
             stat.data?[period.pointComponent]?.filter {
                 period.range.contains($0.date)
             }
-            .map(\.count).reduce(0, +)
+            .count
         }
     }
 
