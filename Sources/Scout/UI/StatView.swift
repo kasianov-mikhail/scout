@@ -38,15 +38,13 @@ struct StatView: View {
 
             if let points {
                 List {
-                    let count = points.map(\.count).reduce(0, +)
-
                     chart(points: points).chartBackground { proxy in
-                        if count == 0 {
+                        if points.count == 0 {
                             Placeholder(text: "No results")
                         }
                     }
 
-                    total(count: count)
+                    total(count: points.count)
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)

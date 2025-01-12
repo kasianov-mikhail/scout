@@ -52,6 +52,14 @@ extension ChartPoint {
     }
 }
 
+// MARK: - Collection Count
+
+extension [ChartPoint] {
+    var count: Int {
+        map(\.count).reduce(0, +)
+    }
+}
+
 // MARK: -
 
 extension ChartPoint: CustomStringConvertible {
