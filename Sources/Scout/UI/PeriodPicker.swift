@@ -8,18 +8,14 @@
 import SwiftUI
 
 struct PeriodPicker: View {
-    @Binding private var period: Period
-    let accent: Bool
+    @ObservedObject var model: StatModel
 
-    init(period: Binding<Period>, accent: Bool = false) {
-        self._period = period
-        self.accent = accent
-    }
+    let periods: [Period]
 
     var body: some View {
-        Picker("", selection: $period) {
-            ForEach(Period.all) { period in
-                if period == self.period, accent {
+        Picker("", selection: $model.period) {
+            ForEach(periods) { period in
+                if period == model.period, model.isAccented {
                     Text(period.shortTitle + "*")
                 } else {
                     Text(period.shortTitle)
@@ -28,6 +24,16 @@ struct PeriodPicker: View {
         }
         .padding(.horizontal)
         .pickerStyle(.segmented)
+    }
+}
+
+extension StatModel {
+
+    /// A Boolean value that indicates whether the current period is accented.
+    /// Accenting is used to highlight the current period in the picker using an asterisk.
+    ///
+    fileprivate var isAccented: Bool {
+        isRightEnabled
     }
 }
 

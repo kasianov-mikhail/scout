@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct RangeControl: View {
-    let period: Period
-    @Binding var range: Range<Date>
+    @ObservedObject var model: StatModel
 
-    let formatter: DateFormatter = {
+    static let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter
@@ -19,29 +18,26 @@ struct RangeControl: View {
 
     var body: some View {
         HStack {
-            let leftRange = range.moved(by: period.rangeComponent, value: -1)
-            let yearRange = Period.year.range
-
             MoveButton(image: "chevron.left") {
-                range.move(by: period.rangeComponent, value: -1)
+                model.moveLeft()
             }
-            .disabled(leftRange.lowerBound < yearRange.lowerBound)
+            .disabled(!model.isLeftEnabled)
 
-            Text(range.rangeLabel(formatter: formatter))
+            Text(model.range.rangeLabel(formatter: Self.formatter))
                 .font(.system(size: 16))
                 .monospaced()
                 .frame(height: 44)
                 .frame(maxWidth: .infinity)
 
             MoveButton(image: "chevron.right") {
-                range.move(by: period.rangeComponent, value: 1)
+                model.moveRight()
             }
             .simultaneousGesture(
                 LongPressGesture().onEnded { _ in
-                    range = period.range
+                    model.moveRightEdge()
                 }
             )
-            .disabled(range == period.range)
+            .disabled(!model.isRightEnabled)
         }
     }
 
@@ -56,20 +52,5 @@ struct RangeControl: View {
             .font(.system(size: 16))
             .frame(width: 44, height: 44)
         }
-    }
-}
-
-// MARK: - Moving
-
-extension Range<Date> {
-
-    mutating func move(by component: Calendar.Component, value: Int) {
-        self = moved(by: component, value: value)
-    }
-
-    func moved(by component: Calendar.Component, value: Int) -> Self {
-        let lowerBound = lowerBound.adding(component, value: value)
-        let upperBound = upperBound.adding(component, value: value)
-        return lowerBound..<upperBound
     }
 }

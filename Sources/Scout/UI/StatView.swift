@@ -10,33 +10,29 @@ import CloudKit
 import SwiftUI
 
 struct StatView: View {
-    @State var period: Period
-    @State var range: Range<Date>
+    let chartColor: Color
+    let showFooter: Bool
 
+    @StateObject var model: StatModel
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(stat: StatProvider, period: Period) {
+    init(stat: StatProvider, period: Period, chartColor: Color = .blue, showFooter: Bool) {
         self.stat = stat
-        self._period = State(wrappedValue: period)
-        self._range = State(wrappedValue: period.range)
+        self._model = StateObject(wrappedValue: StatModel(period: period))
+        self.chartColor = chartColor
+        self.showFooter = showFooter
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodPicker(
-                period: $period,
-                accent: period.range != range
-            )
+            PeriodPicker(model: model, periods: stat.periods)
 
-            RangeControl(period: period, range: $range)
-                .onChange(of: period) { period in
-                    range = period.range
-                }
+            RangeControl(model: model)
                 .padding(.top)
                 .padding(.horizontal)
 
-            if let points {
+            if let data = stat.data, let points = model.points(from: data) {
                 List {
                     chart(points: points).chartBackground { proxy in
                         if points.count == 0 {
@@ -44,7 +40,9 @@ struct StatView: View {
                         }
                     }
 
-                    total(count: points.count)
+                    if showFooter {
+                        total(count: points.count)
+                    }
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
@@ -58,27 +56,22 @@ struct StatView: View {
         }
     }
 
-    var points: [ChartPoint]? {
-        stat.data?[period.pointComponent]?.filter {
-            range.contains($0.date)
-        }
-    }
-
     func chart(points: [ChartPoint]) -> some View {
         Chart(points, id: \.date) { point in
             BarMark(
-                x: .value("X", point.date, unit: period.pointComponent),
+                x: .value("X", point.date, unit: model.period.pointComponent),
                 y: .value("Y", point.count)
             )
-            .foregroundStyle(.blue)
         }
         .chartXAxis {
-            if period == .month {
-                AxisMarks(values: [-28, -21, -14, -7].map(range.upperBound.addingDay))
+            if let axisValues = model.axisValues {
+                AxisMarks(values: axisValues)
             } else {
                 AxisMarks()
             }
         }
+        .listRowSeparator(showFooter ? .visible : .hidden)
+        .foregroundStyle(chartColor)
         .aspectRatio(4 / 3, contentMode: .fit)
         .padding()
         .padding(.bottom)
@@ -95,7 +88,7 @@ struct StatView: View {
             .foregroundColor(.blue)
 
             NavigationLink {
-                StatEventList(eventName: stat.eventName, range: range)
+                StatEventList(eventName: stat.eventName, range: model.range)
             } label: {
                 EmptyView()
             }
@@ -125,7 +118,7 @@ struct StatView: View {
         let data = Dictionary(uniqueKeysWithValues: arrays)
         let stat = StatProvider(eventName: "Event", periods: Period.all)
         stat.data = data
-        return StatView(stat: stat, period: .month)
+        return StatView(stat: stat, period: .month, showFooter: true)
     }
     .environmentObject(Tint())
     .environmentObject(DatabaseController())
