@@ -26,12 +26,7 @@ struct StatRow: View {
             .foregroundColor(color)
 
             NavigationLink {
-                StatView(
-                    stat: stat,
-                    period: period,
-                    chartColor: color,
-                    showFooter: color == .blue
-                )
+                StatView(stat: stat, period: period, chartColor: color)
             } label: {
                 EmptyView()
             }
