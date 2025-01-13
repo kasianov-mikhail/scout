@@ -86,7 +86,7 @@ extension EventView {
                     .foregroundStyle(.blue)
 
                     NavigationLink {
-                        StatView(stat: stat, period: period)
+                        StatView(stat: stat, period: period, showFooter: true)
                     } label: {
                         EmptyView()
                     }
