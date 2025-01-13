@@ -28,19 +28,24 @@ extension StatModel {
     var isRightEnabled: Bool {
         range != period.range
     }
+}
+
+// MARK: - Move Methods
+
+extension StatModel {
 
     /// Moves the range to the left by the specified period component.
-    func moveLeft() {
+    mutating func moveLeft() {
         range.move(by: period.rangeComponent, value: -1)
     }
 
     /// Moves the range to the right by the specified period component.
-    func moveRight() {
+    mutating func moveRight() {
         range.move(by: period.rangeComponent, value: 1)
     }
 
     /// Moves the range to the right edge of the period range.
-    func moveRightEdge() {
+    mutating func moveRightEdge() {
         range = period.range
     }
 }

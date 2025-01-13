@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PeriodPicker: View {
-    @ObservedObject var model: StatModel
+    @Binding var model: StatModel
 
     let periods: [Period]
 

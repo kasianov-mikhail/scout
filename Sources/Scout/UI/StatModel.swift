@@ -10,20 +10,14 @@ import SwiftUI
 /// A model that provides data for a chart.
 ///
 /// The model is responsible for filtering the data based on the selected period.
-/// It also provides the axis values for the chart.
 ///
-@MainActor class StatModel: ObservableObject {
+struct StatModel {
 
-    @Published var period: Period {
+    var period: Period {
         didSet { range = period.range }
     }
 
-    @Published var range: Range<Date>
-
-    init(period: Period) {
-        self.period = period
-        self.range = period.range
-    }
+    var range: Range<Date>
 
     /// Returns the points for the specified data.
     /// The points are filtered based on the selected period and date range.
@@ -36,18 +30,16 @@ import SwiftUI
             range.contains($0.date)
         }
     }
+}
 
-    /// Returns the axis values for the chart.
+extension StatModel {
+
+    /// Initializes a new instance of `StatModel` with the specified period.
     ///
-    /// For a month period, the values are the last 4 weeks. This fixes the issue with the axis
-    /// values not being displayed correctly for the month period. For the other periods,
-    /// the chart uses default axis values
+    /// - Parameter period: The period to use for filtering the data.
     ///
-    var axisValues: [Date]? {
-        if period == .month {
-            return [-28, -21, -14, -7].map(range.upperBound.addingDay)
-        } else {
-            return nil
-        }
+    init(period: Period) {
+        self.period = period
+        self.range = period.range
     }
 }
