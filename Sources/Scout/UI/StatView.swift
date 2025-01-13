@@ -17,9 +17,9 @@ struct StatView: View {
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(stat: StatProvider, period: Period, chartColor: Color = .blue, showFooter: Bool) {
+    init(stat: StatProvider, model: StatModel, chartColor: Color = .blue, showFooter: Bool) {
         self.stat = stat
-        self._model = StateObject(wrappedValue: StatModel(period: period))
+        self._model = StateObject(wrappedValue: model)
         self.chartColor = chartColor
         self.showFooter = showFooter
     }
@@ -32,7 +32,7 @@ struct StatView: View {
                 .padding(.top)
                 .padding(.horizontal)
 
-            if let data = stat.data, let points = model.points(from: data) {
+            if let points = model.points(from: stat.data) {
                 List {
                     chart(points: points).chartBackground { proxy in
                         if points.count == 0 {
