@@ -17,9 +17,9 @@ struct StatView: View {
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(stat: StatProvider, model: StatModel, chartColor: Color = .blue, showFooter: Bool) {
+    init(stat: StatProvider, period: Period, chartColor: Color = .blue, showFooter: Bool) {
         self.stat = stat
-        self._model = StateObject(wrappedValue: model)
+        self._model = StateObject(wrappedValue: StatModel(period: period))
         self.chartColor = chartColor
         self.showFooter = showFooter
     }
