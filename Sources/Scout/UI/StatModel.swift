@@ -31,8 +31,8 @@ import SwiftUI
     /// - Parameter data: The data to filter.
     /// - Returns: An array of `ChartPoint` objects.
     ///
-    func points(from data: ChartData) -> [ChartPoint]? {
-        data[period.pointComponent]?.filter {
+    func points(from data: ChartData?) -> [ChartPoint]? {
+        data?[period.pointComponent]?.filter {
             range.contains($0.date)
         }
     }

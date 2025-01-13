@@ -72,21 +72,17 @@ extension EventView {
 
             ForEach(Period.all) { period in
                 ZStack {
+                    let model = StatModel(period: period)
+
                     HStack {
                         Text(period.title).monospaced(false)
-
                         Spacer()
-
-                        if let count = count(for: period) {
-                            Text(count == 0 ? "—" : "\(count)")
-                        } else {
-                            Redacted(length: 5)
-                        }
+                        RedactedText(count: model.points(from: stat.data)?.count)
                     }
                     .foregroundStyle(.blue)
 
                     NavigationLink {
-                        StatView(stat: stat, period: period, showFooter: true)
+                        StatView(stat: stat, model: model, showFooter: true)
                     } label: {
                         EmptyView()
                     }
@@ -96,13 +92,6 @@ extension EventView {
                     dimension[.trailing]
                 }
             }
-        }
-
-        func count(for period: Period) -> Int? {
-            stat.data?[period.pointComponent]?.filter {
-                period.range.contains($0.date)
-            }
-            .count
         }
     }
 
