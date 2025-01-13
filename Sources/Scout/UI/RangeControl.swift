@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RangeControl: View {
-    @ObservedObject var model: StatModel
+    @Binding var model: StatModel
 
     static let formatter: DateFormatter = {
         let formatter = DateFormatter()
