@@ -71,26 +71,7 @@ extension EventView {
             }
 
             ForEach(Period.all) { period in
-                ZStack {
-                    let model = StatModel(period: period)
-
-                    HStack {
-                        Text(period.title).monospaced(false)
-                        Spacer()
-                        RedactedText(count: model.points(from: stat.data)?.count)
-                    }
-                    .foregroundStyle(.blue)
-
-                    NavigationLink {
-                        StatView(stat: stat, model: model, showFooter: true)
-                    } label: {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                }
-                .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                    dimension[.trailing]
-                }
+                PeriodRow(period: period, color: .blue, stat: stat)
             }
         }
     }
