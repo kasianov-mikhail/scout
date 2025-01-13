@@ -11,28 +11,26 @@ import SwiftUI
 
 struct StatView: View {
     let chartColor: Color
-    let showFooter: Bool
 
     @State var model: StatModel
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(stat: StatProvider, period: Period, chartColor: Color = .blue, showFooter: Bool) {
+    init(stat: StatProvider, period: Period, chartColor: Color) {
         self.stat = stat
         self._model = State(wrappedValue: StatModel(period: period))
         self.chartColor = chartColor
-        self.showFooter = showFooter
     }
 
     var body: some View {
         VStack(spacing: 0) {
             PeriodPicker(model: $model, periods: stat.periods)
 
-            RangeControl(model: $model)
-                .padding(.top)
-                .padding(.horizontal)
-
             if let points = model.points(from: stat.data) {
+                RangeControl(model: $model)
+                    .padding(.top)
+                    .padding(.horizontal)
+
                 List {
                     chart(points: points).chartBackground { proxy in
                         if points.count == 0 {
@@ -40,7 +38,7 @@ struct StatView: View {
                         }
                     }
 
-                    if showFooter {
+                    if chartColor == .blue {
                         total(count: points.count)
                     }
                 }
@@ -70,7 +68,7 @@ struct StatView: View {
                 AxisMarks()
             }
         }
-        .listRowSeparator(showFooter ? .visible : .hidden)
+        .listRowSeparator(chartColor == .blue ? .visible : .hidden)
         .foregroundStyle(chartColor)
         .aspectRatio(4 / 3, contentMode: .fit)
         .padding()
@@ -137,7 +135,7 @@ extension StatModel {
         let data = Dictionary(uniqueKeysWithValues: arrays)
         let stat = StatProvider(eventName: "Event", periods: Period.all)
         stat.data = data
-        return StatView(stat: stat, period: .month, showFooter: true)
+        return StatView(stat: stat, period: .month, chartColor: .blue)
     }
     .environmentObject(Tint())
     .environmentObject(DatabaseController())
