@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PeriodRow: View {
+struct StatRow: View {
     let period: Period
     let color: Color
     @ObservedObject var stat: StatProvider

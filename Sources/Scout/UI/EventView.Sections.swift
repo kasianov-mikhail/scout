@@ -71,7 +71,7 @@ extension EventView {
             }
 
             ForEach(Period.all) { period in
-                PeriodRow(period: period, color: .blue, stat: stat)
+                StatRow(period: period, color: .blue, stat: stat)
             }
         }
     }
