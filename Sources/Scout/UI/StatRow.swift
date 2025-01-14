@@ -13,8 +13,8 @@ struct StatRow: View {
     @ObservedObject var stat: StatProvider
 
     var body: some View {
-        ZStack {
-            HStack {
+        Row {
+            Group {
                 Text(period.title)
                 Spacer()
 
@@ -24,16 +24,8 @@ struct StatRow: View {
                 RedactedText(count: count)
             }
             .foregroundColor(color)
-
-            NavigationLink {
-                StatView(stat: stat, period: period, chartColor: color)
-            } label: {
-                EmptyView()
-            }
-            .opacity(0)
-        }
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
+        } destination: {
+            StatView(stat: stat, period: period, chartColor: color)
         }
     }
 }
