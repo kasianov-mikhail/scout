@@ -15,24 +15,7 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack {
             List {
-                Header(title: "Events")
-                ZStack {
-                    HStack {
-                        Text("See All").foregroundStyle(.blue)
-                        Spacer()
-                    }
-
-                    NavigationLink {
-                        Text("Events")
-                    } label: {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                }
-                .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                    dimension[.trailing]
-                }
-
+                EventSection()
                 UsersSection()
                 SessionSection()
             }

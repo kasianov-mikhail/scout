@@ -1,12 +1,26 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
+
+extension HomeView {
+    struct EventSection: View {
+        var body: some View {
+            Header(title: "Events")
+
+            Row {
+                Text("See All").foregroundStyle(.blue)
+                Spacer()
+            } destination: {
+                AnalyticsView()
+            }
+        }
+    }
+}
 
 extension HomeView {
     struct UsersSection: View {
@@ -14,25 +28,15 @@ extension HomeView {
             Header(title: "Users")
 
             ForEach(UserPeriod.allCases) { period in
-                ZStack {
-                    HStack {
-                        Text(period.title)
-                        Spacer()
-                        Redacted(length: 8)
-                    }
-
-                    NavigationLink {
-                        Placeholder(text: "Coming Soon").navigationTitle("Active Users")
-                    } label: {
-                        EmptyView()
-                    }
-                    .opacity(0)
-                }
-                .foregroundStyle(.green)
-                .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                    dimension[.trailing]
+                Row {
+                    Text(period.title)
+                    Spacer()
+                    Redacted(length: 8)
+                } destination: {
+                    Placeholder(text: "Coming Soon").navigationTitle("Active Users")
                 }
             }
+            .foregroundStyle(.green)
         }
     }
 }
