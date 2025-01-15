@@ -11,6 +11,7 @@ import SwiftUI
 public struct HomeView: View {
     @StateObject private var database: DatabaseController
     @State private var tint = Tint()
+    @Environment(\.dismiss) var dismiss
 
     public var body: some View {
         NavigationStack {
@@ -18,6 +19,13 @@ public struct HomeView: View {
                 EventSection()
                 UsersSection()
                 SessionSection()
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close") {
+                        dismiss()
+                    }
+                }
             }
             .listStyle(.plain)
             .navigationBarTitle("Home")

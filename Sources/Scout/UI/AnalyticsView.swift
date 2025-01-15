@@ -5,87 +5,71 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 class Tint: ObservableObject {
     @Published var value: Color?
 }
 
-public struct AnalyticsView: View {
+struct AnalyticsView: View {
 
     @State private var filter = EventQuery()
 
-    @StateObject private var database: DatabaseController
     @StateObject private var provider = EventProvider()
     @StateObject private var search = EventProvider()
-    @StateObject private var tint = Tint()
 
-    @Environment(\.dismiss) var dismiss
+    @EnvironmentObject private var database: DatabaseController
+    @EnvironmentObject private var tint: Tint
 
-    init(database: DatabaseController) {
-        _database = StateObject(wrappedValue: database)
-    }
-
-    public var body: some View {
-        NavigationStack {
-            Group {
-                if !filter.text.isEmpty {
-                    EventList(provider: search)
-                } else {
-                    eventList
-                }
+    var body: some View {
+        Group {
+            if !filter.text.isEmpty {
+                EventList(provider: search)
+            } else {
+                eventList
             }
-            .searchable(text: $filter.text)
-            .autocorrectionDisabled(true)  // stop keyboard suggestions
-            .keyboardType(.alphabet)  // stop keyboard suggestions
-            .searchSuggestions {
-                if let events = provider.events, filter.text.isEmpty {
-                    ForEach(events.unique(by: \.name, max: 7), id: \.self) {
-                        Suggestion(text: $0)
-                    }
-                }
-            }
-            .onSubmit(of: .search) {
-                UIApplication.shared.sendAction(
-                    #selector(UIResponder.resignFirstResponder),
-                    to: nil,
-                    from: nil,
-                    for: nil
-                )  // hide keyboard on suggestion selected
-
-                Task {
-                    search.events = nil
-                    await search.fetch(for: filter, in: database)
-                }
-            }
-            .onChange(of: filter.text) { _ in
-                search.events?.removeAll()
-            }
-            .navigationTitle("Events")
         }
+        .searchable(text: $filter.text, placement: .navigationBarDrawer(displayMode: .always))
+        .autocorrectionDisabled(true)  // stop keyboard suggestions
+        .keyboardType(.alphabet)  // stop keyboard suggestions
+        .searchSuggestions {
+            if let events = provider.events, filter.text.isEmpty {
+                ForEach(events.unique(by: \.name, max: 7), id: \.self) {
+                    Suggestion(text: $0)
+                }
+            }
+        }
+        .onSubmit(of: .search) {
+            UIApplication.shared.sendAction(
+                #selector(UIResponder.resignFirstResponder),
+                to: nil,
+                from: nil,
+                for: nil
+            )  // hide keyboard on suggestion selected
+
+            Task {
+                search.events = nil
+                await search.fetch(for: filter, in: database)
+            }
+        }
+        .onChange(of: filter.text) { _ in
+            search.events?.removeAll()
+        }
+        .navigationTitle("Events")
         .onPreferenceChange(Message.Key.self) { message in
             MainActor.assumeIsolated {
                 provider.message = message
             }
         }
         .message($provider.message)
-        .environmentObject(database)
-        .environmentObject(tint)
         .tint(tint.value)
     }
 
     var eventList: some View {
         EventList(provider: provider)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    FilterButton(levels: $filter.levels)
-                }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
-                        dismiss()
-                    }
-                    .tint(.blue)
+                    FilterButton(levels: $filter.levels)
                 }
             }
             .task {
@@ -104,21 +88,6 @@ public struct AnalyticsView: View {
 
     func fetch() async {
         await provider.fetch(for: filter, in: database)
-    }
-}
-
-// MARK: - Initializers
-
-extension AnalyticsView {
-
-    /// Creates a new analytics view. The main entry point for the analytics UI.
-    public init(container: CKContainer) {
-        self.init(database: DatabaseController(database: container.publicCloudDatabase))
-    }
-
-    /// For testing purposes. Do not use in production.
-    init() {
-        self.init(database: DatabaseController(database: nil))
     }
 }
 
@@ -174,5 +143,9 @@ extension Array {
 // MARK: - Previews
 
 #Preview {
-    AnalyticsView()
+    NavigationStack {
+        AnalyticsView()
+            .environmentObject(DatabaseController())
+            .environmentObject(Tint())
+    }
 }
