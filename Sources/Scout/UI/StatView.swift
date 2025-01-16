@@ -10,16 +10,22 @@ import CloudKit
 import SwiftUI
 
 struct StatView: View {
-    let chartColor: Color
+    struct Config {
+        let title: String
+        let color: Color
+        let showList: Bool
+    }
+
+    let config: Config
 
     @State var model: StatModel
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(stat: StatProvider, period: Period, chartColor: Color) {
+    init(config: Config, stat: StatProvider, period: Period) {
+        self.config = config
         self.stat = stat
         self._model = State(wrappedValue: StatModel(period: period))
-        self.chartColor = chartColor
     }
 
     var body: some View {
@@ -38,7 +44,7 @@ struct StatView: View {
                         }
                     }
 
-                    if chartColor == .blue {
+                    if config.showList {
                         total(count: points.count)
                     }
                 }
@@ -48,7 +54,7 @@ struct StatView: View {
                 ProgressView().tint(nil).frame(maxHeight: .infinity)
             }
         }
-        .navigationTitle("Stats")
+        .navigationTitle(config.title)
         .onAppear {
             tint.value = nil
         }
@@ -68,8 +74,8 @@ struct StatView: View {
                 AxisMarks()
             }
         }
-        .listRowSeparator(chartColor == .blue ? .visible : .hidden)
-        .foregroundStyle(chartColor)
+        .listRowSeparator(config.showList ? .visible : .hidden)
+        .foregroundStyle(config.color)
         .aspectRatio(4 / 3, contentMode: .fit)
         .padding()
         .padding(.bottom)
@@ -117,6 +123,14 @@ extension StatModel {
     }
 }
 
+// MARK: -
+
+extension StatView.Config: CustomDebugStringConvertible {
+    var debugDescription: String {
+        "StatView.Configuration(title: \(title), color: \(color), showList: \(showList))"
+    }
+}
+
 // MARK: - Previews
 
 #Preview {
@@ -135,7 +149,8 @@ extension StatModel {
         let data = Dictionary(uniqueKeysWithValues: arrays)
         let stat = StatProvider(eventName: "Event", periods: Period.all)
         stat.data = data
-        return StatView(stat: stat, period: .month, chartColor: .blue)
+        let config = StatView.Config(title: "Title", color: .blue, showList: true)
+        return StatView(config: config, stat: stat, period: .month)
     }
     .environmentObject(Tint())
     .environmentObject(DatabaseController())

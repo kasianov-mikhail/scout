@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Param Section
+
 extension EventView {
     struct ParamSection: View {
         let count: Int
@@ -50,7 +52,11 @@ extension EventView {
             }
         }
     }
+}
 
+// MARK: - Stat Section
+
+extension EventView {
     struct StatSection: View {
         @StateObject var stat: StatProvider
 
@@ -69,13 +75,25 @@ extension EventView {
             Header(title: "Stats").task {
                 await stat.fetchIfNeeded(in: database)
             }
-
+            let statConfig = StatConfig(
+                title: "Stats",
+                color: .blue,
+                showList: true
+            )
             ForEach(Period.all) { period in
-                StatRow(period: period, color: .blue, stat: stat)
+                StatRow(
+                    config: statConfig,
+                    period: period,
+                    stat: stat
+                )
             }
         }
     }
+}
 
+// MARK: - History Section
+
+extension EventView {
     struct HistorySection: View {
         let event: Event
 
