@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+// MARK: - Event Section
+
 extension HomeView {
     struct EventSection: View {
         var body: some View {
@@ -22,8 +24,10 @@ extension HomeView {
     }
 }
 
+// MARK: - Active User Section
+
 extension HomeView {
-    struct UsersSection: View {
+    struct ActiveUserSection: View {
         var body: some View {
             Header(title: "Users")
 
@@ -41,6 +45,8 @@ extension HomeView {
     }
 }
 
+// MARK: - Session Section
+
 extension HomeView {
     struct SessionSection: View {
         @EnvironmentObject private var database: DatabaseController
@@ -54,9 +60,17 @@ extension HomeView {
             Header(title: "Sessions").task {
                 await stat.fetchIfNeeded(in: database)
             }
-
+            let statConfig = StatConfig(
+                title: "Sessions",
+                color: .purple,
+                showList: false
+            )
             ForEach(Period.sessions) { period in
-                StatRow(period: period, color: .purple, stat: stat)
+                StatRow(
+                    config: statConfig,
+                    period: period,
+                    stat: stat
+                )
             }
         }
     }

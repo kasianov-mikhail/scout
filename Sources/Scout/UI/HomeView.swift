@@ -17,7 +17,7 @@ public struct HomeView: View {
         NavigationStack {
             List {
                 EventSection()
-                UsersSection()
+                ActiveUserSection()
                 SessionSection()
             }
             .toolbar {

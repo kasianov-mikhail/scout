@@ -7,9 +7,12 @@
 
 import SwiftUI
 
+typealias StatConfig = StatView.Config
+
 struct StatRow: View {
+    let config: StatConfig
     let period: Period
-    let color: Color
+
     @ObservedObject var stat: StatProvider
 
     var body: some View {
@@ -23,9 +26,9 @@ struct StatRow: View {
 
                 RedactedText(count: count)
             }
-            .foregroundColor(color)
+            .foregroundColor(config.color)
         } destination: {
-            StatView(stat: stat, period: period, chartColor: color)
+            StatView(config: config, stat: stat, period: period)
         }
     }
 }
