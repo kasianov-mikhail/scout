@@ -8,11 +8,9 @@
 import CloudKit
 import SwiftUI
 
-typealias Tint = Box<Color?>
-
 public struct HomeView: View {
     @StateObject private var database: DatabaseController
-    @StateObject private var tint = Tint(nil)
+    @StateObject private var tint = Tint()
     @Environment(\.dismiss) var dismiss
 
     public var body: some View {
@@ -52,6 +50,18 @@ extension HomeView {
         self.init(database: DatabaseController(database: nil))
     }
 }
+
+// MARK: - Tint
+
+typealias Tint = Box<Color?>
+
+extension Tint {
+    convenience init() {
+        self.init(nil)
+    }
+}
+
+// MARK: - Previews
 
 #Preview {
     HomeView()
