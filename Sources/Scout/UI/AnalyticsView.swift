@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-class Tint: ObservableObject {
-    @Published var value: Color?
-}
-
 struct AnalyticsView: View {
 
     @State private var filter = EventQuery()
@@ -61,8 +57,10 @@ struct AnalyticsView: View {
                 provider.message = message
             }
         }
+        .onAppear {
+            tint.value = nil
+        }
         .message($provider.message)
-        .tint(tint.value)
     }
 
     var eventList: some View {
@@ -146,6 +144,6 @@ extension Array {
     NavigationStack {
         AnalyticsView()
             .environmentObject(DatabaseController())
-            .environmentObject(Tint())
+            .environmentObject(Tint(nil))
     }
 }
