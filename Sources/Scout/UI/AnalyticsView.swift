@@ -144,6 +144,6 @@ extension Array {
     NavigationStack {
         AnalyticsView()
             .environmentObject(DatabaseController())
-            .environmentObject(Tint(nil))
+            .environmentObject(Tint())
     }
 }
