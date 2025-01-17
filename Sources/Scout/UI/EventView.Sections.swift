@@ -45,10 +45,10 @@ extension EventView {
         }
 
         var seeAll: (() -> Void)? {
-            if param.items == nil, count <= 3 {
-                return nil
-            } else {
+            if let _ = param.items, count > 3 {
                 return { isParamPresented = true }
+            } else {
+                return nil
             }
         }
     }
