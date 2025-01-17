@@ -95,5 +95,5 @@ struct ParamRow: View {
         ]
         ParamList(items: items)
     }
-    .environmentObject(Tint())
+    .environmentObject(Tint(nil))
 }

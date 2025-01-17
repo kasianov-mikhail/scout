@@ -8,9 +8,11 @@
 import CloudKit
 import SwiftUI
 
+typealias Tint = Box<Color?>
+
 public struct HomeView: View {
     @StateObject private var database: DatabaseController
-    @State private var tint = Tint()
+    @StateObject private var tint = Tint(nil)
     @Environment(\.dismiss) var dismiss
 
     public var body: some View {
@@ -30,6 +32,7 @@ public struct HomeView: View {
             .listStyle(.plain)
             .navigationBarTitle("Home")
         }
+        .tint(tint.value)
         .environmentObject(tint)
         .environmentObject(database)
     }

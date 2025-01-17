@@ -86,5 +86,5 @@ struct HistoryView: View {
         HistoryView(filter: filter)
     }
     .environmentObject(DatabaseController())
-    .environmentObject(Tint())
+    .environmentObject(Tint(nil))
 }

@@ -152,6 +152,6 @@ extension StatView.Config: CustomDebugStringConvertible {
         let config = StatView.Config(title: "Title", color: .blue, showList: true)
         return StatView(config: config, stat: stat, period: .month)
     }
-    .environmentObject(Tint())
+    .environmentObject(Tint(nil))
     .environmentObject(DatabaseController())
 }
