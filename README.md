@@ -49,9 +49,9 @@ logger.warning(
 
 ## Visualizing the Logs
 
-By integrating `AnalyticsView` into your SwiftUI application, you can gain insights into your application's performance and issues through an intuitive and interactive interface. 
+By integrating `HomeView` into your SwiftUI application, you can gain insights into your application's performance and issues through an intuitive and interactive interface. 
 ```swift
-AnalyticsView(container: container)
+HomeView(container: container)
 ```
 > This should be done only in debug mode to avoid exposing sensitive log data in production environments.
 
