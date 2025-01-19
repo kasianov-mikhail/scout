@@ -31,7 +31,7 @@ extension HomeView {
         var body: some View {
             Header(title: "Users")
 
-            ForEach(UserPeriod.allCases) { period in
+            ForEach(ActivityPeriod.allCases) { period in
                 Row {
                     Text(period.title)
                     Spacer()
