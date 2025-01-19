@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct DateExtensionsTests {
+struct DateStartTests {
     let date: Date
     let set: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
 
@@ -38,6 +38,18 @@ struct DateExtensionsTests {
         #expect(components.second == 0)
     }
 
+    @Test("Start of a day") func startOfDay() {
+        let day = date.startOfDay
+        let components = Calendar.UTC.dateComponents(set, from: day)
+
+        #expect(components.year == 2030)
+        #expect(components.month == 3)
+        #expect(components.day == 5)
+        #expect(components.hour == 0)
+        #expect(components.minute == 0)
+        #expect(components.second == 0)
+    }
+
     @Test("Start of a week") func startOfWeek() {
         let week = date.startOfWeek
         let components = Calendar.UTC.dateComponents(set, from: week)
@@ -45,6 +57,18 @@ struct DateExtensionsTests {
         #expect(components.year == 2030)
         #expect(components.month == 3)
         #expect(components.day == 3)
+        #expect(components.hour == 0)
+        #expect(components.minute == 0)
+        #expect(components.second == 0)
+    }
+
+    @Test("Start of a month") func startOfMonth() {
+        let month = date.startOfMonth
+        let components = Calendar.UTC.dateComponents(set, from: month)
+
+        #expect(components.year == 2030)
+        #expect(components.month == 3)
+        #expect(components.day == 1)
         #expect(components.hour == 0)
         #expect(components.minute == 0)
         #expect(components.second == 0)
