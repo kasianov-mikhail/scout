@@ -29,7 +29,7 @@ By integrating [swift-log](https://github.com/apple/swift-log) with Scout, you c
 
 
 ## Installation
-For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki/Home).
+For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki/Home/fc1c5d3c3ac96cb1341ac640b9e84526cb82b667).
 
 ## Usage
 
@@ -39,7 +39,7 @@ import Logging
 let logger = Logger(label: "SOME_LOGGER_LABEL")
 
 logger.warning(
-    "event_need_to_know_about",
+    "event_to_know_about",
     metadata: [
         "description": .string(error.localizedDescription),
         "ip": .string(ip),
