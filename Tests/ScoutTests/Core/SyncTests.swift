@@ -53,7 +53,6 @@ import Testing
         event.hour = Date()
         event.week = Date()
         event.date = Date()
-        event.uuid = UUID()
         event.level = EventLevel.info.rawValue
 
         return event

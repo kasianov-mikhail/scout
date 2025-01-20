@@ -75,6 +75,7 @@ extension Session {
 extension EventModel {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
+        setPrimitiveValue(UUID(), forKey: #keyPath(EventModel.eventID))
         setPrimitiveValue(IDs.session, forKey: #keyPath(EventModel.sessionID))
         setPrimitiveValue(IDs.user, forKey: #keyPath(EventModel.userID))
         setPrimitiveValue(IDs.launch, forKey: #keyPath(EventModel.launchID))

@@ -90,7 +90,7 @@ extension CKRecord {
         self["hour"] = event.hour
         self["week"] = event.week
 
-        self["uuid"] = event.uuid?.uuidString
+        self["uuid"] = event.eventID?.uuidString
         self["session_id"] = event.sessionID?.uuidString
         self["launch_id"] = event.launchID?.uuidString
         self["user_id"] = event.userID?.uuidString

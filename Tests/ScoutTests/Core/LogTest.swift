@@ -35,7 +35,7 @@ import Testing
     #expect(event.date == date)
     #expect(event.hour == date.startOfHour)
     #expect(event.week == date.startOfWeek)
-    #expect(event.uuid != nil)
+    #expect(event.eventID != nil)
     #expect(event.userID == IDs.user)
     #expect(event.sessionID == IDs.session)
     #expect(event.paramCount == 1)
