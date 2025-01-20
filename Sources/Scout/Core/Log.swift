@@ -35,7 +35,6 @@ func log(
     event.week = date.startOfWeek
     event.level = level.rawValue
     event.name = name
-    event.uuid = UUID()
 
     if let params = metadata?.compactMapValues(\.stringValue) {
         event.params = try JSONEncoder().encode(params)
