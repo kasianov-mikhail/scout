@@ -38,12 +38,12 @@ public class NotificationListener {
     @MainActor public static let activity = NotificationListener(table: [
         UIApplication.willEnterForegroundNotification: {
             try await persistentContainer.performBackgroundTask(Session.trigger)
-            try await persistentContainer.performBackgroundTask(ActiveUser.trigger)
+            try await persistentContainer.performBackgroundTask(UserActivity.trigger)
             try await sync(in: container)
         },
         UIApplication.didEnterBackgroundNotification: {
             try await persistentContainer.performBackgroundTask(Session.complete)
-            try await persistentContainer.performBackgroundTask(ActiveUser.trigger)
+            try await persistentContainer.performBackgroundTask(UserActivity.trigger)
             try await sync(in: container)
         },
     ])
