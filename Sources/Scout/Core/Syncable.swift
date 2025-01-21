@@ -63,7 +63,7 @@ extension EventModel: Syncable {
 
         return SyncGroup(
             name: name,
-            week: week,
+            date: week,
             objectIDs: events.map(\.objectID),
             records: events.map(CKRecord.init)
         )
@@ -126,7 +126,7 @@ extension Session: Syncable {
 
         return SyncGroup(
             name: "Session",
-            week: week,
+            date: week,
             objectIDs: sessions.map(\.objectID),
             records: sessions.map(CKRecord.init)
         )
@@ -188,7 +188,7 @@ extension UserActivity: Syncable {
 
         return SyncGroup(
             name: "ActiveUser",
-            week: month,
+            date: month,
             objectIDs: activities.map(\.objectID),
             records: [CKRecord(recordType: "UserActivity")]
         )
