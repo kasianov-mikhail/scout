@@ -156,3 +156,41 @@ extension CKRecord {
         self["version"] = 1
     }
 }
+
+// MARK: - UserActivity
+
+extension UserActivity: Syncable {
+
+    /// Fetches the most recent `UserActivity` from the given `NSManagedObjectContext` and uses its
+    /// `month` property to find all activities that match this criteria. It then groups
+    /// the activities by their `month` property.
+    ///
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+        let activityRequest = UserActivity.fetchRequest()
+        activityRequest.predicate = NSPredicate(format: "isSynced == false")
+        activityRequest.fetchLimit = 1
+
+        guard let activity = try context.fetch(activityRequest).first else {
+            return nil
+        }
+        guard let month = activity.month else {
+            return nil
+        }
+
+        let groupRequest = UserActivity.fetchRequest()
+
+        groupRequest.predicate = NSPredicate(
+            format: "isSynced == false && month == %@",
+            month as NSDate
+        )
+
+        let activities = try context.fetch(groupRequest)
+
+        return SyncGroup(
+            name: "ActiveUser",
+            week: month,
+            objectIDs: activities.map(\.objectID),
+            records: [CKRecord(recordType: "UserActivity")]
+        )
+    }
+}
