@@ -34,7 +34,7 @@ public func sync(in container: CKContainer?) async throws {
     /// synchronisation cycles in parallel. Instead, the initial loop rechecks for unuploaded events after each execution.
     try await dispatcher.execute {
         try await sync(
-            syncables: [EventModel.self, Session.self],
+            syncables: [EventModel.self, Session.self, UserActivity.self],
             database: container.publicCloudDatabase,
             context: persistentContainer.viewContext
         )
