@@ -10,15 +10,15 @@ import CloudKit
 /// A provider of a matrix.
 ///
 /// The matrix is a two-dimensional array of integers.
-///  The provider defines the matrix's name, week, and keys to retrieve from the remote database.
+/// The provider defines the matrix's name, date, and keys to retrieve from the remote database.
 ///
 protocol MatrixProvider {
 
     /// The name of the matrix
     var name: String { get }
 
-    /// The week of the matrix
-    var week: Date { get }
+    /// The date of the matrix
+    var date: Date { get }
 
     /// The keys to retrieve from the remote database
     var keys: [String] { get }
@@ -28,14 +28,14 @@ extension MatrixProvider {
 
     /// Creates a new `CKRecord` instance representing a matrix.
     ///
-    /// The matrix will include the `name` and `week` properties of the `MatrixProvider`.
+    /// The matrix will include the `name` and `date` properties of the `MatrixProvider`.
     ///
     /// - Returns: A new `CKRecord` instance.
     ///
     func newMatrix() -> CKRecord {
         let matrix = CKRecord(recordType: "DateIntMatrix")
         matrix["name"] = name
-        matrix["date"] = week
+        matrix["date"] = date
         return matrix
     }
 
@@ -49,7 +49,7 @@ extension MatrixProvider {
     ///
     func matrix(in database: Database) async throws -> CKRecord {
         let namePredicate = NSPredicate(format: "name == %@", name)
-        let datePredicate = NSPredicate(format: "date == %@", week as NSDate)
+        let datePredicate = NSPredicate(format: "date == %@", date as NSDate)
         let predicate = NSCompoundPredicate(
             type: .and, subpredicates: [namePredicate, datePredicate])
 
