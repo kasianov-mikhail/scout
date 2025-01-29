@@ -1,57 +1,11 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-
-/// A generic structure representing a matrix of elements conforming to the `MatrixType` protocol.
-/// This structure provides functionality to work with matrices of various types, ensuring that
-/// the elements conform to the required operations defined in the `MatrixType` protocol.
-///
-/// - Note: The elements of the matrix must conform to the `MatrixType` protocol.
-///
-/// - Parameters:
-///   - T: The type of elements in the matrix, which must conform to the `MatrixType` protocol.
-///
-struct Matrix<T: MatrixType>: Equatable {
-    let date: Date
-    let name: String
-    let recordID: CKRecord.ID
-    let cells: [Cell<T>]
-}
-
-// MARK: - Math
-
-extension Matrix<Int> {
-    static func += (lhs: inout Self, rhs: Self) {
-        lhs = Matrix(
-            date: lhs.date,
-            name: lhs.name,
-            recordID: [lhs.recordID, rhs.recordID].randomElement()!,
-            cells: (lhs.cells + rhs.cells).mergeDuplicates()
-        )
-    }
-}
-
-// MARK: - Generic Types
-
-/// A protocol that defines the requirements for a matrix type.
-///
-/// Conforming types must provide a static `recordName` property that specifies the
-/// name of the CloudKit record type used to store the matrix data.
-///
-protocol MatrixType: CellValue {
-    static var recordName: String { get }
-}
-
-extension Int: MatrixType {
-    static let recordName = "DateIntMatrix"
-}
-
-// MARK: - CloudKit Mapping
 
 extension Matrix {
 
@@ -136,54 +90,5 @@ extension Matrix {
 
             return Cell(row: row, column: column, value: value)
         }
-    }
-}
-
-// MARK: - Removing Duplicates
-
-extension [Matrix<Int>] {
-
-    /// Merges duplicate elements in the array based on the `date` and `name` properties.
-    /// If duplicates are found, they are combined using the `+=` operator.
-    ///
-    func mergeDuplicates() -> Self {
-        reduce(into: []) { result, matrix in
-            if let index = result.firstIndex(where: {
-                $0.date == matrix.date && $0.name == matrix.name
-            }) {
-                result[index] += matrix
-            } else {
-                result.append(matrix)
-            }
-        }
-    }
-}
-
-extension [Cell<Int>] {
-
-    /// Merges duplicate cells in the matrix by summing their values.
-    ///
-    /// This function iterates through the cells in the matrix and combines cells that have the
-    /// same row and column by adding their values together. The resulting matrix will have unique
-    /// cells with summed values.
-    ///
-    func mergeDuplicates() -> Self {
-        reduce(into: []) { result, cell in
-            if let index = result.firstIndex(where: {
-                $0.row == cell.row && $0.column == cell.column
-            }) {
-                result[index] += cell
-            } else {
-                result.append(cell)
-            }
-        }
-    }
-}
-
-// MARK: -
-
-extension Matrix: CustomStringConvertible {
-    var description: String {
-        "Matrix(\(name), \(date), \(cells.count) cells)"
     }
 }
