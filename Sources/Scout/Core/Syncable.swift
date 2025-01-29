@@ -36,6 +36,19 @@ extension [Syncable.Type] {
     }
 }
 
+// MARK: - Error
+
+enum SyncableError: Error {
+    case missingProperty(String)
+
+    var localizedDescription: String {
+        switch self {
+        case let .missingProperty(property):
+            return "Missing property: \(property). Cannot group objects."
+        }
+    }
+}
+
 // MARK: - EventModel
 
 extension EventModel: Syncable {
@@ -51,8 +64,11 @@ extension EventModel: Syncable {
         guard let event = try context.fetch(eventRequest).first else {
             return nil
         }
-        guard let name = event.name, let week = event.week else {
-            return nil
+        guard let name = event.name else {
+            throw SyncableError.missingProperty(#keyPath(EventModel.name))
+        }
+        guard let week = event.week else {
+            throw SyncableError.missingProperty(#keyPath(EventModel.week))
         }
 
         let groupRequest = EventModel.fetchRequest()
@@ -116,7 +132,7 @@ extension Session: Syncable {
             return nil
         }
         guard let week = session.week else {
-            return nil
+            throw SyncableError.missingProperty(#keyPath(Session.week))
         }
 
         let groupRequest = Session.fetchRequest()
@@ -174,7 +190,7 @@ extension UserActivity: Syncable {
             return nil
         }
         guard let month = activity.month else {
-            return nil
+            throw SyncableError.missingProperty(#keyPath(UserActivity.month))
         }
 
         let groupRequest = UserActivity.fetchRequest()
