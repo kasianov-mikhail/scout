@@ -36,6 +36,19 @@ extension [Syncable.Type] {
     }
 }
 
+// MARK: - Error
+
+enum SyncableError: Error {
+    case missingProperty(String)
+
+    var localizedDescription: String {
+        switch self {
+        case let .missingProperty(property):
+            return "Missing property: \(property). Cannot group objects."
+        }
+    }
+}
+
 // MARK: - EventModel
 
 extension EventModel: Syncable {
@@ -51,8 +64,11 @@ extension EventModel: Syncable {
         guard let event = try context.fetch(eventRequest).first else {
             return nil
         }
-        guard let name = event.name, let week = event.week else {
-            return nil
+        guard let name = event.name else {
+            throw SyncableError.missingProperty(#keyPath(EventModel.name))
+        }
+        guard let week = event.week else {
+            throw SyncableError.missingProperty(#keyPath(EventModel.week))
         }
 
         let groupRequest = EventModel.fetchRequest()
@@ -63,7 +79,7 @@ extension EventModel: Syncable {
 
         return SyncGroup(
             name: name,
-            week: week,
+            date: week,
             objectIDs: events.map(\.objectID),
             records: events.map(CKRecord.init)
         )
@@ -90,7 +106,7 @@ extension CKRecord {
         self["hour"] = event.hour
         self["week"] = event.week
 
-        self["uuid"] = event.uuid?.uuidString
+        self["uuid"] = event.eventID?.uuidString
         self["session_id"] = event.sessionID?.uuidString
         self["launch_id"] = event.launchID?.uuidString
         self["user_id"] = event.userID?.uuidString
@@ -116,7 +132,7 @@ extension Session: Syncable {
             return nil
         }
         guard let week = session.week else {
-            return nil
+            throw SyncableError.missingProperty(#keyPath(Session.week))
         }
 
         let groupRequest = Session.fetchRequest()
@@ -126,7 +142,7 @@ extension Session: Syncable {
 
         return SyncGroup(
             name: "Session",
-            week: week,
+            date: week,
             objectIDs: sessions.map(\.objectID),
             records: sessions.map(CKRecord.init)
         )
@@ -154,5 +170,43 @@ extension CKRecord {
         self["user_id"] = session.userID?.uuidString
 
         self["version"] = 1
+    }
+}
+
+// MARK: - UserActivity
+
+extension UserActivity: Syncable {
+
+    /// Fetches the most recent `UserActivity` from the given `NSManagedObjectContext` and uses its
+    /// `month` property to find all activities that match this criteria. It then groups
+    /// the activities by their `month` property.
+    ///
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+        let activityRequest = UserActivity.fetchRequest()
+        activityRequest.predicate = NSPredicate(format: "isSynced == false")
+        activityRequest.fetchLimit = 1
+
+        guard let activity = try context.fetch(activityRequest).first else {
+            return nil
+        }
+        guard let month = activity.month else {
+            throw SyncableError.missingProperty(#keyPath(UserActivity.month))
+        }
+
+        let groupRequest = UserActivity.fetchRequest()
+
+        groupRequest.predicate = NSPredicate(
+            format: "isSynced == false && month == %@",
+            month as NSDate
+        )
+
+        let activities = try context.fetch(groupRequest)
+
+        return SyncGroup(
+            name: "ActiveUser",
+            date: month,
+            objectIDs: activities.map(\.objectID),
+            records: [CKRecord(recordType: "UserActivity")]
+        )
     }
 }
