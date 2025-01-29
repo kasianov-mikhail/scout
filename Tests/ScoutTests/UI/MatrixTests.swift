@@ -23,8 +23,8 @@ struct MatrixTests {
 
         let matrix = try Matrix<Int>(record: record)
         let expectedCells = [
-            Matrix.Cell(row: 0, column: 0, value: 1),
-            Matrix.Cell(row: 0, column: 1, value: 2),
+            Cell(row: 0, column: 0, value: 1),
+            Cell(row: 0, column: 1, value: 2),
         ]
 
         #expect(Set(matrix.cells) == Set(expectedCells))
@@ -36,13 +36,13 @@ struct MatrixTests {
             date: date,
             name: "Test Matrix",
             recordID: CKRecord.ID(recordName: "1"),
-            cells: [Matrix.Cell(row: 0, column: 0, value: 1)]
+            cells: [Cell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
             date: date,
             name: "Test Matrix",
             recordID: CKRecord.ID(recordName: "2"),
-            cells: [Matrix.Cell(row: 0, column: 0, value: 2)]
+            cells: [Cell(row: 0, column: 0, value: 2)]
         )
 
         matrix1 += matrix2
@@ -52,8 +52,8 @@ struct MatrixTests {
     }
 
     @Test("Matrix cell addition") func testMatrixCellAddition() {
-        var cell1 = Matrix<Int>.Cell(row: 0, column: 0, value: 1)
-        let cell2 = Matrix<Int>.Cell(row: 0, column: 0, value: 2)
+        var cell1 = Cell(row: 0, column: 0, value: 1)
+        let cell2 = Cell(row: 0, column: 0, value: 2)
 
         cell1 += cell2
 
@@ -66,13 +66,13 @@ struct MatrixTests {
             date: date,
             name: "Test Matrix",
             recordID: CKRecord.ID(recordName: "1"),
-            cells: [Matrix.Cell(row: 0, column: 0, value: 1)]
+            cells: [Cell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
             date: date,
             name: "Test Matrix",
             recordID: CKRecord.ID(recordName: "2"),
-            cells: [Matrix.Cell(row: 0, column: 0, value: 2)]
+            cells: [Cell(row: 0, column: 0, value: 2)]
         )
 
         let merged = [matrix1, matrix2].mergeDuplicates()
@@ -83,8 +83,8 @@ struct MatrixTests {
     }
 
     @Test("Merge duplicate cells") func testMergeDuplicateCells() {
-        let cell1 = Matrix<Int>.Cell(row: 0, column: 0, value: 1)
-        let cell2 = Matrix<Int>.Cell(row: 0, column: 0, value: 2)
+        let cell1 = Cell(row: 0, column: 0, value: 1)
+        let cell2 = Cell(row: 0, column: 0, value: 2)
 
         let merged = [cell1, cell2].mergeDuplicates()
 

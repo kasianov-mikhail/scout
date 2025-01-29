@@ -20,21 +20,7 @@ struct Matrix<T: MatrixType>: Equatable {
     let date: Date
     let name: String
     let recordID: CKRecord.ID
-    let cells: [Cell]
-
-    struct Cell: Equatable, Hashable {
-        let row: Int
-        let column: Int
-        let value: T
-
-        static func += (lhs: inout Self, rhs: Self) {
-            lhs = Matrix.Cell(
-                row: lhs.row,
-                column: lhs.column,
-                value: lhs.value + rhs.value
-            )
-        }
-    }
+    let cells: [Cell<T>]
 }
 
 // MARK: - Math
@@ -53,11 +39,11 @@ extension Matrix<Int> {
 // MARK: - Generic Types
 
 /// A protocol that defines the requirements for a matrix type.
-/// Conforming types must be equatable, hashable, and support additive arithmetic operations.
-/// Additionally, conforming types must provide a static `recordName` property that specifies the
+///
+/// Conforming types must provide a static `recordName` property that specifies the
 /// name of the CloudKit record type used to store the matrix data.
-/// 
-protocol MatrixType: Equatable, Hashable, AdditiveArithmetic {
+///
+protocol MatrixType: CellValue {
     static var recordName: String { get }
 }
 
@@ -173,7 +159,7 @@ extension [Matrix<Int>] {
     }
 }
 
-extension [Matrix<Int>.Cell] {
+extension [Cell<Int>] {
 
     /// Merges duplicate cells in the matrix by summing their values.
     ///
@@ -199,11 +185,5 @@ extension [Matrix<Int>.Cell] {
 extension Matrix: CustomStringConvertible {
     var description: String {
         "Matrix(\(name), \(date), \(cells.count) cells)"
-    }
-}
-
-extension Matrix.Cell: CustomStringConvertible {
-    var description: String {
-        "Cell(\(row), \(column), \(value))"
     }
 }
