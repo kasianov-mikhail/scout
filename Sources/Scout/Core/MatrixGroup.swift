@@ -7,28 +7,29 @@
 
 import CloudKit
 
-/// A provider of a matrix.
+/// A protocol that defines a group of fields for synchronization.
 ///
-/// The matrix is a two-dimensional array of integers.
-/// The provider defines the matrix's name, date, and keys to retrieve from the remote database.
+/// Types conforming to `MatrixGroup` must provide a name, date, and a dictionary of fields and 
+/// their corresponding counts. This protocol is used to group related fields and manage their 
+/// synchronization.
 ///
-protocol MatrixProvider {
+protocol MatrixGroup: Sendable {
 
-    /// The name of the matrix
+    /// The name of the matrix.
     var name: String { get }
 
     /// The date of the matrix
     var date: Date { get }
 
-    /// The keys to retrieve from the remote database
-    var keys: [String] { get }
+    /// A dictionary mapping field names to their corresponding count values.
+    var fields: [String: Int] { get }
 }
 
-extension MatrixProvider {
+extension MatrixGroup {
 
     /// Creates a new `CKRecord` instance representing a matrix.
     ///
-    /// The matrix will include the `name` and `date` properties of the `MatrixProvider`.
+    /// The matrix will include the `name` and `date` properties of the `SyncGroup`.
     ///
     /// - Returns: A new `CKRecord` instance.
     ///
@@ -55,6 +56,7 @@ extension MatrixProvider {
 
         let query = CKQuery(recordType: "DateIntMatrix", predicate: predicate)
 
+        let keys = fields.map { key, _ in key }
         let allMatrices = try await database.allRecords(matching: query, desiredKeys: keys)
         let matrix = allMatrices.randomElement() ?? newMatrix()
 

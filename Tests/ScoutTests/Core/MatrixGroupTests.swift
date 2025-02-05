@@ -10,14 +10,18 @@ import CloudKit
 
 @testable import Scout
 
-struct MatrixProviderTests {
-    struct TestProvider: MatrixProvider {
+struct MatrixGroupTests {
+    struct TestGroup: MatrixGroup {
         let name: String
         let date: Date
-        let keys: [String] = []
+        let fields: [String: Int]
     }
 
-    let group = TestProvider(name: "group_name", date: Date())
+    let group = TestGroup(
+        name: "group_name",
+        date: Date(),
+        fields: ["foo": 1, "bar": 2]
+    )
 
     @Test("Create a new matrix") func testNewMatrix() async throws {
         let matrix = group.newMatrix()
