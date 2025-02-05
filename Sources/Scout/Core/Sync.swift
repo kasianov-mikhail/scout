@@ -53,6 +53,11 @@ public func sync(in container: CKContainer?) async throws {
 
         try await coordinator.upload()
 
+        try await database.modifyRecords(
+            saving: group.records,
+            deleting: []
+        )
+
         for id in group.objectIDs {
             context.deleteObject(with: id)
         }

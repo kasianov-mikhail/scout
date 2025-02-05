@@ -7,22 +7,28 @@
 
 import CloudKit
 import CoreData
-import Foundation
 import Testing
 
 @testable import Scout
 
 @MainActor struct SyncCoordinatorTests {
+    struct TestGroup: MatrixGroup {
+        let name: String
+        let date: Date
+        let fields: [String: Int]
+    }
+
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
+
     let coordinator: SyncCoordinator
 
     init() throws {
-        let event = EventModel(context: context)
-        event.name = "event_name"
-        event.hour = Date()
-        event.week = Date()
-        let group = try EventModel.group(in: context)!
+        let group = TestGroup(
+            name: "Test",
+            date: Date(),
+            fields: ["cell_01": 5, "cell_02": 10]
+        )
 
         coordinator = SyncCoordinator(
             database: database,
@@ -34,8 +40,9 @@ import Testing
     @Test("Test successful upload") func testUpload() async throws {
         try await coordinator.upload()
 
-        #expect(database.events.count == 1)
-        #expect(database.events.first?["name"] == "event_name")
+        #expect(database.matrices.count == 1)
+        #expect(database.matrices.first?["cell_01"] == 5)
+        #expect(database.matrices.first?["cell_02"] == 10)
     }
 
     @Test("Test successful merge") func testMergeError() async throws {
@@ -43,8 +50,9 @@ import Testing
 
         try await coordinator.upload()
 
-        #expect(database.events.count == 1)
-        #expect(database.events.first?["name"] == "event_name")
+        #expect(database.matrices.count == 1)
+        #expect(database.matrices.first?["cell_01"] == 8)
+        #expect(database.matrices.first?["cell_02"] == 21)
     }
 
     @Test("Create a new matrix, if there are repeating merge errors") func testNewMatrix()
@@ -54,16 +62,20 @@ import Testing
 
         try await coordinator.upload()
 
-        #expect(database.events.count == 1)
-        #expect(database.events.first?["name"] == "event_name")
+        #expect(database.matrices.count == 1)
+        #expect(database.matrices.first?["cell_01"] == 5)
+        #expect(database.matrices.first?["cell_02"] == 10)
     }
 }
 
-extension SyncCoordinatorTests {
-    fileprivate func createMergeError() -> Error {
-        CKError(
-            CKError.Code.serverRecordChanged,
-            userInfo: [CKRecordChangedErrorServerRecordKey: CKRecord(recordType: "DateIntMatrix")]
-        )
-    }
+private func createMergeError() -> Error {
+    let serverMatrix = CKRecord(recordType: "DateIntMatrix")
+    serverMatrix["name"] = "Test"
+    serverMatrix["date"] = Date()
+    serverMatrix["cell_01"] = 3
+    serverMatrix["cell_02"] = 11
+    return CKError(
+        CKError.Code.serverRecordChanged,
+        userInfo: [CKRecordChangedErrorServerRecordKey: serverMatrix]
+    )
 }

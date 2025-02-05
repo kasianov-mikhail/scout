@@ -10,7 +10,7 @@ import CoreData
 
 /// A structure representing a synchronization group.
 ///
-/// `SyncGroup` is used to group events and related fields for a specific date.
+/// `SyncGroup` is used to group together Core Data object IDs and CloudKit records
 ///
 struct SyncGroup: Equatable, @unchecked Sendable {
 
@@ -25,20 +25,15 @@ struct SyncGroup: Equatable, @unchecked Sendable {
 
     /// An array of `CKRecord` objects associated with the synchronization group.
     let records: [CKRecord]
+}
+
+// MARK: - Fields
+
+extension SyncGroup: MatrixGroup {
 
     /// A dictionary mapping field names to their corresponding count values.
     var fields: [String: Int] {
         Dictionary(grouping: records, by: \.hourField).mapValues(\.count)
-    }
-}
-
-// MARK: - Matrix Provider
-
-extension SyncGroup: MatrixProvider {
-
-    /// Used to define desired fields for a matrix.
-    var keys: [String] {
-        fields.map { key, _ in key }
     }
 }
 
