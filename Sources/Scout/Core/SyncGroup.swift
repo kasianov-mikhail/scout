@@ -10,21 +10,26 @@ import CoreData
 
 /// A structure representing a synchronization group.
 ///
-/// `SyncGroup` is used to group events and related fields for a specific week.
+/// `SyncGroup` is used to group together Core Data object IDs and CloudKit records
 ///
 struct SyncGroup: Equatable, @unchecked Sendable {
 
     /// The name of the synchronization group.
     let name: String
 
-    /// The date representing the week of the synchronization group.
-    let week: Date
+    /// The date of the synchronization group
+    let date: Date
 
     /// An array of Core Data object IDs associated with the synchronization group.
     let objectIDs: [NSManagedObjectID]
 
     /// An array of `CKRecord` objects associated with the synchronization group.
     let records: [CKRecord]
+}
+
+// MARK: - Fields
+
+extension SyncGroup: MatrixGroup {
 
     /// A dictionary mapping field names to their corresponding count values.
     var fields: [String: Int] {
@@ -32,20 +37,10 @@ struct SyncGroup: Equatable, @unchecked Sendable {
     }
 }
 
-// MARK: - Matrix Provider
-
-extension SyncGroup: MatrixProvider {
-
-    /// Used to define desired fields for a matrix.
-    var keys: [String] {
-        fields.map { key, _ in key }
-    }
-}
-
 // MARK: -
 
 extension SyncGroup: CustomStringConvertible {
     var description: String {
-        "\(name) – \(week), \(records.count) records, \(fields)"
+        "\(name) – \(date), \(records.count) records, \(fields)"
     }
 }

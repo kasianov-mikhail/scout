@@ -20,8 +20,8 @@ struct ChartPointTests {
             name: "Test",
             recordID: CKRecord.ID(recordName: "Test"),
             cells: [
-                Matrix.Cell(row: 2, column: 0, value: 5),
-                Matrix.Cell(row: 1, column: 1, value: 10),
+                Cell(row: 2, column: 0, value: 5),
+                Cell(row: 1, column: 1, value: 10),
             ])
 
         let points = ChartPoint.fromIntMatrix(matrix)

@@ -7,7 +7,7 @@
 
 import CoreData
 
-struct SessionMonitor {
+extension Session {
 
     /// Registers a new session.
     ///
@@ -25,7 +25,7 @@ struct SessionMonitor {
 
 // MARK: - Completion
 
-extension SessionMonitor {
+extension Session {
 
     /// An error that occurs when completing a session.
     /// - sessionNotFound: The session to be completed was not found.

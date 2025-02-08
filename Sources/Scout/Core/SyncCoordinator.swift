@@ -20,21 +20,21 @@ import CloudKit
     /// The maximum number of retry attempts for failed sync operations.
     let maxRetry: Int
 
-    /// A `SyncGroup` instance that groups a batch of events.
-    let group: SyncGroup
+    /// A `MatrixGroup` instance that groups the data to be synchronized.
+    let group: MatrixGroup
 }
 
 extension SyncCoordinator {
 
-    /// Uploads a given `SyncGroup` and `CKRecord` to the server.
+    /// Uploads a given `MatrixGroup` and `CKRecord` to the server.
     ///
     /// This method uses recursion to handle specific types of errors, such as `CKError.serverRecordChanged`.
     /// If the error occurs, it will retry the upload with the server's version of the record or a new matrix
     /// if the maximum number of retries is exceeded.
     ///
     /// - Parameters:
-    ///   - group: The `SyncGroup` to be uploaded.
-    ///   - matrix: The `CKRecord` associated with the `SyncGroup`.
+    ///   - group: The `MatrixGroup` to be uploaded.
+    ///   - matrix: The `CKRecord` associated with the `MatrixGroup`.
     ///
     /// - Throws: An error if the upload fails after the specified number of retries.
     ///
@@ -97,11 +97,6 @@ extension SyncCoordinator {
 
         do {
             try await database.save(matrix)
-
-            try await database.modifyRecords(
-                saving: group.records,
-                deleting: []
-            )
 
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
             if retry > maxRetry {
