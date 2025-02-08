@@ -32,6 +32,17 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
         }
     }
 
+    var shortTitle: String {
+        switch self {
+        case .daily:
+            return "D"
+        case .weekly:
+            return "W"
+        case .monthly:
+            return "M"
+        }
+    }
+
     var rangeComponent: Calendar.Component {
         switch self {
         case .daily:
@@ -40,6 +51,22 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
             return .weekOfYear
         case .monthly:
             return .month
+        }
+    }
+
+    /// A computed property that returns the appropriate count field key path for the activity period.
+    ///
+    /// This property provides the key path to the count field (`dayCount`, `weekCount`, or `monthCount`)
+    /// based on the activity period (`daily`, `weekly`, or `monthly`).
+    ///
+    var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
+        switch self {
+        case .daily:
+            return \.dayCount
+        case .weekly:
+            return \.weekCount
+        case .monthly:
+            return \.monthCount
         }
     }
 }

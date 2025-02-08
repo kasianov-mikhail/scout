@@ -138,27 +138,6 @@ extension UserActivity.Provider {
     }
 }
 
-// MARK: - Count Field
-
-extension ActivityPeriod {
-
-    /// A computed property that returns the appropriate count field key path for the activity period.
-    ///
-    /// This property provides the key path to the count field (`dayCount`, `weekCount`, or `monthCount`)
-    /// based on the activity period (`daily`, `weekly`, or `monthly`).
-    ///
-    fileprivate var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
-        switch self {
-        case .daily:
-            return \.dayCount
-        case .weekly:
-            return \.weekCount
-        case .monthly:
-            return \.monthCount
-        }
-    }
-}
-
 // MARK: -
 
 extension UserActivity.Provider: CustomDebugStringConvertible {
