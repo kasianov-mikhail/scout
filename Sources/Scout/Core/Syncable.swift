@@ -12,10 +12,12 @@ import CoreData
 /// by their properties and counted. This is useful for synchronizing data between a local
 /// Core Data context and a remote CloudKit database.
 ///
-protocol Syncable {
+protocol Syncable: NSManagedObject {
 
     /// Groups the objects of the conforming type by their properties.
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup?
+
+    var isSynced: Bool { set get }
 }
 
 // MARK: - Random grouping
@@ -36,6 +38,19 @@ extension [Syncable.Type] {
     }
 }
 
+// MARK: - Error
+
+enum SyncableError: Error {
+    case missingProperty(String)
+
+    var localizedDescription: String {
+        switch self {
+        case let .missingProperty(property):
+            return "Missing property: \(property). Cannot group objects."
+        }
+    }
+}
+
 // MARK: - EventModel
 
 extension EventModel: Syncable {
@@ -46,56 +61,34 @@ extension EventModel: Syncable {
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
         let eventRequest = EventModel.fetchRequest()
+        eventRequest.predicate = NSPredicate(format: "isSynced == false")
         eventRequest.fetchLimit = 1
 
         guard let event = try context.fetch(eventRequest).first else {
             return nil
         }
-        guard let name = event.name, let week = event.week else {
-            return nil
+        guard let name = event.name else {
+            throw SyncableError.missingProperty(#keyPath(EventModel.name))
+        }
+        guard let week = event.week else {
+            throw SyncableError.missingProperty(#keyPath(EventModel.week))
         }
 
         let groupRequest = EventModel.fetchRequest()
         groupRequest.predicate = NSPredicate(
-            format: "name == %@ AND week == %@", name, week as NSDate)
+            format: "isSynced == false AND name == %@ AND week == %@",
+            name,
+            week as NSDate
+        )
 
         let events = try context.fetch(groupRequest)
 
         return SyncGroup(
             name: name,
-            week: week,
-            objectIDs: events.map(\.objectID),
-            records: events.map(CKRecord.init)
+            date: week,
+            objects: events,
+            fields: events.grouped(by: \.hour)
         )
-    }
-}
-
-extension CKRecord {
-
-    /// Initializes a new `CKRecord` instance with the specified `EventModel`.
-    ///
-    /// This convenience initializer populates the record fields with the event data.
-    /// The `version` field is set to 1 to indicate the initial version of the record.
-    /// This can be useful for handling migrations or updates to the record schema in the future.
-    ///
-    fileprivate convenience init(event: EventModel) {
-        self.init(recordType: "Event")
-
-        self["name"] = event.name
-        self["level"] = event.level
-        self["params"] = event.params
-        self["param_count"] = event.paramCount
-
-        self["date"] = event.date
-        self["hour"] = event.hour
-        self["week"] = event.week
-
-        self["uuid"] = event.uuid?.uuidString
-        self["session_id"] = event.sessionID?.uuidString
-        self["launch_id"] = event.launchID?.uuidString
-        self["user_id"] = event.userID?.uuidString
-
-        self["version"] = 1
     }
 }
 
@@ -109,50 +102,112 @@ extension Session: Syncable {
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
         let sessionRequest = Session.fetchRequest()
-        sessionRequest.predicate = NSPredicate(format: "endDate != nil")
+        sessionRequest.predicate = NSPredicate(format: "isSynced == false AND endDate != nil")
         sessionRequest.fetchLimit = 1
 
         guard let session = try context.fetch(sessionRequest).first else {
             return nil
         }
         guard let week = session.week else {
-            return nil
+            throw SyncableError.missingProperty(#keyPath(Session.week))
         }
 
         let groupRequest = Session.fetchRequest()
-        groupRequest.predicate = NSPredicate(format: "week == %@", week as NSDate)
+        groupRequest.predicate = NSPredicate(
+            format: "isSynced == false AND endDate != nil AND week == %@",
+            week as NSDate
+        )
 
         let sessions = try context.fetch(groupRequest)
 
         return SyncGroup(
             name: "Session",
-            week: week,
-            objectIDs: sessions.map(\.objectID),
-            records: sessions.map(CKRecord.init)
+            date: week,
+            objects: sessions,
+            fields: sessions.grouped(by: \.endDate)
         )
     }
 }
 
-extension CKRecord {
+// MARK: - Grouping
 
-    /// Initialize a record with a session.
+extension Array {
+
+    /// Groups the elements of the collection by a specified date key path and returns a dictionary
+    /// where the keys are strings representing the combination of the weekday and hour components
+    /// of the date, and the values are the counts of elements in each group.
+    /// 
+    /// - Parameter keyPath: A key path to the date property of the elements.
+    /// - Returns: A dictionary where the keys are strings in the format `cell_<weekday>_<hour>`
+    ///   and the values are the counts of elements in each group.
     ///
-    /// This convenience initializer populates the record fields with the session data.
-    /// The `version` field is set to 1 to indicate the initial version of the record.
-    /// This can be useful for handling migrations or updates to the record schema in the future.
+    fileprivate func grouped(by keyPath: KeyPath<Element, Date?>) -> [String: Int] {
+        Dictionary(grouping: self) {
+            $0[keyPath: keyPath]
+        }
+        .reduce(into: [:]) { result, pair in
+            if let key = pair.key {
+                let week = Calendar.UTC.component(.weekday, from: key)
+                let hour = Calendar.UTC.component(.hour, from: key)
+                let components = ["cell", String(week), String(format: "%02d", hour)]
+                let joined = components.joined(separator: "_")
+
+                result[joined] = pair.value.count
+            }
+        }
+    }
+}
+
+// MARK: - UserActivity
+
+extension UserActivity: Syncable {
+
+    /// Fetches the most recent `UserActivity` from the given `NSManagedObjectContext` and uses its
+    /// `month` property to find all activities that match this criteria. It then groups
+    /// the activities by their `month` property.
     ///
-    fileprivate convenience init(session: Session) {
-        self.init(recordType: "Session")
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+        let activityRequest = UserActivity.fetchRequest()
+        activityRequest.predicate = NSPredicate(format: "isSynced == false")
+        activityRequest.fetchLimit = 1
 
-        self["start_date"] = session.startDate
-        self["end_date"] = session.endDate
-        self["hour"] = session.hour
-        self["week"] = session.week
+        guard let activity = try context.fetch(activityRequest).first else {
+            return nil
+        }
+        guard let month = activity.month else {
+            throw SyncableError.missingProperty(#keyPath(UserActivity.month))
+        }
 
-        self["session_id"] = session.sessionID?.uuidString
-        self["launch_id"] = session.launchID?.uuidString
-        self["user_id"] = session.userID?.uuidString
+        let groupRequest = UserActivity.fetchRequest()
 
-        self["version"] = 1
+        groupRequest.predicate = NSPredicate(
+            format: "isSynced == false && month == %@",
+            month as NSDate
+        )
+
+        let activities = try context.fetch(groupRequest)
+
+        return SyncGroup(
+            name: "ActiveUser",
+            date: month,
+            objects: activities,
+            fields: Dictionary(uniqueKeysWithValues: activities.compactMap(\.matrix))
+        )
+    }
+
+    private var matrix: (String, Int)? {
+        guard let month, let day else {
+            return nil
+        }
+        guard let rawPeriod = period, let period = ActivityPeriod(rawValue: rawPeriod) else {
+            return nil
+        }
+
+        let days = Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0
+        let components = ["cell", period.shortTitle.lowercased(), String(format: "%02d", days)]
+        let joined = components.joined(separator: "_")
+        let count = self[keyPath: period.countField]
+
+        return (joined, Int(count))
     }
 }

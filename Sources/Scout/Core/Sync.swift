@@ -14,13 +14,12 @@ private let dispatcher = Dispatcher()
 /// Synchronizes data with the specified CloudKit container.
 ///
 /// This function checks the account status of the CloudKit container and ensures that the user is logged in.
-/// It then executes a synchronization process that uploads data to the CloudKit public database and deletes
-/// the synchronized events from the local Core Data context.
+/// It then executes a synchronization process that uploads data to the CloudKit public database and
+/// set the `isSynced` flag on the synchronized objects.
 ///
 /// - Parameter container: The CloudKit container to use for synchronization.
 ///
-/// - Throws: An error of type `SyncError.notLoggedIn` if the user is not logged in to iCloud,
-///           or any error encountered during the synchronization process.
+/// - Throws: A `SyncError` if the container is not found or the user is not logged in.
 ///
 public func sync(in container: CKContainer?) async throws {
     guard let container else {
@@ -34,7 +33,7 @@ public func sync(in container: CKContainer?) async throws {
     /// synchronisation cycles in parallel. Instead, the initial loop rechecks for unuploaded events after each execution.
     try await dispatcher.execute {
         try await sync(
-            syncables: [EventModel.self, Session.self],
+            syncables: [EventModel.self, Session.self, UserActivity.self],
             database: container.publicCloudDatabase,
             context: persistentContainer.viewContext
         )
@@ -53,9 +52,17 @@ public func sync(in container: CKContainer?) async throws {
 
         try await coordinator.upload()
 
-        for id in group.objectIDs {
-            context.deleteObject(with: id)
+        if let objects = group.objects as? [CKRepresentable] {
+            try await database.modifyRecords(
+                saving: objects.map(\.toRecord),
+                deleting: []
+            )
         }
+
+        for object in group.objects {
+            object.isSynced = true
+        }
+
         try context.save()
     }
 }
@@ -79,15 +86,5 @@ enum SyncError: Error {
         case .notLoggedIn:
             return "User is not logged in to iCloud"
         }
-    }
-}
-
-// MARK: - Core Data
-
-extension NSManagedObjectContext {
-
-    /// Deletes the object with the specified object ID.
-    fileprivate func deleteObject(with objectID: NSManagedObjectID) {
-        delete(object(with: objectID))
     }
 }

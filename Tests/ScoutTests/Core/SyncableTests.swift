@@ -1,5 +1,5 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -11,65 +11,108 @@ import Testing
 
 @testable import Scout
 
-@MainActor struct SyncableTests {
+struct SyncableTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
-    @Test("Group syncable types") func testSyncableGrouping() async throws {
-        let fixedDate = Date()
-        let eventEntity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
-        let event = EventModel(entity: eventEntity, insertInto: context)
-        event.name = "Event"
-        event.date = fixedDate
-        event.hour = fixedDate
-        event.week = fixedDate
+    let date: Date
+    let nextHour: Date
+    let nextDay: Date
 
-        let sessionEntity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
-        let session = Session(entity: sessionEntity, insertInto: context)
-        session.startDate = fixedDate
-        session.endDate = fixedDate
-        session.week = fixedDate
+    init() {
+        let components = DateComponents(
+            year: 2025,
+            month: 1,
+            day: 1,
+            hour: 10
+        )
 
-        let syncables: [Syncable.Type] = [EventModel.self, Session.self]
-        let group = try #require(try syncables.group(in: context))
-
-        #expect(group.records.count == 1)
+        date = Calendar.UTC.date(from: components)!
+        nextHour = date.addingTimeInterval(3600)
+        nextDay = date.addingTimeInterval(86400)
     }
 
-    @Test("Group events by name and week ") func groupEvents() async throws {
-        let fixedDate = Date()
-        let names = ["1", "2", "2"]
+    @Test("EventModel grouping") func testEventModelGrouping() throws {
+        let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
+        let event1 = EventModel(entity: entity, insertInto: context)
+        event1.name = "event_name"
+        event1.hour = date
+        event1.week = date.startOfWeek
 
-        for name in names {
-            let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
-            let event = EventModel(entity: entity, insertInto: context)
-            event.name = name
-            event.date = Date()
-            event.hour = fixedDate
-            event.week = fixedDate
-        }
+        let event2 = EventModel(entity: entity, insertInto: context)
+        event2.name = "event_name"
+        event2.hour = nextHour
+        event2.week = nextHour.startOfWeek
 
-        let group = try #require(try EventModel.group(in: context))
+        let event3 = EventModel(entity: entity, insertInto: context)
+        event3.name = "event_name"
+        event3.hour = nextHour
+        event3.week = nextHour.startOfWeek
+        event3.isSynced = true
 
-        #expect(group.records.allSatisfy { $0["name"] == "\(group.records.count)" })
+        let group = try EventModel.group(in: context)
+
+        #expect(group?.name == "event_name")
+        #expect(group?.date == event1.week)
+        #expect(group?.objects.count == 2)
+        #expect(group?.fields["cell_4_10"] == 1)
+        #expect(group?.fields["cell_4_11"] == 1)
     }
 
-    @Test("Group sessions by week") func groupSessions() async throws {
-        let sessionEntity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
+    @Test("Session grouping") func testSessionGrouping() throws {
+        let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
+        let session1 = Session(entity: entity, insertInto: context)
+        session1.week = date.startOfWeek
+        session1.endDate = date
 
-        let fixedDate = Date()
-        let session = Session(entity: sessionEntity, insertInto: context)
-        session.startDate = fixedDate
-        session.endDate = fixedDate
-        session.week = fixedDate
-    
-        let session2 = Session(entity: sessionEntity, insertInto: context)
-        session2.startDate = fixedDate
-        session2.endDate = fixedDate
-        session2.week = fixedDate
-    
-        let group = try #require(try Session.group(in: context))
-    
-        #expect(group.records.count == 2)
-        #expect(group.records.allSatisfy { $0["week"] as? Date == fixedDate })
+        let session2 = Session(entity: entity, insertInto: context)
+        session2.week = nextHour.startOfWeek
+        session2.endDate = nextHour
+
+        let session3 = Session(entity: entity, insertInto: context)
+        session3.week = nextHour.startOfWeek
+        session3.endDate = nil
+
+        let session4 = Session(entity: entity, insertInto: context)
+        session4.week = nextHour.startOfWeek
+        session4.endDate = nextHour
+        session4.isSynced = true
+
+        let group = try Session.group(in: context)
+
+        #expect(group?.name == "Session")
+        #expect(group?.date == session1.week)
+        #expect(group?.objects.count == 2)
+        #expect(group?.fields["cell_4_10"] == 1)
+        #expect(group?.fields["cell_4_11"] == 1)
+    }
+
+    @Test("UserActivity grouping") func testUserActivityGrouping() throws {
+        let entity = NSEntityDescription.entity(forEntityName: "UserActivity", in: context)!
+        let activity1 = UserActivity(entity: entity, insertInto: context)
+        activity1.month = date.startOfMonth
+        activity1.day = date
+        activity1.period = ActivityPeriod.daily.rawValue
+        activity1.dayCount = 1
+
+        let activity2 = UserActivity(entity: entity, insertInto: context)
+        activity2.month = nextDay.startOfMonth
+        activity2.day = nextDay
+        activity2.period = ActivityPeriod.weekly.rawValue
+        activity2.weekCount = 2
+
+        let activity3 = UserActivity(entity: entity, insertInto: context)
+        activity3.month = nextDay.startOfMonth
+        activity3.day = nextDay
+        activity3.period = ActivityPeriod.weekly.rawValue
+        activity3.weekCount = 2
+        activity3.isSynced = true
+
+        let group = try UserActivity.group(in: context)
+
+        #expect(group?.name == "ActiveUser")
+        #expect(group?.date == activity1.month)
+        #expect(group?.objects.count == 2)
+        #expect(group?.fields["cell_d_00"] == 1)
+        #expect(group?.fields["cell_w_01"] == 2)
     }
 }

@@ -10,20 +10,24 @@ import CloudKit
 
 @testable import Scout
 
-struct MatrixProviderTests {
-    struct TestProvider: MatrixProvider {
+struct MatrixGroupTests {
+    struct TestGroup: MatrixGroup {
         let name: String
-        let week: Date
-        let keys: [String] = []
+        let date: Date
+        let fields: [String: Int]
     }
 
-    let group = TestProvider(name: "group_name", week: Date())
+    let group = TestGroup(
+        name: "group_name",
+        date: Date(),
+        fields: ["foo": 1, "bar": 2]
+    )
 
     @Test("Create a new matrix") func testNewMatrix() async throws {
         let matrix = group.newMatrix()
 
         #expect(group.name == matrix["name"])
-        #expect(group.week == matrix["date"])
+        #expect(group.date == matrix["date"])
     }
 
     @Test("Retrieve an existing matrix") func testMatrix() async throws {
@@ -31,12 +35,12 @@ struct MatrixProviderTests {
 
         let record = CKRecord(recordType: "DateIntMatrix")
         record["name"] = group.name
-        record["date"] = group.week
+        record["date"] = group.date
         database.records = [record]
 
         let matrix = try await group.matrix(in: database)
 
         #expect(group.name == matrix["name"])
-        #expect(group.week == matrix["date"])
+        #expect(group.date == matrix["date"])
     }
 }
