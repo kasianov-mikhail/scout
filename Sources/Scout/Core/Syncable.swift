@@ -12,10 +12,12 @@ import CoreData
 /// by their properties and counted. This is useful for synchronizing data between a local
 /// Core Data context and a remote CloudKit database.
 ///
-protocol Syncable {
+protocol Syncable: NSManagedObject {
 
     /// Groups the objects of the conforming type by their properties.
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup?
+
+    var isSynced: Bool { set get }
 }
 
 // MARK: - Random grouping
@@ -80,38 +82,9 @@ extension EventModel: Syncable {
         return SyncGroup(
             name: name,
             date: week,
-            objectIDs: events.map(\.objectID),
+            objects: events,
             fields: events.grouped(by: \.hour)
         )
-    }
-}
-
-extension CKRecord {
-
-    /// Initializes a new `CKRecord` instance with the specified `EventModel`.
-    ///
-    /// This convenience initializer populates the record fields with the event data.
-    /// The `version` field is set to 1 to indicate the initial version of the record.
-    /// This can be useful for handling migrations or updates to the record schema in the future.
-    ///
-    fileprivate convenience init(event: EventModel) {
-        self.init(recordType: "Event")
-
-        self["name"] = event.name
-        self["level"] = event.level
-        self["params"] = event.params
-        self["param_count"] = event.paramCount
-
-        self["date"] = event.date
-        self["hour"] = event.hour
-        self["week"] = event.week
-
-        self["uuid"] = event.eventID?.uuidString
-        self["session_id"] = event.sessionID?.uuidString
-        self["launch_id"] = event.launchID?.uuidString
-        self["user_id"] = event.userID?.uuidString
-
-        self["version"] = 1
     }
 }
 
@@ -143,33 +116,9 @@ extension Session: Syncable {
         return SyncGroup(
             name: "Session",
             date: week,
-            objectIDs: sessions.map(\.objectID),
+            objects: sessions,
             fields: sessions.grouped(by: \.hour)
         )
-    }
-}
-
-extension CKRecord {
-
-    /// Initialize a record with a session.
-    ///
-    /// This convenience initializer populates the record fields with the session data.
-    /// The `version` field is set to 1 to indicate the initial version of the record.
-    /// This can be useful for handling migrations or updates to the record schema in the future.
-    ///
-    fileprivate convenience init(session: Session) {
-        self.init(recordType: "Session")
-
-        self["start_date"] = session.startDate
-        self["end_date"] = session.endDate
-        self["hour"] = session.hour
-        self["week"] = session.week
-
-        self["session_id"] = session.sessionID?.uuidString
-        self["launch_id"] = session.launchID?.uuidString
-        self["user_id"] = session.userID?.uuidString
-
-        self["version"] = 1
     }
 }
 
@@ -234,7 +183,7 @@ extension UserActivity: Syncable {
         return SyncGroup(
             name: "ActiveUser",
             date: month,
-            objectIDs: activities.map(\.objectID),
+            objects: activities,
             fields: Dictionary(uniqueKeysWithValues: activities.compactMap(\.matrix))
         )
     }
