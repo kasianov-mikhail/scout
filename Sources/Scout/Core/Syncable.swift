@@ -61,6 +61,7 @@ extension EventModel: Syncable {
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
         let eventRequest = EventModel.fetchRequest()
+        eventRequest.predicate = NSPredicate(format: "isSynced == false")
         eventRequest.fetchLimit = 1
 
         guard let event = try context.fetch(eventRequest).first else {
@@ -75,7 +76,10 @@ extension EventModel: Syncable {
 
         let groupRequest = EventModel.fetchRequest()
         groupRequest.predicate = NSPredicate(
-            format: "name == %@ AND week == %@", name, week as NSDate)
+            format: "isSynced == false AND name == %@ AND week == %@",
+            name,
+            week as NSDate
+        )
 
         let events = try context.fetch(groupRequest)
 
@@ -98,7 +102,7 @@ extension Session: Syncable {
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
         let sessionRequest = Session.fetchRequest()
-        sessionRequest.predicate = NSPredicate(format: "endDate != nil")
+        sessionRequest.predicate = NSPredicate(format: "isSynced == false AND endDate != nil")
         sessionRequest.fetchLimit = 1
 
         guard let session = try context.fetch(sessionRequest).first else {
@@ -109,7 +113,10 @@ extension Session: Syncable {
         }
 
         let groupRequest = Session.fetchRequest()
-        groupRequest.predicate = NSPredicate(format: "week == %@", week as NSDate)
+        groupRequest.predicate = NSPredicate(
+            format: "isSynced == false AND endDate != nil AND week == %@",
+            week as NSDate
+        )
 
         let sessions = try context.fetch(groupRequest)
 
@@ -117,7 +124,7 @@ extension Session: Syncable {
             name: "Session",
             date: week,
             objects: sessions,
-            fields: sessions.grouped(by: \.hour)
+            fields: sessions.grouped(by: \.endDate)
         )
     }
 }
@@ -197,7 +204,7 @@ extension UserActivity: Syncable {
         }
 
         let days = Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0
-        let components = ["cell", period.rawValue.lowercased(), String(format: "%02d", days)]
+        let components = ["cell", period.shortTitle.lowercased(), String(format: "%02d", days)]
         let joined = components.joined(separator: "_")
         let count = self[keyPath: period.countField]
 
