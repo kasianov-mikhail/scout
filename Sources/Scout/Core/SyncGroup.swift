@@ -10,37 +10,28 @@ import CoreData
 
 /// A structure representing a synchronization group.
 ///
-/// `SyncGroup` is used to group together Core Data object IDs and CloudKit records
+/// `SyncGroup` is used to group together Core Data objects and CloudKit records
+/// for the purpose of synchronizing data between a local Core Data context and a remote CloudKit database.
 ///
-struct SyncGroup: Equatable, @unchecked Sendable {
+struct SyncGroup: MatrixGroup, @unchecked Sendable {
 
     /// The name of the synchronization group.
     let name: String
 
-    /// The date of the synchronization group
+    /// The date of the synchronization group.
     let date: Date
 
-    /// An array of Core Data object IDs associated with the synchronization group.
-    let objectIDs: [NSManagedObjectID]
-
-    /// An array of `CKRecord` objects associated with the synchronization group.
-    let records: [CKRecord]
-}
-
-// MARK: - Fields
-
-extension SyncGroup: MatrixGroup {
+    /// An array of objects that are part of the synchronization group.
+    let objects: [Syncable]
 
     /// A dictionary mapping field names to their corresponding count values.
-    var fields: [String: Int] {
-        Dictionary(grouping: records, by: \.hourField).mapValues(\.count)
-    }
+    let fields: [String: Int]
 }
 
-// MARK: -
+// MARK: - CustomStringConvertible
 
 extension SyncGroup: CustomStringConvertible {
     var description: String {
-        "\(name) – \(date), \(records.count) records, \(fields)"
+        "SyncGroup(name: \(name), date: \(date), objects: \(objects.count), fields: \(fields))"
     }
 }
