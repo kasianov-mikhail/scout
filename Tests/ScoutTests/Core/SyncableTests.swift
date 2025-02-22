@@ -35,18 +35,15 @@ struct SyncableTests {
         let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
         let event1 = EventModel(entity: entity, insertInto: context)
         event1.name = "event_name"
-        event1.hour = date
-        event1.week = date.startOfWeek
+        event1.date = date
 
         let event2 = EventModel(entity: entity, insertInto: context)
         event2.name = "event_name"
-        event2.hour = nextHour
-        event2.week = nextHour.startOfWeek
+        event2.date = nextHour
 
         let event3 = EventModel(entity: entity, insertInto: context)
         event3.name = "event_name"
-        event3.hour = nextHour
-        event3.week = nextHour.startOfWeek
+        event3.date = nextHour
         event3.isSynced = true
 
         let group = try EventModel.group(in: context)
@@ -61,19 +58,15 @@ struct SyncableTests {
     @Test("Session grouping") func testSessionGrouping() throws {
         let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
         let session1 = Session(entity: entity, insertInto: context)
-        session1.week = date.startOfWeek
-        session1.endDate = date
+        session1.date = date
 
         let session2 = Session(entity: entity, insertInto: context)
-        session2.week = nextHour.startOfWeek
-        session2.endDate = nextHour
+        session2.date = nextHour
 
         let session3 = Session(entity: entity, insertInto: context)
-        session3.week = nextHour.startOfWeek
-        session3.endDate = nil
+        session3.date = nil
 
         let session4 = Session(entity: entity, insertInto: context)
-        session4.week = nextHour.startOfWeek
         session4.endDate = nextHour
         session4.isSynced = true
 
@@ -89,20 +82,17 @@ struct SyncableTests {
     @Test("UserActivity grouping") func testUserActivityGrouping() throws {
         let entity = NSEntityDescription.entity(forEntityName: "UserActivity", in: context)!
         let activity1 = UserActivity(entity: entity, insertInto: context)
-        activity1.month = date.startOfMonth
-        activity1.day = date
+        activity1.date = date
         activity1.period = ActivityPeriod.daily.rawValue
         activity1.dayCount = 1
 
         let activity2 = UserActivity(entity: entity, insertInto: context)
-        activity2.month = nextDay.startOfMonth
-        activity2.day = nextDay
+        activity2.date = nextDay
         activity2.period = ActivityPeriod.weekly.rawValue
         activity2.weekCount = 2
 
         let activity3 = UserActivity(entity: entity, insertInto: context)
-        activity3.month = nextDay.startOfMonth
-        activity3.day = nextDay
+        activity3.date = nextDay
         activity3.period = ActivityPeriod.weekly.rawValue
         activity3.weekCount = 2
         activity3.isSynced = true

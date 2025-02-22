@@ -74,9 +74,7 @@ extension Session {
         }
 
         let date = Date()
-        session.endDate = date
-        session.hour = date.startOfHour
-        session.week = date.startOfWeek
+        session.date = date
         try context.save()
     }
 }

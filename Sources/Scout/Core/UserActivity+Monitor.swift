@@ -129,9 +129,7 @@ extension UserActivity.Provider {
         let entity = NSEntityDescription.entity(forEntityName: "UserActivity", in: context)!
         let activity = UserActivity(entity: entity, insertInto: context)
 
-        activity.day = date
-        activity.week = date.startOfWeek
-        activity.month = date.startOfMonth
+        activity.date = date
         activity.period = period.rawValue
 
         return activity

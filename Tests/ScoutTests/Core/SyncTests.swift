@@ -50,8 +50,6 @@ import Testing
         let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
         let event = EventModel(entity: entity, insertInto: context)
         event.name = name
-        event.hour = Date()
-        event.week = Date()
         event.date = Date()
         event.level = EventLevel.info.rawValue
 
