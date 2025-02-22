@@ -84,6 +84,7 @@ extension EventModel: Syncable {
         let events = try context.fetch(groupRequest)
 
         return SyncGroup(
+            recordType: "DateIntMatrix",
             name: name,
             date: week,
             objects: events,
@@ -121,6 +122,7 @@ extension Session: Syncable {
         let sessions = try context.fetch(groupRequest)
 
         return SyncGroup(
+            recordType: "DateIntMatrix",
             name: "Session",
             date: week,
             objects: sessions,
@@ -188,6 +190,7 @@ extension UserActivity: Syncable {
         let activities = try context.fetch(groupRequest)
 
         return SyncGroup(
+            recordType: "PeriodMatrix",
             name: "ActiveUser",
             date: month,
             objects: activities,
@@ -195,6 +198,10 @@ extension UserActivity: Syncable {
         )
     }
 
+    /// A computed property that returns a tuple containing a string key and an integer count.
+    /// The key is a combination of the period's short title and the number of days from the month
+    /// to the day. The count is the value of the period's count field.
+    ///
     private var matrix: (String, Int)? {
         guard let month, let day else {
             return nil
@@ -204,7 +211,7 @@ extension UserActivity: Syncable {
         }
 
         let days = Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0
-        let components = ["cell", period.shortTitle.lowercased(), String(format: "%02d", days)]
+        let components = ["cell", period.shortTitle.lowercased(), String(format: "%02d", days + 1)]
         let joined = components.joined(separator: "_")
         let count = self[keyPath: period.countField]
 

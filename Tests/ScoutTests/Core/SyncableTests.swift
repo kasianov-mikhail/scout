@@ -99,7 +99,7 @@ struct SyncableTests {
         #expect(group?.name == "ActiveUser")
         #expect(group?.date == activity1.month)
         #expect(group?.objects.count == 2)
-        #expect(group?.fields["cell_d_00"] == 1)
-        #expect(group?.fields["cell_w_01"] == 2)
+        #expect(group?.fields["cell_d_01"] == 1)
+        #expect(group?.fields["cell_w_02"] == 2)
     }
 }
