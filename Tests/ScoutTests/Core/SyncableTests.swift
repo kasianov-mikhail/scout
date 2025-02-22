@@ -64,11 +64,8 @@ struct SyncableTests {
         session2.date = nextHour
 
         let session3 = Session(entity: entity, insertInto: context)
-        session3.date = nil
-
-        let session4 = Session(entity: entity, insertInto: context)
-        session4.endDate = nextHour
-        session4.isSynced = true
+        session3.endDate = nextHour
+        session3.isSynced = true
 
         let group = try Session.group(in: context)
 

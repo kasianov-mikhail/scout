@@ -52,9 +52,4 @@ extension EventModel: DateModel {}
 
 extension UserActivity: DateModel {}
 
-extension Session: DateModel {
-    var datePrimitive: Date? {
-        get { endDate }
-        set { endDate = newValue }
-    }
-}
+extension Session: DateModel {}

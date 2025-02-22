@@ -75,7 +75,7 @@ extension Session: CKRepresentable {
     var toRecord: CKRecord {
         let record = CKRecord(recordType: "Session")
 
-        record["start_date"] = startDate
+        record["start_date"] = date
         record["end_date"] = endDate
         record["hour"] = hour
         record["week"] = week

@@ -17,22 +17,22 @@
         <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="Session" representedClassName="Session" syncable="YES" codeGenerationType="class">
-        <attribute name="day" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="hour" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="month" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="startDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="week" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="UserActivity" representedClassName="UserActivity" syncable="YES" codeGenerationType="class">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="hour" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
