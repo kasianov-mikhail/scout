@@ -31,8 +31,6 @@ func log(
     let event = EventModel(entity: entity, insertInto: context)
 
     event.date = date
-    event.hour = date.startOfHour
-    event.week = date.startOfWeek
     event.level = level.rawValue
     event.name = name
 
