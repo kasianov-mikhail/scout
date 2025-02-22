@@ -22,7 +22,7 @@ struct SessionMonitorTests {
         #expect(sessions.count == 1)
 
         let session = sessions[0]
-        #expect(session.startDate != nil)
+        #expect(session.date != nil)
         #expect(session.endDate == nil)
     }
 

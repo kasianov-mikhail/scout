@@ -102,7 +102,7 @@ extension Session: Syncable {
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
         let sessionRequest = Session.fetchRequest()
-        sessionRequest.predicate = NSPredicate(format: "isSynced == false AND endDate != nil")
+        sessionRequest.predicate = NSPredicate(format: "isSynced == false")
         sessionRequest.fetchLimit = 1
 
         guard let session = try context.fetch(sessionRequest).first else {
@@ -114,7 +114,7 @@ extension Session: Syncable {
 
         let groupRequest = Session.fetchRequest()
         groupRequest.predicate = NSPredicate(
-            format: "isSynced == false AND endDate != nil AND week == %@",
+            format: "isSynced == false AND week == %@",
             week as NSDate
         )
 
@@ -124,7 +124,7 @@ extension Session: Syncable {
             name: "Session",
             date: week,
             objects: sessions,
-            fields: sessions.grouped(by: \.endDate)
+            fields: sessions.grouped(by: \.date)
         )
     }
 }

@@ -18,7 +18,7 @@ extension Session {
     static func trigger(in context: NSManagedObjectContext) throws {
         let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
         let session = Session(entity: entity, insertInto: context)
-        session.startDate = Date()
+        session.date = Date()
         try context.save()
     }
 }
@@ -61,7 +61,7 @@ extension Session {
     ///
     static func complete(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<Session>(entityName: "Session")
-        request.sortDescriptors = [NSSortDescriptor(key: "startDate", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
         request.fetchLimit = 1
 
@@ -74,7 +74,7 @@ extension Session {
         }
 
         let date = Date()
-        session.date = date
+        session.endDate = date
         try context.save()
     }
 }
