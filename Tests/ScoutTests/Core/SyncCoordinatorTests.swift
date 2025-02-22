@@ -11,8 +11,11 @@ import Testing
 
 @testable import Scout
 
+private let recordType = "DateIntMatrix"
+
 @MainActor struct SyncCoordinatorTests {
     struct TestGroup: MatrixGroup {
+        let recordType: String
         let name: String
         let date: Date
         let fields: [String: Int]
@@ -25,6 +28,7 @@ import Testing
 
     init() throws {
         let group = TestGroup(
+            recordType: recordType,
             name: "Test",
             date: Date(),
             fields: ["cell_01": 5, "cell_02": 10]
@@ -78,4 +82,10 @@ private func createMergeError() -> Error {
         CKError.Code.serverRecordChanged,
         userInfo: [CKRecordChangedErrorServerRecordKey: serverMatrix]
     )
+}
+
+extension InMemoryDatabase {
+    fileprivate var matrices: [CKRecord] {
+        records.filter { $0.recordType == recordType }
+    }
 }

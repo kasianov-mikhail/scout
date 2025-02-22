@@ -15,6 +15,9 @@ import CloudKit
 ///
 protocol MatrixGroup: Sendable {
 
+    /// The record type for the matrix.
+    var recordType: String { get }
+
     /// The name of the matrix.
     var name: String { get }
 
@@ -34,9 +37,10 @@ extension MatrixGroup {
     /// - Returns: A new `CKRecord` instance.
     ///
     func newMatrix() -> CKRecord {
-        let matrix = CKRecord(recordType: "DateIntMatrix")
+        let matrix = CKRecord(recordType: recordType)
         matrix["name"] = name
         matrix["date"] = date
+        matrix["version"] = 1
         return matrix
     }
 
@@ -54,7 +58,7 @@ extension MatrixGroup {
         let predicate = NSCompoundPredicate(
             type: .and, subpredicates: [namePredicate, datePredicate])
 
-        let query = CKQuery(recordType: "DateIntMatrix", predicate: predicate)
+        let query = CKQuery(recordType: recordType, predicate: predicate)
 
         let keys = fields.map { key, _ in key }
         let allMatrices = try await database.allRecords(matching: query, desiredKeys: keys)

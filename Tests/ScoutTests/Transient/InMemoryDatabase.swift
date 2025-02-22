@@ -55,8 +55,4 @@ extension InMemoryDatabase {
     var events: [CKRecord] {
         records.filter { $0.recordType == "Event" }
     }
-
-    var matrices: [CKRecord] {
-        records.filter { $0.recordType == "DateIntMatrix" }
-    }
 }

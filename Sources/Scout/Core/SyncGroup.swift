@@ -15,6 +15,9 @@ import CoreData
 ///
 struct SyncGroup: MatrixGroup, @unchecked Sendable {
 
+    /// The record type of the synchronization
+    let recordType: String
+
     /// The name of the synchronization group.
     let name: String
 
@@ -32,6 +35,6 @@ struct SyncGroup: MatrixGroup, @unchecked Sendable {
 
 extension SyncGroup: CustomStringConvertible {
     var description: String {
-        "SyncGroup(name: \(name), date: \(date), objects: \(objects.count), fields: \(fields))"
+        "SyncGroup(name: \(name), date: \(date), objects: \(objects.count), fields: \(fields), recordType: \(recordType)"
     }
 }
