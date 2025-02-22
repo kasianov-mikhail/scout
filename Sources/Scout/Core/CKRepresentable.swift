@@ -8,9 +8,26 @@
 import CloudKit
 
 /// A protocol that defines a type that can be represented as a `CKRecord`.
+///
+/// Types that conform to the `CKRepresentable` protocol can be converted to a `CKRecord`
+/// representation, which can be saved to a CloudKit database.
+///
 protocol CKRepresentable {
 
     /// A computed property that returns a `CKRecord` representation of the instance.
+    ///
+    /// This property should create a new `CKRecord` with the appropriate record type and set
+    /// its fields based on the properties of the instance. The `CKRecord` should be returned
+    /// as the result of this property. For example:
+    /// ```
+    /// var toRecord: CKRecord {
+    ///    let record = CKRecord(recordType: "MyRecordType")
+    ///    record["field1"] = field1
+    ///    record["field2"] = field2
+    ///    return record
+    /// }
+    /// ```
+    ///
     var toRecord: CKRecord { get }
 }
 
