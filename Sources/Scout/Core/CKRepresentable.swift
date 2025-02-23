@@ -49,8 +49,7 @@ extension EventModel: CKRepresentable {
         record["param_count"] = paramCount
 
         record["date"] = date
-        record["hour"] = hour
-        record["week"] = week
+        record.setValuesForKeys(dateFields)
 
         record["uuid"] = eventID?.uuidString
         record["session_id"] = sessionID?.uuidString
@@ -77,8 +76,7 @@ extension Session: CKRepresentable {
 
         record["start_date"] = date
         record["end_date"] = endDate
-        record["hour"] = hour
-        record["week"] = week
+        record.setValuesForKeys(dateFields)
 
         record["session_id"] = sessionID?.uuidString
         record["launch_id"] = launchID?.uuidString

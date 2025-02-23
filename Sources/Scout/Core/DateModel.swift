@@ -46,6 +46,29 @@ extension DateModel {
     }
 }
 
+// MARK: - Date Fields
+
+extension DateModel {
+
+    /// A dictionary representation of the date fields.
+    ///
+    /// This property returns a dictionary containing the date fields of the model. The keys
+    /// represent the field names, such as "hour", "day", "week", and "month", while the values
+    /// represent the corresponding date values.
+    ///
+    /// - Note: Used in conjunction with `CKRepresentable` to convert the date fields to a
+    /// dictionary that can be saved to CloudKit.
+    ///
+    var dateFields: [String: Date] {
+        var fields: [String: Date] = [:]
+        if let hour { fields["hour"] = hour }
+        if let day { fields["day"] = day }
+        if let week { fields["week"] = week }
+        if let month { fields["month"] = month }
+        return fields
+    }
+}
+
 // MARK: - Conformances
 
 extension EventModel: DateModel {}
