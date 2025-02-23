@@ -63,4 +63,16 @@ struct DateModelTests {
         #expect(month.minute == 0)
         #expect(month.second == 0)
     }
+
+    @Test("DateModel date fields") func testDateModelDateFields() {
+        let model = TestModel()
+        model.date = Date()
+
+        let fields = model.dateFields
+
+        #expect(fields["hour"] != nil)
+        #expect(fields["day"] != nil)
+        #expect(fields["week"] != nil)
+        #expect(fields["month"] != nil)
+    }
 }
