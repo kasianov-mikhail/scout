@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24D60" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="EventModel" representedClassName="EventModel" syncable="YES" codeGenerationType="class">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24D70" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="EventObject" representedClassName="EventObject" syncable="YES" codeGenerationType="class">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
@@ -16,7 +16,7 @@
         <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="Session" representedClassName="Session" syncable="YES" codeGenerationType="class">
+    <entity name="SessionObject" representedClassName="SessionObject" syncable="YES" codeGenerationType="class">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

@@ -16,14 +16,14 @@ import Testing
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Sync with no groups") func testSyncNoGroups() async throws {
-        try await sync(syncables: [EventModel.self], database: database, context: context)
+        try await sync(syncables: [EventObject.self], database: database, context: context)
         #expect(database.events.isEmpty)
     }
 
     @Test("Sync with one group") func testSyncOneGroup() async throws {
         createEvent(name: "event_name", in: context)
 
-        try await sync(syncables: [EventModel.self], database: database, context: context)
+        try await sync(syncables: [EventObject.self], database: database, context: context)
 
         #expect(database.events.count == 1)
         #expect(database.events.first?["name"] == "event_name")
@@ -35,7 +35,7 @@ import Testing
             createEvent(name: "event_name_\(i)", in: context)
         }
 
-        try await sync(syncables: [EventModel.self], database: database, context: context)
+        try await sync(syncables: [EventObject.self], database: database, context: context)
 
         #expect(database.events.count == 3)
         for i in 1...3 {
@@ -45,10 +45,10 @@ import Testing
     }
 
     @discardableResult func createEvent(name: String, in context: NSManagedObjectContext)
-        -> EventModel
+        -> EventObject
     {
-        let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
-        let event = EventModel(entity: entity, insertInto: context)
+        let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+        let event = EventObject(entity: entity, insertInto: context)
         event.name = name
         event.date = Date()
         event.level = EventLevel.info.rawValue

@@ -32,21 +32,21 @@ struct SyncableTests {
     }
 
     @Test("EventModel grouping") func testEventModelGrouping() throws {
-        let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
-        let event1 = EventModel(entity: entity, insertInto: context)
+        let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+        let event1 = EventObject(entity: entity, insertInto: context)
         event1.name = "event_name"
         event1.date = date
 
-        let event2 = EventModel(entity: entity, insertInto: context)
+        let event2 = EventObject(entity: entity, insertInto: context)
         event2.name = "event_name"
         event2.date = nextHour
 
-        let event3 = EventModel(entity: entity, insertInto: context)
+        let event3 = EventObject(entity: entity, insertInto: context)
         event3.name = "event_name"
         event3.date = nextHour
         event3.isSynced = true
 
-        let group = try EventModel.group(in: context)
+        let group = try EventObject.group(in: context)
 
         #expect(group?.name == "event_name")
         #expect(group?.date == event1.week)
@@ -56,18 +56,18 @@ struct SyncableTests {
     }
 
     @Test("Session grouping") func testSessionGrouping() throws {
-        let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
-        let session1 = Session(entity: entity, insertInto: context)
+        let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
+        let session1 = SessionObject(entity: entity, insertInto: context)
         session1.date = date
 
-        let session2 = Session(entity: entity, insertInto: context)
+        let session2 = SessionObject(entity: entity, insertInto: context)
         session2.date = nextHour
 
-        let session3 = Session(entity: entity, insertInto: context)
+        let session3 = SessionObject(entity: entity, insertInto: context)
         session3.endDate = nextHour
         session3.isSynced = true
 
-        let group = try Session.group(in: context)
+        let group = try SessionObject.group(in: context)
 
         #expect(group?.name == "Session")
         #expect(group?.date == session1.week)

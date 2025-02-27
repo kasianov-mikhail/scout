@@ -24,7 +24,7 @@ import Testing
         context: context
     )
 
-    let fetchRequest: NSFetchRequest<EventModel> = EventModel.fetchRequest()
+    let fetchRequest: NSFetchRequest<EventObject> = EventObject.fetchRequest()
     let events = try context.fetch(fetchRequest)
 
     #expect(events.count == 1)

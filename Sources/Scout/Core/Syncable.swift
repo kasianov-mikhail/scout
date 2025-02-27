@@ -51,16 +51,16 @@ enum SyncableError: Error {
     }
 }
 
-// MARK: - EventModel
+// MARK: - EventObject
 
-extension EventModel: Syncable {
+extension EventObject: Syncable {
 
-    /// Fetches the most recent `EventModel` from the given `NSManagedObjectContext` and uses its
+    /// Fetches the most recent `EventObject` from the given `NSManagedObjectContext` and uses its
     /// `name` and `week` properties to find all events that match these criteria. It then groups
     /// the events by their `hour`'s `field` property and counts the occurrences of each field.
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let eventRequest = EventModel.fetchRequest()
+        let eventRequest = EventObject.fetchRequest()
         eventRequest.predicate = NSPredicate(format: "isSynced == false")
         eventRequest.fetchLimit = 1
 
@@ -68,13 +68,13 @@ extension EventModel: Syncable {
             return nil
         }
         guard let name = event.name else {
-            throw SyncableError.missingProperty(#keyPath(EventModel.name))
+            throw SyncableError.missingProperty(#keyPath(EventObject.name))
         }
         guard let week = event.week else {
-            throw SyncableError.missingProperty(#keyPath(EventModel.week))
+            throw SyncableError.missingProperty(#keyPath(EventObject.week))
         }
 
-        let groupRequest = EventModel.fetchRequest()
+        let groupRequest = EventObject.fetchRequest()
         groupRequest.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND week == %@",
             name,
@@ -93,16 +93,16 @@ extension EventModel: Syncable {
     }
 }
 
-// MARK: - Session
+// MARK: - SessionObject
 
-extension Session: Syncable {
+extension SessionObject: Syncable {
 
     /// Fetches the most recent `Session` from the given `NSManagedObjectContext` and uses its
     /// `week` property to find all sessions that match this criteria. It then groups
     /// the sessions by their `name` and `week` properties.
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let sessionRequest = Session.fetchRequest()
+        let sessionRequest = SessionObject.fetchRequest()
         sessionRequest.predicate = NSPredicate(format: "isSynced == false")
         sessionRequest.fetchLimit = 1
 
@@ -110,10 +110,10 @@ extension Session: Syncable {
             return nil
         }
         guard let week = session.week else {
-            throw SyncableError.missingProperty(#keyPath(Session.week))
+            throw SyncableError.missingProperty(#keyPath(SessionObject.week))
         }
 
-        let groupRequest = Session.fetchRequest()
+        let groupRequest = SessionObject.fetchRequest()
         groupRequest.predicate = NSPredicate(
             format: "isSynced == false AND week == %@",
             week as NSDate
