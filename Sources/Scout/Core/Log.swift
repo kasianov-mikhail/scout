@@ -11,7 +11,7 @@ import Logging
 
 /// Logs an event with the specified name, level, metadata, and date.
 ///
-/// This function creates a new `EventModel` instance, populates it with the provided
+/// This function creates a new `EventObject` instance, populates it with the provided
 /// information, and saves it to the Core Data context.
 ///
 /// - Parameters:
@@ -27,8 +27,8 @@ func log(
     _ name: String, level: Logger.Level, metadata: Logger.Metadata?, date: Date,
     context: NSManagedObjectContext
 ) throws {
-    let entity = NSEntityDescription.entity(forEntityName: "EventModel", in: context)!
-    let event = EventModel(entity: entity, insertInto: context)
+    let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+    let event = EventObject(entity: entity, insertInto: context)
 
     event.date = date
     event.level = level.rawValue

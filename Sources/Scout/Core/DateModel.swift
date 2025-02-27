@@ -71,8 +71,8 @@ extension DateModel {
 
 // MARK: - Conformances
 
-extension EventModel: DateModel {}
+extension EventObject: DateModel {}
 
 extension UserActivity: DateModel {}
 
-extension Session: DateModel {}
+extension SessionObject: DateModel {}

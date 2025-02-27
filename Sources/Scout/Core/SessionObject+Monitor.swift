@@ -7,17 +7,17 @@
 
 import CoreData
 
-extension Session {
+extension SessionObject {
 
-    /// Registers a new session.
+    /// Registers a new session object within the application.
     ///
     /// This method is responsible for initializing and registering a new session
     /// within the application. It sets up necessary configurations and ensures
     /// that the session is properly tracked and managed.
     ///
     static func trigger(in context: NSManagedObjectContext) throws {
-        let entity = NSEntityDescription.entity(forEntityName: "Session", in: context)!
-        let session = Session(entity: entity, insertInto: context)
+        let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
+        let session = SessionObject(entity: entity, insertInto: context)
         session.date = Date()
         try context.save()
     }
@@ -25,7 +25,7 @@ extension Session {
 
 // MARK: - Completion
 
-extension Session {
+extension SessionObject {
 
     /// An error that occurs when completing a session.
     /// - sessionNotFound: The session to be completed was not found.
@@ -60,7 +60,7 @@ extension Session {
     /// This method should be called when the session is ready to be terminated.
     ///
     static func complete(in context: NSManagedObjectContext) throws {
-        let request = NSFetchRequest<Session>(entityName: "Session")
+        let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
         request.fetchLimit = 1

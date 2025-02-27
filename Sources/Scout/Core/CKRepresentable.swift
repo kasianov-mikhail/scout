@@ -33,12 +33,12 @@ protocol CKRepresentable {
 
 // MARK: - EventModel
 
-extension EventModel: CKRepresentable {
+extension EventObject: CKRepresentable {
 
-    /// A computed property that returns a `CKRecord` representation of the `EventModel` instance.
+    /// A computed property that returns a `CKRecord` representation of the `EventObject` instance.
     ///
     /// This property creates a new `CKRecord` with the record type "Event" and sets its fields
-    /// based on the properties of the `EventModel` instance.
+    /// based on the properties of the `EventObject` instance.
     ///
     var toRecord: CKRecord {
         let record = CKRecord(recordType: "Event")
@@ -64,12 +64,12 @@ extension EventModel: CKRepresentable {
 
 // MARK: - Session
 
-extension Session: CKRepresentable {
+extension SessionObject: CKRepresentable {
 
-    /// A computed property that returns a `CKRecord` representation of the `Session` instance.
+    /// A computed property that returns a `CKRecord` representation of the `SessionObject` instance.
     ///
     /// This property creates a new `CKRecord` with the record type "Session" and sets its fields
-    /// based on the properties of the `Session` instance.
+    /// based on the properties of the `SessionObject` instance.
     ///
     var toRecord: CKRecord {
         let record = CKRecord(recordType: "Session")

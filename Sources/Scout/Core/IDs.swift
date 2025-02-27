@@ -18,7 +18,7 @@ enum IDs {
     /// A static computed property that returns an optional UUID representing the session ID.
     static var session: UUID? {
         let context = persistentContainer.viewContext
-        let request: NSFetchRequest<Session> = Session.fetchRequest()
+        let request: NSFetchRequest<SessionObject> = SessionObject.fetchRequest()
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         request.predicate = NSPredicate(format: "launchID == %@", launch as CVarArg)
         request.fetchLimit = 1
@@ -63,22 +63,22 @@ extension UserDefaults {
 
 // MARK: - Default Values
 
-extension Session {
+extension SessionObject {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(Session.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(Session.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(Session.launchID))
+        setPrimitiveValue(UUID(), forKey: #keyPath(SessionObject.sessionID))
+        setPrimitiveValue(IDs.user, forKey: #keyPath(SessionObject.userID))
+        setPrimitiveValue(IDs.launch, forKey: #keyPath(SessionObject.launchID))
     }
 }
 
-extension EventModel {
+extension EventObject {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(EventModel.eventID))
-        setPrimitiveValue(IDs.session, forKey: #keyPath(EventModel.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(EventModel.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(EventModel.launchID))
+        setPrimitiveValue(UUID(), forKey: #keyPath(EventObject.eventID))
+        setPrimitiveValue(IDs.session, forKey: #keyPath(EventObject.sessionID))
+        setPrimitiveValue(IDs.user, forKey: #keyPath(EventObject.userID))
+        setPrimitiveValue(IDs.launch, forKey: #keyPath(EventObject.launchID))
     }
 }
 
