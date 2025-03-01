@@ -19,7 +19,7 @@ enum IDs {
     static var session: UUID? {
         let context = persistentContainer.viewContext
         let request: NSFetchRequest<SessionObject> = SessionObject.fetchRequest()
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
         request.predicate = NSPredicate(format: "launchID == %@", launch as CVarArg)
         request.fetchLimit = 1
         let session = try? context.fetch(request).first
