@@ -53,7 +53,7 @@ struct SessionObjectTests {
         try SessionObject.complete(in: context)
 
         let fetchRequest: NSFetchRequest<SessionObject> = SessionObject.fetchRequest()
-        let sessions = try context.fetch(fetchRequest)
+        let sessions = try context.fetch(fetchRequest).sorted { $0.date! < $1.date! }
 
         #expect(sessions.count == 2)
         #expect(sessions[0].endDate == nil)

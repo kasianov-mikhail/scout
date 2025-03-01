@@ -61,7 +61,7 @@ extension SessionObject {
     ///
     static func complete(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
         request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
         request.fetchLimit = 1
 
