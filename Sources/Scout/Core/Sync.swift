@@ -7,9 +7,7 @@
 
 import CloudKit
 import CoreData
-
-/// A private instance of `Dispatcher` used for managing and coordinating tasks.
-private let dispatcher = Dispatcher()
+import UIKit
 
 /// Synchronizes data with the specified CloudKit container.
 ///
@@ -29,9 +27,29 @@ public func sync(in container: CKContainer?) async throws {
         throw SyncError.notLoggedIn
     }
 
-    /// Because CloudKit network requests are executed sequentially, there is no point in running multiple
-    /// synchronisation cycles in parallel. Instead, the initial loop rechecks for unuploaded events after each execution.
+    try await sync(in: container)
+}
+
+// MARK: - Dispatching
+
+/// A private instance of `Dispatcher` used for managing and coordinating tasks.
+private let dispatcher = Dispatcher()
+
+/// Because CloudKit network requests are executed sequentially, there is no point in running
+/// multiple synchronisation cycles in parallel. Instead, the initial loop rechecks for unuploaded
+/// events after each execution. This way, the synchronisation process is more efficient
+/// and less error-prone.
+///
+private func sync(in container: CKContainer) async throws {
     try await dispatcher.execute {
+        let task = await UIApplication.shared.beginBackgroundTask()
+
+        defer {
+            Task {
+                await UIApplication.shared.endBackgroundTask(task)
+            }
+        }
+
         try await sync(
             syncables: [EventObject.self, SessionObject.self, UserActivity.self],
             database: container.publicCloudDatabase,
@@ -39,6 +57,8 @@ public func sync(in container: CKContainer?) async throws {
         )
     }
 }
+
+// MARK: - Synchronization
 
 @MainActor func sync(
     syncables: [Syncable.Type], database: Database, context: NSManagedObjectContext
