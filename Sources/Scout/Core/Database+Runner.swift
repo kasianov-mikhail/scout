@@ -9,7 +9,7 @@ import CloudKit
 import UIKit
 
 /// Adds a method `runner` to `CKDatabase`, which allows executing a closure with a configured
-/// instance of the database. Also defines a `NetworkError` enum to handle timeout errors.
+/// instance of the database. Also defines a `RunnerError` enum to handle timeout errors.
 ///
 extension CKDatabase {
 
@@ -18,7 +18,7 @@ extension CKDatabase {
     ///
     func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
         guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
-            throw NetworkError.aborted
+            throw RunnerError.aborted
         }
 
         let configuration = CKOperation.Configuration()
@@ -28,7 +28,7 @@ extension CKDatabase {
         return try await configuredWith(configuration: configuration, body: body)
     }
 
-    enum NetworkError: Error {
+    enum RunnerError: Error {
         case aborted
 
         var localizedDescription: String {
