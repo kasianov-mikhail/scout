@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct UserActivityTests {
+@MainActor struct UserActivityTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Trigger") func trigger() async throws {

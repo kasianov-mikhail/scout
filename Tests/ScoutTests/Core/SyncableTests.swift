@@ -11,7 +11,7 @@ import Testing
 
 @testable import Scout
 
-struct SyncableTests {
+@MainActor struct SyncableTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     let date: Date
