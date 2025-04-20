@@ -26,6 +26,34 @@ struct Cell<T: CellValue>: Equatable, Hashable {
     let value: T
 }
 
+// MARK: - CellType
+
+extension Cell {
+    init(key: String, value: Any) {
+        let parts = key.components(separatedBy: "_")
+
+        guard parts.count == 3 else {
+            fatalError("Invalid key format")
+        }
+
+        guard let row = Int(parts[1]) else {
+            fatalError("Invalid row index")
+        }
+
+        guard let column = Int(parts[2]) else {
+            fatalError("Invalid column index")
+        }
+
+        guard let value = value as? T else {
+            fatalError("Invalid value type")
+        }
+
+        self.row = row
+        self.column = column
+        self.value = value
+    }
+}
+
 // MARK: - Maths
 
 extension Cell {

@@ -15,8 +15,6 @@ extension Matrix {
         case missingDate
         case missingName
         case missingCells
-        case invalidCellFormat
-        case incorrectCellType
 
         var errorDescription: String? {
             switch self {
@@ -28,10 +26,6 @@ extension Matrix {
                 return "Missing name"
             case .missingCells:
                 return "Missing cells"
-            case .invalidCellFormat:
-                return "Invalid cell format"
-            case .incorrectCellType:
-                return "Incorrect cell type"
             }
         }
     }
@@ -77,18 +71,6 @@ extension Matrix {
 
         let cellDict = record.dictionaryWithValues(forKeys: cellKeys)
 
-        self.cells = try cellDict.map { key, value in
-            let parts = key.components(separatedBy: "_")
-
-            guard parts.count == 3, let row = Int(parts[1]), let column = Int(parts[2]) else {
-                throw MapError.invalidCellFormat
-            }
-
-            guard let value = value as? T else {
-                throw MapError.incorrectCellType
-            }
-
-            return Cell(row: row, column: column, value: value)
-        }
+        self.cells = try cellDict.map(Cell.init)
     }
 }
