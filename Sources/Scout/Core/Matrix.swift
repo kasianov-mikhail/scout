@@ -16,7 +16,7 @@ import CloudKit
 /// - Parameters:
 ///   - T: The type of elements in the matrix, which must conform to the `MatrixType` protocol.
 ///
-struct Matrix<T: MatrixType>: Equatable {
+struct Matrix<T: MatrixType> {
     let date: Date
     let name: String
     let recordID: CKRecord.ID
