@@ -211,7 +211,7 @@ extension UserActivity: Syncable {
         }
 
         let days = Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0
-        let components = ["cell", period.shortTitle.lowercased(), String(format: "%02d", days + 1)]
+        let components = ["cell", period.rawValue, String(format: "%02d", days + 1)]
         let joined = components.joined(separator: "_")
         let count = self[keyPath: period.countField]
 
