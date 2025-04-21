@@ -15,9 +15,9 @@ import Foundation
 /// active users.
 ///
 enum ActivityPeriod: String, Identifiable, CaseIterable {
-    case daily
-    case weekly
-    case monthly
+    case daily = "d"
+    case weekly = "w"
+    case monthly = "m"
 
     var id: Self { self }
 
@@ -32,17 +32,6 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
         }
     }
 
-    var shortTitle: String {
-        switch self {
-        case .daily:
-            return "D"
-        case .weekly:
-            return "W"
-        case .monthly:
-            return "M"
-        }
-    }
-
     var rangeComponent: Calendar.Component {
         switch self {
         case .daily:
@@ -54,10 +43,10 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
         }
     }
 
-    /// A computed property that returns the appropriate count field key path for the activity period.
+    /// A property that returns the appropriate count field key path for the activity period.
     ///
-    /// This property provides the key path to the count field (`dayCount`, `weekCount`, or `monthCount`)
-    /// based on the activity period (`daily`, `weekly`, or `monthly`).
+    /// This property provides the key path to the count field (`dayCount`, `weekCount`,
+    /// or `monthCount`) based on the activity period (`daily`, `weekly`, or `monthly`).
     ///
     var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
         switch self {
@@ -67,6 +56,17 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
             return \.weekCount
         case .monthly:
             return \.monthCount
+        }
+    }
+
+    /// A computed property that returns the appropriate point component for the activity period.
+    ///
+    var pointComponent: Calendar.Component {
+        switch self {
+        case .daily:
+            return .hour
+        case .weekly, .monthly:
+            return .day
         }
     }
 }
