@@ -58,7 +58,7 @@ extension StatProvider {
                 desiredKeys: nil
             )
 
-            let rawPoints = try records.map(Matrix.init)
+            let rawPoints = try records.map(Matrix<Cell<Int>>.init)
                 .mergeDuplicates()
                 .flatMap(ChartPoint.fromIntMatrix)
 
