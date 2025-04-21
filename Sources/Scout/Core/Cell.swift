@@ -7,28 +7,28 @@
 
 import Foundation
 
-/// A typealias that combines the `Equatable`, `Hashable`, and `AdditiveArithmetic` protocols.
-/// This typealias is used to define the requirements for the value type of a `Cell`.
+/// A structure representing a cell in a matrix, identified by its row and column indices,
+/// and containing a value of a generic type.
 ///
-typealias CellValue = Equatable & Hashable & AdditiveArithmetic
+/// - Generic Parameter T: The type of the value stored in the cell.
+///
+struct Cell<T> {
 
-/// A structure representing a cell in a matrix.
-///
-/// The `Cell` structure is generic over a type `T` that conforms to the `CellValue` typealias.
-/// It includes properties for the row and column indices of the cell, as well as the value of the cell.
-///
-/// - Parameters:
-///   - T: The type of the value in the cell, which must conform to the `CellValue` typealias.
-///
-struct Cell<T: CellValue>: Equatable, Hashable {
+    /// The row index of the cell.
     let row: Int
+
+    /// The column index of the cell.
     let column: Int
+
+    /// The value stored in the cell.
     let value: T
 }
 
 // MARK: - CellType
 
-extension Cell {
+extension Cell: CellType {
+    typealias Value = T
+
     init(key: String, value: Any) {
         let parts = key.components(separatedBy: "_")
 
@@ -54,9 +54,14 @@ extension Cell {
     }
 }
 
-// MARK: - Maths
+// MARK: - Combining
 
-extension Cell {
+extension Cell: Combining where T: AdditiveArithmetic {
+
+    /// Checks if the current cell is a duplicate of another cell.
+    func isDuplicate(of other: Cell<T>) -> Bool {
+        row == other.row && column == other.column
+    }
 
     /// Adds the values of two cells and assigns the result to the left-hand side cell.
     ///
@@ -86,9 +91,11 @@ extension Cell {
     }
 }
 
-// MARK: - CustomStringConvertible
+// MARK: -
 
 extension Cell: CustomStringConvertible {
+
+    /// A string representation of the cell.
     var description: String {
         "Cell(\(row), \(column), \(value)) of type \(T.self)"
     }
