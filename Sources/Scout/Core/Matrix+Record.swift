@@ -49,8 +49,8 @@ extension Matrix {
     /// - Note: The cell keys are expected to be in the format `cell_<row>_<column>`.
     ///
     init(record: CKRecord) throws {
-        guard T.recordName == record.recordType else {
-            throw MapError.invalidRecord(expected: T.recordName, got: record.recordType)
+        guard U.Value.recordName == record.recordType else {
+            throw MapError.invalidRecord(expected: U.Value.recordName, got: record.recordType)
         }
         guard let date = record["date"] as? Date else {
             throw MapError.missingDate
@@ -71,6 +71,6 @@ extension Matrix {
 
         let cellDict = record.dictionaryWithValues(forKeys: cellKeys)
 
-        self.cells = try cellDict.map(Cell.init)
+        self.cells = try cellDict.map(U.init)
     }
 }
