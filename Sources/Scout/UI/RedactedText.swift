@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+/// A view that displays a redacted text representation.
+///
+/// This view is used to show a placeholder text with a specified number of spaces,
+/// indicating that the actual content is not available or is being loaded.
+///
+/// - Parameters:
+///  - count: The number of spaces to display in the redacted text.
+///
 struct RedactedText: View {
     let count: Int?
 
