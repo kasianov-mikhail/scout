@@ -32,17 +32,6 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
         }
     }
 
-    var rangeComponent: Calendar.Component {
-        switch self {
-        case .daily:
-            return .day
-        case .weekly:
-            return .weekOfYear
-        case .monthly:
-            return .month
-        }
-    }
-
     /// A property that returns the appropriate count field key path for the activity period.
     ///
     /// This property provides the key path to the count field (`dayCount`, `weekCount`,
@@ -56,6 +45,33 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
             return \.weekCount
         case .monthly:
             return \.monthCount
+        }
+    }
+}
+
+// MARK: - ChartCompatible
+
+/// A protocol that defines properties and methods for chart compatibility.
+///
+extension ActivityPeriod: ChartCompatible {
+
+    /// A computed property that returns the range of dates for the activity period.
+    ///
+    var range: Range<Date> {
+        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
+        return today.adding(rangeComponent, value: -1)..<today
+    }
+
+    /// A computed property that returns the appropriate range component for the activity period.
+    ///
+    var rangeComponent: Calendar.Component {
+        switch self {
+        case .daily:
+            return .day
+        case .weekly:
+            return .weekOfYear
+        case .monthly:
+            return .month
         }
     }
 
