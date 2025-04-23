@@ -52,7 +52,7 @@ extension Period {
 
 // MARK: - Components
 
-extension Period {
+extension Period: ChartCompatible {
 
     /// A computed property that returns the date range for each statistical period.
     /// This property is used to visualize data for a specific period,
