@@ -18,7 +18,7 @@ struct StatView: View {
 
     let config: Config
 
-    @State var model: StatModel
+    @State var model: StatModel<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 

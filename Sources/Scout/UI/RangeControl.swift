@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct RangeControl: View {
-    @Binding var model: StatModel
+struct RangeControl<T: ChartCompatible>: View {
+    @Binding var model: StatModel<T>
 
-    static let formatter: DateFormatter = {
+    let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         return formatter
@@ -23,7 +23,7 @@ struct RangeControl: View {
             }
             .disabled(!model.isLeftEnabled)
 
-            Text(model.range.rangeLabel(formatter: Self.formatter))
+            Text(model.range.rangeLabel(formatter: formatter))
                 .font(.system(size: 16))
                 .monospaced()
                 .frame(height: 44)

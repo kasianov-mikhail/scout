@@ -7,18 +7,20 @@
 
 import SwiftUI
 
-struct PeriodPicker: View {
-    @Binding var model: StatModel
+typealias PickerItem = ChartCompatible & Hashable & RawRepresentable<String>
 
-    let periods: [Period]
+struct PeriodPicker<T: PickerItem>: View {
+    @Binding var model: StatModel<T>
+
+    let periods: [T]
 
     var body: some View {
         Picker("", selection: $model.period) {
             ForEach(periods) { period in
                 if period == model.period, model.isAccented {
-                    Text(period.shortTitle + "*")
+                    Text(period.rawValue + "*")
                 } else {
-                    Text(period.shortTitle)
+                    Text(period.rawValue)
                 }
             }
         }
