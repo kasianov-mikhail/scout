@@ -11,15 +11,12 @@ extension Matrix {
 
     /// An enumeration representing errors that can occur while mapping data.
     enum MapError: LocalizedError {
-        case invalidRecord(expected: String, got: String)
         case missingDate
         case missingName
         case missingCells
 
         var errorDescription: String? {
             switch self {
-            case .invalidRecord(let expected, let got):
-                return "Invalid record type. Expected \(expected), got \(got)"
             case .missingDate:
                 return "Missing date"
             case .missingName:
@@ -39,19 +36,13 @@ extension Matrix {
     ///
     /// - Throws: An error of type `MapError` if the record is invalid or missing required fields.
     ///   Possible errors include:
-    ///   - `MapError.invalidRecord`: If the record type does not match the expected type.
     ///   - `MapError.missingDate`: If the record does not contain a valid `date` field.
     ///   - `MapError.missingName`: If the record does not contain a valid `name` field.
     ///   - `MapError.missingCells`: If the record does not contain any cell data.
-    ///   - `MapError.invalidCellFormat`: If the cell keys are not in the expected format.
-    ///   - `MapError.incorrectCellType`: If the cell values are not of the expected type.
     ///
     /// - Note: The cell keys are expected to be in the format `cell_<row>_<column>`.
     ///
     init(record: CKRecord) throws {
-        guard U.Value.recordName == record.recordType else {
-            throw MapError.invalidRecord(expected: U.Value.recordName, got: record.recordType)
-        }
         guard let date = record["date"] as? Date else {
             throw MapError.missingDate
         }
