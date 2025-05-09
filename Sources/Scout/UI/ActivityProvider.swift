@@ -16,7 +16,7 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 /// A provider class responsible for managing and fetching active user data.
 /// This class is an `ObservableObject` and is designed to be used in SwiftUI views.
 ///
-@MainActor class ActiveUserProvider: ObservableObject {
+@MainActor class ActivityProvider: ObservableObject {
 
     /// Published property containing the chart data for active users.
     @Published var data: ChartData?
@@ -33,14 +33,14 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 
 // MARK: - Fetching Data
 
-/// An extension of `ActiveUserProvider` that provides methods to fetch data from the database.
+/// An extension of `ActivityProvider` that provides methods to fetch data from the database.
 ///
 /// This extension includes methods to fetch active user data from the database and convert it
 /// into a format suitable for charting. It also includes a method to create a query for fetching
 /// the data based on a specified date range. The fetched data is stored in the `data` property
-/// of the `ActiveUserProvider` class.
+/// of the `ActivityProvider` class.
 ///
-extension ActiveUserProvider {
+extension ActivityProvider {
 
     private func fetch(in database: DatabaseController) async {
         let today = Calendar(identifier: .iso8601).startOfDay(for: Date())

@@ -27,18 +27,19 @@ extension HomeView {
 // MARK: - Active User Section
 
 extension HomeView {
-    struct ActiveUserSection: View {
-        var body: some View {
-            Header(title: "Users")
+    struct ActivitySection: View {
+        @EnvironmentObject private var database: DatabaseController
+        @StateObject private var activity = ActivityProvider()
 
+        var body: some View {
+            Header(title: "Users").task {
+                await activity.fetchIfNeeded(in: database)
+            }
             ForEach(ActivityPeriod.allCases) { period in
-                Row {
-                    Text(period.title)
-                    Spacer()
-                    Redacted(length: 8)
-                } destination: {
-                    Placeholder(text: "Coming Soon").navigationTitle("Active Users")
-                }
+                ActivityRow(
+                    period: period,
+                    activity: activity
+                )
             }
             .foregroundStyle(.green)
         }
