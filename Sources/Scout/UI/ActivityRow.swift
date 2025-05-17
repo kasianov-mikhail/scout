@@ -16,7 +16,11 @@ struct ActivityRow: View {
         Row {
             Text(period.title)
             Spacer()
-            RedactedText(count: .random(in: 1_000...10_000))
+
+            let model = StatModel(period: period)
+            let count = model.points(from: activity.data)?.count
+
+            RedactedText(count: count)
         } destination: {
             ActivityView(activity: activity, period: period)
         }
