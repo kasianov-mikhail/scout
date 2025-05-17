@@ -35,7 +35,7 @@ class Criteria<T: Hashable & CaseIterable>: ObservableObject {
     }
 }
 
-/// MARK: - Criteria Actions
+// MARK: - Criteria Actions
 
 extension Criteria {
 
