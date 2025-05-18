@@ -15,9 +15,9 @@ import Foundation
 /// active users.
 ///
 enum ActivityPeriod: String, Identifiable, CaseIterable {
-    case daily
-    case weekly
-    case monthly
+    case daily = "d"
+    case weekly = "w"
+    case monthly = "m"
 
     var id: Self { self }
 
@@ -32,17 +32,38 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
         }
     }
 
-    var shortTitle: String {
+    /// A property that returns the appropriate count field key path for the activity period.
+    ///
+    /// This property provides the key path to the count field (`dayCount`, `weekCount`,
+    /// or `monthCount`) based on the activity period (`daily`, `weekly`, or `monthly`).
+    ///
+    var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
         switch self {
         case .daily:
-            return "D"
+            return \.dayCount
         case .weekly:
-            return "W"
+            return \.weekCount
         case .monthly:
-            return "M"
+            return \.monthCount
         }
     }
+}
 
+// MARK: - ChartCompatible
+
+/// A protocol that defines properties and methods for chart compatibility.
+///
+extension ActivityPeriod: ChartCompatible {
+
+    /// A computed property that returns the range of dates for the activity period.
+    ///
+    var range: Range<Date> {
+        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
+        return today.adding(rangeComponent, value: -1)..<today
+    }
+
+    /// A computed property that returns the appropriate range component for the activity period.
+    ///
     var rangeComponent: Calendar.Component {
         switch self {
         case .daily:
@@ -54,19 +75,14 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
         }
     }
 
-    /// A computed property that returns the appropriate count field key path for the activity period.
+    /// A computed property that returns the appropriate point component for the activity period.
     ///
-    /// This property provides the key path to the count field (`dayCount`, `weekCount`, or `monthCount`)
-    /// based on the activity period (`daily`, `weekly`, or `monthly`).
-    ///
-    var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
+    var pointComponent: Calendar.Component {
         switch self {
         case .daily:
-            return \.dayCount
-        case .weekly:
-            return \.weekCount
-        case .monthly:
-            return \.monthCount
+            return .hour
+        case .weekly, .monthly:
+            return .day
         }
     }
 }

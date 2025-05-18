@@ -15,7 +15,7 @@ struct ChartPointTests {
 
     @Test("Mapping an integer matrix to chart points") func testFromIntMatrix() {
         let date = Date()
-        let matrix = Matrix<Int>(
+        let matrix = Matrix(
             date: date,
             name: "Test",
             recordID: CKRecord.ID(recordName: "Test"),

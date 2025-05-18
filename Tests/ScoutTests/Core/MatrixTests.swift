@@ -21,7 +21,7 @@ struct MatrixTests {
         record["cell_0_0"] = 1
         record["cell_0_1"] = 2
 
-        let matrix = try Matrix<Int>(record: record)
+        let matrix = try Matrix<Cell<Int>>(record: record)
         let expectedCells = [
             Cell(row: 0, column: 0, value: 1),
             Cell(row: 0, column: 1, value: 2),

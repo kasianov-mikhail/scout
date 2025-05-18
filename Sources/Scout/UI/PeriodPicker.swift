@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct PeriodPicker: View {
-    @Binding var model: StatModel
+struct PeriodPicker<T: PickerCompatible & ChartCompatible>: View {
+    @Binding var model: StatModel<T>
 
-    let periods: [Period]
+    let periods: [T]
 
     var body: some View {
         Picker("", selection: $model.period) {
@@ -34,24 +34,5 @@ extension StatModel {
     ///
     fileprivate var isAccented: Bool {
         isRightEnabled
-    }
-}
-
-extension Period {
-
-    /// A short title for each statistical period.
-    fileprivate var shortTitle: String {
-        switch self {
-        case .today:
-            "T"
-        case .yesterday:
-            "Y"
-        case .week:
-            "7"
-        case .month:
-            "30"
-        case .year:
-            "365"
-        }
     }
 }

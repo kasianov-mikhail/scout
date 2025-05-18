@@ -7,13 +7,15 @@
 
 import SwiftUI
 
+// MARK: - StatModel
+
 /// A model that provides data for a chart.
 ///
 /// The model is responsible for filtering the data based on the selected period.
 ///
-struct StatModel {
+struct StatModel<T: ChartCompatible> {
 
-    var period: Period {
+    var period: T {
         didSet { range = period.range }
     }
 
@@ -38,7 +40,7 @@ extension StatModel {
     ///
     /// - Parameter period: The period to use for filtering the data.
     ///
-    init(period: Period) {
+    init(period: T) {
         self.period = period
         self.range = period.range
     }

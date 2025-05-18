@@ -34,6 +34,10 @@ enum Period: String, Identifiable {
 extension Period {
 
     /// A human-readable title for each statistical period.
+    ///
+    /// This property is used to display the period in a user-friendly format,
+    /// making it easier for users to understand the timeframe being analyzed.
+    ///
     var title: String {
         switch self {
         case .today:
@@ -52,7 +56,7 @@ extension Period {
 
 // MARK: - Components
 
-extension Period {
+extension Period: ChartCompatible {
 
     /// A computed property that returns the date range for each statistical period.
     /// This property is used to visualize data for a specific period,

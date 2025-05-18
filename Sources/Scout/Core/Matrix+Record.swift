@@ -11,27 +11,18 @@ extension Matrix {
 
     /// An enumeration representing errors that can occur while mapping data.
     enum MapError: LocalizedError {
-        case invalidRecord(expected: String, got: String)
         case missingDate
         case missingName
         case missingCells
-        case invalidCellFormat
-        case incorrectCellType
 
         var errorDescription: String? {
             switch self {
-            case .invalidRecord(let expected, let got):
-                return "Invalid record type. Expected \(expected), got \(got)"
             case .missingDate:
                 return "Missing date"
             case .missingName:
                 return "Missing name"
             case .missingCells:
                 return "Missing cells"
-            case .invalidCellFormat:
-                return "Invalid cell format"
-            case .incorrectCellType:
-                return "Incorrect cell type"
             }
         }
     }
@@ -45,19 +36,13 @@ extension Matrix {
     ///
     /// - Throws: An error of type `MapError` if the record is invalid or missing required fields.
     ///   Possible errors include:
-    ///   - `MapError.invalidRecord`: If the record type does not match the expected type.
     ///   - `MapError.missingDate`: If the record does not contain a valid `date` field.
     ///   - `MapError.missingName`: If the record does not contain a valid `name` field.
     ///   - `MapError.missingCells`: If the record does not contain any cell data.
-    ///   - `MapError.invalidCellFormat`: If the cell keys are not in the expected format.
-    ///   - `MapError.incorrectCellType`: If the cell values are not of the expected type.
     ///
     /// - Note: The cell keys are expected to be in the format `cell_<row>_<column>`.
     ///
     init(record: CKRecord) throws {
-        guard T.recordName == record.recordType else {
-            throw MapError.invalidRecord(expected: T.recordName, got: record.recordType)
-        }
         guard let date = record["date"] as? Date else {
             throw MapError.missingDate
         }
@@ -77,18 +62,6 @@ extension Matrix {
 
         let cellDict = record.dictionaryWithValues(forKeys: cellKeys)
 
-        self.cells = try cellDict.map { key, value in
-            let parts = key.components(separatedBy: "_")
-
-            guard parts.count == 3, let row = Int(parts[1]), let column = Int(parts[2]) else {
-                throw MapError.invalidCellFormat
-            }
-
-            guard let value = value as? T else {
-                throw MapError.incorrectCellType
-            }
-
-            return Cell(row: row, column: column, value: value)
-        }
+        self.cells = try cellDict.map(U.init)
     }
 }

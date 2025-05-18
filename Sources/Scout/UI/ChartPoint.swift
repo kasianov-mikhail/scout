@@ -24,7 +24,17 @@ struct ChartPoint: Identifiable {
 }
 
 extension ChartPoint {
-    static func fromIntMatrix(_ matrix: Matrix<Int>) -> [ChartPoint] {
+
+    /// Converts a matrix of integer cells into an array of `ChartPoint` instances.
+    ///
+    /// This method maps each cell in the provided matrix to a `ChartPoint` by calculating
+    /// the date based on the matrix's date and the cell's row and column indices. The cell's
+    /// value is used as the count for the `ChartPoint`.
+    ///
+    /// - Parameter matrix: A `Matrix` containing `Cell<Int>` elements.
+    /// - Returns: An array of `ChartPoint` instances created from the matrix cells.
+    ///
+    static func fromIntMatrix(_ matrix: Matrix<Cell<Int>>) -> [ChartPoint] {
         matrix.cells.map { cell in
             ChartPoint(
                 date: matrix.date.addingDay(cell.row - 1).addingHour(cell.column),

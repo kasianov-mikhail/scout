@@ -18,7 +18,7 @@ struct StatView: View {
 
     let config: Config
 
-    @State var model: StatModel
+    @State var model: StatModel<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
@@ -38,11 +38,9 @@ struct StatView: View {
                     .padding(.horizontal)
 
                 List {
-                    chart(points: points).chartBackground { proxy in
-                        if points.count == 0 {
-                            Placeholder(text: "No results")
-                        }
-                    }
+                    ChartView(points: points, model: model)
+                        .foregroundStyle(config.color)
+                        .listRowSeparator(config.showList ? .visible : .hidden)
 
                     if config.showList {
                         total(count: points.count)
@@ -58,28 +56,6 @@ struct StatView: View {
         .onAppear {
             tint.value = nil
         }
-    }
-
-    func chart(points: [ChartPoint]) -> some View {
-        Chart(points, id: \.date) { point in
-            BarMark(
-                x: .value("X", point.date, unit: model.period.pointComponent),
-                y: .value("Y", point.count)
-            )
-        }
-        .chartXAxis {
-            if let axisValues = model.axisValues {
-                AxisMarks(values: axisValues)
-            } else {
-                AxisMarks()
-            }
-        }
-        .listRowSeparator(config.showList ? .visible : .hidden)
-        .foregroundStyle(config.color)
-        .aspectRatio(4 / 3, contentMode: .fit)
-        .padding()
-        .padding(.bottom)
-        .listRowInsets(EdgeInsets())
     }
 
     func total(count: Int) -> some View {
@@ -100,25 +76,6 @@ struct StatView: View {
         }
         .alignmentGuide(.listRowSeparatorTrailing) { dimension in
             dimension[.trailing]
-        }
-    }
-}
-
-// MARK: - Axis Values
-
-extension StatModel {
-
-    /// Returns the axis values for the chart.
-    ///
-    /// For a month period, the values are the last 4 weeks. This fixes the issue with the axis
-    /// values not being displayed correctly for the month period. For the other periods,
-    /// the chart uses default axis values
-    ///
-    fileprivate var axisValues: [Date]? {
-        if period == .month {
-            return [-28, -21, -14, -7].map(range.upperBound.addingDay)
-        } else {
-            return nil
         }
     }
 }
