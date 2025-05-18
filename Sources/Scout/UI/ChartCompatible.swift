@@ -28,3 +28,13 @@ protocol ChartCompatible: Identifiable {
     /// The date range for the data points.
     var range: Range<Date> { get }
 }
+
+extension Array where Element: ChartCompatible {
+
+    /// A computed property that returns an unique set of calendar components,
+    /// which are used to group the data points.
+    ///
+    var uniqueComponents: Set<Calendar.Component> {
+        Set(map(\.pointComponent))
+    }
+}

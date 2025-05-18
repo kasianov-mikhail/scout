@@ -27,7 +27,9 @@ struct ActivityView: View {
                     .padding(.horizontal)
 
                 List {
-                    ChartView(points: points, model: model).foregroundStyle(.green)
+                    ChartView(points: points, model: model)
+                        .foregroundStyle(.green)
+                        .listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)

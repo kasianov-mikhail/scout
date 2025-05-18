@@ -62,7 +62,7 @@ extension ActivityProvider {
                 points: rawPoints
             )
 
-            data = rawData.chartData(for: ActivityPeriod.allCases.components)
+            data = rawData.chartData(for: ActivityPeriod.allCases.uniqueComponents)
 
         } catch {
             print("Error fetching active user data: \(error)")
@@ -103,15 +103,5 @@ extension ChartPoint {
                 count: cell.value
             )
         }
-    }
-}
-
-// MARK: - Calendar Components
-
-extension [ActivityPeriod] {
-
-    /// Returns a set of calendar components from the array of `ActivityPeriod`.
-    fileprivate var components: Set<Calendar.Component> {
-        Set(map(\.pointComponent))
     }
 }
