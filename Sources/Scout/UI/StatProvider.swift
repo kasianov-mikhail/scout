@@ -68,7 +68,7 @@ extension StatProvider {
                 points: rawPoints
             )
 
-            data = rawData.chartData(for: periods.components)
+            data = rawData.chartData(for: periods.uniqueComponents)
 
         } catch {
             print(error.localizedDescription)
@@ -89,15 +89,5 @@ extension StatProvider {
         )
 
         return query
-    }
-}
-
-// MARK: - Calendar Components
-
-extension [Period] {
-
-    /// A set of calendar components used for date calculations.
-    fileprivate var components: Set<Calendar.Component> {
-        Set(map(\.pointComponent))
     }
 }
