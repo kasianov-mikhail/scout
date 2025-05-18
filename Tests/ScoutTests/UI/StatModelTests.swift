@@ -26,21 +26,21 @@ struct StatModelTests {
     }
 
     @Test("Points from data") func testPointsFromData() throws {
-        let statModel = StatModel(period: .week, range: range)
+        let statModel = StatModel(period: Period.week, range: range)
         let points = try #require(statModel.points(from: chartData))
 
         #expect(points.map(\.count) == [10])
     }
 
     @Test("Points from nil data") func testPointsFromNilData() {
-        let statModel = StatModel(period: .week, range: range)
+        let statModel = StatModel(period: Period.week, range: range)
         let points = statModel.points(from: nil)
 
         #expect(points == nil)
     }
 
     @Test("Points from data with different period") func testPointsFromDataWithDifferentPeriod() {
-        let statModel = StatModel(period: .yesterday, range: range)
+        let statModel = StatModel(period: Period.yesterday, range: range)
         let points = statModel.points(from: chartData)
 
         #expect(points == nil)

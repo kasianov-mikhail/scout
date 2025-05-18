@@ -12,7 +12,7 @@ import Foundation
 ///
 /// - Generic Parameter T: The type of the value stored in the cell.
 ///
-struct Cell<T> {
+struct Cell<T: Hashable>: Hashable {
 
     /// The row index of the cell.
     let row: Int
