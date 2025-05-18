@@ -19,13 +19,6 @@ struct ChartView<T: ChartCompatible>: View {
                 y: .value("Y", point.count)
             )
         }
-        .chartXAxis {
-            if let axisValues = model.axisValues {
-                AxisMarks(values: axisValues)
-            } else {
-                AxisMarks()
-            }
-        }
         .chartBackground { proxy in
             if points.count == 0 {
                 Placeholder(text: "No results")

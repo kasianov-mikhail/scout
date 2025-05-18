@@ -80,27 +80,6 @@ struct StatView: View {
     }
 }
 
-
-
-// MARK: - Axis Values
-
-extension StatModel {
-
-    /// Returns the axis values for the chart.
-    ///
-    /// For a month period, the values are the last 4 weeks. This fixes the issue with the axis
-    /// values not being displayed correctly for the month period. For the other periods,
-    /// the chart uses default axis values
-    ///
-    var axisValues: [Date]? {
-        //        if period == .month {
-        //            return [-28, -21, -14, -7].map(range.upperBound.addingDay)
-        //        } else {
-        return nil
-        //        }
-    }
-}
-
 // MARK: -
 
 extension StatView.Config: CustomDebugStringConvertible {
