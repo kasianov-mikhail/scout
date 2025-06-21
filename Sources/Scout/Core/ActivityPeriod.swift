@@ -65,24 +65,12 @@ extension ActivityPeriod: ChartCompatible {
     /// A computed property that returns the appropriate range component for the activity period.
     ///
     var rangeComponent: Calendar.Component {
-        switch self {
-        case .daily:
-            return .day
-        case .weekly:
-            return .weekOfYear
-        case .monthly:
-            return .month
-        }
+        return .month
     }
 
     /// A computed property that returns the appropriate point component for the activity period.
     ///
     var pointComponent: Calendar.Component {
-        switch self {
-        case .daily:
-            return .hour
-        case .weekly, .monthly:
-            return .day
-        }
+        return .day
     }
 }
