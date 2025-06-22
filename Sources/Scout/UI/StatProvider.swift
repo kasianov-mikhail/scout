@@ -68,7 +68,9 @@ extension StatProvider {
                 points: rawPoints
             )
 
-            data = rawData.chartData(for: periods)
+            data = Dictionary(uniqueKeysWithValues: periods.map { period in
+                (period, rawData.group(by: period.pointComponent))
+            })
 
         } catch {
             print(error.localizedDescription)

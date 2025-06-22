@@ -13,7 +13,7 @@ import Testing
 struct StatModelTests {
     let date: Date
     let range: Range<Date>
-    let chartData: ChartData
+    let chartData: ChartData<Period>
 
     init() {
         date = Date()
@@ -22,11 +22,11 @@ struct StatModelTests {
         let chartPoint1 = ChartPoint(date: date, count: 10)
         let chartPoint2 = ChartPoint(date: date.addingTimeInterval(86400), count: 20)
 
-        chartData = [.day: [chartPoint1, chartPoint2]]
+        chartData = [.today: [chartPoint1, chartPoint2]]
     }
 
     @Test("Points from data") func testPointsFromData() throws {
-        let statModel = StatModel(period: Period.week, range: range)
+        let statModel = StatModel(period: Period.today, range: range)
         let points = try #require(statModel.points(from: chartData))
 
         #expect(points.map(\.count) == [10])

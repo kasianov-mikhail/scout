@@ -11,14 +11,13 @@ import Testing
 @testable import Scout
 
 struct RawPointDataTests {
-    let calendar = Calendar.UTC
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
         return formatter
     }()
 
-    @Test("Chart data grouping by day") func testChartDataByDay() {
+    @Test("Grouping by day") func testChartDataByDay() {
         let from = formatter.date(from: "2024-01-01 00:00:00")!
         let to = formatter.date(from: "2024-01-03 00:00:00")!
         let points = [
@@ -27,12 +26,12 @@ struct RawPointDataTests {
         ]
         let rawData = RawPointData(from: from, to: to, points: points)
 
-        let chartData = rawData.chartData(for: [.day])
+        let grouped = rawData.group(by: .day)
 
-        #expect(chartData[.day]?.map(\.count) == [5, 10])
+        #expect(grouped.map(\.count) == [5, 10])
     }
 
-    @Test("Chart data grouping by hour") func testChartDataByHour() {
+    @Test("Grouping by hour") func testChartDataByHour() {
         let from = formatter.date(from: "2024-01-01 00:00:00")!
         let to = formatter.date(from: "2024-01-01 03:00:00")!
         let points = [
@@ -41,19 +40,19 @@ struct RawPointDataTests {
         ]
         let rawData = RawPointData(from: from, to: to, points: points)
 
-        let chartData = rawData.chartData(for: [.hour])
+        let grouped = rawData.group(by: .hour)
 
-        #expect(chartData[.hour]?.map(\.count) == [0, 5, 10])
+        #expect(grouped.map(\.count) == [0, 5, 10])
     }
 
-    @Test("Chart data with no points") func testChartDataNoPoints() {
+    @Test("Grouping no points") func testChartDataNoPoints() {
         let from = formatter.date(from: "2024-01-01 00:00:00")!
         let to = formatter.date(from: "2024-01-01 03:00:00")!
         let points: [ChartPoint] = []
         let series = RawPointData(from: from, to: to, points: points)
 
-        let chartData = series.chartData(for: [.hour])
+        let grouped = series.group(by: .hour)
 
-        #expect(chartData[.hour]?.map(\.count) == [0, 0, 0])
+        #expect(grouped.map(\.count) == [0, 0, 0])
     }
 }
