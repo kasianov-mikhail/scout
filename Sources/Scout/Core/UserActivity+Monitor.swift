@@ -36,7 +36,7 @@ extension UserActivity {
             let provider = Provider(date: date, period: period)
             let activities = try provider.fetch(in: context)
 
-            let limit = date.adding(period.rangeComponent)
+            let limit = date.adding(period.spreadComponent)
 
             for activity in activities {
                 if let day = activity.day, day < limit, activity[keyPath: period.countField] == 0 {
@@ -76,7 +76,7 @@ extension UserActivity.Provider {
     ///   - period: The period for which the user activity is being tracked (e.g., daily, weekly, monthly).
     ///
     init(date: Date, period: ActivityPeriod) {
-        self.range = date..<date.adding(period.rangeComponent)
+        self.range = date..<date.adding(period.spreadComponent)
         self.period = period
     }
 }

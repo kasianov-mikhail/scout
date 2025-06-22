@@ -49,6 +49,23 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
     }
 }
 
+// MARK: - Spread
+
+extension ActivityPeriod {
+
+    /// This property is used to determine the date range for creating or fetching `UserActivity` records.
+    var spreadComponent: Calendar.Component {
+        switch self {
+        case .daily:
+            return .day
+        case .weekly:
+            return .weekOfYear
+        case .monthly:
+            return .month
+        }
+    }
+}
+
 // MARK: - ChartCompatible
 
 /// A protocol that defines properties and methods for chart compatibility.
