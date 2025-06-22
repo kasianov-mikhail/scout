@@ -42,6 +42,14 @@ extension ChartPoint {
     }
 }
 
+// MARK: - Comparable
+
+extension ChartPoint: Comparable {
+    static func < (lhs: ChartPoint, rhs: ChartPoint) -> Bool {
+        lhs.date < rhs.date
+    }
+}
+
 // MARK: - Math
 
 extension ChartPoint: Equatable {

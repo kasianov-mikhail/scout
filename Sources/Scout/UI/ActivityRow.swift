@@ -18,7 +18,7 @@ struct ActivityRow: View {
             Spacer()
 
             let model = StatModel(period: period)
-            let count = model.points(from: activity.data)?.count
+            let count = model.points(from: activity.data)?.last?.count
 
             RedactedText(count: count)
         } destination: {
