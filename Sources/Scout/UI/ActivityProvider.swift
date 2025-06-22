@@ -55,26 +55,23 @@ extension ActivityProvider {
 
             let matrices = try records.map(PeriodMatrix.init).mergeDuplicates()
 
-            let points = ActivityPeriod.allCases.map { period in
-                (period, matrices.flatMap { matrix in
-                    matrix.cells.filter { cell in
+            let periodPoints = ActivityPeriod.allCases.map { period in
+                let points = matrices.flatMap { matrix in
+                    let filteredCells = matrix.cells.filter { cell in
                         cell.period == period
                     }
-                    .map { cell in
+
+                    return filteredCells.map { cell in
                         ChartPoint(
                             date: matrix.date.addingDay(cell.day - 1),
                             count: cell.value
                         )
                     }
-                    .sorted { lhs, rhs in
-                        lhs.date < rhs.date
-                    }
-                })
+                }
+                return (period, points.sorted())
             }
 
-            data = points.reduce(into: [:]) { result, pair in
-                result[pair.0] = pair.1
-            }
+            data = Dictionary(uniqueKeysWithValues: periodPoints)
 
         } catch {
             print("Error fetching active user data: \(error)")
