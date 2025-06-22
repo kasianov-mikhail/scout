@@ -19,7 +19,7 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 @MainActor class ActivityProvider: ObservableObject {
 
     /// Published property containing the chart data for active users.
-    @Published var data: ChartData?
+    @Published var data: ChartData<ActivityPeriod>?
 
     /// Fetches data if it has not already been loaded.
     /// - Parameter database: The `DatabaseController` instance used to fetch data.
@@ -44,25 +44,37 @@ extension ActivityProvider {
 
     private func fetch(in database: DatabaseController) async {
         let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
+        let tomorrow = today.addingDay()
         let yearAgo = today.addingYear(-1).addingWeek(-1)
 
         do {
             let records = try await database.allRecords(
-                matching: query(from: yearAgo),
+                matching: query(from: yearAgo, to: tomorrow),
                 desiredKeys: nil
             )
 
-            let rawPoints = try records.map(PeriodMatrix.init)
-                .mergeDuplicates()
-                .flatMap(ChartPoint.fromPeriodMatrix)
+            let matrices = try records.map(PeriodMatrix.init).mergeDuplicates()
 
-            let rawData = RawPointData(
-                from: yearAgo,
-                to: today.addingDay(),
-                points: rawPoints
-            )
+            let points = ActivityPeriod.allCases.map { period in
+                (period, matrices.flatMap { matrix in
+                    matrix.cells.filter { cell in
+                        cell.period == period
+                    }
+                    .map { cell in
+                        ChartPoint(
+                            date: matrix.date.addingDay(cell.day - 1),
+                            count: cell.value
+                        )
+                    }
+                    .sorted { lhs, rhs in
+                        lhs.date < rhs.date
+                    }
+                })
+            }
 
-            data = rawData.chartData(for: ActivityPeriod.allCases.uniqueComponents)
+            data = points.reduce(into: [:]) { result, pair in
+                result[pair.0] = pair.1
+            }
 
         } catch {
             print("Error fetching active user data: \(error)")
@@ -70,10 +82,11 @@ extension ActivityProvider {
         }
     }
 
-    private func query(from date: Date) async throws -> CKQuery {
+    private func query(from: Date, to: Date) async throws -> CKQuery {
         let predicate = NSPredicate(
-            format: "date >= %@ AND name == %@",
-            date as NSDate,
+            format: "date >= %@ AND date < %@ AND name == %@",
+            from as NSDate,
+            to as NSDate,
             "ActiveUser"
         )
 
@@ -83,25 +96,5 @@ extension ActivityProvider {
         )
 
         return query
-    }
-}
-
-// MARK: - ChartPoint Factory
-
-extension ChartPoint {
-
-    /// Converts a `PeriodMatrix` into an array of `ChartPoint`.
-    ///
-    /// - Parameter matrix: The matrix to convert.
-    /// - Returns: An array of `ChartPoint` objects.
-    /// - Throws: An error if the conversion fails.
-    ///
-    fileprivate static func fromPeriodMatrix(_ matrix: PeriodMatrix) -> [ChartPoint] {
-        matrix.cells.map { cell in
-            ChartPoint(
-                date: matrix.date,
-                count: cell.value
-            )
-        }
     }
 }

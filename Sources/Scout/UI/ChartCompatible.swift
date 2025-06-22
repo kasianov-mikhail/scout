@@ -17,7 +17,7 @@ import Foundation
 /// determine the granularity of the data points and the range of dates to be
 /// considered for the chart.
 ///
-protocol ChartCompatible: Identifiable {
+protocol ChartCompatible: Identifiable, Hashable {
 
     /// The component used to represent individual data points.
     var pointComponent: Calendar.Component { get }

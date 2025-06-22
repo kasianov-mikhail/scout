@@ -27,8 +27,8 @@ struct StatModel<T: ChartCompatible> {
     /// - Parameter data: The data to filter.
     /// - Returns: An array of `ChartPoint` objects.
     ///
-    func points(from data: ChartData?) -> [ChartPoint]? {
-        data?[period.pointComponent]?.filter {
+    func points(from data: ChartData<T>?) -> [ChartPoint]? {
+        data?[period]?.filter {
             range.contains($0.date)
         }
     }

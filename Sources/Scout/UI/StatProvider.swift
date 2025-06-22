@@ -17,7 +17,7 @@ import CloudKit
     let periods: [Period]
 
     /// The statistical data fetched from the cloud, published to notify observers of changes.
-    @Published var data: ChartData?
+    @Published var data: ChartData<Period>?
 
     /// Initializes a new instance of `StatProvider` with the specified event name and periods.
     init(eventName: String, periods: [Period]) {
@@ -68,7 +68,7 @@ extension StatProvider {
                 points: rawPoints
             )
 
-            data = rawData.chartData(for: periods.uniqueComponents)
+            data = rawData.chartData(for: periods)
 
         } catch {
             print(error.localizedDescription)

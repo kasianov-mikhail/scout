@@ -92,8 +92,7 @@ extension StatView.Config: CustomDebugStringConvertible {
 
 #Preview {
     NavigationStack {
-        let components = Period.all.map(\.pointComponent)
-        let arrays = components.map { period in
+        let arrays = Period.all.map { period in
             let points = (0..<30).map { i in
                 ChartPoint(
                     date: Date().startOfHour.addingDay(-i),
