@@ -7,10 +7,8 @@
 
 import CloudKit
 
-/// This typealias is used to organize and manage chart data points
-/// associated with different calendar components.
-///
-typealias ChartData = [Calendar.Component: [ChartPoint]]
+/// A typealias representing chart data grouped by a chart-compatible key.
+typealias ChartData<T: ChartCompatible> = [T: [ChartPoint]]
 
 /// A structure representing a point in a chart.
 struct ChartPoint: Identifiable {

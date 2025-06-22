@@ -32,12 +32,12 @@ extension RawPointData {
 
     /// Generates chart data for the given calendar components.
     ///
-    /// - Parameter components: A set of calendar components to group the points by.
-    /// - Returns: A dictionary where the keys are the calendar components and the values are arrays of `ChartPoint`.
+    /// - Parameter periods: An array of `Period` objects representing the calendar components to group the data by.
+    /// - Returns: A dictionary where keys are `Period` objects representing the calendar components,
     ///
-    func chartData(for components: Set<Calendar.Component>) -> ChartData {
-        components.reduce(into: [:]) { dict, component in
-            dict[component] = group(by: component)
+    func chartData(for periods: [Period]) -> ChartData<Period> {
+        periods.reduce(into: [:]) { dict, component in
+            dict[component] = group(by: component.pointComponent)
         }
     }
 
