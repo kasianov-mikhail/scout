@@ -7,11 +7,13 @@
 
 import CloudKit
 import Logging
+import Metrics
 
 @MainActor var container: CKContainer?
 
 @MainActor public func setup(container: CKContainer) throws {
     Scout.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
+    MetricsSystem.bootstrap(CKMetricsFactory())
     try NotificationListener.activity.setup()
 }
