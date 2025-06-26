@@ -40,7 +40,7 @@ struct StatView: View {
                 List {
                     ChartView(points: points, model: model)
                         .foregroundStyle(config.color)
-                        .listRowSeparator(config.showList ? .visible : .hidden)
+                        .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
                     if config.showList {
                         total(count: points.count)
