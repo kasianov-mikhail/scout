@@ -29,7 +29,7 @@ By integrating [swift-log](https://github.com/apple/swift-log) with Scout, you c
 
 
 ## Installation
-For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki/Home/fc1c5d3c3ac96cb1341ac640b9e84526cb82b667).
+For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki).
 
 ## Usage
 
