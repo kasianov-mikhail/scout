@@ -6,6 +6,7 @@
         <attribute name="params" optional="YES" attributeType="Binary"/>
     </entity>
     <entity name="MetricsObject" representedClassName="MetricsObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="class">
+        <attribute name="telemetry" attributeType="String"/>
         <attribute name="value" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
     </entity>
     <entity name="SessionObject" representedClassName="SessionObject" syncable="YES" codeGenerationType="class">

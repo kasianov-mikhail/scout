@@ -41,3 +41,4 @@ public enum Telemetry {
     /// Records a time interval in seconds.
     case timer(Double)
 }
+
