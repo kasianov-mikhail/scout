@@ -60,7 +60,7 @@ extension EventObject: Syncable {
     /// the events by their `hour`'s `field` property and counts the occurrences of each field.
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let eventRequest = EventObject.fetchRequest()
+        let eventRequest = NSFetchRequest<EventObject>(entityName: "EventObject")
         eventRequest.predicate = NSPredicate(format: "isSynced == false")
         eventRequest.fetchLimit = 1
 
@@ -74,7 +74,7 @@ extension EventObject: Syncable {
             throw SyncableError.missingProperty(#keyPath(EventObject.week))
         }
 
-        let groupRequest = EventObject.fetchRequest()
+        let groupRequest = NSFetchRequest<EventObject>(entityName: "EventObject")
         groupRequest.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND week == %@",
             name,
