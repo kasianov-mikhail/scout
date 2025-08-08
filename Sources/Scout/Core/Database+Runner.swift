@@ -18,7 +18,7 @@ extension CKDatabase {
     ///
     func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
         guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
-            throw RunnerError.aborted
+            throw RunnerError()
         }
 
         let configuration = CKOperation.Configuration()
@@ -28,14 +28,8 @@ extension CKDatabase {
         return try await configuredWith(configuration: configuration, body: body)
     }
 
-    enum RunnerError: Error {
-        case aborted
-
-        var localizedDescription: String {
-            switch self {
-            case .aborted:
-                return "The operation was aborted because the remaining background time is insufficient to complete it."
-            }
-        }
+    struct RunnerError: LocalizedError {
+        let errorDescription =
+            "The operation was aborted because the remaining background time is insufficient."
     }
 }
