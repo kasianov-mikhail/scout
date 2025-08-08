@@ -218,3 +218,39 @@ extension UserActivity: Syncable {
         return (joined, Int(count))
     }
 }
+
+extension MetricsObject: Syncable {
+
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+        let metricsRequest = NSFetchRequest<EventObject>(entityName: "MetricsObject")
+        metricsRequest.predicate = NSPredicate(format: "isSynced == false")
+        metricsRequest.fetchLimit = 1
+
+        guard let metricsItem = try context.fetch(metricsRequest).first else {
+            return nil
+        }
+        guard let name = metricsItem.name else {
+            throw SyncableError.missingProperty(#keyPath(MetricsObject.name))
+        }
+        guard let week = metricsItem.week else {
+            throw SyncableError.missingProperty(#keyPath(MetricsObject.week))
+        }
+
+        let groupRequest = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
+        groupRequest.predicate = NSPredicate(
+            format: "isSynced == false AND name == %@ AND week == %@",
+            name,
+            week as NSDate
+        )
+
+        let allMetrics = try context.fetch(groupRequest)
+
+        return SyncGroup(
+            recordType: "DateDoubleMatrix",
+            name: name,
+            date: week,
+            objects: allMetrics,
+            fields: allMetrics.grouped(by: \.hour)
+        )
+    }
+}

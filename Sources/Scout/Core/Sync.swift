@@ -51,7 +51,12 @@ private func sync(in container: CKContainer) async throws {
         }
 
         try await sync(
-            syncables: [EventObject.self, SessionObject.self, UserActivity.self],
+            syncables: [
+                EventObject.self,
+                SessionObject.self,
+                UserActivity.self,
+                MetricsObject.self,
+            ],
             database: container.publicCloudDatabase,
             context: persistentContainer.viewContext
         )
@@ -61,7 +66,9 @@ private func sync(in container: CKContainer) async throws {
 // MARK: - Synchronization
 
 @MainActor func sync(
-    syncables: [Syncable.Type], database: Database, context: NSManagedObjectContext
+    syncables: [Syncable.Type],
+    database: Database,
+    context: NSManagedObjectContext
 ) async throws {
     while let group = try syncables.group(in: context) {
         let coordinator = SyncCoordinator(
