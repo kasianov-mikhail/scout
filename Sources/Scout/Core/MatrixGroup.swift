@@ -7,34 +7,27 @@
 
 import CloudKit
 
-/// A protocol that defines a group of fields for synchronization.
-///
-/// Types conforming to `MatrixGroup` must provide a name, date, and a dictionary of fields and 
-/// their corresponding counts. This protocol is used to group related fields and manage their 
-/// synchronization.
-///
+/// A dated, named collection of integer counters for CloudKit sync.
 protocol MatrixGroup: Sendable {
 
-    /// The record type for the matrix.
+    /// CloudKit record type.
     var recordType: String { get }
 
-    /// The name of the matrix.
+    /// Logical name of the matrix.
     var name: String { get }
 
-    /// The date of the matrix
+    /// Date represented by the matrix.
     var date: Date { get }
 
-    /// A dictionary mapping field names to their corresponding count values.
+    /// Field names and their counts.
     var fields: [String: Int] { get }
 }
 
 extension MatrixGroup {
 
-    /// Creates a new `CKRecord` instance representing a matrix.
+    /// Creates a new unsaved `CKRecord` with `name`, `date`, and version.
     ///
-    /// The matrix will include the `name` and `date` properties of the `SyncGroup`.
-    ///
-    /// - Returns: A new `CKRecord` instance.
+    /// - Returns: A new `CKRecord` for this matrix.
     ///
     func newMatrix() -> CKRecord {
         let matrix = CKRecord(recordType: recordType)
@@ -44,26 +37,25 @@ extension MatrixGroup {
         return matrix
     }
 
-    /// Asynchronously retrieves a CKRecord from the specified database or creates a new one if the database doesn't contain a required matrix.
+    /// Fetches a matching record from `database` or creates a new one.
     ///
-    /// - Parameters:
-    ///   - database: The database conforming to `Database` from which to retrieve the CKRecord.
-    ///   - fields: The fields to retrieve from the matrix.
-    /// - Returns: A `CKRecord` retrieved from the specified database or a newly created one.
-    /// - Throws: An error if the operation fails.
+    /// Matches on `name` and `date`.
+    /// Returns a random match if multiple exist.
+    ///
+    /// - Parameter database: The database to search in.
+    /// - Returns: An existing or new `CKRecord` for this matrix.
+    /// - Throws: If the database query fails.
     ///
     func matrix(in database: Database) async throws -> CKRecord {
         let namePredicate = NSPredicate(format: "name == %@", name)
         let datePredicate = NSPredicate(format: "date == %@", date as NSDate)
         let predicate = NSCompoundPredicate(
-            type: .and, subpredicates: [namePredicate, datePredicate])
-
+            type: .and,
+            subpredicates: [namePredicate, datePredicate]
+        )
         let query = CKQuery(recordType: recordType, predicate: predicate)
-
         let keys = fields.map { key, _ in key }
         let allMatrices = try await database.allRecords(matching: query, desiredKeys: keys)
-        let matrix = allMatrices.randomElement() ?? newMatrix()
-
-        return matrix
+        return allMatrices.randomElement() ?? newMatrix()
     }
 }
