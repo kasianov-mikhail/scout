@@ -7,7 +7,7 @@
 
 import Metrics
 
-struct CKMetricsFactory: MetricsFactory {
+struct TelemetryFactory: MetricsFactory {
     func makeCounter(label: String, dimensions: [(String, String)]) -> CounterHandler {
         return CKCounter()
     }

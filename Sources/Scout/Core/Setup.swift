@@ -14,6 +14,6 @@ import Metrics
 @MainActor public func setup(container: CKContainer) throws {
     Scout.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
-    MetricsSystem.bootstrap(CKMetricsFactory())
+    MetricsSystem.bootstrap(TelemetryFactory())
     try NotificationListener.activity.setup()
 }
