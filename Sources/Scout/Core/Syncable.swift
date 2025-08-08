@@ -8,38 +8,34 @@
 import CloudKit
 import CoreData
 
-/// A protocol for types that can be synchronized. Types conforming to `Syncable` can be grouped
-/// by their properties and counted. This is useful for synchronizing data between a local
-/// Core Data context and a remote CloudKit database.
+// MARK: - Syncable protocol
+
+/// Core Data models that can be synchronized as small, logical batches.
+///
+/// Contract:
+/// - `group(in:)` returns **one** batch (or `nil` if nothing pending).
+/// - Implementations are free to choose the grouping key (e.g. week/name).
+/// - Keep batches small (use a seed row + its key to collect the set).
 ///
 protocol Syncable: NSManagedObject {
 
-    /// Groups the objects of the conforming type by their properties.
+    /// Returns a batch of currently-unsynced objects, or `nil` if none.
+    ///
+    /// Implementations should:
+    /// - use one “seed” unsynced row to determine the batch key,
+    /// - fetch the rest of the unsynced rows matching that key,
+    /// - map them into `SyncGroup`.
+    ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup?
 
-    var isSynced: Bool { set get }
+    /// Whether this instance has been sent upstream.
+    var isSynced: Bool { get set }
 }
 
-// MARK: - Random grouping
+// MARK: - Errors
 
-extension [Syncable.Type] {
-
-    /// Groups the array of `Syncable` types by their properties.
-    func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-
-        // Shuffle the array to avoid grouping the same types in the same order every time.
-        for syncable in shuffled() {
-            if let group = try syncable.group(in: context) {
-                return group
-            }
-        }
-
-        return nil
-    }
-}
-
-// MARK: - Error
-
+/// Errors for missing required fields when building a batch.
+///
 enum SyncableError: Error {
     case missingProperty(String)
 
@@ -55,40 +51,43 @@ enum SyncableError: Error {
 
 extension EventObject: Syncable {
 
-    /// Fetches the most recent `EventObject` from the given `NSManagedObjectContext` and uses its
-    /// `name` and `week` properties to find all events that match these criteria. It then groups
-    /// the events by their `hour`'s `field` property and counts the occurrences of each field.
+    /// One batch of unsynced events sharing `(name, week)`, grouped by `hour`.
+    ///
+    /// Strategy:
+    /// - Seed = most recent unsynced event (via `fetchLimit = 1`).
+    /// - Batch key = `(name, week)` from seed.
+    /// - Fields = counts grouped by `hour` (for "DateIntMatrix").
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let eventRequest = NSFetchRequest<EventObject>(entityName: "EventObject")
-        eventRequest.predicate = NSPredicate(format: "isSynced == false")
-        eventRequest.fetchLimit = 1
+        let seedReq = NSFetchRequest<EventObject>(entityName: "EventObject")
+        seedReq.predicate = NSPredicate(format: "isSynced == false")
+        seedReq.fetchLimit = 1
 
-        guard let event = try context.fetch(eventRequest).first else {
+        guard let seed = try context.fetch(seedReq).first else {
             return nil
         }
-        guard let name = event.name else {
+        guard let name = seed.name else {
             throw SyncableError.missingProperty(#keyPath(EventObject.name))
         }
-        guard let week = event.week else {
+        guard let week = seed.week else {
             throw SyncableError.missingProperty(#keyPath(EventObject.week))
         }
 
-        let groupRequest = NSFetchRequest<EventObject>(entityName: "EventObject")
-        groupRequest.predicate = NSPredicate(
+        let batchReq = NSFetchRequest<EventObject>(entityName: "EventObject")
+        batchReq.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND week == %@",
             name,
             week as NSDate
         )
 
-        let events = try context.fetch(groupRequest)
+        let rows = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: name,
             date: week,
-            objects: events,
-            fields: events.grouped(by: \.hour)
+            objects: rows,
+            fields: rows.grouped(by: \.hour)
         )
     }
 }
@@ -97,36 +96,36 @@ extension EventObject: Syncable {
 
 extension SessionObject: Syncable {
 
-    /// Fetches the most recent `Session` from the given `NSManagedObjectContext` and uses its
-    /// `week` property to find all sessions that match this criteria. It then groups
-    /// the sessions by their `name` and `week` properties.
+    /// One batch of unsynced sessions for a `week`, grouped by `date`.
+    ///
+    /// Strategy:
+    /// - Seed = most recent unsynced session.
+    /// - Batch key = `week`.
+    /// - Fields = counts grouped by `date` (for "DateIntMatrix").
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let sessionRequest = SessionObject.fetchRequest()
-        sessionRequest.predicate = NSPredicate(format: "isSynced == false")
-        sessionRequest.fetchLimit = 1
+        let seedReq = SessionObject.fetchRequest()
+        seedReq.predicate = NSPredicate(format: "isSynced == false")
+        seedReq.fetchLimit = 1
 
-        guard let session = try context.fetch(sessionRequest).first else {
+        guard let seed = try context.fetch(seedReq).first else {
             return nil
         }
-        guard let week = session.week else {
+        guard let week = seed.week else {
             throw SyncableError.missingProperty(#keyPath(SessionObject.week))
         }
 
-        let groupRequest = SessionObject.fetchRequest()
-        groupRequest.predicate = NSPredicate(
-            format: "isSynced == false AND week == %@",
-            week as NSDate
-        )
+        let batchReq = SessionObject.fetchRequest()
+        batchReq.predicate = NSPredicate(format: "isSynced == false AND week == %@", week as NSDate)
 
-        let sessions = try context.fetch(groupRequest)
+        let rows = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: "Session",
             date: week,
-            objects: sessions,
-            fields: sessions.grouped(by: \.date)
+            objects: rows,
+            fields: rows.grouped(by: \.date)
         )
     }
 }
@@ -135,93 +134,101 @@ extension SessionObject: Syncable {
 
 extension UserActivity: Syncable {
 
-    /// Fetches the most recent `UserActivity` from the given `NSManagedObjectContext` and uses its
-    /// `month` property to find all activities that match this criteria. It then groups
-    /// the activities by their `month` property.
+    /// One batch of unsynced activities for a `month`, mapped via `matrix` to (key, count).
+    ///
+    /// Strategy:
+    /// - Seed = most recent unsynced activity.
+    /// - Batch key = `month`.
+    /// - Fields = `"cell_<periodShort>_<dayIndex>" -> count` (for "PeriodMatrix").
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let activityRequest = UserActivity.fetchRequest()
-        activityRequest.predicate = NSPredicate(format: "isSynced == false")
-        activityRequest.fetchLimit = 1
+        let seedReq = UserActivity.fetchRequest()
+        seedReq.predicate = NSPredicate(format: "isSynced == false")
+        seedReq.fetchLimit = 1
 
-        guard let activity = try context.fetch(activityRequest).first else {
+        guard let seed = try context.fetch(seedReq).first else {
             return nil
         }
-        guard let month = activity.month else {
+        guard let month = seed.month else {
             throw SyncableError.missingProperty(#keyPath(UserActivity.month))
         }
 
-        let groupRequest = UserActivity.fetchRequest()
-
-        groupRequest.predicate = NSPredicate(
-            format: "isSynced == false && month == %@",
+        let batchReq = UserActivity.fetchRequest()
+        batchReq.predicate = NSPredicate(
+            format: "isSynced == false AND month == %@",
             month as NSDate
         )
 
-        let activities = try context.fetch(groupRequest)
+        let rows = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "PeriodMatrix",
             name: "ActiveUser",
             date: month,
-            objects: activities,
-            fields: Dictionary(uniqueKeysWithValues: activities.compactMap(\.matrix))
+            objects: rows,
+            fields: Dictionary(uniqueKeysWithValues: rows.compactMap(\.matrix))
         )
     }
 
-    /// A computed property that returns a tuple containing a string key and an integer count.
-    /// The key is a combination of the period's short title and the number of days from the month
-    /// to the day. The count is the value of the period's count field.
+    /// Maps the row to a matrix `(key, count)` pair; returns `nil` if data is incomplete.
     ///
     private var matrix: (String, Int)? {
         guard let month, let day else {
             return nil
         }
-        guard let rawPeriod = period, let period = ActivityPeriod(rawValue: rawPeriod) else {
+        guard let raw = period, let period = ActivityPeriod(rawValue: raw) else {
             return nil
         }
 
-        let days = Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0
-        let components = ["cell", period.rawValue, String(format: "%02d", days + 1)]
-        let joined = components.joined(separator: "_")
+        let d = Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0
+        let key = ["cell", period.rawValue, String(format: "%02d", d + 1)].joined(separator: "_")
         let count = self[keyPath: period.countField]
 
-        return (joined, Int(count))
+        return (key, Int(count))
     }
 }
 
+// MARK: - MetricsObject
+
 extension MetricsObject: Syncable {
 
+    /// One batch of unsynced metrics sharing `(name, week)`, grouped by `hour` with `Double` payloads.
+    ///
+    /// Strategy:
+    /// - Seed = most recent unsynced metrics row.
+    /// - Batch key = `(name, week)`.
+    /// - Fields = counts grouped by `hour` (for "DateDoubleMatrix").
+    ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
-        let metricsRequest = NSFetchRequest<EventObject>(entityName: "MetricsObject")
-        metricsRequest.predicate = NSPredicate(format: "isSynced == false")
-        metricsRequest.fetchLimit = 1
+        let seedReq = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
+        seedReq.predicate = NSPredicate(format: "isSynced == false")
+        seedReq.fetchLimit = 1
 
-        guard let metricsItem = try context.fetch(metricsRequest).first else {
+        guard let seed = try context.fetch(seedReq).first else {
             return nil
         }
-        guard let name = metricsItem.name else {
+        guard let name = seed.name else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.name))
         }
-        guard let week = metricsItem.week else {
+        guard let week = seed.week else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.week))
         }
 
-        let groupRequest = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
-        groupRequest.predicate = NSPredicate(
+        let batchReq = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
+        batchReq.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND week == %@",
             name,
             week as NSDate
         )
 
-        let allMetrics = try context.fetch(groupRequest)
+        let rows = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "DateDoubleMatrix",
             name: name,
             date: week,
-            objects: allMetrics,
-            fields: allMetrics.grouped(by: \.hour)
+            objects: rows,
+            fields: rows.grouped(by: \.hour)
         )
     }
 }
