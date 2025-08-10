@@ -7,31 +7,57 @@
 
 import CoreData
 
-/// Logs a metrics event with the specified name, date, and value.
-///
-/// This function creates a new `MetricsObject` instance, sets its name, date, and value,
-/// and saves it to the provided Core Data context.
+/// Logs metrics in the background and then triggers sync.
 ///
 /// - Parameters:
-///   - name: The name of the metrics event to log.
-///   - date: The date and time when the metrics event occurred.
-///   - telemetry: The telemetry type associated with the metrics event, represented by the `Telemetry.Export` enum.
-///     This enum should be defined elsewhere in your codebase to represent different telemetry events.
-///   - value: The numeric value associated with the metrics event.
-///   - context: The Core Data context where the metrics event should be saved.
+///   - name: The name of the metric.
+///   - telemetry: The telemetry type associated with the metric.
+///   - value: The value of the metric.
 ///
-/// - Throws: An error if the metrics event could not be saved to the context.
+func logMetrics(
+    _ name: String,
+    telemetry: Telemetry.Export,
+    value: Double
+) {
+    Task {
+        do {
+            try await persistentContainer.performBackgroundTask { context in
+                try logMetrics(
+                    name,
+                    date: Date(),
+                    telemetry: telemetry,
+                    value: value,
+                    context
+                )
+            }
+            try await sync(in: container)
+        } catch {
+            print("Failed to save metrics: \(error.localizedDescription)")
+        }
+    }
+}
+
+/// Inserts metrics into the given Core Data context and saves.
+///
+/// - Parameters:
+///   - name: The name of the metric.
+///   - date: The date when the metric was recorded.
+///   - telemetry: The telemetry type associated with the metric.
+///   - value: The value of the metric.
+///   - context: The Core Data context where the metric will be saved.
+///
+/// - Throws: An error if the insertion or saving fails.
 ///
 func logMetrics(
     _ name: String,
     date: Date,
     telemetry: Telemetry.Export,
     value: Double,
-    context: NSManagedObjectContext
+    _ context: NSManagedObjectContext
 ) throws {
     let entity = NSEntityDescription.entity(forEntityName: "MetricsObject", in: context)!
-    let metrics = MetricsObject(entity: entity, insertInto: context)
 
+    let metrics = MetricsObject(entity: entity, insertInto: context)
     metrics.value = value
     metrics.telemetry = telemetry.rawValue
     metrics.date = date

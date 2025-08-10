@@ -10,12 +10,10 @@ import Metrics
 
 final class CKCounter: CounterHandler {
     func increment(by: Int64) {
-        try? logMetrics(
+        logMetrics(
             "name",
-            date: Date(),
             telemetry: .counter,
             value: Double(by),
-            context: persistentContainer.viewContext
         )
     }
 
@@ -26,12 +24,10 @@ final class CKCounter: CounterHandler {
 
 final class CKFloatingCounter: FloatingPointCounterHandler {
     func increment(by: Double) {
-        try? logMetrics(
+        logMetrics(
             "name",
-            date: Date(),
-            telemetry: .counter,
+            telemetry: .floatingCounter,
             value: by,
-            context: persistentContainer.viewContext
         )
     }
 
