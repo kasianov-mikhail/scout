@@ -29,18 +29,6 @@ protocol CellType {
     init(key: String, value: Any) throws
 }
 
-// MARK: - MatrixType
-
-/// A protocol that defines the requirements for a matrix type.
-///
-/// Conforming types must provide a static `recordName` property that specifies the
-/// name of the CloudKit record type used to store the matrix data.
-///
-protocol MatrixType {
-
-    /// The type of the value stored in the matrix.
-    static var recordName: String { get }
-}
 
 // MARK: - Matrix
 
@@ -117,14 +105,6 @@ extension Matrix: Combining {
             cells: (lhs.cells + rhs.cells).mergeDuplicates()
         )
     }
-}
-
-// MARK: - Int
-
-extension Int: MatrixType {
-
-    /// The name of the CloudKit record type used to store the integer matrix data.
-    static let recordName = "DateIntMatrix"
 }
 
 // MARK: -
