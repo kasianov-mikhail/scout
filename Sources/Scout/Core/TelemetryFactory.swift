@@ -10,27 +10,27 @@ import Metrics
 
 struct TelemetryFactory: MetricsFactory {
     func makeCounter(label: String, dimensions: [(String, String)]) -> CounterHandler {
-        return CKCounter()
+        CKTelemetryHandler(label: label, dimensions: dimensions)
     }
 
     func makeFloatingPointCounter(label: String, dimensions: [(String, String)])
         -> FloatingPointCounterHandler
     {
-        return CKFloatingCounter()
+        CKTelemetryHandler(label: label, dimensions: dimensions)
     }
 
     func makeMeter(label: String, dimensions: [(String, String)]) -> MeterHandler {
-        return CKMeter()
+        return NoOpMeter()
     }
 
     func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool)
         -> RecorderHandler
     {
-        return CKRecorder()
+        return NoOpRecorder()
     }
 
     func makeTimer(label: String, dimensions: [(String, String)]) -> TimerHandler {
-        return CKTimer()
+        CKTelemetryHandler(label: label, dimensions: dimensions)
     }
 
     func destroyCounter(_ handler: CounterHandler) {
