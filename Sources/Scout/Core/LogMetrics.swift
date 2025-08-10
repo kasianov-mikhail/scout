@@ -15,7 +15,8 @@ import CoreData
 /// - Parameters:
 ///   - name: The name of the metrics event to log.
 ///   - date: The date and time when the metrics event occurred.
-///   - telemetry: The telemetry system used for logging metrics.
+///   - telemetry: The telemetry type associated with the metrics event, represented by the `Telemetry.Export` enum.
+///     This enum should be defined elsewhere in your codebase to represent different telemetry events.
 ///   - value: The numeric value associated with the metrics event.
 ///   - context: The Core Data context where the metrics event should be saved.
 ///
@@ -24,7 +25,7 @@ import CoreData
 func logMetrics(
     _ name: String,
     date: Date,
-    telemetry: Telemetry,
+    telemetry: Telemetry.Export,
     value: Double,
     context: NSManagedObjectContext
 ) throws {
@@ -32,7 +33,7 @@ func logMetrics(
     let metrics = MetricsObject(entity: entity, insertInto: context)
 
     metrics.value = value
-    metrics.telemetry = telemetry.export.rawValue
+    metrics.telemetry = telemetry.rawValue
     metrics.date = date
     metrics.name = name
 
