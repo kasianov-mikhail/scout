@@ -8,7 +8,7 @@
 import Metrics
 
 extension CKTelemetryHandler {
-    final class Sink: MeterHandler, RecorderHandler {
+    final class Idle: MeterHandler, RecorderHandler {
         func set(_ value: Int64) {}
 
         func set(_ value: Double) {}

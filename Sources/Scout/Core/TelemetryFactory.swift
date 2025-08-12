@@ -27,7 +27,7 @@ struct TelemetryFactory: MetricsFactory {
         label: String,
         dimensions: [(String, String)]
     ) -> MeterHandler {
-        return CKTelemetryHandler.Sink()
+        return CKTelemetryHandler.Idle()
     }
 
     func makeRecorder(
@@ -35,7 +35,7 @@ struct TelemetryFactory: MetricsFactory {
         dimensions: [(String, String)],
         aggregate: Bool
     ) -> RecorderHandler {
-        return CKTelemetryHandler.Sink()
+        return CKTelemetryHandler.Idle()
     }
 
     func makeTimer(
