@@ -7,30 +7,16 @@
 
 import Metrics
 
-final class NoOpMeter: MeterHandler {
-    func set(_ value: Int64) {
+final class NoOpTelemetry: MeterHandler, RecorderHandler {
+    func set(_ value: Int64) {}
 
-    }
+    func set(_ value: Double) {}
 
-    func set(_ value: Double) {
+    func increment(by: Double) {}
 
-    }
+    func decrement(by: Double) {}
 
-    func increment(by: Double) {
+    func record(_ value: Int64) {}
 
-    }
-
-    func decrement(by: Double) {
-
-    }
-}
-
-final class NoOpRecorder: RecorderHandler {
-    func record(_ value: Int64) {
-
-    }
-
-    func record(_ value: Double) {
-
-    }
+    func record(_ value: Double) {}
 }

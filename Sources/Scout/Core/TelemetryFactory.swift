@@ -27,7 +27,7 @@ struct TelemetryFactory: MetricsFactory {
         label: String,
         dimensions: [(String, String)]
     ) -> MeterHandler {
-        return NoOpMeter()
+        return NoOpTelemetry()
     }
 
     func makeRecorder(
@@ -35,7 +35,7 @@ struct TelemetryFactory: MetricsFactory {
         dimensions: [(String, String)],
         aggregate: Bool
     ) -> RecorderHandler {
-        return NoOpRecorder()
+        return NoOpTelemetry()
     }
 
     func makeTimer(
