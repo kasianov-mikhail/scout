@@ -8,11 +8,11 @@
 import Foundation
 import Metrics
 
-/// A CloudKit-specific telemetry handler that routes metric updates
-/// to the `logMetrics` function for persistence and analysis.
+/// A telemetry handler that logs metrics to the console.
 ///
-/// This class implements various metric protocols (`CounterHandler`,
-/// `FloatingPointCounterHandler`, `TimerHandler`) but does not support reset.
+/// This handler is used for debugging purposes and does not send data to any external service.
+/// It implements the `CounterHandler`, `FloatingPointCounterHandler`, and `TimerHandler`
+/// protocols to handle different types of metrics.
 ///
 final class CKTelemetryHandler: NSObject {
 
@@ -24,45 +24,23 @@ final class CKTelemetryHandler: NSObject {
         self.dimensions = dimensions
     }
 
-    func reset() {
-        // No-op for resetting metrics.
-    }
+    func reset() {}
 }
 
-// MARK: - Metrics Protocols
-
 extension CKTelemetryHandler: CounterHandler {
-
-    /// Increments an integer counter metric.
     func increment(by: Int64) {
-        logMetrics(
-            label,
-            telemetry: .counter,
-            value: Double(by),
-        )
+        logMetrics(label, telemetry: .counter, value: by)
     }
 }
 
 extension CKTelemetryHandler: FloatingPointCounterHandler {
-
-    /// Increments a floating-point counter metric.
     func increment(by: Double) {
-        logMetrics(
-            label,
-            telemetry: .floatingCounter,
-            value: by,
-        )
+        logMetrics(label, telemetry: .floatingCounter, value: by)
     }
 }
 
 extension CKTelemetryHandler: TimerHandler {
-
-    /// Records a timer metric in nanoseconds.
     func recordNanoseconds(_ duration: Int64) {
-        logMetrics(
-            label,
-            telemetry: .timer,
-            value: Double(duration),
-        )
+        logMetrics(label, telemetry: .timer, value: duration)
     }
 }
