@@ -12,12 +12,14 @@ import CoreData
 /// - Parameters:
 ///   - name: The name of the metric.
 ///   - telemetry: The telemetry type associated with the metric.
-///   - value: The value of the metric.
+///   - intValue: An integer value for the metric (default is 0).
+///   - doubleValue: A double value for the metric (default is 0).
 ///
 func logMetrics(
     _ name: String,
     telemetry: Telemetry.Export,
-    value: Double
+    intValue: Int64 = 0,
+    doubleValue: Double = 0,
 ) {
     Task {
         do {
@@ -26,7 +28,8 @@ func logMetrics(
                     name,
                     date: Date(),
                     telemetry: telemetry,
-                    value: value,
+                    intValue: intValue,
+                    doubleValue: doubleValue,
                     context
                 )
             }
@@ -43,7 +46,8 @@ func logMetrics(
 ///   - name: The name of the metric.
 ///   - date: The date when the metric was recorded.
 ///   - telemetry: The telemetry type associated with the metric.
-///   - value: The value of the metric.
+///   - intValue: An integer value for the metric.
+///   - doubleValue: A double value for the metric.
 ///   - context: The Core Data context where the metric will be saved.
 ///
 /// - Throws: An error if the insertion or saving fails.
@@ -52,13 +56,15 @@ func logMetrics(
     _ name: String,
     date: Date,
     telemetry: Telemetry.Export,
-    value: Double,
+    intValue: Int64,
+    doubleValue: Double,
     _ context: NSManagedObjectContext
 ) throws {
     let entity = NSEntityDescription.entity(forEntityName: "MetricsObject", in: context)!
 
     let metrics = MetricsObject(entity: entity, insertInto: context)
-    metrics.value = value
+    metrics.intValue = intValue
+    metrics.doubleValue = doubleValue
     metrics.telemetry = telemetry.rawValue
     metrics.date = date
     metrics.name = name
