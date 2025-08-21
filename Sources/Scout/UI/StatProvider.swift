@@ -49,12 +49,11 @@ extension StatProvider {
     /// - Parameter database: The `DatabaseController` instance from which to fetch data.
     ///
     private func fetch(in database: DatabaseController) async {
-        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
-        let yearAgo = today.addingYear(-1).addingWeek(-1)
+        let range = Calendar(identifier: .iso8601).queryRange
 
         do {
             let records = try await database.allRecords(
-                matching: query(from: yearAgo),
+                matching: query(from: range.lowerBound),
                 desiredKeys: nil
             )
 
@@ -63,8 +62,8 @@ extension StatProvider {
                 .flatMap(ChartPoint.fromIntMatrix)
 
             let rawData = RawPointData(
-                from: yearAgo,
-                to: today.addingDay(),
+                from: range.lowerBound,
+                to: range.upperBound,
                 points: rawPoints
             )
 

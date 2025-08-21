@@ -43,13 +43,11 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 extension ActivityProvider {
 
     private func fetch(in database: DatabaseController) async {
-        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
-        let tomorrow = today.addingDay()
-        let yearAgo = today.addingYear(-1).addingWeek(-1)
+        let range = Calendar(identifier: .iso8601).queryRange
 
         do {
             let records = try await database.allRecords(
-                matching: query(from: yearAgo, to: tomorrow),
+                matching: query(from: range.from, to: range.to),
                 desiredKeys: nil
             )
 
