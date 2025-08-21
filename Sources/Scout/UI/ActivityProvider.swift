@@ -47,7 +47,7 @@ extension ActivityProvider {
 
         do {
             let records = try await database.allRecords(
-                matching: query(from: range.from, to: range.to),
+                matching: query(from: range.lowerBound, to: range.upperBound),
                 desiredKeys: nil
             )
 

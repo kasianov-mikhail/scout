@@ -61,11 +61,7 @@ extension StatProvider {
                 .mergeDuplicates()
                 .flatMap(ChartPoint.fromIntMatrix)
 
-            let rawData = RawPointData(
-                from: range.lowerBound,
-                to: range.upperBound,
-                points: rawPoints
-            )
+            let rawData = RawPointData(range: range, points: rawPoints)
 
             data = Dictionary(uniqueKeysWithValues: periods.map { period in
                 (period, rawData.group(by: period.pointComponent))

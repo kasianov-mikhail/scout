@@ -7,39 +7,28 @@
 
 import Foundation
 
-/// A structure representing raw point data.
-/// 
-/// This structure is used to store and manage raw data points.
-/// It can be used in various contexts where point data is required,
-/// such as in graphical representations.
-/// 
-/// - SeeAlso: `ChartPoint`
-/// 
+/// A container for chart data points within a specific date range.
 struct RawPointData {
 
-    /// The starting date for the data range.
-    let from: Date
+    /// The inclusive date range that bounds the data points.
+    let range: ClosedRange<Date>
 
-    /// The end date for the data range.
-    /// This date represents the upper bound of the time period for which data points are considered.
-    let to: Date
-
-    /// An array of `ChartPoint` objects representing the raw data points.
+    /// The list of chart points will be grouped by the range.
     let points: [ChartPoint]
 }
 
 extension RawPointData {
 
-    /// Groups the points by the specified calendar component.
+    /// Groups the chart points into buckets based on the given calendar component.
     ///
-    /// - Parameter component: The calendar component to group the points by.
-    /// - Returns: An array of `ChartPoint` grouped by the specified calendar component.
+    /// For each step of the specified component (such as `.day`, `.weekOfYear`, or `.month`),
+    /// the method calculates the sum of counts for all points whose dates fall within that interval.
     ///
     func group(by component: Calendar.Component) -> [ChartPoint] {
         var result: [ChartPoint] = []
-        var date = from
+        var date = range.lowerBound
 
-        while date < to {
+        while date < range.upperBound {
             let next = date.adding(component)
 
             let count = points.filter { item in
