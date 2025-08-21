@@ -17,6 +17,15 @@ extension Telemetry {
         case meterDecrement = "meter_decrement"
         case recorder = "recorder"
         case timer = "timer"
+
+        var recordType: String {
+            switch self {
+            case .counter, .timer:
+                "DateIntMatrix"
+            case .floatingCounter, .meterSet, .meterIncrement, .meterDecrement, .recorder:
+                "DateDoubleMatrix"
+            }
+        }
     }
 
     /// Errors that can occur during import from string names.

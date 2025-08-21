@@ -162,8 +162,11 @@ extension MetricsObject: Syncable {
         guard let name = seed.name else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.name))
         }
-        guard let telemetry = seed.telemetry else {
+        guard let telemetryValue = seed.telemetry else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.telemetry))
+        }
+        guard let telemetry = Telemetry.Export(rawValue: telemetryValue) else {
+            throw Telemetry.ExportError.invalidName
         }
         guard let week = seed.week else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.week))
@@ -173,15 +176,15 @@ extension MetricsObject: Syncable {
         batchReq.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
             name,
-            telemetry,
+            telemetryValue,
             week as NSDate
         )
 
         let rows = try context.fetch(batchReq)
 
         return SyncGroup(
-            recordType: "DateDoubleMatrix",
-            name: "\(name)_\(telemetry)",
+            recordType: telemetry.recordType,
+            name: "\(name)_\(telemetryValue)",
             date: week,
             objects: rows,
             fields: rows.grouped(by: \.hour)
