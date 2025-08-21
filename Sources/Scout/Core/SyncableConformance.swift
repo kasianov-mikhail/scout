@@ -144,11 +144,11 @@ extension UserActivity: Syncable {
 
 extension MetricsObject: Syncable {
 
-    /// One batch of unsynced metrics sharing `(name, week)`, grouped by `hour` with `Double` payloads.
+    /// One batch of unsynced metrics sharing `(name, telemetry, week)`, grouped by `hour` with `Double` payloads.
     ///
     /// Strategy:
     /// - Seed = most recent unsynced metrics row.
-    /// - Batch key = `(name, week)`.
+    /// - Batch key = `(name, telemetry, week)`.
     /// - Fields = counts grouped by `hour` (for "DateDoubleMatrix").
     ///
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
@@ -162,14 +162,18 @@ extension MetricsObject: Syncable {
         guard let name = seed.name else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.name))
         }
+        guard let telemetry = seed.telemetry else {
+            throw SyncableError.missingProperty(#keyPath(MetricsObject.telemetry))
+        }
         guard let week = seed.week else {
             throw SyncableError.missingProperty(#keyPath(MetricsObject.week))
         }
 
         let batchReq = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
         batchReq.predicate = NSPredicate(
-            format: "isSynced == false AND name == %@ AND week == %@",
+            format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
             name,
+            telemetry,
             week as NSDate
         )
 
@@ -177,7 +181,7 @@ extension MetricsObject: Syncable {
 
         return SyncGroup(
             recordType: "DateDoubleMatrix",
-            name: name,
+            name: "\(name)_\(telemetry)",
             date: week,
             objects: rows,
             fields: rows.grouped(by: \.hour)
