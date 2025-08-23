@@ -7,7 +7,11 @@
 
 import CloudKit
 
-extension Matrix {
+protocol CKInitializable {
+    init(record: CKRecord) throws
+}
+
+extension Matrix: CKInitializable {
     enum MapError: LocalizedError {
         case missingDate
         case missingName
@@ -17,13 +21,13 @@ extension Matrix {
         var errorDescription: String? {
             switch self {
             case .missingDate:
-                return "Missing date field"
+                "Missing date field"
             case .missingName:
-                return "Missing name field"
+                "Missing name field"
             case .missingCells:
-                return "Missing cells"
+                "Missing cells"
             case .invalidCells:
-                return "Invalid cells. Expected a dictionary of Strings to Int or Double"
+                "Invalid cells. Expected a dictionary of Strings to Int or Double"
             }
         }
     }
