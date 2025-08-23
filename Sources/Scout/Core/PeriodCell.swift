@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-struct PeriodCell<T: MatrixValue> {
+struct PeriodCell<T: MatrixValue & AdditiveArithmetic> {
     let period: ActivityPeriod
     let day: Int
     let value: T
@@ -33,7 +33,7 @@ extension PeriodCell: CellInitializable {
     }
 }
 
-extension PeriodCell: Combining where T: AdditiveArithmetic {
+extension PeriodCell: Combining {
     func isDuplicate(of other: Self) -> Bool {
         period == other.period && day == other.day
     }

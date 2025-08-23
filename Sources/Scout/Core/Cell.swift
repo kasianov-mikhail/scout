@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Cell<T: MatrixValue & Hashable>: Hashable {
+struct Cell<T: MatrixValue & AdditiveArithmetic> {
     let row: Int
     let column: Int
     let value: T
@@ -35,7 +35,7 @@ extension Cell: CellInitializable {
     }
 }
 
-extension Cell: Combining where T: AdditiveArithmetic {
+extension Cell: Combining {
     func isDuplicate(of other: Cell<T>) -> Bool {
         row == other.row && column == other.column
     }
