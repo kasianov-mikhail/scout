@@ -8,30 +8,36 @@
 import CloudKit
 import CoreData
 
-/// A structure representing a synchronization group.
-///
-/// `SyncGroup` is used to group together Core Data objects and CloudKit records
-/// for the purpose of synchronizing data between a local Core Data context and a remote CloudKit database.
-///
-struct SyncGroup: MatrixGroup, @unchecked Sendable {
-
-    /// The record type of the synchronization
+struct SyncGroup: @unchecked Sendable {
     let recordType: String
-
-    /// The name of the synchronization group.
     let name: String
-
-    /// The date of the synchronization group.
     let date: Date
-
-    /// An array of objects that are part of the synchronization group.
     let objects: [Syncable]
-
-    /// A dictionary mapping field names to their corresponding count values.
     let fields: [String: Int]
 }
 
-// MARK: - CustomStringConvertible
+extension SyncGroup {
+    func newMatrix() -> CKRecord {
+        let matrix = CKRecord(recordType: recordType)
+        matrix["name"] = name
+        matrix["date"] = date
+        matrix["version"] = 1
+        return matrix
+    }
+
+    func matrix(in database: Database) async throws -> CKRecord {
+        let namePredicate = NSPredicate(format: "name == %@", name)
+        let datePredicate = NSPredicate(format: "date == %@", date as NSDate)
+        let predicate = NSCompoundPredicate(
+            type: .and,
+            subpredicates: [namePredicate, datePredicate]
+        )
+        let query = CKQuery(recordType: recordType, predicate: predicate)
+        let keys = fields.map { key, _ in key }
+        let allMatrices = try await database.allRecords(matching: query, desiredKeys: keys)
+        return allMatrices.randomElement() ?? newMatrix()
+    }
+}
 
 extension SyncGroup: CustomStringConvertible {
     var description: String {

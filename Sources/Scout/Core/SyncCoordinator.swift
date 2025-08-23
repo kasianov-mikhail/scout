@@ -10,7 +10,7 @@ import CloudKit
 @MainActor struct SyncCoordinator {
     let database: Database
     let maxRetry: Int
-    let group: MatrixGroup
+    let group: SyncGroup
 }
 
 extension SyncCoordinator {

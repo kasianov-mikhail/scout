@@ -14,23 +14,17 @@ import Testing
 private let recordType = "DateIntMatrix"
 
 @MainActor struct SyncCoordinatorTests {
-    struct TestGroup: MatrixGroup {
-        let recordType: String
-        let name: String
-        let date: Date
-        let fields: [String: Int]
-    }
-
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 
     let coordinator: SyncCoordinator
 
     init() throws {
-        let group = TestGroup(
+        let group = SyncGroup(
             recordType: recordType,
             name: "Test",
             date: Date(),
+            objects: [],
             fields: ["cell_01": 5, "cell_02": 10]
         )
 

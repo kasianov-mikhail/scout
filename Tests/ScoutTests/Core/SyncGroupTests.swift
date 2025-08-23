@@ -10,18 +10,12 @@ import CloudKit
 
 @testable import Scout
 
-struct MatrixGroupTests {
-    struct TestGroup: MatrixGroup {
-        let recordType: String
-        let name: String
-        let date: Date
-        let fields: [String: Int]
-    }
-
-    let group = TestGroup(
+struct SyncGroupTests {
+    let group = SyncGroup(
         recordType: "DateIntMatrix",
         name: "group_name",
         date: Date(),
+        objects: [],
         fields: ["foo": 1, "bar": 2]
     )
 
