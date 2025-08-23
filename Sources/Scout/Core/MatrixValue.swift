@@ -6,19 +6,19 @@
 // https://opensource.org/licenses/MIT.
 
 
-/// A protocol that defines the requirements for a matrix type.
+/// A protocol that defines the requirements for a matrix value.
 ///
 /// Conforming types must provide a static `recordName` property that specifies the
 /// name of the CloudKit record type used to store the matrix data.
 ///
-protocol MatrixType {
+protocol MatrixValue {
     static var recordName: String { get }
 }
 
-extension Int: MatrixType {
+extension Int: MatrixValue {
     static let recordName = "DateIntMatrix"
 }
 
-extension Double: MatrixType {
+extension Double: MatrixValue {
     static let recordName = "DateDoubleMatrix"
 }

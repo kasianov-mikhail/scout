@@ -39,9 +39,9 @@ protocol CellType {
 ///
 /// - Parameters:
 ///  - U: The type of cells in the matrix, which must conform to the `CellType` protocol.
-///  - The `Value` type of the cells must conform to the `MatrixType` protocol.
+///  - The `Value` type of the cells must conform to the `MatrixValue` protocol.
 ///
-struct Matrix<U: CellType & Combining> where U.Value: MatrixType {
+struct Matrix<U: CellType & Combining> where U.Value: MatrixValue {
 
     /// The date associated with the matrix.
     let date: Date

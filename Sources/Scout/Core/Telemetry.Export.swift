@@ -18,6 +18,7 @@ extension Telemetry {
         case recorder = "recorder"
         case timer = "timer"
 
+        /// Corresponding CloudKit record type for this telemetry kind.
         var recordType: String {
             switch self {
             case .counter, .timer:
