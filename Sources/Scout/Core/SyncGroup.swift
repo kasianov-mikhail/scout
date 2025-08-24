@@ -8,16 +8,18 @@
 import CloudKit
 import CoreData
 
-struct SyncGroup: @unchecked Sendable {
+typealias SyncValue = MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable
+
+struct SyncGroup<T: SyncValue>: @unchecked Sendable {
     let recordType: String
     let name: String
     let date: Date
     let objects: [Syncable]
-    let fields: [String: Int]
+    let fields: [String: T]
 }
 
 extension SyncGroup {
-    func newMatrix() -> Matrix<Cell<Int>> {
+    func newMatrix() -> Matrix<Cell<T>> {
         Matrix(
             date: date,
             name: name,
@@ -26,7 +28,7 @@ extension SyncGroup {
         )
     }
 
-    func matrix(in database: Database) async throws -> Matrix<Cell<Int>> {
+    func matrix(in database: Database) async throws -> Matrix<Cell<T>> {
         let namePredicate = NSPredicate(format: "name == %@", name)
         let datePredicate = NSPredicate(format: "date == %@", date as NSDate)
         let predicate = NSCompoundPredicate(type: .and, subpredicates: [namePredicate, datePredicate])

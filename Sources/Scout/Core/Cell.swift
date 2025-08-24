@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Cell<T: MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable> {
+struct Cell<T: SyncValue> {
     let row: Int
     let column: Int
     let value: T
