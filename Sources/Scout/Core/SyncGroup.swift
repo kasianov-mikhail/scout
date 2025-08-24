@@ -17,30 +17,40 @@ struct SyncGroup: @unchecked Sendable {
 }
 
 extension SyncGroup {
-    func newMatrix() -> CKRecord {
-        let matrix = CKRecord(recordType: recordType)
-        matrix["name"] = name
-        matrix["date"] = date
-        matrix["version"] = 1
-        return matrix
+    func newMatrix() -> Matrix<Cell<Int>> {
+        Matrix(
+            date: date,
+            name: name,
+            recordID: nil,
+            cells: fields.map(Cell.init)
+        )
     }
 
-    func matrix(in database: Database) async throws -> CKRecord {
+    func matrix(in database: Database) async throws -> Matrix<Cell<Int>> {
         let namePredicate = NSPredicate(format: "name == %@", name)
         let datePredicate = NSPredicate(format: "date == %@", date as NSDate)
-        let predicate = NSCompoundPredicate(
-            type: .and,
-            subpredicates: [namePredicate, datePredicate]
-        )
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [namePredicate, datePredicate])
         let query = CKQuery(recordType: recordType, predicate: predicate)
-        let keys = fields.map { key, _ in key }
-        let allMatrices = try await database.allRecords(matching: query, desiredKeys: keys)
-        return allMatrices.randomElement() ?? newMatrix()
+        let allMatrices = try await database.allRecords(matching: query, desiredKeys: nil)
+
+        if let randomRecord = allMatrices.randomElement() {
+            return try Matrix(record: randomRecord)
+        } else {
+            return newMatrix()
+        }
     }
 }
 
 extension SyncGroup: CustomStringConvertible {
     var description: String {
-        "SyncGroup(name: \(name), date: \(date), objects: \(objects.count), fields: \(fields), recordType: \(recordType)"
+        """
+        SyncGroup(
+          recordType: "\(recordType)",
+          name: "\(name)",
+          date: \(date),
+          objects: \(objects.count) items,
+          fields: \(fields)
+        )
+        """
     }
 }

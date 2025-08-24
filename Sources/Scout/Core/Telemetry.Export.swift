@@ -5,10 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-/// Export/import of `Telemetry` to stable string identifiers.
 extension Telemetry {
-
-    /// Stable string names used for serialization.
     enum Export: String, CaseIterable {
         case counter = "counter"
         case floatingCounter = "floating_counter"
@@ -18,7 +15,6 @@ extension Telemetry {
         case recorder = "recorder"
         case timer = "timer"
 
-        /// Corresponding CloudKit record type for this telemetry kind.
         var recordType: String {
             switch self {
             case .counter, .timer:
@@ -29,7 +25,6 @@ extension Telemetry {
         }
     }
 
-    /// Errors that can occur during import from string names.
     enum ExportError: Error, CustomStringConvertible {
         case invalidName
 
@@ -39,13 +34,6 @@ extension Telemetry {
         }
     }
 
-    /// Deserializes telemetry from an exported name and numeric value.
-    ///
-    /// - Parameters:
-    ///   - name: One of `Export` raw values.
-    ///   - value: Associated numeric payload.
-    /// - Throws: `ExportError.invalidName` if `name` is unknown.
-    ///
     init(name: String, value: Double) throws(ExportError) {
         guard let type = Export(rawValue: name) else {
             throw .invalidName
@@ -69,23 +57,22 @@ extension Telemetry {
         }
     }
 
-    /// Export identifier for this telemetry instance.
     var export: Export {
         switch self {
         case .counter:
-            return .counter
+            .counter
         case .floatingCounter:
-            return .floatingCounter
+            .floatingCounter
         case .meter(.set):
-            return .meterSet
+            .meterSet
         case .meter(.increment):
-            return .meterIncrement
+            .meterIncrement
         case .meter(.decrement):
-            return .meterDecrement
+            .meterDecrement
         case .recorder:
-            return .recorder
+            .recorder
         case .timer:
-            return .timer
+            .timer
         }
     }
 }
