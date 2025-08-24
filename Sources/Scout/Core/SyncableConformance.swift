@@ -8,15 +8,7 @@
 import CoreData
 
 extension EventObject: Syncable {
-
-    /// One batch of unsynced events sharing `(name, week)`, grouped by `hour`.
-    ///
-    /// Strategy:
-    /// - Seed = most recent unsynced event (via `fetchLimit = 1`).
-    /// - Batch key = `(name, week)` from seed.
-    /// - Fields = counts grouped by `hour` (for "DateIntMatrix").
-    ///
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
         let seedReq = NSFetchRequest<EventObject>(entityName: "EventObject")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -51,15 +43,7 @@ extension EventObject: Syncable {
 }
 
 extension SessionObject: Syncable {
-
-    /// One batch of unsynced sessions for a `week`, grouped by `date`.
-    ///
-    /// Strategy:
-    /// - Seed = most recent unsynced session.
-    /// - Batch key = `week`.
-    /// - Fields = counts grouped by `date` (for "DateIntMatrix").
-    ///
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
         let seedReq = SessionObject.fetchRequest()
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -87,15 +71,7 @@ extension SessionObject: Syncable {
 }
 
 extension UserActivity: Syncable {
-
-    /// One batch of unsynced activities for a `month`, mapped via `matrix` to (key, count).
-    ///
-    /// Strategy:
-    /// - Seed = most recent unsynced activity.
-    /// - Batch key = `month`.
-    /// - Fields = `"cell_<periodShort>_<dayIndex>" -> count` (for "PeriodMatrix").
-    ///
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
         let seedReq = UserActivity.fetchRequest()
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -143,15 +119,7 @@ extension UserActivity: Syncable {
 }
 
 extension MetricsObject: Syncable {
-
-    /// One batch of unsynced metrics sharing `(name, telemetry, week)`, grouped by `hour` with `Double` payloads.
-    ///
-    /// Strategy:
-    /// - Seed = most recent unsynced metrics row.
-    /// - Batch key = `(name, telemetry, week)`.
-    /// - Fields = counts grouped by `hour` (for "DateDoubleMatrix").
-    ///
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Double>? {
         let seedReq = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -187,7 +155,7 @@ extension MetricsObject: Syncable {
             name: "\(name)_\(telemetryValue)",
             date: week,
             objects: rows,
-            fields: rows.grouped(by: \.hour)
+            fields: [:]// rows.grouped(by: \.hour)
         )
     }
 }
