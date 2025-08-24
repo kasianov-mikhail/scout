@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CloudKit
 
-struct Cell<T: MatrixValue & AdditiveArithmetic> {
+struct Cell<T: MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable> {
     let row: Int
     let column: Int
     let value: T
@@ -32,6 +32,12 @@ extension Cell: CellInitializable {
         self.row = row
         self.column = column
         self.value = value
+    }
+}
+
+extension Cell: CellRepresentable {
+    var key: String {
+        "cell_\(row)_\(column)"
     }
 }
 

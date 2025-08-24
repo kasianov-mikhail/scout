@@ -16,34 +16,19 @@ import CloudKit
 extension SyncCoordinator {
     func upload() async throws {
         let matrix = try await group.matrix(in: database)
-
-        try await upload(matrix: matrix)
-    }
-
-    fileprivate func upload(matrix: CKRecord) async throws {
         try await upload(matrix: matrix, retry: 1)
     }
 
-    fileprivate func upload(matrix: CKRecord, retry: Int) async throws {
-        matrix.merge(with: group.fields)
-
+    private func upload(matrix: Matrix<Cell<Int>>, retry: Int) async throws {
         do {
-            try await database.save(matrix)
+            try await database.save(matrix.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
             if retry > maxRetry {
-                try await upload(matrix: group.newMatrix())
-            } else if let serverMatrix = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
-                try await upload(matrix: serverMatrix, retry: retry + 1)
+                try await upload(matrix: group.newMatrix(), retry: 1)
+            } else if let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
+                let serverMatrix = try Matrix<Cell<Int>>(record: serverRecord)
+                try await upload(matrix: serverMatrix + matrix, retry: retry + 1)
             }
-        }
-    }
-}
-
-extension CKRecord {
-    func merge(with fields: [String: Int]) {
-        for (field, count) in fields {
-            let oldCount: Int = self[field] ?? 0
-            self[field] = oldCount + count
         }
     }
 }

@@ -7,15 +7,23 @@
 
 import CloudKit
 
+typealias CellPersistable = CellRepresentable & CellInitializable
+
+protocol CellRepresentable {
+    associatedtype Value: MatrixValue & CKRecordValueProtocol
+    var key: String { get }
+    var value: Value { get }
+}
+
 protocol CellInitializable {
     associatedtype Value: MatrixValue
     init(key: String, value: Value) throws
 }
 
-struct Matrix<T: CellInitializable & Combining> {
+struct Matrix<T: CellPersistable & Combining & Sendable> {
     let date: Date
     let name: String
-    let recordID: CKRecord.ID
+    let recordID: CKRecord.ID?
     let cells: [T]
 }
 
@@ -87,6 +95,18 @@ extension Matrix: CKInitializable {
         }
 
         self.cells = try cellDict.map(T.init)
+    }
+}
+
+extension Matrix: CKRepresentable {
+    var toRecord: CKRecord {
+        let record = CKRecord(recordType: "DateIntMatrix")
+        record["date"] = date
+        record["name"] = name
+        for cell in cells {
+            record[cell.key] = cell.value
+        }
+        return record
     }
 }
 
