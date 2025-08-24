@@ -44,13 +44,7 @@ extension PeriodCell: Combining {
         period == other.period && day == other.day
     }
 
-    static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs + rhs
-    }
-
     static func + (lhs: PeriodCell, rhs: PeriodCell) -> PeriodCell {
-
-        // Ensure that the activity period and day match
         assert(lhs.period == rhs.period, "Cannot combine different periods")
         assert(lhs.day == rhs.day, "Cannot combine different days")
 

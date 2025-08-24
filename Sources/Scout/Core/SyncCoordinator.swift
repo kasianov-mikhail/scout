@@ -11,9 +11,7 @@ import CloudKit
     let database: Database
     let maxRetry: Int
     let group: SyncGroup
-}
 
-extension SyncCoordinator {
     func upload() async throws {
         let matrix = try await group.matrix(in: database)
         try await upload(matrix: matrix, retry: 1)

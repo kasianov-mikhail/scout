@@ -7,8 +7,6 @@
 
 import CloudKit
 
-typealias CellPersistable = CellRepresentable & CellInitializable
-
 protocol CellRepresentable {
     associatedtype Value: MatrixValue & CKRecordValueProtocol
     var key: String { get }
@@ -19,6 +17,8 @@ protocol CellInitializable {
     associatedtype Value: MatrixValue
     init(key: String, value: Value) throws
 }
+
+typealias CellPersistable = CellRepresentable & CellInitializable
 
 struct Matrix<T: CellPersistable & Combining & Sendable> {
     let date: Date
@@ -32,13 +32,7 @@ extension Matrix: Combining {
         date == other.date && name == other.name
     }
 
-    static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs + rhs
-    }
-
     static func + (lhs: Self, rhs: Self) -> Self {
-
-        // Ensure the matrices have the same date and name.
         assert(lhs.date == rhs.date, "Dates must match")
         assert(lhs.name == rhs.name, "Names must match")
 

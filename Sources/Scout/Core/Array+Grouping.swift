@@ -8,15 +8,6 @@
 import Foundation
 
 extension Array {
-
-    /// Groups the elements of the collection by a specified date key path and returns a dictionary
-    /// where the keys are strings representing the combination of the weekday and hour components
-    /// of the date, and the values are the counts of elements in each group.
-    ///
-    /// - Parameter keyPath: A key path to the date property of the elements.
-    /// - Returns: A dictionary where the keys are strings in the format `cell_<weekday>_<hour>`
-    ///   and the values are the counts of elements in each group.
-    ///
     func grouped(by keyPath: KeyPath<Element, Date?>) -> [String: Int] {
         Dictionary(grouping: self) {
             $0[keyPath: keyPath]

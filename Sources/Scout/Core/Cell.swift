@@ -20,11 +20,9 @@ extension Cell: CellInitializable {
         guard parts.count == 3 else {
             fatalError("Invalid key format")
         }
-
         guard let row = Int(parts[1]) else {
             fatalError("Invalid row index")
         }
-
         guard let column = Int(parts[2]) else {
             fatalError("Invalid column index")
         }
@@ -46,13 +44,7 @@ extension Cell: Combining {
         row == other.row && column == other.column
     }
 
-    static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs + rhs
-    }
-
     static func + (lhs: Self, rhs: Self) -> Self {
-
-        // Ensure that the row and column indices match
         assert(lhs.row == rhs.row, "Row indices must match")
         assert(lhs.column == rhs.column, "Column indices must match")
 
