@@ -8,7 +8,8 @@
 import CloudKit
 
 /// A class that represents a statistical data fetcher and manager.
-@MainActor class StatProvider: ObservableObject {
+@MainActor
+class StatProvider: ObservableObject {
 
     /// The name of the event for which the statistics are being fetched.
     let eventName: String

@@ -13,7 +13,8 @@ import Testing
 
 private let recordType = "DateIntMatrix"
 
-@MainActor struct SyncCoordinatorTests {
+@MainActor
+struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 

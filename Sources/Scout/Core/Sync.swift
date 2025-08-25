@@ -7,19 +7,18 @@
 
 import CloudKit
 
-public func sync(in container: CKContainer?) async throws {
+func sync(in container: CKContainer?) async throws {
     guard let container else {
         throw SyncError.containerNotFound
     }
     guard try await container.accountStatus() == .available else {
         throw SyncError.notLoggedIn
     }
-
     try await SyncDriver(
         database: container.publicCloudDatabase,
         context: persistentContainer.viewContext
     )
-    .execute()
+    .send()
 }
 
 enum SyncError: Error {

@@ -9,7 +9,6 @@ import Foundation
 import Metrics
 
 final class CKTelemetryHandler: NSObject {
-
     let label: String
     let dimensions: [(String, String)]
 

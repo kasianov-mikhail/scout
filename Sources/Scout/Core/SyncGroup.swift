@@ -25,14 +25,14 @@ struct SyncGroup<T: SyncValue>: @unchecked Sendable {
     }
 
     func matrix(in database: Database) async throws -> Matrix<Cell<T>> {
-        let namePredicate = NSPredicate(format: "name == %@", name)
-        let datePredicate = NSPredicate(format: "date == %@", date as NSDate)
-        let predicate = NSCompoundPredicate(type: .and, subpredicates: [namePredicate, datePredicate])
+        let name = NSPredicate(format: "name == %@", name)
+        let date = NSPredicate(format: "date == %@", date as NSDate)
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date])
         let query = CKQuery(recordType: recordType, predicate: predicate)
-        let allMatrices = try await database.allRecords(matching: query, desiredKeys: nil)
+        let matrices = try await database.allRecords(matching: query, desiredKeys: nil)
 
-        if let randomRecord = allMatrices.randomElement() {
-            return try Matrix(record: randomRecord)
+        if let record = matrices.randomElement() {
+            return try Matrix(record: record)
         } else {
             return newMatrix()
         }

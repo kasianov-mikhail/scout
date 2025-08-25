@@ -10,7 +10,8 @@ import Foundation
 import SwiftUI
 
 /// A class responsible for fetching and managing events from CloudKit.
-@MainActor class EventProvider: ObservableObject {
+@MainActor
+class EventProvider: ObservableObject {
 
     /// The list of events fetched from CloudKit.
     @Published var events: [Event]?

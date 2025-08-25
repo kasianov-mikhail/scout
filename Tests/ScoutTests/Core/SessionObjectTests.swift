@@ -10,7 +10,8 @@ import Testing
 
 @testable import Scout
 
-@MainActor struct SessionObjectTests {
+@MainActor
+struct SessionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Session trigger") func testTrigger() throws {

@@ -11,7 +11,8 @@ import Testing
 
 @testable import Scout
 
-@MainActor @Test("Logging an event") func testLogEvent() throws {
+@MainActor
+@Test("Logging an event") func testLogEvent() throws {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date()
     let metadata: Logger.Metadata = ["key": .string("value")]

@@ -14,7 +14,7 @@ struct SyncDriver: @unchecked Sendable {
     let database: Database
     let context: NSManagedObjectContext
 
-    func execute() async throws {
+    func send() async throws {
         try await dispatcher.execute {
             let task = await UIApplication.shared.beginBackgroundTask()
 
@@ -25,10 +25,10 @@ struct SyncDriver: @unchecked Sendable {
             }
 
             let jobs = [
-                { try await sync(EventObject.self) },
-                { try await sync(SessionObject.self) },
-                { try await sync(UserActivity.self) },
-                { try await sync(MetricsObject.self) },
+                { try await send(type: EventObject.self) },
+                { try await send(type: SessionObject.self) },
+                { try await send(type: UserActivity.self) },
+                { try await send(type: MetricsObject.self) },
             ]
 
             for job in jobs.shuffled() {
@@ -38,7 +38,7 @@ struct SyncDriver: @unchecked Sendable {
     }
 
     @MainActor
-    func sync<T: Syncable>(_ syncable: T.Type, ) async throws {
+    func send<T: Syncable>(type syncable: T.Type) async throws {
         while let group = try syncable.group(in: context) {
             let coordinator = SyncCoordinator(
                 database: database,

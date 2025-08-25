@@ -16,7 +16,8 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 /// A provider class responsible for managing and fetching active user data.
 /// This class is an `ObservableObject` and is designed to be used in SwiftUI views.
 ///
-@MainActor class ActivityProvider: ObservableObject {
+@MainActor
+class ActivityProvider: ObservableObject {
 
     /// Published property containing the chart data for active users.
     @Published var data: ChartData<ActivityPeriod>?

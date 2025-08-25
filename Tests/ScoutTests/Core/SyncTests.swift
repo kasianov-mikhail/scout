@@ -11,7 +11,8 @@ import Testing
 
 @testable import Scout
 
-@MainActor class SyncTests {
+@MainActor
+class SyncTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 

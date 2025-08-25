@@ -8,7 +8,8 @@
 import UIKit
 
 extension NotificationListener {
-    @MainActor public static let activity = NotificationListener(table: [
+    @MainActor
+    static let activity = NotificationListener(table: [
         UIApplication.willEnterForegroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionObject.trigger)
             try await persistentContainer.performBackgroundTask(UserActivity.trigger)
@@ -18,6 +19,6 @@ extension NotificationListener {
             try await persistentContainer.performBackgroundTask(SessionObject.complete)
             try await persistentContainer.performBackgroundTask(UserActivity.trigger)
             try await sync(in: container)
-        }
+        },
     ])
 }

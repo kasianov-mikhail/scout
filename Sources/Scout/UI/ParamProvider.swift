@@ -8,7 +8,8 @@
 import CloudKit
 
 /// A class that provides parameters by fetching them from a CloudKit record.
-@MainActor class ParamProvider: ObservableObject {
+@MainActor
+class ParamProvider: ObservableObject {
 
     /// The ID of the CloudKit record from which parameters are fetched.
     let recordID: CKRecord.ID
