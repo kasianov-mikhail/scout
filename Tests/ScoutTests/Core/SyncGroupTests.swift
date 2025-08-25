@@ -16,7 +16,7 @@ struct SyncGroupTests {
         name: "group_name",
         date: Date(),
         objects: [],
-        fields: ["foo": 1, "bar": 2]
+        fields: ["cell_1_01": 1, "cell_1_02": 2]
     )
 
     @Test("Create a new matrix") func testNewMatrix() async throws {
@@ -32,6 +32,8 @@ struct SyncGroupTests {
         let record = CKRecord(recordType: "DateIntMatrix")
         record["name"] = group.name
         record["date"] = group.date
+        record["cell_1_01"] = 1
+        record["cell_1_02"] = 2
         database.records = [record]
 
         let matrix = try await group.matrix(in: database)
