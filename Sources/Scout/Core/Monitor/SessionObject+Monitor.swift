@@ -8,29 +8,13 @@
 import CoreData
 
 extension SessionObject {
-
-    /// Registers a new session object within the application.
-    ///
-    /// This method is responsible for initializing and registering a new session
-    /// within the application. It sets up necessary configurations and ensures
-    /// that the session is properly tracked and managed.
-    ///
     static func trigger(in context: NSManagedObjectContext) throws {
         let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
         let session = SessionObject(entity: entity, insertInto: context)
         session.date = Date()
         try context.save()
     }
-}
 
-// MARK: - Completion
-
-extension SessionObject {
-
-    /// An error that occurs when completing a session.
-    /// - sessionNotFound: The session to be completed was not found.
-    /// - alreadyCompleted: The session has already been completed.
-    ///
     enum CompleteError: LocalizedError, Equatable {
         case sessionNotFound
         case alreadyCompleted(Date)
@@ -56,9 +40,6 @@ extension SessionObject {
         }
     }
 
-    /// Completes the current session by performing necessary cleanup and finalization tasks.
-    /// This method should be called when the session is ready to be terminated.
-    ///
     static func complete(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]

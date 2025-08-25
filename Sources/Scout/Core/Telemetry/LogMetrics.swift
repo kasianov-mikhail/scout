@@ -7,14 +7,6 @@
 
 import CoreData
 
-/// Logs metrics in the background and then triggers sync.
-///
-/// - Parameters:
-///   - name: The name of the metric.
-///   - telemetry: The telemetry type associated with the metric.
-///   - intValue: An integer value for the metric (default is 0).
-///   - doubleValue: A double value for the metric (default is 0).
-///
 func logMetrics(
     _ name: String,
     telemetry: Telemetry.Export,
@@ -40,18 +32,6 @@ func logMetrics(
     }
 }
 
-/// Inserts metrics into the given Core Data context and saves.
-///
-/// - Parameters:
-///   - name: The name of the metric.
-///   - date: The date when the metric was recorded.
-///   - telemetry: The telemetry type associated with the metric.
-///   - intValue: An integer value for the metric.
-///   - doubleValue: A double value for the metric.
-///   - context: The Core Data context where the metric will be saved.
-///
-/// - Throws: An error if the insertion or saving fails.
-///
 func logMetrics(
     _ name: String,
     date: Date,

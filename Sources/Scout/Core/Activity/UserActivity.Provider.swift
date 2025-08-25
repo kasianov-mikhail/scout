@@ -24,7 +24,7 @@ extension UserActivity.Provider {
         var activities = try existing(in: context)
         var recent = activities.last?.day?.addingDay() ?? range.lowerBound
 
-        /// Fill in any missing activities
+        // Fill in any missing activities
         while recent < range.upperBound {
             let activity = newActivity(for: recent, in: context)
             activities.append(activity)
