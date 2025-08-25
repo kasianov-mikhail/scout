@@ -8,14 +8,7 @@
 import CloudKit
 import UIKit
 
-/// Adds a method `runner` to `CKDatabase`, which allows executing a closure with a configured
-/// instance of the database. Also defines a `RunnerError` enum to handle timeout errors.
-///
 extension CKDatabase {
-
-    /// Configures the `CKDatabase` with specified timeout intervals for requests and resources.
-    /// If the background time remaining is less than 15 seconds, it throws a timeout error.
-    ///
     func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
         guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
             throw RunnerError()
