@@ -12,21 +12,21 @@ import Testing
 @testable import Scout
 
 private let recordType = "DateIntMatrix"
+private let now = Date()
 
 @MainActor
 struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
-
     let coordinator: SyncCoordinator<Int>
 
     init() throws {
         let group = SyncGroup(
             recordType: recordType,
             name: "Test",
-            date: Date(),
+            date: now,
             objects: [],
-            fields: ["cell_01": 5, "cell_02": 10]
+            fields: ["cell_1_01": 5, "cell_2_02": 10]
         )
 
         coordinator = SyncCoordinator(
@@ -40,8 +40,8 @@ struct SyncCoordinatorTests {
         try await coordinator.upload()
 
         #expect(database.matrices.count == 1)
-        #expect(database.matrices.first?["cell_01"] == 5)
-        #expect(database.matrices.first?["cell_02"] == 10)
+        #expect(database.matrices.first?["cell_1_01"] == 5)
+        #expect(database.matrices.first?["cell_2_02"] == 10)
     }
 
     @Test("Test successful merge") func testMergeError() async throws {
@@ -50,8 +50,8 @@ struct SyncCoordinatorTests {
         try await coordinator.upload()
 
         #expect(database.matrices.count == 1)
-        #expect(database.matrices.first?["cell_01"] == 8)
-        #expect(database.matrices.first?["cell_02"] == 21)
+        #expect(database.matrices.first?["cell_1_01"] == 8)
+        #expect(database.matrices.first?["cell_2_02"] == 21)
     }
 
     @Test("Create a new matrix, if there are repeating merge errors") func testNewMatrix()
@@ -62,17 +62,17 @@ struct SyncCoordinatorTests {
         try await coordinator.upload()
 
         #expect(database.matrices.count == 1)
-        #expect(database.matrices.first?["cell_01"] == 5)
-        #expect(database.matrices.first?["cell_02"] == 10)
+        #expect(database.matrices.first?["cell_1_01"] == 5)
+        #expect(database.matrices.first?["cell_2_02"] == 10)
     }
 }
 
 private func createMergeError() -> Error {
     let serverMatrix = CKRecord(recordType: "DateIntMatrix")
     serverMatrix["name"] = "Test"
-    serverMatrix["date"] = Date()
-    serverMatrix["cell_01"] = 3
-    serverMatrix["cell_02"] = 11
+    serverMatrix["date"] = now
+    serverMatrix["cell_1_01"] = 3
+    serverMatrix["cell_2_02"] = 11
     return CKError(
         CKError.Code.serverRecordChanged,
         userInfo: [CKRecordChangedErrorServerRecordKey: serverMatrix]

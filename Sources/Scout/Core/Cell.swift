@@ -35,7 +35,7 @@ extension Cell: CellInitializable {
 
 extension Cell: CellRepresentable {
     var key: String {
-        "cell_\(row)_\(column)"
+        "cell_\(row)_\(String(format: "%02d", column))"
     }
 }
 
