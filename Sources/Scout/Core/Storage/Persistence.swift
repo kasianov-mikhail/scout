@@ -7,13 +7,6 @@
 
 import CoreData
 
-/// The persistent container for the application.
-///
-/// This container is created using the `newContainer(named:)` function, which attempts to locate
-/// the Core Data model file in the module's bundle and initializes a new `NSPersistentContainer` with it.
-///
-/// - Note: The persistent container is a singleton instance that is lazily initialized.
-///
 let persistentContainer: NSPersistentContainer = {
     let container = NSPersistentContainer.newContainer(named: "Scout")
 
@@ -26,22 +19,6 @@ let persistentContainer: NSPersistentContainer = {
 }()
 
 extension NSPersistentContainer {
-
-    /// Creates a new `NSPersistentContainer` with the specified name.
-    ///
-    /// This function attempts to locate the Core Data model file with the given name
-    /// in the module's bundle. If the model file is found, it creates an `NSManagedObjectModel`
-    /// from the file and uses it to initialize a new `NSPersistentContainer`.
-    ///
-    /// - Parameter name: The name of the Core Data model file (without the extension).
-    /// - Returns: A new `NSPersistentContainer` initialized with the specified model.
-    /// - Throws: A runtime error if the model file cannot be found or if the model cannot be created.
-    ///
-    /// Example usage:
-    /// ```
-    /// let container = NSPersistentContainer.newContainer(named: "Scout")
-    /// ```
-    ///
     static func newContainer(named name: String) -> NSPersistentContainer {
         guard let modelURL = Bundle.module.url(forResource: name, withExtension: "momd") else {
             fatalError("Failed to find data model")
