@@ -22,7 +22,7 @@ struct NotificationListenerTests {
 
     @Test("Failure setup") func testFailureSetup() async throws {
         let listener = NotificationListener(table: [:])
-        #expect(throws: NotificationListener.Error.alreadySetup) {
+        #expect(throws: NotificationListener.SetupError.self) {
             try listener.setup()
             try listener.setup()
         }

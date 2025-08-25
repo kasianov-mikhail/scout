@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Cell<T: SyncValue> {
+struct Cell<T: SyncValue>: Hashable {
     let row: Int
     let column: Int
     let value: T

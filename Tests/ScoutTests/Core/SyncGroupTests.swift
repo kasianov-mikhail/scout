@@ -22,8 +22,8 @@ struct SyncGroupTests {
     @Test("Create a new matrix") func testNewMatrix() async throws {
         let matrix = group.newMatrix()
 
-        #expect(group.name == matrix["name"])
-        #expect(group.date == matrix["date"])
+        #expect(group.name == matrix.name)
+        #expect(group.date == matrix.date)
     }
 
     @Test("Retrieve an existing matrix") func testMatrix() async throws {
@@ -36,7 +36,7 @@ struct SyncGroupTests {
 
         let matrix = try await group.matrix(in: database)
 
-        #expect(group.name == matrix["name"])
-        #expect(group.date == matrix["date"])
+        #expect(group.name == matrix.name)
+        #expect(group.date == matrix.date)
     }
 }

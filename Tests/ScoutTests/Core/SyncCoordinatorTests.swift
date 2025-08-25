@@ -18,7 +18,7 @@ struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 
-    let coordinator: SyncCoordinator
+    let coordinator: SyncCoordinator<Int>
 
     init() throws {
         let group = SyncGroup(

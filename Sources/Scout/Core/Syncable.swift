@@ -8,7 +8,7 @@
 import CloudKit
 import CoreData
 
-typealias SyncValue = MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable
+typealias SyncValue = MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable
 
 protocol Syncable: NSManagedObject {
     associatedtype Value: SyncValue
