@@ -13,7 +13,11 @@ struct PeriodCell<T: SyncValue> {
     let value: T
 }
 
-extension PeriodCell: CellInitializable {
+extension PeriodCell: CellPersistable {
+    var key: String {
+        "period_\(period.rawValue)_\(day)"
+    }
+
     init(key: String, value: T) throws {
         let parts = key.components(separatedBy: "_")
 
@@ -30,12 +34,6 @@ extension PeriodCell: CellInitializable {
         self.period = period
         self.day = day
         self.value = value
-    }
-}
-
-extension PeriodCell: CellRepresentable {
-    var key: String {
-        "period_\(period.rawValue)_\(day)"
     }
 }
 

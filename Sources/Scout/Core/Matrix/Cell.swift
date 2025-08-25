@@ -13,7 +13,11 @@ struct Cell<T: SyncValue>: Hashable {
     let value: T
 }
 
-extension Cell: CellInitializable {
+extension Cell: CellPersistable {
+    var key: String {
+        "cell_\(row)_\(String(format: "%02d", column))"
+    }
+
     init(key: String, value: T) {
         let parts = key.components(separatedBy: "_")
 
@@ -30,12 +34,6 @@ extension Cell: CellInitializable {
         self.row = row
         self.column = column
         self.value = value
-    }
-}
-
-extension Cell: CellRepresentable {
-    var key: String {
-        "cell_\(row)_\(String(format: "%02d", column))"
     }
 }
 
