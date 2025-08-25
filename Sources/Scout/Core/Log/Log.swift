@@ -9,22 +9,11 @@ import CloudKit
 import CoreData
 import Logging
 
-/// Logs an event with the specified name, level, metadata, and date.
-///
-/// This function creates a new `EventObject` instance, populates it with the provided
-/// information, and saves it to the Core Data context.
-///
-/// - Parameters:
-///   - name: The name of the event to log.
-///   - level: The log level of the event.
-///   - metadata: Additional metadata associated with the event.
-///   - date: The date and time when the event occurred.
-///   - context: The Core Data context where the event should be saved.
-///
-/// - Throws: An error if the event could not be saved to the context.
-///
 func log(
-    _ name: String, level: Logger.Level, metadata: Logger.Metadata?, date: Date,
+    _ name: String,
+    level: Logger.Level,
+    metadata: Logger.Metadata?,
+    date: Date,
     context: NSManagedObjectContext
 ) throws {
     let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
@@ -42,11 +31,7 @@ func log(
     try context.save()
 }
 
-// MARK: - Metadata
-
 extension Logger.MetadataValue {
-
-    /// Converts the metadata value to a string, if possible.
     fileprivate var stringValue: String? {
         switch self {
         case .string(let string):

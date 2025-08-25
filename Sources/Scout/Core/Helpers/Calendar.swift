@@ -8,14 +8,6 @@
 import Foundation
 
 extension Calendar {
-    
-    /// A static property that returns a Calendar instance configured for UTC.
-    ///
-    /// This property creates a Calendar with the ISO 8601 identifier, sets the first weekday to Sunday,
-    /// and configures the time zone to UTC.
-    ///
-    /// - Returns: A Calendar instance configured for UTC.
-    ///
     static var UTC: Calendar {
         var calendar = Calendar(identifier: .iso8601)
         calendar.firstWeekday = 1
