@@ -12,19 +12,19 @@ import Testing
 @testable import Scout
 
 @MainActor
-class SyncTests {
+class SyncDriverTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Sync with no groups") func testSyncNoGroups() async throws {
-        try await sync(syncables: [EventObject.self], database: database, context: context)
+        try await SyncDriver(database: database, context: context).send(type: EventObject.self)
         #expect(database.events.isEmpty)
     }
 
     @Test("Sync with one group") func testSyncOneGroup() async throws {
         createEvent(name: "event_name", in: context)
 
-        try await sync(syncables: [EventObject.self], database: database, context: context)
+        try await SyncDriver(database: database, context: context).send(type: EventObject.self)
 
         #expect(database.events.count == 1)
         #expect(database.events.first?["name"] == "event_name")
@@ -36,7 +36,7 @@ class SyncTests {
             createEvent(name: "event_name_\(i)", in: context)
         }
 
-        try await sync(syncables: [EventObject.self], database: database, context: context)
+        try await SyncDriver(database: database, context: context).send(type: EventObject.self)
 
         #expect(database.events.count == 3)
         for i in 1...3 {
@@ -44,17 +44,12 @@ class SyncTests {
         }
         #expect(context.registeredObjects.isEmpty)
     }
-
-    @discardableResult func createEvent(name: String, in context: NSManagedObjectContext)
-        -> EventObject
-    {
-        let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
-        let event = EventObject(entity: entity, insertInto: context)
-        event.name = name
-        event.date = Date()
-        event.level = EventLevel.info.rawValue
-
-        return event
-    }
 }
 
+private func createEvent(name: String, in context: NSManagedObjectContext) {
+    let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+    let event = EventObject(entity: entity, insertInto: context)
+    event.name = name
+    event.date = Date()
+    event.level = EventLevel.info.rawValue
+}
