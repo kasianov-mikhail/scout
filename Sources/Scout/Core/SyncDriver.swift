@@ -37,7 +37,8 @@ struct SyncDriver: @unchecked Sendable {
         }
     }
 
-    @MainActor func sync<T: Syncable>(_ syncable: T.Type, ) async throws {
+    @MainActor
+    func sync<T: Syncable>(_ syncable: T.Type, ) async throws {
         while let group = try syncable.group(in: context) {
             let coordinator = SyncCoordinator(
                 database: database,

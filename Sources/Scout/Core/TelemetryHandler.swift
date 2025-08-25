@@ -8,12 +8,6 @@
 import Foundation
 import Metrics
 
-/// A telemetry handler that logs metrics to the console.
-///
-/// This handler is used for debugging purposes and does not send data to any external service.
-/// It implements the `CounterHandler`, `FloatingPointCounterHandler`, and `TimerHandler`
-/// protocols to handle different types of metrics.
-///
 final class CKTelemetryHandler: NSObject {
 
     let label: String
