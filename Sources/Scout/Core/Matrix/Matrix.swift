@@ -7,19 +7,6 @@
 
 import CloudKit
 
-protocol CellRepresentable {
-    associatedtype Value: MatrixValue & CKRecordValueProtocol
-    var key: String { get }
-    var value: Value { get }
-}
-
-protocol CellInitializable {
-    associatedtype Value: MatrixValue
-    init(key: String, value: Value) throws
-}
-
-typealias CellPersistable = CellRepresentable & CellInitializable
-
 struct Matrix<T: CellPersistable & Combining & Sendable> {
     let date: Date
     let name: String
