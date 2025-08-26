@@ -14,7 +14,6 @@ protocol MatrixValue: Sendable {
 }
 
 extension Int: MatrixValue {
-    typealias Object = IntMetricsObject
     static let recordName = "DateIntMatrix"
 
     func toObject(in context: NSManagedObjectContext) -> IntMetricsObject {
@@ -26,7 +25,6 @@ extension Int: MatrixValue {
 }
 
 extension Double: MatrixValue {
-    typealias Object = DoubleMetricsObject
     static let recordName = "DateDoubleMatrix"
 
     func toObject(in context: NSManagedObjectContext) -> DoubleMetricsObject {
