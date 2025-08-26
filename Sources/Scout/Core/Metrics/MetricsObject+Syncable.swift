@@ -23,4 +23,3 @@ extension IntMetricsObject {
         Int(intValue)
     }
 }
-
