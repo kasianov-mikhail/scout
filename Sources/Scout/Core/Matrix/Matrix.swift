@@ -32,33 +32,30 @@ extension Matrix: Combining {
     }
 }
 
-extension Matrix: CKInitializable {
-    enum MapError: LocalizedError {
-        case missingDate
-        case missingName
-        case missingCells
-        case invalidCells
+enum MapError: LocalizedError {
+    case missingField(String)
+    case missingCells
+    case invalidCells
 
-        var errorDescription: String? {
-            switch self {
-            case .missingDate:
-                "Missing date field"
-            case .missingName:
-                "Missing name field"
-            case .missingCells:
-                "Missing cells"
-            case .invalidCells:
-                "Invalid cells. Expected a dictionary of Strings to Int or Double"
-            }
+    var errorDescription: String? {
+        switch self {
+        case .missingField(let field):
+            "Missing \(field) field"
+        case .missingCells:
+            "Missing cells"
+        case .invalidCells:
+            "Invalid cells. Expected a dictionary of Strings to Int or Double"
         }
     }
+}
 
+extension Matrix: CKInitializable {
     init(record: CKRecord) throws {
         guard let date = record["date"] as? Date else {
-            throw MapError.missingDate
+            throw MapError.missingField("date")
         }
         guard let name = record["name"] as? String else {
-            throw MapError.missingName
+            throw MapError.missingField("name")
         }
 
         self.date = date
