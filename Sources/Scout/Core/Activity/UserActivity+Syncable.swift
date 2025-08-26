@@ -32,7 +32,7 @@ extension UserActivity: Syncable {
             recordType: "PeriodMatrix",
             name: "ActiveUser",
             date: month,
-            objects: rows,
+            batch: rows,
             fields: Dictionary(uniqueKeysWithValues: rows.compactMap(\.matrix))
         )
     }

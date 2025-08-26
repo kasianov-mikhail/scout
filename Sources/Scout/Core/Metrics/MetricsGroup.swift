@@ -48,7 +48,7 @@ func metricsGroup<T: MatrixValue>(
         recordType: T.recordName,
         name: "\(name)_\(telemetry)",
         date: week,
-        objects: [],
+        batch: [],
         fields: fields
     )
 }

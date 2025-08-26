@@ -29,7 +29,7 @@ extension SessionObject: Syncable {
             recordType: "DateIntMatrix",
             name: "Session",
             date: week,
-            objects: rows,
+            batch: rows,
             fields: rows.grouped(by: \.date).mapValues(\.count)
         )
     }

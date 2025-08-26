@@ -49,14 +49,14 @@ struct SyncDriver: @unchecked Sendable {
 
             try await coordinator.upload()
 
-            if let objects = group.objects as? [CKRepresentable] {
+            if let objects = group.batch as? [CKRepresentable] {
                 try await database.modifyRecords(
                     saving: objects.map(\.toRecord),
                     deleting: []
                 )
             }
 
-            for object in group.objects {
+            for object in group.batch {
                 object.isSynced = true
             }
 

@@ -51,7 +51,7 @@ struct SyncableTests {
 
         #expect(group?.name == "event_name")
         #expect(group?.date == event1.week)
-        #expect(group?.objects.count == 2)
+        #expect(group?.batch.count == 2)
         #expect(group?.fields["cell_4_10"] == 1)
         #expect(group?.fields["cell_4_11"] == 1)
     }
@@ -72,7 +72,7 @@ struct SyncableTests {
 
         #expect(group?.name == "Session")
         #expect(group?.date == session1.week)
-        #expect(group?.objects.count == 2)
+        #expect(group?.batch.count == 2)
         #expect(group?.fields["cell_4_10"] == 1)
         #expect(group?.fields["cell_4_11"] == 1)
     }
@@ -99,7 +99,7 @@ struct SyncableTests {
 
         #expect(group?.name == "ActiveUser")
         #expect(group?.date == activity1.month)
-        #expect(group?.objects.count == 2)
+        #expect(group?.batch.count == 2)
         #expect(group?.fields["cell_d_01"] == 1)
         #expect(group?.fields["cell_w_02"] == 2)
     }

@@ -12,7 +12,7 @@ struct SyncGroup<T: SyncValue>: @unchecked Sendable {
     let recordType: String
     let name: String
     let date: Date
-    let objects: [any Syncable]
+    let batch: [any Syncable]
     let fields: [String: T]
 
     func newMatrix() -> Matrix<Cell<T>> {
@@ -46,7 +46,7 @@ extension SyncGroup: CustomStringConvertible {
           recordType: "\(recordType)",
           name: "\(name)",
           date: \(date),
-          objects: \(objects.count) items,
+          batch: \(batch.count) items,
           fields: \(fields)
         )
         """

@@ -36,7 +36,7 @@ extension EventObject: Syncable {
             recordType: "DateIntMatrix",
             name: name,
             date: week,
-            objects: rows,
+            batch: rows,
             fields: rows.grouped(by: \.hour).mapValues(\.count)
         )
     }
