@@ -30,7 +30,7 @@ extension SessionObject: Syncable {
             name: "Session",
             date: week,
             objects: rows,
-            fields: rows.grouped(by: \.date)
+            fields: rows.grouped(by: \.date).mapValues(\.count)
         )
     }
 }

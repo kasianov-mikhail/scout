@@ -37,7 +37,7 @@ extension EventObject: Syncable {
             name: name,
             date: week,
             objects: rows,
-            fields: rows.grouped(by: \.hour)
+            fields: rows.grouped(by: \.hour).mapValues(\.count)
         )
     }
 }

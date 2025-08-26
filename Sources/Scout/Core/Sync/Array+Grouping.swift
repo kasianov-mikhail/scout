@@ -8,7 +8,7 @@
 import Foundation
 
 extension Array {
-    func grouped(by keyPath: KeyPath<Element, Date?>) -> [String: Int] {
+    func grouped(by keyPath: KeyPath<Element, Date?>) -> [String: [Element]] {
         Dictionary(grouping: self) {
             $0[keyPath: keyPath]
         }
@@ -19,7 +19,7 @@ extension Array {
                 let components = ["cell", String(week), String(format: "%02d", hour)]
                 let joined = components.joined(separator: "_")
 
-                result[joined] = pair.value.count
+                result[joined] = pair.value
             }
         }
     }
