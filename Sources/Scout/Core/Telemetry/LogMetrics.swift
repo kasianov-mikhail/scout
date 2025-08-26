@@ -7,11 +7,10 @@
 
 import CoreData
 
-func logMetrics(
+func logMetrics<T: MatrixValue>(
     _ name: String,
     telemetry: Telemetry.Export,
-    intValue: Int64 = 0,
-    doubleValue: Double = 0,
+    value: T,
 ) {
     Task {
         do {
@@ -20,8 +19,7 @@ func logMetrics(
                     name,
                     date: Date(),
                     telemetry: telemetry,
-                    intValue: intValue,
-                    doubleValue: doubleValue,
+                    value: value,
                     context
                 )
             }
@@ -32,22 +30,16 @@ func logMetrics(
     }
 }
 
-func logMetrics(
+func logMetrics<T: MatrixValue>(
     _ name: String,
     date: Date,
     telemetry: Telemetry.Export,
-    intValue: Int64,
-    doubleValue: Double,
+    value: T,
     _ context: NSManagedObjectContext
 ) throws {
-    let entity = NSEntityDescription.entity(forEntityName: "MetricsObject", in: context)!
-
-    let metrics = MetricsObject(entity: entity, insertInto: context)
-    metrics.intValue = intValue
-    metrics.doubleValue = doubleValue
+    let metrics = value.toObject(in: context)
     metrics.telemetry = telemetry.rawValue
     metrics.date = date
     metrics.name = name
-
     try context.save()
 }
