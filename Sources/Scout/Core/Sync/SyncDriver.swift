@@ -28,7 +28,8 @@ struct SyncDriver: @unchecked Sendable {
                 { try await send(type: EventObject.self) },
                 { try await send(type: SessionObject.self) },
                 { try await send(type: UserActivity.self) },
-                { try await send(type: MetricsObject.self) },
+                { try await send(type: IntMetricsObject.self) },
+                { try await send(type: DoubleMetricsObject.self) },
             ]
 
             for job in jobs.shuffled() {

@@ -1,4 +1,3 @@
-//
 // Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
@@ -7,9 +6,9 @@
 
 import CoreData
 
-extension MetricsObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Double>? {
-        let seedReq = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
+extension IntMetricsObject: Syncable {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
+        let seedReq = NSFetchRequest<IntMetricsObject>(entityName: "IntMetricsObject")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
 
@@ -17,19 +16,19 @@ extension MetricsObject: Syncable {
             return nil
         }
         guard let name = seed.name else {
-            throw SyncableError.missingProperty(#keyPath(MetricsObject.name))
+            throw SyncableError.missingProperty("name")
         }
         guard let telemetryValue = seed.telemetry else {
-            throw SyncableError.missingProperty(#keyPath(MetricsObject.telemetry))
+            throw SyncableError.missingProperty("telemetry")
         }
         guard let telemetry = Telemetry.Export(rawValue: telemetryValue) else {
             throw Telemetry.ExportError.invalidName
         }
         guard let week = seed.week else {
-            throw SyncableError.missingProperty(#keyPath(MetricsObject.week))
+            throw SyncableError.missingProperty("week")
         }
 
-        let batchReq = NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
+        let batchReq = NSFetchRequest<MetricsObject>(entityName: "IntMetricsObject")
         batchReq.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
             name,
@@ -43,8 +42,50 @@ extension MetricsObject: Syncable {
             recordType: telemetry.recordType,
             name: "\(name)_\(telemetryValue)",
             date: week,
-            objects: rows,
-            fields: [:]  // rows.grouped(by: \.hour)
+            objects: [],
+            fields: ["cell_1_01": 5]  // rows.grouped(by: \.hour)
+        )
+    }
+}
+
+extension DoubleMetricsObject: Syncable {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Double>? {
+        let seedReq = NSFetchRequest<DoubleMetricsObject>(entityName: "DoubleMetricsObject")
+        seedReq.predicate = NSPredicate(format: "isSynced == false")
+        seedReq.fetchLimit = 1
+
+        guard let seed = try context.fetch(seedReq).first else {
+            return nil
+        }
+        guard let name = seed.name else {
+            throw SyncableError.missingProperty("name")
+        }
+        guard let telemetryValue = seed.telemetry else {
+            throw SyncableError.missingProperty("telemetry")
+        }
+        guard let telemetry = Telemetry.Export(rawValue: telemetryValue) else {
+            throw Telemetry.ExportError.invalidName
+        }
+        guard let week = seed.week else {
+            throw SyncableError.missingProperty("week")
+        }
+
+        let batchReq = NSFetchRequest<MetricsObject>(entityName: "DoubleMetricsObject")
+        batchReq.predicate = NSPredicate(
+            format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
+            name,
+            telemetryValue,
+            week as NSDate
+        )
+
+        let rows = try context.fetch(batchReq)
+
+        return SyncGroup(
+            recordType: telemetry.recordType,
+            name: "\(name)_\(telemetryValue)",
+            date: week,
+            objects: [],
+            fields: ["cell_1_01": 5]  // rows.grouped(by: \.hour)
         )
     }
 }
