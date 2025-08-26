@@ -28,7 +28,7 @@ extension IntMetricsObject: Syncable {
             throw SyncableError.missingProperty("week")
         }
 
-        let batchReq = NSFetchRequest<MetricsObject>(entityName: "IntMetricsObject")
+        let batchReq = NSFetchRequest<IntMetricsObject>(entityName: "IntMetricsObject")
         batchReq.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
             name,
@@ -43,7 +43,9 @@ extension IntMetricsObject: Syncable {
             name: "\(name)_\(telemetryValue)",
             date: week,
             objects: [],
-            fields: ["cell_1_01": 5]  // rows.grouped(by: \.hour)
+            fields: rows.grouped(by: \.hour).mapValues {
+                $0.reduce(0) { $0 + Int($1.intValue) }
+            }
         )
     }
 }
@@ -70,7 +72,7 @@ extension DoubleMetricsObject: Syncable {
             throw SyncableError.missingProperty("week")
         }
 
-        let batchReq = NSFetchRequest<MetricsObject>(entityName: "DoubleMetricsObject")
+        let batchReq = NSFetchRequest<DoubleMetricsObject>(entityName: "DoubleMetricsObject")
         batchReq.predicate = NSPredicate(
             format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
             name,
@@ -85,7 +87,9 @@ extension DoubleMetricsObject: Syncable {
             name: "\(name)_\(telemetryValue)",
             date: week,
             objects: [],
-            fields: ["cell_1_01": 5]  // rows.grouped(by: \.hour)
+            fields: rows.grouped(by: \.hour).mapValues {
+                $0.reduce(0) { $0 + $1.doubleValue }
+            }
         )
     }
 }
