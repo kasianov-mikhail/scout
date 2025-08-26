@@ -23,14 +23,15 @@ extension SessionObject: Syncable {
         let batchReq = SessionObject.fetchRequest()
         batchReq.predicate = NSPredicate(format: "isSynced == false AND week == %@", week as NSDate)
 
-        let rows = try context.fetch(batchReq)
+        let batch = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: "Session",
             date: week,
-            batch: rows,
-            fields: rows.grouped(by: \.date).mapValues(\.count)
+            representables: batch,
+            batch: batch,
+            fields: batch.grouped(by: \.date).mapValues(\.count)
         )
     }
 }

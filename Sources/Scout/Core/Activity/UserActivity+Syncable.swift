@@ -26,14 +26,15 @@ extension UserActivity: Syncable {
             month as NSDate
         )
 
-        let rows = try context.fetch(batchReq)
+        let batch = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "PeriodMatrix",
             name: "ActiveUser",
             date: month,
-            batch: rows,
-            fields: Dictionary(uniqueKeysWithValues: rows.compactMap(\.matrix))
+            representables: nil,
+            batch: batch,
+            fields: Dictionary(uniqueKeysWithValues: batch.compactMap(\.matrix))
         )
     }
 

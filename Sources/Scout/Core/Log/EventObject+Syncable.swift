@@ -30,14 +30,15 @@ extension EventObject: Syncable {
             week as NSDate
         )
 
-        let rows = try context.fetch(batchReq)
+        let batch = try context.fetch(batchReq)
 
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: name,
             date: week,
-            batch: rows,
-            fields: rows.grouped(by: \.hour).mapValues(\.count)
+            representables: batch,
+            batch: batch,
+            fields: batch.grouped(by: \.hour).mapValues(\.count)
         )
     }
 }

@@ -10,7 +10,7 @@ import CoreData
 func metricsGroup<T: MatrixValue>(
     in context: NSManagedObjectContext,
     valuePath: KeyPath<T.Object, T>
-) throws -> SyncGroup<T>? {
+) throws -> SyncGroup<T>? where T.Object: Syncable {
     let entityName = String(describing: T.Object.self)
 
     let seedReq = NSFetchRequest<T.Object>(entityName: entityName)
@@ -38,9 +38,9 @@ func metricsGroup<T: MatrixValue>(
         week as NSDate
     )
 
-    let batch = try context.fetch(batchReq).grouped(by: \.hour)
+    let batch = try context.fetch(batchReq)
 
-    let fields = batch.mapValues { items in
+    let fields = batch.grouped(by: \.hour).mapValues { items in
         items.reduce(T.zero) { $0 + $1[keyPath: valuePath] }
     }
 
@@ -48,7 +48,8 @@ func metricsGroup<T: MatrixValue>(
         recordType: T.recordName,
         name: "\(name)_\(telemetry)",
         date: week,
-        batch: [],
+        representables: nil,
+        batch: batch,
         fields: fields
     )
 }

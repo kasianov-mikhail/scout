@@ -12,9 +12,12 @@ struct SyncGroup<T: SyncValue>: @unchecked Sendable {
     let recordType: String
     let name: String
     let date: Date
+    let representables: [CKRepresentable]?
     let batch: [any Syncable]
     let fields: [String: T]
+}
 
+extension SyncGroup {
     func newMatrix() -> Matrix<Cell<T>> {
         Matrix(
             date: date,
