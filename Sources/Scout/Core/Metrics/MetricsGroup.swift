@@ -23,7 +23,7 @@ func metricsGroup<T: MatrixValue>(
     guard let name = seed.name else {
         throw SyncableError.missingProperty("name")
     }
-    guard let telemetryValue = seed.telemetry else {
+    guard let telemetry = seed.telemetry else {
         throw SyncableError.missingProperty("telemetry")
     }
     guard let week = seed.week else {
@@ -34,7 +34,7 @@ func metricsGroup<T: MatrixValue>(
     batchReq.predicate = NSPredicate(
         format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
         name,
-        telemetryValue,
+        telemetry,
         week as NSDate
     )
 
@@ -46,7 +46,7 @@ func metricsGroup<T: MatrixValue>(
 
     return SyncGroup(
         recordType: T.recordName,
-        name: "\(name)_\(telemetryValue)",
+        name: "\(name)_\(telemetry)",
         date: week,
         objects: [],
         fields: fields
