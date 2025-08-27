@@ -16,7 +16,7 @@ protocol Syncable: NSManagedObject {
     associatedtype Value: CellPersistable & Combining & Sendable
 
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Self>?
-    static func parse(of batch: [Self]) throws -> [Value]
+    static func parse(of batch: [Self]) -> [Value]
 
     var isSynced: Bool { get set }
 }

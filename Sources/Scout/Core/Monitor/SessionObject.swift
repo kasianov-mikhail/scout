@@ -34,7 +34,7 @@ final class SessionObject: NSManagedObject, Syncable {
         )
     }
 
-    static func parse(of batch: [SessionObject]) throws -> [Cell<Int>] {
+    static func parse(of batch: [SessionObject]) -> [Cell<Int>] {
         batch.grouped(by: \.date).mapValues(\.count).map(Cell.init)
     }
 }

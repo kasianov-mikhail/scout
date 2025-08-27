@@ -37,7 +37,7 @@ final class UserActivity: NSManagedObject, Syncable {
         )
     }
 
-    static func parse(of batch: [UserActivity]) throws -> [PeriodCell<Int>] {
+    static func parse(of batch: [UserActivity]) -> [PeriodCell<Int>] {
         batch.compactMap(\.matrix).mergeDuplicates()
     }
 

@@ -22,7 +22,7 @@ extension SyncGroup {
             date: date,
             name: name,
             recordID: CKRecord.ID(),
-            cells: try! T.parse(of: batch)
+            cells: T.parse(of: batch)
         )
     }
 

@@ -41,7 +41,7 @@ final class EventObject: TrackedObject, Syncable {
         )
     }
 
-    static func parse(of batch: [EventObject]) throws -> [Cell<Int>] {
+    static func parse(of batch: [EventObject]) -> [Cell<Int>] {
         batch.grouped(by: \.hour).mapValues(\.count).map(Cell.init)
     }
 }
