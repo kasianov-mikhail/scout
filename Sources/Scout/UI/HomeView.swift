@@ -36,8 +36,6 @@ public struct HomeView: View {
     }
 }
 
-// MARK: - Initializers
-
 extension HomeView {
 
     /// Creates a new analytics view. The main entry point for the analytics UI.
@@ -51,8 +49,6 @@ extension HomeView {
     }
 }
 
-// MARK: - Tint
-
 typealias Tint = Box<Color?>
 
 extension Tint {
@@ -60,8 +56,6 @@ extension Tint {
         self.init(nil)
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     HomeView()

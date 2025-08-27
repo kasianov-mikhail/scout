@@ -7,17 +7,8 @@
 
 import Foundation
 
-/// An enumeration of statistical periods used to analyze data.
-/// Each period represents a specific timeframe for the statistics being analyzed.
-///
-/// - Note: The period is used to group data points and visualize trends over time.
-///
 enum Period: String, Identifiable {
-
-    /// An array of all statistical periods. The same as 'CaseIterable.allCases', but as a constant.
     static let all = [Period.today, .yesterday, .week, .month, .year]
-
-    /// An array of all session-based statistical periods.
     static let sessions = [Period.week, .month, .year]
 
     case today
@@ -29,15 +20,7 @@ enum Period: String, Identifiable {
     var id: Self { self }
 }
 
-// MARK: - Title
-
 extension Period {
-
-    /// A human-readable title for each statistical period.
-    ///
-    /// This property is used to display the period in a user-friendly format,
-    /// making it easier for users to understand the timeframe being analyzed.
-    ///
     var title: String {
         switch self {
         case .today:
@@ -54,14 +37,7 @@ extension Period {
     }
 }
 
-// MARK: - Components
-
 extension Period: ChartCompatible {
-
-    /// A computed property that returns the date range for each statistical period.
-    /// This property is used to visualize data for a specific period,
-    /// providing a clear timeframe for the statistics being analyzed.
-    ///
     var range: Range<Date> {
         let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
 
@@ -73,9 +49,6 @@ extension Period: ChartCompatible {
         }
     }
 
-    /// The calendar component used to calculate the date range for each statistical period.
-    /// This property helps in determining the length of the date range for each period.
-    ///
     var rangeComponent: Calendar.Component {
         switch self {
         case .today, .yesterday:
@@ -89,9 +62,6 @@ extension Period: ChartCompatible {
         }
     }
 
-    /// The calendar component used to group data points within the statistical period.
-    /// This property helps in determining the granularity of the data points for each period.
-    ///
     var pointComponent: Calendar.Component {
         switch self {
         case .today, .yesterday:
@@ -103,8 +73,6 @@ extension Period: ChartCompatible {
         }
     }
 }
-
-// MARK: -
 
 extension Period: CustomStringConvertible {
     var description: String {

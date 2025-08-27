@@ -9,37 +9,18 @@ import CloudKit
 import Logging
 import SwiftUI
 
-/// A structure representing an event.
 struct Event: Identifiable {
-
-    /// The name of the event.
     let name: String
-
-    /// The logging level of the event, if applicable.
     let level: Logger.Level?
-
-    /// The date when the event occurred, if available.
     let date: Date?
-
-    /// The number of parameters associated with the event, if any.
     let paramCount: Int?
-
-    /// A unique identifier for the event, if available.
     let uuid: UUID?
-
-    /// The CloudKit record ID for the event.
     let id: CKRecord.ID
-
-    /// The unique identifier for the user associated with the event, if any.
     let userID: UUID?
-
-    /// The unique identifier for the session associated with the event, if any.
     let sessionID: UUID?
 }
 
 extension Event {
-
-    /// The desired keys to fetch from CloudKit when fetching events.
     static let desiredKeys = [
         "name",
         "level",
@@ -52,13 +33,10 @@ extension Event {
 }
 
 extension Event {
-
-    /// Initializes a new instance of `EventProvider` with the given results tuple.
     init(results: (CKRecord.ID, Result<CKRecord, Error>)) throws {
         try self.init(record: results.1.get())
     }
 
-    /// Initializes a new instance of the class with the provided CKRecord.
     init(record: CKRecord) throws {
         name = record["name"] ?? ""
         level = record["level"].flatMap { EventLevel(rawValue: $0) }
@@ -71,14 +49,9 @@ extension Event {
     }
 }
 
-// MARK: - EventLevel
-
-/// This can be used to categorize and filter log messages based on their severity or importance.
 typealias EventLevel = Logger.Level
 
 extension EventLevel {
-
-    /// A computed property that returns a string description for each case of the `EventLevel` enum.
     var description: String {
         switch self {
         case .notice:
@@ -98,10 +71,6 @@ extension EventLevel {
         }
     }
 
-    /// The color associated with the event level.
-    /// This property returns an optional `Color` value that represents the color
-    /// corresponding to the event level.
-    ///
     var color: Color? {
         switch self {
         case .notice, .debug, .trace, .info:
@@ -114,16 +83,6 @@ extension EventLevel {
     }
 }
 
-// MARK: - EventQuery
-
-/// A structure representing a filter for events.
-/// This can be used to filter events based on various criteria.
-///
-/// The `EventQuery` structure allows you to specify different criteria to filter events,
-/// such as event levels, text, name, date range, user ID, and session ID. It provides a method to
-/// generate an `NSPredicate` object based on the specified criteria, which can be used
-/// to filter events in a database or collection.
-///
 struct EventQuery {
     var levels = Set(EventLevel.allCases)
     var text = ""
@@ -132,7 +91,6 @@ struct EventQuery {
     var sessionID: UUID?
     var dates: Range<Date>?
 
-    /// Generates an `NSPredicate` object based on the current filter criteria.
     func buildPredicate() -> NSPredicate {
         var predicates: [NSPredicate] = []
 
@@ -162,8 +120,6 @@ struct EventQuery {
         return NSCompoundPredicate(type: .and, subpredicates: predicates)
     }
 }
-
-// MARK: -
 
 extension EventQuery: CustomStringConvertible {
     var description: String {

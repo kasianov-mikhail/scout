@@ -7,33 +7,18 @@
 
 import CloudKit
 
-/// A class that represents a statistical data fetcher and manager.
 @MainActor
 class StatProvider: ObservableObject {
-
-    /// The name of the event for which the statistics are being fetched.
     let eventName: String
-
-    /// The periods for which the statistics are fetched.
     let periods: [Period]
 
-    /// The statistical data fetched from the cloud, published to notify observers of changes.
     @Published var data: ChartData<Period>?
 
-    /// Initializes a new instance of `StatProvider` with the specified event name and periods.
     init(eventName: String, periods: [Period]) {
         self.eventName = eventName
         self.periods = periods
     }
 
-    /// Fetches data if needed from the provided database.
-    ///
-    /// This asynchronous function checks if the data needs to be fetched and performs the fetch operation
-    /// using the given `DatabaseController` instance.
-    ///
-    /// - Parameter database: The `DatabaseController` instance used to fetch the data.
-    /// - Returns: An asynchronous operation that fetches the data if needed.
-    ///
     func fetchIfNeeded(in database: DatabaseController) async {
         if data == nil {
             await fetch(in: database)
@@ -41,14 +26,7 @@ class StatProvider: ObservableObject {
     }
 }
 
-// MARK: - Fetching Data
-
 extension StatProvider {
-
-    /// Fetches data from the specified database asynchronously.
-    ///
-    /// - Parameter database: The `DatabaseController` instance from which to fetch data.
-    ///
     private func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).queryRange
 

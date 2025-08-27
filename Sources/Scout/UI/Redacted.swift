@@ -7,20 +7,6 @@
 
 import SwiftUI
 
-/// A view that displays a redacted text placeholder of a specified length.
-/// 
-/// The `Redacted` view is used to show a placeholder text with a specified number of spaces,
-/// which indicates that the actual content is not available or is being loaded.
-///
-/// - Parameters:
-///   - length: The number of spaces to display in the redacted text.
-/// 
-/// - Example:
-/// ```swift
-/// Redacted(length: 5)
-/// ```
-/// This will display a redacted placeholder with a length of 5 spaces.
-///
 struct Redacted: View {
     let length: Int
 
