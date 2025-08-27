@@ -8,10 +8,6 @@
 import CloudKit
 
 extension DatabaseController {
-
-    /// Sample data for use in Previews.
-    /// This data is used when the database is not available, such as in Previews or when running tests.
-    ///
     static let sampleData = {
         var data: [CKRecord] = []
 
@@ -32,7 +28,7 @@ extension DatabaseController {
             "Carrier": "AT&T",
             "BatteryLevel": "85%",
             "Orientation": "Portrait",
-            "ConnectionType": "4G"
+            "ConnectionType": "4G",
         ]
         let events: [CKRecord] = eventLevels.enumerated().map { index, event in
             let record = CKRecord(recordType: "Event", recordID: CKRecord.ID())
@@ -62,7 +58,7 @@ extension DatabaseController {
             }
             return record
         }
-                data.append(contentsOf: matrices)
+        data.append(contentsOf: matrices)
 
         return data
     }()
