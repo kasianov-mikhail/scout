@@ -8,26 +8,25 @@
 import CloudKit
 import CoreData
 
-struct SyncGroup<T: SyncValue>: @unchecked Sendable {
+struct SyncGroup<T: Syncable>: @unchecked Sendable {
     let recordType: String
     let name: String
     let date: Date
     let representables: [CKRepresentable]?
-    let batch: [any Syncable]
-    let fields: [String: T]
+    let batch: [T]
 }
 
 extension SyncGroup {
-    func newMatrix() -> Matrix<Cell<T>> {
+    func newMatrix() -> Matrix<T.Value> {
         Matrix(
             date: date,
             name: name,
             recordID: CKRecord.ID(),
-            cells: fields.map(Cell.init)
+            cells: try! T.parse(of: batch)
         )
     }
 
-    func matrix(in database: Database) async throws -> Matrix<Cell<T>> {
+    func matrix(in database: Database) async throws -> Matrix<T.Value> {
         let name = NSPredicate(format: "name == %@", name)
         let date = NSPredicate(format: "date == %@", date as NSDate)
         let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date])
@@ -50,7 +49,6 @@ extension SyncGroup: CustomStringConvertible {
           name: "\(name)",
           date: \(date),
           batch: \(batch.count) items,
-          fields: \(fields)
         )
         """
     }

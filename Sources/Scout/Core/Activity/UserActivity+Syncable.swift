@@ -7,8 +7,8 @@
 
 import CoreData
 
-extension UserActivity: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<PeriodCell<Int>>? {
+final class UserActivity: NSManagedObject, Syncable {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<UserActivity>? {
         let seedReq = UserActivity.fetchRequest()
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -28,14 +28,17 @@ extension UserActivity: Syncable {
 
         let batch = try context.fetch(batchReq)
 
-        return SyncGroup(
+        return SyncGroup<UserActivity>(
             recordType: "PeriodMatrix",
             name: "ActiveUser",
             date: month,
             representables: nil,
             batch: batch,
-            fields: Dictionary(uniqueKeysWithValues: batch.compactMap(\.matrix))
         )
+    }
+
+    static func parse(of batch: [UserActivity]) throws -> [PeriodCell<Int>] {
+        try Dictionary(uniqueKeysWithValues: batch.compactMap(\.matrix)).map(PeriodCell.init)
     }
 
     private var matrix: (String, Int)? {

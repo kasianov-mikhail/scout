@@ -6,15 +6,21 @@
 
 import CoreData
 
-extension DoubleMetricsObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Cell<Double>>? {
-        try metricsGroup(in: context, valuePath: \.doubleValue)
+final class DoubleMetricsObject: MetricsObject, Syncable {
+    static func parse(of batch: [DoubleMetricsObject]) throws -> [Cell<Double>] {
+        batch.grouped(by: \.hour).mapValues { items in
+            items.reduce(0) { $0 + $1.doubleValue }
+        }
+        .map(Cell.init)
     }
 }
 
-extension IntMetricsObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
-        try metricsGroup(in: context, valuePath: \.intValueCast)
+final class IntMetricsObject: MetricsObject, Syncable {
+    static func parse(of batch: [IntMetricsObject]) throws -> [Cell<Int>] {
+        batch.grouped(by: \.hour).mapValues { items in
+            items.reduce(0) { $0 + Int($1.intValue) }
+        }
+        .map(Cell.init)
     }
 }
 

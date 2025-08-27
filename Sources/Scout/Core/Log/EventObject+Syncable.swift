@@ -7,8 +7,8 @@
 
 import CoreData
 
-extension EventObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Cell<Int>>? {
+final class EventObject: TrackedObject, Syncable {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<EventObject>? {
         let seedReq = NSFetchRequest<EventObject>(entityName: "EventObject")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -37,8 +37,11 @@ extension EventObject: Syncable {
             name: name,
             date: week,
             representables: batch,
-            batch: batch,
-            fields: batch.grouped(by: \.hour).mapValues(\.count)
+            batch: batch
         )
+    }
+
+    static func parse(of batch: [EventObject]) throws -> [Cell<Int>] {
+        batch.grouped(by: \.hour).mapValues(\.count).map(Cell.init)
     }
 }

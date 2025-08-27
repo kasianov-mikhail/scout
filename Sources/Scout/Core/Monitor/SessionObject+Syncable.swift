@@ -7,8 +7,8 @@
 
 import CoreData
 
-extension SessionObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Cell<Int>>? {
+final class SessionObject: NSManagedObject, Syncable {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
         let seedReq = SessionObject.fetchRequest()
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
@@ -31,7 +31,10 @@ extension SessionObject: Syncable {
             date: week,
             representables: batch,
             batch: batch,
-            fields: batch.grouped(by: \.date).mapValues(\.count)
         )
+    }
+
+    static func parse(of batch: [SessionObject]) throws -> [Cell<Int>] {
+        batch.grouped(by: \.date).mapValues(\.count).map(Cell.init)
     }
 }

@@ -10,9 +10,14 @@ import CoreData
 
 typealias SyncValue = MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable
 
+//protocol SyncableSuper: NSManagedObject {}
+
 protocol Syncable: NSManagedObject {
-    associatedtype Value: SyncValue
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Value>?
+    associatedtype Value: CellPersistable & Combining & Sendable
+
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Self>?
+    static func parse(of batch: [Self]) throws -> [Value]
+
     var isSynced: Bool { get set }
 }
 

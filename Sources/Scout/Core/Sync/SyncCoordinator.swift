@@ -8,7 +8,7 @@
 import CloudKit
 
 @MainActor
-struct SyncCoordinator<T: SyncValue> {
+struct SyncCoordinator<T: Syncable> {
     let database: Database
     let maxRetry: Int
     let group: SyncGroup<T>
@@ -18,7 +18,7 @@ struct SyncCoordinator<T: SyncValue> {
         try await upload(matrix: matrix, retry: 1)
     }
 
-    func upload(matrix: Matrix<Cell<T>>, retry: Int) async throws {
+    func upload(matrix: Matrix<T.Value>, retry: Int) async throws {
         do {
             try await database.save(matrix.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
