@@ -8,7 +8,7 @@
 import CoreData
 
 extension UserActivity: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<PeriodCell<Int>>? {
         let seedReq = UserActivity.fetchRequest()
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1

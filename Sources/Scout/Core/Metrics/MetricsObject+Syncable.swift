@@ -7,7 +7,7 @@
 import CoreData
 
 extension DoubleMetricsObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Double>? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Cell<Double>>? {
         try metricsGroup(in: context, valuePath: \.doubleValue)
     }
 }

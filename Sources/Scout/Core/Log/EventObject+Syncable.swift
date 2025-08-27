@@ -8,7 +8,7 @@
 import CoreData
 
 extension EventObject: Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Int>? {
+    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Cell<Int>>? {
         let seedReq = NSFetchRequest<EventObject>(entityName: "EventObject")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1

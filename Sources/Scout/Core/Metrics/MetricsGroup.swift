@@ -10,7 +10,7 @@ import CoreData
 func metricsGroup<T: MatrixValue>(
     in context: NSManagedObjectContext,
     valuePath: KeyPath<T.Object, T>
-) throws -> SyncGroup<T>? where T.Object: Syncable {
+) throws -> SyncGroup<Cell<T>>? where T.Object: Syncable {
     let entityName = String(describing: T.Object.self)
 
     let seedReq = NSFetchRequest<T.Object>(entityName: entityName)
