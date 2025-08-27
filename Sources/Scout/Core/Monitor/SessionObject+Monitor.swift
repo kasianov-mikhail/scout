@@ -15,6 +15,27 @@ extension SessionObject {
         try context.save()
     }
 
+    static func complete(in context: NSManagedObjectContext) throws {
+        let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
+        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
+        request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
+        request.fetchLimit = 1
+
+        guard let session = try context.fetch(request).first else {
+            throw CompleteError.sessionNotFound
+        }
+
+        if let endDate = session.endDate {
+            throw CompleteError.alreadyCompleted(endDate)
+        }
+
+        let date = Date()
+        session.endDate = date
+        try context.save()
+    }
+}
+
+extension SessionObject {
     enum CompleteError: LocalizedError, Equatable {
         case sessionNotFound
         case alreadyCompleted(Date)
@@ -38,24 +59,5 @@ extension SessionObject {
                 return false
             }
         }
-    }
-
-    static func complete(in context: NSManagedObjectContext) throws {
-        let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
-        request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
-        request.fetchLimit = 1
-
-        guard let session = try context.fetch(request).first else {
-            throw CompleteError.sessionNotFound
-        }
-
-        if let endDate = session.endDate {
-            throw CompleteError.alreadyCompleted(endDate)
-        }
-
-        let date = Date()
-        session.endDate = date
-        try context.save()
     }
 }
