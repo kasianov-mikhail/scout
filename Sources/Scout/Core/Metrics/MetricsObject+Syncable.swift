@@ -23,9 +23,3 @@ final class IntMetricsObject: MetricsObject, Syncable {
         .map(Cell.init)
     }
 }
-
-extension IntMetricsObject {
-    fileprivate var intValueCast: Int {
-        Int(intValue)
-    }
-}

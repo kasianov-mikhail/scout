@@ -9,6 +9,7 @@ import CoreData
 
 protocol MatrixValue: Sendable {
     associatedtype Object: MetricsObject
+
     static var recordName: String { get }
     func toObject(in context: NSManagedObjectContext) -> Object
 }
