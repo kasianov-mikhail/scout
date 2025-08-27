@@ -10,7 +10,7 @@ import CloudKit
 struct Matrix<T: CellPersistable & Combining & Sendable> {
     let date: Date
     let name: String
-    let recordID: CKRecord.ID?
+    let recordID: CKRecord.ID
     let cells: [T]
 }
 
@@ -78,7 +78,7 @@ extension Matrix: CKInitializable {
 
 extension Matrix: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: "DateIntMatrix")
+        let record = CKRecord(recordType: T.Value.recordName, recordID: recordID)
         record["date"] = date
         record["name"] = name
         for cell in cells {

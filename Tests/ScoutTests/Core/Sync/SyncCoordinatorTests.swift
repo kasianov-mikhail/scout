@@ -25,6 +25,7 @@ struct SyncCoordinatorTests {
             recordType: recordType,
             name: "Test",
             date: now,
+            representables: nil,
             batch: [],
             fields: ["cell_1_01": 5, "cell_2_02": 10]
         )

@@ -22,7 +22,7 @@ extension SyncGroup {
         Matrix(
             date: date,
             name: name,
-            recordID: nil,
+            recordID: CKRecord.ID(),
             cells: fields.map(Cell.init)
         )
     }

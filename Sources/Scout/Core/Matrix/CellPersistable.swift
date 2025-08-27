@@ -7,15 +7,11 @@
 
 import CloudKit
 
-typealias CellPersistable = CellRepresentable & CellInitializable
-
-protocol CellRepresentable {
+protocol CellPersistable {
     associatedtype Value: MatrixValue & CKRecordValueProtocol
+
     var key: String { get }
     var value: Value { get }
-}
 
-protocol CellInitializable {
-    associatedtype Value: MatrixValue
     init(key: String, value: Value) throws
 }

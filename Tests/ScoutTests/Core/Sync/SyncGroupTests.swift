@@ -15,6 +15,7 @@ struct SyncGroupTests {
         recordType: "DateIntMatrix",
         name: "group_name",
         date: Date(),
+        representables: nil,
         batch: [],
         fields: ["cell_1_01": 1, "cell_1_02": 2]
     )
