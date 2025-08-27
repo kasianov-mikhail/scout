@@ -7,20 +7,23 @@
 
 import CoreData
 
-actor Dispatcher {
+typealias DispatchBlock = @Sendable () async throws -> Void
+
+protocol Dispatcher {
+    func execute(_ block: @escaping DispatchBlock) async rethrows
+}
+
+actor SkipDispatcher: Dispatcher {
     private var isRunning = false
 
-    func execute(_ block: @escaping () async throws -> Void) async rethrows {
+    func execute(_ block: @escaping DispatchBlock) async rethrows {
         guard !isRunning else {
             return
         }
-
         isRunning = true
-
         defer {
             isRunning = false
         }
-
         try await block()
     }
 }

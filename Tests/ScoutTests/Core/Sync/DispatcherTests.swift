@@ -14,7 +14,7 @@ struct DispatcherTests {
         case test
     }
 
-    let dispatcher = Dispatcher()
+    let dispatcher = SkipDispatcher()
 
     @Test("Doesn't execute concurrent blocks") func testNotExecuteConcurrentBlocks() async throws {
         await confirmation { confirmation in
