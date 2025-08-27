@@ -15,7 +15,7 @@ struct PeriodCell<T: SyncValue> {
 
 extension PeriodCell: CellPersistable {
     var key: String {
-        "period_\(period.rawValue)_\(day)"
+        "cell_\(period.rawValue)_\(String(format: "%02d", day + 1))"
     }
 
     init(key: String, value: T) throws {
