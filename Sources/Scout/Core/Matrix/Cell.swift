@@ -13,7 +13,7 @@ struct Cell<T: SyncValue>: Hashable {
     let value: T
 }
 
-extension Cell: CellPersistable {
+extension Cell: CellProtocol {
     var key: String {
         "cell_\(row)_\(String(format: "%02d", column))"
     }

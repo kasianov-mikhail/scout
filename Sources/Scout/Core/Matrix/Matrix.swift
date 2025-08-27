@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Matrix<T: CellPersistable & Combining & Sendable> {
+struct Matrix<T: CellProtocol & Combining & Sendable> {
     let date: Date
     let name: String
     let recordID: CKRecord.ID

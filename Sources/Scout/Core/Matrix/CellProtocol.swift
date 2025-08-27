@@ -7,7 +7,7 @@
 
 import CloudKit
 
-protocol CellPersistable {
+protocol CellProtocol {
     associatedtype Value: MatrixValue & CKRecordValueProtocol
 
     var key: String { get }

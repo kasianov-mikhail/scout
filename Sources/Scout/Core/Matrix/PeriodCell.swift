@@ -13,7 +13,7 @@ struct PeriodCell<T: SyncValue> {
     let value: T
 }
 
-extension PeriodCell: CellPersistable {
+extension PeriodCell: CellProtocol {
     var key: String {
         "cell_\(period.rawValue)_\(String(format: "%02d", day + 1))"
     }
