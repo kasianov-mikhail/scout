@@ -22,7 +22,6 @@ extension CKDatabase {
     }
 
     struct RunnerError: LocalizedError {
-        let errorDescription =
-            "The operation was aborted because the remaining background time is insufficient."
+        let errorDescription = "The operation was aborted because the remaining background time is insufficient."
     }
 }
