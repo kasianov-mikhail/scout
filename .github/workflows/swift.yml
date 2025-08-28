@@ -10,12 +10,12 @@ jobs:
   build-15:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Resolve dependencies
         run: swift package resolve
       - uses: sersoft-gmbh/xcodebuild-action@v3
         with:
           spm-package: .
           scheme: Scout
-          destination: platform=iOS Simulator,id=dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder,name=Any iOS Simulator Device
+          destination: platform=iOS,
           action: test
