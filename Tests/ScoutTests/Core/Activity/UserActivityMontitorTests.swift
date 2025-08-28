@@ -11,7 +11,8 @@ import Testing
 @testable import Scout
 
 @MainActor
-struct UserActivityTests {
+@Suite("UserActivity+Monitor")
+struct UserActivityMontitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Trigger") func trigger() async throws {
