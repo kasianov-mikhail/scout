@@ -17,5 +17,5 @@ jobs:
         with:
           spm-package: .
           scheme: Scout
-          destination: platform=iOS,
+          destination: platform=iOS
           action: test
