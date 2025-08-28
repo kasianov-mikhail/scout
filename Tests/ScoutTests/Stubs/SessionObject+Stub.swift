@@ -11,7 +11,6 @@ import CoreData
 
 extension SessionObject {
     @discardableResult static func stub(
-//        week: Date,
         date: Date,
         synced: Bool = false,
         endDate: Date? = nil,
