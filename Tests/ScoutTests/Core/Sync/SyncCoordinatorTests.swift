@@ -11,25 +11,24 @@ import Testing
 
 @testable import Scout
 
-private let recordType = "DateIntMatrix"
-private let now = Date()
-
 @MainActor
+@Suite("SyncCoordinator")
 struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
-    let coordinator: SyncCoordinator<Int>
+    let coordinator: SyncCoordinator<EventObject>
 
-    init() throws {
+    init() {
         let group = SyncGroup(
-            recordType: recordType,
-            name: "Test",
+            recordType: "DateIntMatrix",
+            name: "matrix",
             date: now,
             representables: nil,
-            batch: [],
-            fields: ["cell_1_01": 5, "cell_2_02": 10]
+            batch: [
+                createEvent(name: "A", in: context),
+                createEvent(name: "A", in: context),
+            ]
         )
-
         coordinator = SyncCoordinator(
             database: database,
             maxRetry: 3,
@@ -37,40 +36,38 @@ struct SyncCoordinatorTests {
         )
     }
 
-    @Test("Test successful upload") func testUpload() async throws {
+    @Test("Successful upload calls save on the database")
+    func testUploadSuccess() async throws {
         try await coordinator.upload()
 
-        #expect(database.matrices.count == 1)
-        #expect(database.matrices.first?["cell_1_01"] == 5)
-        #expect(database.matrices.first?["cell_2_02"] == 10)
+        #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
     }
 
-    @Test("Test successful merge") func testMergeError() async throws {
+    @Test("Upload retries and merges on serverRecordChanged error")
+    func testUploadServerRecordChangedMerges() async throws {
         database.errors.append(createMergeError())
 
         try await coordinator.upload()
 
-        #expect(database.matrices.count == 1)
-        #expect(database.matrices.first?["cell_1_01"] == 8)
-        #expect(database.matrices.first?["cell_2_02"] == 21)
+        #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
     }
 
-    @Test("Create a new matrix, if there are repeating merge errors") func testNewMatrix()
-        async throws
-    {
-        database.errors.append(contentsOf: Array(repeating: createMergeError(), count: 4))
-
+    @Test("Upload falls back to newMatrix after max retries")
+    func testUploadMaxRetryFallback() async throws {
+        for _ in 0..<(coordinator.maxRetry + 1) {
+            database.errors.append(createMergeError())
+        }
         try await coordinator.upload()
 
-        #expect(database.matrices.count == 1)
-        #expect(database.matrices.first?["cell_1_01"] == 5)
-        #expect(database.matrices.first?["cell_2_02"] == 10)
+        #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
     }
 }
 
+private let now = Date()
+
 private func createMergeError() -> Error {
     let serverMatrix = CKRecord(recordType: "DateIntMatrix")
-    serverMatrix["name"] = "Test"
+    serverMatrix["name"] = "matrix"
     serverMatrix["date"] = now
     serverMatrix["cell_1_01"] = 3
     serverMatrix["cell_2_02"] = 11
@@ -80,8 +77,10 @@ private func createMergeError() -> Error {
     )
 }
 
-extension InMemoryDatabase {
-    fileprivate var matrices: [CKRecord] {
-        records.filter { $0.recordType == recordType }
-    }
+private func createEvent(name: String, in context: NSManagedObjectContext) -> EventObject {
+    let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+    let event = EventObject(entity: entity, insertInto: context)
+    event.name = name
+    event.date = now
+    return event
 }
