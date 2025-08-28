@@ -1,5 +1,5 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -11,71 +11,41 @@ import Testing
 @testable import Scout
 
 @MainActor
+@Suite("SessionObject")
 struct SessionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
+    let date1 = Date(timeIntervalSince1970: 1_724_457_800)  // +200s
+    let date2 = Date(timeIntervalSince1970: 1_724_458_000)  // +400s
 
-    @Test("Session trigger") func testTrigger() throws {
-        try SessionObject.trigger(in: context)
+    @Test("group(in:) returns correct SyncGroup for matching unsynced sessions")
+    func testGroupIn() throws {
+        SessionObject.stub(date: date1, synced: false, in: context)
+        SessionObject.stub(date: date2, synced: false, in: context)
+        SessionObject.stub(date: date2, synced: true, in: context)
 
-        let fetchRequest: NSFetchRequest<SessionObject> = SessionObject.fetchRequest()
-        let sessions = try context.fetch(fetchRequest)
+        let group = try #require(try SessionObject.group(in: context))
 
-        #expect(sessions.count == 1)
-
-        let session = sessions[0]
-        #expect(session.date != nil)
-        #expect(session.endDate == nil)
+        #expect(group.batch.count == 2)
+        #expect(group.name == "Session")
+        #expect(group.recordType == "DateIntMatrix")
+        #expect(group.date == week)
+        #expect(group.batch.allSatisfy { !$0.isSynced && $0.week == week })
     }
 
-    @Test("Session complete") func testComplete() throws {
-        // First, trigger a session
-        try SessionObject.trigger(in: context)
+    @Test("parse(of:) produces correct Cell<Int> counts by date")
+    func testParseOf() throws {
+        let batch: [SessionObject] = [
+            .stub(date: week, synced: false, in: context),
+            .stub(date: week, synced: false, in: context),
+            .stub(date: week.addingHour(), synced: false, in: context),
+        ]
 
-        // Then, complete the session
-        try SessionObject.complete(in: context)
+        let cells = SessionObject.parse(of: batch)
 
-        let fetchRequest: NSFetchRequest<SessionObject> = SessionObject.fetchRequest()
-        let sessions = try context.fetch(fetchRequest)
-
-        #expect(sessions.count == 1)
-
-        let session = sessions[0]
-        #expect(session.endDate != nil)
-    }
-
-    @Test("Complete the most recent session") func testCompleteMostRecent() throws {
-        // First, trigger a session
-        try SessionObject.trigger(in: context)
-
-        // Then, trigger another session
-        try SessionObject.trigger(in: context)
-
-        // Then, complete the most recent session
-        try SessionObject.complete(in: context)
-
-        let fetchRequest: NSFetchRequest<SessionObject> = SessionObject.fetchRequest()
-        let sessions = try context.fetch(fetchRequest).sorted { $0.date! < $1.date! }
-
-        #expect(sessions.count == 2)
-        #expect(sessions[0].endDate == nil)
-        #expect(sessions[1].endDate != nil)
-    }
-
-    @Test("Complete with no active session") func testCompleteNoActiveSession() throws {
-        #expect(throws: SessionObject.CompleteError.sessionNotFound) {
-            try SessionObject.complete(in: context)
-        }
-    }
-
-    @Test("Complete an already completed session") func testCompleteAlreadyCompleted() throws {
-        // First, trigger a session
-        try SessionObject.trigger(in: context)
-
-        // Then, complete the session
-        try SessionObject.complete(in: context)
-
-        #expect(throws: SessionObject.CompleteError.alreadyCompleted(Date())) {
-            try SessionObject.complete(in: context)
-        }
+        #expect(cells.sorted() == [
+            Cell(row: 1, column: 0, value: 2),
+            Cell(row: 1, column: 1, value: 1),
+        ])
     }
 }

@@ -54,8 +54,18 @@ extension Cell: Combining {
     }
 }
 
+extension Cell: Comparable {
+    static func < (lhs: Cell<T>, rhs: Cell<T>) -> Bool {
+        if lhs.row == rhs.row {
+            return lhs.column < rhs.column
+        } else {
+            return lhs.row < rhs.row
+        }
+    }
+}
+
 extension Cell: CustomStringConvertible {
     var description: String {
-        "Cell(\(row), \(column), \(value)) of type \(T.self)"
+        "Cell(row: \(row), column: \(column), value: \(value))"
     }
 }
