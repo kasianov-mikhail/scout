@@ -7,6 +7,7 @@
 
 import CoreData
 
+@objc(SessionObject)
 final class SessionObject: NSManagedObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
         let seedReq = SessionObject.fetchRequest()

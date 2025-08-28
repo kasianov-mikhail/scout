@@ -7,6 +7,7 @@
 
 import CoreData
 
+@objc(UserActivity)
 final class UserActivity: NSManagedObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<UserActivity>? {
         let seedReq = UserActivity.fetchRequest()

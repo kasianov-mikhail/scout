@@ -10,10 +10,10 @@ import CoreData
 @testable import Scout
 
 extension EventObject {
-    static func stub(
+    @discardableResult static func stub(
         name: String,
         date: Date = Date(),
-        isSynced: Bool = false,
+        synced: Bool = false,
         in context: NSManagedObjectContext
     ) -> EventObject {
         let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
@@ -22,7 +22,7 @@ extension EventObject {
         event.name = name
         event.date = date
         event.eventID = UUID()
-        event.isSynced = isSynced
+        event.isSynced = synced
         event.userID = UUID()
         event.launchID = UUID()
         event.sessionID = UUID()
