@@ -17,5 +17,5 @@ jobs:
         with:
           spm-package: .
           scheme: Scout
-          destination: platform=iOS Simulator,name=Any iOS Simulator Device
+          destination: platform=iOS,id=dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder,name=Any iOS Device
           action: test
