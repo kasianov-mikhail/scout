@@ -19,14 +19,14 @@ struct SyncCoordinatorTests {
     let coordinator: SyncCoordinator<EventObject>
 
     init() {
-        let group = SyncGroup(
+        let group = SyncGroup<EventObject>(
             recordType: "DateIntMatrix",
             name: "matrix",
             date: now,
             representables: nil,
             batch: [
-                createEvent(name: "A", in: context),
-                createEvent(name: "A", in: context),
+                .stub(name: "A", in: context),
+                .stub(name: "A", in: context),
             ]
         )
         coordinator = SyncCoordinator(
@@ -65,22 +65,10 @@ struct SyncCoordinatorTests {
 
 private let now = Date()
 
-private func createMergeError() -> Error {
-    let serverMatrix = CKRecord(recordType: "DateIntMatrix")
-    serverMatrix["name"] = "matrix"
-    serverMatrix["date"] = now
-    serverMatrix["cell_1_01"] = 3
-    serverMatrix["cell_2_02"] = 11
+private func createMergeError() -> CKError {
+    let serverMatrix = CKRecord.matrixStub(date: now)
     return CKError(
         CKError.Code.serverRecordChanged,
         userInfo: [CKRecordChangedErrorServerRecordKey: serverMatrix]
     )
-}
-
-private func createEvent(name: String, in context: NSManagedObjectContext) -> EventObject {
-    let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
-    let event = EventObject(entity: entity, insertInto: context)
-    event.name = name
-    event.date = now
-    return event
 }

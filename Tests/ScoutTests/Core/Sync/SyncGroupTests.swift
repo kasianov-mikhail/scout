@@ -5,37 +5,41 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Testing
 import CloudKit
+import CoreData
+import Testing
 
 @testable import Scout
 
+@Suite("SyncGroup")
 struct SyncGroupTests {
-    let group = SyncGroup(
-        recordType: "DateIntMatrix",
-        name: "group_name",
-        date: Date(),
-        representables: nil,
-        batch: [],
-        fields: ["cell_1_01": 1, "cell_1_02": 2]
-    )
+    let database = InMemoryDatabase()
+    let context = NSManagedObjectContext.inMemoryContext()
+    let group: SyncGroup<EventObject>
+
+    init() {
+        group = SyncGroup<EventObject>(
+            recordType: "DateIntMatrix",
+            name: "group_name",
+            date: now,
+            representables: nil,
+            batch: [
+                .stub(name: "A", in: context),
+                .stub(name: "A", in: context),
+            ],
+        )
+    }
 
     @Test("Create a new matrix") func testNewMatrix() async throws {
         let matrix = group.newMatrix()
 
         #expect(group.name == matrix.name)
         #expect(group.date == matrix.date)
+        #expect(!matrix.cells.isEmpty)
     }
 
     @Test("Retrieve an existing matrix") func testMatrix() async throws {
-        let database = InMemoryDatabase()
-
-        let record = CKRecord(recordType: "DateIntMatrix")
-        record["name"] = group.name
-        record["date"] = group.date
-        record["cell_1_01"] = 1
-        record["cell_1_02"] = 2
-        database.records = [record]
+        database.records = [.matrixStub(name: group.name, date: group.date)]
 
         let matrix = try await group.matrix(in: database)
 
@@ -43,3 +47,5 @@ struct SyncGroupTests {
         #expect(group.date == matrix.date)
     }
 }
+
+private let now = Date()
