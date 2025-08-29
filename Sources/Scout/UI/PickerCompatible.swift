@@ -7,10 +7,7 @@
 
 import Foundation
 
-/// A protocol that defines the requirements for a type to be used in a period picker.
 protocol PickerCompatible: Hashable {
-
-    /// The title of the period. Should be short and suitable for display in a picker.
     var shortTitle: String { get }
 }
 

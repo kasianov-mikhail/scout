@@ -7,15 +7,28 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build-15:
+  ios-tests:
     runs-on: macos-15
+
     steps:
-      - uses: actions/checkout@v2
-      - name: Resolve dependencies
-        run: swift package resolve
-      - uses: sersoft-gmbh/xcodebuild-action@v3
+      - uses: actions/checkout@v4
+
+      - uses: maxim-lobanov/setup-xcode@v1
         with:
-          spm-package: .
-          scheme: Scout
-          destination: platform=iOS Simulator,name=iPhone 16
-          action: test
+          xcode-version: 16.2
+
+      - name: Install iOS platform runtime
+        run: sudo xcodebuild -downloadPlatform iOS
+
+      - name: Show available runtimes
+        run: |
+          xcrun simctl list runtimes
+          xcrun simctl list devices
+
+      - name: Run tests on iPhone 15 (latest iOS)
+        run: |
+          xcodebuild \
+            -scheme "Scout" \
+            -destination 'platform=iOS Simulator,OS=18.6,name=iPhone 16 Pro' \
+            -enableCodeCoverage YES \
+            test

@@ -7,30 +7,15 @@
 
 import Foundation
 
-/// A structure representing a filter for event items.
-/// This can be used to filter history records based on certain criteria.
-///
 struct HistoryFilter {
-
-    /// The name of the event.
     let name: String
-
-    /// The user ID.
     let userID: UUID
-
-    /// The session ID.
     let sessionID: UUID
-
-    /// The category to filter by.
     var category: Category
-
-    /// The option to filter by.
     var option = Option.event
 }
 
 extension HistoryFilter {
-
-    /// Initializes a new `HistoryFilter` instance with the given event and category.
     init?(event: Event, category: Category) {
         guard let userID = event.userID, let sessionID = event.sessionID else {
             return nil
@@ -43,11 +28,7 @@ extension HistoryFilter {
     }
 }
 
-// MARK: - Query Generation
-
 extension HistoryFilter {
-
-    /// Generates and returns an `EventQuery` object.
     func query() -> EventQuery {
         let name =
             switch option {
@@ -69,11 +50,7 @@ extension HistoryFilter {
     }
 }
 
-// MARK: - Models
-
 extension HistoryFilter {
-
-    /// An enumeration representing different categories in the history UI.
     enum Category: CaseIterable, Identifiable {
         case user, session
 
@@ -89,7 +66,6 @@ extension HistoryFilter {
         }
     }
 
-    /// An enumeration representing different options for history view.
     enum Option: Identifiable {
         case event, all
 
@@ -115,8 +91,6 @@ extension HistoryFilter {
         }
     }
 }
-
-// MARK: -
 
 extension HistoryFilter: CustomStringConvertible {
     var description: String {

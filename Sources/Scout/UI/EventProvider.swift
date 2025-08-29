@@ -9,24 +9,12 @@ import CloudKit
 import Foundation
 import SwiftUI
 
-/// A class responsible for fetching and managing events from CloudKit.
-@MainActor class EventProvider: ObservableObject {
-
-    /// The list of events fetched from CloudKit.
+@MainActor
+class EventProvider: ObservableObject {
     @Published var events: [Event]?
-
-    /// The cursor for fetching additional events.
     @Published var cursor: CKQueryOperation.Cursor?
-
-    /// The error that occurred while fetching events.
     @Published var message: Message?
 
-    /// Fetches events from CloudKit based on the provided filter.
-    ///
-    /// - Parameters:
-    ///   - filter: The filter criteria for fetching events.
-    ///   - container: The CloudKit container to fetch events from.
-    ///
     func fetch(for filter: EventQuery, in database: DatabaseController) async {
         do {
             let query = CKQuery(recordType: "Event", predicate: filter.buildPredicate())
@@ -44,12 +32,6 @@ import SwiftUI
         }
     }
 
-    /// Fetches more events from CloudKit using the provided cursor.
-    ///
-    /// - Parameters:
-    ///   - cursor: The cursor to continue fetching events from.
-    ///   - container: The CloudKit container to fetch events from.
-    ///
     func fetchMore(cursor: CKQueryOperation.Cursor, in database: DatabaseController) async {
         do {
             let results = try await database.records(

@@ -28,10 +28,6 @@ struct PeriodPicker<T: PickerCompatible & ChartCompatible>: View {
 }
 
 extension StatModel {
-
-    /// A Boolean value that indicates whether the current period is accented.
-    /// Accenting is used to highlight the current period in the picker using an asterisk.
-    ///
     fileprivate var isAccented: Bool {
         isRightEnabled
     }

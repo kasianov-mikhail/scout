@@ -8,48 +8,24 @@
 import CloudKit
 import SwiftUI
 
-/// A typealias for a matrix of period cells containing integer values.
-/// This is used to represent a grid of data points for a specific period.
-///
 typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 
-/// A provider class responsible for managing and fetching active user data.
-/// This class is an `ObservableObject` and is designed to be used in SwiftUI views.
-///
-@MainActor class ActivityProvider: ObservableObject {
-
-    /// Published property containing the chart data for active users.
+@MainActor
+class ActivityProvider: ObservableObject {
     @Published var data: ChartData<ActivityPeriod>?
 
-    /// Fetches data if it has not already been loaded.
-    /// - Parameter database: The `DatabaseController` instance used to fetch data.
-    ///
     func fetchIfNeeded(in database: DatabaseController) async {
         if data == nil {
             await fetch(in: database)
         }
     }
-}
-
-// MARK: - Fetching Data
-
-/// An extension of `ActivityProvider` that provides methods to fetch data from the database.
-///
-/// This extension includes methods to fetch active user data from the database and convert it
-/// into a format suitable for charting. It also includes a method to create a query for fetching
-/// the data based on a specified date range. The fetched data is stored in the `data` property
-/// of the `ActivityProvider` class.
-///
-extension ActivityProvider {
 
     private func fetch(in database: DatabaseController) async {
-        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
-        let tomorrow = today.addingDay()
-        let yearAgo = today.addingYear(-1).addingWeek(-1)
+        let range = Calendar(identifier: .iso8601).queryRange
 
         do {
             let records = try await database.allRecords(
-                matching: query(from: yearAgo, to: tomorrow),
+                matching: query(from: range.lowerBound, to: range.upperBound),
                 desiredKeys: nil
             )
 

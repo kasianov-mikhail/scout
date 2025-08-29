@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-/// A structure representing a message that can be displayed to the user.
-///
-/// Messages can have different levels of importance. Each level is associated with a specific color.
-///
 struct Message: Equatable {
     let text: String
     let level: Level
@@ -41,11 +37,7 @@ struct Message: Equatable {
     }
 }
 
-// MARK: - Modifiers
-
-/// Adds a message overlay to the view.
 extension View {
-
     func message(_ message: Binding<Message?>) -> some View {
         modifier(MessageView.Presenter(message: message))
     }
@@ -56,11 +48,6 @@ extension View {
 }
 
 extension Message {
-
-    /// A preference key that stores the message to be displayed.
-    ///
-    /// This key is used to pass the message up the view hierarchy.
-    ///
     struct Key: PreferenceKey {
         static let defaultValue: Message? = nil
 
@@ -70,14 +57,6 @@ extension Message {
     }
 }
 
-// MARK: - View
-
-/// A view that displays a message to the user.
-///
-/// The message is displayed as a banner at the top of the view.
-/// The message will automatically disappear after a set amount of time.
-/// The message can also be hidden manually by setting the message to `nil`.
-///
 struct MessageView: View {
     let text: String
     let level: Message.Level
@@ -100,7 +79,6 @@ struct MessageView: View {
             .padding(.horizontal)
     }
 
-    /// A view modifier that presents a message to the user.
     struct Presenter: ViewModifier {
         @Binding var message: Message?
         @State private var hideTask: Task<Void, Never>?
@@ -138,8 +116,6 @@ struct MessageView: View {
         }
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     ForEach(Message.Level.allCases, id: \.self) { level in
@@ -180,7 +156,6 @@ struct MessageView: View {
     .message($message)
 }
 
-/// A set of test messages for use in previews.
 extension Message.Level {
     fileprivate var text: String {
         "This is \(article) \(rawValue) message"

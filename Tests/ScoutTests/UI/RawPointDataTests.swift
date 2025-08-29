@@ -20,11 +20,13 @@ struct RawPointDataTests {
     @Test("Grouping by day") func testChartDataByDay() {
         let from = formatter.date(from: "2024-01-01 00:00:00")!
         let to = formatter.date(from: "2024-01-03 00:00:00")!
+        let range = from...to
+
         let points = [
             ChartPoint(date: formatter.date(from: "2024-01-01 12:00:00")!, count: 5),
             ChartPoint(date: formatter.date(from: "2024-01-02 12:00:00")!, count: 10)
         ]
-        let rawData = RawPointData(from: from, to: to, points: points)
+        let rawData = RawPointData(range: range, points: points)
 
         let grouped = rawData.group(by: .day)
 
@@ -34,11 +36,13 @@ struct RawPointDataTests {
     @Test("Grouping by hour") func testChartDataByHour() {
         let from = formatter.date(from: "2024-01-01 00:00:00")!
         let to = formatter.date(from: "2024-01-01 03:00:00")!
+        let range = from...to
+
         let points = [
             ChartPoint(date: formatter.date(from: "2024-01-01 01:00:00")!, count: 5),
             ChartPoint(date: formatter.date(from: "2024-01-01 02:00:00")!, count: 10)
         ]
-        let rawData = RawPointData(from: from, to: to, points: points)
+        let rawData = RawPointData(range: range, points: points)
 
         let grouped = rawData.group(by: .hour)
 
@@ -48,10 +52,12 @@ struct RawPointDataTests {
     @Test("Grouping no points") func testChartDataNoPoints() {
         let from = formatter.date(from: "2024-01-01 00:00:00")!
         let to = formatter.date(from: "2024-01-01 03:00:00")!
-        let points: [ChartPoint] = []
-        let series = RawPointData(from: from, to: to, points: points)
+        let range = from...to
 
-        let grouped = series.group(by: .hour)
+        let points: [ChartPoint] = []
+        let rawData = RawPointData(range: range, points: points)
+
+        let grouped = rawData.group(by: .hour)
 
         #expect(grouped.map(\.count) == [0, 0, 0])
     }

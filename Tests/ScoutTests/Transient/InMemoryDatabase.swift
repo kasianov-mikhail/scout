@@ -9,13 +9,6 @@ import CloudKit
 
 @testable import Scout
 
-/// An in-memory implementation of the `Database` protocol.
-/// This class provides a database that stores data in memory,
-/// which means that all data will be lost when the application terminates.
-///
-/// - Note: This class is intended for use in testing or scenarios where
-///         persistence is not required.
-///
 final class InMemoryDatabase: Database, @unchecked Sendable {
     var records: [CKRecord] = []
     var errors: [Error] = []

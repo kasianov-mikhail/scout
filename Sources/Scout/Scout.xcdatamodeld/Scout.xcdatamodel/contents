@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24D70" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="EventObject" representedClassName="EventObject" syncable="YES" codeGenerationType="class">
-        <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24295.2" systemVersion="25A5349a" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+    <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="category">
+        <attribute name="doubleValue" attributeType="Double" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="EventObject" representedClassName="EventObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="category">
         <attribute name="level" attributeType="String"/>
-        <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
-        <attribute name="name" attributeType="String"/>
         <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="params" optional="YES" attributeType="Binary"/>
-        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="SessionObject" representedClassName="SessionObject" syncable="YES" codeGenerationType="class">
+    <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="category">
+        <attribute name="intValue" attributeType="Integer 64" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="class">
+        <attribute name="telemetry" attributeType="String"/>
+    </entity>
+    <entity name="SessionObject" representedClassName="SessionObject" syncable="YES" codeGenerationType="category">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -28,7 +26,20 @@
         <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="UserActivity" representedClassName="UserActivity" syncable="YES" codeGenerationType="class">
+    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" syncable="YES" codeGenerationType="class">
+        <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="UserActivity" representedClassName="UserActivity" syncable="YES" codeGenerationType="category">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>

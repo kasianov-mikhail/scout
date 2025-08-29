@@ -7,17 +7,6 @@
 
 import SwiftUI
 
-/// A SwiftUI view that serves as a placeholder.
-/// 
-/// This view can be used to represent a temporary or empty state in the UI.
-/// 
-/// Example usage:
-/// ```swift
-/// Placeholder(text: "No results")
-/// ```
-///
-/// - Note: Customize this view to fit the specific needs of your application.
-///
 struct Placeholder: View {
     let text: String
 
