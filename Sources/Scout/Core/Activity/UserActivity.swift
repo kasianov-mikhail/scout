@@ -8,9 +8,9 @@
 import CoreData
 
 @objc(UserActivity)
-final class UserActivity: NSManagedObject, Syncable {
+final class UserActivity: DateObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<UserActivity>? {
-        let seedReq = UserActivity.fetchRequest()
+        let seedReq = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
         seedReq.fetchLimit = 1
 
@@ -21,7 +21,7 @@ final class UserActivity: NSManagedObject, Syncable {
             throw SyncableError.missingProperty(#keyPath(UserActivity.month))
         }
 
-        let batchReq = UserActivity.fetchRequest()
+        let batchReq = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         batchReq.predicate = NSPredicate(
             format: "isSynced == false AND month == %@",
             month as NSDate

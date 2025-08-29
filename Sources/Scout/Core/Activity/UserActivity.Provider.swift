@@ -35,7 +35,7 @@ extension UserActivity.Provider {
     }
 
     func existing(in context: NSManagedObjectContext) throws -> [UserActivity] {
-        let request = UserActivity.fetchRequest()
+        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
 
         request.sortDescriptors = [
             NSSortDescriptor(keyPath: \UserActivity.day, ascending: true)

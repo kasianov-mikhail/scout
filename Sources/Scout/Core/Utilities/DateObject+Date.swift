@@ -7,18 +7,11 @@
 
 import Foundation
 
-protocol DateModel: AnyObject {
-    var datePrimitive: Date? { set get }
-
-    var hour: Date? { set get }
-    var day: Date? { set get }
-    var week: Date? { set get }
-    var month: Date? { set get }
-}
-
-extension DateModel {
+extension DateObject {
     var date: Date? {
-        get { datePrimitive }
+        get {
+            datePrimitive
+        }
         set {
             datePrimitive = newValue
             hour = newValue?.startOfHour
@@ -27,9 +20,7 @@ extension DateModel {
             month = newValue?.startOfMonth
         }
     }
-}
 
-extension DateModel {
     var dateFields: [String: Date] {
         var fields: [String: Date] = [:]
         if let hour { fields["hour"] = hour }
@@ -39,9 +30,3 @@ extension DateModel {
         return fields
     }
 }
-
-extension TrackedObject: DateModel {}
-
-extension UserActivity: DateModel {}
-
-extension SessionObject: DateModel {}
