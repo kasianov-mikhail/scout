@@ -20,10 +20,10 @@ jobs:
       - name: Show eligible build destinations
         run: xcodebuild -showdestinations -scheme Scout
 
-      - name: Run tests on iPhone 15 (latest iOS)
+      - name: Run unit tests (iPhone 16 Pro, latest iOS)
         run: |
           xcodebuild \
             -scheme "Scout" \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro' \
+            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
             -enableCodeCoverage YES \
             test
