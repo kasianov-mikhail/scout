@@ -10,7 +10,7 @@ import CoreData
 func logMetrics<T: MatrixValue>(
     _ name: String,
     telemetry: Telemetry.Export,
-    value: T,
+    value: T
 ) {
     Task {
         do {
