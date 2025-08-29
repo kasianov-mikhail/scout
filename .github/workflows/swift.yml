@@ -38,7 +38,7 @@ jobs:
 
       - name: Export test summary with xcresulttool
         run: |
-          xcresulttool get --format json --path TestResults.xcresult > TestResults.json
+          xcrun xcresulttool get --format json --path TestResults.xcresult > TestResults.json
           jq '.actions._values[]?.testPlanRunSummaries._values[]?.testableSummaries._values[]?.tests._values[]?' TestResults.json || true
 
       - name: Upload xcresult bundle
