@@ -25,7 +25,7 @@ struct SyncGroupTests {
             representables: nil,
             batch: [
                 .stub(name: "A", in: context),
-                .stub(name: "A", in: context),
+                .stub(name: "A", in: context)
             ],
         )
     }
