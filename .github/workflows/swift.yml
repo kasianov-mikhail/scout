@@ -17,8 +17,8 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Show eligible build destinations for Earendil
-        run: xcodebuild -showdestinations -scheme Earendil
+      - name: Show eligible build destinations
+        run: xcodebuild -showdestinations -scheme Scout
 
       - name: Run tests on iPhone 15 (latest iOS)
         run: |
