@@ -26,7 +26,7 @@ struct SyncGroupTests {
             batch: [
                 .stub(name: "A", in: context),
                 .stub(name: "A", in: context)
-            ],
+            ]
         )
     }
 
