@@ -17,9 +17,6 @@ jobs:
         with:
           xcode-version: 16.2
 
-      - name: Install iOS platform runtime
-        run: sudo xcodebuild -downloadPlatform iOS
-
       - name: Show available runtimes
         run: |
           xcrun simctl list runtimes
