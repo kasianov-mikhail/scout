@@ -19,6 +19,7 @@ func log(
     let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
     let event = EventObject(entity: entity, insertInto: context)
 
+    event.eventID = UUID()
     event.date = date
     event.level = level.rawValue
     event.name = name

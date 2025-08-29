@@ -21,6 +21,7 @@ extension UserActivity {
         let entity = NSEntityDescription.entity(forEntityName: "UserActivity", in: context)!
         let activity = UserActivity(entity: entity, insertInto: context)
 
+        activity.userActivityID = UUID()
         activity.month = month
         activity.day = day
         activity.period = period.rawValue

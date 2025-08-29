@@ -45,31 +45,11 @@ extension UserDefaults {
     }
 }
 
-extension SessionObject {
+extension IDObject {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(SessionObject.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(SessionObject.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(SessionObject.launchID))
-    }
-}
-
-extension EventObject {
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(EventObject.eventID))
-        setPrimitiveValue(IDs.session, forKey: #keyPath(EventObject.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(EventObject.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(EventObject.launchID))
-    }
-}
-
-extension UserActivity {
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(UserActivity.userActivityID))
-        setPrimitiveValue(IDs.session, forKey: #keyPath(UserActivity.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(UserActivity.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(UserActivity.launchID))
+        setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))
+        setPrimitiveValue(IDs.user, forKey: #keyPath(IDObject.userID))
+        setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
     }
 }

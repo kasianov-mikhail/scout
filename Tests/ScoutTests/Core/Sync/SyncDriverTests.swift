@@ -49,6 +49,7 @@ class SyncDriverTests {
 private func createEvent(name: String, in context: NSManagedObjectContext, level: EventLevel = .info) {
     let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
     let event = EventObject(entity: entity, insertInto: context)
+    event.eventID = UUID()
     event.name = name
     event.date = Date()
     event.level = level.rawValue
