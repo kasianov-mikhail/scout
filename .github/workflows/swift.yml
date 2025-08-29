@@ -33,14 +33,13 @@ jobs:
             -scheme $SCHEME_NAME \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
             -enableCodeCoverage YES \
-            -resultBundlePath TestResults.xcresult \
+            -resultBundlePath TestResults \
             test
 
       - uses: kishikawakatsumi/xcresulttool@v1
-      - name: Export test summary with xcresulttool
-        run: |
-          xcresulttool get --format json --path TestResults.xcresult > TestResults.json
-          jq '.actions._values[]?.testPlanRunSummaries._values[]?.testableSummaries._values[]?.tests._values[]?' TestResults.json || true
+        with:
+          path: TestResults.xcresult
+        if: success() || failure()
 
       - name: Upload xcresult bundle
         uses: actions/upload-artifact@v4
