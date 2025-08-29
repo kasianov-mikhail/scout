@@ -36,9 +36,10 @@ jobs:
             -resultBundlePath TestResults.xcresult \
             test
 
+      - uses: kishikawakatsumi/xcresulttool@v1
       - name: Export test summary with xcresulttool
         run: |
-          xcrun xcresulttool get --format json --path TestResults.xcresult > TestResults.json
+          xcresulttool get --format json --path TestResults.xcresult > TestResults.json
           jq '.actions._values[]?.testPlanRunSummaries._values[]?.testableSummaries._values[]?.tests._values[]?' TestResults.json || true
 
       - name: Upload xcresult bundle
