@@ -8,12 +8,14 @@ on:
 
 jobs:
   ios-tests:
-    runs-on: macos-15
+    runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
       
       - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
 
       - name: Show eligible build destinations for Earendil
         run: xcodebuild -showdestinations -scheme Earendil
