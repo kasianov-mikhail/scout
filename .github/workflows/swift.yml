@@ -12,18 +12,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
+      
       - uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: 16.2
 
-      - name: Install iOS platform runtime
-        run: sudo xcodebuild -downloadPlatform iOS
-
-      - name: Show available runtimes
-        run: |
-          xcrun simctl list runtimes
-          xcrun simctl list devices
+      - name: Show eligible build destinations for Earendil
+        run: xcodebuild -showdestinations -scheme Earendil
 
       - name: Run tests on iPhone 15 (latest iOS)
         run: |
