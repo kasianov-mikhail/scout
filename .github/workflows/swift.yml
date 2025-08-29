@@ -8,27 +8,27 @@ on:
 
 jobs:
   ios-tests:
-    runs-on: macos-14
+    runs-on: macos-15
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: 16.2
 
       - name: Install iOS platform runtime
         run: sudo xcodebuild -downloadPlatform iOS
 
-      - name: Create simulator
+      - name: Show available runtimes
         run: |
-          RUNTIME=$(xcrun simctl list runtimes | awk -F '[()]' '/iOS 18.0/ {print $2; exit}')
-          DEVICE_TYPE="com.apple.CoreSimulator.SimDeviceType.iPhone-15"
-          xcrun simctl create "CI iPhone 15" "$DEVICE_TYPE" "$RUNTIME"
+          xcrun simctl list runtimes
+          xcrun simctl list devices
 
-      - name: Run unit tests on simulator
+      - name: Run tests on iPhone 15 (latest iOS)
         run: |
           xcodebuild \
             -scheme "Scout" \
-            -destination 'platform=iOS Simulator,name=CI iPhone 15' \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
             -enableCodeCoverage YES \
             test
