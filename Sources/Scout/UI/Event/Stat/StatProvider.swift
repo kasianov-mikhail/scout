@@ -8,9 +8,11 @@
 import CloudKit
 
 @MainActor
-class StatProvider: ObservableObject {
+class StatProvider: ObservableObject, DataProvider {
     let eventName: String
     let periods: [Period]
+    
+    typealias DataType = ChartData<Period>
 
     @Published var data: ChartData<Period>?
 
@@ -27,7 +29,7 @@ class StatProvider: ObservableObject {
 }
 
 extension StatProvider {
-    private func fetch(in database: DatabaseController) async {
+    func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).queryRange
 
         do {
@@ -47,7 +49,7 @@ extension StatProvider {
             })
 
         } catch {
-            print(error.localizedDescription)
+            error.logError()
             data = nil
         }
     }

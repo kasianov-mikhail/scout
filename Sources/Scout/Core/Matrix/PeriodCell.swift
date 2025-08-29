@@ -15,19 +15,16 @@ struct PeriodCell<T: SyncValue> {
 
 extension PeriodCell: CellProtocol {
     var key: String {
-        "cell_\(period.rawValue)_\(String(format: "%02d", day + 1))"
+        CellKeyParser.createKey(prefix: period.rawValue, suffix: String(format: "%02d", day + 1))
     }
 
     init(key: String, value: T) throws {
-        let parts = key.components(separatedBy: "_")
-
-        guard parts.count == 3 else {
-            fatalError("Invalid key format")
-        }
-        guard let period = ActivityPeriod(rawValue: String(parts[1])) else {
+        let (periodString, dayString) = CellKeyParser.parse(key: key)
+        
+        guard let period = ActivityPeriod(rawValue: periodString) else {
             fatalError("Invalid period")
         }
-        guard let day = Int(parts[2]) else {
+        guard let day = Int(dayString) else {
             fatalError("Invalid day")
         }
 

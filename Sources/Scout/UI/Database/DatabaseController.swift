@@ -33,24 +33,33 @@ extension DatabaseController {
 }
 
 extension DatabaseController {
-    func record(for recordID: CKRecord.ID) async throws -> CKRecord {
+    /// Helper to execute database operations with fallback to sample data
+    private func withDatabase<T>(
+        fallback: @autoclosure () -> T,
+        operation: (CKDatabase) async throws -> T
+    ) async throws -> T {
         guard let database else {
-            return DatabaseController.sampleData[0]
+            return fallback()
         }
-        return try await database.record(for: recordID)
+        return try await operation(database)
+    }
+    
+    func record(for recordID: CKRecord.ID) async throws -> CKRecord {
+        try await withDatabase(fallback: DatabaseController.sampleData[0]) { database in
+            try await database.record(for: recordID)
+        }
     }
 
     func allRecords(
         matching query: CKQuery,
         desiredKeys: [CKRecord.FieldKey]?
     ) async throws -> [CKRecord] {
-        guard let database else {
-            return DatabaseController.sampleData.filter { $0.recordType == query.recordType }
+        try await withDatabase(fallback: DatabaseController.sampleData.filter { $0.recordType == query.recordType }) { database in
+            try await database.allRecords(
+                matching: query,
+                desiredKeys: desiredKeys
+            )
         }
-        return try await database.allRecords(
-            matching: query,
-            desiredKeys: desiredKeys
-        )
     }
 }
 
@@ -62,25 +71,23 @@ extension DatabaseController {
         matching query: CKQuery,
         desiredKeys: [CKRecord.FieldKey]? = nil
     ) async throws -> CursorResult {
-        guard let database else {
-            return (DatabaseController.sampleDataResults, nil)
+        try await withDatabase(fallback: (DatabaseController.sampleDataResults, nil)) { database in
+            try await database.records(
+                matching: query,
+                desiredKeys: desiredKeys
+            )
         }
-        return try await database.records(
-            matching: query,
-            desiredKeys: desiredKeys
-        )
     }
 
     func records(
         continuingMatchFrom queryCursor: CKQueryOperation.Cursor,
         desiredKeys: [CKRecord.FieldKey]? = nil
     ) async throws -> CursorResult {
-        guard let database else {
-            return (DatabaseController.sampleDataResults, nil)
+        try await withDatabase(fallback: (DatabaseController.sampleDataResults, nil)) { database in
+            try await database.records(
+                continuingMatchFrom: queryCursor,
+                desiredKeys: desiredKeys
+            )
         }
-        return try await database.records(
-            continuingMatchFrom: queryCursor,
-            desiredKeys: desiredKeys
-        )
     }
 }

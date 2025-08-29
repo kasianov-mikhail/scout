@@ -28,7 +28,7 @@ class EventProvider: ObservableObject {
             self.cursor = results.queryCursor
             self.events = try results.matchResults.map(Event.init)
         } catch {
-            self.message = Message(error.localizedDescription, level: .error)
+            self.message = error.toMessage()
         }
     }
 
@@ -41,7 +41,7 @@ class EventProvider: ObservableObject {
             self.cursor = results.queryCursor
             self.events?.append(contentsOf: try results.matchResults.map(Event.init))
         } catch {
-            self.message = Message(error.localizedDescription, level: .error)
+            self.message = error.toMessage()
         }
     }
 }

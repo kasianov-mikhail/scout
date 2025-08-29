@@ -11,7 +11,9 @@ import SwiftUI
 typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 
 @MainActor
-class ActivityProvider: ObservableObject {
+class ActivityProvider: ObservableObject, DataProvider {
+    typealias DataType = ChartData<ActivityPeriod>
+    
     @Published var data: ChartData<ActivityPeriod>?
 
     func fetchIfNeeded(in database: DatabaseController) async {
@@ -20,7 +22,7 @@ class ActivityProvider: ObservableObject {
         }
     }
 
-    private func fetch(in database: DatabaseController) async {
+    func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).queryRange
 
         do {
@@ -50,7 +52,7 @@ class ActivityProvider: ObservableObject {
             data = Dictionary(uniqueKeysWithValues: periodPoints)
 
         } catch {
-            print("Error fetching active user data: \(error)")
+            error.logError()
             data = nil
         }
     }

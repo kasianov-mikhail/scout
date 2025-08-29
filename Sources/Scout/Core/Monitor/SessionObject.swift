@@ -10,9 +10,7 @@ import CoreData
 @objc(SessionObject)
 final class SessionObject: IDObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
-        let seedReq = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        seedReq.predicate = NSPredicate(format: "isSynced == false")
-        seedReq.fetchLimit = 1
+        let seedReq = CoreDataSyncGroupBuilder.createSeedRequest(for: SessionObject.self)
 
         guard let seed = try context.fetch(seedReq).first else {
             return nil
@@ -21,8 +19,8 @@ final class SessionObject: IDObject, Syncable {
             throw SyncableError.missingProperty(#keyPath(SessionObject.week))
         }
 
-        let batchReq = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        batchReq.predicate = NSPredicate(format: "isSynced == false AND week == %@", week as NSDate)
+        let additionalPredicate = NSPredicate(format: "week == %@", week as NSDate)
+        let batchReq = CoreDataSyncGroupBuilder.createBatchRequest(for: SessionObject.self, additionalPredicate: additionalPredicate)
 
         let batch = try context.fetch(batchReq)
 

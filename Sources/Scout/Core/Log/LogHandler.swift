@@ -47,7 +47,7 @@ struct CKLogHandler: LogHandler {
                 try await sync(in: container)
 
             } catch {
-                print(error.localizedDescription)
+                error.logError()
             }
         }
     }

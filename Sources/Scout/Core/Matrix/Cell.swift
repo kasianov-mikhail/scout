@@ -15,19 +15,16 @@ struct Cell<T: SyncValue>: Hashable {
 
 extension Cell: CellProtocol {
     var key: String {
-        "cell_\(row)_\(String(format: "%02d", column))"
+        CellKeyParser.createKey(prefix: "\(row)", suffix: String(format: "%02d", column))
     }
 
     init(key: String, value: T) {
-        let parts = key.components(separatedBy: "_")
-
-        guard parts.count == 3 else {
-            fatalError("Invalid key format")
-        }
-        guard let row = Int(parts[1]) else {
+        let (rowString, columnString) = CellKeyParser.parse(key: key)
+        
+        guard let row = Int(rowString) else {
             fatalError("Invalid row index")
         }
-        guard let column = Int(parts[2]) else {
+        guard let column = Int(columnString) else {
             fatalError("Invalid column index")
         }
 

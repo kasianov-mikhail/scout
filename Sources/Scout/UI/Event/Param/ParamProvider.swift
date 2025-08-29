@@ -8,17 +8,21 @@
 import CloudKit
 
 @MainActor
-class ParamProvider: ObservableObject {
+class ParamProvider: ObservableObject, DataProvider {
     let recordID: CKRecord.ID
+    
+    typealias DataType = [Item]
 
     @Published var items: [Item]?
+    
+    var data: [Item]? { items }
 
     init(recordID: CKRecord.ID) {
         self.recordID = recordID
     }
 
     func fetchIfNeeded(in database: DatabaseController) async {
-        if items == nil {
+        if data == nil {
             await fetch(in: database)
         }
     }
@@ -45,14 +49,14 @@ extension ParamProvider {
 }
 
 extension ParamProvider {
-    fileprivate func fetch(in database: DatabaseController) async {
+    func fetch(in database: DatabaseController) async {
         do {
             items = try await database
                 .record(for: recordID)["params"]
                 .map(Item.fromData)?
                 .sorted()
         } catch {
-            print(error.localizedDescription)
+            error.logError()
             items = nil
         }
     }
