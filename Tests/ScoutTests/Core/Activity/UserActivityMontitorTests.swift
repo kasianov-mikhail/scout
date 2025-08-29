@@ -16,9 +16,7 @@ struct UserActivityMontitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Trigger") func trigger() async throws {
-        let date = Date(iso8601String: "2025-01-01T00:00:00Z")
-
-        try UserActivity.trigger(date: date, in: context)
+        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
 
         let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         let activities = try context.fetch(request)
@@ -33,8 +31,8 @@ struct UserActivityMontitorTests {
     }
 
     @Test("Trigger at next day") func triggerNextDay() async throws {
-        try UserActivity.trigger(date: Date(iso8601String: "2025-01-01T00:00:00Z"), in: context)
-        try UserActivity.trigger(date: Date(iso8601String: "2025-01-02T00:00:00Z"), in: context)
+        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 2), in: context)
 
         let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         let activities = try context.fetch(request)
@@ -49,8 +47,8 @@ struct UserActivityMontitorTests {
     }
 
     @Test("Trigger skip one day") func triggerSkipDay() async throws {
-        try UserActivity.trigger(date: Date(iso8601String: "2025-01-01T00:00:00Z"), in: context)
-        try UserActivity.trigger(date: Date(iso8601String: "2025-01-03T00:00:00Z"), in: context)
+        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 3), in: context)
 
         let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         let activities = try context.fetch(request)
