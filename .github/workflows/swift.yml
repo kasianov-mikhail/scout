@@ -10,24 +10,27 @@ concurrency:
   group: ios-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  SCHEME_NAME: Scout
+
 jobs:
   ios-tests:
     runs-on: macos-latest
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
       - name: Show eligible build destinations
-        run: xcodebuild -showdestinations -scheme Scout
+        run: xcodebuild -showdestinations -scheme $SCHEME_NAME
 
       - name: Run unit tests (iPhone 16 Pro, latest iOS)
         run: |
           xcodebuild \
-            -scheme "Scout" \
+            -scheme $SCHEME_NAME \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
             -enableCodeCoverage YES \
             test
