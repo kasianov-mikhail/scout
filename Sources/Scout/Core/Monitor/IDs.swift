@@ -53,17 +53,3 @@ extension IDObject {
         setPrimitiveValue(IDs.launch, forKey: #keyPath(SessionObject.launchID))
     }
 }
-
-extension EventObject {
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(EventObject.eventID))
-    }
-}
-
-extension UserActivity {
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(UserActivity.userActivityID))
-    }
-}
