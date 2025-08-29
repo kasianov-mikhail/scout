@@ -48,8 +48,8 @@ extension UserDefaults {
 extension IDObject {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(SessionObject.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(SessionObject.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(SessionObject.launchID))
+        setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))
+        setPrimitiveValue(IDs.user, forKey: #keyPath(IDObject.userID))
+        setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
     }
 }
