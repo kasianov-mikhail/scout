@@ -23,9 +23,6 @@ extension EventObject {
         event.date = date
         event.eventID = UUID()
         event.isSynced = synced
-        event.userID = UUID()
-        event.launchID = UUID()
-        event.sessionID = UUID()
 
         return event
     }

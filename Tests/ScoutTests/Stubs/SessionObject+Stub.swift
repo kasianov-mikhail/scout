@@ -21,9 +21,6 @@ extension SessionObject {
 
         session.date = date
         session.isSynced = synced
-        session.sessionID = UUID()
-        session.userID = UUID()
-        session.launchID = UUID()
         session.endDate = endDate
 
         return session
