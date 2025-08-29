@@ -15,36 +15,32 @@
         <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="params" optional="YES" attributeType="Binary"/>
     </entity>
+    <entity name="IDObject" representedClassName="IDObject" isAbstract="YES" parentEntity="DateObject" syncable="YES" codeGenerationType="class">
+        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
     <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="category">
         <attribute name="intValue" attributeType="Integer 64" usesScalarValueType="YES"/>
     </entity>
     <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="class">
         <attribute name="telemetry" attributeType="String"/>
     </entity>
-    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="DateObject" syncable="YES" codeGenerationType="category">
+    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="IDObject" syncable="YES" codeGenerationType="category">
         <attribute name="endDate" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
-    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="DateObject" syncable="YES" codeGenerationType="class">
+    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="IDObject" syncable="YES" codeGenerationType="class">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
-        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
-    <entity name="UserActivity" representedClassName="UserActivity" parentEntity="DateObject" syncable="YES" codeGenerationType="category">
+    <entity name="UserActivity" representedClassName="UserActivity" parentEntity="IDObject" syncable="YES" codeGenerationType="category">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="period" attributeType="String"/>
-        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="userActivityID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="weekCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
 </model>
