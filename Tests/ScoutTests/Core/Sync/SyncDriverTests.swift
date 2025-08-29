@@ -22,7 +22,7 @@ class SyncDriverTests {
     }
 
     @Test("Sync with one group") func testSyncOneGroup() async throws {
-        createEvent(name: "event_name", in: context)
+        EventObject.stub(name: "event_name", in: context)
 
         try await SyncDriver(database: database, context: context).send(type: EventObject.self)
 
@@ -33,7 +33,7 @@ class SyncDriverTests {
 
     @Test("Sync with multiple groups") func testSyncMultipleGroups() async throws {
         for i in 1...3 {
-            createEvent(name: "event_name_\(i)", in: context)
+            EventObject.stub(name: "event_name_\(i)", in: context)
         }
 
         try await SyncDriver(database: database, context: context).send(type: EventObject.self)
@@ -44,13 +44,4 @@ class SyncDriverTests {
         }
         #expect(context.registeredObjects.isEmpty)
     }
-}
-
-private func createEvent(name: String, in context: NSManagedObjectContext, level: EventLevel = .info) {
-    let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
-    let event = EventObject(entity: entity, insertInto: context)
-    event.eventID = UUID()
-    event.name = name
-    event.date = Date()
-    event.level = level.rawValue
 }
