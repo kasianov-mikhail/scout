@@ -20,7 +20,7 @@ struct UserActivityMontitorTests {
 
         try UserActivity.trigger(date: date, in: context)
 
-        let request = UserActivity.fetchRequest()
+        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         let activities = try context.fetch(request)
 
         let days = activities.days.map(\.dayCount)
@@ -36,7 +36,7 @@ struct UserActivityMontitorTests {
         try UserActivity.trigger(date: Date(iso8601String: "2025-01-01T00:00:00Z"), in: context)
         try UserActivity.trigger(date: Date(iso8601String: "2025-01-02T00:00:00Z"), in: context)
 
-        let request = UserActivity.fetchRequest()
+        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         let activities = try context.fetch(request)
 
         let days = activities.days.map(\.dayCount)
@@ -52,7 +52,7 @@ struct UserActivityMontitorTests {
         try UserActivity.trigger(date: Date(iso8601String: "2025-01-01T00:00:00Z"), in: context)
         try UserActivity.trigger(date: Date(iso8601String: "2025-01-03T00:00:00Z"), in: context)
 
-        let request = UserActivity.fetchRequest()
+        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
         let activities = try context.fetch(request)
 
         let days = activities.days.map(\.dayCount)
