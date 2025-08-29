@@ -45,7 +45,7 @@ extension MetricsObject {
             name: "\(name)_\(telemetry)",
             date: week,
             representables: nil,
-            batch: batch,
+            batch: batch
         )
     }
 }

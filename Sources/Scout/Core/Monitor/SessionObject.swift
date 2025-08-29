@@ -31,7 +31,7 @@ final class SessionObject: NSManagedObject, Syncable {
             name: "Session",
             date: week,
             representables: batch,
-            batch: batch,
+            batch: batch
         )
     }
 

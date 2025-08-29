@@ -34,7 +34,7 @@ final class UserActivity: NSManagedObject, Syncable {
             name: "ActiveUser",
             date: month,
             representables: nil,
-            batch: batch,
+            batch: batch
         )
     }
 
