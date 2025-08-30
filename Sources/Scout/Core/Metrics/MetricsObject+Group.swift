@@ -8,38 +8,15 @@
 import CoreData
 
 extension MetricsObject {
-    static func group<T: MetricsObject & Syncable>(in context: NSManagedObjectContext) throws
-        -> SyncGroup<T>?
-    {
-        let entityName = String(describing: T.self)
-
-        let seedReq = NSFetchRequest<T>(entityName: entityName)
-        seedReq.predicate = NSPredicate(format: "isSynced == false")
-        seedReq.fetchLimit = 1
-
-        guard let seed = try context.fetch(seedReq).first else {
+    static func group<T: MetricsObject & Syncable>(
+        in context: NSManagedObjectContext
+    ) throws -> SyncGroup<T>? {
+        guard let batch: [T] = try batch(in: context, matching: [\.name, \.telemetry, \.week]) else {
             return nil
         }
-        guard let name = seed.name else {
-            throw SyncableError.missingProperty("name")
+        guard let name = batch.first?.name, let telemetry = batch.first?.telemetry, let week = batch.first?.week else {
+            return nil
         }
-        guard let telemetry = seed.telemetry else {
-            throw SyncableError.missingProperty("telemetry")
-        }
-        guard let week = seed.week else {
-            throw SyncableError.missingProperty("week")
-        }
-
-        let batchReq = NSFetchRequest<T>(entityName: entityName)
-        batchReq.predicate = NSPredicate(
-            format: "isSynced == false AND name == %@ AND telemetry == %@ AND week == %@",
-            name,
-            telemetry,
-            week as NSDate
-        )
-
-        let batch = try context.fetch(batchReq)
-
         return SyncGroup(
             recordType: T.Value.Value.recordName,
             name: "\(name)_\(telemetry)",
