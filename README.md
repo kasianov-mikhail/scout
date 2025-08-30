@@ -5,8 +5,7 @@ Scout is a robust logging framework designed to provide comprehensive logging ca
 
 ## Table of Contents
 - [CloudKit Integration](#cloudkit-integration)
-- [Swift Log](#swift-log)
-- [Swift Metrics](#swift-metrics)
+- [Logging & Metrics](#logging--metrics)
 - [Installation](#installation)
 - [Visualizing the Logs](#visualizing-the-logs)
 - [Example Project](#example-project)
@@ -20,16 +19,18 @@ Scout offers seamless integration with [CloudKit](https://developer.apple.com/ic
 - **📈 Scalability**: Benefit from [CloudKit](https://developer.apple.com/icloud/cloudkit/)'s scalability to handle large volumes of log data without compromising performance.
 - **🔒 Security**: Ensure your logs are securely stored and transmitted, adhering to industry-standard security practices.
 
-## Swift Log
-Scout leverages the power of [swift-log](https://github.com/apple/swift-log), Apple's official logging API, to provide a flexible and efficient logging solution. By using [swift-log](https://github.com/apple/swift-log), Scout ensures compatibility with other  libraries and tools, making it easier to integrate into your existing projects. Benefits of Using [swift-log](https://github.com/apple/swift-log) with Scout:
+## Logging & Metrics
+Scout builds on Apple’s observability facades:
+- [swift-log](https://github.com/apple/swift-log) for structured logging
+- [swift-metrics](https://github.com/apple/swift-metrics) for counters, gauges, and timers
 
-- **📏 Standardization**: Utilize a standardized logging API that is widely adopted in the Swift community.
-- **🔧 Flexibility**: Customize log handlers and formats to suit your specific needs.
+Benefits:
+- **📏 Standardization**: Use unified, community-adopted APIs for logs and metrics.
+- **🔧 Flexibility**: Customize log handlers and choose any metrics backend (Prometheus, StatsD, OpenTelemetry adapters).
+- **🔍 Correlation**: Share labels/metadata to jump from a metric spike to the exact log events.
+- **⚡ Insight + Performance**: Keep metrics lightweight on hot paths; use logs for rich context when needed.
 
-By integrating [swift-log](https://github.com/apple/swift-log) with Scout, you can take advantage of a robust and standardized logging framework that enhances your application's logging capabilities.
-
-## Swift Metrics
-[swift-metrics](https://github.com/apple/swift-metrics) is a lightweight, backend‑agnostic facade for emitting counters, gauges, and timers. Pairing metrics with Scout logs lets you answer both "what happened" (logs) and "how often / how fast" (metrics).
+Together, logs answer “what happened?” while metrics quantify “how often?” and “how fast?”. Scout stays backend‑agnostic so your app can pick exporters without changing call sites.
 
 
 ## Installation
