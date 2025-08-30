@@ -10,22 +10,12 @@ import CoreData
 @objc(SessionObject)
 final class SessionObject: SyncableObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
-        let seedReq = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        seedReq.predicate = NSPredicate(format: "isSynced == false")
-        seedReq.fetchLimit = 1
-
-        guard let seed = try context.fetch(seedReq).first else {
+        guard let batch: [SessionObject] = try batch(in: context, matching: [\.week]) else {
             return nil
         }
-        guard let week = seed.week else {
-            throw SyncableError.missingProperty(#keyPath(SessionObject.week))
+        guard let week = batch.first?.week else {
+            return nil
         }
-
-        let batchReq = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        batchReq.predicate = NSPredicate(format: "isSynced == false AND week == %@", week as NSDate)
-
-        let batch = try context.fetch(batchReq)
-
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: "Session",
