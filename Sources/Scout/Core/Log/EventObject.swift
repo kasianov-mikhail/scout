@@ -13,10 +13,13 @@ final class EventObject: TrackedObject, Syncable {
         guard let batch = try BatchProvider<EventObject>(context: context, keyPaths: [\.name, \.week]).batch() else {
             return nil
         }
+        guard let name = batch.first?.name, let week = batch.first?.week else {
+            return nil
+        }
         return SyncGroup(
             recordType: "DateIntMatrix",
-            name: batch[0].name!,
-            date: batch[0].week!,
+            name: name,
+            date: week,
             representables: batch,
             batch: batch
         )
