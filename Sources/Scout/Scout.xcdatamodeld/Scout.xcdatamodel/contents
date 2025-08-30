@@ -26,18 +26,18 @@
     <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="class">
         <attribute name="telemetry" attributeType="String"/>
     </entity>
-    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="IDObject" syncable="YES" codeGenerationType="category">
+    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="endDate" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="class">
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
-    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="IDObject" syncable="YES" codeGenerationType="class">
+    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="class">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String"/>
     </entity>
-    <entity name="UserActivity" representedClassName="UserActivity" parentEntity="IDObject" syncable="YES" codeGenerationType="category">
+    <entity name="UserActivity" representedClassName="UserActivity" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="period" attributeType="String"/>
         <attribute name="userActivityID" attributeType="UUID" usesScalarValueType="NO"/>
