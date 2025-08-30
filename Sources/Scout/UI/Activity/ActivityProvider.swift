@@ -13,14 +13,10 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 @MainActor
 class ActivityProvider: ObservableObject {
     @Published var data: ChartData<ActivityPeriod>?
+}
 
-    func fetchIfNeeded(in database: DatabaseController) async {
-        if data == nil {
-            await fetch(in: database)
-        }
-    }
-
-    private func fetch(in database: DatabaseController) async {
+extension ActivityProvider: Provider {
+    func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).queryRange
 
         do {

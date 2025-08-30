@@ -18,16 +18,10 @@ class StatProvider: ObservableObject {
         self.eventName = eventName
         self.periods = periods
     }
-
-    func fetchIfNeeded(in database: DatabaseController) async {
-        if data == nil {
-            await fetch(in: database)
-        }
-    }
 }
 
-extension StatProvider {
-    private func fetch(in database: DatabaseController) async {
+extension StatProvider: Provider {
+    func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).queryRange
 
         do {
