@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(SessionObject)
-final class SessionObject: IDObject, Syncable {
+final class SessionObject: SyncableObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
         let seedReq = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         seedReq.predicate = NSPredicate(format: "isSynced == false")
