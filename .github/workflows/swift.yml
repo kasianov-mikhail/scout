@@ -24,13 +24,18 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Install xcpretty
+        run: |
+          brew install xcpretty
+
       - name: Show eligible build destinations
-        run: xcodebuild -showdestinations -scheme $SCHEME_NAME
+        run: xcodebuild -showdestinations -scheme $SCHEME_NAME | xcpretty
 
       - name: Run unit tests (iPhone 16 Pro, latest iOS)
         run: |
+          set -o pipefail && \
           xcodebuild \
             -scheme $SCHEME_NAME \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
             -enableCodeCoverage YES \
-            test
+            test | xcpretty
