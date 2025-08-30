@@ -30,8 +30,7 @@ Benefits:
 - **🔍 Correlation**: Share labels/metadata to jump from a metric spike to the exact log events.
 - **⚡ Insight + Performance**: Keep metrics lightweight on hot paths; use logs for rich context when needed.
 
-Together, logs answer “what happened?” while metrics quantify “how often?” and “how fast?”. Scout stays backend‑agnostic so your app can pick exporters without changing call sites.
-
+Together, logs answer “what happened?” while metrics quantify “how often?” and “how fast?”.
 
 ## Installation
 For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki).
