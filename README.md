@@ -26,7 +26,7 @@ Scout builds on Apple’s observability facades:
 
 Benefits:
 - **📏 Standardization**: Use unified, community-adopted APIs for logs and metrics.
-- **🔧 Flexibility**: Customize log handlers and choose any metrics backend (Prometheus, StatsD, OpenTelemetry adapters).
+- **🔧 Flexibility**: Customize log handlers and formats to suit your specific needs.
 - **🔍 Correlation**: Share labels/metadata to jump from a metric spike to the exact log events.
 - **⚡ Insight + Performance**: Keep metrics lightweight on hot paths; use logs for rich context when needed.
 
