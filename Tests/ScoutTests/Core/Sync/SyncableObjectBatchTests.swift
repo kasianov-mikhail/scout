@@ -28,7 +28,7 @@ struct SyncableObjectBatchTests {
 
         let batch = try #require(try EventObject.batch(
             in: context,
-            matching: [\EventObject.name, \EventObject.week]
+            matching: [\.name, \.week]
         ))
 
         #expect(Set(batch.map(\.name)).count == 1)
@@ -41,7 +41,7 @@ struct SyncableObjectBatchTests {
 
         let batch = try EventObject.batch(
             in: context,
-            matching: [\EventObject.name]
+            matching: [\.name]
         )
 
         #expect(batch == nil)
@@ -54,10 +54,10 @@ struct SyncableObjectBatchTests {
         let event = EventObject.stub(name: "EventC", date: week, synced: false, in: context)
         try context.save()
 
-        let batch = try EventObject.batch(
+        let batch = try #require(try EventObject.batch(
             in: context,
-            matching: [\EventObject.name, \EventObject.week]
-        )
+            matching: [\.name, \.week]
+        ))
 
         #expect(batch?.count == 1)
         #expect(batch?.first === event)
