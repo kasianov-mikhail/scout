@@ -10,33 +10,13 @@ import CoreData
 @objc(EventObject)
 final class EventObject: TrackedObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<EventObject>? {
-        let seedReq = NSFetchRequest<EventObject>(entityName: "EventObject")
-        seedReq.predicate = NSPredicate(format: "isSynced == false")
-        seedReq.fetchLimit = 1
-
-        guard let seed = try context.fetch(seedReq).first else {
+        guard let batch = try BatchProvider<EventObject>(context: context, keyPaths: [\.name, \.week]).batch() else {
             return nil
         }
-        guard let name = seed.name else {
-            throw SyncableError.missingProperty("name")
-        }
-        guard let week = seed.week else {
-            throw SyncableError.missingProperty("week")
-        }
-
-        let batchReq = NSFetchRequest<EventObject>(entityName: "EventObject")
-        batchReq.predicate = NSPredicate(
-            format: "isSynced == false AND name == %@ AND week == %@",
-            name,
-            week as NSDate
-        )
-
-        let batch = try context.fetch(batchReq)
-
         return SyncGroup(
             recordType: "DateIntMatrix",
-            name: name,
-            date: week,
+            name: batch[0].name!,
+            date: batch[0].week!,
             representables: batch,
             batch: batch
         )
