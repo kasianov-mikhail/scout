@@ -7,16 +7,11 @@
 
 import CoreData
 
-final class BatchProvider<T: NSManagedObject> {
-    let context: NSManagedObjectContext
-    let keyPaths: [PartialKeyPath<T>]
-
-    init(context: NSManagedObjectContext, keyPaths: [PartialKeyPath<T>]) {
-        self.context = context
-        self.keyPaths = keyPaths
-    }
-
-    func batch() throws -> [T]? {
+extension SyncableObject {
+    static func batch<T: SyncableObject>(
+        in context: NSManagedObjectContext,
+        matching keyPaths: [PartialKeyPath<T>]
+    ) throws -> [T]? {
         let entityName = String(describing: T.self)
 
         let seedRequest = NSFetchRequest<T>(entityName: entityName)
@@ -27,9 +22,10 @@ final class BatchProvider<T: NSManagedObject> {
             return nil
         }
 
-        var predicates: [NSPredicate] = [NSPredicate(format: "isSynced == false")]
+        var predicates = [NSPredicate(format: "isSynced == false")]
+
         for keyPath in keyPaths {
-            if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject {
+            if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject{
                 predicates.append(NSPredicate(format: "%K == %@", key, value))
             }
         }

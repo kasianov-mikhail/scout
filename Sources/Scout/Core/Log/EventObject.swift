@@ -10,7 +10,7 @@ import CoreData
 @objc(EventObject)
 final class EventObject: TrackedObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<EventObject>? {
-        guard let batch = try BatchProvider<EventObject>(context: context, keyPaths: [\.name, \.week]).batch() else {
+        guard let batch: [EventObject] = try batch(in: context, matching: [\.name, \.week]) else {
             return nil
         }
         guard let name = batch.first?.name, let week = batch.first?.week else {
