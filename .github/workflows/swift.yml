@@ -26,7 +26,7 @@ jobs:
 
       - name: Install xcpretty
         run: |
-          brew install xcpretty
+          sudo gem install xcpretty
 
       - name: Show eligible build destinations
         run: xcodebuild -showdestinations -scheme $SCHEME_NAME | xcpretty
