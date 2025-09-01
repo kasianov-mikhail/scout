@@ -16,7 +16,7 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack {
             List {
-                EventSection()
+                LogSection()
                 ActivitySection()
                 SessionSection()
             }
