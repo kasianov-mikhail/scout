@@ -22,7 +22,12 @@ jobs:
 
       - uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: "16.2"
+
+      - name: Show toolchain versions (sanity check)
+        run: |
+          xcodebuild -version
+          swift --version
 
       - name: Install xcpretty
         run: |
