@@ -36,6 +36,6 @@ extension NSPersistentContainer {
             )
         }
 
-        try loadPersistentStores()
+        try loadStores()
     }
 }

@@ -8,7 +8,7 @@
 import CoreData
 
 extension NSPersistentContainer {
-    func loadPersistentStores() throws {
+    func loadStores() throws {
         var captured: Error?
         loadPersistentStores { _, error in
             captured = error
