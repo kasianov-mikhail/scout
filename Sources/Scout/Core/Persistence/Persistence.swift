@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
-import Logging
 
 private let incompatibleCodes = [
     NSPersistentStoreIncompatibleVersionHashError,
