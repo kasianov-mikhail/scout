@@ -17,7 +17,7 @@ let persistentContainer: NSPersistentContainer = {
     let container = NSPersistentContainer.newContainer(named: "Scout")
 
     do {
-        try container.loadPersistentStores()
+        try container.loadStores()
     } catch let error as NSError {
         if error.domain == NSCocoaErrorDomain && incompatibleCodes.contains(error.code) {
             container.rebuildStore()
