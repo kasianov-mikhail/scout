@@ -6,14 +6,25 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import Logging
+
+private let incompatibleCodes = [
+    NSPersistentStoreIncompatibleVersionHashError,
+    NSMigrationError,
+    NSMigrationMissingSourceModelError,
+]
 
 let persistentContainer: NSPersistentContainer = {
     let container = NSPersistentContainer.newContainer(named: "Scout")
 
     do {
         try container.loadPersistentStores()
-    } catch {
-        print("Error loading Core Data store: \(error.localizedDescription)")
+    } catch let error as NSError {
+        if error.domain == NSCocoaErrorDomain && incompatibleCodes.contains(error.code) {
+            container.rebuildStore()
+        } else {
+            fatalError("Error loading Core Data store: \(error) | \(error.userInfo)")
+        }
     }
 
     return container
