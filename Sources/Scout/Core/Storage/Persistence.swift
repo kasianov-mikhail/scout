@@ -10,11 +10,12 @@ import CoreData
 let persistentContainer: NSPersistentContainer = {
     let container = NSPersistentContainer.newContainer(named: "Scout")
 
-    container.loadPersistentStores { _, error in
-        if let error {
-            print("Error loading Core Data store: \(error.localizedDescription)")
-        }
+    do {
+        try container.loadPersistentStores()
+    } catch {
+        print("Error loading Core Data store: \(error.localizedDescription)")
     }
+
     return container
 }()
 
