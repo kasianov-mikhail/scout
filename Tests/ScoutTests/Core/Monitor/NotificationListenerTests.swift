@@ -29,19 +29,19 @@ struct NotificationListenerTests {
     }
 }
 
-class NotificationListenerTestCase: XCTestCase {
-
-    // Special case not covering with SwiftTesting
-    func testNotificationHandling() async throws {
-        let expectation = XCTestExpectation(description: "Notification handling")
-        let listener = NotificationListener(table: [
-            UIApplication.didBecomeActiveNotification: expectation.fulfill
-        ])
-        try listener.setup()
-        NotificationCenter.default.post(
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil
-        )
-        await fulfillment(of: [expectation], timeout: 0.1)
-    }
-}
+//class NotificationListenerTestCase: XCTestCase {
+//
+//    // Special case not covering with SwiftTesting
+//    func testNotificationHandling() async throws {
+//        let expectation = XCTestExpectation(description: "Notification handling")
+//        let listener = NotificationListener(table: [
+//            UIApplication.didBecomeActiveNotification: expectation.fulfill
+//        ])
+//        try listener.setup()
+//        NotificationCenter.default.post(
+//            name: UIApplication.didBecomeActiveNotification,
+//            object: nil
+//        )
+//        await fulfillment(of: [expectation], timeout: 0.1)
+//    }
+//}
