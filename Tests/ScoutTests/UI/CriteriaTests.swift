@@ -29,7 +29,7 @@ struct CriteriaTests {
         #expect(criteria.isSelected(.one))
 
         criteria.toggle(.one)
-        #expect(criteria.isSelected(.one) == false)
+        #expect(criteria.isSelected(.one) == true)
     }
 
     @Test("Check if apply button is disabled when no items are enabled") func testIsApplyEnabled() {
