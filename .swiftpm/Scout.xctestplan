@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "C3523B16-AD2C-42DC-8003-1084253FCA32",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ScoutTests",
+        "name" : "ScoutTests"
+      }
+    }
+  ],
+  "version" : 1
+}
