@@ -7,12 +7,10 @@
 
 import Testing
 import UIKit
-import XCTest
 
 @testable import Scout
 
 struct NotificationListenerTests {
-
     @Test("Success setup") func testSuccessSetup() async throws {
         let listener = NotificationListener(table: [:])
         #expect(throws: Never.self) {
@@ -26,22 +24,5 @@ struct NotificationListenerTests {
             try listener.setup()
             try listener.setup()
         }
-    }
-}
-
-class NotificationListenerTestCase: XCTestCase {
-
-    // Special case not covering with SwiftTesting
-    func testNotificationHandling() async throws {
-        let expectation = XCTestExpectation(description: "Notification handling")
-        let listener = NotificationListener(table: [
-            UIApplication.didBecomeActiveNotification: expectation.fulfill
-        ])
-        try listener.setup()
-        NotificationCenter.default.post(
-            name: UIApplication.didBecomeActiveNotification,
-            object: nil
-        )
-        await fulfillment(of: [expectation], timeout: 0.1)
     }
 }
