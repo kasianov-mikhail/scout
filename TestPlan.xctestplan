@@ -12,7 +12,13 @@
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ScoutTests",
+        "name" : "ScoutTests"
+      }
+    }
   ],
   "version" : 1
 }
