@@ -9,6 +9,7 @@
     }
   ],
   "defaultOptions" : {
+    "distributor" : "com.apple.TestFlight",
     "performanceAntipatternCheckerEnabled" : true
   },
   "testTargets" : [
