@@ -10,9 +10,7 @@ import Foundation
 struct RawPointData {
     let range: ClosedRange<Date>
     let points: [ChartPoint]
-}
 
-extension RawPointData {
     func group(by component: Calendar.Component) -> [ChartPoint] {
         var result: [ChartPoint] = []
         var date = range.lowerBound
@@ -31,5 +29,19 @@ extension RawPointData {
         }
 
         return result
+    }
+}
+
+extension RawPointData: CustomStringConvertible {
+    var description: String {
+        let formatter = ISO8601DateFormatter()
+        let start = formatter.string(from: range.lowerBound)
+        let end = formatter.string(from: range.upperBound)
+
+        let previewCount = min(points.count, 5)
+        let preview = points.prefix(previewCount).map(\.description).joined(separator: ", ")
+        let more = points.count > previewCount ? ", …" : ""
+
+        return "RawPointData(range: \(start)...\(end), points: \(points.count) [\(preview)\(more)])"
     }
 }
