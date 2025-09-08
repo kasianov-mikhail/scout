@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "B1F1F7E4-D813-4F3C-8DE6-037A274BA883",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "performanceAntipatternCheckerEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "ScoutTests",
+        "name" : "ScoutTests"
+      }
+    }
+  ],
+  "version" : 1
+}
