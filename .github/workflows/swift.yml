@@ -34,5 +34,4 @@ jobs:
           xcodebuild \
             -scheme $SCHEME_NAME \
             -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
-            -enableCodeCoverage YES \
             test | xcpretty
