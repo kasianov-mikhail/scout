@@ -21,11 +21,11 @@ func sync(in container: CKContainer?) async throws {
     .send()
 }
 
-enum SyncError: Error {
+enum SyncError: LocalizedError {
     case containerNotFound
     case notLoggedIn
 
-    var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case .containerNotFound:
             "CloudKit container not found. Call `setup(container:)` while initializing the app."
