@@ -33,7 +33,6 @@ jobs:
           set -o pipefail && \
           xcodebuild \
             -scheme $SCHEME_NAME \
-            -arch 'x86_64' \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
+            -destination 'platform=iOS Simulator,arch:x86_64,OS=latest,name=iPhone 16 Pro' \
             -enableCodeCoverage YES \
             test | xcpretty
