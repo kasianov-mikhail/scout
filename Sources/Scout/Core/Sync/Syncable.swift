@@ -11,12 +11,18 @@ import CoreData
 typealias SyncValue = MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable
 
 protocol Syncable: NSManagedObject {
-    associatedtype Value: CellProtocol & Combining & Sendable
+    associatedtype Cell: CellProtocol & Combining & Sendable
 
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Self>?
-    static func parse(of batch: [Self]) -> [Value]
+    static func parse(of batch: [Self]) -> [Cell]
 
     var isSynced: Bool { get set }
+}
+
+// Backward compatibility
+extension Syncable {
+    @available(*, deprecated, renamed: "Cell")
+    typealias Value = Cell
 }
 
 enum SyncableError: Error {
