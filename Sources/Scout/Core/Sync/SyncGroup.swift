@@ -17,7 +17,7 @@ struct SyncGroup<T: Syncable>: @unchecked Sendable {
 }
 
 extension SyncGroup {
-    func newMatrix() -> Matrix<T.Value> {
+    func newMatrix() -> Matrix<T.Cell> {
         Matrix(
             date: date,
             name: name,
@@ -26,7 +26,7 @@ extension SyncGroup {
         )
     }
 
-    func matrix(in database: Database) async throws -> Matrix<T.Value> {
+    func matrix(in database: Database) async throws -> Matrix<T.Cell> {
         let name = NSPredicate(format: "name == %@", name)
         let date = NSPredicate(format: "date == %@", date as NSDate)
         let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date])

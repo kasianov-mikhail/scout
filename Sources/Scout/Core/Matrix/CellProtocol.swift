@@ -8,10 +8,16 @@
 import CloudKit
 
 protocol CellProtocol {
-    associatedtype Value: MatrixValue & CKRecordValueProtocol
+    associatedtype Scalar: MatrixValue & CKRecordValueProtocol
 
     var key: String { get }
-    var value: Value { get }
+    var value: Scalar { get }
 
-    init(key: String, value: Value) throws
+    init(key: String, value: Scalar) throws
+}
+
+// Backward compatibility
+extension CellProtocol {
+    @available(*, deprecated, renamed: "Scalar")
+    typealias Value = Scalar
 }
