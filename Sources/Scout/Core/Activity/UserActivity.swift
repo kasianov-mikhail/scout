@@ -19,6 +19,7 @@ final class UserActivity: SyncableObject, Syncable {
         return SyncGroup(
             recordType: "PeriodMatrix",
             name: "ActiveUser",
+            category: nil,
             date: month,
             representables: nil,
             batch: batch

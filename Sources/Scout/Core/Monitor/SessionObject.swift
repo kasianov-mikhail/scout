@@ -19,6 +19,7 @@ final class SessionObject: SyncableObject, Syncable {
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: "Session",
+            category: nil,
             date: week,
             representables: batch,
             batch: batch

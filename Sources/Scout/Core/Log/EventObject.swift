@@ -19,6 +19,7 @@ final class EventObject: TrackedObject, Syncable {
         return SyncGroup(
             recordType: "DateIntMatrix",
             name: name,
+            category: nil,
             date: week,
             representables: batch,
             batch: batch

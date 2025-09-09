@@ -19,7 +19,8 @@ extension MetricsObject {
         }
         return SyncGroup(
             recordType: T.Cell.Scalar.recordName,
-            name: "\(name)_\(telemetry)",
+            name: name,
+            category: telemetry,
             date: week,
             representables: nil,
             batch: batch
