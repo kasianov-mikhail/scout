@@ -18,7 +18,7 @@ extension MetricsObject {
             return nil
         }
         return SyncGroup(
-            recordType: T.Value.Value.recordName,
+            recordType: T.Cell.Scalar.recordName,
             name: "\(name)_\(telemetry)",
             date: week,
             representables: nil,

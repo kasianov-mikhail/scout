@@ -68,7 +68,7 @@ extension Matrix: CKInitializable {
         guard cellDict.count > 0 else {
             throw MapError.missingCells
         }
-        guard let cellDict = cellDict as? [String: T.Value] else {
+        guard let cellDict = cellDict as? [String: T.Scalar] else {
             throw MapError.invalidCells
         }
 
@@ -78,7 +78,7 @@ extension Matrix: CKInitializable {
 
 extension Matrix: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: T.Value.recordName, recordID: recordID)
+        let record = CKRecord(recordType: T.Scalar.recordName, recordID: recordID)
         record["date"] = date
         record["name"] = name
         for cell in cells {
