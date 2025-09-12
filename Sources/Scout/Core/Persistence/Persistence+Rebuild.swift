@@ -13,14 +13,15 @@ private let logger = Logger(label: "Scout.CoreData")
 extension NSPersistentContainer {
     func rebuildStore() {
         do {
-            try rebuildStoreThrowing()
+            try destroyStore()
+            try loadStore()
             logger.info("Core Data store wiped and recreated due to model incompatibility.")
         } catch {
             fatalError("Failed to wipe Core Data store: \(error)")
         }
     }
 
-    func rebuildStoreThrowing() throws {
+    func destroyStore() throws {
         viewContext.reset()
 
         if let store = persistentStoreCoordinator.persistentStores.first, let url = store.url {
@@ -35,7 +36,5 @@ extension NSPersistentContainer {
                 ofType: NSSQLiteStoreType
             )
         }
-
-        try loadStores()
     }
 }
