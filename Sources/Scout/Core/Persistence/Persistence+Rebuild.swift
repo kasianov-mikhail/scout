@@ -14,7 +14,7 @@ extension NSPersistentContainer {
     func rebuildStore() {
         do {
             try destroyStore()
-            try loadStores()
+            try loadStore()
             logger.info("Core Data store wiped and recreated due to model incompatibility.")
         } catch {
             fatalError("Failed to wipe Core Data store: \(error)")
