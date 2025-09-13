@@ -15,3 +15,15 @@ protocol CellProtocol {
 
     init(key: String, value: Scalar) throws
 }
+
+extension Array where Element: CellProtocol {
+    var summary: String {
+        if isEmpty {
+            return "[]"
+        }
+        let items = map { cell in
+            "\(cell.key)=\(String(describing: cell.value))"
+        }
+        return "[\(items.joined(separator: ", "))]"
+    }
+}
