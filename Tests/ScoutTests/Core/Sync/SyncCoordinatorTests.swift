@@ -20,10 +20,14 @@ struct SyncCoordinatorTests {
 
     init() {
         let group = SyncGroup<EventObject>(
-            recordType: "DateIntMatrix",
-            name: "matrix",
-            category: nil,
-            date: now,
+            matrix: Matrix(
+                recordType: "DateIntMatrix",
+                date: now,
+                name: "matrix",
+                category: nil,
+                recordID: CKRecord.ID(),
+                cells: []
+            ),
             representables: nil,
             batch: [
                 .stub(name: "A", in: context),

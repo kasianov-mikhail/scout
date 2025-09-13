@@ -27,9 +27,9 @@ struct SessionObjectTests {
         let group = try #require(try SessionObject.group(in: context))
 
         #expect(group.batch.count == 2)
-        #expect(group.name == "Session")
-        #expect(group.recordType == "DateIntMatrix")
-        #expect(group.date == week)
+        #expect(group.matrix.name == "Session")
+        #expect(group.matrix.recordType == "DateIntMatrix")
+        #expect(group.matrix.date == week)
         #expect(group.batch.allSatisfy { !$0.isSynced && $0.week == week })
     }
 
