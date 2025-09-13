@@ -5,23 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 struct SyncGroup<T: Syncable>: @unchecked Sendable {
     let matrix: Matrix<T.Cell>
     let representables: [CKRepresentable]?
     let batch: [T]
-}
-
-extension SyncGroup {
-    func newMatrix() -> Matrix<T.Cell> {
-        matrix
-    }
-
-    func matrix(in database: Database) async throws -> Matrix<T.Cell> {
-        try await matrix.lookupExisting(in: database) ?? matrix
-    }
 }
 
 extension SyncGroup: CustomStringConvertible {
