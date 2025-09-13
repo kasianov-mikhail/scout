@@ -39,11 +39,9 @@ struct PersistenceLoadTests {
         do {
             try container.loadStore()
             Issue.record("Expected loadStore() to throw, but it did not.")
-        } catch {
-            // Ensure we surface the same error we injected
-            let nsError = error as NSError
-            #expect(nsError.domain == expectedError.domain)
-            #expect(nsError.code == expectedError.code)
+        } catch let error as NSError {
+            #expect(error.domain == expectedError.domain)
+            #expect(error.code == expectedError.code)
         }
     }
 }
