@@ -30,8 +30,8 @@ var container: CKContainer?
 /// ```
 @MainActor
 public func setup(container: CKContainer) throws {
+    try NotificationListener.activity.setup()
     Scout.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
     MetricsSystem.bootstrap(TelemetryFactory())
-    try NotificationListener.activity.setup()
 }
