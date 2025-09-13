@@ -24,30 +24,33 @@ struct SyncDriver: @unchecked Sendable {
                 }
             }
 
-            let jobs = [
-                { try await send(type: EventObject.self) },
-                { try await send(type: SessionObject.self) },
-                { try await send(type: UserActivity.self) },
-                { try await send(type: IntMetricsObject.self) },
-                { try await send(type: DoubleMetricsObject.self) },
-            ]
-
             for job in jobs.shuffled() {
                 try await job()
             }
         }
     }
 
+    private typealias Job = () async throws -> Void
+
+    private var jobs: [Job] {
+        [
+            { try await send(type: EventObject.self) },
+            { try await send(type: SessionObject.self) },
+            { try await send(type: UserActivity.self) },
+            { try await send(type: IntMetricsObject.self) },
+            { try await send(type: DoubleMetricsObject.self) },
+        ]
+    }
+
     @MainActor
     func send<T: Syncable>(type syncable: T.Type) async throws {
         while let group = try syncable.group(in: context) {
-            let coordinator = SyncCoordinator<T.Cell>(
+            try await SyncCoordinator<T.Cell>(
                 database: database,
                 maxRetry: 3,
                 matrix: group.matrix
             )
-
-            try await coordinator.upload()
+            .upload()
 
             if let objects = group.representables {
                 try await database.modifyRecords(
