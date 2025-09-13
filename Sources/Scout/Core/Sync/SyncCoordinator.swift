@@ -11,10 +11,10 @@ import CloudKit
 struct SyncCoordinator<T: Syncable> {
     let database: Database
     let maxRetry: Int
-    let group: SyncGroup<T>
+    let matrix: Matrix<T.Cell>
 
     func upload() async throws {
-        let matrix = try await group.matrix(in: database)
+        let matrix = try await matrix.lookupExisting(in: database) ?? matrix
         try await upload(matrix: matrix, retry: 1)
     }
 
@@ -23,7 +23,7 @@ struct SyncCoordinator<T: Syncable> {
             try await database.save(matrix.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
             if retry > maxRetry {
-                try await upload(matrix: group.newMatrix(), retry: 1)
+                try await upload(matrix: matrix, retry: 1)
             } else if let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
                 try await upload(matrix: try Matrix(record: serverRecord) + matrix, retry: retry + 1)
             }

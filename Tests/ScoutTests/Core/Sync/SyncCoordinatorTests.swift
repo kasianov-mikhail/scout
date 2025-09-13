@@ -19,7 +19,9 @@ struct SyncCoordinatorTests {
     let coordinator: SyncCoordinator<EventObject>
 
     init() {
-        let group = SyncGroup<EventObject>(
+        coordinator = SyncCoordinator(
+            database: database,
+            maxRetry: 3,
             matrix: Matrix(
                 recordType: "DateIntMatrix",
                 date: now,
@@ -27,17 +29,7 @@ struct SyncCoordinatorTests {
                 category: nil,
                 recordID: CKRecord.ID(),
                 cells: []
-            ),
-            representables: nil,
-            batch: [
-                .stub(name: "A", in: context),
-                .stub(name: "A", in: context),
-            ]
-        )
-        coordinator = SyncCoordinator(
-            database: database,
-            maxRetry: 3,
-            group: group
+            )
         )
     }
 
