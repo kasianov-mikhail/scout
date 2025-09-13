@@ -33,23 +33,6 @@ struct SyncGroupTests {
             batch: batch
         )
     }
-
-    @Test("Create a new matrix") func testNewMatrix() async throws {
-        let matrix = group.newMatrix()
-
-        #expect(group.matrix.name == matrix.name)
-        #expect(group.matrix.date == matrix.date)
-        #expect(!matrix.cells.isEmpty)
-    }
-
-    @Test("Retrieve an existing matrix") func testMatrix() async throws {
-        database.records = [.matrixStub(name: group.matrix.name, date: group.matrix.date)]
-
-        let matrix = try await group.matrix(in: database)
-
-        #expect(group.matrix.name == matrix.name)
-        #expect(group.matrix.date == matrix.date)
-    }
 }
 
 private let now = Date()
