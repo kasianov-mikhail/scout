@@ -14,6 +14,18 @@ struct Matrix<T: CellProtocol & Combining & Sendable> {
     let category: String?
     let recordID: CKRecord.ID
     let cells: [T]
+
+    func lookupExisting(in database: Database) async throws -> Self? {
+        let name = NSPredicate(format: "name == %@", name)
+        let date = NSPredicate(format: "date == %@", date as NSDate)
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date])
+        let query = CKQuery(recordType: recordType, predicate: predicate)
+
+        let matrices = try await database.allRecords(matching: query, desiredKeys: nil)
+        let matrix = try matrices.randomElement().map(Matrix.init(record:))
+
+        return matrix
+    }
 }
 
 extension Matrix: Combining {
