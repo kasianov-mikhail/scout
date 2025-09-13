@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 import UIKit
 
-public class NotificationListener {
+class NotificationListener {
     struct SetupError: LocalizedError {
         let errorDescription: String? = "NotificationListener is already setup"
     }
@@ -24,7 +24,7 @@ public class NotificationListener {
         self.table = table
     }
 
-    public func setup() throws {
+    func setup() throws {
         guard !isSetup else {
             throw SetupError()
         }
