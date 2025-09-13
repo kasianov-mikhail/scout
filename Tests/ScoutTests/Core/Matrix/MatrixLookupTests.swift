@@ -15,8 +15,7 @@ import CloudKit
 struct MatrixLookupTests {
     let database = InMemoryDatabase()
 
-    @Test("Returns nil when no matching records")
-    func testNoMatches() async throws {
+    @Test func `Returns nil when no matching records`() async throws {
         database.records = [CKRecord.matrixStub(name: "other", date: Date().addingTimeInterval(-3600))]
 
         let matrix = Matrix<Cell<Int>>(
@@ -30,8 +29,7 @@ struct MatrixLookupTests {
         #expect(existing == nil)
     }
 
-    @Test("Returns a valid matrix when a match exists")
-    func testSingleMatch() async throws {
+    @Test func `Returns a valid matrix when a match exists`() async throws {
         let date = Date()
         let match = CKRecord.matrixStub(name: "target", date: date)
         database.records = [match]
