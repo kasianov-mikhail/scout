@@ -50,6 +50,39 @@ extension Matrix: Combining {
 
 extension Matrix: CustomStringConvertible {
     var description: String {
-        "Matrix(\(name), \(date), \(cells.count) cells)"
+        """
+        Matrix<\(T.self)>(
+          type: "\(recordType)",
+          date: \(date),
+          name: "\(name)",
+          category: \(category ?? "nil"),
+          id: \(recordID.recordName),
+          cells: \(cells.count) items
+        )
+        """
+    }
+}
+
+extension Matrix: CustomDebugStringConvertible {
+    var debugDescription: String {
+        """
+        Matrix<\(T.self)>(
+          type: \(recordType), 
+          date: \(date), 
+          name: \(name),
+          category: \(category ?? "nil"),
+          id: \(recordID.recordName),
+          cells: \(cellsSummary))
+        """
+    }
+
+    private var cellsSummary: String {
+        if cells.isEmpty {
+            return "[]"
+        }
+        let items = cells.map { cell in
+            "\(cell.key)=\(String(describing: cell.value))"
+        }
+        return "[\(items.joined(separator: ", "))]"
     }
 }
