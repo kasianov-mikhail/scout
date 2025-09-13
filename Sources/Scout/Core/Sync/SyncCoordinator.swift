@@ -14,8 +14,8 @@ struct SyncCoordinator<T: CellProtocol & Combining & Sendable> {
     let matrix: Matrix<T>
 
     func upload() async throws {
-        let matrix = try await matrix.lookupExisting(in: database) ?? matrix
-        try await upload(matrix: matrix, retry: 1)
+        let existing = try await matrix.lookupExisting(in: database)
+        try await upload(matrix: existing ?? matrix, retry: 1)
     }
 
     func upload(matrix: Matrix<T>, retry: Int) async throws {
