@@ -25,7 +25,7 @@ struct SyncGroupTests {
         group = SyncGroup<EventObject>(
             matrix: Matrix(
                 recordType: "DateIntMatrix",
-                date: now,
+                date: Date(),
                 name: "group_name",
                 cells: EventObject.parse(of: batch)
             ),
@@ -34,5 +34,3 @@ struct SyncGroupTests {
         )
     }
 }
-
-private let now = Date()
