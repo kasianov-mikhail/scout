@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import CloudKit
 
 extension MetricsObject {
     static func group<T: MetricsObject & Syncable>(
@@ -18,10 +19,14 @@ extension MetricsObject {
             return nil
         }
         return SyncGroup(
-            recordType: T.Cell.Scalar.recordName,
-            name: name,
-            category: telemetry,
-            date: week,
+            matrix: Matrix(
+                recordType: T.Cell.Scalar.recordName,
+                date: week,
+                name: name,
+                category: telemetry,
+                recordID: CKRecord.ID(),
+                cells: []
+            ),
             representables: nil,
             batch: batch
         )

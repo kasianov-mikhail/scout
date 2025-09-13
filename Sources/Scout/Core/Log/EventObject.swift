@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(EventObject)
@@ -17,10 +18,14 @@ final class EventObject: TrackedObject, Syncable {
             return nil
         }
         return SyncGroup(
-            recordType: "DateIntMatrix",
-            name: name,
-            category: nil,
-            date: week,
+            matrix: Matrix(
+                recordType: "DateIntMatrix",
+                date: week,
+                name: name,
+                category: nil,
+                recordID: CKRecord.ID(),
+                cells: []
+            ),
             representables: batch,
             batch: batch
         )

@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(UserActivity)
@@ -17,10 +18,14 @@ final class UserActivity: SyncableObject, Syncable {
             return nil
         }
         return SyncGroup(
-            recordType: "PeriodMatrix",
-            name: "ActiveUser",
-            category: nil,
-            date: month,
+            matrix: Matrix(
+                recordType: "PeriodMatrix",
+                date: month,
+                name: "ActiveUser",
+                category: nil,
+                recordID: CKRecord.ID(),
+                cells: []
+            ),
             representables: nil,
             batch: batch
         )
