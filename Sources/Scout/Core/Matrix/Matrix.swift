@@ -60,17 +60,7 @@ extension Matrix: CustomDebugStringConvertible {
           name: \(name),
           category: \(category ?? "nil"),
           id: \(recordID.recordName),
-          cells: \(cellsSummary))
+          cells: \(cells.summary)
         """
-    }
-
-    private var cellsSummary: String {
-        if cells.isEmpty {
-            return "[]"
-        }
-        let items = cells.map { cell in
-            "\(cell.key)=\(String(describing: cell.value))"
-        }
-        return "[\(items.joined(separator: ", "))]"
     }
 }
