@@ -16,7 +16,7 @@ import Testing
 struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
-    let coordinator: SyncCoordinator<EventObject>
+    let coordinator: SyncCoordinator<Cell<Int>>
 
     init() {
         coordinator = SyncCoordinator(

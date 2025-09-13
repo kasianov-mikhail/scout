@@ -41,7 +41,7 @@ struct SyncDriver: @unchecked Sendable {
     @MainActor
     func send<T: Syncable>(type syncable: T.Type) async throws {
         while let group = try syncable.group(in: context) {
-            let coordinator = SyncCoordinator<T>(
+            let coordinator = SyncCoordinator<T.Cell>(
                 database: database,
                 maxRetry: 3,
                 matrix: group.matrix

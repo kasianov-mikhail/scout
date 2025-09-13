@@ -8,17 +8,17 @@
 import CloudKit
 
 @MainActor
-struct SyncCoordinator<T: Syncable> {
+struct SyncCoordinator<T: CellProtocol & Combining & Sendable> {
     let database: Database
     let maxRetry: Int
-    let matrix: Matrix<T.Cell>
+    let matrix: Matrix<T>
 
     func upload() async throws {
         let matrix = try await matrix.lookupExisting(in: database) ?? matrix
         try await upload(matrix: matrix, retry: 1)
     }
 
-    func upload(matrix: Matrix<T.Cell>, retry: Int) async throws {
+    func upload(matrix: Matrix<T>, retry: Int) async throws {
         do {
             try await database.save(matrix.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
