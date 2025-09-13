@@ -15,9 +15,3 @@ protocol CellProtocol {
 
     init(key: String, value: Scalar) throws
 }
-
-// Backward compatibility
-extension CellProtocol {
-    @available(*, deprecated, renamed: "Scalar")
-    typealias Value = Scalar
-}
