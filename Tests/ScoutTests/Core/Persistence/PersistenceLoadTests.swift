@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-@Suite("NSPersistentContainer.loadStores()")
+@Suite("NSPersistentContainer.loadStore()")
 struct PersistenceLoadTests {
     let model = NSManagedObjectModel.stub()
 
@@ -23,7 +23,7 @@ struct PersistenceLoadTests {
         container.persistentStoreDescriptions = [description]
 
         // This should not throw
-        try container.loadStores()
+        try container.loadStore()
     }
 
     @Test("loadStores throws when loadPersistentStores reports an error")
@@ -37,8 +37,8 @@ struct PersistenceLoadTests {
         )
 
         do {
-            try container.loadStores()
-            Issue.record("Expected loadStores() to throw, but it did not.")
+            try container.loadStore()
+            Issue.record("Expected loadStore() to throw, but it did not.")
         } catch {
             // Ensure we surface the same error we injected
             let nsError = error as NSError
