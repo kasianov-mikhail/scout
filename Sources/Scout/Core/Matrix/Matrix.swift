@@ -11,8 +11,8 @@ struct Matrix<T: CellProtocol & Combining & Sendable> {
     let recordType: String
     let date: Date
     let name: String
-    let category: String?
-    let recordID: CKRecord.ID
+    var category: String? = nil
+    var recordID = CKRecord.ID()
     let cells: [T]
 
     func lookupExisting(in database: Database) async throws -> Self? {

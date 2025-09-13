@@ -23,8 +23,6 @@ struct SyncGroupTests {
                 recordType: "DateIntMatrix",
                 date: now,
                 name: "group_name",
-                category: nil,
-                recordID: CKRecord.ID(),
                 cells: []
             ),
             representables: nil,

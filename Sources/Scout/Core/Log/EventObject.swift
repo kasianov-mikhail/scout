@@ -22,8 +22,6 @@ final class EventObject: TrackedObject, Syncable {
                 recordType: "DateIntMatrix",
                 date: week,
                 name: name,
-                category: nil,
-                recordID: CKRecord.ID(),
                 cells: []
             ),
             representables: batch,

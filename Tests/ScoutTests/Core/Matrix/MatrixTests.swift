@@ -36,16 +36,12 @@ struct MatrixTests {
             recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
-            category: nil,
-            recordID: CKRecord.ID(recordName: "1"),
             cells: [Cell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
             recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
-            category: nil,
-            recordID: CKRecord.ID(recordName: "2"),
             cells: [Cell(row: 0, column: 0, value: 2)]
         )
 
@@ -70,7 +66,7 @@ struct MatrixTests {
             recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
-            category: nil,
+            category: "A",
             recordID: CKRecord.ID(recordName: "1"),
             cells: [Cell(row: 0, column: 0, value: 1)]
         )
@@ -78,7 +74,7 @@ struct MatrixTests {
             recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
-            category: nil,
+            category: "A",
             recordID: CKRecord.ID(recordName: "2"),
             cells: [Cell(row: 0, column: 0, value: 2)]
         )

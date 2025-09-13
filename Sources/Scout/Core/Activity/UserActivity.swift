@@ -22,8 +22,6 @@ final class UserActivity: SyncableObject, Syncable {
                 recordType: "PeriodMatrix",
                 date: month,
                 name: "ActiveUser",
-                category: nil,
-                recordID: CKRecord.ID(),
                 cells: []
             ),
             representables: nil,

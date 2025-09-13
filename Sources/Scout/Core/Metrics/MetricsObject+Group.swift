@@ -24,7 +24,6 @@ extension MetricsObject {
                 date: week,
                 name: name,
                 category: telemetry,
-                recordID: CKRecord.ID(),
                 cells: []
             ),
             representables: nil,

@@ -26,8 +26,6 @@ struct SyncCoordinatorTests {
                 recordType: "DateIntMatrix",
                 date: now,
                 name: "matrix",
-                category: nil,
-                recordID: CKRecord.ID(),
                 cells: []
             )
         )

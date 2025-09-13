@@ -18,8 +18,6 @@ struct ChartPointTests {
             recordType: "Test",
             date: date,
             name: "Test",
-            category: nil,
-            recordID: CKRecord.ID(recordName: "Test"),
             cells: [
                 Cell(row: 2, column: 0, value: 5),
                 Cell(row: 1, column: 1, value: 10),

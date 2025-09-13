@@ -22,8 +22,6 @@ final class SessionObject: SyncableObject, Syncable {
                 recordType: "DateIntMatrix",
                 date: week,
                 name: "Session",
-                category: nil,
-                recordID: CKRecord.ID(),
                 cells: []
             ),
             representables: batch,
