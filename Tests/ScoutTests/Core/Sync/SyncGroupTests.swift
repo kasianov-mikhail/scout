@@ -18,18 +18,19 @@ struct SyncGroupTests {
     let group: SyncGroup<EventObject>
 
     init() {
+        let batch : [EventObject] = [
+            .stub(name: "A", in: context),
+            .stub(name: "A", in: context),
+        ]
         group = SyncGroup<EventObject>(
             matrix: Matrix(
                 recordType: "DateIntMatrix",
                 date: now,
                 name: "group_name",
-                cells: []
+                cells: EventObject.parse(of: batch)
             ),
             representables: nil,
-            batch: [
-                .stub(name: "A", in: context),
-                .stub(name: "A", in: context),
-            ]
+            batch: batch
         )
     }
 

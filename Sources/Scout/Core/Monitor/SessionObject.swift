@@ -22,7 +22,7 @@ final class SessionObject: SyncableObject, Syncable {
                 recordType: "DateIntMatrix",
                 date: week,
                 name: "Session",
-                cells: []
+                cells: parse(of: batch)
             ),
             representables: batch,
             batch: batch

@@ -22,7 +22,7 @@ final class EventObject: TrackedObject, Syncable {
                 recordType: "DateIntMatrix",
                 date: week,
                 name: name,
-                cells: []
+                cells: parse(of: batch)
             ),
             representables: batch,
             batch: batch

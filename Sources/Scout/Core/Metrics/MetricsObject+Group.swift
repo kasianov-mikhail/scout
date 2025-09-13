@@ -24,7 +24,7 @@ extension MetricsObject {
                 date: week,
                 name: name,
                 category: telemetry,
-                cells: []
+                cells: T.parse(of: batch)
             ),
             representables: nil,
             batch: batch

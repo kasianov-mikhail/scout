@@ -22,7 +22,7 @@ final class UserActivity: SyncableObject, Syncable {
                 recordType: "PeriodMatrix",
                 date: month,
                 name: "ActiveUser",
-                cells: []
+                cells: parse(of: batch)
             ),
             representables: nil,
             batch: batch
