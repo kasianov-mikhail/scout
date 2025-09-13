@@ -19,10 +19,10 @@ protocol Syncable: NSManagedObject {
     var isSynced: Bool { get set }
 }
 
-enum SyncableError: Error {
+enum SyncableError: LocalizedError {
     case missingProperty(String)
 
-    var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case let .missingProperty(property):
             return "Missing property: \(property). Cannot group objects."
