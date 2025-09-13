@@ -8,88 +8,69 @@
 import CloudKit
 
 struct Matrix<T: CellProtocol & Combining & Sendable> {
+    let recordType: String
     let date: Date
     let name: String
-    let recordID: CKRecord.ID
+    var category: String? = nil
+    var recordID = CKRecord.ID()
     let cells: [T]
 }
 
 extension Matrix: Combining {
     func isDuplicate(of other: Matrix<T>) -> Bool {
-        date == other.date && name == other.name
+        return date == other.date
+            && name == other.name
+            && category == other.category
+            && recordType == other.recordType
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
-        assert(lhs.date == rhs.date, "Dates must match")
-        assert(lhs.name == rhs.name, "Names must match")
-
-        return Matrix(
+        Matrix(
+            recordType: lhs.recordType,
             date: lhs.date,
             name: lhs.name,
+            category: lhs.category,
             recordID: [lhs.recordID, rhs.recordID].randomElement()!,
             cells: (lhs.cells + rhs.cells).mergeDuplicates()
         )
     }
 }
 
-enum MapError: LocalizedError {
-    case missingField(String)
-    case missingCells
-    case invalidCells
-
-    var errorDescription: String? {
-        switch self {
-        case .missingField(let field):
-            "Missing \(field) field"
-        case .missingCells:
-            "Missing cells"
-        case .invalidCells:
-            "Invalid cells. Expected a dictionary of Strings to Int or Double"
-        }
-    }
-}
-
-extension Matrix: CKInitializable {
-    init(record: CKRecord) throws {
-        guard let date = record["date"] as? Date else {
-            throw MapError.missingField("date")
-        }
-        guard let name = record["name"] as? String else {
-            throw MapError.missingField("name")
-        }
-
-        self.date = date
-        self.name = name
-        self.recordID = record.recordID
-
-        let cellKeys = record.allKeys().filter { $0.hasPrefix("cell_") }
-        let cellDict = record.dictionaryWithValues(forKeys: cellKeys)
-
-        guard cellDict.count > 0 else {
-            throw MapError.missingCells
-        }
-        guard let cellDict = cellDict as? [String: T.Scalar] else {
-            throw MapError.invalidCells
-        }
-
-        self.cells = try cellDict.map(T.init)
-    }
-}
-
-extension Matrix: CKRepresentable {
-    var toRecord: CKRecord {
-        let record = CKRecord(recordType: T.Scalar.recordName, recordID: recordID)
-        record["date"] = date
-        record["name"] = name
-        for cell in cells {
-            record[cell.key] = cell.value
-        }
-        return record
-    }
-}
-
 extension Matrix: CustomStringConvertible {
     var description: String {
-        "Matrix(\(name), \(date), \(cells.count) cells)"
+        """
+        Matrix<\(T.self)>(
+          type: "\(recordType)",
+          date: \(date),
+          name: "\(name)",
+          category: \(category ?? "nil"),
+          id: \(recordID.recordName),
+          cells: \(cells.count) items
+        )
+        """
+    }
+}
+
+extension Matrix: CustomDebugStringConvertible {
+    var debugDescription: String {
+        """
+        Matrix<\(T.self)>(
+          type: \(recordType), 
+          date: \(date), 
+          name: \(name),
+          category: \(category ?? "nil"),
+          id: \(recordID.recordName),
+          cells: \(cellsSummary))
+        """
+    }
+
+    private var cellsSummary: String {
+        if cells.isEmpty {
+            return "[]"
+        }
+        let items = cells.map { cell in
+            "\(cell.key)=\(String(describing: cell.value))"
+        }
+        return "[\(items.joined(separator: ", "))]"
     }
 }

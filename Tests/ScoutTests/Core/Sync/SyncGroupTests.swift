@@ -18,33 +18,20 @@ struct SyncGroupTests {
     let group: SyncGroup<EventObject>
 
     init() {
+        let batch : [EventObject] = [
+            .stub(name: "A", in: context),
+            .stub(name: "A", in: context),
+        ]
         group = SyncGroup<EventObject>(
-            recordType: "DateIntMatrix",
-            name: "group_name",
-            date: now,
+            matrix: Matrix(
+                recordType: "DateIntMatrix",
+                date: now,
+                name: "group_name",
+                cells: EventObject.parse(of: batch)
+            ),
             representables: nil,
-            batch: [
-                .stub(name: "A", in: context),
-                .stub(name: "A", in: context)
-            ]
+            batch: batch
         )
-    }
-
-    @Test("Create a new matrix") func testNewMatrix() async throws {
-        let matrix = group.newMatrix()
-
-        #expect(group.name == matrix.name)
-        #expect(group.date == matrix.date)
-        #expect(!matrix.cells.isEmpty)
-    }
-
-    @Test("Retrieve an existing matrix") func testMatrix() async throws {
-        database.records = [.matrixStub(name: group.name, date: group.date)]
-
-        let matrix = try await group.matrix(in: database)
-
-        #expect(group.name == matrix.name)
-        #expect(group.date == matrix.date)
     }
 }
 

@@ -28,8 +28,8 @@ struct EventObjectTests {
 
         let group = try #require(try EventObject.group(in: context))
 
-        #expect(group.name == name)
-        #expect(group.date == date)
+        #expect(group.matrix.name == name)
+        #expect(group.matrix.date == date)
         #expect(group.batch.count == 3)
         #expect(group.batch.allSatisfy { $0.isSynced == false })
     }

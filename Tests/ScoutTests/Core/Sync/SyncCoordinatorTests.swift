@@ -16,23 +16,18 @@ import Testing
 struct SyncCoordinatorTests {
     let database = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
-    let coordinator: SyncCoordinator<EventObject>
+    let coordinator: SyncCoordinator<Cell<Int>>
 
     init() {
-        let group = SyncGroup<EventObject>(
-            recordType: "DateIntMatrix",
-            name: "matrix",
-            date: now,
-            representables: nil,
-            batch: [
-                .stub(name: "A", in: context),
-                .stub(name: "A", in: context),
-            ]
-        )
         coordinator = SyncCoordinator(
             database: database,
             maxRetry: 3,
-            group: group
+            matrix: Matrix(
+                recordType: "DateIntMatrix",
+                date: now,
+                name: "matrix",
+                cells: []
+            )
         )
     }
 

@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(SessionObject)
@@ -17,9 +18,12 @@ final class SessionObject: SyncableObject, Syncable {
             return nil
         }
         return SyncGroup(
-            recordType: "DateIntMatrix",
-            name: "Session",
-            date: week,
+            matrix: Matrix(
+                recordType: "DateIntMatrix",
+                date: week,
+                name: "Session",
+                cells: parse(of: batch)
+            ),
             representables: batch,
             batch: batch
         )
