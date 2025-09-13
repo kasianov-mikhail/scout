@@ -18,7 +18,7 @@ struct SyncCoordinator<T: Syncable> {
         try await upload(matrix: matrix, retry: 1)
     }
 
-    func upload(matrix: Matrix<T.Value>, retry: Int) async throws {
+    func upload(matrix: Matrix<T.Cell>, retry: Int) async throws {
         do {
             try await database.save(matrix.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {

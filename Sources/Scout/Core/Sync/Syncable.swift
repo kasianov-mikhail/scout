@@ -19,12 +19,6 @@ protocol Syncable: NSManagedObject {
     var isSynced: Bool { get set }
 }
 
-// Backward compatibility
-extension Syncable {
-    @available(*, deprecated, renamed: "Cell")
-    typealias Value = Cell
-}
-
 enum SyncableError: Error {
     case missingProperty(String)
 
