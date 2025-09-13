@@ -20,6 +20,7 @@ struct SyncGroup<T: Syncable>: @unchecked Sendable {
 extension SyncGroup {
     func newMatrix() -> Matrix<T.Cell> {
         Matrix(
+            recordType: recordType,
             date: date,
             name: name,
             category: category,

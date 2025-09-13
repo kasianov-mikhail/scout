@@ -8,6 +8,7 @@
 import CloudKit
 
 struct Matrix<T: CellProtocol & Combining & Sendable> {
+    let recordType: String
     let date: Date
     let name: String
     let category: String?
@@ -17,15 +18,15 @@ struct Matrix<T: CellProtocol & Combining & Sendable> {
 
 extension Matrix: Combining {
     func isDuplicate(of other: Matrix<T>) -> Bool {
-        date == other.date && name == other.name
+        return date == other.date
+            && name == other.name
+            && category == other.category
+            && recordType == other.recordType
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
-        assert(lhs.date == rhs.date, "Dates must match")
-        assert(lhs.name == rhs.name, "Names must match")
-        assert(lhs.category == rhs.category, "Categories must match")
-
-        return Matrix(
+        Matrix(
+            recordType: lhs.recordType,
             date: lhs.date,
             name: lhs.name,
             category: lhs.category,
@@ -61,6 +62,7 @@ extension Matrix: CKInitializable {
             throw MapError.missingField("name")
         }
 
+        self.recordType = record.recordType
         self.date = date
         self.name = name
         self.category = record["category"]
@@ -82,7 +84,7 @@ extension Matrix: CKInitializable {
 
 extension Matrix: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: T.Scalar.recordName, recordID: recordID)
+        let record = CKRecord(recordType: recordType, recordID: recordID)
         record["date"] = date
         record["name"] = name
         for cell in cells {

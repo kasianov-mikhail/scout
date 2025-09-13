@@ -33,6 +33,7 @@ struct MatrixTests {
     @Test("Matrix addition") func testMatrixAddition() {
         let date = Date()
         var matrix1 = Matrix(
+            recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
             category: nil,
@@ -40,6 +41,7 @@ struct MatrixTests {
             cells: [Cell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
+            recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
             category: nil,
@@ -65,6 +67,7 @@ struct MatrixTests {
     @Test("Merge duplicate matrices") func testMergeDuplicateMatrices() {
         let date = Date()
         let matrix1 = Matrix(
+            recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
             category: nil,
@@ -72,6 +75,7 @@ struct MatrixTests {
             cells: [Cell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
+            recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
             category: nil,
