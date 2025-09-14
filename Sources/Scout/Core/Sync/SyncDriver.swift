@@ -44,22 +44,22 @@ struct SyncDriver: @unchecked Sendable {
 
     @MainActor
     func send<T: Syncable>(type syncable: T.Type) async throws {
-        while let group = try syncable.group(in: context) {
-            try await SyncCoordinator<T.Cell>(
+        while let batch = try syncable.group(in: context), let matrix = syncable.matrix(of: batch) {
+            try await SyncCoordinator(
                 database: database,
                 maxRetry: 3,
-                matrix: group.matrix
+                matrix: matrix
             )
             .upload()
 
-            if let objects = group.representables {
+            if let objects = batch as? [CKRepresentable] {
                 try await database.modifyRecords(
                     saving: objects.map(\.toRecord),
                     deleting: []
                 )
             }
 
-            for object in group.batch {
+            for object in batch {
                 object.isSynced = true
             }
 

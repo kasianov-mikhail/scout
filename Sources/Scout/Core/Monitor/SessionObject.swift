@@ -10,18 +10,8 @@ import CoreData
 
 @objc(SessionObject)
 final class SessionObject: SyncableObject, Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
-        guard let batch: [SessionObject] = try batch(in: context, matching: [\.week]) else {
-            return nil
-        }
-        guard let matrix = matrix(of: batch) else {
-            return nil
-        }
-        return SyncGroup(
-            matrix: matrix,
-            representables: batch,
-            batch: batch
-        )
+    static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
+        try batch(in: context, matching: [\.week])
     }
 
     static func matrix(of batch: [SessionObject]) -> Matrix<Cell<Int>>? {

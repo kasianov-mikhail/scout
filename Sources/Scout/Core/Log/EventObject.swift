@@ -10,18 +10,8 @@ import CoreData
 
 @objc(EventObject)
 final class EventObject: TrackedObject, Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<EventObject>? {
-        guard let batch: [EventObject] = try batch(in: context, matching: [\.name, \.week]) else {
-            return nil
-        }
-        guard let matrix = matrix(of: batch) else {
-            return nil
-        }
-        return SyncGroup(
-            matrix: matrix,
-            representables: batch,
-            batch: batch
-        )
+    static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
+        try batch(in: context, matching: [\.name, \.week])
     }
 
     static func matrix(of batch: [EventObject]) -> Matrix<Cell<Int>>? {

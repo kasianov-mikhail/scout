@@ -10,18 +10,8 @@ import CoreData
 
 @objc(UserActivity)
 final class UserActivity: SyncableObject, Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<UserActivity>? {
-        guard let batch: [UserActivity] = try batch(in: context, matching: [\.month]) else {
-            return nil
-        }
-        guard let matrix = matrix(of: batch) else {
-            return nil
-        }
-        return SyncGroup(
-            matrix: matrix,
-            representables: nil,
-            batch: batch
-        )
+    static func group(in context: NSManagedObjectContext) throws -> [UserActivity]? {
+         try batch(in: context, matching: [\.month])
     }
 
     static func matrix(of batch: [UserActivity]) -> Matrix<PeriodCell<Int>>? {

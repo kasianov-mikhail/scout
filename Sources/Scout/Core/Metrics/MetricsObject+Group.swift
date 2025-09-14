@@ -9,20 +9,8 @@ import CoreData
 import CloudKit
 
 extension MetricsObject {
-    static func group<T: MetricsObject & Syncable>(
-        in context: NSManagedObjectContext
-    ) throws -> SyncGroup<T>? {
-        guard let batch: [T] = try batch(in: context, matching: [\.name, \.telemetry, \.week]) else {
-            return nil
-        }
-        guard let matrix = matrix(of: batch) else {
-            return nil
-        }
-        return SyncGroup(
-            matrix: matrix,
-            representables: nil,
-            batch: batch
-        )
+    static func group<T: MetricsObject & Syncable>(in context: NSManagedObjectContext) throws -> [T]? {
+        try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
     static func matrix<T: MetricsObject & Syncable>(of batch: [T]) -> Matrix<T.Cell>? {
