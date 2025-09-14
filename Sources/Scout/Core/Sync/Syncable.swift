@@ -14,6 +14,7 @@ protocol Syncable: NSManagedObject {
     associatedtype Cell: CellProtocol & Combining & Sendable
 
     static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Self>?
+    static func matrix(of batch: [Self]) -> Matrix<Cell>?
     static func parse(of batch: [Self]) -> [Cell]
 
     var isSynced: Bool { get set }

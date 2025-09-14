@@ -14,18 +14,25 @@ final class SessionObject: SyncableObject, Syncable {
         guard let batch: [SessionObject] = try batch(in: context, matching: [\.week]) else {
             return nil
         }
-        guard let week = batch.first?.week else {
+        guard let matrix = matrix(of: batch) else {
             return nil
         }
         return SyncGroup(
-            matrix: Matrix(
-                recordType: "DateIntMatrix",
-                date: week,
-                name: "Session",
-                cells: parse(of: batch)
-            ),
+            matrix: matrix,
             representables: batch,
             batch: batch
+        )
+    }
+
+    static func matrix(of batch: [SessionObject]) -> Matrix<Cell<Int>>? {
+        guard let week = batch.first?.week else {
+            return nil
+        }
+        return Matrix(
+            recordType: "DateIntMatrix",
+            date: week,
+            name: "Session",
+            cells: parse(of: batch)
         )
     }
 

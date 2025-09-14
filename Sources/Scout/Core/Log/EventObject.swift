@@ -14,18 +14,25 @@ final class EventObject: TrackedObject, Syncable {
         guard let batch: [EventObject] = try batch(in: context, matching: [\.name, \.week]) else {
             return nil
         }
-        guard let name = batch.first?.name, let week = batch.first?.week else {
+        guard let matrix = matrix(of: batch) else {
             return nil
         }
         return SyncGroup(
-            matrix: Matrix(
-                recordType: "DateIntMatrix",
-                date: week,
-                name: name,
-                cells: parse(of: batch)
-            ),
+            matrix: matrix,
             representables: batch,
             batch: batch
+        )
+    }
+
+    static func matrix(of batch: [EventObject]) -> Matrix<Cell<Int>>? {
+        guard let name = batch.first?.name, let week = batch.first?.week else {
+            return nil
+        }
+        return Matrix(
+            recordType: "DateIntMatrix",
+            date: week,
+            name: name,
+            cells: parse(of: batch)
         )
     }
 

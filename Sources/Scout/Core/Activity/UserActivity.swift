@@ -14,18 +14,25 @@ final class UserActivity: SyncableObject, Syncable {
         guard let batch: [UserActivity] = try batch(in: context, matching: [\.month]) else {
             return nil
         }
-        guard let month = batch.first?.month else {
+        guard let matrix = matrix(of: batch) else {
             return nil
         }
         return SyncGroup(
-            matrix: Matrix(
-                recordType: "PeriodMatrix",
-                date: month,
-                name: "ActiveUser",
-                cells: parse(of: batch)
-            ),
+            matrix: matrix,
             representables: nil,
             batch: batch
+        )
+    }
+
+    static func matrix(of batch: [UserActivity]) -> Matrix<PeriodCell<Int>>? {
+        guard let month = batch.first?.month else {
+            return nil
+        }
+        return Matrix(
+            recordType: "PeriodMatrix",
+            date: month,
+            name: "ActiveUser",
+            cells: parse(of: batch)
         )
     }
 
