@@ -44,11 +44,11 @@ struct SyncDriver: @unchecked Sendable {
 
     @MainActor
     func send<T: Syncable>(type syncable: T.Type) async throws {
-        while let batch = try syncable.group(in: context), let matrix = syncable.matrix(of: batch) {
+        while let batch = try syncable.group(in: context) {
             try await SyncCoordinator(
                 database: database,
                 maxRetry: 3,
-                matrix: matrix
+                batch: batch
             )
             .upload()
 

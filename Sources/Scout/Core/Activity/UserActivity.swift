@@ -14,9 +14,9 @@ final class UserActivity: SyncableObject, Syncable {
          try batch(in: context, matching: [\.month])
     }
 
-    static func matrix(of batch: [UserActivity]) -> Matrix<PeriodCell<Int>>? {
+    static func matrix(of batch: [UserActivity]) throws(SyncableError) -> Matrix<PeriodCell<Int>> {
         guard let month = batch.first?.month else {
-            return nil
+            throw .missingProperty("month")
         }
         return Matrix(
             recordType: "PeriodMatrix",

@@ -13,9 +13,15 @@ extension MetricsObject {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
-    static func matrix<T: MetricsObject & Syncable>(of batch: [T]) -> Matrix<T.Cell>? {
-        guard let name = batch.first?.name, let telemetry = batch.first?.telemetry, let week = batch.first?.week else {
-            return nil
+    static func matrix<T: MetricsObject & Syncable>(of batch: [T]) throws(SyncableError) -> Matrix<T.Cell> {
+        guard let name = batch.first?.name else {
+            throw .missingProperty("name")
+        }
+        guard let telemetry = batch.first?.telemetry else {
+            throw .missingProperty("telemetry")
+        }
+        guard let week = batch.first?.week else {
+            throw .missingProperty("week")
         }
         return Matrix(
             recordType: T.Cell.Scalar.recordName,
