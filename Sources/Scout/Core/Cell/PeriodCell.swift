@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct PeriodCell<T: SyncValue> {
+struct PeriodCell<T: MatrixValue> {
     let period: ActivityPeriod
     let day: Int
     let value: T
