@@ -11,7 +11,6 @@ import CoreData
 struct SyncGroup<T: Syncable>: @unchecked Sendable {
     let recordType: String
     let name: String
-    let category: String?
     let date: Date
     let representables: [CKRepresentable]?
     let batch: [T]
@@ -22,7 +21,6 @@ extension SyncGroup {
         Matrix(
             date: date,
             name: name,
-            category: category,
             recordID: CKRecord.ID(),
             cells: T.parse(of: batch)
         )

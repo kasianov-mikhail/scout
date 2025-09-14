@@ -21,7 +21,6 @@ struct SyncGroupTests {
         group = SyncGroup<EventObject>(
             recordType: "DateIntMatrix",
             name: "group_name",
-            category: nil,
             date: now,
             representables: nil,
             batch: [

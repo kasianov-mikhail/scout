@@ -10,7 +10,6 @@ import CloudKit
 struct Matrix<T: CellProtocol & Combining & Sendable> {
     let date: Date
     let name: String
-    let category: String?
     let recordID: CKRecord.ID
     let cells: [T]
 }
@@ -23,12 +22,10 @@ extension Matrix: Combining {
     static func + (lhs: Self, rhs: Self) -> Self {
         assert(lhs.date == rhs.date, "Dates must match")
         assert(lhs.name == rhs.name, "Names must match")
-        assert(lhs.category == rhs.category, "Categories must match")
 
         return Matrix(
             date: lhs.date,
             name: lhs.name,
-            category: lhs.category,
             recordID: [lhs.recordID, rhs.recordID].randomElement()!,
             cells: (lhs.cells + rhs.cells).mergeDuplicates()
         )
@@ -63,7 +60,6 @@ extension Matrix: CKInitializable {
 
         self.date = date
         self.name = name
-        self.category = record["category"]
         self.recordID = record.recordID
 
         let cellKeys = record.allKeys().filter { $0.hasPrefix("cell_") }

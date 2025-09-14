@@ -22,7 +22,6 @@ struct SyncCoordinatorTests {
         let group = SyncGroup<EventObject>(
             recordType: "DateIntMatrix",
             name: "matrix",
-            category: nil,
             date: now,
             representables: nil,
             batch: [
