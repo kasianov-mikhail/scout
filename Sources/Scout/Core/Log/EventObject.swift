@@ -14,7 +14,7 @@ final class EventObject: TrackedObject, Syncable {
         try batch(in: context, matching: [\.name, \.week])
     }
 
-    static func matrix(of batch: [EventObject]) throws(SyncableError) -> Matrix<Cell<Int>> {
+    static func matrix(of batch: [EventObject]) throws(MatrixSyncError) -> Matrix<Cell<Int>> {
         guard let name = batch.first?.name else {
             throw .missingProperty("name")
         }
