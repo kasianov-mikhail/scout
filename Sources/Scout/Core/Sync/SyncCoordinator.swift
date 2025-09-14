@@ -30,11 +30,3 @@ struct SyncCoordinator<T: CellProtocol & Combining & Sendable> {
         }
     }
 }
-
-extension SyncCoordinator {
-    init<V: Syncable>(database: Database, maxRetry: Int, batch: [V]) throws where V.Cell == T {
-        self.database = database
-        self.maxRetry = maxRetry
-        self.matrix = try V.matrix(of: batch)
-    }
-}
