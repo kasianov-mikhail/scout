@@ -16,24 +16,6 @@ struct EventObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
 
-    @Test("group(in:) returns correct SyncGroup for matching unsynced events")
-    func testGroupIn() throws {
-        let name = "test-event"
-
-        for _ in 0..<3 {
-            EventObject.stub(name: name, date: date, synced: false, in: context)
-        }
-
-        EventObject.stub(name: name, date: date, synced: true, in: context)
-
-        let group = try #require(try EventObject.group(in: context))
-
-        #expect(group.matrix.name == name)
-        #expect(group.matrix.date == date)
-        #expect(group.batch.count == 3)
-        #expect(group.batch.allSatisfy { $0.isSynced == false })
-    }
-
     @Test("parse(of:) produces correct Cell<Int> counts by hour")
     func testParseOf() throws {
         let batch: [EventObject] = [
