@@ -8,7 +8,7 @@
 import CloudKit
 
 @MainActor
-struct SyncCoordinator<T: CellProtocol & Combining & Sendable> {
+struct SyncCoordinator<T: CellProtocol> {
     let database: Database
     let maxRetry: Int
     let matrix: Matrix<T>
