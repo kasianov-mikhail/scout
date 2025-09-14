@@ -12,7 +12,7 @@ protocol Syncable: SyncableObject {
     associatedtype Cell: CellProtocol
 
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
-    static func matrix(of batch: [Self]) throws(SyncableError) -> Matrix<Cell>
+    static func matrix(of batch: [Self]) throws(MatrixSyncError) -> Matrix<Cell>
     static func parse(of batch: [Self]) -> [Cell]
 }
 
@@ -24,7 +24,7 @@ extension SyncCoordinator {
     }
 }
 
-enum SyncableError: LocalizedError {
+enum MatrixSyncError: LocalizedError {
     case missingProperty(String)
 
     var errorDescription: String? {
