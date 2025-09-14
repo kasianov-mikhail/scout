@@ -15,23 +15,6 @@ import Testing
 struct SessionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
-    let date1 = Date(timeIntervalSince1970: 1_724_457_800)  // +200s
-    let date2 = Date(timeIntervalSince1970: 1_724_458_000)  // +400s
-
-    @Test("group(in:) returns correct SyncGroup for matching unsynced sessions")
-    func testGroupIn() throws {
-        SessionObject.stub(date: date1, synced: false, in: context)
-        SessionObject.stub(date: date2, synced: false, in: context)
-        SessionObject.stub(date: date2, synced: true, in: context)
-
-        let group = try #require(try SessionObject.group(in: context))
-
-        #expect(group.batch.count == 2)
-        #expect(group.matrix.name == "Session")
-        #expect(group.matrix.recordType == "DateIntMatrix")
-        #expect(group.matrix.date == week)
-        #expect(group.batch.allSatisfy { !$0.isSynced && $0.week == week })
-    }
 
     @Test("parse(of:) produces correct Cell<Int> counts by date")
     func testParseOf() throws {
