@@ -7,7 +7,7 @@
 
 import CloudKit
 
-protocol CellProtocol {
+protocol CellProtocol: Combining, Sendable {
     associatedtype Scalar: MatrixValue & CKRecordValueProtocol
 
     var key: String { get }

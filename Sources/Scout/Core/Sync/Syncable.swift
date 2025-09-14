@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 protocol Syncable: SyncableObject {
-    associatedtype Cell: CellProtocol & Combining & Sendable
+    associatedtype Cell: CellProtocol
 
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
     static func matrix(of batch: [Self]) throws(SyncableError) -> Matrix<Cell>
