@@ -24,39 +24,42 @@ struct SyncDriver: @unchecked Sendable {
                 }
             }
 
-            let jobs = [
-                { try await send(type: EventObject.self) },
-                { try await send(type: SessionObject.self) },
-                { try await send(type: UserActivity.self) },
-                { try await send(type: IntMetricsObject.self) },
-                { try await send(type: DoubleMetricsObject.self) },
-            ]
-
             for job in jobs.shuffled() {
                 try await job()
             }
         }
     }
 
+    private typealias Job = () async throws -> Void
+
+    private var jobs: [Job] {
+        [
+            { try await send(type: EventObject.self) },
+            { try await send(type: SessionObject.self) },
+            { try await send(type: UserActivity.self) },
+            { try await send(type: IntMetricsObject.self) },
+            { try await send(type: DoubleMetricsObject.self) },
+        ]
+    }
+
     @MainActor
     func send<T: Syncable>(type syncable: T.Type) async throws {
-        while let group = try syncable.group(in: context) {
-            let coordinator = SyncCoordinator(
+        while let batch = try syncable.group(in: context) {
+            try await SyncCoordinator(
                 database: database,
                 maxRetry: 3,
-                group: group
+                batch: batch
             )
+            .upload()
 
-            try await coordinator.upload()
-
-            if let objects = group.representables {
+            if let objects = batch as? [CKRepresentable] {
                 try await database.modifyRecords(
                     saving: objects.map(\.toRecord),
                     deleting: []
                 )
             }
 
-            for object in group.batch {
+            for object in batch {
                 object.isSynced = true
             }
 

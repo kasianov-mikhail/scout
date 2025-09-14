@@ -12,13 +12,12 @@ import Testing
 @testable import Scout
 
 struct ChartPointTests {
-
     @Test("Mapping an integer matrix to chart points") func testFromIntMatrix() {
         let date = Date()
         let matrix = Matrix(
+            recordType: "Test",
             date: date,
             name: "Test",
-            recordID: CKRecord.ID(recordName: "Test"),
             cells: [
                 Cell(row: 2, column: 0, value: 5),
                 Cell(row: 1, column: 1, value: 10),

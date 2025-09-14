@@ -7,11 +7,23 @@
 
 import CloudKit
 
-protocol CellProtocol {
+protocol CellProtocol: Combining, Sendable {
     associatedtype Scalar: MatrixValue & CKRecordValueProtocol
 
     var key: String { get }
     var value: Scalar { get }
 
     init(key: String, value: Scalar) throws
+}
+
+extension Array where Element: CellProtocol {
+    var summary: String {
+        if isEmpty {
+            return "[]"
+        }
+        let items = map { cell in
+            "\(cell.key)=\(String(describing: cell.value))"
+        }
+        return "[\(items.joined(separator: ", "))]"
+    }
 }

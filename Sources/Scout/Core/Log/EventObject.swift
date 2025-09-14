@@ -5,23 +5,27 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(EventObject)
 final class EventObject: TrackedObject, Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<EventObject>? {
-        guard let batch: [EventObject] = try batch(in: context, matching: [\.name, \.week]) else {
-            return nil
+    static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
+        try batch(in: context, matching: [\.name, \.week])
+    }
+
+    static func matrix(of batch: [EventObject]) throws(MatrixSyncError) -> Matrix<Cell<Int>> {
+        guard let name = batch.first?.name else {
+            throw .missingProperty("name")
         }
-        guard let name = batch.first?.name, let week = batch.first?.week else {
-            return nil
+        guard let week = batch.first?.week else {
+            throw .missingProperty("week")
         }
-        return SyncGroup(
+        return Matrix(
             recordType: "DateIntMatrix",
-            name: name,
             date: week,
-            representables: batch,
-            batch: batch
+            name: name,
+            cells: parse(of: batch)
         )
     }
 
@@ -29,3 +33,4 @@ final class EventObject: TrackedObject, Syncable {
         batch.grouped(by: \.hour).mapValues(\.count).map(Cell.init)
     }
 }
+

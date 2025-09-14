@@ -6,24 +6,32 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import CloudKit
 
-extension MetricsObject {
-    static func group<T: MetricsObject & Syncable>(
-        in context: NSManagedObjectContext
-    ) throws -> SyncGroup<T>? {
-        guard let batch: [T] = try batch(in: context, matching: [\.name, \.telemetry, \.week]) else {
-            return nil
+@objc(MetricsObject)
+class MetricsObject: TrackedObject {
+    static func group<T: MetricsObject & Syncable>(in context: NSManagedObjectContext) throws -> [T]? {
+        try batch(in: context, matching: [\.name, \.telemetry, \.week])
+    }
+
+    static func matrix<T: MetricsObject & Syncable>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
+        guard let name = batch.first?.name else {
+            throw .missingProperty("name")
         }
-        guard let name = batch.first?.name, let telemetry = batch.first?.telemetry, let week = batch.first?.week else {
-            return nil
+        guard let telemetry = batch.first?.telemetry else {
+            throw .missingProperty("telemetry")
         }
-        return SyncGroup(
+        guard let week = batch.first?.week else {
+            throw .missingProperty("week")
+        }
+        return Matrix(
             recordType: T.Cell.Scalar.recordName,
             name: name,
             category: telemetry,
             date: week,
-            representables: nil,
-            batch: batch
+            name: name,
+            category: telemetry,
+            cells: T.parse(of: batch)
         )
     }
 }

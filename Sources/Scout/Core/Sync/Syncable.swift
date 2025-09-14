@@ -8,21 +8,26 @@
 import CloudKit
 import CoreData
 
-typealias SyncValue = MatrixValue & CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable
+protocol Syncable: SyncableObject {
+    associatedtype Cell: CellProtocol
 
-protocol Syncable: NSManagedObject {
-    associatedtype Cell: CellProtocol & Combining & Sendable
-
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<Self>?
+    static func group(in context: NSManagedObjectContext) throws -> [Self]?
+    static func matrix(of batch: [Self]) throws(MatrixSyncError) -> Matrix<Cell>
     static func parse(of batch: [Self]) -> [Cell]
-
-    var isSynced: Bool { get set }
 }
 
-enum SyncableError: Error {
+extension SyncCoordinator {
+    init<V: Syncable>(database: Database, maxRetry: Int, batch: [V]) throws where V.Cell == T {
+        self.database = database
+        self.maxRetry = maxRetry
+        self.matrix = try V.matrix(of: batch)
+    }
+}
+
+enum MatrixSyncError: LocalizedError {
     case missingProperty(String)
 
-    var localizedDescription: String {
+    var errorDescription: String? {
         switch self {
         case let .missingProperty(property):
             return "Missing property: \(property). Cannot group objects."

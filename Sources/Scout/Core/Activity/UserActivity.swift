@@ -5,23 +5,24 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(UserActivity)
 final class UserActivity: SyncableObject, Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<UserActivity>? {
-        guard let batch: [UserActivity] = try batch(in: context, matching: [\.month]) else {
-            return nil
-        }
+    static func group(in context: NSManagedObjectContext) throws -> [UserActivity]? {
+         try batch(in: context, matching: [\.month])
+    }
+
+    static func matrix(of batch: [UserActivity]) throws(MatrixSyncError) -> Matrix<PeriodCell<Int>> {
         guard let month = batch.first?.month else {
-            return nil
+            throw .missingProperty("month")
         }
-        return SyncGroup(
+        return Matrix(
             recordType: "PeriodMatrix",
-            name: "ActiveUser",
             date: month,
-            representables: nil,
-            batch: batch
+            name: "ActiveUser",
+            cells: parse(of: batch)
         )
     }
 

@@ -5,23 +5,24 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(SessionObject)
 final class SessionObject: SyncableObject, Syncable {
-    static func group(in context: NSManagedObjectContext) throws -> SyncGroup<SessionObject>? {
-        guard let batch: [SessionObject] = try batch(in: context, matching: [\.week]) else {
-            return nil
-        }
+    static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
+        try batch(in: context, matching: [\.week])
+    }
+
+    static func matrix(of batch: [SessionObject]) throws(MatrixSyncError) -> Matrix<Cell<Int>> {
         guard let week = batch.first?.week else {
-            return nil
+            throw .missingProperty("week")
         }
-        return SyncGroup(
+        return Matrix(
             recordType: "DateIntMatrix",
-            name: "Session",
             date: week,
-            representables: batch,
-            batch: batch
+            name: "Session",
+            cells: parse(of: batch)
         )
     }
 

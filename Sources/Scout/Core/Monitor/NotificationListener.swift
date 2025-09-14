@@ -9,9 +9,9 @@ import CloudKit
 import CoreData
 import UIKit
 
-public class NotificationListener {
+class NotificationListener {
     struct SetupError: LocalizedError {
-        let errorDescription = "NotificationListener is already setup"
+        let errorDescription: String? = "NotificationListener is already setup"
     }
 
     typealias Action = @Sendable () async throws -> Void
@@ -24,7 +24,7 @@ public class NotificationListener {
         self.table = table
     }
 
-    public func setup() throws {
+    func setup() throws {
         guard !isSetup else {
             throw SetupError()
         }

@@ -6,8 +6,9 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import CloudKit
 
-protocol MatrixValue: Sendable {
+protocol MatrixValue: CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable {
     associatedtype Object: MetricsObject
 
     static var recordName: String { get }
