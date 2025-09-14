@@ -14,7 +14,7 @@ class MetricsObject: TrackedObject {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
-    static func matrix<T: MetricsObject & Syncable>(of batch: [T]) throws(SyncableError) -> Matrix<T.Cell> {
+    static func matrix<T: MetricsObject & Syncable>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
         guard let name = batch.first?.name else {
             throw .missingProperty("name")
         }
