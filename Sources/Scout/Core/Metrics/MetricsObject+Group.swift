@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
 import CloudKit
+import CoreData
 
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
@@ -26,8 +26,6 @@ class MetricsObject: TrackedObject {
         }
         return Matrix(
             recordType: T.Cell.Scalar.recordName,
-            name: name,
-            category: telemetry,
             date: week,
             name: name,
             category: telemetry,
