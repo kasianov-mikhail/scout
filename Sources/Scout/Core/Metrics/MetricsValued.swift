@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MetricsValued {
+protocol MetricsValued: MetricsObject {
     associatedtype Value: MatrixValue
     var value: Value { get set }
 }
