@@ -5,8 +5,13 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
 import CloudKit
+import CoreData
+
+protocol MetricsObjectProtocol {
+    associatedtype Value: MatrixValue
+    var value: Value { get set }
+}
 
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
@@ -32,4 +37,28 @@ class MetricsObject: TrackedObject {
             cells: T.parse(of: batch)
         )
     }
+
+    static func parse<
+        T: MetricsObject & MetricsObjectProtocol & Syncable,
+        V: CellProtocol
+    >(of batch: [T])  -> [V] where T.Value == V.Scalar {
+        batch.grouped(by: \.hour).mapValues { items in
+            items.reduce(T.Value.zero) { $0 + $1.value }
+        }
+        .map {
+           try! V(key: $0.key, value: $0.value)
+        }
+    }
+}
+
+@objc(DoubleMetricsObject)
+final class DoubleMetricsObject: MetricsObject, Syncable, MetricsObjectProtocol {
+    typealias Cell = GridCell<Double>
+    @NSManaged var value: Double
+}
+
+@objc(IntMetricsObject)
+final class IntMetricsObject: MetricsObject, Syncable, MetricsObjectProtocol {
+    typealias Cell = GridCell<Int>
+    @NSManaged var value: Int
 }
