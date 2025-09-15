@@ -16,7 +16,7 @@ struct EventObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
 
-    @Test("parse(of:) produces correct Cell<Int> counts by hour")
+    @Test("parse(of:) produces correct GridCell<Int> counts by hour")
     func testParseOf() throws {
         let batch: [EventObject] = [
             .stub(name: "name", date: date, in: context),

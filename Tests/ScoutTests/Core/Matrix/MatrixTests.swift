@@ -21,10 +21,10 @@ struct MatrixTests {
         record["cell_0_0"] = 1
         record["cell_0_1"] = 2
 
-        let matrix = try Matrix<Cell<Int>>(record: record)
+        let matrix = try Matrix<GridCell<Int>>(record: record)
         let expectedCells = [
-            Cell(row: 0, column: 0, value: 1),
-            Cell(row: 0, column: 1, value: 2),
+            GridCell(row: 0, column: 0, value: 1),
+            GridCell(row: 0, column: 1, value: 2),
         ]
 
         #expect(Set(matrix.cells) == Set(expectedCells))
@@ -36,13 +36,13 @@ struct MatrixTests {
             recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
-            cells: [Cell(row: 0, column: 0, value: 1)]
+            cells: [GridCell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
             recordType: "DateIntMatrix",
             date: date,
             name: "Test Matrix",
-            cells: [Cell(row: 0, column: 0, value: 2)]
+            cells: [GridCell(row: 0, column: 0, value: 2)]
         )
 
         matrix1 += matrix2
@@ -52,8 +52,8 @@ struct MatrixTests {
     }
 
     @Test("Matrix cell addition") func testMatrixCellAddition() {
-        var cell1 = Cell(row: 0, column: 0, value: 1)
-        let cell2 = Cell(row: 0, column: 0, value: 2)
+        var cell1 = GridCell(row: 0, column: 0, value: 1)
+        let cell2 = GridCell(row: 0, column: 0, value: 2)
 
         cell1 += cell2
 
@@ -68,7 +68,7 @@ struct MatrixTests {
             name: "Test Matrix",
             category: "A",
             recordID: CKRecord.ID(recordName: "1"),
-            cells: [Cell(row: 0, column: 0, value: 1)]
+            cells: [GridCell(row: 0, column: 0, value: 1)]
         )
         let matrix2 = Matrix(
             recordType: "DateIntMatrix",
@@ -76,7 +76,7 @@ struct MatrixTests {
             name: "Test Matrix",
             category: "A",
             recordID: CKRecord.ID(recordName: "2"),
-            cells: [Cell(row: 0, column: 0, value: 2)]
+            cells: [GridCell(row: 0, column: 0, value: 2)]
         )
 
         let merged = [matrix1, matrix2].mergeDuplicates()
@@ -87,8 +87,8 @@ struct MatrixTests {
     }
 
     @Test("Merge duplicate cells") func testMergeDuplicateCells() {
-        let cell1 = Cell(row: 0, column: 0, value: 1)
-        let cell2 = Cell(row: 0, column: 0, value: 2)
+        let cell1 = GridCell(row: 0, column: 0, value: 1)
+        let cell2 = GridCell(row: 0, column: 0, value: 2)
 
         let merged = [cell1, cell2].mergeDuplicates()
 
