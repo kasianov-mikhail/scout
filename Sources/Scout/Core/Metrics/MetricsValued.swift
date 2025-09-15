@@ -5,11 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
 protocol MetricsValued: MetricsObject {
     associatedtype Value: MatrixValue
     var value: Value { get set }
+    init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
 }
 
 @objc(DoubleMetricsObject)

@@ -11,7 +11,7 @@ extension MatrixValue {
     func toObject(in context: NSManagedObjectContext) -> Object {
         let entityName = String(describing: Object.self)
         let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)!
-        let object = NSManagedObject(entity: entity, insertInto: context) as! Object
+        let object = Object(entity: entity, insertInto: context)
         object.value = self
         return object
     }
