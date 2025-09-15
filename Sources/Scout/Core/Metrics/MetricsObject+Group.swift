@@ -43,11 +43,9 @@ class MetricsObject: TrackedObject {
         V: CellProtocol
     >(of batch: [T])  -> [V] where T.Value == V.Scalar {
         batch.grouped(by: \.hour).mapValues { items in
-            items.reduce(T.Value.zero) { $0 + $1.value }
+            items.reduce(.zero) { $0 + $1.value }
         }
-        .map {
-           try! V(key: $0.key, value: $0.value)
-        }
+        .map(V.init)
     }
 }
 
