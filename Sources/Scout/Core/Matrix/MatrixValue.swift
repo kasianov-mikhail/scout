@@ -22,13 +22,3 @@ extension Double: MatrixValue {
     typealias Object = DoubleMetricsObject
     static let recordName = "DateDoubleMatrix"
 }
-
-extension MatrixValue {
-    func toObject(in context: NSManagedObjectContext) -> Object {
-        let entityName = String(describing: Object.self)
-        let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)!
-        var object = MetricsObject(entity: entity, insertInto: context) as! Object
-        object.value = self
-        return object
-    }
-}
