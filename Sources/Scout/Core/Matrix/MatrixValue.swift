@@ -9,30 +9,16 @@ import CoreData
 import CloudKit
 
 protocol MatrixValue: CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable {
-    associatedtype Object: MetricsObject
-
+    associatedtype Object: MetricsObject & MetricsValued where Object.Value == Self
     static var recordName: String { get }
-    func toObject(in context: NSManagedObjectContext) -> Object
 }
 
 extension Int: MatrixValue {
+    typealias Object = IntMetricsObject
     static let recordName = "DateIntMatrix"
-
-    func toObject(in context: NSManagedObjectContext) -> IntMetricsObject {
-        let entity = NSEntityDescription.entity(forEntityName: "IntMetricsObject", in: context)!
-        let object = IntMetricsObject(entity: entity, insertInto: context)
-        object.value = self
-        return object
-    }
 }
 
 extension Double: MatrixValue {
+    typealias Object = DoubleMetricsObject
     static let recordName = "DateDoubleMatrix"
-
-    func toObject(in context: NSManagedObjectContext) -> DoubleMetricsObject {
-        let entity = NSEntityDescription.entity(forEntityName: "DoubleMetricsObject", in: context)!
-        let object = DoubleMetricsObject(entity: entity, insertInto: context)
-        object.value = self
-        return object
-    }
 }

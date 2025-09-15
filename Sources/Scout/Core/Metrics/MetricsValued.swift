@@ -7,17 +7,19 @@
 
 import Foundation
 
-protocol MetricsValued: Syncable {
-    associatedtype Value: MatrixValue where Cell == GridCell<Value>
+protocol MetricsValued {
+    associatedtype Value: MatrixValue
     var value: Value { get set }
 }
 
 @objc(DoubleMetricsObject)
-final class DoubleMetricsObject: MetricsObject, MetricsValued {
+final class DoubleMetricsObject: MetricsObject, MetricsValued, Syncable {
+    typealias Cell = GridCell<Double>
     @NSManaged var value: Double
 }
 
 @objc(IntMetricsObject)
-final class IntMetricsObject: MetricsObject, MetricsValued {
+final class IntMetricsObject: MetricsObject, MetricsValued, Syncable {
+    typealias Cell = GridCell<Int>
     @NSManaged var value: Int
 }
