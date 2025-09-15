@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
 import CloudKit
+import CoreData
 
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
@@ -31,5 +31,12 @@ class MetricsObject: TrackedObject {
             category: telemetry,
             cells: T.parse(of: batch)
         )
+    }
+
+    static func parse<T: MetricsObject & MetricsValued>(of batch: [T]) -> [T.Cell] {
+        batch.grouped(by: \.hour).mapValues { items in
+            items.reduce(.zero) { $0 + $1.value }
+        }
+        .map(T.Cell.init)
     }
 }
