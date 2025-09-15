@@ -21,7 +21,7 @@ extension Int: MatrixValue {
     func toObject(in context: NSManagedObjectContext) -> IntMetricsObject {
         let entity = NSEntityDescription.entity(forEntityName: "IntMetricsObject", in: context)!
         let object = IntMetricsObject(entity: entity, insertInto: context)
-        object.value = Int64(self)
+        object.value = self
         return object
     }
 }
