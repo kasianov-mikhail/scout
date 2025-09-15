@@ -8,18 +8,16 @@
 import Foundation
 
 protocol MetricsValued: Syncable {
-    associatedtype Value: MatrixValue
+    associatedtype Value: MatrixValue where Cell == GridCell<Value>
     var value: Value { get set }
 }
 
 @objc(DoubleMetricsObject)
 final class DoubleMetricsObject: MetricsObject, MetricsValued {
-    typealias Cell = GridCell<Double>
     @NSManaged var value: Double
 }
 
 @objc(IntMetricsObject)
 final class IntMetricsObject: MetricsObject, MetricsValued {
-    typealias Cell = GridCell<Int>
     @NSManaged var value: Int
 }
