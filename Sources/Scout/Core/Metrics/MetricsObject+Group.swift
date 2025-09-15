@@ -8,7 +8,7 @@
 import CloudKit
 import CoreData
 
-protocol MetricsObjectProtocol {
+protocol MetricsObjectProtocol: Syncable {
     associatedtype Value: MatrixValue
     var value: Value { get set }
 }
@@ -39,9 +39,9 @@ class MetricsObject: TrackedObject {
     }
 
     static func parse<
-        T: MetricsObject & MetricsObjectProtocol & Syncable,
+        T: MetricsObject & MetricsObjectProtocol,
         V: CellProtocol
-    >(of batch: [T])  -> [V] where T.Value == V.Scalar {
+    >(of batch: [T]) -> [V] where T.Value == V.Scalar {
         batch.grouped(by: \.hour).mapValues { items in
             items.reduce(.zero) { $0 + $1.value }
         }
@@ -50,13 +50,13 @@ class MetricsObject: TrackedObject {
 }
 
 @objc(DoubleMetricsObject)
-final class DoubleMetricsObject: MetricsObject, Syncable, MetricsObjectProtocol {
+final class DoubleMetricsObject: MetricsObject, MetricsObjectProtocol {
     typealias Cell = GridCell<Double>
     @NSManaged var value: Double
 }
 
 @objc(IntMetricsObject)
-final class IntMetricsObject: MetricsObject, Syncable, MetricsObjectProtocol {
+final class IntMetricsObject: MetricsObject, MetricsObjectProtocol {
     typealias Cell = GridCell<Int>
     @NSManaged var value: Int
 }
