@@ -13,7 +13,7 @@ protocol CellProtocol: Combining, Sendable {
     var key: String { get }
     var value: Scalar { get }
 
-    init(key: String, value: Scalar) throws
+    init(key: String, value: Scalar)
 }
 
 extension Array where Element: CellProtocol {
