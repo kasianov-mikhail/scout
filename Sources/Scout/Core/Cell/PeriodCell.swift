@@ -18,7 +18,7 @@ extension PeriodCell: CellProtocol {
         "cell_\(period.rawValue)_\(String(format: "%02d", day + 1))"
     }
 
-    init(key: String, value: T) throws {
+    init(key: String, value: T) {
         let parts = key.components(separatedBy: "_")
 
         guard parts.count == 3 else {
