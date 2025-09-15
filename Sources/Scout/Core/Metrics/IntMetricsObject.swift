@@ -8,7 +8,7 @@ import CoreData
 
 @objc(IntMetricsObject)
 final class IntMetricsObject: MetricsObject, Syncable {
-    static func parse(of batch: [IntMetricsObject]) -> [Cell<Int>] {
+    static func parse(of batch: [IntMetricsObject]) -> [GridCell<Int>] {
         batch.grouped(by: \.hour).mapValues { items in
             items.reduce(0) { $0 + Int($1.intValue) }
         }

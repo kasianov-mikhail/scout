@@ -9,7 +9,7 @@ import Foundation
 
 @objc(DoubleMetricsObject)
 final class DoubleMetricsObject: MetricsObject, Syncable {
-    static func parse(of batch: [DoubleMetricsObject]) -> [Cell<Double>] {
+    static func parse(of batch: [DoubleMetricsObject]) -> [GridCell<Double>] {
         batch.grouped(by: \.hour).mapValues { items in
             items.reduce(0) { $0 + $1.doubleValue }
         }

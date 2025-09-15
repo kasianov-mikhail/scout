@@ -7,13 +7,13 @@
 
 import CloudKit
 
-struct Cell<T: MatrixValue>: Hashable {
+struct GridCell<T: MatrixValue>: Hashable {
     let row: Int
     let column: Int
     let value: T
 }
 
-extension Cell: CellProtocol {
+extension GridCell: CellProtocol {
     var key: String {
         "cell_\(row)_\(String(format: "%02d", column))"
     }
@@ -37,8 +37,8 @@ extension Cell: CellProtocol {
     }
 }
 
-extension Cell: Combining {
-    func isDuplicate(of other: Cell<T>) -> Bool {
+extension GridCell: Combining {
+    func isDuplicate(of other: GridCell<T>) -> Bool {
         row == other.row && column == other.column
     }
 
@@ -46,7 +46,7 @@ extension Cell: Combining {
         assert(lhs.row == rhs.row, "Row indices must match")
         assert(lhs.column == rhs.column, "Column indices must match")
 
-        return Cell(
+        return GridCell(
             row: lhs.row,
             column: lhs.column,
             value: lhs.value + rhs.value
@@ -54,8 +54,8 @@ extension Cell: Combining {
     }
 }
 
-extension Cell: Comparable {
-    static func < (lhs: Cell<T>, rhs: Cell<T>) -> Bool {
+extension GridCell: Comparable {
+    static func < (lhs: GridCell<T>, rhs: GridCell<T>) -> Bool {
         if lhs.row == rhs.row {
             return lhs.column < rhs.column
         } else {
@@ -64,7 +64,7 @@ extension Cell: Comparable {
     }
 }
 
-extension Cell: CustomStringConvertible {
+extension GridCell: CustomStringConvertible {
     var description: String {
         "Cell(row: \(row), column: \(column), value: \(value))"
     }

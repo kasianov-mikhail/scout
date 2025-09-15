@@ -16,7 +16,7 @@ struct SessionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
 
-    @Test("parse(of:) produces correct Cell<Int> counts by date")
+    @Test("parse(of:) produces correct GridCell<Int> counts by date")
     func testParseOf() throws {
         let batch: [SessionObject] = [
             .stub(date: week, synced: false, in: context),
@@ -27,8 +27,8 @@ struct SessionObjectTests {
         let cells = SessionObject.parse(of: batch)
 
         #expect(cells.sorted() == [
-            Cell(row: 1, column: 0, value: 2),
-            Cell(row: 1, column: 1, value: 1),
+            GridCell(row: 1, column: 0, value: 2),
+            GridCell(row: 1, column: 1, value: 1),
         ])
     }
 }
