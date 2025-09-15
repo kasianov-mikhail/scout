@@ -7,8 +7,8 @@
 
 import Foundation
 
-protocol MetricsValued: Syncable {
-    associatedtype Value: MatrixValue where Cell == GridCell<Value>
+protocol MetricsValued {
+    associatedtype Value: MatrixValue
     var value: Value { get set }
 }
 
