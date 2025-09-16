@@ -37,7 +37,7 @@ func logMetrics<T: MatrixValue>(
     value: T,
     _ context: NSManagedObjectContext
 ) throws {
-    let metrics = value.toObject(in: context)
+    let metrics = T.Object(value: value, in: context)
     metrics.telemetry = telemetry.rawValue
     metrics.date = date
     metrics.name = name

@@ -7,12 +7,11 @@
 
 import CoreData
 
-extension MatrixValue {
-    func toObject(in context: NSManagedObjectContext) -> Object {
-        let entityName = String(describing: Object.self)
+extension MetricsValued {
+    init(value: Value, in context: NSManagedObjectContext) {
+        let entityName = String(describing: Self.self)
         let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)!
-        let object = Object(entity: entity, insertInto: context)
-        object.value = self
-        return object
+        self.init(entity: entity, insertInto: context)
+        self.value = value
     }
 }

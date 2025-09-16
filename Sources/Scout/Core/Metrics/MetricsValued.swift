@@ -8,7 +8,7 @@
 import CoreData
 
 protocol MetricsValued: MetricsObject {
-    associatedtype Value: MatrixValue
+    associatedtype Value
     var value: Value { get set }
     init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
 }
