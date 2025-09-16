@@ -7,7 +7,7 @@
 
 import CoreData
 
-protocol MetricsValued: Syncable {
+protocol MetricsValued: MetricsObject & Syncable {
     associatedtype Value where Cell.Scalar == Value
     var value: Value { get set }
     init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)

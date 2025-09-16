@@ -10,11 +10,11 @@ import CoreData
 
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
-    static func group<T: MetricsObject & MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
+    static func group<T: MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
-    static func matrix<T: MetricsObject & MetricsValued>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
+    static func matrix<T: MetricsValued>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
         guard let name = batch.first?.name else {
             throw .missingProperty("name")
         }
