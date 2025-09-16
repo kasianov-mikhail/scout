@@ -25,7 +25,7 @@ class MetricsObject: TrackedObject {
             throw .missingProperty("week")
         }
         return Matrix(
-            recordType: T.Cell.Scalar.recordName,
+            recordType: T.Value.recordName,
             date: week,
             name: name,
             category: telemetry,
