@@ -10,11 +10,11 @@ import CoreData
 
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
-    static func group<T: MetricsObject & Syncable>(in context: NSManagedObjectContext) throws -> [T]? {
+    static func group<T: MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
-    static func matrix<T: MetricsObject & Syncable>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
+    static func matrix<T: MetricsValued>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
         guard let name = batch.first?.name else {
             throw .missingProperty("name")
         }
@@ -25,7 +25,7 @@ class MetricsObject: TrackedObject {
             throw .missingProperty("week")
         }
         return Matrix(
-            recordType: T.Cell.Scalar.recordName,
+            recordType: T.Value.recordName,
             date: week,
             name: name,
             category: telemetry,
@@ -33,7 +33,7 @@ class MetricsObject: TrackedObject {
         )
     }
 
-    static func parse<T: MetricsValued>(of batch: [T]) -> [T.Cell] where T.Cell.Scalar == T.Value {
+    static func parse<T: MetricsValued>(of batch: [T]) -> [T.Cell] {
         batch.grouped(by: \.hour).mapValues { items in
             items.reduce(.zero) { $0 + $1.value }
         }
