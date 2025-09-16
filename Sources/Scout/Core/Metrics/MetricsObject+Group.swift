@@ -33,7 +33,7 @@ class MetricsObject: TrackedObject {
         )
     }
 
-    static func parse<T: MetricsObject & Syncable & MetricsValued>(of batch: [T]) -> [T.Cell] where T.Cell.Scalar == T.Value {
+    static func parse<T: MetricsValued>(of batch: [T]) -> [T.Cell] where T.Cell.Scalar == T.Value {
         batch.grouped(by: \.hour).mapValues { items in
             items.reduce(.zero) { $0 + $1.value }
         }

@@ -5,21 +5,22 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
-protocol MetricsValued {
-    associatedtype Value: MatrixValue
+protocol MetricsValued: Syncable {
+    associatedtype Value
     var value: Value { get set }
+    init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
 }
 
 @objc(DoubleMetricsObject)
-final class DoubleMetricsObject: MetricsObject, MetricsValued, Syncable {
+final class DoubleMetricsObject: MetricsObject, MetricsValued {
     typealias Cell = GridCell<Double>
     @NSManaged var value: Double
 }
 
 @objc(IntMetricsObject)
-final class IntMetricsObject: MetricsObject, MetricsValued, Syncable {
+final class IntMetricsObject: MetricsObject, MetricsValued {
     typealias Cell = GridCell<Int>
     @NSManaged var value: Int
 }
