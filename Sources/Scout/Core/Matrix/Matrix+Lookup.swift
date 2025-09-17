@@ -11,7 +11,8 @@ extension Matrix {
     func lookupExisting(in database: Database) async throws -> Self? {
         let name = NSPredicate(format: "name == %@", name)
         let date = NSPredicate(format: "date == %@", date as NSDate)
-        let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date])
+        let category = NSPredicate(format: "category == %@", category ?? NSNull())
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date, category])
         let query = CKQuery(recordType: recordType, predicate: predicate)
 
         let matrices = try await database.allRecords(matching: query, desiredKeys: nil)
