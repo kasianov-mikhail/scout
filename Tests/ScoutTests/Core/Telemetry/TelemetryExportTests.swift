@@ -171,7 +171,7 @@ struct TelemetryExportTests {
     @Test("Error description contains names")
     func errorDescriptionContainsNames() {
         let error = Telemetry.ExportError.invalidName
-        let description = error.description
+        let description = error.localizedDescription
         #expect(description.contains("counter"))
         #expect(description.contains("floating_counter"))
         #expect(description.contains("meter_set"))
