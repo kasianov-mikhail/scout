@@ -8,10 +8,7 @@
 import CloudKit
 
 extension CKDatabase: Database {
-    func modifyRecords(
-        saving recordsToSave: [CKRecord],
-        deleting recordIDsToDelete: [CKRecord.ID]
-    ) async throws -> DatabaseResult {
+    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID]) async throws -> DatabaseResult {
         try await runner { database in
             try await database.modifyRecords(
                 saving: recordsToSave,
@@ -22,10 +19,7 @@ extension CKDatabase: Database {
         }
     }
 
-    func allRecords(
-        matching query: CKQuery,
-        desiredKeys: [CKRecord.FieldKey]?
-    ) async throws -> [CKRecord] {
+    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws -> [CKRecord] {
         let results = try await runner { database in
             try await database.records(
                 matching: query,

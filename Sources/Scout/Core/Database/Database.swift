@@ -17,14 +17,8 @@ protocol Database: Sendable {
     func save(_ record: CKRecord) async throws -> CKRecord
 
     @discardableResult
-    func modifyRecords(
-        saving recordsToSave: [CKRecord],
-        deleting recordIDsToDelete: [CKRecord.ID]
-    ) async throws -> DatabaseResult
+    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID]) async throws -> DatabaseResult
 
-    func allRecords(
-        matching query: CKQuery,
-        desiredKeys: [CKRecord.FieldKey]?
-    ) async throws -> [CKRecord]
+    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws -> [CKRecord]
 }
 
