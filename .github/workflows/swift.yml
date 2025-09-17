@@ -14,15 +14,44 @@ env:
   SCHEME_NAME: Scout
 
 jobs:
+  verify-headers:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify MIT headers
+        run: |
+          year=$(date +%Y)
+
+          expected="// Copyright $year Mikhail Kasianov
+                    //
+                    // Use of this source code is governed by an MIT-style
+                    // license that can be found in the LICENSE file or at
+                    // https://opensource.org/licenses/MIT."
+
+          bad_files=()
+          while IFS= read -r -d '' file; do
+            head -n 5 "$file" | diff -q - <(printf "%s\n" "$expected") > /dev/null
+            if [ $? -ne 0 ]; then
+              bad_files+=("$file")
+            fi
+          done < <(find . -name "*.swift" -print0)
+
+          if [ ${#bad_files[@]} -ne 0 ]; then
+            echo "❌ These Swift files are missing or have an incorrect MIT header:"
+            printf '%s\n' "${bad_files[@]}"
+            exit 1
+          fi
+
+          echo "✅ All Swift files contain the correct MIT header."
+
   ios-tests:
     runs-on: macos-latest
-
     steps:
       - uses: actions/checkout@v4
 
       - name: Install xcpretty
-        run: |
-          sudo gem install xcpretty
+        run: sudo gem install xcpretty
 
       - name: Run unit tests (iPhone 16 Pro, latest iOS)
         run: |
