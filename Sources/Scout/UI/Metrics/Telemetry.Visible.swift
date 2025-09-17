@@ -14,6 +14,30 @@ extension Telemetry {
         case timer
 
         var id: Self { self }
+
+        init?(export: Export) {
+            switch export {
+            case .counter:
+                self = .counter
+            case .floatingCounter:
+                self = .floatingCounter
+            case .timer:
+                self = .timer
+            default:
+                return nil
+            }
+        }
+
+        var export: Export {
+            switch self {
+            case .counter:
+                .counter
+            case .floatingCounter:
+                .floatingCounter
+            case .timer:
+                .timer
+            }
+        }
     }
 }
 
