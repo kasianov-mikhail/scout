@@ -9,10 +9,10 @@ import Testing
 
 @testable import Scout
 
-@Test("Cell addition") func testCellAddition() {
-    let a = Cell(row: 1, column: 2, value: 3)
-    let b = Cell(row: 1, column: 2, value: 4)
+@Test("GridCell addition") func testCellAddition() {
+    let a = GridCell(row: 1, column: 2, value: 3)
+    let b = GridCell(row: 1, column: 2, value: 4)
     let c = a + b
 
-    #expect(c == Cell(row: 1, column: 2, value: 7))
+    #expect(c == GridCell(row: 1, column: 2, value: 7))
 }

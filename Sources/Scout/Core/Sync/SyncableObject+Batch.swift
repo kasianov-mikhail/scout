@@ -8,10 +8,7 @@
 import CoreData
 
 extension SyncableObject {
-    static func batch<T: SyncableObject>(
-        in context: NSManagedObjectContext,
-        matching keyPaths: [PartialKeyPath<T>]
-    ) throws -> [T]? {
+    static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
 
         let seedRequest = NSFetchRequest<T>(entityName: entityName)
@@ -25,7 +22,7 @@ extension SyncableObject {
         var predicates = [NSPredicate(format: "isSynced == false")]
 
         for keyPath in keyPaths {
-            if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject{
+            if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject {
                 predicates.append(NSPredicate(format: "%K == %@", key, value))
             }
         }

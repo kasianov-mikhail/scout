@@ -7,8 +7,8 @@
         <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="category">
-        <attribute name="doubleValue" attributeType="Double" usesScalarValueType="YES"/>
+    <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES">
+        <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
     </entity>
     <entity name="EventObject" representedClassName="EventObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="category">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
@@ -21,8 +21,8 @@
         <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
-    <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="category">
-        <attribute name="intValue" attributeType="Integer 64" usesScalarValueType="YES"/>
+    <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES">
+        <attribute name="value" attributeType="Integer 64" usesScalarValueType="YES"/>
     </entity>
     <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="category">
         <attribute name="telemetry" attributeType="String"/>

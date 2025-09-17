@@ -19,8 +19,8 @@ struct ChartPointTests {
             date: date,
             name: "Test",
             cells: [
-                Cell(row: 2, column: 0, value: 5),
-                Cell(row: 1, column: 1, value: 10),
+                GridCell(row: 2, column: 0, value: 5),
+                GridCell(row: 1, column: 1, value: 10),
             ])
 
         let points = ChartPoint.fromIntMatrix(matrix)
