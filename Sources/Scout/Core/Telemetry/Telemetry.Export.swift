@@ -5,6 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Foundation
+
 extension Telemetry {
     enum Export: String, CaseIterable {
         case counter = "counter"
@@ -16,10 +18,10 @@ extension Telemetry {
         case timer = "timer"
     }
 
-    enum ExportError: Error, CustomStringConvertible {
+    enum ExportError: LocalizedError {
         case invalidName
 
-        var description: String {
+        var errorDescription: String? {
             "Invalid telemetry name. Expected one of: "
                 + Export.allCases.map(\.rawValue).joined(separator: ", ")
         }
