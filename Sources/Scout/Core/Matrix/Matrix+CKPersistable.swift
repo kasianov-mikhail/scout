@@ -39,6 +39,7 @@ extension Matrix: CKPersistable {
         let record = CKRecord(recordType: recordType, recordID: recordID)
         record["date"] = date
         record["name"] = name
+        record["category"] = category
         for cell in cells {
             record[cell.key] = cell.value
         }
