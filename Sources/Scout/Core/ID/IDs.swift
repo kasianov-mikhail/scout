@@ -33,14 +33,3 @@ enum IDs {
         return userID
     }()
 }
-
-extension UserDefaults {
-    fileprivate func set(_ value: UUID, forKey key: String) {
-        set(value.uuidString, forKey: key)
-    }
-
-    fileprivate func uuid(forKey key: String) -> UUID? {
-        guard let string = string(forKey: key) else { return nil }
-        return UUID(uuidString: string)
-    }
-}
