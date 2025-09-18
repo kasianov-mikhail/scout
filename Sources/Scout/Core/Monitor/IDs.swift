@@ -44,13 +44,3 @@ extension UserDefaults {
         return UUID(uuidString: string)
     }
 }
-
-@objc(IDObject)
-class IDObject: DateObject {
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(IDObject.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
-    }
-}
