@@ -10,9 +10,10 @@
     <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES">
         <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
     </entity>
-    <entity name="EventObject" representedClassName="EventObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="category">
+    <entity name="EventObject" representedClassName="EventObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="level" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
         <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="params" optional="YES" attributeType="Binary"/>
     </entity>
@@ -24,7 +25,8 @@
     <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES">
         <attribute name="value" attributeType="Integer 64" usesScalarValueType="YES"/>
     </entity>
-    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="category">
+    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
+        <attribute name="name" attributeType="String"/>
         <attribute name="telemetry" attributeType="String"/>
     </entity>
     <entity name="SessionObject" representedClassName="SessionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
@@ -32,9 +34,6 @@
     </entity>
     <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="category">
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-    </entity>
-    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="class">
-        <attribute name="name" attributeType="String"/>
     </entity>
     <entity name="UserActivity" representedClassName="UserActivity" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
