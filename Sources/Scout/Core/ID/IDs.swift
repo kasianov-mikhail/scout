@@ -33,23 +33,3 @@ enum IDs {
         return userID
     }()
 }
-
-extension UserDefaults {
-    fileprivate func set(_ value: UUID, forKey key: String) {
-        set(value.uuidString, forKey: key)
-    }
-
-    fileprivate func uuid(forKey key: String) -> UUID? {
-        guard let string = string(forKey: key) else { return nil }
-        return UUID(uuidString: string)
-    }
-}
-
-extension IDObject {
-    public override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))
-        setPrimitiveValue(IDs.user, forKey: #keyPath(IDObject.userID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
-    }
-}
