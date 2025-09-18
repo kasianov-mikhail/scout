@@ -7,7 +7,8 @@
 
 import CoreData
 
-extension SyncableObject {
+@objc(SyncableObject)
+class SyncableObject: IDObject {
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
 

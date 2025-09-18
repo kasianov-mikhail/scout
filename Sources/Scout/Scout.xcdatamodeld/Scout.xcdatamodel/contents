@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A353" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A354" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="DateObject" representedClassName="DateObject" isAbstract="YES" syncable="YES" codeGenerationType="class">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
@@ -30,7 +30,7 @@
     <entity name="SessionObject" representedClassName="SessionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="endDate" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
-    <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="class">
+    <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="category">
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
     <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="class">
