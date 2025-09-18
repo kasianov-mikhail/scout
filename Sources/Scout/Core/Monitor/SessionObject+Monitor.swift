@@ -43,20 +43,20 @@ extension SessionObject {
         var errorDescription: String? {
             switch self {
             case .sessionNotFound:
-                return "Session not found"
+                "Session not found"
             case .alreadyCompleted(let date):
-                return "Session already completed on \(date)"
+                "Session already completed on \(date)"
             }
         }
 
         static func == (lhs: CompleteError, rhs: CompleteError) -> Bool {
             switch (lhs, rhs) {
             case (.sessionNotFound, .sessionNotFound):
-                return true
+                true
             case (.alreadyCompleted, .alreadyCompleted):
-                return true
+                true
             default:
-                return false
+                false
             }
         }
     }
