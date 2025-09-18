@@ -26,9 +26,15 @@ extension NSPersistentContainer {
 
         if let store = persistentStoreCoordinator.persistentStores.first, let url = store.url {
             try persistentStoreCoordinator.remove(store)
-            try persistentStoreCoordinator.destroyPersistentStore(at: url, ofType: NSSQLiteStoreType)
+            try persistentStoreCoordinator.destroyStore(at: url)
         } else if let url = persistentStoreDescriptions.first?.url {
-            try persistentStoreCoordinator.destroyPersistentStore(at: url, ofType: NSSQLiteStoreType)
+            try persistentStoreCoordinator.destroyStore(at: url)
         }
+    }
+}
+
+extension NSPersistentStoreCoordinator {
+    fileprivate func destroyStore(at url: URL) throws {
+        try destroyPersistentStore(at: url, ofType: NSSQLiteStoreType)
     }
 }
