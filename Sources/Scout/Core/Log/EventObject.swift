@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 @objc(EventObject)
-final class EventObject: TrackedObject, Syncable {
+final class EventObject: SyncableObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
         try batch(in: context, matching: [\.name, \.week])
     }

@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 @objc(MetricsObject)
-class MetricsObject: TrackedObject {
+class MetricsObject: SyncableObject {
     static func group<T: MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
