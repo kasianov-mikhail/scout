@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A354" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="DateObject" representedClassName="DateObject" isAbstract="YES" syncable="YES" codeGenerationType="class">
+    <entity name="DateObject" representedClassName="DateObject" isAbstract="YES" syncable="YES" codeGenerationType="category">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>

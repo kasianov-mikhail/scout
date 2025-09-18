@@ -5,9 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
-extension DateObject {
+@objc(DateObject)
+class DateObject: NSManagedObject {
     var date: Date? {
         get {
             datePrimitive
