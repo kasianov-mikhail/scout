@@ -45,7 +45,8 @@ extension UserDefaults {
     }
 }
 
-extension IDObject {
+@objc(IDObject)
+class IDObject: DateObject {
     public override func awakeFromInsert() {
         super.awakeFromInsert()
         setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))
