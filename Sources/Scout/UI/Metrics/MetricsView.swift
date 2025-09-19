@@ -14,7 +14,7 @@ struct MetricsView: View {
     var body: some View {
         Group {
             Picker("Metrics Type", selection: $metrics.telemetry) {
-                ForEach(Telemetry.Visible.allCases) { type in
+                ForEach(Telemetry.Scope.allCases) { type in
                     Text(type.shortTitle.uppercased())
                 }
             }

@@ -9,10 +9,10 @@ import CloudKit
 import SwiftUI
 
 class MetricsProvider: ObservableObject {
-    @Published var telemetry: Telemetry.Visible
+    @Published var telemetry: Telemetry.Scope
     @Published var data: [String]?
 
-    init(telemetry: Telemetry.Visible) {
+    init(telemetry: Telemetry.Scope) {
         self.telemetry = telemetry
     }
 }

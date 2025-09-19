@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension Telemetry {
-    enum Visible: CaseIterable, Identifiable {
+    enum Scope: CaseIterable, Identifiable {
         case counter
         case floatingCounter
         case timer
@@ -41,7 +41,7 @@ extension Telemetry {
     }
 }
 
-extension Telemetry.Visible {
+extension Telemetry.Scope {
     var matrixValue: MatrixValue.Type {
         switch self {
         case .counter, .timer:
