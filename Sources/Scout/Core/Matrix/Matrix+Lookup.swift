@@ -9,15 +9,22 @@ import CloudKit
 
 extension Matrix {
     func lookupExisting(in database: Database) async throws -> Self? {
-        let name = NSPredicate(format: "name == %@", name)
-        let date = NSPredicate(format: "date == %@", date as NSDate)
-        let category = NSPredicate(format: "category == %@", category ?? NSNull())
-        let predicate = NSCompoundPredicate(type: .and, subpredicates: [name, date, category])
-        let query = CKQuery(recordType: recordType, predicate: predicate)
+        let named = NSPredicate(format: "name == %@", name)
+        let dated = NSPredicate(format: "date == %@", date as NSDate)
+        let predicate = NSCompoundPredicate(type: .and, subpredicates: [named, dated, categoryed])
 
+        let query = CKQuery(recordType: recordType, predicate: predicate)
         let matrices = try await database.allRecords(matching: query, desiredKeys: nil)
         let matrix = try matrices.randomElement().map(Matrix.init(record:))
 
         return matrix
+    }
+
+    private var categoryed: NSPredicate {
+        if let category {
+            NSPredicate(format: "category == %@", category)
+        } else {
+            NSPredicate(format: "category == nil")
+        }
     }
 }
