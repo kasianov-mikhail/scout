@@ -25,7 +25,8 @@ extension Matrix: Combining {
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
-        Matrix(
+        assert(lhs.isDuplicate(of: rhs), "Cannot combine non-duplicate matrices")
+        return Matrix(
             recordType: lhs.recordType,
             date: lhs.date,
             name: lhs.name,
