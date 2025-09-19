@@ -12,7 +12,7 @@ struct Matrix<T: CellProtocol> {
     let date: Date
     let name: String
     var category: String? = nil
-    var recordID = CKRecord.ID()
+    var record: CKRecord? = nil
     let cells: [T]
 }
 
@@ -30,7 +30,7 @@ extension Matrix: Combining {
             date: lhs.date,
             name: lhs.name,
             category: lhs.category,
-            recordID: [lhs.recordID, rhs.recordID].randomElement()!,
+            record: lhs.record ?? rhs.record,
             cells: (lhs.cells + rhs.cells).mergeDuplicates()
         )
     }
@@ -44,7 +44,6 @@ extension Matrix: CustomStringConvertible {
           date: \(date),
           name: "\(name)",
           category: \(category ?? "nil"),
-          id: \(recordID.recordName),
           cells: \(cells.count) items
         )
         """
@@ -59,7 +58,6 @@ extension Matrix: CustomDebugStringConvertible {
           date: \(date), 
           name: \(name),
           category: \(category ?? "nil"),
-          id: \(recordID.recordName),
           cells: \(cells.summary)
         """
     }
