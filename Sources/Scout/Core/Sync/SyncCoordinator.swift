@@ -14,11 +14,14 @@ struct SyncCoordinator<T: CellProtocol> {
     let matrix: Matrix<T>
 
     func upload() async throws {
-        let existing = try await matrix.lookupExisting(in: database)
-        try await upload(snapshot: existing ?? matrix, retry: 1)
+        if let existing = try await matrix.lookupExisting(in: database) {
+            try await upload(snapshot: matrix + existing)
+        } else {
+            try await upload(snapshot: matrix)
+        }
     }
 
-    func upload(snapshot: Matrix<T>, retry: Int) async throws {
+    func upload(snapshot: Matrix<T>, retry: Int = 1) async throws {
         do {
             try await database.save(snapshot.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
