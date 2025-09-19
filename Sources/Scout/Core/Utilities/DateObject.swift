@@ -24,10 +24,10 @@ class DateObject: NSManagedObject {
 
     var dateFields: [String: Date] {
         var fields: [String: Date] = [:]
-        if let hour { fields["hour"] = hour }
-        if let day { fields["day"] = day }
-        if let week { fields["week"] = week }
-        if let month { fields["month"] = month }
+        fields["hour"] = hour
+        fields["day"] = day
+        fields["week"] = week
+        fields["month"] = month
         return fields
     }
 }
