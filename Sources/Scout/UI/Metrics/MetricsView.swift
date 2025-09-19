@@ -7,45 +7,21 @@
 
 import SwiftUI
 
-enum MetricsType: CaseIterable, Identifiable {
-    case intCounter
-    case doubleCounter
-    case timer
-
-    var id: Self { self }
-
-    var title: String {
-        switch self {
-        case .intCounter:
-            "Int Counter"
-        case .doubleCounter:
-            "Double Counter"
-        case .timer:
-            "Timer"
-        }
-    }
-
-    var shortTitle: String {
-        switch self {
-        case .intCounter:
-            "Int"
-        case .doubleCounter:
-            "Double"
-        case .timer:
-            "Timer"
-        }
-    }
-}
-
 struct MetricsView: View {
+    @EnvironmentObject var database: DatabaseController
     @ObservedObject var metrics: MetricsProvider
-    @State private var metricsType: MetricsType = .intCounter
 
     var body: some View {
         Group {
-            Picker("Metrics Type", selection: $metricsType) {
-                ForEach(MetricsType.allCases) { type in
+            Picker("Metrics Type", selection: $metrics.telemetry) {
+                ForEach(Telemetry.Visible.allCases) { type in
                     Text(type.shortTitle.uppercased())
+                }
+            }
+            .onChange(of: metrics.telemetry) { _ in
+                Task {
+                    metrics.data = nil
+                    await metrics.fetch(in: database)
                 }
             }
             .padding(.horizontal)
@@ -83,7 +59,7 @@ struct MetricsView: View {
 
 #Preview {
     NavigationStack {
-        let metrics = MetricsProvider()
+        let metrics = MetricsProvider(telemetry: .floatingCounter)
         metrics.data = [
             "CPU Usage",
             "Memory Allocated",

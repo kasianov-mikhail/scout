@@ -42,6 +42,15 @@ extension Telemetry {
 }
 
 extension Telemetry.Visible {
+    var matrixValue: MatrixValue.Type {
+        switch self {
+        case .counter, .timer:
+            Int.self
+        case .floatingCounter:
+            Double.self
+        }
+    }
+
     var title: String {
         switch self {
         case .counter:
