@@ -22,22 +22,11 @@ extension MetricsProvider: Provider {
         let range = Calendar(identifier: .iso8601).queryRange
 
         do {
-            let records = try await database.allRecords(
-                matching: query(from: range),
-                desiredKeys: nil
-            )
+            let records = try await database.allRecords(matching: query(from: range), desiredKeys: nil)
+            let rawPoints = try records.map(Matrix<GridCell<Double>>.init).mergeDuplicates()
+            let grouped = Dictionary(grouping: rawPoints, by: \.name)
 
-            let rawPoints = try records.map(Matrix<GridCell<Int>>.init)
-                .mergeDuplicates()
-                .flatMap(ChartPoint.fromIntMatrix)
-
-            let rawData = RawPointData(range: range, points: rawPoints)
-
-            print(rawData)
-            data = ["Crash", "Launch", "Active", "Background", "Memory", "CPU", "Disk", "Network"]
-//            data = Dictionary(uniqueKeysWithValues: periods.map { period in
-//                (period, rawData.group(by: period.pointComponent))
-//            })
+            data = grouped.map(\.key).sorted()
 
         } catch {
             print(error.localizedDescription)
