@@ -42,11 +42,11 @@ extension Telemetry {
 }
 
 extension Telemetry.Scope {
-    var matrixValue: MatrixValue.Type {
+    var valueType: MatrixValue.Type {
         switch self {
-        case .counter, .timer:
+        case .counter:
             Int.self
-        case .floatingCounter:
+        case .floatingCounter, .timer:
             Double.self
         }
     }

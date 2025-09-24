@@ -54,7 +54,7 @@ extension MetricsProvider: Provider {
         )
 
         let query = CKQuery(
-            recordType: telemetry.matrixValue.recordName,
+            recordType: telemetry.valueType.recordName,
             predicate: predicate
         )
 
