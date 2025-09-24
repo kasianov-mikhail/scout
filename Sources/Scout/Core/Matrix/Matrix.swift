@@ -36,6 +36,31 @@ extension Matrix: Combining {
     }
 }
 
+extension Matrix: Equatable {
+    static func == (lhs: Matrix<T>, rhs: Matrix<T>) -> Bool {
+        lhs.recordType == rhs.recordType
+            && lhs.date == rhs.date
+            && lhs.name == rhs.name
+            && lhs.category == rhs.category
+            && lhs.cells == rhs.cells
+    }
+}
+
+extension Matrix: Comparable {
+    static func < (lhs: Matrix<T>, rhs: Matrix<T>) -> Bool {
+        if lhs.date != rhs.date {
+            return lhs.date < rhs.date
+        }
+        if lhs.name != rhs.name {
+            return lhs.name < rhs.name
+        }
+        if lhs.category != rhs.category {
+            return (lhs.category ?? "") < (rhs.category ?? "")
+        }
+        return lhs.recordType < rhs.recordType
+    }
+}
+
 extension Matrix: CustomStringConvertible {
     var description: String {
         """
