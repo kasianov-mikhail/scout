@@ -22,7 +22,7 @@ class StatProvider: ObservableObject {
 
 extension StatProvider: Provider {
     func fetch(in database: DatabaseController) async {
-        let range = Calendar(identifier: .iso8601).queryRange
+        let range = Calendar(identifier: .iso8601).defaultRange
 
         do {
             let records = try await database.allRecords(
