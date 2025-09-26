@@ -19,7 +19,7 @@ class MetricsProvider: ObservableObject {
 
 extension MetricsProvider: Provider {
     func fetch(in database: DatabaseController) async {
-        let range = Calendar(identifier: .iso8601).queryRange
+        let range = Calendar(identifier: .iso8601).defaultRange
 
         do {
             let records = try await database.allRecords(matching: query(from: range), desiredKeys: nil)
