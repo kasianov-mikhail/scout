@@ -47,3 +47,24 @@ extension StatModel {
         }
     }
 }
+
+#Preview("ChartView – Month") {
+    let model = StatModel(period: Period.month)
+
+    let cal = Calendar(identifier: .iso8601)
+    let end = model.range.upperBound
+    let points: [ChartPoint] = (1...30).compactMap { i in
+        cal.date(byAdding: .day, value: -i, to: end).map {
+            ChartPoint(date: $0, count: Int.random(in: 0...10))
+        }
+    }.sorted()
+
+    return VStack(alignment: .leading, spacing: 24) {
+        Text("With Data").font(.headline)
+        ChartView(points: points, model: model)
+
+        Text("Empty State").font(.headline)
+        ChartView(points: [], model: model)
+    }
+    .padding()
+}
