@@ -47,3 +47,16 @@ extension StatModel {
         }
     }
 }
+
+#Preview("ChartView – Month") {
+    let model = StatModel(period: Period.month)
+
+    VStack(alignment: .leading, spacing: 24) {
+        Text("With Data").font(.headline)
+        ChartView(points: .sample, model: model)
+
+        Text("Empty State").font(.headline)
+        ChartView(points: [], model: model)
+    }
+    .padding()
+}

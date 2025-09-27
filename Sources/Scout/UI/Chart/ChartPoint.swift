@@ -57,3 +57,15 @@ extension ChartPoint: CustomStringConvertible {
         "\(date): \(count)"
     }
 }
+
+extension [ChartPoint] {
+    static let sample: [ChartPoint] = {
+        let cal = Calendar(identifier: .iso8601)
+        let end = Date()
+        return (1...30).compactMap { i in
+            cal.date(byAdding: .day, value: -i, to: end).map {
+                ChartPoint(date: $0, count: Int.random(in: 0...10))
+            }
+        }.sorted()
+    }()
+}
