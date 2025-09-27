@@ -26,12 +26,18 @@ class MetricsProvider: ObservableObject {
         let range = Calendar(identifier: .iso8601).defaultRange
 
         do {
-            let records = try await database.allRecords(matching: query(from: range), desiredKeys: nil)
+            let records = try await database.allRecords(
+                matching: query(from: range),
+                desiredKeys: nil
+            )
+
             let rawPoints = try records.map(Matrix<GridCell<T>>.init).mergeDuplicates()
             let grouped = Dictionary(grouping: rawPoints, by: \.name)
+
             data = grouped.map(\.key).sorted()
         } catch {
             print(error.localizedDescription)
+
             data = nil
         }
     }
