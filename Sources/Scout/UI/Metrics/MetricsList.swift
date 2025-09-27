@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct MetricsView: View {
+struct MetricsList: View {
     @EnvironmentObject var database: DatabaseController
     @ObservedObject var metrics: MetricsProvider
 
@@ -76,6 +76,6 @@ struct MetricsView: View {
             "Power Consumption",
             "Thread Count",
         ]
-        return MetricsView(metrics: metrics)
+        return MetricsList(metrics: metrics)
     }
 }

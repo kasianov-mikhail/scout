@@ -27,7 +27,7 @@ extension HomeView {
                     Text("Metrics")
                     Spacer()
                 } destination: {
-                    MetricsView(metrics: metrics)
+                    MetricsList(metrics: metrics)
                 }
             }
             .foregroundStyle(.blue)
