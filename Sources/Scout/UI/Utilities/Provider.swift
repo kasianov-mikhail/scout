@@ -5,8 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-@MainActor
-protocol Provider {
+@MainActor protocol Provider {
     associatedtype DataType
 
     var data: DataType? { get }
