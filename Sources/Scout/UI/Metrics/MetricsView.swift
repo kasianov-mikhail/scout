@@ -20,8 +20,7 @@ struct MetricsView: View {
             }
             .onChange(of: metrics.telemetry) { _ in
                 Task {
-                    metrics.data = nil
-                    await metrics.fetch(in: database)
+                    await metrics.fetchAgain(in: database)
                 }
             }
             .padding(.horizontal)
