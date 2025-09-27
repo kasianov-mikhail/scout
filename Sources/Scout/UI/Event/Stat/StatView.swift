@@ -92,17 +92,9 @@ extension StatView.Config: CustomDebugStringConvertible {
 
 #Preview {
     NavigationStack {
-        let arrays = Period.all.map { period in
-            let points = (0..<30).map { i in
-                ChartPoint(
-                    date: Date().startOfHour.addingDay(-i),
-                    count: Int.random(in: 0...100)
-                )
-            }
-
-            return (period, points)
-        }
-        let data = Dictionary(uniqueKeysWithValues: arrays)
+        let data = Dictionary(uniqueKeysWithValues: Period.all.map { period in
+            (period, [ChartPoint].sample)
+        })
         let stat = StatProvider(eventName: "Event", periods: Period.all)
         stat.data = data
         let config = StatView.Config(title: "Title", color: .blue, showList: true)
