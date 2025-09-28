@@ -9,7 +9,7 @@ import Charts
 import SwiftUI
 
 struct ChartView<T: ChartCompatible>: View {
-    let points: [ChartPoint]
+    let points: [ChartPoint<Int>]
     let model: StatModel<T>
 
     var body: some View {

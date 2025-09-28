@@ -93,7 +93,7 @@ extension StatView.Config: CustomDebugStringConvertible {
 #Preview {
     NavigationStack {
         let data = Dictionary(uniqueKeysWithValues: Period.all.map { period in
-            (period, [ChartPoint].sample)
+            (period, [ChartPoint<Int>].sample)
         })
         let stat = StatProvider(eventName: "Event", periods: Period.all)
         stat.data = data

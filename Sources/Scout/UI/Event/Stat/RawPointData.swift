@@ -9,10 +9,10 @@ import Foundation
 
 struct RawPointData {
     let range: ClosedRange<Date>
-    let points: [ChartPoint]
+    let points: [ChartPoint<Int>]
 
-    func group(by component: Calendar.Component) -> [ChartPoint] {
-        var result: [ChartPoint] = []
+    func group(by component: Calendar.Component) -> [ChartPoint<Int>] {
+        var result: [ChartPoint<Int>] = []
         var date = range.lowerBound
 
         while date < range.upperBound {

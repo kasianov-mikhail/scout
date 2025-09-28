@@ -14,7 +14,7 @@ struct StatModel<T: ChartCompatible> {
 
     var range: Range<Date>
 
-    func points(from data: ChartData<T>?) -> [ChartPoint]? {
+    func points(from data: ChartData<T>?) -> [ChartPoint<Int>]? {
         data?[period]?.filter {
             range.contains($0.date)
         }

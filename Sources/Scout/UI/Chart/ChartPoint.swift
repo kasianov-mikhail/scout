@@ -7,16 +7,16 @@
 
 import CloudKit
 
-typealias ChartData<T: ChartCompatible> = [T: [ChartPoint]]
+typealias ChartData<T: ChartCompatible> = [T: [ChartPoint<Int>]]
 
-struct ChartPoint: Identifiable {
+struct ChartPoint<T: MatrixValue>: Identifiable {
     let id = UUID()
     let date: Date
-    let count: Int
+    let count: T
 
-    static func fromIntMatrix(_ matrix: Matrix<GridCell<Int>>) -> [ChartPoint] {
+    static func fromIntMatrix(_ matrix: Matrix<GridCell<Int>>) -> [ChartPoint<Int>] {
         matrix.cells.map { cell in
-            ChartPoint(
+            ChartPoint<Int>(
                 date: matrix.date.addingDay(cell.row - 1).addingHour(cell.column),
                 count: cell.value
             )
@@ -50,7 +50,7 @@ extension ChartPoint {
 
 // MARK: -
 
-extension [ChartPoint] {
+extension Array where Element == ChartPoint<Int> {
     var total: Int {
         map(\.count).reduce(0, +)
     }
@@ -62,8 +62,8 @@ extension ChartPoint: CustomStringConvertible {
     }
 }
 
-extension [ChartPoint] {
-    static let sample: [ChartPoint] = {
+extension [ChartPoint<Int>] {
+    static var sample: [ChartPoint<Int>] {
         let cal = Calendar(identifier: .iso8601)
         let end = Date()
         return (1...30).compactMap { i in
@@ -71,5 +71,5 @@ extension [ChartPoint] {
                 ChartPoint(date: $0, count: Int.random(in: 0...10))
             }
         }.sorted()
-    }()
+    }
 }
