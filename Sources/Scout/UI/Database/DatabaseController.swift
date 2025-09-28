@@ -14,25 +14,24 @@ final class DatabaseController: ObservableObject, Sendable {
     init(database: CKDatabase? = nil) {
         self.database = database
     }
-}
 
-extension DatabaseController {
+    // MARK: - Save
+
     func save(_ record: CKRecord) async throws {
         _ = try await database?.save(record)
     }
 
-    func modifyRecords(
-        saving recordsToSave: [CKRecord],
-        deleting recordIDsToDelete: [CKRecord.ID]
-    ) async throws {
+    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID])
+        async throws
+    {
         _ = try await database?.modifyRecords(
             saving: recordsToSave,
             deleting: recordIDsToDelete
         )
     }
-}
 
-extension DatabaseController {
+    // MARK: - Fetch
+
     func record(for recordID: CKRecord.ID) async throws -> CKRecord {
         guard let database else {
             return DatabaseController.sampleData[0]
@@ -40,10 +39,9 @@ extension DatabaseController {
         return try await database.record(for: recordID)
     }
 
-    func allRecords(
-        matching query: CKQuery,
-        desiredKeys: [CKRecord.FieldKey]?
-    ) async throws -> [CKRecord] {
+    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws
+        -> [CKRecord]
+    {
         guard let database else {
             return DatabaseController.sampleData.filter { $0.recordType == query.recordType }
         }
@@ -52,16 +50,17 @@ extension DatabaseController {
             desiredKeys: desiredKeys
         )
     }
-}
 
-extension DatabaseController {
+    // MARK: - Query with Cursor
+
+    typealias Cursor = CKQueryOperation.Cursor
     typealias Results = [(CKRecord.ID, Result<CKRecord, any Error>)]
-    typealias CursorResult = (matchResults: Results, queryCursor: CKQueryOperation.Cursor?)
 
-    func records(
-        matching query: CKQuery,
-        desiredKeys: [CKRecord.FieldKey]? = nil
-    ) async throws -> CursorResult {
+    typealias CursorResult = (matchResults: Results, queryCursor: Cursor?)
+
+    func records(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]? = nil) async throws
+        -> CursorResult
+    {
         guard let database else {
             return (DatabaseController.sampleDataResults, nil)
         }
@@ -71,10 +70,9 @@ extension DatabaseController {
         )
     }
 
-    func records(
-        continuingMatchFrom queryCursor: CKQueryOperation.Cursor,
-        desiredKeys: [CKRecord.FieldKey]? = nil
-    ) async throws -> CursorResult {
+    func records(continuingMatchFrom queryCursor: Cursor, desiredKeys: [CKRecord.FieldKey]? = nil)
+        async throws -> CursorResult
+    {
         guard let database else {
             return (DatabaseController.sampleDataResults, nil)
         }
