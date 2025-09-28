@@ -37,6 +37,8 @@ extension Matrix: Combining {
     }
 }
 
+// MARK: - Operators
+
 extension Matrix: Equatable {
     static func == (lhs: Matrix<T>, rhs: Matrix<T>) -> Bool {
         lhs.recordType == rhs.recordType
@@ -61,6 +63,8 @@ extension Matrix: Comparable {
         return lhs.recordType < rhs.recordType
     }
 }
+
+// MARK: - Debug
 
 extension Matrix: CustomStringConvertible {
     var description: String {
