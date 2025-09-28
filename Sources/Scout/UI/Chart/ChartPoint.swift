@@ -24,6 +24,8 @@ struct ChartPoint: Identifiable {
     }
 }
 
+// MARK: - Operators
+
 extension ChartPoint: Comparable {
     static func < (lhs: ChartPoint, rhs: ChartPoint) -> Bool {
         lhs.date < rhs.date
@@ -46,8 +48,10 @@ extension ChartPoint {
     }
 }
 
+// MARK: -
+
 extension [ChartPoint] {
-    var count: Int {
+    var total: Int {
         map(\.count).reduce(0, +)
     }
 }

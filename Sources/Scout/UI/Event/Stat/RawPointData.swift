@@ -38,10 +38,10 @@ extension RawPointData: CustomStringConvertible {
         let start = formatter.string(from: range.lowerBound)
         let end = formatter.string(from: range.upperBound)
 
-        let previewCount = min(points.count, 5)
+        let previewCount = min(points.total, 5)
         let preview = points.prefix(previewCount).map(\.description).joined(separator: ", ")
-        let more = points.count > previewCount ? ", …" : ""
+        let more = points.total > previewCount ? ", …" : ""
 
-        return "RawPointData(range: \(start)...\(end), points: \(points.count) [\(preview)\(more)])"
+        return "RawPointData(range: \(start)...\(end), points: \(points.total) [\(preview)\(more)])"
     }
 }
