@@ -43,7 +43,7 @@ struct StatView: View {
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
                     if config.showList {
-                        total(count: points.count)
+                        total(count: points.total)
                     }
                 }
                 .listStyle(.plain)
