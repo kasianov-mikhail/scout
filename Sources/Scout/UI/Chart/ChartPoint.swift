@@ -14,9 +14,9 @@ struct ChartPoint<T: MatrixValue>: Identifiable {
     let date: Date
     let count: T
 
-    static func fromIntMatrix(_ matrix: Matrix<GridCell<Int>>) -> [ChartPoint<Int>] {
+    static func fromGridMatrix<V: MatrixValue>(_ matrix: Matrix<GridCell<V>>) -> [ChartPoint<V>] {
         matrix.cells.map { cell in
-            ChartPoint<Int>(
+            ChartPoint<V>(
                 date: matrix.date.addingDay(cell.row - 1).addingHour(cell.column),
                 count: cell.value
             )

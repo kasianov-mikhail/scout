@@ -32,7 +32,7 @@ extension StatProvider: Provider {
 
             let rawPoints = try records.map(Matrix<GridCell<Int>>.init)
                 .mergeDuplicates()
-                .flatMap(ChartPoint<Int>.fromIntMatrix)
+                .flatMap(ChartPoint<Int>.fromGridMatrix)
 
             let rawData = RawPointData(range: range, points: rawPoints)
 
