@@ -7,17 +7,13 @@
 
 import SwiftUI
 
-struct MetricsView: View {
-    let title: String
+struct MetricsView<T: MatrixValue>: View {
+    let matrices: [Matrix<GridCell<T>>]
 
     var body: some View {
-        Text(title.uppercased())
+        Text(String(matrices.count).uppercased())
             .font(.largeTitle)
             .bold()
-            .navigationTitle(title)
+            .navigationTitle(matrices[0].name)
     }
-}
-
-#Preview {
-    MetricsView(title: "Metrics")
 }

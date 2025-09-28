@@ -8,16 +8,14 @@
 import CloudKit
 import SwiftUI
 
-class MetricsProvider: ObservableObject {
+class MetricsProvider: ObservableObject, Provider {
     @Published var telemetry: Telemetry.Scope
     @Published var data: [String]?
 
     init(telemetry: Telemetry.Scope) {
         self.telemetry = telemetry
     }
-}
 
-@MainActor extension MetricsProvider: Provider {
     func fetch(in database: DatabaseController) async {
         await fetch(in: database, type: telemetry.valueType)
     }
@@ -31,10 +29,9 @@ class MetricsProvider: ObservableObject {
                 desiredKeys: nil
             )
 
-            let rawPoints = try records.map(Matrix<GridCell<T>>.init).mergeDuplicates()
-            let grouped = Dictionary(grouping: rawPoints, by: \.name)
+            let matrices = try records.map(Matrix<GridCell<T>>.init).mergeDuplicates()
 
-            data = grouped.map(\.key).sorted()
+            data = Dictionary(grouping: matrices, by: \.name).map(\.key)
         } catch {
             print(error.localizedDescription)
 
@@ -50,11 +47,9 @@ class MetricsProvider: ObservableObject {
             telemetry.export.rawValue
         )
 
-        let query = CKQuery(
+        return CKQuery(
             recordType: telemetry.valueType.recordName,
             predicate: predicate
         )
-
-        return query
     }
 }
