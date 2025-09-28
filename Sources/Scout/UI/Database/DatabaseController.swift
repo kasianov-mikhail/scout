@@ -14,9 +14,9 @@ final class DatabaseController: ObservableObject, Sendable {
     init(database: CKDatabase? = nil) {
         self.database = database
     }
-}
 
-extension DatabaseController {
+    // MARK: - Save
+
     func save(_ record: CKRecord) async throws {
         _ = try await database?.save(record)
     }
@@ -30,9 +30,9 @@ extension DatabaseController {
             deleting: recordIDsToDelete
         )
     }
-}
 
-extension DatabaseController {
+    // MARK: - Fetch
+
     func record(for recordID: CKRecord.ID) async throws -> CKRecord {
         guard let database else {
             return DatabaseController.sampleData[0]
@@ -52,9 +52,9 @@ extension DatabaseController {
             desiredKeys: desiredKeys
         )
     }
-}
 
-extension DatabaseController {
+    // MARK: - Query with Cursor
+
     typealias Results = [(CKRecord.ID, Result<CKRecord, any Error>)]
     typealias CursorResult = (matchResults: Results, queryCursor: CKQueryOperation.Cursor?)
 
