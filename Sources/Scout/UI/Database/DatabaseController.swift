@@ -21,10 +21,9 @@ final class DatabaseController: ObservableObject, Sendable {
         _ = try await database?.save(record)
     }
 
-    func modifyRecords(
-        saving recordsToSave: [CKRecord],
-        deleting recordIDsToDelete: [CKRecord.ID]
-    ) async throws {
+    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID])
+        async throws
+    {
         _ = try await database?.modifyRecords(
             saving: recordsToSave,
             deleting: recordIDsToDelete
@@ -40,10 +39,9 @@ final class DatabaseController: ObservableObject, Sendable {
         return try await database.record(for: recordID)
     }
 
-    func allRecords(
-        matching query: CKQuery,
-        desiredKeys: [CKRecord.FieldKey]?
-    ) async throws -> [CKRecord] {
+    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws
+        -> [CKRecord]
+    {
         guard let database else {
             return DatabaseController.sampleData.filter { $0.recordType == query.recordType }
         }
@@ -58,10 +56,9 @@ final class DatabaseController: ObservableObject, Sendable {
     typealias Results = [(CKRecord.ID, Result<CKRecord, any Error>)]
     typealias CursorResult = (matchResults: Results, queryCursor: CKQueryOperation.Cursor?)
 
-    func records(
-        matching query: CKQuery,
-        desiredKeys: [CKRecord.FieldKey]? = nil
-    ) async throws -> CursorResult {
+    func records(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]? = nil) async throws
+        -> CursorResult
+    {
         guard let database else {
             return (DatabaseController.sampleDataResults, nil)
         }
