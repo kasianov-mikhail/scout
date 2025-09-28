@@ -27,7 +27,7 @@ struct ChartView<T: ChartCompatible>: View {
             }
         }
         .chartBackground { proxy in
-            if points.count == 0 {
+            if points.total == 0 {
                 Placeholder(text: "No results")
             }
         }

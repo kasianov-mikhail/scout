@@ -22,7 +22,7 @@ struct StatRow: View {
                 Spacer()
 
                 let model = StatModel(period: period)
-                let count = model.points(from: stat.data)?.count
+                let count = model.points(from: stat.data)?.total
 
                 RedactedText(count: count)
             }
