@@ -40,15 +40,15 @@ struct MetricsList: View {
     }
 
     func list(data: [String]) -> some View {
-        return List(data, id: \.self) { metric in
+        return List(data, id: \.self) { metrics in
             Row {
-                Text(metric)
+                Text(metrics)
                     .monospaced()
                     .font(.system(size: 17))
                     .lineLimit(1)
                 Spacer()
             } destination: {
-                EmptyView()
+                MetricsView(title: metrics)
             }
         }
         .listStyle(.plain)
