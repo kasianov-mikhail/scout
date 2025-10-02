@@ -48,8 +48,7 @@ struct MetricsList: View {
                     .lineLimit(1)
                 Spacer()
             } destination: {
-                EmptyView()
-//                MetricsView(matrices: [])
+                MetricsView(matrices: metrics)
             }
         }
         .listStyle(.plain)

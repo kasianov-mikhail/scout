@@ -7,13 +7,27 @@
 
 import SwiftUI
 
-struct MetricsView<T: MatrixValue>: View {
-    let matrices: [Matrix<GridCell<T>>]
+struct MetricsView: View {
+    let title: String
+
+    @State private var model = StatModel(period: Period.month)
 
     var body: some View {
-        Text(String(matrices.count).uppercased())
-            .font(.largeTitle)
-            .bold()
-            .navigationTitle(matrices[0].name)
+        VStack(spacing: 0) {
+            List {
+                ChartView(points: .sample, model: model)
+                    .foregroundStyle(.blue)
+                    .listRowSeparator(.hidden)
+            }
+            .listStyle(.plain)
+            .scrollDisabled(true)
+        }
+        .navigationTitle(title)
+    }
+}
+
+#Preview {
+    NavigationStack {
+        MetricsView(title: "Matrices")
     }
 }
