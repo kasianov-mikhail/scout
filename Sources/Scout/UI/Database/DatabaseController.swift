@@ -53,10 +53,10 @@ final class DatabaseController: ObservableObject, Sendable {
 
     // MARK: - Query with Cursor
 
-    typealias Cursor = CKQueryOperation.Cursor
-    typealias Results = [(CKRecord.ID, Result<CKRecord, any Error>)]
-
-    typealias CursorResult = (matchResults: Results, queryCursor: Cursor?)
+    typealias CursorResult = (
+        matchResults: [(CKRecord.ID, Result<CKRecord, any Error>)],
+        queryCursor: CKQueryOperation.Cursor?
+    )
 
     func records(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]? = nil) async throws
         -> CursorResult
@@ -70,9 +70,7 @@ final class DatabaseController: ObservableObject, Sendable {
         )
     }
 
-    func records(continuingMatchFrom queryCursor: Cursor, desiredKeys: [CKRecord.FieldKey]? = nil)
-        async throws -> CursorResult
-    {
+    func records(continuingMatchFrom queryCursor: CKQueryOperation.Cursor, desiredKeys: [CKRecord.FieldKey]? = nil) async throws -> CursorResult {
         guard let database else {
             return (DatabaseController.sampleDataResults, nil)
         }
