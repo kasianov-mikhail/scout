@@ -40,7 +40,7 @@ struct MetricsList: View {
     }
 
     func list(data: [String]) -> some View {
-        return List(data, id: \.self) { metrics in
+        List(data, id: \.self) { metrics in
             Row {
                 Text(metrics)
                     .monospaced()
@@ -48,34 +48,8 @@ struct MetricsList: View {
                     .lineLimit(1)
                 Spacer()
             } destination: {
-                MetricsView(matrices: metrics)
+                MetricsView(title: metrics)
             }
         }
-        .listStyle(.plain)
-        .frame(maxHeight: .infinity)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        let metrics = MetricsProvider(telemetry: .floatingCounter)
-        metrics.data = [
-            "CPU Usage",
-            "Memory Allocated",
-            "Disk Writes",
-            "Network Throughput",
-            "Cache Hits",
-            "Database Queries",
-            "API Latency",
-            "Page Load Time",
-            "Frame Rate",
-            "Error Count",
-            "Active Users",
-            "Session Duration",
-            "Background Tasks",
-            "Power Consumption",
-            "Thread Count",
-        ]
-        return MetricsList(metrics: metrics)
     }
 }
