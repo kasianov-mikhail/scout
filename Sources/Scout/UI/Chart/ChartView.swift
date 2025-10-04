@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-struct ChartView<T: ChartCompatible, V: MatrixValue & Plottable>: View {
+struct ChartView<T: ChartCompatible, V: ChartNumeric>: View {
     let points: [ChartPoint<V>]
     let period: T
 

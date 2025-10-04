@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RawPointData<T: MatrixValue> {
+struct RawPointData<T: ChartNumeric> {
     let range: ClosedRange<Date>
     let points: [ChartPoint<T>]
 

@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-struct MetricsView<T: MatrixValue & Plottable>: View {
+struct MetricsView<T: ChartNumeric>: View {
     @ObservedObject var metrics: MetricsProvider<T>
     @State private var model = StatModel(period: Period.month)
 
@@ -23,8 +23,7 @@ struct MetricsView<T: MatrixValue & Plottable>: View {
                 .listStyle(.plain)
                 .scrollDisabled(true)
             } else {
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }

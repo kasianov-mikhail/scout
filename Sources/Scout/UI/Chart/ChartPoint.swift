@@ -7,14 +7,12 @@
 
 import CloudKit
 
-typealias ChartData<T: ChartCompatible, V: MatrixValue> = [T: [ChartPoint<V>]]
-
-struct ChartPoint<T: MatrixValue>: Identifiable {
+struct ChartPoint<T: ChartNumeric>: Identifiable {
     let id = UUID()
     let date: Date
     let count: T
 
-    static func fromGridMatrix<V: MatrixValue>(_ matrix: Matrix<GridCell<V>>) -> [ChartPoint<V>] {
+    static func fromGridMatrix<V: ChartNumeric>(_ matrix: Matrix<GridCell<V>>) -> [ChartPoint<V>] {
         matrix.cells.map { cell in
             ChartPoint<V>(
                 date: matrix.date.addingDay(cell.row - 1).addingHour(cell.column),

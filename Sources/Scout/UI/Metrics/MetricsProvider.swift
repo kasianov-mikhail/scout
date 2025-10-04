@@ -9,7 +9,7 @@ import CloudKit
 import Charts
 import SwiftUI
 
-class MetricsProvider<T: MatrixValue & Plottable>: ObservableObject, Provider {
+class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
     @Published var telemetry: Telemetry.Scope
     @Published var keys: [String]?
     @Published var data: ChartData<Period, T>?
