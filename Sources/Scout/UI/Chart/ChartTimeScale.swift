@@ -7,13 +7,14 @@
 
 import Foundation
 
-protocol ChartCompatible: Identifiable, Hashable {
+protocol ChartTimeScale: Identifiable, Hashable {
     var pointComponent: Calendar.Component { get }
     var rangeComponent: Calendar.Component { get }
+
     var range: Range<Date> { get }
 }
 
-extension ChartCompatible {
+extension ChartTimeScale {
     var axisValues: [Date]? {
         switch rangeComponent {
         case .month:
@@ -24,7 +25,7 @@ extension ChartCompatible {
     }
 }
 
-extension Array where Element: ChartCompatible {
+extension [ChartTimeScale] {
     var uniqueComponents: Set<Calendar.Component> {
         Set(map(\.pointComponent))
     }

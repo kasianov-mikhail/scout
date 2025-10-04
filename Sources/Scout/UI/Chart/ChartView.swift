@@ -8,7 +8,7 @@
 import Charts
 import SwiftUI
 
-struct ChartView<T: ChartCompatible, V: ChartNumeric>: View {
+struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
     let points: [ChartPoint<V>]
     let period: T
 
@@ -37,7 +37,6 @@ struct ChartView<T: ChartCompatible, V: ChartNumeric>: View {
         .listRowInsets(EdgeInsets())
     }
 }
-
 
 #Preview("ChartView – Month") {
     VStack(alignment: .leading, spacing: 24) {

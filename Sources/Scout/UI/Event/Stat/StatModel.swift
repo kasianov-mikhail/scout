@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StatModel<T: ChartCompatible> {
+struct StatModel<T: ChartTimeScale> {
     var period: T {
         didSet { range = period.range }
     }

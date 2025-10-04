@@ -50,7 +50,7 @@ extension ActivityPeriod {
     }
 }
 
-extension ActivityPeriod: ChartCompatible {
+extension ActivityPeriod: ChartTimeScale {
     var range: Range<Date> {
         let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
         return today.adding(rangeComponent, value: -1)..<today

@@ -7,7 +7,7 @@
 
 import Charts
 
-typealias ChartData<T: ChartCompatible, V: ChartNumeric> = [T: [ChartPoint<V>]]
+typealias ChartData<T: ChartTimeScale, V: ChartNumeric> = [T: [ChartPoint<V>]]
 
 typealias ChartNumeric = MatrixValue & Plottable
 

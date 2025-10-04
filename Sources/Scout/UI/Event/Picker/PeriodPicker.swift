@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PeriodPicker<T: PickerCompatible & ChartCompatible>: View {
+struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
     @Binding var model: StatModel<T>
 
     let periods: [T]
