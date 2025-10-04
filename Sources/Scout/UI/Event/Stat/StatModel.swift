@@ -11,7 +11,6 @@ struct StatModel<T: ChartCompatible> {
     var period: T {
         didSet { range = period.range }
     }
-
     var range: Range<Date>
 }
 

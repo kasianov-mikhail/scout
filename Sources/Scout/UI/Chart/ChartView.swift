@@ -8,8 +8,8 @@
 import Charts
 import SwiftUI
 
-struct ChartView<T: ChartCompatible>: View {
-    let points: [ChartPoint<Int>]
+struct ChartView<T: ChartCompatible, V: MatrixValue & Plottable>: View {
+    let points: [ChartPoint<V>]
     let model: StatModel<T>
 
     var body: some View {
@@ -27,7 +27,7 @@ struct ChartView<T: ChartCompatible>: View {
             }
         }
         .chartBackground { proxy in
-            if points.total == 0 {
+            if points.isEmpty {
                 Placeholder(text: "No results")
             }
         }
@@ -56,7 +56,7 @@ extension StatModel {
         ChartView(points: .sample, model: model)
 
         Text("Empty State").font(.headline)
-        ChartView(points: [], model: model)
+        ChartView<Period, Int>(points: [], model: model)
     }
     .padding()
 }
