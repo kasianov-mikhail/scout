@@ -13,17 +13,19 @@ struct StatModel<T: ChartCompatible> {
     }
 
     var range: Range<Date>
-
-    func points(from data: ChartData<T, Int>?) -> [ChartPoint<Int>]? {
-        data?[period]?.filter {
-            range.contains($0.date)
-        }
-    }
 }
 
 extension StatModel {
     init(period: T) {
         self.period = period
         self.range = period.range
+    }
+}
+
+extension StatModel {
+    func points<V: MatrixValue>(from data: ChartData<T, V>?) -> [ChartPoint<V>]? {
+        data?[period]?.filter {
+            range.contains($0.date)
+        }
     }
 }
