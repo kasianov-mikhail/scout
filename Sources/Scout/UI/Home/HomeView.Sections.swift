@@ -13,9 +13,8 @@ extension HomeView {
         @StateObject private var metrics = MetricsProvider(telemetry: .counter)
 
         var body: some View {
-            Header(title: "Log").task {
-                await metrics.fetchIfNeeded(in: database)
-            }
+            Header(title: "Log")
+
             Group {
                 Row {
                     Text("Events")
@@ -27,7 +26,7 @@ extension HomeView {
                     Text("Metrics")
                     Spacer()
                 } destination: {
-                    MetricsList(metrics: metrics)
+                    MetricsList()
                 }
             }
             .foregroundStyle(.blue)

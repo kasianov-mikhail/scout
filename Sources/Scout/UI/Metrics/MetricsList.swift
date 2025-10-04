@@ -9,18 +9,13 @@ import SwiftUI
 
 struct MetricsList: View {
     @EnvironmentObject var database: DatabaseController
-    @ObservedObject var metrics: MetricsProvider
+    @StateObject private var metrics = MetricsProvider(telemetry: .counter)
 
     var body: some View {
         Group {
             Picker("Metrics Type", selection: $metrics.telemetry) {
                 ForEach(Telemetry.Scope.allCases) { type in
                     Text(type.shortTitle.uppercased())
-                }
-            }
-            .onChange(of: metrics.telemetry) { _ in
-                Task {
-                    await metrics.fetchAgain(in: database)
                 }
             }
             .padding(.horizontal)
@@ -34,6 +29,14 @@ struct MetricsList: View {
                 }
             } else {
                 ProgressView().frame(maxHeight: .infinity)
+            }
+        }
+        .task {
+            await metrics.fetchIfNeeded(in: database)
+        }
+        .onChange(of: metrics.telemetry) { _ in
+            Task {
+                await metrics.fetchAgain(in: database)
             }
         }
         .navigationTitle("Metrics")
