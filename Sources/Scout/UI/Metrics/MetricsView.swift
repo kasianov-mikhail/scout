@@ -15,14 +15,15 @@ struct MetricsView: View {
         VStack(spacing: 0) {
             if let points = model.points(from: metrics.data) {
                 List {
-                    ChartView(points: points, model: model)
+                    ChartView(points: points, period: model.period)
                         .foregroundStyle(.blue)
                         .listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
             } else {
-                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+                ProgressView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
     }

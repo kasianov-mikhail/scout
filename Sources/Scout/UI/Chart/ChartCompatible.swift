@@ -13,6 +13,17 @@ protocol ChartCompatible: Identifiable, Hashable {
     var range: Range<Date> { get }
 }
 
+extension ChartCompatible {
+    var axisValues: [Date]? {
+        switch rangeComponent {
+        case .month:
+            [-28, -21, -14, -7].map(range.upperBound.addingDay)
+        default:
+            nil
+        }
+    }
+}
+
 extension Array where Element: ChartCompatible {
     var uniqueComponents: Set<Calendar.Component> {
         Set(map(\.pointComponent))

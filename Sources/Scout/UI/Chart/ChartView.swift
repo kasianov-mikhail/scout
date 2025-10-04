@@ -10,17 +10,17 @@ import SwiftUI
 
 struct ChartView<T: ChartCompatible, V: MatrixValue & Plottable>: View {
     let points: [ChartPoint<V>]
-    let model: StatModel<T>
+    let period: T
 
     var body: some View {
         Chart(points, id: \.date) { point in
             BarMark(
-                x: .value("X", point.date, unit: model.period.pointComponent),
+                x: .value("X", point.date, unit: period.pointComponent),
                 y: .value("Y", point.count)
             )
         }
         .chartXAxis {
-            if let axisValues = model.axisValues {
+            if let axisValues = period.axisValues {
                 AxisMarks(values: axisValues)
             } else {
                 AxisMarks()
@@ -38,25 +38,14 @@ struct ChartView<T: ChartCompatible, V: MatrixValue & Plottable>: View {
     }
 }
 
-extension StatModel {
-    fileprivate var axisValues: [Date]? {
-        if period.rangeComponent == .month {
-            return [-28, -21, -14, -7].map(range.upperBound.addingDay)
-        } else {
-            return nil
-        }
-    }
-}
 
 #Preview("ChartView – Month") {
-    let model = StatModel(period: Period.month)
-
     VStack(alignment: .leading, spacing: 24) {
         Text("With Data").font(.headline)
-        ChartView(points: .sample, model: model)
+        ChartView(points: .sample, period: Period.month)
 
         Text("Empty State").font(.headline)
-        ChartView<Period, Int>(points: [], model: model)
+        ChartView<Period, Int>(points: [], period: Period.month)
     }
     .padding()
 }

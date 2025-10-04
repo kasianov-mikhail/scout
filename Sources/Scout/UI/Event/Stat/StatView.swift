@@ -38,7 +38,7 @@ struct StatView: View {
                     .padding(.horizontal)
 
                 List {
-                    ChartView(points: points, model: model)
+                    ChartView(points: points, period: model.period)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
