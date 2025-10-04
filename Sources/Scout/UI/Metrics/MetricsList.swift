@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MetricsList: View {
     @EnvironmentObject var database: DatabaseController
-    @StateObject private var metrics = MetricsProvider(telemetry: .counter)
+    @StateObject private var metrics = MetricsProvider<Int>(telemetry: .counter)
 
     var body: some View {
         Group {

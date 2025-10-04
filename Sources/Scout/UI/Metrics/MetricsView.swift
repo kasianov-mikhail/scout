@@ -5,10 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Charts
 import SwiftUI
 
-struct MetricsView: View {
-    @ObservedObject var metrics: MetricsProvider
+struct MetricsView<T: MatrixValue & Plottable>: View {
+    @ObservedObject var metrics: MetricsProvider<T>
     @State private var model = StatModel(period: Period.month)
 
     var body: some View {

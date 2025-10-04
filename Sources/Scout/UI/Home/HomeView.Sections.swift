@@ -10,7 +10,7 @@ import SwiftUI
 extension HomeView {
     struct LogSection: View {
         @EnvironmentObject private var database: DatabaseController
-        @StateObject private var metrics = MetricsProvider(telemetry: .counter)
+        @StateObject private var metrics = MetricsProvider<Int>(telemetry: .counter)
 
         var body: some View {
             Header(title: "Log")

@@ -6,22 +6,19 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
+import Charts
 import SwiftUI
 
-class MetricsProvider: ObservableObject, Provider {
+class MetricsProvider<T: MatrixValue & Plottable>: ObservableObject, Provider {
     @Published var telemetry: Telemetry.Scope
     @Published var keys: [String]?
-    @Published var data: ChartData<Period, Int>?
+    @Published var data: ChartData<Period, T>?
 
     init(telemetry: Telemetry.Scope) {
         self.telemetry = telemetry
     }
 
     func fetch(in database: DatabaseController) async {
-        await fetch(in: database, type: telemetry.valueType)
-    }
-
-    func fetch<T: MatrixValue>(in database: DatabaseController, type: T.Type) async {
         let range = Calendar(identifier: .iso8601).defaultRange
 
         do {
@@ -36,11 +33,11 @@ class MetricsProvider: ObservableObject, Provider {
 
             keys = Dictionary(grouping: matrices, by: \.name).map(\.key)
 
-            if let rawData = rawData as? RawPointData<Int> {
-                data = Dictionary(uniqueKeysWithValues: Period.all.map { period in
+            data = Dictionary(
+                uniqueKeysWithValues: Period.all.map { period in
                     (period, rawData.group(by: period.pointComponent))
-                })
-            }
+                }
+            )
 
         } catch {
             print(error.localizedDescription)
