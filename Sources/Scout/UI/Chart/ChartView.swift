@@ -45,7 +45,7 @@ struct ChartView<T: ChartCompatible, V: MatrixValue & Plottable>: View {
         ChartView(points: .sample, period: Period.month)
 
         Text("Empty State").font(.headline)
-        ChartView<Period, Int>(points: [], period: Period.month)
+        ChartView(points: .empty, period: Period.month)
     }
     .padding()
 }

@@ -62,8 +62,10 @@ extension ChartPoint: CustomStringConvertible {
     }
 }
 
+// MARK: - Sample Data
+
 extension [ChartPoint<Int>] {
-    static var sample: [ChartPoint<Int>] {
+    static var sample: Self {
         let cal = Calendar(identifier: .iso8601)
         let end = Date()
         return (1...30).compactMap { i in
@@ -72,4 +74,6 @@ extension [ChartPoint<Int>] {
             }
         }.sorted()
     }
+
+    static var empty: Self { [] }
 }
