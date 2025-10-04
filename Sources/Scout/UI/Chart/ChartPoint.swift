@@ -7,7 +7,7 @@
 
 import CloudKit
 
-typealias ChartData<T: ChartCompatible> = [T: [ChartPoint<Int>]]
+typealias ChartData<T: ChartCompatible, V: MatrixValue> = [T: [ChartPoint<V>]]
 
 struct ChartPoint<T: MatrixValue>: Identifiable {
     let id = UUID()

@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct RawPointData {
+struct RawPointData<T: MatrixValue> {
     let range: ClosedRange<Date>
-    let points: [ChartPoint<Int>]
+    let points: [ChartPoint<T>]
 
-    func group(by component: Calendar.Component) -> [ChartPoint<Int>] {
-        var result: [ChartPoint<Int>] = []
+    func group(by component: Calendar.Component) -> [ChartPoint<T>] {
+        var result: [ChartPoint<T>] = []
         var date = range.lowerBound
 
         while date < range.upperBound {
@@ -20,7 +20,7 @@ struct RawPointData {
 
             let count = points.filter { item in
                 (date..<next).contains(item.date)
-            }.reduce(0) {
+            }.reduce(.zero) {
                 $0 + $1.count
             }
 
@@ -32,16 +32,16 @@ struct RawPointData {
     }
 }
 
-extension RawPointData: CustomStringConvertible {
-    var description: String {
-        let formatter = ISO8601DateFormatter()
-        let start = formatter.string(from: range.lowerBound)
-        let end = formatter.string(from: range.upperBound)
-
-        let previewCount = min(points.total, 5)
-        let preview = points.prefix(previewCount).map(\.description).joined(separator: ", ")
-        let more = points.total > previewCount ? ", …" : ""
-
-        return "RawPointData(range: \(start)...\(end), points: \(points.total) [\(preview)\(more)])"
-    }
-}
+//extension RawPointData: CustomStringConvertible {
+//    var description: String {
+//        let formatter = ISO8601DateFormatter()
+//        let start = formatter.string(from: range.lowerBound)
+//        let end = formatter.string(from: range.upperBound)
+//
+//        let previewCount = min(points.total, 5)
+//        let preview = points.prefix(previewCount).map(\.description).joined(separator: ", ")
+//        let more = points.total > previewCount ? ", …" : ""
+//
+//        return "RawPointData(range: \(start)...\(end), points: \(points.total) [\(preview)\(more)])"
+//    }
+//}

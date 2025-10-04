@@ -12,7 +12,7 @@ typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 
 @MainActor
 class ActivityProvider: ObservableObject {
-    @Published var data: ChartData<ActivityPeriod>?
+    @Published var data: ChartData<ActivityPeriod, Int>?
 }
 
 extension ActivityProvider: Provider {

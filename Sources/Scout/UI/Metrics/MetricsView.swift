@@ -8,26 +8,22 @@
 import SwiftUI
 
 struct MetricsView: View {
-    let title: String
-
+    @ObservedObject var metrics: MetricsProvider
     @State private var model = StatModel(period: Period.month)
 
     var body: some View {
         VStack(spacing: 0) {
-            List {
-                ChartView(points: .sample, model: model)
-                    .foregroundStyle(.blue)
-                    .listRowSeparator(.hidden)
+            if let points = model.points(from: metrics.data) {
+                List {
+                    ChartView(points: points, model: model)
+                        .foregroundStyle(.blue)
+                        .listRowSeparator(.hidden)
+                }
+                .listStyle(.plain)
+                .scrollDisabled(true)
+            } else {
+                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .listStyle(.plain)
-            .scrollDisabled(true)
         }
-        .navigationTitle(title)
-    }
-}
-
-#Preview {
-    NavigationStack {
-        MetricsView(title: "Matrices")
     }
 }

@@ -10,7 +10,8 @@ import SwiftUI
 
 class MetricsProvider: ObservableObject, Provider {
     @Published var telemetry: Telemetry.Scope
-    @Published var data: [String]?
+    @Published var keys: [String]?
+    @Published var data: ChartData<Period, Int>?
 
     init(telemetry: Telemetry.Scope) {
         self.telemetry = telemetry
@@ -30,12 +31,21 @@ class MetricsProvider: ObservableObject, Provider {
             )
 
             let matrices = try records.map(Matrix<GridCell<T>>.init).mergeDuplicates()
+            let rawPoints = matrices.flatMap(ChartPoint<T>.fromGridMatrix)
+            let rawData = RawPointData(range: range, points: rawPoints)
 
-            data = Dictionary(grouping: matrices, by: \.name).map(\.key)
+            keys = Dictionary(grouping: matrices, by: \.name).map(\.key)
+
+            if let rawData = rawData as? RawPointData<Int> {
+                data = Dictionary(uniqueKeysWithValues: Period.all.map { period in
+                    (period, rawData.group(by: period.pointComponent))
+                })
+            }
+
         } catch {
             print(error.localizedDescription)
 
-            data = nil
+            keys = nil
         }
     }
 

@@ -26,11 +26,11 @@ struct MetricsList: View {
             .padding(.horizontal)
             .pickerStyle(.segmented)
 
-            if let data = metrics.data {
-                if data.isEmpty {
+            if let keys = metrics.keys {
+                if keys.isEmpty {
                     Placeholder(text: "No results").frame(maxHeight: .infinity)
                 } else {
-                    list(data: data)
+                    list(keys: keys)
                 }
             } else {
                 ProgressView().frame(maxHeight: .infinity)
@@ -39,17 +39,18 @@ struct MetricsList: View {
         .navigationTitle("Metrics")
     }
 
-    func list(data: [String]) -> some View {
-        List(data, id: \.self) { metrics in
+    func list(keys: [String]) -> some View {
+        List(keys, id: \.self) { title in
             Row {
-                Text(metrics)
+                Text(title)
                     .monospaced()
                     .font(.system(size: 17))
                     .lineLimit(1)
                 Spacer()
             } destination: {
-                MetricsView(title: metrics)
+                MetricsView(metrics: metrics).navigationTitle(title)
             }
         }
+        .listStyle(.plain)
     }
 }

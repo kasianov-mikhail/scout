@@ -12,7 +12,7 @@ class StatProvider: ObservableObject {
     let eventName: String
     let periods: [Period]
 
-    @Published var data: ChartData<Period>?
+    @Published var data: ChartData<Period, Int>?
 
     init(eventName: String, periods: [Period]) {
         self.eventName = eventName
