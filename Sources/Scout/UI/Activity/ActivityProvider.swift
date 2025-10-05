@@ -21,7 +21,7 @@ extension ActivityProvider: Provider {
 
         do {
             let records = try await database.allRecords(
-                matching: query(from: range.lowerBound, to: range.upperBound),
+                matching: query(for: range),
                 desiredKeys: nil
             )
 
@@ -51,11 +51,11 @@ extension ActivityProvider: Provider {
         }
     }
 
-    private func query(from: Date, to: Date) async throws -> CKQuery {
+    private func query(for dateRange: ClosedRange<Date>) async throws -> CKQuery {
         let predicate = NSPredicate(
             format: "date >= %@ AND date < %@ AND name == %@",
-            from as NSDate,
-            to as NSDate,
+            dateRange.lowerBound as NSDate,
+            dateRange.upperBound as NSDate,
             "ActiveUser"
         )
 
