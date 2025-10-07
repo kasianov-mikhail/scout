@@ -8,28 +8,37 @@
 import Foundation
 
 struct MetricsSeries<T: ChartNumeric>: Identifiable {
-    let name: String
+    let id: String
     let points: [ChartPoint<T>]
 
-    var id: String { name }
-    var title: String { "\(name) – \(points.total) points" }
-}
-
-extension MetricsSeries {
-    static func fromMatrices(_ matrices: [Matrix<GridCell<T>>]) -> [MetricsSeries<T>] {
-        Dictionary(grouping: matrices, by: \.name)
-            .mapValues(toPoints)
-            .map(MetricsSeries.init)
-            .sorted()
+    init?(id: String, points: [ChartPoint<T>]) {
+        if points.isEmpty {
+            return nil
+        }
+        self.id = id
+        self.points = points
     }
 
-    static func toPoints(matrices: [Matrix<GridCell<T>>]) -> [ChartPoint<T>] {
-        matrices.flatMap(ChartPoint<T>.fromGridMatrix)
+    var title: String {
+        "\(id) – \(points.total)"
     }
 }
+
+// MARK: -
 
 extension MetricsSeries: Comparable {
     static func < (lhs: MetricsSeries<T>, rhs: MetricsSeries<T>) -> Bool {
         lhs.points.total > rhs.points.total
+    }
+}
+
+extension MetricsSeries: CustomStringConvertible {
+    var description: String {
+        let total = points.reduce(into: .zero) { $0 + $1.count }
+        let dates = points.map(\.date)
+        let start = dates.min().map(ISO8601DateFormatter().string) ?? "n/a"
+        let end = dates.max().map(ISO8601DateFormatter().string) ?? "n/a"
+
+        return "MetricsSeries(id: \(id), points: \(points.count), total: \(total), range: \(start) – \(end))"
     }
 }

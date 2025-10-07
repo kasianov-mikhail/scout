@@ -19,11 +19,13 @@ struct MetricsContent<T: ChartNumeric>: View {
     }
 
     var body: some View {
-        if let data = metrics.data {
-            if data.isEmpty {
+        if let matrices = metrics.data {
+            let series = MetricsSeries.Compose(of: matrices, period: period)()
+
+            if series.isEmpty {
                 Placeholder(text: "No results").frame(maxHeight: .infinity)
             } else {
-                list(series: MetricsSeries.fromMatrices(data))
+                List(series, rowContent: row).listStyle(.plain)
             }
         } else {
             ProgressView().frame(maxHeight: .infinity).task {
@@ -32,19 +34,15 @@ struct MetricsContent<T: ChartNumeric>: View {
         }
     }
 
-    func list(series: [MetricsSeries<T>]) -> some View {
-        List(series) { series in
-            Row {
-                Text(series.title)
-                    .monospaced()
-                    .font(.system(size: 17))
-                    .lineLimit(1)
-                Spacer()
-            } destination: {
-                MetricsView(period: period, points: series.points)
-                    .navigationTitle(series.name)
-            }
+    func row(series: MetricsSeries<T>) -> some View {
+        Row {
+            Text(series.title)
+                .monospaced()
+                .font(.system(size: 17))
+                .lineLimit(1)
+            Spacer()
+        } destination: {
+            MetricsView(period: period, points: series.points).navigationTitle(series.id)
         }
-        .listStyle(.plain)
     }
 }
