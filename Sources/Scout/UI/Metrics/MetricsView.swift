@@ -9,10 +9,23 @@ import Charts
 import SwiftUI
 
 struct MetricsView<T: ChartNumeric>: View {
-    let period: Period
+    @State private var period: Period
     let points: [ChartPoint<T>]
 
+    init(period: Period, points: [ChartPoint<T>]) {
+        self._period = State(initialValue: period)
+        self.points = points
+    }
+
     var body: some View {
+        Picker("Period", selection: $period) {
+            ForEach(Period.all) { period in
+                Text(period.shortTitle.uppercased())
+            }
+        }
+        .padding(.horizontal)
+        .pickerStyle(.segmented)
+
         List {
             ChartView(points: points, period: period)
                 .foregroundStyle(.blue)
@@ -24,12 +37,7 @@ struct MetricsView<T: ChartNumeric>: View {
 }
 
 #Preview("MetricsView") {
-    VStack(alignment: .leading, spacing: 24) {
-        Text("With Data").font(.headline)
-        MetricsView(period: .month, points: .sample)
-
-        Text("Empty State").font(.headline)
-        MetricsView(period: .month, points: .empty)
+    NavigationStack {
+        MetricsView(period: .month, points: .sample).navigationTitle("MetricsView")
     }
-    .padding()
 }
