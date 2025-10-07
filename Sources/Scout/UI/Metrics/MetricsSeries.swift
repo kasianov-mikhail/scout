@@ -34,11 +34,10 @@ extension MetricsSeries: Comparable {
 
 extension MetricsSeries: CustomStringConvertible {
     var description: String {
-        let total = points.reduce(into: .zero) { $0 + $1.count }
         let dates = points.map(\.date)
         let start = dates.min().map(ISO8601DateFormatter().string) ?? "n/a"
         let end = dates.max().map(ISO8601DateFormatter().string) ?? "n/a"
 
-        return "MetricsSeries(id: \(id), points: \(points.count), total: \(total), range: \(start) – \(end))"
+        return "MetricsSeries(id: \(id), points: \(points.count), total: \(points.total), range: \(start) – \(end))"
     }
 }
