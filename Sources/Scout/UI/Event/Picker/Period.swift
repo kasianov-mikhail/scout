@@ -37,7 +37,7 @@ extension Period {
     }
 }
 
-extension Period: ChartCompatible {
+extension Period: ChartTimeScale {
     var range: Range<Date> {
         let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
 

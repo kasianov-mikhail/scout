@@ -21,13 +21,15 @@ struct ActivityView: View {
         VStack(spacing: 0) {
             PeriodPicker(model: $model, periods: ActivityPeriod.allCases)
 
-            if let points = model.points(from: activity.data) {
+            if let data = activity.data {
                 RangeControl(model: $model)
                     .padding(.top)
                     .padding(.horizontal)
 
+                let points = data.points(in: model.viewport)
+
                 List {
-                    ChartView(points: points, model: model)
+                    ChartView(points: points, period: model.period)
                         .foregroundStyle(.green)
                         .listRowSeparator(.hidden)
                 }

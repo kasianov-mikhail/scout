@@ -17,6 +17,12 @@ protocol CellProtocol: Combining, Sendable, Equatable {
 }
 
 extension Array where Element: CellProtocol {
+    var total: Element.Scalar {
+        map(\.value).reduce(.zero, +)
+    }
+}
+
+extension Array where Element: CellProtocol {
     var summary: String {
         if isEmpty {
             return "[]"

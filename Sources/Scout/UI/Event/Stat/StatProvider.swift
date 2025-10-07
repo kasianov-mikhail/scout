@@ -12,7 +12,7 @@ class StatProvider: ObservableObject {
     let eventName: String
     let periods: [Period]
 
-    @Published var data: ChartData<Period>?
+    @Published var data: [ChartPoint<Int>]?
 
     init(eventName: String, periods: [Period]) {
         self.eventName = eventName
@@ -25,20 +25,14 @@ extension StatProvider: Provider {
         let range = Calendar(identifier: .iso8601).defaultRange
 
         do {
+            let query = query(from: range.lowerBound)
             let records = try await database.allRecords(
-                matching: query(from: range.lowerBound),
+                matching: query,
                 desiredKeys: nil
             )
 
-            let rawPoints = try records.map(Matrix<GridCell<Int>>.init)
-                .mergeDuplicates()
-                .flatMap(ChartPoint.fromIntMatrix)
-
-            let rawData = RawPointData(range: range, points: rawPoints)
-
-            data = Dictionary(uniqueKeysWithValues: periods.map { period in
-                (period, rawData.group(by: period.pointComponent))
-            })
+            let matrices = try records.map(Matrix<GridCell<Int>>.init).mergeDuplicates()
+            data = matrices.flatMap(ChartPoint<Int>.fromGridMatrix)
 
         } catch {
             print(error.localizedDescription)
@@ -46,7 +40,7 @@ extension StatProvider: Provider {
         }
     }
 
-    private func query(from date: Date) async throws -> CKQuery {
+    private func query(from date: Date) -> CKQuery {
         let predicate = NSPredicate(
             format: "date >= %@ AND name == %@",
             date as NSDate,

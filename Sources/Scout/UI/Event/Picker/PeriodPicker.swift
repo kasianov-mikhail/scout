@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct PeriodPicker<T: PickerCompatible & ChartCompatible>: View {
-    @Binding var model: StatModel<T>
+struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
+    @Binding var model: ChartModel<T>
 
     let periods: [T]
 
@@ -27,7 +27,7 @@ struct PeriodPicker<T: PickerCompatible & ChartCompatible>: View {
     }
 }
 
-extension StatModel {
+extension ChartModel {
     fileprivate var isAccented: Bool {
         isRightEnabled
     }

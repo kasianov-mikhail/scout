@@ -11,11 +11,9 @@ import SwiftUI
 typealias PeriodMatrix = Matrix<PeriodCell<Int>>
 
 @MainActor
-class ActivityProvider: ObservableObject {
-    @Published var data: ChartData<ActivityPeriod>?
-}
+class ActivityProvider: ObservableObject, Provider {
+    @Published var data: [ChartPoint<Int>]?
 
-extension ActivityProvider: Provider {
     func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).defaultRange
 
@@ -43,7 +41,7 @@ extension ActivityProvider: Provider {
                 return (period, points.sorted())
             }
 
-            data = Dictionary(uniqueKeysWithValues: periodPoints)
+            data = []// Dictionary(uniqueKeysWithValues: periodPoints)
 
         } catch {
             print("Error fetching active user data: \(error)")
@@ -51,7 +49,7 @@ extension ActivityProvider: Provider {
         }
     }
 
-    private func query(for dateRange: ClosedRange<Date>) async throws -> CKQuery {
+    private func query(for dateRange: ClosedRange<Date>) -> CKQuery {
         let predicate = NSPredicate(
             format: "date >= %@ AND date < %@ AND name == %@",
             dateRange.lowerBound as NSDate,

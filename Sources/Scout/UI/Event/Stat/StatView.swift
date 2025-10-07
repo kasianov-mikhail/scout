@@ -32,13 +32,15 @@ struct StatView: View {
         VStack(spacing: 0) {
             PeriodPicker(model: $model, periods: stat.periods)
 
-            if let points = model.points(from: stat.data) {
+            if let data = stat.data {
                 RangeControl(model: $model)
                     .padding(.top)
                     .padding(.horizontal)
 
+                let points = data.points(in: model.viewport)
+
                 List {
-                    ChartView(points: points, model: model)
+                    ChartView(points: points, period: model.period)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
@@ -92,11 +94,8 @@ extension StatView.Config: CustomDebugStringConvertible {
 
 #Preview {
     NavigationStack {
-        let data = Dictionary(uniqueKeysWithValues: Period.all.map { period in
-            (period, [ChartPoint].sample)
-        })
         let stat = StatProvider(eventName: "Event", periods: Period.all)
-        stat.data = data
+        stat.data = .sample
         let config = StatView.Config(title: "Title", color: .blue, showList: true)
         return StatView(config: config, stat: stat, period: .month)
     }
