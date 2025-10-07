@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct RangeControl<T: ChartCompatible>: View {
-    @Binding var model: StatModel<T>
+struct RangeControl<T: ChartTimeScale>: View {
+    @Binding var model: ChartModel<T>
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()

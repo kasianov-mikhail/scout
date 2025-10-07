@@ -7,23 +7,22 @@
 
 import SwiftUI
 
-struct StatModel<T: ChartCompatible> {
+struct ChartModel<T: ChartTimeScale> {
     var period: T {
         didSet { range = period.range }
     }
-
     var range: Range<Date>
-
-    func points(from data: ChartData<T>?) -> [ChartPoint]? {
-        data?[period]?.filter {
-            range.contains($0.date)
-        }
-    }
 }
 
-extension StatModel {
+extension ChartModel {
     init(period: T) {
         self.period = period
         self.range = period.range
+    }
+
+    var viewport: ClosedRange<Date> {
+        let lowerBound = range.lowerBound
+        let upperBound = range.upperBound.adding(period.pointComponent, value: -1)
+        return lowerBound...upperBound
     }
 }

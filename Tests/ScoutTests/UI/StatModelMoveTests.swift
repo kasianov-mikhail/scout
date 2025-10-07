@@ -10,33 +10,33 @@ import Testing
 
 @testable import Scout
 
-struct StatModelMoveTests {
+struct ChartModelMoveTests {
     let date = Date()
 
     @Test("Is left disabled") func testIsLeftDisabled() {
         let range = Period.year.range
-        let model = StatModel(period: Period.week, range: range)
+        let model = ChartModel(period: Period.week, range: range)
 
         #expect(!model.isLeftEnabled)
     }
 
     @Test("Is left enabled") func testIsLeftEnabled() {
         let range = Period.week.range
-        let model = StatModel(period: Period.week, range: range)
+        let model = ChartModel(period: Period.week, range: range)
 
         #expect(model.isLeftEnabled)
     }
 
     @Test("Is right disabled") func testIsRightDisabled() {
         let range = Period.week.range
-        let model = StatModel(period: Period.week, range: range)
+        let model = ChartModel(period: Period.week, range: range)
 
         #expect(!model.isRightEnabled)
     }
 
     @Test("Is right enabled") func testIsRightEnabled() {
         let range = Period.week.range
-        var model = StatModel(period: Period.week, range: range)
+        var model = ChartModel(period: Period.week, range: range)
 
         model.moveLeft()
 
@@ -45,7 +45,7 @@ struct StatModelMoveTests {
 
     @Test("Move left") func testMoveLeft() {
         let range = date..<date.addingTimeInterval(3600 * 24 * 7)
-        var model = StatModel(period: Period.week, range: range)
+        var model = ChartModel(period: Period.week, range: range)
 
         model.moveLeft()
 
@@ -56,7 +56,7 @@ struct StatModelMoveTests {
     @Test("Move right") func testMoveRight() {
         let interval: Double = 3600 * 24 * 7
         let range = date..<date.addingTimeInterval(interval)
-        var model = StatModel(period: Period.week, range: range)
+        var model = ChartModel(period: Period.week, range: range)
 
         model.moveRight()
 
@@ -67,7 +67,7 @@ struct StatModelMoveTests {
 
     @Test("Move right edge") func testMoveRightEdge() {
         let range = Period.week.range
-        var model = StatModel(period: Period.week, range: range)
+        var model = ChartModel(period: Period.week, range: range)
 
         model.moveLeft()
         model.moveLeft()

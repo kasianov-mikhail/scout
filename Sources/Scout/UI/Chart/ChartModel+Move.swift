@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension StatModel {
+extension ChartModel {
     var isLeftEnabled: Bool {
         let yearRange = Period.year.range
         let leftRange = range.moved(by: period.rangeComponent, value: -1)
@@ -19,7 +19,7 @@ extension StatModel {
     }
 }
 
-extension StatModel {
+extension ChartModel {
     mutating func moveLeft() {
         range.move(by: period.rangeComponent, value: -1)
     }
@@ -32,6 +32,8 @@ extension StatModel {
         range = period.range
     }
 }
+
+// MARK: - Date Range Moving
 
 extension Range<Date> {
     mutating func move(by component: Calendar.Component, value: Int) {

@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct StatModelTests {
+struct ChartModelTests {
     let date: Date
     let range: Range<Date>
     let chartData: ChartData<Period>
@@ -26,22 +26,22 @@ struct StatModelTests {
     }
 
     @Test("Points from data") func testPointsFromData() throws {
-        let statModel = StatModel(period: Period.today, range: range)
-        let points = try #require(statModel.points(from: chartData))
+        let chartModel = ChartModel(period: Period.today, range: range)
+        let points = try #require(chartModel.points(from: chartData))
 
         #expect(points.map(\.count) == [10])
     }
 
     @Test("Points from nil data") func testPointsFromNilData() {
-        let statModel = StatModel(period: Period.week, range: range)
-        let points = statModel.points(from: nil)
+        let chartModel = ChartModel(period: Period.week, range: range)
+        let points = chartModel.points(from: nil)
 
         #expect(points == nil)
     }
 
     @Test("Points from data with different period") func testPointsFromDataWithDifferentPeriod() {
-        let statModel = StatModel(period: Period.yesterday, range: range)
-        let points = statModel.points(from: chartData)
+        let chartModel = ChartModel(period: Period.yesterday, range: range)
+        let points = chartModel.points(from: chartData)
 
         #expect(points == nil)
     }

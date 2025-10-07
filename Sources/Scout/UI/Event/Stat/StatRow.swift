@@ -21,8 +21,8 @@ struct StatRow: View {
                 Text(period.title)
                 Spacer()
 
-                let model = StatModel(period: period)
-                let count = model.points(from: stat.data)?.total
+                let model = ChartModel(period: period)
+                let count = stat.data?.points(in: model.viewport).total
 
                 RedactedText(count: count)
             }

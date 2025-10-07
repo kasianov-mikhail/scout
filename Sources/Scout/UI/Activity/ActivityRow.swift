@@ -17,8 +17,8 @@ struct ActivityRow: View {
             Text(period.title)
             Spacer()
 
-            let model = StatModel(period: period)
-            let count = model.points(from: activity.data)?.last?.count
+            let model = ChartModel(period: period)
+            let count = activity.data?.points(in: model.viewport).last?.count
 
             RedactedText(count: count)
         } destination: {

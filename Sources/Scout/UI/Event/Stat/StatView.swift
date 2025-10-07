@@ -18,14 +18,14 @@ struct StatView: View {
 
     let config: Config
 
-    @State var model: StatModel<Period>
+    @State var model: ChartModel<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
     init(config: Config, stat: StatProvider, period: Period) {
         self.config = config
         self.stat = stat
-        self._model = State(wrappedValue: StatModel(period: period))
+        self._model = State(wrappedValue: ChartModel(period: period))
     }
 
     var body: some View {

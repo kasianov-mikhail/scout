@@ -9,12 +9,12 @@ import SwiftUI
 import Charts
 
 struct ActivityView: View {
-    @State var model: StatModel<ActivityPeriod>
+    @State var model: ChartModel<ActivityPeriod>
     @ObservedObject var activity: ActivityProvider
 
     init(activity: ActivityProvider, period: ActivityPeriod) {
         self.activity = activity
-        self._model = State(wrappedValue: StatModel(period: period))
+        self._model = State(wrappedValue: ChartModel(period: period))
     }
 
     var body: some View {
