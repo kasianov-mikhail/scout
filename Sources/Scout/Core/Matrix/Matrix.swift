@@ -12,7 +12,7 @@ struct Matrix<T: CellProtocol> {
     let date: Date
     let name: String
     var category: String? = nil
-    var recordID = CKRecord.ID()
+    var record: CKRecord? = nil
     let cells: [T]
 }
 
@@ -25,16 +25,19 @@ extension Matrix: Combining {
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
-        Matrix(
+        assert(lhs.isDuplicate(of: rhs), "Cannot combine non-duplicate matrices")
+        return Matrix(
             recordType: lhs.recordType,
             date: lhs.date,
             name: lhs.name,
             category: lhs.category,
-            recordID: [lhs.recordID, rhs.recordID].randomElement()!,
+            record: lhs.record ?? rhs.record,
             cells: (lhs.cells + rhs.cells).mergeDuplicates()
         )
     }
 }
+
+// MARK: - Operators
 
 extension Matrix: Equatable {
     static func == (lhs: Matrix<T>, rhs: Matrix<T>) -> Bool {
@@ -61,6 +64,8 @@ extension Matrix: Comparable {
     }
 }
 
+// MARK: - Debug
+
 extension Matrix: CustomStringConvertible {
     var description: String {
         """
@@ -69,7 +74,6 @@ extension Matrix: CustomStringConvertible {
           date: \(date),
           name: "\(name)",
           category: \(category ?? "nil"),
-          id: \(recordID.recordName),
           cells: \(cells.count) items
         )
         """
@@ -84,7 +88,6 @@ extension Matrix: CustomDebugStringConvertible {
           date: \(date), 
           name: \(name),
           category: \(category ?? "nil"),
-          id: \(recordID.recordName),
           cells: \(cells.summary)
         """
     }

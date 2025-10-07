@@ -19,8 +19,8 @@ extension Matrix: CKPersistable {
         self.recordType = record.recordType
         self.date = date
         self.name = name
+        self.record = record
         self.category = record["category"]
-        self.recordID = record.recordID
 
         let cellKeys = record.allKeys().filter { $0.hasPrefix("cell_") }
         let cellDict = record.dictionaryWithValues(forKeys: cellKeys)
@@ -36,7 +36,7 @@ extension Matrix: CKPersistable {
     }
 
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: recordType, recordID: recordID)
+        let record = record ?? CKRecord(recordType: recordType)
         record["date"] = date
         record["name"] = name
         record["category"] = category
