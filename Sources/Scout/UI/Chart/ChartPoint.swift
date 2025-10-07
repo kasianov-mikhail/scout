@@ -24,6 +24,15 @@ struct ChartPoint: Identifiable {
     }
 }
 
+// MARK: - Traits
+
+extension ChartPoint: HasDate, HasCount {
+    init(date: Date) {
+        self.date = date
+        self.count = .zero
+    }
+}
+
 // MARK: - Operators
 
 extension ChartPoint: Comparable {
