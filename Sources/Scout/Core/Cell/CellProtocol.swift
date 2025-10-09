@@ -22,6 +22,8 @@ extension Int {
     }
 }
 
+// MARK: - Debug
+
 extension Array where Element: CellProtocol {
     var summary: String {
         if isEmpty {

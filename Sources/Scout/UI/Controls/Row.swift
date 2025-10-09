@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct Row<Content: View, Destination: View>: View {
-    @ViewBuilder var content: () -> Content
-    @ViewBuilder var destination: () -> Destination
+    @ViewBuilder let content: () -> Content
+    @ViewBuilder let destination: () -> Destination
 
     var body: some View {
         ZStack {
