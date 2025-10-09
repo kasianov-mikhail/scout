@@ -24,7 +24,9 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
             return "Monthly"
         }
     }
+}
 
+extension ActivityPeriod {
     var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
         switch self {
         case .daily:
@@ -35,9 +37,7 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
             return \.monthCount
         }
     }
-}
 
-extension ActivityPeriod {
     var spreadComponent: Calendar.Component {
         switch self {
         case .daily:
@@ -50,10 +50,11 @@ extension ActivityPeriod {
     }
 }
 
+// MARK: - Chart
+
 extension ActivityPeriod: ChartTimeScale {
-    var range: Range<Date> {
-        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
-        return today.adding(rangeComponent, value: -1)..<today
+    var horizonDate: Date {
+        today
     }
 
     var rangeComponent: Calendar.Component {

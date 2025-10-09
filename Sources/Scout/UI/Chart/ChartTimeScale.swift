@@ -35,9 +35,28 @@ protocol ChartTimeScale: Identifiable, Hashable {
     ///
     var pointComponent: Calendar.Component { get }
 
-    /// The currently visible time window on the x‑axis.
-    var range: Range<Date> { get }
+    /// The exclusive upper bound (“right edge”) of the initial visible time window.
+    ///
+    /// Default value is “today” in most cases; for an incomplete current day,
+    /// the upper bound advances to the start of the next day.
+    ///
+    var horizonDate: Date { get }
 }
+
+// MARK: - Helpers
+
+extension ChartTimeScale {
+
+    var today: Date {
+        Calendar(identifier: .iso8601).startOfDay(for: Date())
+    }
+
+    var initialRange: Range<Date> {
+        horizonDate.adding(rangeComponent, value: -1)..<horizonDate
+    }
+}
+
+// MARK: -
 
 extension ChartTimeScale {
 
@@ -45,11 +64,11 @@ extension ChartTimeScale {
     ///
     /// The default system behavior places ticks on Mondays.
     /// This implementation overrides that behavior to mark exactly 1, 2, 3, and 4 weeks ago
-    /// relative to the current upper bound of the visible range.
+    /// relative to the horizon date.
     ///
     var axisValues: [Date]? {
         if case .month = rangeComponent {
-            [-28, -21, -14, -7].map(range.upperBound.addingDay)
+            [-28, -21, -14, -7].map(horizonDate.addingDay)
         } else {
             nil
         }

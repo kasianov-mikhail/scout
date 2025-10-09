@@ -9,13 +9,13 @@ import Foundation
 
 extension ChartModel {
     var isLeftEnabled: Bool {
-        let yearRange = Period.year.range
+        let yearRange = Period.year.initialRange
         let leftRange = domain.moved(by: period.rangeComponent, value: -1)
         return yearRange.lowerBound < leftRange.lowerBound
     }
 
     var isRightEnabled: Bool {
-        domain != period.range
+        domain != period.initialRange
     }
 }
 
@@ -29,7 +29,7 @@ extension ChartModel {
     }
 
     mutating func moveRightEdge() {
-        domain = period.range
+        domain = period.initialRange
     }
 }
 

@@ -47,7 +47,7 @@ struct StatEventList: View {
 
 #Preview {
     NavigationStack {
-        StatEventList(eventName: "Event", range: Period.week.range)
+        StatEventList(eventName: "Event", range: Period.week.initialRange)
             .environmentObject(DatabaseController())
     }
 }

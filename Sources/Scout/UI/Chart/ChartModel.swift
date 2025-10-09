@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChartModel<T: ChartTimeScale> {
     var period: T {
-        didSet { domain = period.range }
+        didSet { domain = period.initialRange }
     }
     var domain: Range<Date>
 }
@@ -17,7 +17,7 @@ struct ChartModel<T: ChartTimeScale> {
 extension ChartModel {
     init(period: T) {
         self.period = period
-        self.domain = period.range
+        self.domain = period.initialRange
     }
 
     var viewport: ClosedRange<Date> {
