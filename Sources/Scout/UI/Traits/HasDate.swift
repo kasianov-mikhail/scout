@@ -13,7 +13,7 @@ protocol HasDate {
 }
 
 extension Array where Element: HasDate {
-    func points(in range: ClosedRange<Date>) -> [Element] {
+    func segment(in range: ClosedRange<Date>) -> [Element] {
         var points = filter {
             range.contains($0.date)
         }

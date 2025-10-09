@@ -12,7 +12,7 @@ extension Matrix {
         let predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         let query = CKQuery(recordType: recordType, predicate: predicate)
         let matrices = try await database.allRecords(matching: query, desiredKeys: nil)
-        let matrix = try matrices.randomElement().map(Matrix.init(record:))
+        let matrix = try matrices.randomElement().map(Matrix.init)
 
         return matrix
     }

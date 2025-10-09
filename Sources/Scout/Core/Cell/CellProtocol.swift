@@ -16,6 +16,12 @@ protocol CellProtocol: Combining, Sendable, Equatable {
     init(key: String, value: Scalar)
 }
 
+extension Int {
+    var leadingZero: String {
+        String(format: "%02d", self)
+    }
+}
+
 extension Array where Element: CellProtocol {
     var summary: String {
         if isEmpty {

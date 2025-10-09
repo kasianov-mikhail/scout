@@ -13,9 +13,13 @@ struct GridCell<T: MatrixValue>: Hashable {
     let value: T
 }
 
+// MARK: - Matrix
+
+typealias GridMatrix<T: MatrixValue> = Matrix<GridCell<T>>
+
 extension GridCell: CellProtocol {
     var key: String {
-        "cell_\(row)_\(String(format: "%02d", column))"
+        "cell_\(row)_\(column.leadingZero)"
     }
 
     init(key: String, value: T) {
@@ -31,11 +35,11 @@ extension GridCell: CellProtocol {
             fatalError("Invalid column index")
         }
 
-        self.row = row
-        self.column = column
-        self.value = value
+        self.init(row: row, column: column, value: value)
     }
 }
+
+// MARK: - Combining
 
 extension GridCell: Combining {
     func isDuplicate(of other: GridCell<T>) -> Bool {
@@ -43,16 +47,15 @@ extension GridCell: Combining {
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
-        assert(lhs.row == rhs.row, "Row indices must match")
-        assert(lhs.column == rhs.column, "Column indices must match")
-
-        return GridCell(
+        GridCell(
             row: lhs.row,
             column: lhs.column,
             value: lhs.value + rhs.value
         )
     }
 }
+
+// MARK: -
 
 extension GridCell: Comparable {
     static func < (lhs: GridCell<T>, rhs: GridCell<T>) -> Bool {

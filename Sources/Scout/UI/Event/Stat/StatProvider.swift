@@ -31,8 +31,10 @@ extension StatProvider: Provider {
                 desiredKeys: nil
             )
 
-            let matrices = try records.map(Matrix<GridCell<Int>>.init).mergeDuplicates()
-            data = matrices.flatMap(ChartPoint<Int>.fromGridMatrix)
+            data = try records
+                .map(GridMatrix.init)
+                .mergeDuplicates()
+                .flatMap(\.chartPoints)
 
         } catch {
             print(error.localizedDescription)

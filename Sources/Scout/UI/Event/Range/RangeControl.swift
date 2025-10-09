@@ -23,7 +23,7 @@ struct RangeControl<T: ChartTimeScale>: View {
             }
             .disabled(!model.isLeftEnabled)
 
-            Text(model.range.rangeLabel(formatter: formatter))
+            Text(model.domain.rangeLabel(formatter: formatter))
                 .font(.system(size: 16))
                 .monospaced()
                 .frame(height: 44)

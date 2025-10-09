@@ -11,10 +11,12 @@ struct Matrix<T: CellProtocol> {
     let recordType: String
     let date: Date
     let name: String
-    var category: String? = nil
-    var record: CKRecord? = nil
+    var category: String?
+    var record: CKRecord?
     let cells: [T]
 }
+
+// MARK: - Combining
 
 extension Matrix: Combining {
     func isDuplicate(of other: Matrix<T>) -> Bool {
@@ -25,8 +27,7 @@ extension Matrix: Combining {
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
-        assert(lhs.isDuplicate(of: rhs), "Cannot combine non-duplicate matrices")
-        return Matrix(
+        Matrix(
             recordType: lhs.recordType,
             date: lhs.date,
             name: lhs.name,

@@ -13,9 +13,13 @@ struct PeriodCell<T: MatrixValue> {
     let value: T
 }
 
+// MARK: - Matrix
+
+typealias PeriodMatrix = Matrix<PeriodCell<Int>>
+
 extension PeriodCell: CellProtocol {
     var key: String {
-        "cell_\(period.rawValue)_\(String(format: "%02d", day + 1))"
+        "cell_\(period.rawValue)_\((day + 1).leadingZero)"
     }
 
     init(key: String, value: T) {
@@ -31,11 +35,11 @@ extension PeriodCell: CellProtocol {
             fatalError("Invalid day")
         }
 
-        self.period = period
-        self.day = day
-        self.value = value
+        self.init(period: period, day: day, value: value)
     }
 }
+
+// MARK: - Combining
 
 extension PeriodCell: Combining {
     func isDuplicate(of other: Self) -> Bool {
@@ -43,16 +47,15 @@ extension PeriodCell: Combining {
     }
 
     static func + (lhs: PeriodCell, rhs: PeriodCell) -> PeriodCell {
-        assert(lhs.period == rhs.period, "Cannot combine different periods")
-        assert(lhs.day == rhs.day, "Cannot combine different days")
-
-        return PeriodCell(
+        PeriodCell(
             period: lhs.period,
             day: lhs.day,
             value: lhs.value + rhs.value
         )
     }
 }
+
+// MARK: -
 
 extension PeriodCell: CustomStringConvertible {
     var description: String {

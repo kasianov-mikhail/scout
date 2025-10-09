@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HasCount {
-    associatedtype Value: ChartNumeric
+    associatedtype Value: AdditiveArithmetic
     var count: Value { get }
 }
 

@@ -9,10 +9,10 @@ import Foundation
 
 extension MetricsSeries {
     struct Compose {
-        let matrices: [Matrix<GridCell<T>>]
+        let matrices: [GridMatrix<T>]
         let period: Period
 
-        init(of matrices: [Matrix<GridCell<T>>], period: Period) {
+        init(of matrices: [GridMatrix<T>], period: Period) {
             self.matrices = matrices
             self.period = period
         }
@@ -24,8 +24,8 @@ extension MetricsSeries {
                 .sorted()
         }
 
-        private func toPoints(matrices: [Matrix<GridCell<T>>]) -> [ChartPoint<T>] {
-            matrices.flatMap(ChartPoint<T>.fromGridMatrix).points(in: range)
+        private func toPoints(matrices: [GridMatrix<T>]) -> [ChartPoint<T>] {
+            matrices.flatMap(\.chartPoints).segment(in: range)
         }
 
         private var range: ClosedRange<Date> {

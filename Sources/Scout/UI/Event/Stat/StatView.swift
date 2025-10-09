@@ -37,7 +37,7 @@ struct StatView: View {
                     .padding(.top)
                     .padding(.horizontal)
 
-                let points = data.points(in: model.viewport)
+                let points = data.segment(in: model.viewport)
 
                 List {
                     ChartView(points: points, period: model.period)
@@ -70,7 +70,7 @@ struct StatView: View {
             .foregroundColor(.blue)
 
             NavigationLink {
-                StatEventList(eventName: stat.eventName, range: model.range)
+                StatEventList(eventName: stat.eventName, range: model.domain)
             } label: {
                 EmptyView()
             }

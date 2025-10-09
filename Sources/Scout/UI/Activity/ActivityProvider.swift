@@ -8,8 +8,6 @@
 import CloudKit
 import SwiftUI
 
-typealias PeriodMatrix = Matrix<PeriodCell<Int>>
-
 @MainActor
 class ActivityProvider: ObservableObject, Provider {
     @Published var data: [ChartPoint<Int>]?
@@ -23,25 +21,9 @@ class ActivityProvider: ObservableObject, Provider {
                 desiredKeys: nil
             )
 
-            let matrices = try records.map(PeriodMatrix.init).mergeDuplicates()
-
-            let periodPoints = ActivityPeriod.allCases.map { period in
-                let points = matrices.flatMap { matrix in
-                    let filteredCells = matrix.cells.filter { cell in
-                        cell.period == period
-                    }
-
-                    return filteredCells.map { cell in
-                        ChartPoint(
-                            date: matrix.date.addingDay(cell.day - 1),
-                            count: cell.value
-                        )
-                    }
-                }
-                return (period, points.sorted())
-            }
-
-            data = []// Dictionary(uniqueKeysWithValues: periodPoints)
+            data = try records.map(PeriodMatrix.init)
+                .mergeDuplicates()
+                .flatMap(\.chartPoints)
 
         } catch {
             print("Error fetching active user data: \(error)")

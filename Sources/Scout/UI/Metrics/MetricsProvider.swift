@@ -11,7 +11,7 @@ import SwiftUI
 
 class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
     @Published var telemetry: Telemetry.Scope
-    @Published var data: [Matrix<GridCell<T>>]?
+    @Published var data: [GridMatrix<T>]?
 
     init(telemetry: Telemetry.Scope) {
         self.telemetry = telemetry
@@ -26,7 +26,8 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
                 desiredKeys: nil
             )
 
-            data = try records.map(Matrix<GridCell<T>>.init).mergeDuplicates()
+            data = try records.map(GridMatrix.init).mergeDuplicates()
+
         } catch {
             print("Failed to fetch metrics: ", error)
             data = nil

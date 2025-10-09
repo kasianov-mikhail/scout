@@ -8,8 +8,6 @@
 import Charts
 import SwiftUI
 
-typealias ChartNumeric = MatrixValue & Plottable & Comparable
-
 struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
     let points: [ChartPoint<V>]
     let period: T

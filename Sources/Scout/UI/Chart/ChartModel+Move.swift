@@ -10,26 +10,26 @@ import Foundation
 extension ChartModel {
     var isLeftEnabled: Bool {
         let yearRange = Period.year.range
-        let leftRange = range.moved(by: period.rangeComponent, value: -1)
+        let leftRange = domain.moved(by: period.rangeComponent, value: -1)
         return yearRange.lowerBound < leftRange.lowerBound
     }
 
     var isRightEnabled: Bool {
-        range != period.range
+        domain != period.range
     }
 }
 
 extension ChartModel {
     mutating func moveLeft() {
-        range.move(by: period.rangeComponent, value: -1)
+        domain.move(by: period.rangeComponent, value: -1)
     }
 
     mutating func moveRight() {
-        range.move(by: period.rangeComponent, value: 1)
+        domain.move(by: period.rangeComponent, value: 1)
     }
 
     mutating func moveRightEdge() {
-        range = period.range
+        domain = period.range
     }
 }
 
