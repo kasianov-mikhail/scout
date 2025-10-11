@@ -20,23 +20,3 @@ extension ChartModel {
         self.domain = period.initialRange
     }
 }
-
-extension ChartModel {
-    func segment<U: HasDate>(from all: [U]) -> [U] {
-        all.segment(in: viewport)
-    }
-
-    func segment<U: HasDate>(from all: [U]?) -> [U]? {
-        all?.segment(in: viewport)
-    }
-
-    private var viewport: ClosedRange<Date> {
-        domain.aligned(to: period.pointComponent)
-    }
-}
-
-extension Range where Bound == Date {
-    fileprivate func aligned(to component: Calendar.Component) -> ClosedRange<Bound> {
-        lowerBound...upperBound.adding(component, value: -1)
-    }
-}
