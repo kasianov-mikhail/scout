@@ -37,10 +37,10 @@ struct StatView: View {
                     .padding(.top)
                     .padding(.horizontal)
 
-                let points = data.segment(in: model.viewport)
+                let points = data.segment(using: model)
 
                 List {
-                    ChartView(points: points, period: model.period)
+                    ChartView(points: points, model: model)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 

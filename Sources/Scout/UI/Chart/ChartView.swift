@@ -38,6 +38,13 @@ struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
     }
 }
 
+extension ChartView {
+    init(points: [ChartPoint<V>], model: ChartModel<T>) {
+        self.points = points
+        self.period = model.period
+    }
+}
+
 #Preview("ChartView – Month") {
     VStack(alignment: .leading, spacing: 24) {
         Text("With Data").font(.headline)

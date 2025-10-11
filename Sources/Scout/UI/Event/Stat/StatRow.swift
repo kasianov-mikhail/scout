@@ -22,7 +22,7 @@ struct StatRow: View {
                 Spacer()
 
                 let model = ChartModel(period: period)
-                let count = stat.data?.segment(in: model.viewport).total
+                let count = stat.data?.segment(using: model).total
 
                 RedactedText(count: count)
             }

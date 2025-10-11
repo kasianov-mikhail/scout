@@ -19,10 +19,24 @@ extension ChartModel {
         self.period = period
         self.domain = period.initialRange
     }
+}
 
-    var viewport: ClosedRange<Date> {
-        let lowerBound = domain.lowerBound
-        let upperBound = domain.upperBound.adding(period.pointComponent, value: -1)
-        return lowerBound...upperBound
+// MARK: - Segments
+
+extension Array where Element: HasDate {
+    func segment(using model: ChartModel<some ChartTimeScale>) -> [Element] {
+        segment(in: model.viewport)
+    }
+}
+
+extension ChartModel {
+    fileprivate var viewport: ClosedRange<Date> {
+        domain.aligned(to: period.pointComponent)
+    }
+}
+
+extension Range where Bound == Date {
+    fileprivate func aligned(to component: Calendar.Component) -> ClosedRange<Bound> {
+        lowerBound...upperBound.adding(component, value: -1)
     }
 }
