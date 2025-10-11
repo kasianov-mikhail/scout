@@ -17,11 +17,11 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
     var title: String {
         switch self {
         case .daily:
-            return "Daily"
+            "Daily"
         case .weekly:
-            return "Weekly"
+            "Weekly"
         case .monthly:
-            return "Monthly"
+            "Monthly"
         }
     }
 }
@@ -30,22 +30,22 @@ extension ActivityPeriod {
     var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
         switch self {
         case .daily:
-            return \.dayCount
+            \.dayCount
         case .weekly:
-            return \.weekCount
+            \.weekCount
         case .monthly:
-            return \.monthCount
+            \.monthCount
         }
     }
 
     var spreadComponent: Calendar.Component {
         switch self {
         case .daily:
-            return .day
+            .day
         case .weekly:
-            return .weekOfYear
+            .weekOfYear
         case .monthly:
-            return .month
+            .month
         }
     }
 }

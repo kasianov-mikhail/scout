@@ -39,13 +39,13 @@ extension Event {
 
     init(record: CKRecord) throws {
         name = record["name"] ?? ""
-        level = record["level"].flatMap { EventLevel(rawValue: $0) }
+        level = record["level"].flatMap(EventLevel.init)
         date = record["date"]
         paramCount = record["param_count"]
-        uuid = record["uuid"].flatMap { UUID(uuidString: $0) }
+        uuid = record["uuid"].flatMap(UUID.init)
         id = record.recordID
-        userID = record["user_id"].flatMap { UUID(uuidString: $0) }
-        sessionID = record["session_id"].flatMap { UUID(uuidString: $0) }
+        userID = record["user_id"].flatMap(UUID.init)
+        sessionID = record["session_id"].flatMap(UUID.init)
     }
 }
 

@@ -46,9 +46,9 @@ extension EventView {
 
         var seeAll: (() -> Void)? {
             if let _ = param.data, count > 3 {
-                return { isParamPresented = true }
+                { isParamPresented = true }
             } else {
-                return nil
+                nil
             }
         }
     }
