@@ -58,10 +58,10 @@ extension ActivityPeriod: ChartTimeScale {
     }
 
     var rangeComponent: Calendar.Component {
-        return .month
+        .month
     }
 
     var pointComponent: Calendar.Component {
-        return .day
+        .day
     }
 }
