@@ -17,7 +17,7 @@ struct ActivityRow: View {
             Text(period.title)
             Spacer()
 
-            let count = ChartModel(period: period)
+            let count = ChartExtent(period: period)
                 .segment(from: activity.data)?
                 .last?
                 .count

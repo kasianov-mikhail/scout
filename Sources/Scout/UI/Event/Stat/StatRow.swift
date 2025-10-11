@@ -21,7 +21,7 @@ struct StatRow: View {
                 Text(period.title)
                 Spacer()
 
-                let count = ChartModel(period: period)
+                let count = ChartExtent(period: period)
                     .segment(from: stat.data)?
                     .total
 

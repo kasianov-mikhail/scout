@@ -18,29 +18,29 @@ struct StatView: View {
 
     let config: Config
 
-    @State var model: ChartModel<Period>
+    @State var extent: ChartExtent<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
     init(config: Config, stat: StatProvider, period: Period) {
         self.config = config
         self.stat = stat
-        self._model = State(wrappedValue: ChartModel(period: period))
+        self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodPicker(model: $model, periods: stat.periods)
+            PeriodPicker(extent: $extent, periods: stat.periods)
 
             if let data = stat.data {
-                RangeControl(model: $model)
+                RangeControl(extent: $extent)
                     .padding(.top)
                     .padding(.horizontal)
 
                 List {
-                    let points = model.segment(from: data)
+                    let points = extent.segment(from: data)
 
-                    ChartView(points: points, model: model)
+                    ChartView(points: points, extent: extent)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
@@ -70,7 +70,7 @@ struct StatView: View {
             .foregroundColor(.blue)
 
             NavigationLink {
-                StatEventList(eventName: stat.eventName, range: model.domain)
+                StatEventList(eventName: stat.eventName, range: extent.domain)
             } label: {
                 EmptyView()
             }

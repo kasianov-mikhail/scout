@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ChartModel {
+extension ChartExtent {
     func segment<U: HasDate>(from all: [U]) -> [U] {
         all.segment(in: viewport)
     }
@@ -17,7 +17,7 @@ extension ChartModel {
     }
 }
 
-extension ChartModel {
+extension ChartExtent {
     fileprivate var viewport: ClosedRange<Date> {
         domain.aligned(to: period.pointComponent)
     }

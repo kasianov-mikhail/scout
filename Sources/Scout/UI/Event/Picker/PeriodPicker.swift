@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
-    @Binding var model: ChartModel<T>
+    @Binding var extent: ChartExtent<T>
 
     let periods: [T]
 
     var body: some View {
-        Picker("", selection: $model.period) {
+        Picker("", selection: $extent.period) {
             ForEach(periods) { period in
-                if period == model.period, model.isAccented {
+                if period == extent.period, extent.isAccented {
                     Text(period.shortTitle + "*")
                 } else {
                     Text(period.shortTitle)
@@ -27,7 +27,7 @@ struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
     }
 }
 
-extension ChartModel {
+extension ChartExtent {
     fileprivate var isAccented: Bool {
         isRightEnabled
     }

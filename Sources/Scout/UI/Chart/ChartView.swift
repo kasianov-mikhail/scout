@@ -39,9 +39,9 @@ struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
 }
 
 extension ChartView {
-    init(points: [ChartPoint<V>], model: ChartModel<T>) {
+    init(points: [ChartPoint<V>], extent: ChartExtent<T>) {
         self.points = points
-        self.period = model.period
+        self.period = extent.period
     }
 }
 

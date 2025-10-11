@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-struct ChartModel<T: ChartTimeScale> {
+struct ChartExtent<T: ChartTimeScale> {
     var period: T {
         didSet { domain = period.initialRange }
     }
     var domain: Range<Date>
 }
 
-extension ChartModel {
+extension ChartExtent {
     init(period: T) {
         self.period = period
         self.domain = period.initialRange

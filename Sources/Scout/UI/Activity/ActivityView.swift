@@ -9,27 +9,27 @@ import SwiftUI
 import Charts
 
 struct ActivityView: View {
-    @State var model: ChartModel<ActivityPeriod>
+    @State var extent: ChartExtent<ActivityPeriod>
     @ObservedObject var activity: ActivityProvider
 
     init(activity: ActivityProvider, period: ActivityPeriod) {
         self.activity = activity
-        self._model = State(wrappedValue: ChartModel(period: period))
+        self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodPicker(model: $model, periods: ActivityPeriod.allCases)
+            PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)
 
             if let data = activity.data {
-                RangeControl(model: $model)
+                RangeControl(extent: $extent)
                     .padding(.top)
                     .padding(.horizontal)
 
-                let points = model.segment(from: data)
+                let points = extent.segment(from: data)
 
                 List {
-                    ChartView(points: points, model: model)
+                    ChartView(points: points, extent: extent)
                         .foregroundStyle(.green)
                         .listRowSeparator(.hidden)
                 }

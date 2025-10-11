@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ChartModel {
+extension ChartExtent {
     var isLeftEnabled: Bool {
         let yearRange = Period.year.initialRange
         let leftRange = domain.moved(by: period.rangeComponent, value: -1)
@@ -19,7 +19,7 @@ extension ChartModel {
     }
 }
 
-extension ChartModel {
+extension ChartExtent {
     mutating func moveLeft() {
         domain.move(by: period.rangeComponent, value: -1)
     }
