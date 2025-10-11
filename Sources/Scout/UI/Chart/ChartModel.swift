@@ -21,16 +21,16 @@ extension ChartModel {
     }
 }
 
-// MARK: - Segments
-
-extension Array where Element: HasDate {
-    func segment(using model: ChartModel<some ChartTimeScale>) -> [Element] {
-        segment(in: model.viewport)
-    }
-}
-
 extension ChartModel {
-    fileprivate var viewport: ClosedRange<Date> {
+    func segment<U: HasDate>(from all: [U]) -> [U] {
+        all.segment(in: viewport)
+    }
+
+    func segment<U: HasDate>(from all: [U]?) -> [U]? {
+        all?.segment(in: viewport)
+    }
+
+    private var viewport: ClosedRange<Date> {
         domain.aligned(to: period.pointComponent)
     }
 }

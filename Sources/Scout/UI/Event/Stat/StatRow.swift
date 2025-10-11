@@ -21,8 +21,9 @@ struct StatRow: View {
                 Text(period.title)
                 Spacer()
 
-                let model = ChartModel(period: period)
-                let count = stat.data?.segment(using: model).total
+                let count = ChartModel(period: period)
+                    .segment(from: stat.data)?
+                    .total
 
                 RedactedText(count: count)
             }

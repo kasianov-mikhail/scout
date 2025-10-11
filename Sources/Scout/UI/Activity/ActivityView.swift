@@ -26,7 +26,7 @@ struct ActivityView: View {
                     .padding(.top)
                     .padding(.horizontal)
 
-                let points = data.segment(using: model)
+                let points = model.segment(from: data)
 
                 List {
                     ChartView(points: points, model: model)

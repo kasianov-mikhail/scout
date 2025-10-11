@@ -37,9 +37,9 @@ struct StatView: View {
                     .padding(.top)
                     .padding(.horizontal)
 
-                let points = data.segment(using: model)
-
                 List {
+                    let points = model.segment(from: data)
+
                     ChartView(points: points, model: model)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
