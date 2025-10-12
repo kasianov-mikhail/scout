@@ -14,7 +14,7 @@ extension EventObject {
         name: String,
         date: Date = Date(),
         synced: Bool = false,
-        level: EventLevel = .info,
+        level: Event.Level = .info,
         in context: NSManagedObjectContext
     ) -> EventObject {
         let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!

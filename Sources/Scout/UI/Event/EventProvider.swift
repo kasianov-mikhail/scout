@@ -15,7 +15,7 @@ class EventProvider: ObservableObject {
     @Published var cursor: CKQueryOperation.Cursor?
     @Published var message: Message?
 
-    func fetch(for filter: EventQuery, in database: DatabaseController) async {
+    func fetch(for filter: Event.Query, in database: DatabaseController) async {
         do {
             let query = CKQuery(recordType: "Event", predicate: filter.buildPredicate())
             query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]

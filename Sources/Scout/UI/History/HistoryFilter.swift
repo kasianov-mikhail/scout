@@ -29,7 +29,7 @@ extension HistoryFilter {
 }
 
 extension HistoryFilter {
-    func query() -> EventQuery {
+    func query() -> Event.Query {
         let name =
             switch option {
             case .event:
@@ -41,9 +41,9 @@ extension HistoryFilter {
         let eventFilter =
             switch category {
             case .user:
-                EventQuery(name: name, userID: userID)
+                Event.Query(name: name, userID: userID)
             case .session:
-                EventQuery(name: name, sessionID: sessionID)
+                Event.Query(name: name, sessionID: sessionID)
             }
 
         return eventFilter
