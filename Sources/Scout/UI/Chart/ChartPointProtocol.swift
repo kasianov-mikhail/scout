@@ -7,13 +7,17 @@
 
 import Foundation
 
-protocol HasCount {
-    associatedtype Value: AdditiveArithmetic
-    var count: Value { get }
+protocol ChartPointProtocol {
+    associatedtype Numeric: ChartNumeric
+
+    var date: Date { get }
+    var count: Numeric { get }
+
+    init(date: Date, count: Numeric)
 }
 
-extension Collection where Element: HasCount {
-    var total: Element.Value {
+extension Collection where Element: ChartPointProtocol {
+    var total: Element.Numeric {
         map(\.count).reduce(.zero, +)
     }
 }

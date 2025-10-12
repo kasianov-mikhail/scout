@@ -8,19 +8,10 @@
 import Charts
 import CloudKit
 
-struct ChartPoint<T: ChartNumeric>: Identifiable {
+struct ChartPoint<T: ChartNumeric>: Identifiable, ChartPointProtocol {
     let id = UUID()
     let date: Date
     let count: T
-}
-
-// MARK: - Traits
-
-extension ChartPoint: HasDate, HasCount {
-    init(date: Date) {
-        self.date = date
-        self.count = .zero
-    }
 }
 
 // MARK: - Operators
