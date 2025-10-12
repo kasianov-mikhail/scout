@@ -11,7 +11,7 @@ extension DatabaseController {
     static let sampleData = {
         var data: [CKRecord] = []
 
-        let eventLevels: [String: EventLevel] = [
+        let eventLevels: [String: Event.Level] = [
             "UserLogin": .info, "PageView": .info, "ButtonClick": .debug, "Purchase": .notice,
             "ItemAddedToCart": .info, "ItemRemovedFromCart": .info, "SearchPerformed": .debug,
             "ProfileUpdated": .notice, "SettingsChanged": .notice, "Logout": .info,

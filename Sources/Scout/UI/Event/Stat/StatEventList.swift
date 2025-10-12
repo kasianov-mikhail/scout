@@ -36,7 +36,7 @@ struct StatEventList: View {
     }
 
     func fetch() async {
-        var query = EventQuery()
+        var query = Event.Query()
         query.dates = range
         query.name = eventName
         await provider.fetch(for: query, in: database)

@@ -6,12 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-import Logging
-import SwiftUI
 
 struct Event: Identifiable {
     let name: String
-    let level: Logger.Level?
+    let level: Level?
     let date: Date?
     let paramCount: Int?
     let uuid: UUID?
@@ -39,46 +37,12 @@ extension Event {
 
     init(record: CKRecord) throws {
         name = record["name"] ?? ""
-        level = record["level"].flatMap(EventLevel.init)
+        level = record["level"].flatMap(Level.init)
         date = record["date"]
         paramCount = record["param_count"]
         uuid = record["uuid"].flatMap(UUID.init)
         id = record.recordID
         userID = record["user_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
-    }
-}
-
-typealias EventLevel = Logger.Level
-
-extension EventLevel {
-    var description: String {
-        switch self {
-        case .notice:
-            "Notice"
-        case .debug:
-            "Debug"
-        case .trace:
-            "Trace"
-        case .info:
-            "Info"
-        case .warning:
-            "Warning"
-        case .error:
-            "Error"
-        case .critical:
-            "Critical"
-        }
-    }
-
-    var color: Color? {
-        switch self {
-        case .notice, .debug, .trace, .info:
-            return nil
-        case .warning, .error:
-            return .yellow
-        case .critical:
-            return .red
-        }
     }
 }
