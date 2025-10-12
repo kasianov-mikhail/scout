@@ -20,7 +20,7 @@ extension PeriodCell: ChartComposing {
 
 extension GridCell: ChartComposing {
     var secondsSinceBase: Int {
-        row * 86_400 + column * 3_600
+        (row - 1) * 86_400 + column * 3_600
     }
 }
 

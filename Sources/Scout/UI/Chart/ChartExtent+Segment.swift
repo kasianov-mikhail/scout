@@ -19,12 +19,12 @@ extension ChartExtent {
 
 extension ChartExtent {
     fileprivate var viewport: ClosedRange<Date> {
-        domain.aligned(to: period.pointComponent)
+        domain.aligned(toComponent: period.pointComponent)
     }
 }
 
 extension Range where Bound == Date {
-    fileprivate func aligned(to component: Calendar.Component) -> ClosedRange<Bound> {
+    fileprivate func aligned(toComponent component: Calendar.Component) -> ClosedRange<Bound> {
         lowerBound...upperBound.adding(component, value: -1)
     }
 }
