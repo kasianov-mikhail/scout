@@ -6,11 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-import Logging
 
 struct Event: Identifiable {
     let name: String
-    let level: Logger.Level?
+    let level: Level?
     let date: Date?
     let paramCount: Int?
     let uuid: UUID?
@@ -38,7 +37,7 @@ extension Event {
 
     init(record: CKRecord) throws {
         name = record["name"] ?? ""
-        level = record["level"].flatMap(EventLevel.init)
+        level = record["level"].flatMap(Level.init)
         date = record["date"]
         paramCount = record["param_count"]
         uuid = record["uuid"].flatMap(UUID.init)

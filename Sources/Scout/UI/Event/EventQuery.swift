@@ -8,7 +8,7 @@
 import Foundation
 
 struct EventQuery {
-    var levels = Set(EventLevel.allCases)
+    var levels = Set(Event.Level.allCases)
     var text = ""
     var name = ""
     var userID: UUID?
@@ -18,7 +18,7 @@ struct EventQuery {
     func buildPredicate() -> NSPredicate {
         var predicates: [NSPredicate] = []
 
-        if levels != Set(EventLevel.allCases) {
+        if levels != Set(Event.Level.allCases) {
             predicates.append(.init(format: "level IN %@", levels.map(\.rawValue)))
         }
         if !text.isEmpty {
@@ -51,7 +51,7 @@ extension EventQuery: CustomStringConvertible {
     var description: String {
         var components: [String] = []
 
-        if levels != Set(EventLevel.allCases) {
+        if levels != Set(Event.Level.allCases) {
             components.append("levels: \(levels.map(\.description).joined(separator: ", "))")
         }
         if !text.isEmpty {

@@ -5,12 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import SwiftUI
 import Logging
+import SwiftUI
 
-typealias EventLevel = Logger.Level
+extension Event {
+    typealias Level = Logger.Level
+}
 
-extension EventLevel {
+extension Event.Level {
     var description: String {
         switch self {
         case .notice:

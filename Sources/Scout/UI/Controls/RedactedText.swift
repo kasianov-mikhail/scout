@@ -28,7 +28,6 @@ struct Redacted: View {
     }
 }
 
-
 #Preview {
     List {
         Redacted(length: 3)
