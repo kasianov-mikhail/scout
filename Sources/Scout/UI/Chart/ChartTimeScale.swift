@@ -55,22 +55,3 @@ extension ChartTimeScale {
         horizonDate.adding(rangeComponent, value: -1)..<horizonDate
     }
 }
-
-// MARK: -
-
-extension ChartTimeScale {
-
-    /// Explicit x‑axis tick positions for monthly charts.
-    ///
-    /// The default system behavior places ticks on Mondays.
-    /// This implementation overrides that behavior to mark exactly 1, 2, 3, and 4 weeks ago
-    /// relative to the horizon date.
-    ///
-    var axisValues: [Date]? {
-        if case .month = rangeComponent {
-            [-28, -21, -14, -7].map(horizonDate.addingDay)
-        } else {
-            nil
-        }
-    }
-}

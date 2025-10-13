@@ -27,7 +27,9 @@ struct MetricsView<T: ChartNumeric>: View {
         .pickerStyle(.segmented)
 
         List {
-            ChartView(points: points, period: period)
+            let extent = ChartExtent(period: period)
+
+            ChartView(points: points, extent: extent)
                 .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
         }
