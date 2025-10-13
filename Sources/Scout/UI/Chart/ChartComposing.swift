@@ -24,9 +24,7 @@ extension GridCell: ChartComposing {
     }
 }
 
-// MARK: - Numeric
-
-typealias ChartNumeric = MatrixValue & Plottable
+// MARK: -
 
 extension Matrix where T: ChartComposing, T.Scalar: ChartNumeric {
     var chartPoints: [ChartPoint<T.Scalar>] {
