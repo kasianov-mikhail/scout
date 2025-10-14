@@ -24,15 +24,19 @@ extension GridCell: ChartComposing {
     }
 }
 
-// MARK: -
+// MARK: - Chart Point Mapping
 
 extension Matrix where T: ChartComposing, T.Scalar: ChartNumeric {
-    var chartPoints: [ChartPoint<T.Scalar>] {
-        cells.map { cell in
-            ChartPoint(
-                date: date.addingTimeInterval(TimeInterval(cell.secondsSinceBase)),
-                count: cell.value
-            )
-        }
+    var points: [ChartPoint<T.Scalar>] {
+        cells.map { $0.point(baseDate: date) }
+    }
+}
+
+extension ChartComposing where Scalar: ChartNumeric {
+    func point(baseDate: Date) -> ChartPoint<Scalar> {
+        ChartPoint(
+            date: baseDate.addingTimeInterval(TimeInterval(secondsSinceBase)),
+            count: value
+        )
     }
 }

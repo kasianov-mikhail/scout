@@ -34,8 +34,6 @@ struct StatView: View {
 
             if let data = stat.data {
                 RangeControl(extent: $extent)
-                    .padding(.top)
-                    .padding(.horizontal)
 
                 List {
                     let points = extent.segment(from: data)

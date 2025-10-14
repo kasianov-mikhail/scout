@@ -34,7 +34,7 @@ extension StatProvider: Provider {
             data = try records
                 .map(GridMatrix.init)
                 .mergeDuplicates()
-                .flatMap(\.chartPoints)
+                .flatMap(\.points)
 
         } catch {
             print(error.localizedDescription)

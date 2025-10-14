@@ -25,10 +25,9 @@ extension MetricsSeries {
         }
 
         private func toPoints(matrices: [GridMatrix<T>]) -> [ChartPoint<T>] {
-            let points = matrices.flatMap(\.chartPoints)
-            let extent = ChartExtent(period: period)
-            let segment = extent.segment(from: points)
-            return segment
+            matrices
+                .flatMap(\.points)
+                .bucket(on: period)
         }
     }
 }

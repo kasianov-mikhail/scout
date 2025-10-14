@@ -39,6 +39,8 @@ struct RangeControl<T: ChartTimeScale>: View {
             )
             .disabled(!extent.isRightEnabled)
         }
+        .padding(.top)
+        .padding(.horizontal)
     }
 
     struct MoveButton: View {

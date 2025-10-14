@@ -19,17 +19,9 @@ extension ChartExtent {
         self.period = period
         self.domain = period.initialRange
     }
-}
 
-// MARK: - Segmenting
-
-extension ChartExtent {
     func segment<U: ChartNumeric>(from all: [ChartPoint<U>]) -> [ChartPoint<U>] {
         all.bucket(in: domain, component: period.pointComponent)
-    }
-
-    func segment<U: ChartNumeric>(from all: [ChartPoint<U>]?) -> [ChartPoint<U>]? {
-        all?.bucket(in: domain, component: period.pointComponent)
     }
 }
 

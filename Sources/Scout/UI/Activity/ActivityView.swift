@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct ActivityView: View {
     @State var extent: ChartExtent<ActivityPeriod>
@@ -23,12 +23,10 @@ struct ActivityView: View {
 
             if let data = activity.data {
                 RangeControl(extent: $extent)
-                    .padding(.top)
-                    .padding(.horizontal)
-
-                let points = extent.segment(from: data)
 
                 List {
+                    let points = ActivityCompose(of: data, period: extent.period)()
+
                     ChartView(points: points, extent: extent)
                         .foregroundStyle(.green)
                         .listRowSeparator(.hidden)

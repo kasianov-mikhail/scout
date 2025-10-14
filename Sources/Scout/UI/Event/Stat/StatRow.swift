@@ -21,10 +21,7 @@ struct StatRow: View {
                 Text(period.title)
                 Spacer()
 
-                let count = ChartExtent(period: period)
-                    .segment(from: stat.data)?
-                    .total
-
+                let count = stat.data?.bucket(on: period).total
                 RedactedText(count: count)
             }
             .foregroundColor(config.color)

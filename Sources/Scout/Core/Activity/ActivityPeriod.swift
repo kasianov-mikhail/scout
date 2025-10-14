@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ActivityPeriod: String, Identifiable, CaseIterable {
+enum ActivityPeriod: String, Identifiable, CaseIterable, Equatable {
     case daily = "d"
     case weekly = "w"
     case monthly = "m"
