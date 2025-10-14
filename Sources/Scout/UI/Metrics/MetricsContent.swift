@@ -25,7 +25,10 @@ struct MetricsContent<T: ChartNumeric>: View {
             if series.isEmpty {
                 Placeholder(text: "No results").frame(maxHeight: .infinity)
             } else {
-                List(series, rowContent: row).listStyle(.plain)
+                List(series) {
+                    row(series: $0, points: matrices.flatMap(\.points))
+                }
+                .listStyle(.plain)
             }
         } else {
             ProgressView().frame(maxHeight: .infinity).task {
@@ -34,7 +37,7 @@ struct MetricsContent<T: ChartNumeric>: View {
         }
     }
 
-    func row(series: MetricsSeries<T>) -> some View {
+    func row(series: MetricsSeries<T>, points: [ChartPoint<T>]) -> some View {
         Row {
             Text(series.title)
                 .monospaced()
@@ -42,7 +45,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                 .lineLimit(1)
             Spacer()
         } destination: {
-            MetricsView(period: period, points: series.points).navigationTitle(series.id)
+            MetricsView(points: points, period: period).navigationTitle(series.id)
         }
     }
 }
