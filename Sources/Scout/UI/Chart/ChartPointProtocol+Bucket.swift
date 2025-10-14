@@ -9,10 +9,7 @@ import Foundation
 
 extension Collection where Element: ChartPointProtocol {
 
-    /// Convenience overload that buckets points using a ChartTimeScale.
-    ///
-    /// This uses the time scale’s initialRange as the window and pointComponent
-    /// as the bucket granularity, then aggregates counts within each bucket.
+    /// Convenience overload that buckets points using `ChartTimeScale`.
     ///
     func bucket(on period: some ChartTimeScale) -> [Element] {
         bucket(in: period.initialRange, component: period.pointComponent)

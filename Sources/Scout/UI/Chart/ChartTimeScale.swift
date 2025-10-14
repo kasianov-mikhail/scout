@@ -11,7 +11,7 @@ protocol ChartTimeScale: Identifiable, Hashable {
 
     /// Major axis segmentation (big bands).
     ///
-    /// Each block represents one whole Calendar.Component in the visible time window (`range`).
+    /// Each block represents one whole `Calendar.Component` in the visible time window (`range`).
     /// The chart window is aligned to and typically paged by this component.
     ///
     /// Examples:
@@ -24,7 +24,7 @@ protocol ChartTimeScale: Identifiable, Hashable {
 
     /// Minor tick spacing inside each major band.
     ///
-    /// Minor ticks or data points are placed at this Calendar.Component granularity
+    /// Minor ticks or data points are placed at this `Calendar.Component` granularity
     /// within each `rangeComponent` block.
     ///
     /// Typical pairings:
@@ -37,7 +37,7 @@ protocol ChartTimeScale: Identifiable, Hashable {
 
     /// The exclusive upper bound (“right edge”) of the initial visible time window.
     ///
-    /// Default value is “today” in most cases; for an incomplete current day,
+    /// Default value is `today` in most cases; for an incomplete current day,
     /// the upper bound advances to the start of the next day.
     ///
     var horizonDate: Date { get }

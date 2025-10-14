@@ -20,7 +20,7 @@ extension MetricsSeries {
         func callAsFunction() -> [MetricsSeries<T>] {
             Dictionary(grouping: matrices, by: \.name)
                 .mapValues(toPoints)
-                .compactMap(MetricsSeries.init)
+                .map(MetricsSeries.init)
                 .sorted()
         }
 

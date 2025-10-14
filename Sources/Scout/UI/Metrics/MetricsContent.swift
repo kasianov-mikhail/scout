@@ -20,7 +20,7 @@ struct MetricsContent<T: ChartNumeric>: View {
 
     var body: some View {
         if let matrices = metrics.data {
-            let series = MetricsSeries.Compose(of: matrices, period: period)()
+            let series = MetricsSeries.Compose(of: matrices, period: period)().filter { $0.points.total > .zero }
 
             if series.isEmpty {
                 Placeholder(text: "No results").frame(maxHeight: .infinity)

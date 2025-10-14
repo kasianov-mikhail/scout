@@ -13,7 +13,7 @@ struct MetricsView<T: ChartNumeric>: View {
     let points: [ChartPoint<T>]
 
     init(period: Period, points: [ChartPoint<T>]) {
-        self._period = State(initialValue: period)
+        self._period = State(wrappedValue: period)
         self.points = points
     }
 
