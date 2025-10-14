@@ -30,7 +30,7 @@ struct StatEventList: View {
                 .refreshable {
                     await fetch()
                 }
-                .navigationTitle(range.rangeLabel(formatter: formatter))
+                .navigationTitle(range.label(using: formatter))
                 .font(.system(size: 12))
         }
     }
