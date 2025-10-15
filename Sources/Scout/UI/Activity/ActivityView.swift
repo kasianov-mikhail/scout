@@ -25,7 +25,7 @@ struct ActivityView: View {
                 RangeControl(extent: $extent)
 
                 List {
-                    let points = ActivityCompose(of: data, period: extent.period)()
+                    let points = activityCompose(of: data, period: extent.period)
 
                     ChartView(points: points, extent: extent)
                         .foregroundStyle(.green)

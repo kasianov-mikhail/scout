@@ -5,25 +5,17 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-struct ActivityCompose {
-    let matrices: [PeriodMatrix]
-    let period: ActivityPeriod
+func activityCompose(of matrices: [PeriodMatrix], period: ActivityPeriod) -> [ChartPoint<Int>] {
+    matrices
+        .flatMap { $0.points(on: period) }
+        .bucket(on: period)
+        .sorted()
+}
 
-    init(of matrices: [PeriodMatrix], period: ActivityPeriod) {
-        self.matrices = matrices
-        self.period = period
-    }
-
-    func callAsFunction() -> [ChartPoint<Int>] {
-        matrices
-            .flatMap(toPoints)
-            .bucket(on: period)
-            .sorted()
-    }
-
-    private func toPoints(matrix: PeriodMatrix) -> [ChartPoint<Int>] {
-        matrix.cells
+extension PeriodMatrix {
+    fileprivate func points(on period: ActivityPeriod) -> [ChartPoint<Int>] {
+        cells
             .filter { $0.period == period }
-            .map { $0.point(baseDate: matrix.date) }
+            .map { $0.point(baseDate: date) }
     }
 }

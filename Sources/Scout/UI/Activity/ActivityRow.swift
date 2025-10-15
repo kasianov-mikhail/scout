@@ -18,7 +18,7 @@ struct ActivityRow: View {
             Spacer()
 
             let count = activity.data
-                .map { ActivityCompose(of: $0, period: period)() }?
+                .map { activityCompose(of: $0, period: period) }?
                 .last?
                 .count
 
