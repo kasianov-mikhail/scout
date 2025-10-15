@@ -13,7 +13,9 @@ enum ActivityPeriod: String, Identifiable, CaseIterable, Equatable {
     case monthly = "m"
 
     var id: Self { self }
+}
 
+extension ActivityPeriod {
     var title: String {
         switch self {
         case .daily:
@@ -26,42 +28,9 @@ enum ActivityPeriod: String, Identifiable, CaseIterable, Equatable {
     }
 }
 
-extension ActivityPeriod {
-    var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
-        switch self {
-        case .daily:
-            \.dayCount
-        case .weekly:
-            \.weekCount
-        case .monthly:
-            \.monthCount
-        }
-    }
-
-    var spreadComponent: Calendar.Component {
-        switch self {
-        case .daily:
-            .day
-        case .weekly:
-            .weekOfYear
-        case .monthly:
-            .month
-        }
-    }
-}
-
-// MARK: - Chart
-
 extension ActivityPeriod: ChartTimeScale {
-    var horizonDate: Date {
-        today
-    }
+    var horizonDate: Date { today }
 
-    var rangeComponent: Calendar.Component {
-        .month
-    }
-
-    var pointComponent: Calendar.Component {
-        .day
-    }
+    var rangeComponent: Calendar.Component { .month }
+    var pointComponent: Calendar.Component { .day }
 }
