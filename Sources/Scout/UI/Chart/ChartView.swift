@@ -8,20 +8,21 @@
 import Charts
 import SwiftUI
 
-struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
-    let points: [ChartPoint<V>]
-    let extent: ChartExtent<T>
+
+struct ChartView<T: ChartNumeric>: View {
+    let points: [ChartPoint<T>]
+    let timing: ChartTiming
 
     var body: some View {
         Chart(points, id: \.date) { point in
             BarMark(
-                x: .value("X", point.date, unit: extent.period.pointComponent),
+                x: .value("X", point.date, unit: timing.unit),
                 y: .value("Y", point.count)
             )
         }
         .chartXAxis {
-            if let axisValues = extent.axisValues {
-                AxisMarks(values: axisValues)
+            if let values = timing.tickValues {
+                AxisMarks(values: values)
             } else {
                 AxisMarks()
             }
@@ -41,10 +42,10 @@ struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
 #Preview("ChartView – Month") {
     VStack(alignment: .leading, spacing: 24) {
         Text("With Data").font(.headline)
-        ChartView(points: .sample, extent: .init(period: Period.month))
+        ChartView(points: .sample, timing: ChartExtent(period: Period.month))
 
         Text("Empty State").font(.headline)
-        ChartView(points: .empty, extent: .init(period: Period.month))
+        ChartView(points: .empty, timing: ChartExtent(period: Period.month))
     }
     .padding()
 }

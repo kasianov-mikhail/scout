@@ -38,7 +38,7 @@ struct StatView: View {
                 List {
                     let points = extent.segment(from: data)
 
-                    ChartView(points: points, extent: extent)
+                    ChartView(points: points, timing: extent)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 

@@ -27,7 +27,7 @@ struct ActivityView: View {
                 List {
                     let points = activityCompose(of: data, period: extent.period)
 
-                    ChartView(points: points, extent: extent)
+                    ChartView(points: points, timing: extent)
                         .foregroundStyle(.green)
                         .listRowSeparator(.hidden)
                 }
