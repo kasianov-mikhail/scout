@@ -10,15 +10,15 @@ import SwiftUI
 
 struct MetricsView<T: ChartNumeric>: View {
     let points: [ChartPoint<T>]
-    @State private var period: Period
+    @State private var extent: ChartExtent<Period>
 
     init(points: [ChartPoint<T>], period: Period) {
         self.points = points
-        self._period = State(wrappedValue: period)
+        self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
     var body: some View {
-        Picker("Period", selection: $period) {
+        Picker("Period", selection: $extent.period) {
             ForEach(Period.all) { period in
                 Text(period.shortTitle.uppercased())
             }
@@ -26,10 +26,10 @@ struct MetricsView<T: ChartNumeric>: View {
         .padding(.horizontal)
         .pickerStyle(.segmented)
 
-        List {
-            let extent = ChartExtent(period: period)
+        RangeControl(extent: $extent)
 
-            ChartView(points: points.bucket(on: period), extent: extent)
+        List {
+            ChartView(points: extent.segment(from: points), extent: extent)
                 .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
         }

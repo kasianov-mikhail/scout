@@ -27,7 +27,7 @@ struct ChartView<T: ChartTimeScale, V: ChartNumeric>: View {
             }
         }
         .chartBackground { proxy in
-            if points.isEmpty {
+            if points.total == .zero {
                 Placeholder(text: "No results")
             }
         }
