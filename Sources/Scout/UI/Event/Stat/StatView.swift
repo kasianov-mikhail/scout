@@ -36,14 +36,14 @@ struct StatView: View {
                 RangeControl(extent: $extent)
 
                 List {
-                    let points = extent.segment(from: data)
+                    let segment = extent.segment(from: data)
 
-                    ChartView(points: points, timing: extent)
+                    ChartView(segment: segment, timing: extent)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
                     if config.showList {
-                        total(count: points.total)
+                        total(count: segment.total)
                     }
                 }
                 .listStyle(.plain)

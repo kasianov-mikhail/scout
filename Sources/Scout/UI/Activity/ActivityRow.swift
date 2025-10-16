@@ -17,9 +17,10 @@ struct ActivityRow: View {
             Text(period.title)
             Spacer()
 
-            let count = activity.data
-                .map { activityCompose(of: $0, period: period) }?
-                .last?
+            let count = activity.data?
+                .points(on: period)
+                .bucket(on: period)
+                .max()?
                 .count
 
             RedactedText(count: count)

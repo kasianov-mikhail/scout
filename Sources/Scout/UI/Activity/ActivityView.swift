@@ -25,9 +25,9 @@ struct ActivityView: View {
                 RangeControl(extent: $extent)
 
                 List {
-                    let points = activityCompose(of: data, period: extent.period)
+                    let segment = extent.segment(from: data)
 
-                    ChartView(points: points, timing: extent)
+                    ChartView(segment: segment, timing: extent)
                         .foregroundStyle(.green)
                         .listRowSeparator(.hidden)
                 }
@@ -38,5 +38,11 @@ struct ActivityView: View {
             }
         }
         .navigationTitle("Active Users")
+    }
+}
+
+extension ChartExtent<ActivityPeriod> {
+    fileprivate func segment(from matrices: [ActivityMatrix]) -> [ChartPoint<Int>] {
+        segment(from: matrices.points(on: period))
     }
 }

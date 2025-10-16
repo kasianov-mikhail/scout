@@ -29,7 +29,9 @@ struct MetricsView<T: ChartNumeric>: View {
         RangeControl(extent: $extent)
 
         List {
-            ChartView(points: extent.segment(from: points), timing: extent)
+            let segment = extent.segment(from: points)
+
+            ChartView(segment: segment, timing: extent)
                 .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
         }

@@ -10,7 +10,7 @@ import SwiftUI
 
 @MainActor
 class ActivityProvider: ObservableObject, Provider {
-    @Published var data: [PeriodMatrix]?
+    @Published var data: [ActivityMatrix]?
 
     func fetch(in database: DatabaseController) async {
         let range = Calendar(identifier: .iso8601).defaultRange
@@ -21,7 +21,7 @@ class ActivityProvider: ObservableObject, Provider {
                 desiredKeys: nil
             )
 
-            data = try records.map(PeriodMatrix.init).mergeDuplicates()
+            data = try records.map(ActivityMatrix.init).mergeDuplicates()
 
         } catch {
             print("Error fetching active user data: \(error)")

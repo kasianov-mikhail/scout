@@ -15,8 +15,6 @@ struct PeriodCell<T: MatrixValue> {
 
 // MARK: - Matrix
 
-typealias PeriodMatrix = Matrix<PeriodCell<Int>>
-
 extension PeriodCell: CellProtocol {
     var key: String {
         "cell_\(period.rawValue)_\((day + 1).leadingZero)"

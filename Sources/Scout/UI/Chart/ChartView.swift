@@ -8,13 +8,12 @@
 import Charts
 import SwiftUI
 
-
 struct ChartView<T: ChartNumeric>: View {
-    let points: [ChartPoint<T>]
+    let segment: [ChartPoint<T>]
     let timing: ChartTiming
 
     var body: some View {
-        Chart(points, id: \.date) { point in
+        Chart(segment, id: \.date) { point in
             BarMark(
                 x: .value("X", point.date, unit: timing.unit),
                 y: .value("Y", point.count)
@@ -28,7 +27,7 @@ struct ChartView<T: ChartNumeric>: View {
             }
         }
         .chartBackground { proxy in
-            if points.total == .zero {
+            if segment.total == .zero {
                 Placeholder(text: "No results")
             }
         }
@@ -42,10 +41,10 @@ struct ChartView<T: ChartNumeric>: View {
 #Preview("ChartView – Month") {
     VStack(alignment: .leading, spacing: 24) {
         Text("With Data").font(.headline)
-        ChartView(points: .sample, timing: ChartExtent(period: Period.month))
+        ChartView(segment: .sample, timing: ChartExtent(period: Period.month))
 
         Text("Empty State").font(.headline)
-        ChartView(points: .empty, timing: ChartExtent(period: Period.month))
+        ChartView(segment: .empty, timing: ChartExtent(period: Period.month))
     }
     .padding()
 }
