@@ -8,7 +8,7 @@
 import Charts
 import CloudKit
 
-struct ChartPoint<T: ChartNumeric>: Identifiable, ChartPointProtocol {
+struct ChartPoint<T: ChartNumeric>: Identifiable, BucketPoint {
     let id = UUID()
     let date: Date
     let count: T
