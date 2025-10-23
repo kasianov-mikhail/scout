@@ -8,18 +8,6 @@
 import Foundation
 
 extension ChartExtent {
-    var isLeftEnabled: Bool {
-        let yearRange = Period.year.initialRange
-        let leftRange = domain.moved(by: period.rangeComponent, value: -1)
-        return yearRange.lowerBound < leftRange.lowerBound
-    }
-
-    var isRightEnabled: Bool {
-        domain != period.initialRange
-    }
-}
-
-extension ChartExtent {
     mutating func moveLeft() {
         domain.move(by: period.rangeComponent, value: -1)
     }
@@ -32,8 +20,6 @@ extension ChartExtent {
         domain = period.initialRange
     }
 }
-
-// MARK: - Date Range Moving
 
 extension Range<Date> {
     mutating func move(by component: Calendar.Component, value: Int) {
