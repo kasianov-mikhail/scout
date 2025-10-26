@@ -26,22 +26,18 @@ struct MetricsContent<T: ChartNumeric>: View {
 
     @ViewBuilder
     private func list(groups: [PointGroup<T>]) -> some View {
-        let periodGroups = groups
-            .map { $0.group(on: period) }
-            .filter(\.hasPoints)
-            .sorted()
+        let ranked = groups.ranked(on: period)
 
-        if periodGroups.isEmpty {
+        if ranked.isEmpty {
             Placeholder(text: "No results").frame(maxHeight: .infinity)
         } else {
-            List(periodGroups) { group in
+            List(ranked) { group in
                 Row {
                     row(group: group)
                 } destination: {
-                    MetricsView(
-                        group: groups.first { $0.name == group.name }!,
-                        period: period
-                    )
+                    if let named = groups.named(group.name) {
+                        MetricsView(group: named, period: period)
+                    }
                 }
             }
             .listStyle(.plain)

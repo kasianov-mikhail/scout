@@ -7,14 +7,10 @@
 
 import Foundation
 
-struct PointGroup<T: ChartNumeric>: Identifiable {
+struct PointGroup<T: ChartNumeric>: PointGroupProtocol, Identifiable {
     let name: String
     let points: [ChartPoint<T>]
     let id = UUID()
-
-    var hasPoints: Bool {
-        points.total > .zero
-    }
 }
 
 extension PointGroup: Comparable {
@@ -22,25 +18,6 @@ extension PointGroup: Comparable {
         lhs.points.total > rhs.points.total
     }
 }
-
-// MARK: - Period Filtering
-
-extension PointGroup {
-    func group(on period: Period) -> PointGroup<T> {
-        PointGroup(
-            name: name,
-            points: points(on: period)
-        )
-    }
-
-    func points(on period: Period) -> [ChartPoint<T>] {
-        points.filter { point in
-            period.initialRange.contains(point.date)
-        }
-    }
-}
-
-// MARK: -
 
 extension Sequence {
     func pointGroups<T: ChartNumeric>() -> [PointGroup<T>] where Element == GridMatrix<T> {
