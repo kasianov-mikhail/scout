@@ -10,7 +10,7 @@ import Foundation
 /// A named group of chart points used by collection helpers for
 /// operations such as lookup by name, per-period filtering, and ranking.
 ///
-protocol PointGroupProtocol {
+protocol PointSeries {
     associatedtype T: ChartNumeric
 
     var name: String { get }
@@ -19,7 +19,7 @@ protocol PointGroupProtocol {
     init(name: String, points: [ChartPoint<T>])
 }
 
-extension PointGroupProtocol {
+extension PointSeries {
     var hasPoints: Bool {
         points.total > .zero
     }
@@ -27,7 +27,7 @@ extension PointGroupProtocol {
 
 // MARK: - By Name
 
-extension Collection where Element: PointGroupProtocol {
+extension Collection where Element: PointSeries {
     func named(_ name: String) -> Element? {
         first { $0.name == name }
     }
@@ -35,7 +35,7 @@ extension Collection where Element: PointGroupProtocol {
 
 // MARK: - By Period
 
-extension Collection where Element: PointGroupProtocol & Comparable {
+extension Collection where Element: PointSeries & Comparable {
     func ranked(on period: Period) -> [Element] {
         withPoints(in: period)
             .filter(\.hasPoints)
@@ -52,7 +52,7 @@ extension Collection where Element: PointGroupProtocol & Comparable {
     }
 }
 
-extension Collection where Element: ChartPointProtocol {
+extension Collection where Element: ChartSeries {
     fileprivate func inPeriod(_ period: Period) -> [Element] {
         filter { point in
             period.initialRange.contains(point.date)

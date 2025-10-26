@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct PointGroup<T: ChartNumeric>: PointGroupProtocol, Identifiable {
+struct PointGroup<T: ChartNumeric>: PointSeries, Identifiable {
     let name: String
     let points: [ChartPoint<T>]
     let id = UUID()
