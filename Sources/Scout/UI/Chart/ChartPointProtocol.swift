@@ -7,13 +7,13 @@
 
 import Foundation
 
-protocol BucketPoint: HasCount {
+protocol ChartPointProtocol: HasCount {
     var date: Date { get }
 
     init(date: Date, count: Count)
 }
 
-extension Collection where Element: BucketPoint {
+extension Collection where Element: ChartPointProtocol {
 
     func bucket(on period: some ChartTimeScale) -> [Element] {
         bucket(in: period.initialRange, component: period.pointComponent)

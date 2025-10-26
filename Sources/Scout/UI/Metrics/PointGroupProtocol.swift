@@ -37,24 +37,24 @@ extension Collection where Element: PointGroupProtocol {
 
 extension Collection where Element: PointGroupProtocol & Comparable {
     func ranked(on period: Period) -> [Element] {
-        group(on: period)
+        withPoints(in: period)
             .filter(\.hasPoints)
             .sorted()
     }
 
-    private func group(on period: Period) -> [Element] {
+    private func withPoints(in period: Period) -> [Element] {
         map {
             Element(
                 name: $0.name,
-                points: $0.points(on: period)
+                points: $0.points.inPeriod(period)
             )
         }
     }
 }
 
-extension PointGroupProtocol {
-    fileprivate func points(on period: Period) -> [ChartPoint<T>] {
-        points.filter { point in
+extension Collection where Element: ChartPointProtocol {
+    fileprivate func inPeriod(_ period: Period) -> [Element] {
+        filter { point in
             period.initialRange.contains(point.date)
         }
     }
