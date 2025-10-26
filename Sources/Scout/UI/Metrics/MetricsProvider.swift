@@ -10,10 +10,11 @@ import CloudKit
 import SwiftUI
 
 class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
-    @Published var telemetry: Telemetry.Scope
     @Published var data: [GridMatrix<T>]?
 
-    init(telemetry: Telemetry.Scope) {
+    private let telemetry: Telemetry.Export
+
+    init(telemetry: Telemetry.Export) {
         self.telemetry = telemetry
     }
 
@@ -39,7 +40,7 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
             format: "date >= %@ AND date < %@ AND category == %@",
             dateRange.lowerBound as NSDate,
             dateRange.upperBound as NSDate,
-            telemetry.export.rawValue
+            telemetry.rawValue
         )
 
         return CKQuery(

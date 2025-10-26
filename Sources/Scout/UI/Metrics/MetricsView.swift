@@ -9,11 +9,11 @@ import Charts
 import SwiftUI
 
 struct MetricsView<T: ChartNumeric>: View {
-    let points: [ChartPoint<T>]
+    let group: PointGroup<T>
     @State private var extent: ChartExtent<Period>
 
-    init(points: [ChartPoint<T>], period: Period) {
-        self.points = points
+    init(group: PointGroup<T>, period: Period) {
+        self.group = group
         self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
@@ -29,19 +29,20 @@ struct MetricsView<T: ChartNumeric>: View {
         RangeControl(extent: $extent)
 
         List {
-            let segment = extent.segment(from: points)
+            let segment = extent.segment(from: group.points)
 
             ChartView(segment: segment, timing: extent)
                 .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
+        .navigationTitle(group.name)
         .scrollDisabled(true)
     }
 }
 
 #Preview("MetricsView") {
     NavigationStack {
-        MetricsView(points: .sample, period: .month).navigationTitle("MetricsView")
+        MetricsView(group: .init(name: "Group", points: .sample), period: .month)
     }
 }

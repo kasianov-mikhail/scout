@@ -8,8 +8,20 @@
 import SwiftUI
 
 struct MetricsList: View {
-    @State private var telemetry: Telemetry.Scope = .counter
+    enum Scope: String, CaseIterable, Identifiable {
+        case int
+        case double
+        case timer
+
+        var id: Self { self }
+    }
+
     @State private var period: Period = .today
+    @State private var scope: Scope = .int
+
+    @StateObject private var counter = MetricsProvider<Int>(telemetry: .counter)
+    @StateObject private var floating = MetricsProvider<Double>(telemetry: .floatingCounter)
+    @StateObject private var timer = MetricsProvider<TimeInterval>(telemetry: .timer)
 
     var body: some View {
         Picker("Period", selection: $period) {
@@ -21,21 +33,33 @@ struct MetricsList: View {
         .padding(.bottom)
         .pickerStyle(.segmented)
 
-        Picker("Metrics Type", selection: $telemetry) {
-            ForEach(Telemetry.Scope.allCases) { type in
-                Text(type.shortTitle.uppercased())
+        Picker("Scope", selection: $scope) {
+            ForEach(Scope.allCases) { scope in
+                Text(scope.rawValue.uppercased())
             }
         }
         .padding(.horizontal)
         .pickerStyle(.segmented)
 
-        switch telemetry {
-        case .counter:
-            MetricsContent<Int>(period: period, telemetry: telemetry)
-        case .floatingCounter:
-            MetricsContent<Double>(period: period, telemetry: telemetry)
+        switch scope {
+        case .int:
+            MetricsContent(
+                period: period,
+                formatter: \.plain,
+                metrics: counter
+            )
+        case .double:
+            MetricsContent(
+                period: period,
+                formatter: \.decimal,
+                metrics: floating
+            )
         case .timer:
-            MetricsContent<Double>(period: period, telemetry: telemetry)
+            MetricsContent(
+                period: period,
+                formatter: \.duration,
+                metrics: timer
+            )
         }
     }
 }

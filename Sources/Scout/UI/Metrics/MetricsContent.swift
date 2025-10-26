@@ -9,27 +9,14 @@ import SwiftUI
 
 struct MetricsContent<T: ChartNumeric>: View {
     let period: Period
+    let formatter: KeyPath<T, String>
 
+    @ObservedObject var metrics: MetricsProvider<T>
     @EnvironmentObject var database: DatabaseController
-    @StateObject private var metrics: MetricsProvider<T>
-
-    init(period: Period, telemetry: Telemetry.Scope) {
-        self.period = period
-        _metrics = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
-    }
 
     var body: some View {
-        if let matrices = metrics.data {
-            let series = MetricsSeries.Compose(of: matrices, period: period)().filter { $0.points.total > .zero }
-
-            if series.isEmpty {
-                Placeholder(text: "No results").frame(maxHeight: .infinity)
-            } else {
-                List(series) {
-                    row(series: $0, points: matrices.flatMap(\.points))
-                }
-                .listStyle(.plain)
-            }
+        if let data = metrics.data {
+            list(groups: data.pointGroups())
         } else {
             ProgressView().frame(maxHeight: .infinity).task {
                 await metrics.fetchIfNeeded(in: database)
@@ -37,15 +24,38 @@ struct MetricsContent<T: ChartNumeric>: View {
         }
     }
 
-    func row(series: MetricsSeries<T>, points: [ChartPoint<T>]) -> some View {
-        Row {
-            Text(series.title)
-                .monospaced()
-                .font(.system(size: 17))
-                .lineLimit(1)
-            Spacer()
-        } destination: {
-            MetricsView(points: points, period: period).navigationTitle(series.id)
+    @ViewBuilder
+    private func list(groups: [PointGroup<T>]) -> some View {
+        let periodGroups = groups
+            .map { $0.group(on: period) }
+            .filter(\.hasPoints)
+            .sorted()
+
+        if periodGroups.isEmpty {
+            Placeholder(text: "No results").frame(maxHeight: .infinity)
+        } else {
+            List(periodGroups) { group in
+                Row {
+                    row(group: group)
+                } destination: {
+                    MetricsView(
+                        group: groups.first { $0.name == group.name }!,
+                        period: period
+                    )
+                }
+            }
+            .listStyle(.plain)
         }
+    }
+
+    private func row(group: PointGroup<T>) -> some View {
+        HStack {
+            Text(group.name)
+            Spacer()
+            Text(group.points.total[keyPath: formatter])
+        }
+        .monospaced()
+        .font(.system(size: 17))
+        .lineLimit(1)
     }
 }

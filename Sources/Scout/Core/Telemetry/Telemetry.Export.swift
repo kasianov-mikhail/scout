@@ -22,8 +22,7 @@ extension Telemetry {
         case invalidName
 
         var errorDescription: String? {
-            "Invalid telemetry name. Expected one of: "
-                + Export.allCases.map(\.rawValue).joined(separator: ", ")
+            "Invalid telemetry name. Expected one of: " + Export.allCases.map(\.rawValue).joined(separator: ", ")
         }
     }
 
