@@ -41,7 +41,7 @@ extension Double {
 
         switch self {
         case 0:
-            "0.0"
+            return "0.0"
         case ..<0.01:
             formatter.minimumFractionDigits = 3
             formatter.maximumFractionDigits = 3
