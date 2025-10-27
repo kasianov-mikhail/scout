@@ -27,3 +27,29 @@ actor SkipDispatcher: Dispatcher {
         try await block()
     }
 }
+
+actor QueueDispatcher {
+    private var queue: [DispatchBlock] = []
+    private var isRunning = false
+
+    func execute(_ block: @escaping DispatchBlock) async throws {
+        queue.append(block)
+
+        guard !isRunning else { return }
+
+        isRunning = true
+
+        defer { isRunning = false }
+
+        while let next = queue.first {
+            queue.removeFirst()
+
+            do {
+                try await next()
+            } catch {
+                queue.removeAll()
+                throw error
+            }
+        }
+    }
+}
