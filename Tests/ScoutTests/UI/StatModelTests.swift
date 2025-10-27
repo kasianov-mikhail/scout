@@ -13,7 +13,7 @@ import Testing
 struct ChartModelTests {
     let date: Date
     let range: Range<Date>
-    let chartData: ChartData<Period>
+    let points: [ChartPoint<Int>]
 
     init() {
         date = Date()
@@ -22,27 +22,13 @@ struct ChartModelTests {
         let chartPoint1 = ChartPoint(date: date, count: 10)
         let chartPoint2 = ChartPoint(date: date.addingTimeInterval(86400), count: 20)
 
-        chartData = [.today: [chartPoint1, chartPoint2]]
+        points = [chartPoint1, chartPoint2]
     }
 
     @Test("Points from data") func testPointsFromData() throws {
-        let chartModel = ChartModel(period: Period.today, range: range)
-        let points = try #require(chartModel.points(from: chartData))
+        let extent = ChartExtent(period: Period.today, domain: range)
+        let points = extent.segment(from: points)
 
         #expect(points.map(\.count) == [10])
-    }
-
-    @Test("Points from nil data") func testPointsFromNilData() {
-        let chartModel = ChartModel(period: Period.week, range: range)
-        let points = chartModel.points(from: nil)
-
-        #expect(points == nil)
-    }
-
-    @Test("Points from data with different period") func testPointsFromDataWithDifferentPeriod() {
-        let chartModel = ChartModel(period: Period.yesterday, range: range)
-        let points = chartModel.points(from: chartData)
-
-        #expect(points == nil)
     }
 }
