@@ -18,32 +18,32 @@ struct StatView: View {
 
     let config: Config
 
-    @State var model: StatModel<Period>
+    @State var extent: ChartExtent<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
     init(config: Config, stat: StatProvider, period: Period) {
         self.config = config
         self.stat = stat
-        self._model = State(wrappedValue: StatModel(period: period))
+        self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodPicker(model: $model, periods: stat.periods)
+            PeriodPicker(extent: $extent, periods: stat.periods)
 
-            if let points = model.points(from: stat.data) {
-                RangeControl(model: $model)
-                    .padding(.top)
-                    .padding(.horizontal)
+            if let data = stat.data {
+                RangeControl(extent: $extent)
 
                 List {
-                    ChartView(points: points, model: model)
+                    let segment = extent.segment(from: data)
+
+                    ChartView(segment: segment, timing: extent)
                         .foregroundStyle(config.color)
                         .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
 
                     if config.showList {
-                        total(count: points.total)
+                        total(count: segment.total)
                     }
                 }
                 .listStyle(.plain)
@@ -68,7 +68,7 @@ struct StatView: View {
             .foregroundColor(.blue)
 
             NavigationLink {
-                StatEventList(eventName: stat.eventName, range: model.range)
+                StatEventList(eventName: stat.eventName, range: extent.domain)
             } label: {
                 EmptyView()
             }
@@ -92,11 +92,8 @@ extension StatView.Config: CustomDebugStringConvertible {
 
 #Preview {
     NavigationStack {
-        let data = Dictionary(uniqueKeysWithValues: Period.all.map { period in
-            (period, [ChartPoint].sample)
-        })
         let stat = StatProvider(eventName: "Event", periods: Period.all)
-        stat.data = data
+        stat.data = .sample
         let config = StatView.Config(title: "Title", color: .blue, showList: true)
         return StatView(config: config, stat: stat, period: .month)
     }

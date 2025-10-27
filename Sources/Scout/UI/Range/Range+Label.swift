@@ -8,7 +8,7 @@
 import Foundation
 
 extension Range<Date> {
-    func rangeLabel(formatter: DateFormatter) -> String {
+    func label(using formatter: DateFormatter) -> String {
         let from = formatter.string(from: lowerBound)
         let to = formatter.string(from: upperBound.addingDay(-1))
 

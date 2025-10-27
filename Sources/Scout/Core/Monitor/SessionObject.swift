@@ -14,7 +14,7 @@ final class SessionObject: SyncableObject, Syncable {
         try batch(in: context, matching: [\.week])
     }
 
-    static func matrix(of batch: [SessionObject]) throws(MatrixSyncError) -> Matrix<GridCell<Int>> {
+    static func matrix(of batch: [SessionObject]) throws(MatrixSyncError) -> GridMatrix<Int> {
         guard let week = batch.first?.week else {
             throw .missingProperty("week")
         }

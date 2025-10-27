@@ -14,6 +14,7 @@ protocol Combining {
 
 extension Combining {
     static func += (lhs: inout Self, rhs: Self) {
+        assert(lhs.isDuplicate(of: rhs), "Cannot combine non-duplicate instances of \(Self.self)")
         lhs = lhs + rhs
     }
 }

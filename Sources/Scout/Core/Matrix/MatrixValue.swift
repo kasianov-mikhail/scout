@@ -5,10 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
 import CloudKit
+import CoreData
 
-protocol MatrixValue: CKRecordValueProtocol & AdditiveArithmetic & Sendable & Hashable {
+protocol MatrixValue: AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
     associatedtype Object: MetricsValued where Object.Value == Self
     static var recordName: String { get }
 }

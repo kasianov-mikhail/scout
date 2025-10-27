@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct RangeControl<T: ChartCompatible>: View {
-    @Binding var model: StatModel<T>
+struct RangeControl<T: ChartTimeScale>: View {
+    @Binding var extent: ChartExtent<T>
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -19,26 +19,28 @@ struct RangeControl<T: ChartCompatible>: View {
     var body: some View {
         HStack {
             MoveButton(image: "chevron.left") {
-                model.moveLeft()
+                extent.moveLeft()
             }
-            .disabled(!model.isLeftEnabled)
+            .disabled(!extent.isLeftEnabled)
 
-            Text(model.range.rangeLabel(formatter: formatter))
+            Text(extent.domain.label(using: formatter))
                 .font(.system(size: 16))
                 .monospaced()
                 .frame(height: 44)
                 .frame(maxWidth: .infinity)
 
             MoveButton(image: "chevron.right") {
-                model.moveRight()
+                extent.moveRight()
             }
             .simultaneousGesture(
                 LongPressGesture().onEnded { _ in
-                    model.moveRightEdge()
+                    extent.moveRightEdge()
                 }
             )
-            .disabled(!model.isRightEnabled)
+            .disabled(!extent.isRightEnabled)
         }
+        .padding(.top)
+        .padding(.horizontal)
     }
 
     struct MoveButton: View {

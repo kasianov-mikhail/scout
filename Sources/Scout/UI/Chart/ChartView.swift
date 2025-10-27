@@ -8,26 +8,26 @@
 import Charts
 import SwiftUI
 
-struct ChartView<T: ChartCompatible>: View {
-    let points: [ChartPoint]
-    let model: StatModel<T>
+struct ChartView<T: ChartNumeric>: View {
+    let segment: [ChartPoint<T>]
+    let timing: ChartTiming
 
     var body: some View {
-        Chart(points, id: \.date) { point in
+        Chart(segment, id: \.date) { point in
             BarMark(
-                x: .value("X", point.date, unit: model.period.pointComponent),
+                x: .value("X", point.date, unit: timing.unit),
                 y: .value("Y", point.count)
             )
         }
         .chartXAxis {
-            if let axisValues = model.axisValues {
-                AxisMarks(values: axisValues)
+            if let values = timing.tickValues {
+                AxisMarks(values: values)
             } else {
                 AxisMarks()
             }
         }
         .chartBackground { proxy in
-            if points.total == 0 {
+            if segment.total == .zero {
                 Placeholder(text: "No results")
             }
         }
@@ -38,25 +38,13 @@ struct ChartView<T: ChartCompatible>: View {
     }
 }
 
-extension StatModel {
-    fileprivate var axisValues: [Date]? {
-        if period.rangeComponent == .month {
-            return [-28, -21, -14, -7].map(range.upperBound.addingDay)
-        } else {
-            return nil
-        }
-    }
-}
-
 #Preview("ChartView – Month") {
-    let model = StatModel(period: Period.month)
-
     VStack(alignment: .leading, spacing: 24) {
         Text("With Data").font(.headline)
-        ChartView(points: .sample, model: model)
+        ChartView(segment: .sample, timing: ChartExtent(period: Period.month))
 
         Text("Empty State").font(.headline)
-        ChartView(points: [], model: model)
+        ChartView(segment: .empty, timing: ChartExtent(period: Period.month))
     }
     .padding()
 }

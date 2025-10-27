@@ -21,8 +21,8 @@ struct RangeLabelTests {
         let startDate = formatter.date(from: "2024-01-01")!
         let endDate = formatter.date(from: "2024-01-02")!
         let range = startDate..<endDate
-        let label = range.rangeLabel(formatter: formatter)
-        
+        let label = range.label(using: formatter)
+
         #expect(label == "2024-01-01")
     }
 
@@ -30,8 +30,8 @@ struct RangeLabelTests {
         let startDate = formatter.date(from: "2024-01-01")!
         let endDate = formatter.date(from: "2024-01-04")!
         let range = startDate..<endDate
-        let label = range.rangeLabel(formatter: formatter)
-        
+        let label = range.label(using: formatter)
+
         #expect(label == "2024-01-01 – 2024-01-03")
     }
 }

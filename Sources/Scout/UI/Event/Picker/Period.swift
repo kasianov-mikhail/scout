@@ -37,15 +37,14 @@ extension Period {
     }
 }
 
-extension Period: ChartCompatible {
-    var range: Range<Date> {
-        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
+// MARK: - Chart
 
-        return switch self {
-        case .today:
-            today..<today.adding(rangeComponent)
-        default:
-            today.adding(rangeComponent, value: -1)..<today
+extension Period: ChartTimeScale {
+    var horizonDate: Date {
+        if case .today = self {
+            today.adding(rangeComponent)
+        } else {
+            today
         }
     }
 
@@ -73,6 +72,8 @@ extension Period: ChartCompatible {
         }
     }
 }
+
+// MARK: -
 
 extension Period: CustomStringConvertible {
     var description: String {
