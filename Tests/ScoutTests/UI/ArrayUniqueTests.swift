@@ -14,7 +14,7 @@ struct ArrayUniqueTests {
         let name: String
     }
 
-    @Test("Unique elements") func testUniqueElements() {
+    @Test func `all unique elements within limit`() {
         let events = [
             Event(name: "A"),
             Event(name: "B"),
@@ -24,7 +24,7 @@ struct ArrayUniqueTests {
         #expect(Set(result) == Set(["A", "B", "C"]))
     }
 
-    @Test("Duplicate elements") func testDuplicateElements() {
+    @Test func `limit unique elements to 3`() {
         let events = [
             Event(name: "A"),
             Event(name: "A"),
@@ -37,7 +37,7 @@ struct ArrayUniqueTests {
         #expect(result == ["B", "A", "C"])
     }
 
-    @Test("Max limit") func testMaxLimit() {
+    @Test("f") func `limit unique elements to 2`() {
         let events = [
             Event(name: "A"),
             Event(name: "A"),
@@ -50,13 +50,13 @@ struct ArrayUniqueTests {
         #expect(result == ["B", "A"])
     }
 
-    @Test("Empty array") func testEmptyArray() {
+    @Test func `empty array `() {
         let events: [Event] = []
         let result = events.unique(by: \.name, max: 3)
         #expect(result == [])
     }
 
-    @Test("All elements are same") func testAllElementsSame() {
+    @Test func `all elements are the same`() {
         let events = [
             Event(name: "A"),
             Event(name: "A"),
