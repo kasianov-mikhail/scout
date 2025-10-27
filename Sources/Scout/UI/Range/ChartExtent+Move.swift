@@ -7,29 +7,17 @@
 
 import Foundation
 
-extension StatModel {
-    var isLeftEnabled: Bool {
-        let yearRange = Period.year.range
-        let leftRange = range.moved(by: period.rangeComponent, value: -1)
-        return yearRange.lowerBound < leftRange.lowerBound
-    }
-
-    var isRightEnabled: Bool {
-        range != period.range
-    }
-}
-
-extension StatModel {
+extension ChartExtent {
     mutating func moveLeft() {
-        range.move(by: period.rangeComponent, value: -1)
+        domain.move(by: period.rangeComponent, value: -1)
     }
 
     mutating func moveRight() {
-        range.move(by: period.rangeComponent, value: 1)
+        domain.move(by: period.rangeComponent, value: 1)
     }
 
     mutating func moveRightEdge() {
-        range = period.range
+        domain = period.initialRange
     }
 }
 

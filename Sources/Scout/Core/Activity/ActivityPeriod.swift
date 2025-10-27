@@ -7,13 +7,15 @@
 
 import Foundation
 
-enum ActivityPeriod: String, Identifiable, CaseIterable {
+enum ActivityPeriod: String, Identifiable, CaseIterable, Equatable {
     case daily = "d"
     case weekly = "w"
     case monthly = "m"
 
     var id: Self { self }
+}
 
+extension ActivityPeriod {
     var title: String {
         switch self {
         case .daily:
@@ -24,43 +26,11 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
             "Monthly"
         }
     }
-
-    var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
-        switch self {
-        case .daily:
-            \.dayCount
-        case .weekly:
-            \.weekCount
-        case .monthly:
-            \.monthCount
-        }
-    }
 }
 
-extension ActivityPeriod {
-    var spreadComponent: Calendar.Component {
-        switch self {
-        case .daily:
-            .day
-        case .weekly:
-            .weekOfYear
-        case .monthly:
-            .month
-        }
-    }
-}
+extension ActivityPeriod: ChartTimeScale {
+    var horizonDate: Date { today }
 
-extension ActivityPeriod: ChartCompatible {
-    var range: Range<Date> {
-        let today = Calendar(identifier: .iso8601).startOfDay(for: Date())
-        return today.adding(rangeComponent, value: -1)..<today
-    }
-
-    var rangeComponent: Calendar.Component {
-        return .month
-    }
-
-    var pointComponent: Calendar.Component {
-        return .day
-    }
+    var rangeComponent: Calendar.Component { .month }
+    var pointComponent: Calendar.Component { .day }
 }

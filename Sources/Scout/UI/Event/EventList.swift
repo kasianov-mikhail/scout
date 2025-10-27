@@ -26,9 +26,7 @@ struct EventList: View {
                 Placeholder(text: "No results").frame(maxHeight: .infinity)
             } else {
                 List {
-                    ForEach(events) { event in
-                        row(for: event)
-                    }
+                    ForEach(events, content: row)
 
                     if let cursor = provider.cursor {
                         ProgressView()

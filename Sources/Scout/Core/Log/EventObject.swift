@@ -14,7 +14,7 @@ final class EventObject: SyncableObject, Syncable {
         try batch(in: context, matching: [\.name, \.week])
     }
 
-    static func matrix(of batch: [EventObject]) throws(MatrixSyncError) -> Matrix<GridCell<Int>> {
+    static func matrix(of batch: [EventObject]) throws(MatrixSyncError) -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
             throw .missingProperty("name")
         }

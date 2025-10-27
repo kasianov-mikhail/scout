@@ -9,6 +9,7 @@
 /// but is reserved for future telemetry expansion and metrics export.
 /// Keeping it now helps establish a consistent data format (see Telemetry.Export)
 /// and simplifies integration in upcoming releases.
+///
 enum Telemetry {
     case counter(Int)
     case floatingCounter(Double)

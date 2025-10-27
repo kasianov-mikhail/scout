@@ -5,23 +5,13 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Charts
 import CloudKit
 
-typealias ChartData<T: ChartCompatible> = [T: [ChartPoint]]
-
-struct ChartPoint: Identifiable {
+struct ChartPoint<T: ChartNumeric>: Identifiable, ChartSeries {
     let id = UUID()
     let date: Date
-    let count: Int
-
-    static func fromIntMatrix(_ matrix: Matrix<GridCell<Int>>) -> [ChartPoint] {
-        matrix.cells.map { cell in
-            ChartPoint(
-                date: matrix.date.addingDay(cell.row - 1).addingHour(cell.column),
-                count: cell.value
-            )
-        }
-    }
+    let count: T
 }
 
 // MARK: - Operators
@@ -50,26 +40,24 @@ extension ChartPoint {
 
 // MARK: -
 
-extension [ChartPoint] {
-    var total: Int {
-        map(\.count).reduce(0, +)
-    }
-}
-
 extension ChartPoint: CustomStringConvertible {
     var description: String {
         "\(date): \(count)"
     }
 }
 
-extension [ChartPoint] {
-    static let sample: [ChartPoint] = {
-        let cal = Calendar(identifier: .iso8601)
+// MARK: - Sample Data
+
+extension [ChartPoint<Int>] {
+    static let empty: Self = []
+
+    static var sample: Self {
         let end = Date()
         return (1...30).compactMap { i in
-            cal.date(byAdding: .day, value: -i, to: end).map {
-                ChartPoint(date: $0, count: Int.random(in: 0...10))
+            Calendar(identifier: .iso8601).date(byAdding: .day, value: -i, to: end).map {
+                ChartPoint(date: $0, count: .random(in: 0...10))
             }
-        }.sorted()
-    }()
+        }
+        .sorted()
+    }
 }

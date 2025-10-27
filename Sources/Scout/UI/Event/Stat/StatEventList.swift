@@ -30,7 +30,7 @@ struct StatEventList: View {
                 .refreshable {
                     await fetch()
                 }
-                .navigationTitle(range.rangeLabel(formatter: formatter))
+                .navigationTitle(range.label(using: formatter))
                 .font(.system(size: 12))
         }
     }
@@ -47,7 +47,7 @@ struct StatEventList: View {
 
 #Preview {
     NavigationStack {
-        StatEventList(eventName: "Event", range: Period.week.range)
+        StatEventList(eventName: "Event", range: Period.week.initialRange)
             .environmentObject(DatabaseController())
     }
 }

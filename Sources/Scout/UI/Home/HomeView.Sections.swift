@@ -7,26 +7,29 @@
 
 import SwiftUI
 
-// MARK: - Event Section
-
 extension HomeView {
-    struct EventSection: View {
+    struct LogSection: View {
         var body: some View {
-            Header(title: "Events")
+            Header(title: "Log")
 
-            Row {
-                Text("See All").foregroundStyle(.blue)
-                Spacer()
-            } destination: {
-                AnalyticsView()
+            Group {
+                Row {
+                    Text("Events")
+                    Spacer()
+                } destination: {
+                    AnalyticsView()
+                }
+                Row {
+                    Text("Metrics")
+                    Spacer()
+                } destination: {
+                    MetricsList().navigationTitle("Metrics")
+                }
             }
+            .foregroundStyle(.blue)
         }
     }
-}
 
-// MARK: - Active User Section
-
-extension HomeView {
     struct ActivitySection: View {
         @EnvironmentObject private var database: DatabaseController
         @StateObject private var activity = ActivityProvider()
@@ -44,11 +47,7 @@ extension HomeView {
             .foregroundStyle(.green)
         }
     }
-}
 
-// MARK: - Session Section
-
-extension HomeView {
     struct SessionSection: View {
         @EnvironmentObject private var database: DatabaseController
 

@@ -13,7 +13,14 @@ protocol PickerCompatible: Hashable {
 
 extension ActivityPeriod: PickerCompatible {
     var shortTitle: String {
-        rawValue.uppercased()
+        switch self {
+        case .daily:
+            "D"
+        case .weekly:
+            "W"
+        case .monthly:
+            "M"
+        }
     }
 }
 
