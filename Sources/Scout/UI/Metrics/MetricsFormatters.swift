@@ -40,6 +40,8 @@ extension Double {
         formatter.groupingSeparator = " "
 
         switch self {
+        case 0:
+            "0.0"
         case ..<0.01:
             formatter.minimumFractionDigits = 3
             formatter.maximumFractionDigits = 3
@@ -70,6 +72,8 @@ extension TimeInterval {
     ///
     var duration: String {
         switch self {
+        case 0:
+            "0"
         case ..<0.001:
             String(format: "%.0f µs", self * 1_000_000)
         case ..<1:

@@ -10,10 +10,13 @@ import SwiftUI
 
 struct MetricsView<T: ChartNumeric>: View {
     let group: PointGroup<T>
+    let formatter: KeyPath<T, String>
+
     @State private var extent: ChartExtent<Period>
 
-    init(group: PointGroup<T>, period: Period) {
+    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period) {
         self.group = group
+        self.formatter = formatter
         self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
@@ -32,6 +35,7 @@ struct MetricsView<T: ChartNumeric>: View {
             let segment = extent.segment(from: group.points)
 
             ChartView(segment: segment, timing: extent)
+                .chartYAxis(content: { formattedMarks })
                 .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
         }
@@ -39,10 +43,23 @@ struct MetricsView<T: ChartNumeric>: View {
         .navigationTitle(group.name)
         .scrollDisabled(true)
     }
+
+    private var formattedMarks: some AxisContent {
+        AxisMarks { value in
+            if let value = value.as(T.self) {
+                AxisGridLine()
+                AxisValueLabel(value[keyPath: formatter])
+            }
+        }
+    }
 }
 
 #Preview("MetricsView") {
     NavigationStack {
-        MetricsView(group: .init(name: "Group", points: .sample), period: .month)
+        MetricsView(
+            group: .init(name: "Group", points: .sample),
+            formatter: \.plain,
+            period: .yesterday
+        )
     }
 }

@@ -36,7 +36,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                     row(group: group)
                 } destination: {
                     if let named = groups.named(group.name) {
-                        MetricsView(group: named, period: period)
+                        MetricsView(group: named, formatter: formatter, period: period)
                     }
                 }
             }
