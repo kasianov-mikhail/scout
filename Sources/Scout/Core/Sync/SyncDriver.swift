@@ -8,7 +8,7 @@
 import CoreData
 import UIKit
 
-private let dispatcher = SkipDispatcher()
+private let dispatcher = QueueDispatcher()
 
 struct SyncDriver: @unchecked Sendable {
     let database: Database

@@ -10,20 +10,31 @@ import CoreData
 typealias DispatchBlock = @Sendable () async throws -> Void
 
 protocol Dispatcher {
-    func execute(_ block: @escaping DispatchBlock) async rethrows
+    func execute(_ block: @escaping DispatchBlock) async throws
 }
 
-actor SkipDispatcher: Dispatcher {
+actor QueueDispatcher: Dispatcher {
+    private var queue: [DispatchBlock] = []
     private var isRunning = false
 
-    func execute(_ block: @escaping DispatchBlock) async rethrows {
-        guard !isRunning else {
-            return
-        }
+    func execute(_ block: @escaping DispatchBlock) async throws {
+        queue.append(block)
+
+        guard !isRunning else { return }
+
         isRunning = true
-        defer {
-            isRunning = false
+
+        defer { isRunning = false }
+
+        while let next = queue.first {
+            queue.removeFirst()
+
+            do {
+                try await next()
+            } catch {
+                queue.removeAll()
+                throw error
+            }
         }
-        try await block()
     }
 }
