@@ -33,7 +33,7 @@ extension PeriodCell: CellProtocol {
             fatalError("Invalid day")
         }
 
-        self.init(period: period, day: day, value: value)
+        self.init(period: period, day: day - 1, value: value)
     }
 }
 
