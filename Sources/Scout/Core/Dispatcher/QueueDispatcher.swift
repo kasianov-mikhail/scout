@@ -1,23 +1,15 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
-
-typealias DispatchBlock = @Sendable () async throws -> Void
-
-protocol Dispatcher {
-    func execute(_ block: @escaping DispatchBlock) async throws
-}
-
 actor QueueDispatcher: Dispatcher {
     private var queue: [DispatchBlock] = []
     private var isRunning = false
 
-    func execute(_ block: @escaping DispatchBlock) async throws {
+    func perform(_ block: @escaping DispatchBlock) async throws {
         queue.append(block)
 
         guard !isRunning else { return }
