@@ -23,7 +23,7 @@ func logMetrics<T: MatrixValue>(
                     context
                 )
             }
-            try await sync(in: container)
+            try await SyncController.shared.synchronize()
         } catch {
             print("Failed to save metrics: \(error.localizedDescription)")
         }

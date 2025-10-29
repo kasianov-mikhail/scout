@@ -9,9 +9,6 @@ import CloudKit
 import Logging
 import Metrics
 
-@MainActor
-var container: CKContainer?
-
 /// Sets up the application’s core services and infrastructure.
 ///
 /// This function initializes the global CloudKit container, configures the logging and metrics systems,
@@ -31,7 +28,7 @@ var container: CKContainer?
 @MainActor
 public func setup(container: CKContainer) throws {
     try NotificationListener.activity.setup()
-    Scout.container = container
+    SyncController.shared.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
     MetricsSystem.bootstrap(TelemetryFactory())
 }

@@ -44,7 +44,7 @@ struct CKLogHandler: LogHandler {
                         context: context
                     )
                 }
-                try await sync(in: container)
+                try await SyncController.shared.synchronize()
 
             } catch {
                 print(error.localizedDescription)
