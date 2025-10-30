@@ -7,12 +7,21 @@
 
 import CloudKit
 
-@MainActor
-struct SyncCoordinator<T: CellProtocol> {
+@MainActor struct SyncCoordinator<T: CellProtocol> {
     let database: Database
     let maxRetry: Int
     let matrix: Matrix<T>
+}
 
+extension SyncCoordinator {
+    init<V: Syncable>(database: Database, maxRetry: Int, batch: [V]) throws where V.Cell == T {
+        self.database = database
+        self.maxRetry = maxRetry
+        self.matrix = try V.matrix(of: batch)
+    }
+}
+
+extension SyncCoordinator {
     func upload() async throws {
         if let existing = try await matrix.lookupExisting(in: database) {
             try await upload(snapshot: matrix + existing)
