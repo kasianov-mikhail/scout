@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 actor QueueDispatcher: Dispatcher {
-    private var queue: [DispatchBlock] = []
+    private var queue: [Block] = []
     private var isRunning = false
 
-    func perform(_ block: @escaping DispatchBlock) async throws {
+    func perform(_ block: @escaping Block) async throws {
         queue.append(block)
 
         guard !isRunning else { return }
