@@ -7,7 +7,11 @@
 
 import CloudKit
 
-extension Matrix: CKPersistable {
+protocol CKInitializable {
+    init(record: CKRecord) throws
+}
+
+extension Matrix: CKInitializable {
     init(record: CKRecord) throws {
         guard let date = record["date"] as? Date else {
             throw MapError.missingField("date")
@@ -34,7 +38,9 @@ extension Matrix: CKPersistable {
 
         self.cells = cellDict.map(T.init)
     }
+}
 
+extension Matrix: CKRepresentable {
     var toRecord: CKRecord {
         let record = record ?? CKRecord(recordType: recordType)
         record["date"] = date
