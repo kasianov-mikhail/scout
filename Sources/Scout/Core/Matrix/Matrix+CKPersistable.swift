@@ -32,7 +32,7 @@ extension Matrix: CKPersistable {
             throw MapError.invalidCells
         }
 
-        self.cells = try cellDict.map(T.init)
+        self.cells = cellDict.map(T.init)
     }
 
     var toRecord: CKRecord {
