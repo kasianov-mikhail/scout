@@ -15,14 +15,10 @@ typealias DispatchBlock = @Sendable () async throws -> Void
 
 extension Dispatcher {
     func performEnsuringBackground(_ block: @escaping DispatchBlock) async throws {
-        try await perform {
-            let task = await UIApplication.shared.beginBackgroundTask()
+        try await perform { @MainActor in
+            let task = UIApplication.shared.beginBackgroundTask()
 
-            defer {
-                Task {
-                    await UIApplication.shared.endBackgroundTask(task)
-                }
-            }
+            defer { UIApplication.shared.endBackgroundTask(task) }
 
             try await block()
         }
