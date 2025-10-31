@@ -8,13 +8,15 @@
 import UIKit
 
 protocol Dispatcher {
-    func perform(_ block: @escaping DispatchBlock) async throws
+    func perform(_ block: @escaping Work) async throws
 }
 
-typealias DispatchBlock = @Sendable () async throws -> Void
+extension Dispatcher {
+    typealias Work = @Sendable () async throws -> Void
+}
 
 extension Dispatcher {
-    func performEnsuringBackground(_ block: @escaping DispatchBlock) async throws {
+    func performEnsuringBackground(_ block: @escaping Work) async throws {
         try await perform { @MainActor in
             let task = UIApplication.shared.beginBackgroundTask()
 
