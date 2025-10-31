@@ -30,7 +30,8 @@ extension Collection where Element: ChartSeries {
         var date = range.upperBound
 
         while date > range.lowerBound {
-            let newDate = date.adding(component, value: -1)
+            let i = -result.count - 1
+            let newDate = range.upperBound.adding(component, value: i)
             let points = filter {
                 newDate..<date ~= $0.date
             }
