@@ -39,7 +39,7 @@ final class UserActivity: SyncableObject, Syncable {
         }
         return PeriodCell(
             period: period,
-            day: Calendar.UTC.dateComponents([.day], from: month, to: day).day ?? 0,
+            day: Calendar.utc.dateComponents([.day], from: month, to: day).day ?? 0,
             value: Int(self[keyPath: period.countField])
         )
     }

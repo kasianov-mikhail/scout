@@ -9,18 +9,18 @@ import Foundation
 
 extension Date {
     var startOfHour: Date {
-        Calendar.UTC.dateComponents([.calendar, .year, .month, .day, .hour], from: self).date!
+        Calendar.utc.dateComponents([.calendar, .year, .month, .day, .hour], from: self).date!
     }
 
     var startOfDay: Date {
-        Calendar.UTC.dateComponents([.calendar, .year, .month, .day], from: self).date!
+        Calendar.utc.dateComponents([.calendar, .year, .month, .day], from: self).date!
     }
 
     var startOfWeek: Date {
-        Calendar.UTC.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
+        Calendar.utc.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
     }
 
     var startOfMonth: Date {
-        Calendar.UTC.dateComponents([.calendar, .year, .month], from: self).date!
+        Calendar.utc.dateComponents([.calendar, .year, .month], from: self).date!
     }
 }
