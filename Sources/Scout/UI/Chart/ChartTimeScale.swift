@@ -48,7 +48,7 @@ protocol ChartTimeScale: Identifiable, Hashable {
 extension ChartTimeScale {
 
     var today: Date {
-        Calendar.UTC.startOfDay(for: Date())
+        Calendar.utc.startOfDay(for: Date())
     }
 
     var initialRange: Range<Date> {

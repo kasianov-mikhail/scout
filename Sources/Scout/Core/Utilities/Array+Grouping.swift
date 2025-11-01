@@ -14,8 +14,8 @@ extension Array {
         }
         .reduce(into: [:]) { result, pair in
             if let key = pair.key {
-                let week = Calendar.UTC.component(.weekday, from: key)
-                let hour = Calendar.UTC.component(.hour, from: key)
+                let week = Calendar.utc.component(.weekday, from: key)
+                let hour = Calendar.utc.component(.hour, from: key)
                 let components = ["cell", String(week), String(format: "%02d", hour)]
                 let joined = components.joined(separator: "_")
 

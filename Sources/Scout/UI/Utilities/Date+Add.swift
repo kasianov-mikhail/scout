@@ -9,27 +9,27 @@ import Foundation
 
 extension Date {
     func adding(_ component: Calendar.Component, value: Int = 1) -> Date {
-        Calendar.UTC.date(byAdding: component, value: value, to: self)!
+        Calendar.utc.date(byAdding: component, value: value, to: self)!
     }
 
     func addingDay(_ value: Int = 1) -> Date {
-        Calendar.UTC.date(byAdding: .day, value: value, to: self)!
+        Calendar.utc.date(byAdding: .day, value: value, to: self)!
     }
 
     func addingHour(_ value: Int = 1) -> Date {
-        Calendar.UTC.date(byAdding: .hour, value: value, to: self)!
+        Calendar.utc.date(byAdding: .hour, value: value, to: self)!
     }
 
     func addingWeek(_ value: Int = 1) -> Date {
-        Calendar.UTC.date(byAdding: .weekOfYear, value: value, to: self)!
+        Calendar.utc.date(byAdding: .weekOfYear, value: value, to: self)!
     }
 
     func addingMonth(_ value: Int = 1) -> Date {
-        Calendar.UTC.date(byAdding: .month, value: value, to: self)!
+        Calendar.utc.date(byAdding: .month, value: value, to: self)!
     }
 
     func addingYear(_ value: Int = 1) -> Date {
-        Calendar.UTC.date(byAdding: .year, value: value, to: self)!
+        Calendar.utc.date(byAdding: .year, value: value, to: self)!
     }
 }
 
