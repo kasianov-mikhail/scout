@@ -12,7 +12,7 @@ import Foundation
 extension Date {
     init(year: Int, month: Int, day: Int, hour: Int = 0, minute: Int = 0, second: Int = 0) {
         var components = DateComponents()
-        components.calendar = Calendar.UTC
+        components.calendar = .utc
         components.timeZone = TimeZone(secondsFromGMT: 0)
         components.year = year
         components.month = month

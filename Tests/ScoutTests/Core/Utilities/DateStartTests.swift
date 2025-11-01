@@ -23,12 +23,12 @@ struct DateStartTests {
             minute: 9,
             second: 11
         )
-        date = Calendar.UTC.date(from: components)!
+        date = Calendar.utc.date(from: components)!
     }
 
     @Test("Start of an hour") func startOfHour() {
         let hour = date.startOfHour
-        let components = Calendar.UTC.dateComponents(set, from: hour)
+        let components = Calendar.utc.dateComponents(set, from: hour)
 
         #expect(components.year == 2030)
         #expect(components.month == 3)
@@ -40,7 +40,7 @@ struct DateStartTests {
 
     @Test("Start of a day") func startOfDay() {
         let day = date.startOfDay
-        let components = Calendar.UTC.dateComponents(set, from: day)
+        let components = Calendar.utc.dateComponents(set, from: day)
 
         #expect(components.year == 2030)
         #expect(components.month == 3)
@@ -52,7 +52,7 @@ struct DateStartTests {
 
     @Test("Start of a week") func startOfWeek() {
         let week = date.startOfWeek
-        let components = Calendar.UTC.dateComponents(set, from: week)
+        let components = Calendar.utc.dateComponents(set, from: week)
 
         #expect(components.year == 2030)
         #expect(components.month == 3)
@@ -64,7 +64,7 @@ struct DateStartTests {
 
     @Test("Start of a month") func startOfMonth() {
         let month = date.startOfMonth
-        let components = Calendar.UTC.dateComponents(set, from: month)
+        let components = Calendar.utc.dateComponents(set, from: month)
 
         #expect(components.year == 2030)
         #expect(components.month == 3)
