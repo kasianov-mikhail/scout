@@ -54,7 +54,7 @@ extension [ChartPoint<Int>] {
     static var sample: Self {
         let end = Date()
         return (1...30).compactMap { i in
-            Calendar(identifier: .iso8601).date(byAdding: .day, value: -i, to: end).map {
+            Calendar.utc.date(byAdding: .day, value: -i, to: end).map {
                 ChartPoint(date: $0, count: .random(in: 0...10))
             }
         }

@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Charts
 import CloudKit
 import SwiftUI
 
@@ -19,7 +18,7 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
     }
 
     func fetch(in database: DatabaseController) async {
-        let dateRange = Calendar(identifier: .iso8601).defaultRange
+        let dateRange = Calendar.utc.defaultRange
 
         do {
             let records = try await database.allRecords(
