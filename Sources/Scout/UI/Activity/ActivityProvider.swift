@@ -13,7 +13,7 @@ class ActivityProvider: ObservableObject, Provider {
     @Published var data: [ActivityMatrix]?
 
     func fetch(in database: DatabaseController) async {
-        let range = Calendar(identifier: .iso8601).defaultRange
+        let range = Calendar.utc.defaultRange
 
         do {
             let records = try await database.allRecords(

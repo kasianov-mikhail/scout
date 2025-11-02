@@ -17,15 +17,13 @@ extension ChartExtent: ChartTiming {
         period.pointComponent
     }
 
-    /// Explicit x‑axis tick positions for monthly charts.
-    ///
-    /// The default system behavior places ticks on Mondays.
-    /// This implementation overrides that behavior to mark exactly 1, 2, 3, and 4 weeks ago
-    ///
     var tickValues: [Date]? {
-        if case .month = period.rangeComponent {
+        switch period.rangeComponent {
+        case .month:
             [-28, -21, -14, -7].map(domain.upperBound.addingDay)
-        } else {
+        case .weekOfYear:
+            [-7, -5, -3, -1].map(domain.upperBound.addingDay)
+        default:
             nil
         }
     }

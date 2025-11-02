@@ -13,6 +13,10 @@ extension Event {
 }
 
 extension Event.Level {
+    var descriptionText: Text {
+        Text(description.uppercased()).foregroundColor(color ?? .blue)
+    }
+
     var description: String {
         switch self {
         case .notice:

@@ -47,6 +47,7 @@ struct EventView: View {
 extension EventView {
     static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         formatter.dateFormat = "dd.MM.y, HH:mm"
         return formatter
     }()
@@ -57,7 +58,7 @@ extension EventView {
         var body: some View {
             VStack(alignment: .leading) {
                 if let date = event.date {
-                    Text(dateFormatter.string(from: date))
+                    Text(dateFormatter.string(from: date) + " UTC")
                         .font(.system(size: 16))
                         .monospaced()
                 }
@@ -66,9 +67,7 @@ extension EventView {
 
                 if let level = event.level {
                     Group {
-                        Text("LEVEL:   ")
-                            + Text(level.description.uppercased()).foregroundColor(
-                                level.color ?? .blue)
+                        Text("LEVEL:   ") + level.descriptionText
                     }
                     .fontWeight(.bold)
                 }
