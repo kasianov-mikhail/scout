@@ -67,9 +67,7 @@ extension EventView {
 
                 if let level = event.level {
                     Group {
-                        Text("LEVEL:   ")
-                            + Text(level.description.uppercased()).foregroundColor(
-                                level.color ?? .blue)
+                        Text("LEVEL:   ") + level.descriptionText
                     }
                     .fontWeight(.bold)
                 }
