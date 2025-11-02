@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension SessionObject {
+extension SessionObject: Monitor {
     static func trigger(in context: NSManagedObjectContext) throws {
         let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
         let session = SessionObject(entity: entity, insertInto: context)
