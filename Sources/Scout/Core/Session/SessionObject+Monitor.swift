@@ -22,42 +22,14 @@ extension SessionObject: Monitor {
         request.fetchLimit = 1
 
         guard let session = try context.fetch(request).first else {
-            throw CompleteError.sessionNotFound
+            throw MonitorError.notFound
         }
-
         if let endDate = session.endDate {
-            throw CompleteError.alreadyCompleted(endDate)
+            throw MonitorError.alreadyCompleted(endDate)
         }
 
         let date = Date()
         session.endDate = date
         try context.save()
-    }
-}
-
-extension SessionObject {
-    enum CompleteError: LocalizedError, Equatable {
-        case sessionNotFound
-        case alreadyCompleted(Date)
-
-        var errorDescription: String? {
-            switch self {
-            case .sessionNotFound:
-                "Session not found"
-            case .alreadyCompleted(let date):
-                "Session already completed on \(date)"
-            }
-        }
-
-        static func == (lhs: CompleteError, rhs: CompleteError) -> Bool {
-            switch (lhs, rhs) {
-            case (.sessionNotFound, .sessionNotFound):
-                true
-            case (.alreadyCompleted, .alreadyCompleted):
-                true
-            default:
-                false
-            }
-        }
     }
 }
