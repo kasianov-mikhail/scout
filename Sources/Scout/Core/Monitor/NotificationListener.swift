@@ -12,6 +12,7 @@ import UIKit
 class NotificationListener {
     struct SetupError: LocalizedError {
         let errorDescription: String? = "NotificationListener is already setup"
+        let recoverySuggestion: String? = "Review the code to ensure setup is called only once"
     }
 
     typealias Action = @Sendable () async throws -> Void
