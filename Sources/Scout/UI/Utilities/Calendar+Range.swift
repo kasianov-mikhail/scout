@@ -9,7 +9,7 @@ import Foundation
 
 extension Calendar {
     var defaultRange: ClosedRange<Date> {
-        let today = startOfDay(for: Date())
+        let today = Date().startOfDay
         let yearAgo = today.addingYear(-1).addingWeek(-1)
         let tomorrow = today.addingDay()
         return yearAgo...tomorrow

@@ -13,9 +13,7 @@ enum ActivityPeriod: String, Identifiable, CaseIterable, Equatable {
     case monthly = "m"
 
     var id: Self { self }
-}
 
-extension ActivityPeriod {
     var title: String {
         switch self {
         case .daily:
@@ -32,5 +30,6 @@ extension ActivityPeriod: ChartTimeScale {
     var horizonDate: Date { today }
 
     var rangeComponent: Calendar.Component { .month }
+
     var pointComponent: Calendar.Component { .day }
 }
