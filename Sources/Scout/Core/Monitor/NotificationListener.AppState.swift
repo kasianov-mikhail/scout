@@ -8,8 +8,7 @@
 import UIKit
 
 extension NotificationListener {
-    @MainActor
-    static let activity = NotificationListener(table: [
+    @MainActor static let appState = NotificationListener(table: [
         UIApplication.willEnterForegroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionObject.trigger)
             try await persistentContainer.performBackgroundTask(UserActivity.trigger)

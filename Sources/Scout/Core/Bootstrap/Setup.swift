@@ -27,7 +27,7 @@ import Metrics
 /// ```
 @MainActor
 public func setup(container: CKContainer) throws {
-    try NotificationListener.activity.setup()
+    try NotificationListener.appState.setup()
     SyncController.shared.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
     MetricsSystem.bootstrap(TelemetryFactory())
