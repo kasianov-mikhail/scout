@@ -13,20 +13,22 @@ struct ChartView<T: ChartNumeric>: View {
     let timing: ChartTiming
 
     var body: some View {
+        let unit = timing.unit
+
         Chart(segment, id: \.date) { point in
             BarMark(
-                x: .value("X", point.date, unit: timing.unit),
+                x: .value("X", point.date, unit: unit),
                 y: .value("Y", point.count)
             )
         }
         .chartXAxis {
             if let values = timing.tickValues {
-                AxisMarks(values: values)
+                AxisMarks(format: unit.chartFormat, values: values)
             } else {
-                AxisMarks()
+                AxisMarks(format: unit.chartFormat)
             }
         }
-        .chartBackground { proxy in
+        .chartBackground { _ in
             if segment.total == .zero {
                 Placeholder(text: "No results")
             }
