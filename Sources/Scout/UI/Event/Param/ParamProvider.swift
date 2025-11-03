@@ -7,28 +7,20 @@
 
 import CloudKit
 
-@MainActor
-class ParamProvider: ObservableObject {
-    let recordID: CKRecord.ID
+class ParamProvider: ObservableObject, Provider {
+    @Published var result: ProviderResult<[Item]>?
 
-    @Published var data: [Item]?
+    let recordID: CKRecord.ID
 
     init(recordID: CKRecord.ID) {
         self.recordID = recordID
     }
-}
 
-extension ParamProvider: Provider {
-    func fetch(in database: DatabaseController) async {
-        do {
-            data = try await database
-                .record(for: recordID)["params"]
-                .map(Item.fromData)?
-                .sorted()
-        } catch {
-            print(error.localizedDescription)
-            data = nil
-        }
+    func fetch(in database: DatabaseController) async throws -> ResultType {
+        try await database
+            .record(for: recordID)["params"]
+            .map(Item.fromData)?
+            .sorted() ?? []
     }
 }
 

@@ -7,53 +7,36 @@
 
 import CloudKit
 
-@MainActor
-class StatProvider: ObservableObject {
+class StatProvider: ObservableObject, Provider {
+    @Published var result: ProviderResult<[GridMatrix<Int>]>?
+
     let eventName: String
     let periods: [Period]
-
-    @Published var data: [ChartPoint<Int>]?
 
     init(eventName: String, periods: [Period]) {
         self.eventName = eventName
         self.periods = periods
     }
-}
 
-extension StatProvider: Provider {
-    func fetch(in database: DatabaseController) async {
-        let range = Calendar.utc.defaultRange
-
-        do {
-            let query = query(from: range.lowerBound)
-            let records = try await database.allRecords(
-                matching: query,
-                desiredKeys: nil
-            )
-
-            data = try records
-                .map(GridMatrix.init)
-                .mergeDuplicates()
-                .flatMap(\.points)
-
-        } catch {
-            print(error.localizedDescription)
-            data = nil
-        }
+    func fetch(in database: DatabaseController) async throws -> ResultType {
+        try await database
+            .allRecords(matching: query, desiredKeys: nil)
+            .map(GridMatrix.init)
+            .mergeDuplicates()
     }
 
-    private func query(from date: Date) -> CKQuery {
+    private var query: CKQuery {
+        let range = Calendar.utc.defaultRange
+
         let predicate = NSPredicate(
             format: "date >= %@ AND name == %@",
-            date as NSDate,
+            range.lowerBound as NSDate,
             eventName
         )
 
-        let query = CKQuery(
+        return CKQuery(
             recordType: "DateIntMatrix",
             predicate: predicate
         )
-
-        return query
     }
 }

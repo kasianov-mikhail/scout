@@ -9,7 +9,7 @@ import CloudKit
 import SwiftUI
 
 class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
-    @Published var data: [GridMatrix<T>]?
+    @Published var result: ProviderResult<[GridMatrix<T>]>?
 
     private let telemetry: Telemetry.Export
 
@@ -17,24 +17,16 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
         self.telemetry = telemetry
     }
 
-    func fetch(in database: DatabaseController) async {
-        let dateRange = Calendar.utc.defaultRange
-
-        do {
-            let records = try await database.allRecords(
-                matching: query(for: dateRange),
-                desiredKeys: nil
-            )
-
-            data = try records.map(GridMatrix.init).mergeDuplicates()
-
-        } catch {
-            print("Failed to fetch metrics: ", error)
-            data = nil
-        }
+    func fetch(in database: DatabaseController) async throws -> ResultType {
+        try await database
+            .allRecords(matching: query, desiredKeys: nil)
+            .map(GridMatrix.init)
+            .mergeDuplicates()
     }
 
-    private func query(for dateRange: ClosedRange<Date>) -> CKQuery {
+    private var query: CKQuery {
+        let dateRange = Calendar.utc.defaultRange
+
         let predicate = NSPredicate(
             format: "date >= %@ AND date < %@ AND category == %@",
             dateRange.lowerBound as NSDate,
