@@ -14,15 +14,15 @@ class MetricsObject: SyncableObject {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
-    static func matrix<T: MetricsValued>(of batch: [T]) throws(MatrixSyncError) -> Matrix<T.Cell> {
+    static func matrix<T: MetricsValued>(of batch: [T]) throws(MatrixPropertyError) -> Matrix<T.Cell> {
         guard let name = batch.first?.name else {
-            throw .missingProperty("name")
+            throw .init("name")
         }
         guard let telemetry = batch.first?.telemetry else {
-            throw .missingProperty("telemetry")
+            throw .init("telemetry")
         }
         guard let week = batch.first?.week else {
-            throw .missingProperty("week")
+            throw .init("week")
         }
         return Matrix(
             recordType: T.Value.recordName,

@@ -14,12 +14,12 @@ final class EventObject: SyncableObject, Syncable {
         try batch(in: context, matching: [\.name, \.week])
     }
 
-    static func matrix(of batch: [EventObject]) throws(MatrixSyncError) -> GridMatrix<Int> {
+    static func matrix(of batch: [EventObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
-            throw .missingProperty("name")
+            throw .init("name")
         }
         guard let week = batch.first?.week else {
-            throw .missingProperty("week")
+            throw .init("week")
         }
         return Matrix(
             recordType: "DateIntMatrix",

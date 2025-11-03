@@ -7,6 +7,10 @@
 
 import CoreData
 
+protocol Syncable: SyncableObject, MatrixBatch {
+    static func group(in context: NSManagedObjectContext) throws -> [Self]?
+}
+
 @objc(SyncableObject)
 class SyncableObject: IDObject {
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {

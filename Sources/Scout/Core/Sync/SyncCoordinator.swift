@@ -14,10 +14,10 @@ import CloudKit
 }
 
 extension SyncCoordinator {
-    init<V: Syncable>(database: Database, maxRetry: Int, batch: [V]) throws where V.Cell == T {
+    init<V: MatrixBatch>(database: Database, maxRetry: Int, batch: [V]) throws where V.Cell == T {
         self.database = database
         self.maxRetry = maxRetry
-        self.matrix = try V.matrix(of: batch)
+        self.matrix = try Matrix(of: batch)
     }
 }
 
