@@ -12,7 +12,11 @@ import CloudKit
 
     var container: CKContainer?
 
-    private let dispatcher = QueueDispatcher()
+    private let dispatcher: Dispatcher
+
+    private init(dispatcher: Dispatcher = QueueDispatcher()) {
+        self.dispatcher = dispatcher
+    }
 
     func synchronize() async throws {
         guard let container else {
