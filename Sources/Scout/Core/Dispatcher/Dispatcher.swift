@@ -7,7 +7,7 @@
 
 import UIKit
 
-protocol Dispatcher {
+protocol Dispatcher: Sendable {
     func perform(_ work: @escaping Work) async throws
 }
 
