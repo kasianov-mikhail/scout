@@ -17,7 +17,7 @@ struct ActivityRow: View {
             Text(period.title)
             Spacer()
 
-            let count = activity.data?
+            let count = try? activity.result?.get()
                 .points(on: period)
                 .bucket(on: period)
                 .max()?

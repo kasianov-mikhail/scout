@@ -21,7 +21,10 @@ struct StatRow: View {
                 Text(period.title)
                 Spacer()
 
-                let count = stat.data?.bucket(on: period).total
+                let count = try? stat.result?.get()
+                    .flatMap(\.points)
+                    .bucket(on: period).total
+
                 RedactedText(count: count)
             }
             .foregroundColor(config.color)

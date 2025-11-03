@@ -32,11 +32,15 @@ struct StatView: View {
         VStack(spacing: 0) {
             PeriodPicker(extent: $extent, periods: stat.periods)
 
-            if let data = stat.data {
+            switch stat.result {
+            case nil:
+                ProgressView().tint(nil).frame(maxHeight: .infinity)
+            case .success(let data):
                 RangeControl(extent: $extent)
 
                 List {
-                    let segment = extent.segment(from: data)
+                    let points = data.flatMap(\.points)
+                    let segment = extent.segment(from: points)
 
                     ChartView(segment: segment, timing: extent)
                         .foregroundStyle(config.color)
@@ -48,8 +52,9 @@ struct StatView: View {
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
-            } else {
-                ProgressView().tint(nil).frame(maxHeight: .infinity)
+
+            case .failure(let error):
+                EmptyView()
             }
         }
         .navigationTitle(config.title)
@@ -86,17 +91,4 @@ extension StatView.Config: CustomDebugStringConvertible {
     var debugDescription: String {
         "StatView.Configuration(title: \(title), color: \(color), showList: \(showList))"
     }
-}
-
-// MARK: - Previews
-
-#Preview {
-    NavigationStack {
-        let stat = StatProvider(eventName: "Event", periods: Period.all)
-        stat.data = .sample
-        let config = StatView.Config(title: "Title", color: .blue, showList: true)
-        return StatView(config: config, stat: stat, period: .month)
-    }
-    .environmentObject(Tint())
-    .environmentObject(DatabaseController())
 }

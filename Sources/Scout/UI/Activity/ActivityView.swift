@@ -21,7 +21,11 @@ struct ActivityView: View {
         VStack(spacing: 0) {
             PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)
 
-            if let data = activity.data {
+            switch activity.result {
+            case nil:
+                ProgressView().tint(nil).frame(maxHeight: .infinity)
+
+            case .success(let data):
                 RangeControl(extent: $extent)
 
                 List {
@@ -33,8 +37,9 @@ struct ActivityView: View {
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
-            } else {
-                ProgressView().tint(nil).frame(maxHeight: .infinity)
+
+            case .failure(let error):
+                EmptyView()
             }
         }
         .navigationTitle("Active Users")

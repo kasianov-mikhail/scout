@@ -8,40 +8,29 @@
 import CloudKit
 import SwiftUI
 
-@MainActor
 class ActivityProvider: ObservableObject, Provider {
-    @Published var data: [ActivityMatrix]?
+    @Published var result: ProviderResult<[ActivityMatrix]>?
 
-    func fetch(in database: DatabaseController) async {
-        let range = Calendar.utc.defaultRange
-
-        do {
-            let records = try await database.allRecords(
-                matching: query(for: range),
-                desiredKeys: nil
-            )
-
-            data = try records.map(ActivityMatrix.init).mergeDuplicates()
-
-        } catch {
-            print("Error fetching active user data: \(error)")
-            data = nil
-        }
+    func fetch(in database: DatabaseController) async throws -> ResultType {
+        try await database
+            .allRecords(matching: query, desiredKeys: nil)
+            .map(ActivityMatrix.init)
+            .mergeDuplicates()
     }
 
-    private func query(for dateRange: ClosedRange<Date>) -> CKQuery {
+    private var query: CKQuery {
+        let range = Calendar.utc.defaultRange
+
         let predicate = NSPredicate(
             format: "date >= %@ AND date < %@ AND name == %@",
-            dateRange.lowerBound as NSDate,
-            dateRange.upperBound as NSDate,
+            range.lowerBound as NSDate,
+            range.upperBound as NSDate,
             "ActiveUser"
         )
 
-        let query = CKQuery(
+        return CKQuery(
             recordType: "PeriodMatrix",
             predicate: predicate
         )
-
-        return query
     }
 }

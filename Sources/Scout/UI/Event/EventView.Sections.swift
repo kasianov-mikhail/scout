@@ -28,12 +28,12 @@ extension EventView {
                 await param.fetchIfNeeded(in: database)
             }
             .navigationDestination(isPresented: $isParamPresented) {
-                if let items = param.data {
+                if let items = try? param.result?.get() {
                     ParamList(items: items)
                 }
             }
 
-            if let items = param.data {
+            if let items = try? param.result?.get() {
                 ForEach(items.prefix(3)) { item in
                     ParamRow(item: item)
                 }
@@ -45,7 +45,7 @@ extension EventView {
         }
 
         var seeAll: (() -> Void)? {
-            if let _ = param.data, count > 3 {
+            if let _ = try? param.result?.get(), count > 3 {
                 { isParamPresented = true }
             } else {
                 nil

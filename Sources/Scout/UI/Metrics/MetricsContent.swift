@@ -15,12 +15,15 @@ struct MetricsContent<T: ChartNumeric>: View {
     @EnvironmentObject var database: DatabaseController
 
     var body: some View {
-        if let data = metrics.data {
-            list(groups: data.pointGroups())
-        } else {
+        switch metrics.result {
+        case nil:
             ProgressView().frame(maxHeight: .infinity).task {
                 await metrics.fetchIfNeeded(in: database)
             }
+        case .success(let data):
+            list(groups: data.pointGroups())
+        case .failure(let error):
+            EmptyView()
         }
     }
 
