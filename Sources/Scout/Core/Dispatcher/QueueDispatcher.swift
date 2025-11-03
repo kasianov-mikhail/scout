@@ -9,8 +9,8 @@ actor QueueDispatcher: Dispatcher {
     private var queue: [Work] = []
     private var isRunning = false
 
-    func perform(_ block: @escaping Work) async throws {
-        queue.append(block)
+    func perform(_ work: @escaping Work) async throws {
+        queue.append(work)
 
         guard !isRunning else { return }
 
