@@ -8,7 +8,7 @@
 import UIKit
 
 protocol Dispatcher {
-    func perform(_ block: @escaping Work) async throws
+    func perform(_ work: @escaping Work) async throws
 }
 
 extension Dispatcher {
@@ -16,13 +16,13 @@ extension Dispatcher {
 }
 
 extension Dispatcher {
-    func performEnsuringBackground(_ block: @escaping Work) async throws {
+    func performEnsuringBackground(_ work: @escaping Work) async throws {
         try await perform { @MainActor in
             let task = UIApplication.shared.beginBackgroundTask()
 
             defer { UIApplication.shared.endBackgroundTask(task) }
 
-            try await block()
+            try await work()
         }
     }
 }
