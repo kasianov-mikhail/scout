@@ -19,7 +19,7 @@ struct ProviderView<P: Provider, Content: View>: View {
         case .success(let data):
             content(data)
         case .failure(let error):
-            EmptyView()
+            ErrorView(error: error)
         }
     }
 }
