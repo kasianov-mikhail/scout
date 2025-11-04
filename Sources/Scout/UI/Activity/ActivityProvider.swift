@@ -11,7 +11,7 @@ import SwiftUI
 class ActivityProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ActivityMatrix]>?
 
-    func fetch(in database: DatabaseController) async throws -> ResultType {
+    func fetch(in database: DatabaseController) async throws -> Output {
         try await database
             .allRecords(matching: query, desiredKeys: nil)
             .map(ActivityMatrix.init)

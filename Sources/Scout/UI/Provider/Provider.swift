@@ -5,13 +5,15 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import SwiftUI
+
 @MainActor
-protocol Provider: AnyObject {
-    associatedtype ResultType
+protocol Provider: ObservableObject {
+    associatedtype Output
 
-    var result: ProviderResult<ResultType>? { get set }
+    var result: ProviderResult<Output>? { get set }
 
-    func fetch(in database: DatabaseController) async throws -> ResultType
+    func fetch(in database: DatabaseController) async throws -> Output
 }
 
 typealias ProviderResult<T> = Result<T, Error>
@@ -29,7 +31,7 @@ extension Provider {
 }
 
 extension Provider {
-    private func resolve(in database: DatabaseController) async -> ProviderResult<ResultType> {
+    private func resolve(in database: DatabaseController) async -> ProviderResult<Output> {
         do {
             return .success(try await fetch(in: database))
         } catch {

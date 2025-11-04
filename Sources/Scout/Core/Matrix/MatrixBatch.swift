@@ -22,6 +22,6 @@ struct MatrixPropertyError: LocalizedError {
     let errorDescription: String?
 
     init(_ property: String) {
-        self.errorDescription = "Missing property: \(property). Cannot group objects."
+        errorDescription = "Missing property: \(property). Cannot group objects."
     }
 }

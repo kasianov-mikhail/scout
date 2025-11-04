@@ -23,7 +23,8 @@ struct StatRow: View {
 
                 let count = try? stat.result?.get()
                     .flatMap(\.points)
-                    .bucket(on: period).total
+                    .bucket(on: period)
+                    .total
 
                 RedactedText(count: count)
             }

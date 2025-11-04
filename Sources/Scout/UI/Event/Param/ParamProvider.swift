@@ -16,7 +16,7 @@ class ParamProvider: ObservableObject, Provider {
         self.recordID = recordID
     }
 
-    func fetch(in database: DatabaseController) async throws -> ResultType {
+    func fetch(in database: DatabaseController) async throws -> Output {
         try await database
             .record(for: recordID)["params"]
             .map(Item.fromData)?
