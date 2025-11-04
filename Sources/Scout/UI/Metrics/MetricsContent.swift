@@ -15,35 +15,27 @@ struct MetricsContent<T: ChartNumeric>: View {
     @EnvironmentObject var database: DatabaseController
 
     var body: some View {
-        switch metrics.result {
-        case nil:
-            ProgressView().frame(maxHeight: .infinity).task {
-                await metrics.fetchIfNeeded(in: database)
-            }
-        case .success(let data):
-            list(groups: data.pointGroups())
-        case .failure(let error):
-            EmptyView()
-        }
-    }
+        ProviderView(provider: metrics) { data in
+            let groups = data.pointGroups()
+            let ranked = groups.ranked(on: period)
 
-    @ViewBuilder
-    private func list(groups: [PointGroup<T>]) -> some View {
-        let ranked = groups.ranked(on: period)
-
-        if ranked.isEmpty {
-            Placeholder(text: "No results").frame(maxHeight: .infinity)
-        } else {
-            List(ranked) { group in
-                Row {
-                    row(group: group)
-                } destination: {
-                    if let named = groups.named(group.name) {
-                        MetricsView(group: named, formatter: formatter, period: period)
+            if ranked.isEmpty {
+                Placeholder(text: "No results").frame(maxHeight: .infinity)
+            } else {
+                List(ranked) { group in
+                    Row {
+                        row(group: group)
+                    } destination: {
+                        if let named = groups.named(group.name) {
+                            MetricsView(group: named, formatter: formatter, period: period)
+                        }
                     }
                 }
+                .listStyle(.plain)
             }
-            .listStyle(.plain)
+        }
+        .task {
+            await metrics.fetchIfNeeded(in: database)
         }
     }
 

@@ -32,10 +32,7 @@ struct StatView: View {
         VStack(spacing: 0) {
             PeriodPicker(extent: $extent, periods: stat.periods)
 
-            switch stat.result {
-            case nil:
-                ProgressView().tint(nil).frame(maxHeight: .infinity)
-            case .success(let data):
+            ProviderView(provider: stat) { data in
                 RangeControl(extent: $extent)
 
                 List {
@@ -52,9 +49,6 @@ struct StatView: View {
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
-
-            case .failure(let error):
-                EmptyView()
             }
         }
         .navigationTitle(config.title)

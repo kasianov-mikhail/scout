@@ -18,7 +18,7 @@ class StatProvider: ObservableObject, Provider {
         self.periods = periods
     }
 
-    func fetch(in database: DatabaseController) async throws -> ResultType {
+    func fetch(in database: DatabaseController) async throws -> Output {
         try await database
             .allRecords(matching: query, desiredKeys: nil)
             .map(GridMatrix.init)

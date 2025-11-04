@@ -17,7 +17,7 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
         self.telemetry = telemetry
     }
 
-    func fetch(in database: DatabaseController) async throws -> ResultType {
+    func fetch(in database: DatabaseController) async throws -> Output {
         try await database
             .allRecords(matching: query, desiredKeys: nil)
             .map(GridMatrix.init)
