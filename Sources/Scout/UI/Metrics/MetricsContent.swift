@@ -32,13 +32,11 @@ struct MetricsContent<T: ChartNumeric>: View {
                     Row {
                         row(group: group)
                     } destination: {
-                        @State var extent = ChartExtent(period: period)
-
                         if let named = groups.named(group.name) {
                             MetricsView(
                                 group: named,
                                 formatter: formatter,
-                                extent: extent
+                                period: period
                             )
                         }
                     }
