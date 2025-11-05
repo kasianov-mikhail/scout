@@ -14,21 +14,3 @@ final class SessionObject: SyncableObject, Syncable {
         try batch(in: context, matching: [\.week])
     }
 }
-
-extension SessionObject: MatrixBatch {
-    static func matrix(of batch: [SessionObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
-        guard let week = batch.first?.week else {
-            throw .init("week")
-        }
-        return Matrix(
-            recordType: "DateIntMatrix",
-            date: week,
-            name: "Session",
-            cells: parse(of: batch)
-        )
-    }
-
-    static func parse(of batch: [SessionObject]) -> [GridCell<Int>] {
-        batch.grouped(by: \.date).mapValues(\.count).map(Cell.init)
-    }
-}
