@@ -26,8 +26,14 @@ struct MetricsContent<T: ChartNumeric>: View {
                     Row {
                         row(group: group)
                     } destination: {
+                        @State var extent = ChartExtent(period: period)
+
                         if let named = groups.named(group.name) {
-                            MetricsView(group: named, formatter: formatter, period: period)
+                            MetricsView(
+                                group: named,
+                                formatter: formatter,
+                                extent: extent
+                            )
                         }
                     }
                 }
@@ -35,7 +41,7 @@ struct MetricsContent<T: ChartNumeric>: View {
             }
         }
         .task {
-            await metrics.fetchIfNeeded(in: database)
+            await metrics.fetchAgain(in: database)
         }
     }
 
