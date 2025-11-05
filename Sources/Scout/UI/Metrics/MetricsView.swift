@@ -12,13 +12,7 @@ struct MetricsView<T: ChartNumeric>: View {
     let group: PointGroup<T>
     let formatter: KeyPath<T, String>
 
-    @State private var extent: ChartExtent<Period>
-
-    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period) {
-        self.group = group
-        self.formatter = formatter
-        self._extent = State(wrappedValue: ChartExtent(period: period))
-    }
+    @State var extent: ChartExtent<Period>
 
     var body: some View {
         Picker("Period", selection: $extent.period) {
@@ -59,7 +53,7 @@ struct MetricsView<T: ChartNumeric>: View {
         MetricsView(
             group: .init(name: "Group", points: .sample),
             formatter: \.plain,
-            period: .yesterday
+            extent: ChartExtent(period: .yesterday)
         )
     }
 }
