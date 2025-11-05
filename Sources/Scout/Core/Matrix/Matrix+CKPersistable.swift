@@ -7,10 +7,6 @@
 
 import CloudKit
 
-protocol CKInitializable {
-    init(record: CKRecord) throws
-}
-
 extension Matrix: CKInitializable {
     init(record: CKRecord) throws {
         guard let date = record["date"] as? Date else {
