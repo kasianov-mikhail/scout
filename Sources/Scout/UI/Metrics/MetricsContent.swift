@@ -11,8 +11,14 @@ struct MetricsContent<T: ChartNumeric>: View {
     let period: Period
     let formatter: KeyPath<T, String>
 
-    @ObservedObject var metrics: MetricsProvider<T>
+    @StateObject var metrics: MetricsProvider<T>
     @EnvironmentObject var database: DatabaseController
+
+    init(period: Period, formatter: KeyPath<T, String>, telemetry: Telemetry.Export) {
+        self.period = period
+        self.formatter = formatter
+        self._metrics = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
+    }
 
     var body: some View {
         ProviderView(provider: metrics) { data in
@@ -26,13 +32,11 @@ struct MetricsContent<T: ChartNumeric>: View {
                     Row {
                         row(group: group)
                     } destination: {
-                        @State var extent = ChartExtent(period: period)
-
                         if let named = groups.named(group.name) {
                             MetricsView(
                                 group: named,
                                 formatter: formatter,
-                                extent: extent
+                                period: period
                             )
                         }
                     }
@@ -41,7 +45,7 @@ struct MetricsContent<T: ChartNumeric>: View {
             }
         }
         .task {
-            await metrics.fetchAgain(in: database)
+            await metrics.fetchIfNeeded(in: database)
         }
     }
 

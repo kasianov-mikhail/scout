@@ -19,10 +19,6 @@ struct MetricsList: View {
     @State private var period: Period = .today
     @State private var scope: Scope = .int
 
-    @StateObject private var counter = MetricsProvider<Int>(telemetry: .counter)
-    @StateObject private var floating = MetricsProvider<Double>(telemetry: .floatingCounter)
-    @StateObject private var timer = MetricsProvider<TimeInterval>(telemetry: .timer)
-
     var body: some View {
         Picker("Period", selection: $period) {
             ForEach(Period.all) { period in
@@ -45,20 +41,20 @@ struct MetricsList: View {
         case .int:
             MetricsContent(
                 period: period,
-                formatter: \.plain,
-                metrics: counter
+                formatter: \Int.plain,
+                telemetry: .counter
             )
         case .double:
             MetricsContent(
                 period: period,
-                formatter: \.decimal,
-                metrics: floating
+                formatter: \Double.decimal,
+                telemetry: .floatingCounter
             )
         case .timer:
             MetricsContent(
                 period: period,
-                formatter: \.duration,
-                metrics: timer
+                formatter: \TimeInterval.duration,
+                telemetry: .timer
             )
         }
     }
