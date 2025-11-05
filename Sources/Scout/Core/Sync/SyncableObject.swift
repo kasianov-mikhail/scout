@@ -7,7 +7,7 @@
 
 import CoreData
 
-protocol Syncable: SyncableObject, MatrixBatch {
+protocol Syncable: SyncableObject {
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
 }
 
