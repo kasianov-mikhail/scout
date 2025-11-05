@@ -8,10 +8,6 @@
 import CloudKit
 import CoreData
 
-protocol CKRepresentable {
-    var toRecord: CKRecord { get }
-}
-
 struct SyncEngine: @unchecked Sendable {
     let database: Database
     let context: NSManagedObjectContext
