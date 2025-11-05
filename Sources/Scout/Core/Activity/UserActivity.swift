@@ -13,7 +13,9 @@ final class UserActivity: SyncableObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> [UserActivity]? {
         try batch(in: context, matching: [\.month])
     }
+}
 
+extension UserActivity: MatrixBatch {
     static func matrix(of batch: [UserActivity]) throws(MatrixPropertyError) -> Matrix<PeriodCell<Int>> {
         guard let month = batch.first?.month else {
             throw .init("month")

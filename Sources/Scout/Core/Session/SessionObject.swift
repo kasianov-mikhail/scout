@@ -13,7 +13,9 @@ final class SessionObject: SyncableObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
         try batch(in: context, matching: [\.week])
     }
+}
 
+extension SessionObject: MatrixBatch {
     static func matrix(of batch: [SessionObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         guard let week = batch.first?.week else {
             throw .init("week")

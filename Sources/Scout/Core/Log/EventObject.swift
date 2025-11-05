@@ -13,7 +13,9 @@ final class EventObject: SyncableObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
         try batch(in: context, matching: [\.name, \.week])
     }
+}
 
+extension EventObject: MatrixBatch {
     static func matrix(of batch: [EventObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
             throw .init("name")

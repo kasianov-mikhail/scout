@@ -12,7 +12,7 @@ struct SyncEngine: @unchecked Sendable {
     let database: Database
     let context: NSManagedObjectContext
 
-    @MainActor func send<T: Syncable>(type syncable: T.Type) async throws {
+    @MainActor func send<T: Syncable & MatrixBatch>(type syncable: T.Type) async throws {
         while let batch = try syncable.group(in: context) {
             try await SyncCoordinator(
                 database: database,
