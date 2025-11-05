@@ -19,12 +19,12 @@ class ActivityProvider: ObservableObject, Provider {
     }
 
     private var query: CKQuery {
-        let range = Calendar.utc.defaultRange
+        let dateRange = Calendar.utc.defaultRange
 
         let predicate = NSPredicate(
             format: "date >= %@ AND date < %@ AND name == %@",
-            range.lowerBound as NSDate,
-            range.upperBound as NSDate,
+            dateRange.lowerBound as NSDate,
+            dateRange.upperBound as NSDate,
             "ActiveUser"
         )
 

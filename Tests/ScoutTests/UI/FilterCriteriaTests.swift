@@ -10,12 +10,12 @@ import Testing
 
 @testable import Scout
 
-struct CriteriaTests {
+struct FilterCriteriaTests {
     enum TestEnum: String, CaseIterable, Hashable {
         case one, two, three
     }
 
-    let criteria = Criteria(selected: .constant(Set<TestEnum>()))
+    let criteria = FilterCriteria(selected: .constant(Set<TestEnum>()))
 
     @Test("Check if item is enabled") func testIsLevelEnabled() {
         #expect(criteria.isSelected(.one) == false)
@@ -47,7 +47,7 @@ struct CriteriaTests {
     }
 
     @Test("Check if reset button is disabled when no items are enabled") func testIsResetEnabled() {
-        let criteria = Criteria(selected: .constant(Set(TestEnum.allCases)))
+        let criteria = FilterCriteria(selected: .constant(Set(TestEnum.allCases)))
 
         #expect(criteria.isResetEnabled == false)
 

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct StatEventList: View {
+struct EventStatList: View {
     let eventName: String
     let range: Range<Date>
 
@@ -47,7 +47,7 @@ struct StatEventList: View {
 
 #Preview {
     NavigationStack {
-        StatEventList(eventName: "Event", range: Period.week.initialRange)
+        EventStatList(eventName: "Event", range: Period.week.initialRange)
             .environmentObject(DatabaseController())
     }
 }
