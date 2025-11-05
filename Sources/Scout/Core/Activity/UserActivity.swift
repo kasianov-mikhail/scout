@@ -27,10 +27,10 @@ final class UserActivity: SyncableObject, Syncable {
     }
 
     static func parse(of batch: [UserActivity]) -> [PeriodCell<Int>] {
-        batch.compactMap(\.matrix).mergeDuplicates()
+        batch.compactMap(\.cell).mergeDuplicates()
     }
 
-    private var matrix: PeriodCell<Int>? {
+    private var cell: PeriodCell<Int>? {
         guard let month, let day else {
             return nil
         }
