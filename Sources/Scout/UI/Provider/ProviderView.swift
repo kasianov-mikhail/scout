@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProviderView<P: Provider, Content: View>: View {
+    @EnvironmentObject var database: DatabaseController
     @ObservedObject var provider: P
 
     @ViewBuilder let content: (P.Output) -> Content
@@ -19,7 +20,11 @@ struct ProviderView<P: Provider, Content: View>: View {
         case .success(let data):
             content(data)
         case .failure(let error):
-            ErrorView(error: error)
+            ErrorView(error: error, retry: fetch)
         }
+    }
+
+    private func fetch() {
+        Task { await provider.fetchAgain(in: database) }
     }
 }
