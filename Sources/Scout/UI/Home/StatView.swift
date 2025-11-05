@@ -67,7 +67,7 @@ struct StatView: View {
             .foregroundColor(.blue)
 
             NavigationLink {
-                StatEventList(eventName: stat.eventName, range: extent.domain)
+                EventStatList(eventName: stat.eventName, range: extent.domain)
             } label: {
                 EmptyView()
             }

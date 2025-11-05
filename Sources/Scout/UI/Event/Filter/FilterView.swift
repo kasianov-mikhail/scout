@@ -9,10 +9,10 @@ import SwiftUI
 
 struct FilterView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject private var criteria: Criteria<Event.Level>
+    @StateObject private var criteria: FilterCriteria<Event.Level>
 
     init(selected: Binding<Set<Event.Level>>) {
-        _criteria = StateObject(wrappedValue: Criteria(selected: selected))
+        _criteria = StateObject(wrappedValue: FilterCriteria(selected: selected))
     }
 
     var body: some View {

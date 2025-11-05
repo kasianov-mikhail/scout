@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class Criteria<T: Hashable & CaseIterable>: ObservableObject {
+class FilterCriteria<T: Hashable & CaseIterable>: ObservableObject {
     var selected: Binding<Set<T>>
 
     @Published private var cache: Set<T>
@@ -25,7 +25,7 @@ class Criteria<T: Hashable & CaseIterable>: ObservableObject {
     }
 }
 
-extension Criteria {
+extension FilterCriteria {
     func isSelected(_ item: T) -> Bool {
         cache.contains(item)
     }
@@ -35,7 +35,7 @@ extension Criteria {
     }
 }
 
-extension Criteria {
+extension FilterCriteria {
     var isApplyEnabled: Bool {
         !cache.isEmpty && cache != selected.wrappedValue
     }
@@ -45,7 +45,7 @@ extension Criteria {
     }
 }
 
-extension Criteria {
+extension FilterCriteria {
     var isResetEnabled: Bool {
         cache != Set(T.allCases)
     }
