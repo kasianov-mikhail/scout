@@ -17,8 +17,4 @@ extension SessionObject: MatrixBatch {
             cells: parse(of: batch)
         )
     }
-
-    static func parse(of batch: [SessionObject]) -> [GridCell<Int>] {
-        batch.grouped(by: \.date).mapValues(\.count).map(Cell.init)
-    }
 }

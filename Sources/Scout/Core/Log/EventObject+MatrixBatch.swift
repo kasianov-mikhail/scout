@@ -20,8 +20,4 @@ extension EventObject: MatrixBatch {
             cells: parse(of: batch)
         )
     }
-
-    static func parse(of batch: [EventObject]) -> [GridCell<Int>] {
-        batch.grouped(by: \.hour).mapValues(\.count).map(Cell.init)
-    }
 }

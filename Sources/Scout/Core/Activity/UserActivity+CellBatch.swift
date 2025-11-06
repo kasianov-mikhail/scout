@@ -1,0 +1,28 @@
+//
+// Copyright 2025 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Foundation
+
+extension UserActivity: CellBatch {
+    static func parse(of batch: [UserActivity]) -> [PeriodCell<Int>] {
+        batch.compactMap(\.cell).mergeDuplicates()
+    }
+
+    private var cell: PeriodCell<Int>? {
+        guard let month, let day else {
+            return nil
+        }
+        guard let raw = period, let period = ActivityPeriod(rawValue: raw) else {
+            return nil
+        }
+        return PeriodCell(
+            period: period,
+            day: Calendar.utc.dateComponents([.day], from: month, to: day).day ?? 0,
+            value: Int(self[keyPath: period.countField])
+        )
+    }
+}
