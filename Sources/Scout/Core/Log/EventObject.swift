@@ -9,8 +9,23 @@ import CloudKit
 import CoreData
 
 @objc(EventObject)
-final class EventObject: SyncableObject, Syncable {
+final class EventObject: SyncableObject, Syncable, MatrixBatch {
     static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
         try batch(in: context, matching: [\.name, \.week])
+    }
+
+    static func matrix(of batch: [EventObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+        guard let name = batch.first?.name else {
+            throw .init("name")
+        }
+        guard let week = batch.first?.week else {
+            throw .init("week")
+        }
+        return Matrix(
+            recordType: "DateIntMatrix",
+            date: week,
+            name: name,
+            cells: parse(of: batch)
+        )
     }
 }
