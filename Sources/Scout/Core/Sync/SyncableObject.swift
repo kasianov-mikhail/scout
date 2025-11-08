@@ -14,13 +14,7 @@ protocol Syncable: SyncableObject {
 @objc(SyncableObject)
 class SyncableObject: IDObject {
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
-        let entityName = String(describing: T.self)
-
-        let seedRequest = NSFetchRequest<T>(entityName: entityName)
-        seedRequest.predicate = NSPredicate(format: "isSynced == false")
-        seedRequest.fetchLimit = 1
-
-        guard let seed = try context.fetch(seedRequest).first else {
+        guard let seed = try seed(in: context) else {
             return nil
         }
 
@@ -32,9 +26,20 @@ class SyncableObject: IDObject {
             }
         }
 
+        let entityName = String(describing: T.self)
         let batchRequest = NSFetchRequest<T>(entityName: entityName)
         batchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
 
         return try context.fetch(batchRequest)
+    }
+
+    private static func seed<T: SyncableObject>(in context: NSManagedObjectContext) throws -> T? {
+        let entityName = String(describing: T.self)
+
+        let seedRequest = NSFetchRequest<T>(entityName: entityName)
+        seedRequest.predicate = NSPredicate(format: "isSynced == false")
+        seedRequest.fetchLimit = 1
+
+        return try context.fetch(seedRequest).first
     }
 }
