@@ -7,18 +7,10 @@
 
 import CloudKit
 
-typealias DatabaseResult = (
-    saveResults: [CKRecord.ID: Result<CKRecord, any Error>],
-    deleteResults: [CKRecord.ID: Result<Void, any Error>]
-)
-
 protocol Database: Sendable {
-    @discardableResult
-    func save(_ record: CKRecord) async throws -> CKRecord
+    func store(record: CKRecord) async throws
 
-    @discardableResult
-    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID]) async throws -> DatabaseResult
+    func store(records: [CKRecord]) async throws
 
-    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws -> [CKRecord]
+    func fetchAll(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> [CKRecord]
 }
-

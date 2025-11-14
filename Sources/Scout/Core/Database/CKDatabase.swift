@@ -8,22 +8,28 @@
 import CloudKit
 
 extension CKDatabase: Database {
-    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID]) async throws -> DatabaseResult {
+    func store(record: CKRecord) async throws {
+        try await runner { database in
+            try await database.save(record)
+        }
+    }
+
+    func store(records: [CKRecord]) async throws {
         try await runner { database in
             try await database.modifyRecords(
-                saving: recordsToSave,
-                deleting: recordIDsToDelete,
+                saving: records,
+                deleting: [],
                 savePolicy: .ifServerRecordUnchanged,
                 atomically: true
             )
         }
     }
 
-    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws -> [CKRecord] {
+    func fetchAll(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> [CKRecord] {
         let results = try await runner { database in
             try await database.records(
                 matching: query,
-                desiredKeys: desiredKeys,
+                desiredKeys: fields,
                 resultsLimit: CKQueryOperation.maximumResults
             )
         }

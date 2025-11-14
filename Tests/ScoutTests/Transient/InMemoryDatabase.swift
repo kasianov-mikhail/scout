@@ -12,32 +12,24 @@ import CloudKit
 final class InMemoryDatabase: Database, @unchecked Sendable {
     var records: [CKRecord] = []
     var errors: [Error] = []
-    var result = DatabaseResult([:], [:])
 
-    func save(_ record: CKRecord) async throws -> CKRecord {
+    func store(record: CKRecord) async throws {
         if let error = errors.popLast() {
             throw error
         } else {
             records.append(record)
-            return record
         }
     }
 
-    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID])
-        async throws -> DatabaseResult
-    {
+    func store(records: [CKRecord]) async throws {
         if let error = errors.popLast() {
             throw error
         } else {
-            records += recordsToSave
-            records.removeAll { recordIDsToDelete.contains($0.recordID) }
-            return result
+            self.records += records
         }
     }
 
-    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws
-        -> [CKRecord]
-    {
+    func fetchAll(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> [CKRecord] {
         let predicate = query.predicate
         predicate.allowEvaluation()
         return records.filter(predicate.evaluate)

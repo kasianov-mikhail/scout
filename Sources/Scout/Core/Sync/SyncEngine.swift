@@ -22,9 +22,8 @@ struct SyncEngine: @unchecked Sendable {
             .upload()
 
             if let objects = batch as? [CKRepresentable] {
-                try await database.modifyRecords(
-                    saving: objects.map(\.toRecord),
-                    deleting: []
+                try await database.store(
+                    records: objects.map(\.toRecord)
                 )
             }
 

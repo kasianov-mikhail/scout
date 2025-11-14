@@ -11,7 +11,7 @@ extension Matrix {
     func lookupExisting(in database: Database) async throws -> Self? {
         let predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         let query = CKQuery(recordType: recordType, predicate: predicate)
-        let matrices = try await database.allRecords(matching: query, desiredKeys: nil)
+        let matrices = try await database.fetchAll(matching: query, fields: nil)
         let matrix = try matrices.randomElement().map(Matrix.init)
 
         return matrix

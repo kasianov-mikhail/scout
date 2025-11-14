@@ -32,7 +32,7 @@ extension SyncCoordinator {
 
     func upload(snapshot: Matrix<T>, retry: Int = 1) async throws {
         do {
-            try await database.save(snapshot.toRecord)
+            try await database.store(record: snapshot.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
             if retry > maxRetry {
                 try await upload(snapshot: matrix, retry: 1)

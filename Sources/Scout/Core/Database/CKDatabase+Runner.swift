@@ -9,7 +9,7 @@ import CloudKit
 import UIKit
 
 extension CKDatabase {
-    func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
+    @discardableResult func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
         guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
             throw RunnerError()
         }
