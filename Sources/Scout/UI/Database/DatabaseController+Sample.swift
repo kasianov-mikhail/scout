@@ -63,7 +63,7 @@ extension DatabaseController {
         return data
     }()
 
-    static let sampleDataResults: Results = {
+    static let sampleDataResults: [(CKRecord.ID, Result<CKRecord, any Error>)] = {
         sampleData.map { ($0.recordID, .success($0)) }
     }()
 }
