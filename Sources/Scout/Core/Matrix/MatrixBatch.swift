@@ -12,12 +12,6 @@ protocol MatrixBatch {
     static func matrix(of batch: [Self]) throws(MatrixPropertyError) -> Matrix<Cell>
 }
 
-extension Matrix {
-    init<V: MatrixBatch>(of batch: [V]) throws where V.Cell == T {
-        self = try V.matrix(of: batch)
-    }
-}
-
 struct MatrixPropertyError: LocalizedError {
     let errorDescription: String?
 

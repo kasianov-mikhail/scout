@@ -17,7 +17,7 @@ extension SyncCoordinator {
     init<V: MatrixBatch>(database: Database, maxRetry: Int, batch: [V]) throws where V.Cell == T {
         self.database = database
         self.maxRetry = maxRetry
-        self.matrix = try Matrix(of: batch)
+        self.matrix = try V.matrix(of: batch)
     }
 }
 
