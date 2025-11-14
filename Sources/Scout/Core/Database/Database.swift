@@ -7,18 +7,27 @@
 
 import CloudKit
 
-typealias DatabaseResult = (
-    saveResults: [CKRecord.ID: Result<CKRecord, any Error>],
-    deleteResults: [CKRecord.ID: Result<Void, any Error>]
-)
-
+/// An abstraction over a CloudKit-backed record store.
+///
+/// The `Database` protocol provides a minimal, async API for persisting and
+/// querying `CKRecord` values. It is designed to be implemented by concrete
+/// types that wrap `CKDatabase` (e.g., private, public, or shared databases),
+/// as well as by test doubles for unit testing.
+///
 protocol Database: Sendable {
-    @discardableResult
-    func save(_ record: CKRecord) async throws -> CKRecord
 
-    @discardableResult
-    func modifyRecords(saving recordsToSave: [CKRecord], deleting recordIDsToDelete: [CKRecord.ID]) async throws -> DatabaseResult
+    /// Saves or updates a single record in the backing store.
+    ///
+    func store(record: CKRecord) async throws
 
-    func allRecords(matching query: CKQuery, desiredKeys: [CKRecord.FieldKey]?) async throws -> [CKRecord]
+    /// Saves or updates multiple records in the backing store.
+    ///
+    func store(records: [CKRecord]) async throws
+
+    /// Fetches all records that match the given query.
+    ///
+    /// Implementations must page through all results until completion and
+    /// return the full set of matching records.
+    ///
+    func fetchAll(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> [CKRecord]
 }
-
