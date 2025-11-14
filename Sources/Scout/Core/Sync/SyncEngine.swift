@@ -8,6 +8,8 @@
 import CloudKit
 import CoreData
 
+typealias Database = RecordWriter & RecordReader
+
 struct SyncEngine: @unchecked Sendable {
     let database: Database
     let context: NSManagedObjectContext
@@ -22,7 +24,7 @@ struct SyncEngine: @unchecked Sendable {
             .upload()
 
             if let objects = batch as? [CKRepresentable] {
-                try await database.store(
+                try await database.write(
                     records: objects.map(\.toRecord)
                 )
             }

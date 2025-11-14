@@ -28,7 +28,7 @@ final class DatabaseController: ObservableObject, Sendable {
         guard let database else {
             return DatabaseController.sampleData.filter { $0.recordType == query.recordType }
         }
-        return try await database.fetchAll(
+        return try await database.readAll(
             matching: query,
             fields: desiredKeys
         )
