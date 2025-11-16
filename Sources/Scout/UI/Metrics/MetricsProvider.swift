@@ -17,9 +17,9 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
         self.telemetry = telemetry
     }
 
-    func fetch(in database: DatabaseController) async throws -> Output {
+    func fetch(in database: AppDatabase) async throws -> Output {
         try await database
-            .allRecords(matching: query, desiredKeys: nil)
+            .readAll(matching: query, fields: nil)
             .map(GridMatrix.init)
             .mergeDuplicates()
     }

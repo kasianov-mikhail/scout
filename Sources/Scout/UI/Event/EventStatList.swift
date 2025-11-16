@@ -12,7 +12,7 @@ struct EventStatList: View {
     let range: Range<Date>
 
     @StateObject private var provider = EventProvider()
-    @EnvironmentObject private var database: DatabaseController
+    @Environment(\.database) var database
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -48,6 +48,5 @@ struct EventStatList: View {
 #Preview {
     NavigationStack {
         EventStatList(eventName: "Event", range: Period.week.initialRange)
-            .environmentObject(DatabaseController())
     }
 }

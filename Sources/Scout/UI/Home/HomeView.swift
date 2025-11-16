@@ -9,9 +9,14 @@ import CloudKit
 import SwiftUI
 
 public struct HomeView: View {
-    @StateObject private var database: DatabaseController
+    let container: CKContainer
+
     @StateObject private var tint = Tint()
     @Environment(\.dismiss) var dismiss
+
+    public init(container: CKContainer) {
+        self.container = container
+    }
 
     public var body: some View {
         NavigationStack {
@@ -32,31 +37,6 @@ public struct HomeView: View {
         }
         .tint(tint.value)
         .environmentObject(tint)
-        .environmentObject(database)
+        .environment(\.database, container.publicCloudDatabase)
     }
-}
-
-extension HomeView {
-
-    /// Creates a new analytics view. The main entry point for the analytics UI.
-    public init(container: CKContainer) {
-        self.init(database: DatabaseController(database: container.publicCloudDatabase))
-    }
-
-    /// For testing purposes. Do not use in production.
-    init() {
-        self.init(database: DatabaseController(database: nil))
-    }
-}
-
-typealias Tint = Box<Color?>
-
-extension Tint {
-    convenience init() {
-        self.init(nil)
-    }
-}
-
-#Preview {
-    HomeView()
 }

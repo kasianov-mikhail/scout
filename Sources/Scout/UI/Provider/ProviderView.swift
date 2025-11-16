@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ProviderView<P: Provider, Content: View>: View {
-    @EnvironmentObject var database: DatabaseController
+    @Environment(\.database) var database
     @ObservedObject var provider: P
 
     @ViewBuilder let content: (P.Output) -> Content

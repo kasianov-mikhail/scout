@@ -16,7 +16,7 @@ extension EventView {
         @State private var isParamPresented = false
 
         @StateObject var param: ParamProvider
-        @EnvironmentObject var database: DatabaseController
+        @Environment(\.database) var database
 
         init(count: Int, param: ParamProvider) {
             self.count = count
@@ -60,7 +60,7 @@ extension EventView {
     struct StatSection: View {
         @StateObject var stat: StatProvider
 
-        @EnvironmentObject var database: DatabaseController
+        @Environment(\.database) var database
 
         init(eventName: String) {
             _stat = StateObject(

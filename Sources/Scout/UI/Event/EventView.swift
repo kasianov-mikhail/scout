@@ -94,5 +94,4 @@ extension EventView {
         EventView(event: event)
     }
     .environmentObject(Tint())
-    .environmentObject(DatabaseController())
 }

@@ -13,25 +13,25 @@ protocol Provider: ObservableObject {
 
     var result: ProviderResult<Output>? { get set }
 
-    func fetch(in database: DatabaseController) async throws -> Output
+    func fetch(in database: AppDatabase) async throws -> Output
 }
 
 typealias ProviderResult<T> = Result<T, Error>
 
 extension Provider {
-    func fetchAgain(in database: DatabaseController) async {
+    func fetchAgain(in database: AppDatabase) async {
         result = nil
         result = await resolve(in: database)
     }
 
-    func fetchIfNeeded(in database: DatabaseController) async {
+    func fetchIfNeeded(in database: AppDatabase) async {
         guard result == nil else { return }
         result = await resolve(in: database)
     }
 }
 
 extension Provider {
-    private func resolve(in database: DatabaseController) async -> ProviderResult<Output> {
+    private func resolve(in database: AppDatabase) async -> ProviderResult<Output> {
         do {
             return .success(try await fetch(in: database))
         } catch {

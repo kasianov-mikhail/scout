@@ -63,7 +63,6 @@ struct MetricsList: View {
 #Preview("Metrics List") {
     NavigationStack {
         MetricsList()
-            .environmentObject(DatabaseController())
             .navigationTitle("Metrics")
     }
 }
