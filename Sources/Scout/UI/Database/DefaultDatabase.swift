@@ -8,14 +8,6 @@
 import CloudKit
 
 struct DefaultDatabase: AppDatabase {
-    func write(record: CKRecord) async throws {
-
-    }
-
-    func write(records: [CKRecord]) async throws {
-
-    }
-
     func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
         RecordChunk(records: Event.sampleRecords, cursor: nil)
     }

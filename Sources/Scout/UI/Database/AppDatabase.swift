@@ -8,22 +8,12 @@
 import CloudKit
 import SwiftUI
 
-/// AppDatabase is a UI-oriented facade over the core database used in Scout.
-/// It provides a simplified interface tailored for SwiftUI integration while
-/// delegating actual data operations to the underlying database layer.
+/// AppDatabase defines the read-only database surface used by the UI.
+/// It abstracts record lookup and query operations for use in SwiftUI
+/// and is intended for dependency injection via the environment.
 ///
-typealias AppDatabase = Database & RecordLookup & Sendable
-
-protocol RecordLookup {
-    func lookup(id: CKRecord.ID) async throws -> CKRecord
-}
+typealias AppDatabase = RecordLookup & RecordReader & Sendable
 
 extension EnvironmentValues {
     @Entry var database: AppDatabase = DefaultDatabase()
-}
-
-extension CKDatabase: RecordLookup {
-    func lookup(id: CKRecord.ID) async throws -> CKRecord {
-        try await record(for: id)
-    }
 }
