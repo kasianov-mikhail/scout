@@ -8,8 +8,6 @@
 import CloudKit
 import CoreData
 
-typealias Database = RecordWriter & RecordReader
-
 struct SyncEngine: @unchecked Sendable {
     let database: Database
     let context: NSManagedObjectContext
