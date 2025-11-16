@@ -8,6 +8,10 @@
 import CloudKit
 import SwiftUI
 
+/// AppDatabase is a UI-oriented facade over the core database used in Scout.
+/// It provides a simplified interface tailored for SwiftUI integration while
+/// delegating actual data operations to the underlying database layer.
+///
 typealias AppDatabase = Database & RecordLookup & Sendable
 
 protocol RecordLookup {
