@@ -31,7 +31,8 @@ extension HomeView {
     }
 
     struct ActivitySection: View {
-        @EnvironmentObject private var database: DatabaseController
+        @Environment(\.database) private var database
+
         @StateObject private var activity = ActivityProvider()
 
         var body: some View {
@@ -49,7 +50,7 @@ extension HomeView {
     }
 
     struct SessionSection: View {
-        @EnvironmentObject private var database: DatabaseController
+        @Environment(\.database) private var database
 
         @StateObject private var stat = StatProvider(
             eventName: "Session",

@@ -11,8 +11,8 @@ import SwiftUI
 struct EventList: View {
     let timeline = Date()
 
+    @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
-    @EnvironmentObject var database: DatabaseController
 
     let dateFormatter: RelativeDateTimeFormatter = {
         let formatter = RelativeDateTimeFormatter()

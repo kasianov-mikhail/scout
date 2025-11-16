@@ -11,9 +11,9 @@ import SwiftUI
 class ActivityProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ActivityMatrix]>?
 
-    func fetch(in database: DatabaseController) async throws -> Output {
+    func fetch(in database: AppDatabase) async throws -> Output {
         try await database
-            .allRecords(matching: query, desiredKeys: nil)
+            .readAll(matching: query, fields: nil)
             .map(ActivityMatrix.init)
             .mergeDuplicates()
     }

@@ -14,7 +14,7 @@ struct AnalyticsView: View {
     @StateObject private var provider = EventProvider()
     @StateObject private var search = EventProvider()
 
-    @EnvironmentObject private var database: DatabaseController
+    @Environment(\.database) var database
     @EnvironmentObject private var tint: Tint
 
     var body: some View {
@@ -94,7 +94,6 @@ struct AnalyticsView: View {
 #Preview {
     NavigationStack {
         AnalyticsView()
-            .environmentObject(DatabaseController())
             .environmentObject(Tint())
     }
 }

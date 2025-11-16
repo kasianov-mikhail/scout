@@ -10,7 +10,7 @@ import SwiftUI
 
 struct HistoryView: View {
     @EnvironmentObject var tint: Tint
-    @EnvironmentObject var database: DatabaseController
+    @Environment(\.database) var database
 
     @State private var filter: HistoryFilter
     @StateObject var provider = EventProvider()
@@ -85,6 +85,5 @@ struct HistoryView: View {
         )
         HistoryView(filter: filter)
     }
-    .environmentObject(DatabaseController())
     .environmentObject(Tint())
 }

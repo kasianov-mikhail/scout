@@ -12,7 +12,7 @@ struct MetricsContent<T: ChartNumeric>: View {
     let formatter: KeyPath<T, String>
 
     @StateObject var metrics: MetricsProvider<T>
-    @EnvironmentObject var database: DatabaseController
+    @Environment(\.database) var database
 
     init(period: Period, formatter: KeyPath<T, String>, telemetry: Telemetry.Export) {
         self.period = period
