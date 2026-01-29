@@ -29,6 +29,6 @@ jobs:
           set -o pipefail && \
           xcodebuild \
             -scheme $SCHEME_NAME \
-            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             -enableCodeCoverage YES \
             test | xcpretty
