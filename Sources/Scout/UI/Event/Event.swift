@@ -37,7 +37,7 @@ extension Event {
 
     init(record: CKRecord) throws {
         name = record["name"] ?? ""
-        level = record["level"].flatMap(Level.init)
+        level = record["level"].flatMap { Level(rawValue: $0) }
         date = record["date"]
         paramCount = record["param_count"]
         uuid = record["uuid"].flatMap(UUID.init)
