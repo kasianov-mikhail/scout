@@ -24,11 +24,11 @@ jobs:
         run: |
           sudo gem install xcpretty
 
-      - name: Run unit tests (iPhone 16 Pro, latest iOS)
+      - name: Run unit tests (iOS Simulator)
         run: |
           set -o pipefail && \
           xcodebuild \
             -scheme $SCHEME_NAME \
-            -destination 'platform=iOS Simulator,OS=latest,name=iPhone 16 Pro' \
+            -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
             -enableCodeCoverage YES \
             test | xcpretty
