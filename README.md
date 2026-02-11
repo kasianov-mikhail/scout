@@ -51,8 +51,6 @@ logger.warning(
 )
 ```
 
-> **Event Naming Convention**: Use `Train_Case` for event names — each word capitalized and separated by an underscore (e.g. `Search_Performed`, `Item_Added_To_Cart`, `User_Login`). This improves readability in the dashboard and keeps naming consistent across your project.
-
 ## Visualizing the Logs
 
 By integrating `HomeView` into your SwiftUI application, you can gain insights into your application's performance and issues through an intuitive and interactive interface. 
