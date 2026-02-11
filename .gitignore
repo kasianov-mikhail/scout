@@ -4,3 +4,4 @@
 xcuserdata/
 .swiftpm/
 Package.resolved
+.claude/settings.local.json
