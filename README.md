@@ -43,13 +43,15 @@ import Logging
 let logger = Logger(label: "SOME_LOGGER_LABEL")
 
 logger.warning(
-    "event_to_know_about",
+    "Search_Performed",
     metadata: [
         "description": .string(error.localizedDescription),
         "ip": .string(ip),
     ]
 )
 ```
+
+> **Event Naming Convention**: Use `Train_Case` for event names — each word capitalized and separated by an underscore (e.g. `Search_Performed`, `Item_Added_To_Cart`, `User_Login`). This improves readability in the dashboard and keeps naming consistent across your project.
 
 ## Visualizing the Logs
 
