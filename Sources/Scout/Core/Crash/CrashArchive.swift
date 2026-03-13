@@ -15,6 +15,14 @@ import Foundation
 struct CrashArchive {
     let directory: URL
 
+    /// The default crash archive using the Application Support directory.
+    static let system = CrashArchive(
+        directory: FileManager.default
+            .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first!
+            .appendingPathComponent("Scout/Crashes", isDirectory: true)
+    )
+
     /// Writes a crash report to disk synchronously.
     func write(_ crash: CrashInfo) {
         let encoder = JSONEncoder()
