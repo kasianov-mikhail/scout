@@ -6,14 +6,15 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
+import Foundation
 import Logging
 import Metrics
 
-/// Sets up the application’s core services and infrastructure.
+/// Sets up the application's core services and infrastructure.
 ///
 /// This function initializes the global CloudKit container, configures the logging and metrics systems,
-/// and prepares notification activity listeners. It should be called on the main actor during application startup,
-/// and should only be invoked once.
+/// crash handler, and prepares notification activity listeners. It should be called on the main actor
+/// during application startup, and should only be invoked once.
 ///
 /// - Parameter container: The `CKContainer` instance to be used for all CloudKit operations.
 ///
@@ -23,10 +24,15 @@ import Metrics
 ///
 /// Example usage:
 /// ```swift
-/// try setup(container: CKContainer.default())
+/// try await setup(container: CKContainer.default())
 /// ```
 @MainActor
-public func setup(container: CKContainer) throws {
+public func setup(container: CKContainer) async throws {
+    installExceptionHandler()
+    installSignalHandler()
+    
+    await CrashArchive.system.flush()
+
     try NotificationListener.appState.setup()
     SyncController.shared.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)

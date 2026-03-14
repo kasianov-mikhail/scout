@@ -17,6 +17,7 @@ struct SyncJobPlan: Sendable {
             { try await engine.send(type: UserActivity.self) },
             { try await engine.send(type: IntMetricsObject.self) },
             { try await engine.send(type: DoubleMetricsObject.self) },
+            { try await engine.send(type: CrashObject.self) },
         ]
     }
 }

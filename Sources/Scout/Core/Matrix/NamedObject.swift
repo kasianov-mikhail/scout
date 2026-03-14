@@ -1,12 +1,15 @@
 //
-// Copyright 2025 Mikhail Kasianov
+// Copyright 2026 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-extension EventObject: MatrixBatch {
-    static func matrix(of batch: [EventObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+import CoreData
+
+@objc(NamedObject)
+class NamedObject: SyncableObject {
+    static func matrix(of batch: [NamedObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
             throw .init("name")
         }
@@ -21,7 +24,7 @@ extension EventObject: MatrixBatch {
         )
     }
 
-    static func parse(of batch: [EventObject]) -> [GridCell<Int>] {
-        batch.grouped(by: \.hour).mapValues(\.count).map(Cell.init)
+    static func parse(of batch: [NamedObject]) -> [GridCell<Int>] {
+        batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
     }
 }
