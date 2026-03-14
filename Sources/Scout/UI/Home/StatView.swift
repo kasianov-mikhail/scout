@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import CloudKit
 import SwiftUI
 
 struct StatView: View {
