@@ -45,3 +45,56 @@ import Testing
 
     #expect(params["key"] == "value")
 }
+
+@MainActor
+@Test("Logging an event with array metadata") func testLogArrayMetadata() throws {
+    let context = NSManagedObjectContext.inMemoryContext()
+    let metadata: Logger.Metadata = [
+        "tags": .array([.string("a"), .string("b"), .string("c")])
+    ]
+
+    try log("Array Event", level: .info, metadata: metadata, date: Date(), context: context)
+
+    let events = try context.fetch(EventObject.fetchRequest())
+    let paramData = try #require(events.first?.params)
+    let params = try JSONDecoder().decode([String: String].self, from: paramData)
+
+    #expect(params["tags"] == "a, b, c")
+}
+
+@MainActor
+@Test("Logging an event with dictionary metadata") func testLogDictionaryMetadata() throws {
+    let context = NSManagedObjectContext.inMemoryContext()
+    let metadata: Logger.Metadata = [
+        "user": .dictionary(["name": .string("Alice"), "role": .string("admin")])
+    ]
+
+    try log("Dict Event", level: .info, metadata: metadata, date: Date(), context: context)
+
+    let events = try context.fetch(EventObject.fetchRequest())
+    let paramData = try #require(events.first?.params)
+    let params = try JSONDecoder().decode([String: String].self, from: paramData)
+
+    #expect(params["user"] == "name: Alice, role: admin")
+}
+
+@MainActor
+@Test("Logging an event with nested metadata") func testLogNestedMetadata() throws {
+    let context = NSManagedObjectContext.inMemoryContext()
+    let metadata: Logger.Metadata = [
+        "simple": .string("value"),
+        "list": .array([.string("x"), .stringConvertible(42)]),
+        "map": .dictionary(["key": .string("val")]),
+    ]
+
+    try log("Mixed Event", level: .info, metadata: metadata, date: Date(), context: context)
+
+    let events = try context.fetch(EventObject.fetchRequest())
+    let paramData = try #require(events.first?.params)
+    let params = try JSONDecoder().decode([String: String].self, from: paramData)
+
+    #expect(params["simple"] == "value")
+    #expect(params["list"] == "x, 42")
+    #expect(params["map"] == "key: val")
+    #expect(events.first?.paramCount == 3)
+}
