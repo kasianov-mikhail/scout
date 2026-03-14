@@ -36,16 +36,16 @@ extension Logger.MetadataValue {
     fileprivate var stringValue: String? {
         switch self {
         case .string(let string):
-            return string
+            string
         case .stringConvertible(let convertible):
-            return convertible.description
+            convertible.description
         case .array(let array):
-            return array.compactMap(\.stringValue).joined(separator: ", ")
+            array.compactMap(\.stringValue).joined(separator: ", ")
         case .dictionary(let dictionary):
-            let pairs = dictionary.compactMapValues(\.stringValue)
+            dictionary.compactMapValues(\.stringValue)
                 .sorted(by: { $0.key < $1.key })
                 .map { "\($0.key): \($0.value)" }
-            return pairs.joined(separator: ", ")
+                .joined(separator: ", ")
         }
     }
 }
