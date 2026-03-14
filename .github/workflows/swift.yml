@@ -18,6 +18,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Build
+        run: |
+          xcodebuild \
+            -scheme Scout \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            build
+
       - name: Run unit tests
         run: |
           xcodebuild \
