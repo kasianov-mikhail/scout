@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A362" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
-    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
+    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="NamedObject" syncable="YES" codeGenerationType="category">
         <attribute name="crashID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="name" attributeType="String"/>
         <attribute name="reason" optional="YES" attributeType="String"/>
         <attribute name="stackTrace" optional="YES" attributeType="Binary"/>
     </entity>
@@ -16,10 +15,9 @@
     <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES">
         <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
     </entity>
-    <entity name="EventObject" representedClassName="EventObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
+    <entity name="EventObject" representedClassName="EventObject" parentEntity="NamedObject" syncable="YES" codeGenerationType="category">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="level" attributeType="String"/>
-        <attribute name="name" attributeType="String"/>
         <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="params" optional="YES" attributeType="Binary"/>
     </entity>
@@ -34,6 +32,9 @@
     <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="name" attributeType="String"/>
         <attribute name="telemetry" attributeType="String"/>
+    </entity>
+    <entity name="NamedObject" representedClassName="NamedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
+        <attribute name="name" attributeType="String"/>
     </entity>
     <entity name="SessionObject" representedClassName="SessionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="category">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>

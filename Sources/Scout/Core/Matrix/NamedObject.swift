@@ -5,8 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-extension CrashObject: MatrixBatch {
-    static func matrix(of batch: [CrashObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+import CoreData
+
+@objc(NamedObject)
+class NamedObject: SyncableObject {
+    static func matrix(of batch: [NamedObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
             throw .init("name")
         }
@@ -21,7 +24,7 @@ extension CrashObject: MatrixBatch {
         )
     }
 
-    static func parse(of batch: [CrashObject]) -> [GridCell<Int>] {
-        batch.grouped(by: \.hour).mapValues(\.count).map(Cell.init)
+    static func parse(of batch: [NamedObject]) -> [GridCell<Int>] {
+        batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
     }
 }

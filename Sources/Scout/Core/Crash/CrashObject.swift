@@ -8,8 +8,12 @@
 import CoreData
 
 @objc(CrashObject)
-final class CrashObject: SyncableObject, Syncable {
+final class CrashObject: NamedObject, Syncable, MatrixBatch {
     static func group(in context: NSManagedObjectContext) throws -> [CrashObject]? {
         try batch(in: context, matching: [\.name, \.week])
+    }
+
+    static func matrix(of batch: [CrashObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+        try NamedObject.matrix(of: batch)
     }
 }
