@@ -10,25 +10,18 @@ concurrency:
   group: ios-tests-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  SCHEME_NAME: Scout
-
 jobs:
-  ios-tests:
+  tests:
     runs-on: macos-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install xcpretty
+      - name: Run unit tests
         run: |
-          sudo gem install xcpretty
-
-      - name: Run unit tests (iOS Simulator)
-        run: |
-          set -o pipefail && \
           xcodebuild \
-            -scheme $SCHEME_NAME \
+            -scheme Scout \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             -enableCodeCoverage YES \
-            test | xcpretty
+            test
