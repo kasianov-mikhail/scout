@@ -12,9 +12,10 @@ import CloudKit
 final class InMemoryDatabase: Database {
     var records: [CKRecord] = []
     var errors: [Error] = []
+    var writeErrors: [Error] = []
 
     func write(record: CKRecord) async throws {
-        if let error = errors.popLast() {
+        if let error = writeErrors.popLast() ?? errors.popLast() {
             throw error
         } else {
             records.append(record)
@@ -22,7 +23,7 @@ final class InMemoryDatabase: Database {
     }
 
     func write(records: [CKRecord]) async throws {
-        if let error = errors.popLast() {
+        if let error = writeErrors.popLast() ?? errors.popLast() {
             throw error
         } else {
             self.records += records

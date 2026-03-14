@@ -37,19 +37,19 @@ struct SyncCoordinatorTests {
         #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
     }
 
-    @Test("Upload retries and merges on serverRecordChanged error", .disabled())
+    @Test("Upload retries and merges on serverRecordChanged error")
     func testUploadServerRecordChangedMerges() async throws {
-        database.errors.append(createMergeError())
+        database.writeErrors.append(createMergeError())
 
         try await coordinator.upload()
 
         #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
     }
 
-    @Test("Upload falls back to newMatrix after max retries", .disabled())
+    @Test("Upload falls back to newMatrix after max retries")
     func testUploadMaxRetryFallback() async throws {
         for _ in 0..<(coordinator.maxRetry + 1) {
-            database.errors.append(createMergeError())
+            database.writeErrors.append(createMergeError())
         }
         try await coordinator.upload()
 
