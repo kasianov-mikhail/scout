@@ -10,8 +10,8 @@ import Foundation
 extension Calendar {
     static var utc: Calendar {
         var calendar = Calendar(identifier: .iso8601)
-        calendar.timeZone = TimeZone(identifier: "UTC")!
         calendar.firstWeekday = 1
+        calendar.timeZone = TimeZone(identifier: "UTC")!
         return calendar
     }
 }
