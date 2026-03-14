@@ -39,10 +39,13 @@ extension Logger.MetadataValue {
             return string
         case .stringConvertible(let convertible):
             return convertible.description
-        case .array:
-            return nil  // TODO: Implement array conversion
-        case .dictionary:
-            return nil  // TODO: Implement dictionary conversion
+        case .array(let array):
+            return array.compactMap(\.stringValue).joined(separator: ", ")
+        case .dictionary(let dictionary):
+            let pairs = dictionary.compactMapValues(\.stringValue)
+                .sorted(by: { $0.key < $1.key })
+                .map { "\($0.key): \($0.value)" }
+            return pairs.joined(separator: ", ")
         }
     }
 }
