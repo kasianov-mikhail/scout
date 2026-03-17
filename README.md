@@ -33,7 +33,13 @@ Benefits:
 Together, logs answer “what happened?” while metrics quantify “how often?” and “how fast?”.
 
 ## Installation
-For detailed installation instructions, please refer to the [Installation Guide](https://github.com/kasianov-mikhail/scout/wiki).
+
+Add the dependency to your `Package.swift`:
+```swift
+.package(url: "https://github.com/kasianov-mikhail/scout.git", from: "2.0.0")
+```
+
+For CloudKit setup and schema upload, see the full [Installation Guide](INSTALLATION.md).
 
 ## Usage
 
