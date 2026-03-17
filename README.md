@@ -59,9 +59,7 @@ HomeView(container: container)
 ```
 > This should be done only in debug mode to avoid exposing sensitive log data in production environments.
 
-| | | |
-| ------------- | ------------- | ------------- |
-| ![](https://github.com/user-attachments/assets/a7cf7126-d995-4fa8-a148-20670b1260f6)  | ![](https://github.com/user-attachments/assets/c84c0051-5dea-4669-9bd1-bc9bb9f7d321)  | ![](https://github.com/user-attachments/assets/2e88e5c2-11ef-4fa5-bdb1-9217ca8d869a)  |
+<img width="200" src="https://github.com/user-attachments/assets/a7cf7126-d995-4fa8-a148-20670b1260f6"> <img width="200" src="https://github.com/user-attachments/assets/c84c0051-5dea-4669-9bd1-bc9bb9f7d321"> <img width="200" src="https://github.com/user-attachments/assets/2e88e5c2-11ef-4fa5-bdb1-9217ca8d869a"> <img width="200" src="https://github.com/user-attachments/assets/52c03cd6-fb3a-43cf-a58c-ab82ff2ca47e">
 
 ## Example Project
 
