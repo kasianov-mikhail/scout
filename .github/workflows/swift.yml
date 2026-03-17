@@ -3,8 +3,18 @@ name: Swift
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'Sources/**'
+      - 'Tests/**'
+      - 'Package.swift'
+      - '.github/workflows/swift.yml'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'Sources/**'
+      - 'Tests/**'
+      - 'Package.swift'
+      - '.github/workflows/swift.yml'
 
 concurrency:
   group: ios-tests-${{ github.workflow }}-${{ github.ref }}
