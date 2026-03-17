@@ -15,7 +15,7 @@ struct DefaultDatabase: AppDatabase {
         case "Crash":
             records = Crash.sampleRecords
         case "DateIntMatrix":
-            records = Self.sampleMatrixRecords
+            records = GridMatrix<Int>.sampleRecords
         default:
             records = Event.sampleRecords
         }
@@ -31,28 +31,4 @@ struct DefaultDatabase: AppDatabase {
         Event.sampleRecords.randomElement()!
     }
 
-    // MARK: - Sample Matrix Records
-
-    private static var sampleMatrixRecords: [CKRecord] {
-        let calendar = Calendar.utc
-        let today = Date().startOfDay
-
-        return (-52...0).compactMap { weekOffset in
-            guard let weekStart = calendar.date(byAdding: .weekOfYear, value: weekOffset, to: today) else {
-                return nil
-            }
-
-            let record = CKRecord(recordType: "DateIntMatrix")
-            record["date"] = weekStart
-            record["name"] = "event_name"
-
-            for day in 1...7 {
-                for hour in stride(from: 8, through: 20, by: 2) {
-                    record["cell_\(day)_\(String(format: "%02d", hour))"] = Int.random(in: 1...15)
-                }
-            }
-
-            return record
-        }
-    }
 }
