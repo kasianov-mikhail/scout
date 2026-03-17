@@ -69,22 +69,7 @@ struct CrashDetailView: View {
 
 #Preview {
     NavigationStack {
-        CrashDetailView(
-            crash: Crash(
-                name: "NSRangeException",
-                reason: "Index 5 beyond bounds [0 .. 3]",
-                stackTrace: [
-                    "0   CoreFoundation    0x00000001a3b8f4e0 __exceptionPreprocess + 220",
-                    "1   libobjc.A.dylib   0x00000001a38a5a70 objc_exception_throw + 60",
-                    "2   CoreFoundation    0x00000001a3c9e7d0 -[__NSArrayM objectAtIndexedSubscript:] + 228",
-                    "3   MyApp             0x0000000104a8c3e0 ViewController.viewDidLoad() + 120",
-                ],
-                date: Date(),
-                id: .init(),
-                userID: UUID(),
-                launchID: UUID()
-            )
-        )
+        CrashDetailView(crash: .sample)
     }
     .environmentObject(Tint())
 }
