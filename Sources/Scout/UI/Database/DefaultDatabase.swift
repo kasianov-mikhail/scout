@@ -9,7 +9,11 @@ import CloudKit
 
 struct DefaultDatabase: AppDatabase {
     func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
-        RecordChunk(records: Event.sampleRecords, cursor: nil)
+        let records = query.recordType == "Crash"
+            ? Crash.sampleRecords
+            : Event.sampleRecords
+
+        return RecordChunk(records: records, cursor: nil)
     }
 
     func readMore(from cursor: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {

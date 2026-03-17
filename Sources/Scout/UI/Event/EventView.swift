@@ -45,20 +45,13 @@ struct EventView: View {
 // MARK: - Header
 
 extension EventView {
-    static let dateFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.timeZone = TimeZone(secondsFromGMT: 0)
-        formatter.dateFormat = "dd.MM.y, HH:mm"
-        return formatter
-    }()
-
     struct EventHeader: View {
         let event: Event
 
         var body: some View {
             VStack(alignment: .leading) {
                 if let date = event.date {
-                    Text(dateFormatter.string(from: date) + " UTC")
+                    Text(utcDateFormatter.string(from: date) + " UTC")
                         .font(.system(size: 16))
                         .monospaced()
                 }
