@@ -29,27 +29,6 @@ Then run the upload script included in the repository. It will update both devel
 3. In the CloudKit Dashboard, go to the "Schema" section and use the "Import Schema" option to upload the schema file.
 4. Once your schema is defined, deploy it to the production environment by clicking the "Deploy to Production" button.
 
-## Add the Package
-
-Add the following dependency to your `Package.swift` file:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/kasianov-mikhail/scout.git", from: "2.0.0")
-]
-```
-
-Then, include `Scout` as a dependency for your target:
-
-```swift
-targets: [
-    .target(
-        name: "YourTargetName",
-        dependencies: ["Scout"]
-    )
-]
-```
-
 ## Configure Scout
 
 ```swift
