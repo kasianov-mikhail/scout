@@ -75,4 +75,18 @@ extension HomeView {
             }
         }
     }
+
+    struct CrashSection: View {
+        var body: some View {
+            Header(title: "Crashes")
+
+            Row {
+                Text("All Crashes")
+                Spacer()
+            } destination: {
+                CrashListView()
+            }
+            .foregroundStyle(.red)
+        }
+    }
 }
