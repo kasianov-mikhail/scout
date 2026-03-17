@@ -12,6 +12,8 @@ struct DefaultDatabase: AppDatabase {
         let records: [CKRecord]
 
         switch query.recordType {
+        case "Crash":
+            records = Crash.sampleRecords
         case "DateIntMatrix":
             records = Self.sampleMatrixRecords
         default:

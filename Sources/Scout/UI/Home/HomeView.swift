@@ -24,6 +24,7 @@ public struct HomeView: View {
                 LogSection()
                 ActivitySection()
                 SessionSection()
+                CrashSection()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
