@@ -1,36 +1,23 @@
 <img width="1371" alt="logo" src="https://github.com/user-attachments/assets/9e27f4e8-603b-4ec5-b0b0-e3d2f8d0d8d9">
 
 ## Description
-Scout is a robust logging framework designed to provide comprehensive logging capabilities for your applications. It supports various logging levels, output formats, and destinations, making it easy to integrate and customize according to your needs. Whether you are developing a small project or a large-scale system, Scout ensures that you have detailed and organized logs to help you monitor and debug your applications effectively.
+Scout is an iOS logging and analytics framework backed by CloudKit. It collects structured logs, metrics, and crash reports from your app and syncs them to a public CloudKit database where you can inspect them through a built-in SwiftUI dashboard.
 
 ## Table of Contents
-- [CloudKit Integration](#cloudkit-integration)
-- [Logging & Metrics](#logging--metrics)
+- [Features](#features)
 - [Installation](#installation)
-- [Visualizing the Logs](#visualizing-the-logs)
+- [Usage](#usage)
+- [Dashboard](#dashboard)
 - [Example Project](#example-project)
 - [License](#license)
 
-## CloudKit Integration
-Scout offers seamless integration with [CloudKit](https://developer.apple.com/icloud/cloudkit/), allowing you to store and manage your logs in the cloud effortlessly. By leveraging [CloudKit](https://developer.apple.com/icloud/cloudkit/), you can:
+## Features
 
-- **📊 Centralize Logs**: Store logs from multiple devices and applications in a single, centralized location.
-- **⏱️ Real-time Access**: Access your logs in real-time from anywhere, ensuring you can monitor your applications' performance and issues promptly.
-- **📈 Scalability**: Benefit from [CloudKit](https://developer.apple.com/icloud/cloudkit/)'s scalability to handle large volumes of log data without compromising performance.
-- **🔒 Security**: Ensure your logs are securely stored and transmitted, adhering to industry-standard security practices.
-
-## Logging & Metrics
-Scout builds on Apple’s observability facades:
-- [swift-log](https://github.com/apple/swift-log) for structured logging
-- [swift-metrics](https://github.com/apple/swift-metrics) for counters, gauges, and timers
-
-Benefits:
-- **📏 Standardization**: Use unified, community-adopted APIs for logs and metrics.
-- **🔧 Flexibility**: Customize log handlers and formats to suit your specific needs.
-- **🔍 Correlation**: Share labels/metadata to jump from a metric spike to the exact log events.
-- **⚡ Insight + Performance**: Keep metrics lightweight on hot paths; use logs for rich context when needed.
-
-Together, logs answer “what happened?” while metrics quantify “how often?” and “how fast?”.
+- **Structured Logging** — integrates with [swift-log](https://github.com/apple/swift-log). All log levels, labels, and metadata are persisted and synced automatically.
+- **Metrics** — integrates with [swift-metrics](https://github.com/apple/swift-metrics). Counters, timers, and floating-point counters are recorded alongside logs.
+- **Crash Reporting** — captures uncaught exceptions and signals (SIGABRT, SIGSEGV, etc.) with stack traces. Crash reports are flushed on the next launch.
+- **CloudKit Sync** — all data is stored locally with Core Data and synced to a public [CloudKit](https://developer.apple.com/icloud/cloudkit/) database. No custom backend required.
+- **SwiftUI Dashboard** — a built-in `HomeView` with charts, event lists, crash details, and activity tracking for debugging in development builds.
 
 ## Installation
 
@@ -43,10 +30,21 @@ For CloudKit setup and schema upload, see the full [Installation Guide](INSTALLA
 
 ## Usage
 
+Call `setup` once during app launch. This bootstraps logging, metrics, and crash reporting:
+```swift
+import CloudKit
+import Scout
+
+let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
+
+try await setup(container: container)
+```
+
+After setup, use the standard [swift-log](https://github.com/apple/swift-log) API to write logs:
 ```swift
 import Logging
 
-let logger = Logger(label: "SOME_LOGGER_LABEL")
+let logger = Logger(label: "MyApp")
 
 logger.warning(
     "Search_Performed",
@@ -57,19 +55,27 @@ logger.warning(
 )
 ```
 
-## Visualizing the Logs
+Metrics work the same way via [swift-metrics](https://github.com/apple/swift-metrics):
+```swift
+import Metrics
 
-By integrating `HomeView` into your SwiftUI application, you can gain insights into your application's performance and issues through an intuitive and interactive interface. 
+Counter(label: "api_requests").increment()
+Timer(label: "response_time").recordSeconds(duration)
+```
+
+## Dashboard
+
+Present `HomeView` to browse logs, metrics, crashes, and user activity:
 ```swift
 HomeView(container: container)
 ```
-> This should be done only in debug mode to avoid exposing sensitive log data in production environments.
+> Use this only in debug builds to avoid exposing log data in production.
 
 <img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
 ## Example Project
 
-You can find an example project demonstrating the integration of Scout with CloudKit in the [Scout IP repository](https://github.com/kasianov-mikhail/scout-ip). This project provides a comprehensive example of how to set up and use Scout for logging in a real-world application.
+See the [Scout IP](https://github.com/kasianov-mikhail/scout-ip) repository for a complete example app using Scout with CloudKit.
 
 ## License
 Scout is released under the MIT License. See [LICENSE](LICENSE) for details.
