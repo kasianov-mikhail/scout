@@ -23,18 +23,9 @@ public struct HomeView: View {
         NavigationStack {
             Group {
                 if let schemaError {
-                    ErrorView(
-                        error: schemaError,
-                        retry: { Task { await self.verify() } }
-                    )
+                    errorView(error: schemaError)
                 } else {
-                    List {
-                        LogSection()
-                        ActivitySection()
-                        SessionSection()
-                        CrashSection()
-                    }
-                    .listStyle(.plain)
+                    HomeContent()
                 }
             }
             .toolbar {
@@ -52,6 +43,14 @@ public struct HomeView: View {
         .tint(tint.value)
         .environmentObject(tint)
         .environment(\.database, container.publicCloudDatabase)
+    }
+
+    private func errorView(error: SchemaError) -> some View {
+        ErrorView(error: error) {
+            Task {
+                await verify()
+            }
+        }
     }
 
     private func verify() async {
@@ -72,4 +71,3 @@ public struct HomeView: View {
         retry: {}
     )
 }
-

@@ -1,5 +1,5 @@
 //
-// Copyright 2025 Mikhail Kasianov
+// Copyright 2026 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -7,11 +7,24 @@
 
 import SwiftUI
 
-extension HomeView {
-    struct LogSection: View {
-        var body: some View {
-            Header(title: "Log")
+struct HomeContent: View {
+    @Environment(\.database) var database
 
+    @StateObject var activity = ActivityProvider()
+    @StateObject var sessionStat = StatProvider(eventName: "Session", periods: Period.sessions)
+
+    var body: some View {
+        List {
+            logSection
+            activitySection
+            sessionSection
+            crashSection
+        }
+        .listStyle(.plain)
+    }
+
+    private var logSection: some View {
+        Section {
             Group {
                 Row {
                     Text("Events")
@@ -27,18 +40,13 @@ extension HomeView {
                 }
             }
             .foregroundStyle(.blue)
+        } header: {
+            Header(title: "Log")
         }
     }
 
-    struct ActivitySection: View {
-        @Environment(\.database) private var database
-
-        @StateObject private var activity = ActivityProvider()
-
-        var body: some View {
-            Header(title: "Users").task {
-                await activity.fetchIfNeeded(in: database)
-            }
+    private var activitySection: some View {
+        Section {
             ForEach(ActivityPeriod.allCases) { period in
                 ActivityRow(
                     period: period,
@@ -46,21 +54,15 @@ extension HomeView {
                 )
             }
             .foregroundStyle(.green)
+        } header: {
+            Header(title: "Users").task {
+                await activity.fetchIfNeeded(in: database)
+            }
         }
     }
 
-    struct SessionSection: View {
-        @Environment(\.database) private var database
-
-        @StateObject private var stat = StatProvider(
-            eventName: "Session",
-            periods: Period.sessions
-        )
-
-        var body: some View {
-            Header(title: "Sessions").task {
-                await stat.fetchIfNeeded(in: database)
-            }
+    private var sessionSection: some View {
+        Section {
             let statConfig = StatConfig(
                 title: "Sessions",
                 color: .purple,
@@ -70,16 +72,18 @@ extension HomeView {
                 StatRow(
                     config: statConfig,
                     period: period,
-                    stat: stat
+                    stat: sessionStat
                 )
+            }
+        } header: {
+            Header(title: "Sessions").task {
+                await sessionStat.fetchIfNeeded(in: database)
             }
         }
     }
 
-    struct CrashSection: View {
-        var body: some View {
-            Header(title: "Crashes")
-
+    private var crashSection: some View {
+        Section {
             Row {
                 Text("All Crashes")
                 Spacer()
@@ -87,6 +91,8 @@ extension HomeView {
                 CrashListView()
             }
             .foregroundStyle(.red)
+        } header: {
+            Header(title: "Crashes")
         }
     }
 }
