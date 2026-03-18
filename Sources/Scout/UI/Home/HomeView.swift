@@ -12,6 +12,7 @@ public struct HomeView: View {
     let container: CKContainer
 
     @StateObject private var tint = Tint()
+    @State private var schemaError: SchemaError?
     @Environment(\.dismiss) var dismiss
 
     public init(container: CKContainer) {
@@ -20,11 +21,21 @@ public struct HomeView: View {
 
     public var body: some View {
         NavigationStack {
-            List {
-                LogSection()
-                ActivitySection()
-                SessionSection()
-                CrashSection()
+            Group {
+                if let schemaError {
+                    ErrorView(
+                        error: schemaError,
+                        retry: { Task { await self.verify() } }
+                    )
+                } else {
+                    List {
+                        LogSection()
+                        ActivitySection()
+                        SessionSection()
+                        CrashSection()
+                    }
+                    .listStyle(.plain)
+                }
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -33,11 +44,32 @@ public struct HomeView: View {
                     }
                 }
             }
-            .listStyle(.plain)
             .navigationBarTitle("Home")
+        }
+        .task {
+            await verify()
         }
         .tint(tint.value)
         .environmentObject(tint)
         .environment(\.database, container.publicCloudDatabase)
     }
+
+    private func verify() async {
+        do {
+            try await container.verifySchema()
+            schemaError = nil
+        } catch let error as SchemaError {
+            schemaError = error
+        } catch {
+            // Ignore other errors (network, auth, etc.)
+        }
+    }
 }
+
+#Preview("Schema Error") {
+    ErrorView(
+        error: SchemaError(recordTypes: ["Crash", "PeriodMatrix"]),
+        retry: {}
+    )
+}
+
