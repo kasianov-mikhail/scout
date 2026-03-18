@@ -13,8 +13,8 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 
 ## Features
 
-| | Feature | Description |
-|:-:|---------|-------------|
+| | | |
+|:-:|-|-|
 | 📝 | **Structured Logging** | Integrates with [swift-log](https://github.com/apple/swift-log). All log levels, labels, and metadata are persisted and synced automatically. |
 | 📊 | **Metrics** | Integrates with [swift-metrics](https://github.com/apple/swift-metrics). Counters, timers, and floating-point counters are recorded alongside logs. |
 | 💥 | **Crash Reporting** | Captures uncaught exceptions and signals (SIGABRT, SIGSEGV, etc.) with stack traces. Reports are flushed on the next launch. |
