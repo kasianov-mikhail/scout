@@ -21,13 +21,4 @@ class DateObject: NSManagedObject {
             month = newValue?.startOfMonth
         }
     }
-
-    var dateFields: [String: Date] {
-        var fields: [String: Date] = [:]
-        fields["hour"] = hour
-        fields["day"] = day
-        fields["week"] = week
-        fields["month"] = month
-        return fields
-    }
 }

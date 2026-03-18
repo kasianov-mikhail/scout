@@ -14,3 +14,17 @@ final class SessionObject: SyncableObject, Syncable {
         try batch(in: context, matching: [\.week])
     }
 }
+
+extension SessionObject: CKRepresentable {
+    var toRecord: CKRecord {
+        let record = CKRecord(recordType: "Session")
+
+        record["start_date"] = date
+        record["end_date"] = endDate
+        record["session_id"] = sessionID?.uuidString
+
+        record.setValuesForKeys(metadata)
+
+        return record
+    }
+}

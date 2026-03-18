@@ -18,3 +18,21 @@ final class EventObject: NamedObject, Syncable, MatrixBatch {
         try NamedObject.matrix(of: batch)
     }
 }
+
+extension EventObject: CKRepresentable {
+    var toRecord: CKRecord {
+        let record = CKRecord(recordType: "Event")
+
+        record["name"] = name
+        record["level"] = level
+        record["params"] = params
+        record["param_count"] = paramCount
+        record["date"] = date
+        record["uuid"] = eventID?.uuidString
+        record["session_id"] = sessionID?.uuidString
+
+        record.setValuesForKeys(metadata)
+
+        return record
+    }
+}
