@@ -6,31 +6,23 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-import SwiftUI
 
-class ActivityProvider: ObservableObject, Provider {
-    @Published var result: ProviderResult<[ActivityMatrix]>?
+class ActivityProvider: QueryProvider<ActivityMatrix> {
+    init() {
+        super.init {
+            let dateRange = Calendar.utc.defaultRange
 
-    func fetch(in database: AppDatabase) async throws -> Output {
-        try await database
-            .readAll(matching: query, fields: nil)
-            .map(ActivityMatrix.init)
-            .mergeDuplicates()
-    }
+            let predicate = NSPredicate(
+                format: "date >= %@ AND date < %@ AND name == %@",
+                dateRange.lowerBound as NSDate,
+                dateRange.upperBound as NSDate,
+                "ActiveUser"
+            )
 
-    private var query: CKQuery {
-        let dateRange = Calendar.utc.defaultRange
-
-        let predicate = NSPredicate(
-            format: "date >= %@ AND date < %@ AND name == %@",
-            dateRange.lowerBound as NSDate,
-            dateRange.upperBound as NSDate,
-            "ActiveUser"
-        )
-
-        return CKQuery(
-            recordType: "PeriodMatrix",
-            predicate: predicate
-        )
+            return CKQuery(
+                recordType: "PeriodMatrix",
+                predicate: predicate
+            )
+        }
     }
 }
