@@ -15,4 +15,16 @@ class IDObject: DateObject {
         setPrimitiveValue(IDs.user, forKey: #keyPath(IDObject.userID))
         setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
     }
+
+    var metadata: [String: Any] {
+        var fields: [String: Any] = [:]
+        fields["hour"] = hour
+        fields["day"] = day
+        fields["week"] = week
+        fields["month"] = month
+        fields["launch_id"] = launchID?.uuidString
+        fields["user_id"] = userID?.uuidString
+        fields["version"] = 1
+        return fields
+    }
 }

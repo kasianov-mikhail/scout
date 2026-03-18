@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import CoreData
 
 @objc(CrashObject)
@@ -15,5 +16,21 @@ final class CrashObject: NamedObject, Syncable, MatrixBatch {
 
     static func matrix(of batch: [CrashObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         try NamedObject.matrix(of: batch)
+    }
+}
+
+extension CrashObject: CKRepresentable {
+    var toRecord: CKRecord {
+        let record = CKRecord(recordType: "Crash")
+
+        record["name"] = name
+        record["reason"] = reason
+        record["stack_trace"] = stackTrace
+        record["date"] = date
+        record["uuid"] = crashID?.uuidString
+
+        record.setValuesForKeys(metadata)
+
+        return record
     }
 }
