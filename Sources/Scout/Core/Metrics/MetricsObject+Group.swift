@@ -14,10 +14,6 @@ class MetricsObject: SyncableObject {
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 
-    @nonobjc class func fetchRequest() -> NSFetchRequest<MetricsObject> {
-        NSFetchRequest<MetricsObject>(entityName: "MetricsObject")
-    }
-
     static func group<T: MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }

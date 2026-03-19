@@ -14,10 +14,6 @@ class IDObject: DateObject {
     @NSManaged var sessionID: UUID?
     @NSManaged var userID: UUID?
 
-    @nonobjc class func fetchRequest() -> NSFetchRequest<IDObject> {
-        NSFetchRequest<IDObject>(entityName: "IDObject")
-    }
-
     override func awakeFromInsert() {
         super.awakeFromInsert()
         setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))

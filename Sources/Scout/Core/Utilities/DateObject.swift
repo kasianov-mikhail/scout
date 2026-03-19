@@ -16,10 +16,6 @@ class DateObject: NSManagedObject, Identifiable {
     @NSManaged var month: Date?
     @NSManaged var week: Date?
 
-    @nonobjc class func fetchRequest() -> NSFetchRequest<DateObject> {
-        NSFetchRequest<DateObject>(entityName: "DateObject")
-    }
-
     var date: Date? {
         get {
             datePrimitive

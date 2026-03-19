@@ -17,10 +17,6 @@ final class UserActivity: SyncableObject, Syncable {
     @NSManaged var userActivityID: UUID?
     @NSManaged var weekCount: Int32
 
-    @nonobjc class func fetchRequest() -> NSFetchRequest<UserActivity> {
-        NSFetchRequest<UserActivity>(entityName: "UserActivity")
-    }
-
     static func group(in context: NSManagedObjectContext) throws -> [UserActivity]? {
         try batch(in: context, matching: [\.month])
     }

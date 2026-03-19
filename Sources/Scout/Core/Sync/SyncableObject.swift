@@ -16,10 +16,6 @@ class SyncableObject: IDObject {
 
     @NSManaged var isSynced: Bool
 
-    @nonobjc class func fetchRequest() -> NSFetchRequest<SyncableObject> {
-        NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
-    }
-
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
 
