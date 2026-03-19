@@ -12,8 +12,7 @@ public struct HomeView: View {
     let container: CKContainer
 
     @StateObject private var tint = Tint()
-    @State private var schemaError: SchemaError?
-    @State private var iCloudWarning = false
+    @StateObject private var checker = HomeChecker()
     @State private var iCloudAlertPresented = false
     @Environment(\.dismiss) var dismiss
 
@@ -24,14 +23,14 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack {
             Group {
-                if let schemaError {
+                if let schemaError = checker.schemaError {
                     errorView(error: schemaError)
                 } else {
                     HomeContent()
                 }
             }
             .toolbar {
-                if iCloudWarning {
+                if checker.iCloudWarning {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             iCloudAlertPresented = true
@@ -55,7 +54,7 @@ public struct HomeView: View {
             .navigationBarTitle("Home")
         }
         .task {
-            await verify()
+            await checker.verify(container: container)
         }
         .tint(tint.value)
         .environmentObject(tint)
@@ -65,22 +64,8 @@ public struct HomeView: View {
     private func errorView(error: SchemaError) -> some View {
         ErrorView(error: error) {
             Task {
-                await verify()
+                await checker.verify(container: container)
             }
-        }
-    }
-
-    private func verify() async {
-        let status = (try? await container.accountStatus()) ?? .couldNotDetermine
-        iCloudWarning = status != .available
-
-        do {
-            try await container.verifySchema()
-            schemaError = nil
-        } catch let error as SchemaError {
-            schemaError = error
-        } catch {
-            // Ignore other errors (network, auth, etc.)
         }
     }
 }
