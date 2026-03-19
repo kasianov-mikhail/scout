@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Testing
-import UIKit
 import XCTest
 
 @testable import Scout
