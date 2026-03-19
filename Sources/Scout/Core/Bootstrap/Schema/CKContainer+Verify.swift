@@ -38,9 +38,14 @@ extension CKContainer {
 
             do {
                 _ = try await publicCloudDatabase.records(matching: query, resultsLimit: 1)
-            } catch let error as CKError where error.isSchemaError {
-                print("[Scout] Schema error for '\(recordType)': \(error.localizedDescription)")
-                invalid.append(recordType)
+                print("[Scout] '\(recordType)': OK")
+            } catch let error as CKError {
+                print("[Scout] '\(recordType)': CKError code=\(error.code.rawValue) message=\(error.localizedDescription)")
+                if error.isSchemaError {
+                    invalid.append(recordType)
+                }
+            } catch {
+                print("[Scout] '\(recordType)': unexpected error: \(error)")
             }
         }
 
