@@ -25,11 +25,3 @@ enum ActivityPeriod: String, Identifiable, CaseIterable, Equatable {
         }
     }
 }
-
-extension ActivityPeriod: ChartTimeScale {
-    var horizonDate: Date { today }
-
-    var rangeComponent: Calendar.Component { .month }
-
-    var pointComponent: Calendar.Component { .day }
-}
