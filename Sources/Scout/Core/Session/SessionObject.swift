@@ -10,6 +10,9 @@ import CoreData
 
 @objc(SessionObject)
 final class SessionObject: SyncableObject, Syncable {
+
+    @NSManaged var endDate: Date?
+
     static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
         try batch(in: context, matching: [\.week])
     }

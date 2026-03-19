@@ -10,6 +10,10 @@ import CoreData
 
 @objc(MetricsObject)
 class MetricsObject: SyncableObject {
+
+    @NSManaged var name: String?
+    @NSManaged var telemetry: String?
+
     static func group<T: MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }

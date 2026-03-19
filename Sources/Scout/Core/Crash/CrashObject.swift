@@ -10,6 +10,11 @@ import CoreData
 
 @objc(CrashObject)
 final class CrashObject: NamedObject, Syncable, MatrixBatch {
+
+    @NSManaged var crashID: UUID?
+    @NSManaged var reason: String?
+    @NSManaged var stackTrace: Data?
+
     static func group(in context: NSManagedObjectContext) throws -> [CrashObject]? {
         try batch(in: context, matching: [\.name, \.week])
     }
