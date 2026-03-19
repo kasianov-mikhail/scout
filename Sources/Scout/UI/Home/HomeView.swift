@@ -13,7 +13,6 @@ public struct HomeView: View {
 
     @StateObject private var tint = Tint()
     @StateObject private var checker = HomeChecker()
-    @State private var iCloudAlertPresented = false
     @Environment(\.dismiss) var dismiss
 
     public init(container: CKContainer) {
@@ -30,27 +29,13 @@ public struct HomeView: View {
                 }
             }
             .toolbar {
-                if checker.iCloudWarning {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            iCloudAlertPresented = true
-                        } label: {
-                            Image(systemName: "icloud.slash")
-                                .foregroundStyle(.orange)
-                        }
-                    }
-                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Close") {
                         dismiss()
                     }
                 }
             }
-            .alert("iCloud Unavailable", isPresented: $iCloudAlertPresented) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text("Sign in to iCloud to sync data.")
-            }
+            .iCloudWarning(checker.iCloudWarning)
             .navigationBarTitle("Home")
         }
         .task {
