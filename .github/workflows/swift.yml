@@ -36,5 +36,4 @@ jobs:
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
-            -enableCodeCoverage YES \
             test-without-building
