@@ -8,7 +8,18 @@
 import CoreData
 
 @objc(DateObject)
-class DateObject: NSManagedObject {
+class DateObject: NSManagedObject, Identifiable {
+
+    @NSManaged var datePrimitive: Date?
+    @NSManaged var day: Date?
+    @NSManaged var hour: Date?
+    @NSManaged var month: Date?
+    @NSManaged var week: Date?
+
+    @nonobjc class func fetchRequest() -> NSFetchRequest<DateObject> {
+        NSFetchRequest<DateObject>(entityName: "DateObject")
+    }
+
     var date: Date? {
         get {
             datePrimitive

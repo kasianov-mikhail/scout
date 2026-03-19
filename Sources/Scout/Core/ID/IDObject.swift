@@ -5,10 +5,19 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
 @objc(IDObject)
 class IDObject: DateObject {
+
+    @NSManaged var launchID: UUID?
+    @NSManaged var sessionID: UUID?
+    @NSManaged var userID: UUID?
+
+    @nonobjc class func fetchRequest() -> NSFetchRequest<IDObject> {
+        NSFetchRequest<IDObject>(entityName: "IDObject")
+    }
+
     override func awakeFromInsert() {
         super.awakeFromInsert()
         setPrimitiveValue(UUID(), forKey: #keyPath(IDObject.sessionID))

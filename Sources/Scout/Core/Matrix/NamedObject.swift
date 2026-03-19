@@ -9,6 +9,13 @@ import CoreData
 
 @objc(NamedObject)
 class NamedObject: SyncableObject {
+
+    @NSManaged var name: String?
+
+    @nonobjc class func fetchRequest() -> NSFetchRequest<NamedObject> {
+        NSFetchRequest<NamedObject>(entityName: "NamedObject")
+    }
+
     static func matrix(of batch: [NamedObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
             throw .init("name")

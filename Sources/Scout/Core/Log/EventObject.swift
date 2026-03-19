@@ -10,6 +10,16 @@ import CoreData
 
 @objc(EventObject)
 final class EventObject: NamedObject, Syncable, MatrixBatch {
+
+    @NSManaged var eventID: UUID?
+    @NSManaged var level: String?
+    @NSManaged var paramCount: Int64
+    @NSManaged var params: Data?
+
+    @nonobjc class func fetchRequest() -> NSFetchRequest<EventObject> {
+        NSFetchRequest<EventObject>(entityName: "EventObject")
+    }
+
     static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
         try batch(in: context, matching: [\.name, \.week])
     }
