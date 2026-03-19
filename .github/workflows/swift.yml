@@ -13,12 +13,10 @@ concurrency:
 jobs:
   tests:
     runs-on: macos-15
-    timeout-minutes: 10
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    timeout-minutes: 20
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Prepare simulator
         run: |
@@ -36,9 +34,16 @@ jobs:
           ")
           xcrun simctl boot "$UDID" 2>/dev/null || true
 
+      - name: Build
+        run: |
+          xcodebuild \
+            -scheme Scout \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            build-for-testing
+
       - name: Test
         run: |
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
-            test
+            test-without-building
