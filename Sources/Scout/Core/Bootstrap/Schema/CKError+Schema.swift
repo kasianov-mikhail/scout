@@ -13,6 +13,9 @@ extension CKError {
     /// is missing or outdated (e.g. unknown record type, missing indexes).
     var isSchemaError: Bool {
         switch code {
+        case .unknownItem:
+            let message = localizedDescription.lowercased()
+            return message.contains("record type")
         case .invalidArguments, .serverRejectedRequest:
             let message = localizedDescription.lowercased()
             return message.contains("record type")
