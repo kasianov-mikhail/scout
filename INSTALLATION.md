@@ -17,17 +17,19 @@ Upload the [schema file](https://github.com/kasianov-mikhail/scout/blob/main/Sch
 xcrun cktool save-token
 ```
 
-Then run the upload script included in the repository. It will update both development and production environments:
+Then run the upload script included in the repository:
 ```bash
 ./upload-schema.sh <your-team-id> <your-container-id>
 ```
+
+This uploads the schema to the development environment. To deploy to production, use the [CloudKit Dashboard](https://icloud.developer.apple.com/dashboard/).
 
 ### Option B: Using CloudKit Dashboard
 
 1. Navigate to the [CloudKit Dashboard](https://icloud.developer.apple.com/dashboard/) and sign in with your Apple Developer account.
 2. Choose the CloudKit container associated with your project.
 3. In the CloudKit Dashboard, go to the "Schema" section and use the "Import Schema" option to upload the schema file.
-4. Once your schema is defined, deploy it to the production environment by clicking the "Deploy to Production" button.
+4. Deploy the schema to production by clicking the "Deploy to Production" button.
 
 ## Configure Scout
 
