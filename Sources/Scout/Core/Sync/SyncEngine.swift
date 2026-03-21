@@ -14,18 +14,18 @@ struct SyncEngine: @unchecked Sendable {
 
     @MainActor func send<T: Syncable & MatrixBatch>(type syncable: T.Type) async throws {
         while let batch = try syncable.group(in: context) {
+            if let objects = batch as? [CKRepresentable] {
+                try await database.write(
+                    records: objects.map(\.toRecord)
+                )
+            }
+
             try await SyncCoordinator(
                 database: database,
                 maxRetry: 3,
                 batch: batch
             )
             .upload()
-
-            if let objects = batch as? [CKRepresentable] {
-                try await database.write(
-                    records: objects.map(\.toRecord)
-                )
-            }
 
             for object in batch {
                 object.isSynced = true
