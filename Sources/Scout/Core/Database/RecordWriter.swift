@@ -10,7 +10,7 @@ import CloudKit
 /// Maximum number of records per CloudKit modify request.
 private let maxBatchSize = 400
 
-protocol RecordWriter {
+protocol RecordWriter: Sendable {
     func write(record: CKRecord) async throws
     func write(records: [CKRecord]) async throws
 }

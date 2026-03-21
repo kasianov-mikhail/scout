@@ -7,7 +7,7 @@
 
 import CloudKit
 
-protocol RecordReader {
+protocol RecordReader: Sendable {
     func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk
     func readMore(from cursor: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk
 }
