@@ -10,7 +10,6 @@ import CoreData
 
 @objc(MetricsObject)
 class MetricsObject: SyncableObject {
-
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 

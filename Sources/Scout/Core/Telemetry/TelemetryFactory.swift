@@ -17,15 +17,15 @@ struct TelemetryFactory: MetricsFactory {
         CKTelemetryHandler(label: label, dimensions: dimensions)
     }
 
-    func makeMeter(label: String,dimensions: [(String, String)]) -> MeterHandler {
+    func makeMeter(label: String, dimensions: [(String, String)]) -> MeterHandler {
         CKTelemetryHandler.Idle()
     }
 
-    func makeRecorder(label: String,dimensions: [(String, String)],aggregate: Bool) -> RecorderHandler {
+    func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool) -> RecorderHandler {
         CKTelemetryHandler.Idle()
     }
 
-    func makeTimer(label: String,dimensions: [(String, String)]) -> TimerHandler {
+    func makeTimer(label: String, dimensions: [(String, String)]) -> TimerHandler {
         CKTelemetryHandler(label: label, dimensions: dimensions)
     }
 

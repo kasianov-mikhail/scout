@@ -59,11 +59,10 @@ extension GridCell: Combining {
 
 extension GridCell: Comparable {
     static func < (lhs: GridCell<T>, rhs: GridCell<T>) -> Bool {
-        if lhs.row == rhs.row {
-            return lhs.column < rhs.column
-        } else {
+        guard lhs.row == rhs.row else {
             return lhs.row < rhs.row
         }
+        return lhs.column < rhs.column
     }
 }
 

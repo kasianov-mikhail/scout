@@ -45,7 +45,7 @@ extension EventView {
         }
 
         var seeAll: (() -> Void)? {
-            if let _ = try? param.result?.get(), count > 3 {
+            if (try? param.result?.get()) != nil, count > 3 {
                 { isParamPresented = true }
             } else {
                 nil

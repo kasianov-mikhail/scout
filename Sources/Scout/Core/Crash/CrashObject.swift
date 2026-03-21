@@ -10,7 +10,6 @@ import CoreData
 
 @objc(CrashObject)
 final class CrashObject: NamedObject, Syncable, MatrixBatch {
-
     @NSManaged var crashID: UUID?
     @NSManaged var reason: String?
     @NSManaged var stackTrace: Data?

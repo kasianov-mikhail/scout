@@ -30,7 +30,7 @@ import Metrics
 public func setup(container: CKContainer) async throws {
     installExceptionHandler()
     installSignalHandler()
-    
+
     await CrashArchive.system.flush()
 
     try NotificationListener.appState.setup()

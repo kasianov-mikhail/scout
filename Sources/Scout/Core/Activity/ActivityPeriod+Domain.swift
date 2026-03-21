@@ -8,7 +8,6 @@
 import Foundation
 
 extension ActivityPeriod {
-
     /// Selects the per-period counter used for DAU/WAU/MAU.
     ///
     /// - `.daily`   -> daily active users (DAU) via `UserActivity.dayCount`
@@ -29,7 +28,7 @@ extension ActivityPeriod {
         }
     }
 
-    /// Defines the calendar span for the metric window:
+    /// Defines the calendar span for the metric window.
     ///
     /// - `.daily`   -> `.day` (DAU window)
     /// - `.weekly`  -> `.weekOfYear` (WAU window)

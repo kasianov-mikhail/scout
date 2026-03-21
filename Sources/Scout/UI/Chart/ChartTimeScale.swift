@@ -8,7 +8,6 @@
 import Foundation
 
 protocol ChartTimeScale: Identifiable, Hashable {
-
     /// Major axis segmentation (big bands).
     ///
     /// Each block represents one whole `Calendar.Component` in the visible time window (`range`).
@@ -46,7 +45,6 @@ protocol ChartTimeScale: Identifiable, Hashable {
 // MARK: - Helpers
 
 extension ChartTimeScale {
-
     var today: Date {
         Date().startOfDay
     }

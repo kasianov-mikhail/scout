@@ -11,7 +11,6 @@ import Testing
 @testable import Scout
 
 struct ActivityPeriodTests {
-
     // MARK: - Raw Values
 
     @Test("Raw values encode correctly")

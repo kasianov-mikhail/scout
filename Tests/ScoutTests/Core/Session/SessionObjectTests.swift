@@ -26,9 +26,10 @@ struct SessionObjectTests {
 
         let cells = SessionObject.parse(of: batch)
 
-        #expect(cells.sorted() == [
-            GridCell(row: 1, column: 0, value: 2),
-            GridCell(row: 1, column: 1, value: 1),
-        ])
+        #expect(
+            cells.sorted() == [
+                GridCell(row: 1, column: 0, value: 2),
+                GridCell(row: 1, column: 1, value: 1),
+            ])
     }
 }

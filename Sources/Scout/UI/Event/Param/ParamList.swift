@@ -91,7 +91,7 @@ struct ParamRow: View {
         let items = [
             ParamProvider.Item(key: "key1", value: "value1"),
             ParamProvider.Item(key: "key2", value: "value2"),
-            ParamProvider.Item(key: "key3", value: "value3")
+            ParamProvider.Item(key: "key3", value: "value3"),
         ]
         ParamList(items: items)
     }

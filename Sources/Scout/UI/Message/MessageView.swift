@@ -12,7 +12,6 @@ struct MessageView: View {
     let level: Message.Level
 
     var body: some View {
-
         Text(text)
             .font(.system(size: 16))
             .multilineTextAlignment(.center)

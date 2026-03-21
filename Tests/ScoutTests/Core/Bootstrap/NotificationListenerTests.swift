@@ -11,7 +11,6 @@ import XCTest
 @testable import Scout
 
 struct NotificationListenerTests {
-
     @Test("Success setup") func testSuccessSetup() async throws {
         let listener = NotificationListener(table: [:])
         #expect(throws: Never.self) {
@@ -29,7 +28,6 @@ struct NotificationListenerTests {
 }
 
 class NotificationListenerTestCase: XCTestCase {
-
     // Special case not covering with SwiftTesting
     func testNotificationHandling() async throws {
         let expectation = XCTestExpectation(description: "Notification handling")

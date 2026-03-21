@@ -9,7 +9,6 @@ import CoreData
 
 @objc(NamedObject)
 class NamedObject: SyncableObject {
-
     @NSManaged var name: String?
 
     static func matrix(of batch: [NamedObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {

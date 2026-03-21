@@ -12,10 +12,9 @@ extension Range<Date> {
         let from = formatter.string(from: lowerBound)
         let to = formatter.string(from: upperBound.addingDay(-1))
 
-        if from == to {
-            return from
-        } else {
+        guard from == to else {
             return "\(from) – \(to)"
         }
+        return from
     }
 }

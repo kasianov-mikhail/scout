@@ -8,7 +8,6 @@
 import CloudKit
 
 extension CKError {
-
     /// Returns `true` when the error indicates the CloudKit schema
     /// is missing or outdated (e.g. unknown record type, missing indexes).
     var isSchemaError: Bool {

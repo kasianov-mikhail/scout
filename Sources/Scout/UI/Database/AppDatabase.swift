@@ -9,6 +9,7 @@ import CloudKit
 import SwiftUI
 
 /// AppDatabase defines the read-only database surface used by the UI.
+///
 /// It abstracts record lookup and query operations for use in SwiftUI
 /// and is intended for dependency injection via the environment.
 ///

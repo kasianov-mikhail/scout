@@ -14,7 +14,6 @@ protocol ChartSeries: HasCount {
 }
 
 extension Collection where Element: ChartSeries {
-
     func bucket(on period: some ChartTimeScale) -> [Element] {
         bucket(in: period.initialRange, component: period.pointComponent)
     }

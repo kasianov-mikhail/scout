@@ -48,7 +48,7 @@ struct NamedObjectTests {
     @Test("matrix(of:) throws when name is missing")
     func testMatrixThrowsOnMissingName() throws {
         let batch: [NamedObject] = [
-            .stub(name: nil, date: date, in: context),
+            .stub(name: nil, date: date, in: context)
         ]
 
         #expect(throws: MatrixPropertyError.self) {

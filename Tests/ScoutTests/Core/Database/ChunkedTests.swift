@@ -10,7 +10,6 @@ import Testing
 @testable import Scout
 
 struct ChunkedTests {
-
     @Test("Empty array returns empty result")
     func empty() {
         let result = [Int]().chunked(into: 5)
