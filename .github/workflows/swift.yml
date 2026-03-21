@@ -51,7 +51,7 @@ jobs:
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             -enableCodeCoverage YES \
-            OTHER_SWIFT_FLAGS="-warnings-as-errors" \
+            SWIFT_TREAT_WARNINGS_AS_ERRORS=YES \
             build-for-testing
 
       - name: Test
