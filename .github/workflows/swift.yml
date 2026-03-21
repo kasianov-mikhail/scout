@@ -54,4 +54,4 @@ jobs:
 
       - name: Coverage
         run: |
-          xcrun xccov view --report --only-targets TestResults.xcresult
+          xcrun xccov view --report --only-targets TestResults.xcresult | grep -v ScoutTests
