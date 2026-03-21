@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct SyncCoordinator<T: CellProtocol>: @unchecked Sendable {
+struct SyncCoordinator<T: CellProtocol>: Sendable {
     let database: Database
     let maxRetry: Int
     let matrix: Matrix<T>

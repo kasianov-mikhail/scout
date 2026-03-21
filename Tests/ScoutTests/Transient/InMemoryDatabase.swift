@@ -9,7 +9,7 @@ import CloudKit
 
 @testable import Scout
 
-final class InMemoryDatabase: Database {
+final class InMemoryDatabase: Database, @unchecked Sendable {
     var records: [CKRecord] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
