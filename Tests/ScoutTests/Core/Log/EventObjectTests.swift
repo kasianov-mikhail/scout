@@ -21,7 +21,7 @@ struct EventObjectTests {
         let batch: [EventObject] = [
             .stub(name: "name", date: date, in: context),
             .stub(name: "name", date: date, in: context),
-            .stub(name: "name", date: date.addingHour(), in: context)
+            .stub(name: "name", date: date.addingHour(), in: context),
         ]
 
         let cells = EventObject.parse(of: batch)

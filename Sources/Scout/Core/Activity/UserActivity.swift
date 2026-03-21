@@ -10,7 +10,6 @@ import CoreData
 
 @objc(UserActivity)
 final class UserActivity: SyncableObject, Syncable {
-
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32
     @NSManaged var period: String?

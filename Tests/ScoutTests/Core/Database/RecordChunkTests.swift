@@ -11,7 +11,6 @@ import Testing
 @testable import Scout
 
 struct RecordChunkTests {
-
     @Test("Addition concatenates records")
     func addition() {
         let r1 = CKRecord(recordType: "A")

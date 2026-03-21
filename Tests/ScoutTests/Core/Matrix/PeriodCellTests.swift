@@ -10,7 +10,6 @@ import Testing
 @testable import Scout
 
 struct PeriodCellTests {
-
     // MARK: - Key Generation
 
     @Test("Key encodes period and day")

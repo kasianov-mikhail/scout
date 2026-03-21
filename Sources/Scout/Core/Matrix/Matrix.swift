@@ -20,7 +20,7 @@ struct Matrix<T: CellProtocol> {
 
 extension Matrix: Combining {
     func isDuplicate(of other: Matrix<T>) -> Bool {
-        return date == other.date
+        date == other.date
             && name == other.name
             && category == other.category
             && recordType == other.recordType

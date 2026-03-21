@@ -22,8 +22,8 @@ private let schemaRecordTypes = [
 ]
 
 extension CKContainer {
-
     /// Queries each record type to verify the CloudKit schema is up to date.
+    ///
     /// Throws a `SchemaError` if any record types have schema issues.
     ///
     func verifySchema() async throws {

@@ -13,7 +13,6 @@ protocol Syncable: SyncableObject {
 
 @objc(SyncableObject)
 class SyncableObject: IDObject {
-
     @NSManaged var isSynced: Bool
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {

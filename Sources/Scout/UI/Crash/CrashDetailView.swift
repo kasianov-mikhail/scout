@@ -16,9 +16,9 @@ struct CrashDetailView: View {
         List {
             headerSection
 
-//            if let reason = crash.reason {
-//                reasonSection(reason)
-//            }
+            //            if let reason = crash.reason {
+            //                reasonSection(reason)
+            //            }
 
             if !crash.stackTrace.isEmpty {
                 stackTraceSection
@@ -46,7 +46,7 @@ struct CrashDetailView: View {
 
             if let reason = crash.reason {
                 Text("REASON:   ").fontWeight(.bold)
-                + Text(reason).fontWeight(.bold).foregroundColor(.red)
+                    + Text(reason).fontWeight(.bold).foregroundColor(.red)
             }
         }
         .padding(.vertical, 4)

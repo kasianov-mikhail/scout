@@ -10,7 +10,6 @@ import CoreData
 
 @objc(SessionObject)
 final class SessionObject: SyncableObject, Syncable {
-
     @NSManaged var endDate: Date?
 
     static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {

@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Testing
-import Foundation
 import CloudKit
+import Foundation
+import Testing
 
 @testable import Scout
 

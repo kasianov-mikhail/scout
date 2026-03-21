@@ -12,7 +12,6 @@ import Testing
 
 @Suite("CKError.isSchemaError")
 struct SchemaErrorTests {
-
     // MARK: - Matching codes with schema messages
 
     @Test("invalidArguments with 'record type' message")

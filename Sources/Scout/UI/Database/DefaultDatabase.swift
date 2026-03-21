@@ -30,5 +30,4 @@ struct DefaultDatabase: AppDatabase {
     func lookup(id: CKRecord.ID) async throws -> CKRecord {
         Event.sampleRecords.randomElement()!
     }
-
 }

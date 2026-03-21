@@ -9,7 +9,6 @@ import CoreData
 
 @objc(IDObject)
 class IDObject: DateObject {
-
     @NSManaged var launchID: UUID?
     @NSManaged var sessionID: UUID?
     @NSManaged var userID: UUID?

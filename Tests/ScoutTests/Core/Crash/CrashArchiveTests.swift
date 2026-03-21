@@ -12,7 +12,6 @@ import Testing
 
 @Suite("CrashArchive")
 struct CrashArchiveTests {
-
     @Test("write creates directory and crash file")
     func testWriteCreatesCrashFile() throws {
         let tempDir = FileManager.default.temporaryDirectory
