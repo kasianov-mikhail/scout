@@ -40,6 +40,7 @@ jobs:
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
+            -enableCodeCoverage YES \
             build-for-testing
 
       - name: Test
@@ -47,4 +48,10 @@ jobs:
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
+            -enableCodeCoverage YES \
+            -resultBundlePath TestResults \
             test-without-building
+
+      - name: Coverage
+        run: |
+          xcrun xccov view --report --only-targets TestResults.xcresult
