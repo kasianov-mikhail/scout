@@ -20,8 +20,10 @@ jobs:
       matrix:
         include:
           - os: macos-15
+            device: iPhone 16
             ios: 18
           - os: macos-26
+            device: iPhone 17
             ios: 26
 
     steps:
@@ -31,12 +33,12 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=${{ matrix.device }},OS=latest' \
             build-for-testing
 
       - name: Test
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=${{ matrix.device }},OS=latest' \
             test-without-building
