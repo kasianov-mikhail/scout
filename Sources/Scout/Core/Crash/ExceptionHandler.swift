@@ -7,10 +7,11 @@
 
 import Foundation
 
-private nonisolated(unsafe) var previousExceptionHandler = NSGetUncaughtExceptionHandler()
+private nonisolated(unsafe) var previousExceptionHandler: NSUncaughtExceptionHandler?
 
 /// Installs a handler for uncaught NSExceptions.
 func installExceptionHandler() {
+    previousExceptionHandler = NSGetUncaughtExceptionHandler()
     NSSetUncaughtExceptionHandler { exception in
         let crash = CrashInfo(
             name: exception.name.rawValue,
