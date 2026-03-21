@@ -19,6 +19,12 @@ jobs:
     strategy:
       matrix:
         include:
+          - os: macos-13
+            device: iPhone 14
+            ios: 16
+          - os: macos-14
+            device: iPhone 15
+            ios: 17
           - os: macos-15
             device: iPhone 16
             ios: 18
