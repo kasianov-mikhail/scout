@@ -1,6 +1,7 @@
 #!/bin/bash
 
-# Uploads the CloudKit schema to both development and production environments.
+# Uploads the CloudKit schema to the development environment.
+# To deploy to production, use the CloudKit Console.
 #
 # Prerequisites:
 #   Xcode command-line tools (cktool is included with Xcode)
@@ -27,14 +28,11 @@ if [ ! -f "$SCHEMA_FILE" ]; then
     exit 1
 fi
 
-for ENV in development production; do
-    echo "Uploading schema to '$CONTAINER_ID' ($ENV)..."
-    xcrun cktool import-schema \
-        --team-id "$TEAM_ID" \
-        --container-id "$CONTAINER_ID" \
-        --environment "$ENV" \
-        --file "$SCHEMA_FILE"
-    echo "$ENV: done."
-done
+echo "Uploading schema to '$CONTAINER_ID' (development)..."
+xcrun cktool import-schema \
+    --team-id "$TEAM_ID" \
+    --container-id "$CONTAINER_ID" \
+    --environment "development" \
+    --file "$SCHEMA_FILE"
 
 echo "Schema uploaded successfully."
