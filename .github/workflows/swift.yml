@@ -12,28 +12,33 @@ concurrency:
 
 jobs:
   tests:
-    runs-on: macos-15
+    name: test-ios-${{ matrix.ios }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+
+    strategy:
+      matrix:
+        include:
+          - os: macos-15
+            device: iPhone 16
+            ios: 18
+          - os: macos-26
+            device: iPhone 17
+            ios: 26
 
     steps:
       - uses: actions/checkout@v6
-
-      - name: Prepare simulator
-        run: |
-          if ! xcrun simctl list devices available | grep -q "iPhone"; then
-            xcodebuild -downloadPlatform iOS
-          fi
 
       - name: Build
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             build-for-testing
 
       - name: Test
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             test-without-building
