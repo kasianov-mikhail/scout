@@ -29,16 +29,22 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Prepare simulator
+        run: |
+          if ! xcrun simctl list devices available | grep -q "iPhone"; then
+            xcodebuild -downloadPlatform iOS
+          fi
+
       - name: Build
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=${{ matrix.device }},OS=latest' \
+            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             build-for-testing
 
       - name: Test
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=${{ matrix.device }},OS=latest' \
+            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             test-without-building
