@@ -7,6 +7,7 @@
 
 import CloudKit
 
+#if DEBUG
 extension Matrix where T == GridCell<Int> {
     static var sampleRecords: [CKRecord] {
         let calendar = Calendar.utc
@@ -31,3 +32,4 @@ extension Matrix where T == GridCell<Int> {
         }
     }
 }
+#endif

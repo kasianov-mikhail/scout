@@ -7,6 +7,7 @@
 
 import CloudKit
 
+#if DEBUG
 extension Crash {
     static var sample: Crash {
         try! Crash(record: sampleRecords[2])
@@ -47,3 +48,4 @@ extension Crash {
         }
     }
 }
+#endif

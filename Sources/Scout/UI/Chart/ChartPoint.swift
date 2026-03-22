@@ -51,6 +51,7 @@ extension ChartPoint: CustomStringConvertible {
 extension [ChartPoint<Int>] {
     static let empty: Self = []
 
+    #if DEBUG
     static var sample: Self {
         let end = Date()
         return (0..<168).compactMap { i in
@@ -60,4 +61,5 @@ extension [ChartPoint<Int>] {
         }
         .sorted()
     }
+    #endif
 }

@@ -7,6 +7,7 @@
 
 import CloudKit
 
+#if DEBUG
 struct DefaultDatabase: AppDatabase {
     func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
         let records: [CKRecord]
@@ -31,3 +32,4 @@ struct DefaultDatabase: AppDatabase {
         Event.sampleRecords.randomElement()!
     }
 }
+#endif

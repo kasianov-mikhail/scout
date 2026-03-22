@@ -7,6 +7,7 @@
 
 import CloudKit
 
+#if DEBUG
 extension Event {
     static var sampleRecords: [CKRecord] {
         let eventLevels = [
@@ -55,3 +56,4 @@ extension Event {
         }
     }
 }
+#endif

@@ -16,5 +16,23 @@ import SwiftUI
 typealias AppDatabase = RecordLookup & RecordReader & Sendable
 
 extension EnvironmentValues {
-    @Entry var database: AppDatabase = DefaultDatabase()
+    #if DEBUG
+        @Entry var database: AppDatabase = DefaultDatabase()
+    #else
+        @Entry var database: AppDatabase = PlaceholderDatabase()
+    #endif
 }
+
+#if !DEBUG
+    private struct PlaceholderDatabase: AppDatabase {
+        func read(matching: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+            fatalError("Database not configured")
+        }
+        func readMore(from: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+            fatalError("Database not configured")
+        }
+        func lookup(id: CKRecord.ID) async throws -> CKRecord {
+            fatalError("Database not configured")
+        }
+    }
+#endif
