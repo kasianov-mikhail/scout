@@ -32,15 +32,10 @@ Then run the upload script included in the repository. It will update both devel
 ## Configure Scout
 
 ```swift
+import CloudKit
 import Scout
 
 let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
 
-func application(
-    _ application: UIApplication,
-    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
-) -> Bool {
-    try? Scout.setup(container: container)
-    return true
-}
+try await setup(container: container)
 ```
