@@ -59,23 +59,23 @@ jobs:
           key: framework-size-ios-${{ matrix.ios }}-
           restore-keys: framework-size-ios-${{ matrix.ios }}-
 
-      - name: Framework size
+      - name: Binary size
         run: |
-          FRAMEWORK=$(find ~/Library/Developer/Xcode/DerivedData \
-            -path "*/PackageFrameworks/Scout.framework" -print -quit 2>/dev/null)
+          OBJ_DIR=$(find ~/Library/Developer/Xcode/DerivedData \
+            -path "*/Scout.build/Objects-normal/arm64" -print -quit 2>/dev/null)
 
-          CURRENT=$(du -sk "$FRAMEWORK" 2>/dev/null | cut -f1)
+          CURRENT=$(du -sk "$OBJ_DIR" 2>/dev/null | cut -f1)
 
           if [ -f main-framework-size.txt ]; then
             MAIN=$(cat main-framework-size.txt)
             DIFF=$((CURRENT - MAIN))
             if [ "$DIFF" -eq 0 ]; then
-              echo "Scout.framework: ${CURRENT}KB" >> "$GITHUB_STEP_SUMMARY"
+              echo "Scout: ${CURRENT}KB" >> "$GITHUB_STEP_SUMMARY"
             else
-              printf 'Scout.framework: %sKB (%+dKB)\n' "$CURRENT" "$DIFF" >> "$GITHUB_STEP_SUMMARY"
+              printf 'Scout: %sKB (%+dKB)\n' "$CURRENT" "$DIFF" >> "$GITHUB_STEP_SUMMARY"
             fi
           else
-            echo "Scout.framework: ${CURRENT}KB" >> "$GITHUB_STEP_SUMMARY"
+            echo "Scout: ${CURRENT}KB" >> "$GITHUB_STEP_SUMMARY"
           fi
 
           echo "$CURRENT" > main-framework-size.txt
