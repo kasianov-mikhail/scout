@@ -53,13 +53,6 @@ jobs:
             -enableCodeCoverage YES \
             build-for-testing
 
-      - name: Framework size
-        run: |
-          FRAMEWORK=$(find ~/Library/Developer/Xcode/DerivedData \
-            -path "*/PackageFrameworks/Scout.framework" -print -quit 2>/dev/null)
-
-          du -sh "$FRAMEWORK" 2>/dev/null | cut -f1 >> "$GITHUB_STEP_SUMMARY"
-
       - name: Test
         run: |
           xcodebuild \
