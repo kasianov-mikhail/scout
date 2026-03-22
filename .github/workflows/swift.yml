@@ -65,17 +65,19 @@ jobs:
             -path "*/Scout.build/Objects-normal/arm64" -print -quit 2>/dev/null)
 
           CURRENT=$(du -sk "$OBJ_DIR" 2>/dev/null | cut -f1)
+          MB=$(awk "BEGIN { printf \"%.1f\", $CURRENT / 1024 }")
 
           if [ -f main-framework-size.txt ]; then
             MAIN=$(cat main-framework-size.txt)
             DIFF=$((CURRENT - MAIN))
             if [ "$DIFF" -eq 0 ]; then
-              echo "Scout: ${CURRENT}KB" >> "$GITHUB_STEP_SUMMARY"
+              echo "Scout: ${MB}MB" >> "$GITHUB_STEP_SUMMARY"
             else
-              printf 'Scout: %sKB (%+dKB)\n' "$CURRENT" "$DIFF" >> "$GITHUB_STEP_SUMMARY"
+              DIFF_KB=$(awk "BEGIN { printf \"%+d\", $DIFF }")
+              echo "Scout: ${MB}MB (${DIFF_KB}KB)" >> "$GITHUB_STEP_SUMMARY"
             fi
           else
-            echo "Scout: ${CURRENT}KB" >> "$GITHUB_STEP_SUMMARY"
+            echo "Scout: ${MB}MB" >> "$GITHUB_STEP_SUMMARY"
           fi
 
           echo "$CURRENT" > main-framework-size.txt
