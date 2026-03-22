@@ -26,13 +26,13 @@ extension EnvironmentValues {
 #if !DEBUG
     private struct PlaceholderDatabase: AppDatabase {
         func read(matching: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
-            fatalError("Database not configured")
+            throw CKError(.internalError)
         }
         func readMore(from: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
-            fatalError("Database not configured")
+            throw CKError(.internalError)
         }
         func lookup(id: CKRecord.ID) async throws -> CKRecord {
-            fatalError("Database not configured")
+            throw CKError(.internalError)
         }
     }
 #endif
