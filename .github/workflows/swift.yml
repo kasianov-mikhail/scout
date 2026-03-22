@@ -69,12 +69,6 @@ jobs:
             -resultBundlePath TestResults \
             test-without-building
 
-      - name: Test failures
-        if: failure()
-        run: |
-          xcrun xcresulttool get test-results summary --path TestResults.xcresult \
-            | jq -r '.testFailures[]? | "::error title=\(.testName)::\(.failureText) [\(.testIdentifierString)]"'
-
       - name: Coverage
         run: |
           xcrun xccov view --report --only-targets TestResults.xcresult | grep -v ScoutTests
