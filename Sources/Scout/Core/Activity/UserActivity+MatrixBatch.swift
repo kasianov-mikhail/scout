@@ -13,7 +13,7 @@ extension UserActivity: MatrixBatch {
             throw .init("month")
         }
         return Matrix(
-            recordType: "PeriodMatrix",
+            recordType: PeriodCell<Int>.recordType,
             date: month,
             name: "ActiveUser",
             cells: parse(of: batch)

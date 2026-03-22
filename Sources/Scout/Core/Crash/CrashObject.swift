@@ -10,6 +10,7 @@ import CoreData
 
 @objc(CrashObject)
 final class CrashObject: NamedObject, Syncable, MatrixBatch {
+    static let recordType = "Crash"
     @NSManaged var crashID: UUID?
     @NSManaged var reason: String?
     @NSManaged var stackTrace: Data?
@@ -25,7 +26,7 @@ final class CrashObject: NamedObject, Syncable, MatrixBatch {
 
 extension CrashObject: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: "Crash")
+        let record = CKRecord(recordType: Self.recordType)
 
         record["name"] = name
         record["reason"] = reason

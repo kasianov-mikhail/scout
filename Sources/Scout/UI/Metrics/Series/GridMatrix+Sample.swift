@@ -17,7 +17,7 @@ extension Matrix where T == GridCell<Int> {
                 return nil
             }
 
-            let record = CKRecord(recordType: "DateIntMatrix")
+            let record = CKRecord(recordType: Int.recordType)
             record["date"] = weekStart
             record["name"] = "event_name"
 

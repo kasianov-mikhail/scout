@@ -19,7 +19,7 @@ class NamedObject: SyncableObject {
             throw .init("week")
         }
         return Matrix(
-            recordType: "DateIntMatrix",
+            recordType: Int.recordType,
             date: week,
             name: name,
             cells: parse(of: batch)

@@ -10,6 +10,7 @@ import CoreData
 
 @objc(EventObject)
 final class EventObject: NamedObject, Syncable, MatrixBatch {
+    static let recordType = "Event"
     @NSManaged var eventID: UUID?
     @NSManaged var level: String?
     @NSManaged var paramCount: Int64
@@ -26,7 +27,7 @@ final class EventObject: NamedObject, Syncable, MatrixBatch {
 
 extension EventObject: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: "Event")
+        let record = CKRecord(recordType: Self.recordType)
 
         record["name"] = name
         record["level"] = level

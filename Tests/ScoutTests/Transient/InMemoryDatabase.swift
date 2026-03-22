@@ -55,6 +55,6 @@ final class InMemoryDatabase: Database, @unchecked Sendable {
 
 extension InMemoryDatabase {
     var events: [CKRecord] {
-        records.filter { $0.recordType == "Event" }
+        records.filter { $0.recordType == EventObject.recordType }
     }
 }

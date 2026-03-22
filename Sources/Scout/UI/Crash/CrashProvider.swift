@@ -15,7 +15,7 @@ class CrashProvider: ObservableObject {
 
     func fetch(in database: AppDatabase) async {
         do {
-            let query = CKQuery(recordType: "Crash", predicate: Self.predicate)
+            let query = CKQuery(recordType: CrashObject.recordType, predicate: Self.predicate)
             query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
 
             let results = try await database.read(

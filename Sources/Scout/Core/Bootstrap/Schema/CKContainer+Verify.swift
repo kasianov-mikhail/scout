@@ -17,8 +17,12 @@ struct SchemaError: LocalizedError {
 }
 
 private let schemaRecordTypes = [
-    "Event", "Session", "Crash",
-    "DateIntMatrix", "DateDoubleMatrix", "PeriodMatrix",
+    EventObject.recordType,
+    SessionObject.recordType,
+    CrashObject.recordType,
+    Int.recordType,
+    Double.recordType,
+    PeriodCell<Int>.recordType,
 ]
 
 extension CKContainer {
