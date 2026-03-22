@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension UserActivity: PartialMonitor {
+extension UserActivityObject: PartialMonitor {
     static func trigger(in context: NSManagedObjectContext) throws {
         try trigger(date: Date().startOfDay, in: context)
     }
