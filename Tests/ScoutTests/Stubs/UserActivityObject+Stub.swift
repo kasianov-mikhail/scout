@@ -9,7 +9,7 @@ import CoreData
 
 @testable import Scout
 
-extension UserActivity {
+extension UserActivityObject {
     @discardableResult static func stub(
         month: Date,
         day: Date,
@@ -17,9 +17,9 @@ extension UserActivity {
         count: Int,
         isSynced: Bool,
         in context: NSManagedObjectContext
-    ) -> UserActivity {
-        let entity = NSEntityDescription.entity(forEntityName: "UserActivity", in: context)!
-        let activity = UserActivity(entity: entity, insertInto: context)
+    ) -> UserActivityObject {
+        let entity = NSEntityDescription.entity(forEntityName: "UserActivityObject", in: context)!
+        let activity = UserActivityObject(entity: entity, insertInto: context)
 
         activity.userActivityID = UUID()
         activity.month = month

@@ -7,8 +7,8 @@
 
 import Foundation
 
-extension UserActivity: MatrixBatch {
-    static func matrix(of batch: [UserActivity]) throws(MatrixPropertyError) -> Matrix<PeriodCell<Int>> {
+extension UserActivityObject: MatrixBatch {
+    static func matrix(of batch: [UserActivityObject]) throws(MatrixPropertyError) -> Matrix<PeriodCell<Int>> {
         guard let month = batch.first?.month else {
             throw .init("month")
         }
@@ -20,7 +20,7 @@ extension UserActivity: MatrixBatch {
         )
     }
 
-    static func parse(of batch: [UserActivity]) -> [PeriodCell<Int>] {
+    static func parse(of batch: [UserActivityObject]) -> [PeriodCell<Int>] {
         batch.compactMap(\.cell).mergeDuplicates()
     }
 

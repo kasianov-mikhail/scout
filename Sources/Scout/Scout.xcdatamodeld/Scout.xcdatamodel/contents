@@ -42,7 +42,7 @@
     <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="none">
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
-    <entity name="UserActivity" representedClassName="UserActivity" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="UserActivityObject" representedClassName="UserActivityObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="period" attributeType="String"/>

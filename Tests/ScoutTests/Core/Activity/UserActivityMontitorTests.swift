@@ -11,14 +11,14 @@ import Testing
 @testable import Scout
 
 @MainActor
-@Suite("UserActivity+Monitor")
-struct UserActivityMontitorTests {
+@Suite("UserActivityObject+Monitor")
+struct UserActivityObjectMontitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Trigger") func trigger() async throws {
-        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
 
-        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
+        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
         let activities = try context.fetch(request)
 
         let days = activities.days.map(\.dayCount)
@@ -31,10 +31,10 @@ struct UserActivityMontitorTests {
     }
 
     @Test("Trigger at next day") func triggerNextDay() async throws {
-        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
-        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 2), in: context)
+        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 2), in: context)
 
-        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
+        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
         let activities = try context.fetch(request)
 
         let days = activities.days.map(\.dayCount)
@@ -47,10 +47,10 @@ struct UserActivityMontitorTests {
     }
 
     @Test("Trigger skip one day") func triggerSkipDay() async throws {
-        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
-        try UserActivity.trigger(date: Date(year: 2025, month: 1, day: 3), in: context)
+        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 3), in: context)
 
-        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
+        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
         let activities = try context.fetch(request)
 
         let days = activities.days.map(\.dayCount)
@@ -63,16 +63,16 @@ struct UserActivityMontitorTests {
     }
 }
 
-extension [UserActivity] {
-    fileprivate var days: [UserActivity] {
+extension [UserActivityObject] {
+    fileprivate var days: [UserActivityObject] {
         filter { $0.period == ActivityPeriod.daily.rawValue }
     }
 
-    fileprivate var weeks: [UserActivity] {
+    fileprivate var weeks: [UserActivityObject] {
         filter { $0.period == ActivityPeriod.weekly.rawValue }
     }
 
-    fileprivate var months: [UserActivity] {
+    fileprivate var months: [UserActivityObject] {
         filter { $0.period == ActivityPeriod.monthly.rawValue }
     }
 }

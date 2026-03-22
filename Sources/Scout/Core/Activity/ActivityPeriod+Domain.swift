@@ -10,14 +10,14 @@ import Foundation
 extension ActivityPeriod {
     /// Selects the per-period counter used for DAU/WAU/MAU.
     ///
-    /// - `.daily`   -> daily active users (DAU) via `UserActivity.dayCount`
-    /// - `.weekly`  -> weekly active users (WAU) via `UserActivity.weekCount`
-    /// - `.monthly` -> monthly active users (MAU) via `UserActivity.monthCount`
+    /// - `.daily`   -> daily active users (DAU) via `UserActivityObject.dayCount`
+    /// - `.weekly`  -> weekly active users (WAU) via `UserActivityObject.weekCount`
+    /// - `.monthly` -> monthly active users (MAU) via `UserActivityObject.monthCount`
     ///
     /// This key path lets aggregation and update code address the correct metric
     /// without branching on the period.
     ///
-    var countField: ReferenceWritableKeyPath<UserActivity, Int32> {
+    var countField: ReferenceWritableKeyPath<UserActivityObject, Int32> {
         switch self {
         case .daily:
             \.dayCount

@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension UserActivity {
+extension UserActivityObject {
     struct Provider {
         let range: Range<Date>
         let period: ActivityPeriod
@@ -19,8 +19,8 @@ extension UserActivity {
     }
 }
 
-extension UserActivity.Provider {
-    func fetch(in context: NSManagedObjectContext) throws -> [UserActivity] {
+extension UserActivityObject.Provider {
+    func fetch(in context: NSManagedObjectContext) throws -> [UserActivityObject] {
         var activities = try existing(in: context)
         var recent = activities.last?.day?.addingDay() ?? range.lowerBound
 
@@ -34,11 +34,11 @@ extension UserActivity.Provider {
         return activities
     }
 
-    func existing(in context: NSManagedObjectContext) throws -> [UserActivity] {
-        let request = NSFetchRequest<UserActivity>(entityName: "UserActivity")
+    func existing(in context: NSManagedObjectContext) throws -> [UserActivityObject] {
+        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
 
         request.sortDescriptors = [
-            NSSortDescriptor(keyPath: \UserActivity.day, ascending: true)
+            NSSortDescriptor(keyPath: \UserActivityObject.day, ascending: true)
         ]
 
         request.predicate = NSPredicate(
@@ -51,9 +51,9 @@ extension UserActivity.Provider {
         return try context.fetch(request)
     }
 
-    func newActivity(for date: Date, in context: NSManagedObjectContext) -> UserActivity {
-        let entity = NSEntityDescription.entity(forEntityName: "UserActivity", in: context)!
-        let activity = UserActivity(entity: entity, insertInto: context)
+    func newActivity(for date: Date, in context: NSManagedObjectContext) -> UserActivityObject {
+        let entity = NSEntityDescription.entity(forEntityName: "UserActivityObject", in: context)!
+        let activity = UserActivityObject(entity: entity, insertInto: context)
 
         activity.userActivityID = UUID()
         activity.date = date
@@ -63,7 +63,7 @@ extension UserActivity.Provider {
     }
 }
 
-extension UserActivity.Provider: CustomDebugStringConvertible {
+extension UserActivityObject.Provider: CustomDebugStringConvertible {
     var debugDescription: String {
         "Provider for \(period) activities on \(range)"
     }

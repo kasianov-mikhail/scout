@@ -11,12 +11,12 @@ extension NotificationListener {
     @MainActor static let appState = NotificationListener(table: [
         UIApplication.willEnterForegroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionObject.trigger)
-            try await persistentContainer.performBackgroundTask(UserActivity.trigger)
+            try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
             try await SyncController.shared.synchronize()
         },
         UIApplication.didEnterBackgroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionObject.complete)
-            try await persistentContainer.performBackgroundTask(UserActivity.trigger)
+            try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
             try await SyncController.shared.synchronize()
         },
     ])
