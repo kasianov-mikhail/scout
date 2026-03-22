@@ -57,7 +57,7 @@ public struct HomeView: View {
 
 #Preview("Schema Error") {
     ErrorView(
-        error: SchemaError(recordTypes: ["Crash", "PeriodMatrix"]),
+        error: SchemaError(recordTypes: [CrashObject.recordType, PeriodCell<Int>.recordType]),
         retry: {}
     )
 }

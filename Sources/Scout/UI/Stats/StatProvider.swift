@@ -25,7 +25,7 @@ class StatProvider: QueryProvider<GridMatrix<Int>> {
             )
 
             return CKQuery(
-                recordType: "DateIntMatrix",
+                recordType: Int.recordType,
                 predicate: predicate
             )
         }

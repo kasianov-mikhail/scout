@@ -39,7 +39,7 @@ struct NamedObjectTests {
 
         let matrix = try NamedObject.matrix(of: batch)
 
-        #expect(matrix.recordType == "DateIntMatrix")
+        #expect(matrix.recordType == Int.recordType)
         #expect(matrix.name == "signal")
         #expect(matrix.date == date.startOfWeek)
         #expect(matrix.cells.count == 2)

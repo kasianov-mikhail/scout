@@ -20,7 +20,7 @@ class ActivityProvider: QueryProvider<ActivityMatrix> {
             )
 
             return CKQuery(
-                recordType: "PeriodMatrix",
+                recordType: PeriodCell<Int>.recordType,
                 predicate: predicate
             )
         }

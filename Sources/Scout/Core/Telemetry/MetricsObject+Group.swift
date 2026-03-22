@@ -28,7 +28,7 @@ class MetricsObject: SyncableObject {
             throw .init("week")
         }
         return Matrix(
-            recordType: T.Value.recordName,
+            recordType: T.Value.recordType,
             date: week,
             name: name,
             category: telemetry,

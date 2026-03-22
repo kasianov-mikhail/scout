@@ -10,6 +10,7 @@ import CoreData
 
 @objc(SessionObject)
 final class SessionObject: SyncableObject, Syncable {
+    static let recordType = "Session"
     @NSManaged var endDate: Date?
 
     static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
@@ -19,7 +20,7 @@ final class SessionObject: SyncableObject, Syncable {
 
 extension SessionObject: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: "Session")
+        let record = CKRecord(recordType: Self.recordType)
 
         record["start_date"] = date
         record["end_date"] = endDate

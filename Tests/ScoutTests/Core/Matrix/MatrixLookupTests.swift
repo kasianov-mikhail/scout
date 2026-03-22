@@ -20,7 +20,7 @@ struct MatrixLookupTests {
         database.records = [CKRecord.matrixStub(name: "other", date: Date().addingTimeInterval(-3600))]
 
         let matrix = Matrix<GridCell<Int>>(
-            recordType: "DateIntMatrix",
+            recordType: Int.recordType,
             date: Date(),
             name: "target",
             cells: []
@@ -37,7 +37,7 @@ struct MatrixLookupTests {
         database.records = [match]
 
         let query = Matrix<GridCell<Int>>(
-            recordType: "DateIntMatrix",
+            recordType: Int.recordType,
             date: date,
             name: "target",
             cells: []
@@ -46,7 +46,7 @@ struct MatrixLookupTests {
         let existing = try #require(try await query.lookupExisting(in: database))
         let parsed = try Matrix<GridCell<Int>>(record: match)
 
-        #expect(existing.recordType == "DateIntMatrix")
+        #expect(existing.recordType == Int.recordType)
         #expect(existing.name == "target")
         #expect(existing.date == date)
         #expect(Set(existing.cells) == Set(parsed.cells))

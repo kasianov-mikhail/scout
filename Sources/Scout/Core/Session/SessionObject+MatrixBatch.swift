@@ -11,7 +11,7 @@ extension SessionObject: MatrixBatch {
             throw .init("week")
         }
         return Matrix(
-            recordType: "DateIntMatrix",
+            recordType: Int.recordType,
             date: week,
             name: "Session",
             cells: parse(of: batch)

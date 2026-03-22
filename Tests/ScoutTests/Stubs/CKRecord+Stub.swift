@@ -7,12 +7,14 @@
 
 import CloudKit
 
+@testable import Scout
+
 extension CKRecord {
     static func matrixStub(
         name: String = "matrix",
         date: Date = Date()
     ) -> CKRecord {
-        let matrix = CKRecord(recordType: "DateIntMatrix")
+        let matrix = CKRecord(recordType: Int.recordType)
         matrix["name"] = name
         matrix["date"] = date
         matrix["cell_1_01"] = 3

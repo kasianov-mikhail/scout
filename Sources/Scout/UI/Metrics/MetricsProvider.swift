@@ -20,7 +20,7 @@ class MetricsProvider<T: ChartNumeric>: QueryProvider<GridMatrix<T>> {
             )
 
             return CKQuery(
-                recordType: T.recordName,
+                recordType: T.recordType,
                 predicate: predicate
             )
         }

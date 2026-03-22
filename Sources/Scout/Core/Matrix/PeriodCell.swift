@@ -8,6 +8,8 @@
 import CloudKit
 
 struct PeriodCell<T: MatrixValue> {
+    static var recordType: String { "PeriodMatrix" }
+
     let period: ActivityPeriod
     let day: Int
     let value: T

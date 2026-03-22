@@ -43,7 +43,7 @@ extension Event {
         ]
 
         return eventLevels.enumerated().map { index, event in
-            let record = CKRecord(recordType: "Event", recordID: CKRecord.ID())
+            let record = CKRecord(recordType: EventObject.recordType, recordID: CKRecord.ID())
             record["name"] = event.key
             record["userID"] = UUID().uuidString
             record["sessionID"] = UUID().uuidString

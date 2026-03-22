@@ -22,7 +22,7 @@ struct SyncCoordinatorTests {
             database: database,
             maxRetry: 3,
             matrix: Matrix(
-                recordType: "DateIntMatrix",
+                recordType: Int.recordType,
                 date: now,
                 name: "matrix",
                 cells: []
@@ -34,7 +34,7 @@ struct SyncCoordinatorTests {
     func testUploadSuccess() async throws {
         try await coordinator.upload()
 
-        #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
+        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 
     @Test("Upload retries and merges on serverRecordChanged error")
@@ -43,7 +43,7 @@ struct SyncCoordinatorTests {
 
         try await coordinator.upload()
 
-        #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
+        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 
     @Test("Upload falls back to newMatrix after max retries")
@@ -53,7 +53,7 @@ struct SyncCoordinatorTests {
         }
         try await coordinator.upload()
 
-        #expect(database.records.filter { $0.recordType == "DateIntMatrix" }.count == 1)
+        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 }
 

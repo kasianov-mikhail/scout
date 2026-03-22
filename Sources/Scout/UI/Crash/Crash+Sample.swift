@@ -23,7 +23,7 @@ extension Crash {
         ]
 
         return crashes.enumerated().map { index, crash in
-            let record = CKRecord(recordType: "Crash", recordID: CKRecord.ID())
+            let record = CKRecord(recordType: CrashObject.recordType, recordID: CKRecord.ID())
             record["name"] = crash.name
             record["reason"] = crash.reason
             record["date"] = Date().addingTimeInterval(TimeInterval(-index * 7200))

@@ -10,15 +10,15 @@ import CoreData
 
 protocol MatrixValue: AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
     associatedtype Object: MetricsValued where Object.Value == Self
-    static var recordName: String { get }
+    static var recordType: String { get }
 }
 
 extension Int: MatrixValue {
     typealias Object = IntMetricsObject
-    static let recordName = "DateIntMatrix"
+    static let recordType = "DateIntMatrix"
 }
 
 extension Double: MatrixValue {
     typealias Object = DoubleMetricsObject
-    static let recordName = "DateDoubleMatrix"
+    static let recordType = "DateDoubleMatrix"
 }
