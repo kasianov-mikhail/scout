@@ -47,32 +47,18 @@ jobs:
 
       - name: Build
         run: |
-          start=$(date +%s)
-
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             -enableCodeCoverage YES \
             build-for-testing
 
-          echo "duration=$(( $(date +%s) - start ))" >> "$GITHUB_ENV"
-
-      - name: Build summary
+      - name: Framework size
         run: |
-          BUILD_DIR=$(xcodebuild \
-            -scheme Scout \
-            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
-            -showBuildSettings 2>/dev/null \
-            | awk '/^\s*BUILT_PRODUCTS_DIR =/ { print $3; exit }')
+          FRAMEWORK=$(find ~/Library/Developer/Xcode/DerivedData \
+            -path "*/PackageFrameworks/Scout.framework" -print -quit 2>/dev/null)
 
-          SIZE=$(du -sh "$BUILD_DIR/PackageFrameworks/Scout.framework" 2>/dev/null | cut -f1 || echo "–")
-
-          {
-            echo "| Metric | Value |"
-            echo "|--------|-------|"
-            echo "| Build time | ${duration}s |"
-            echo "| Framework size | $SIZE |"
-          } >> "$GITHUB_STEP_SUMMARY"
+          du -sh "$FRAMEWORK" 2>/dev/null | cut -f1 >> "$GITHUB_STEP_SUMMARY"
 
       - name: Test
         run: |
