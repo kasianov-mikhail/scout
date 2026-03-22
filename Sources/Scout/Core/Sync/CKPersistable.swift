@@ -7,8 +7,6 @@
 
 import CloudKit
 
-typealias CKPersistable = CKInitializable & CKRepresentable
-
 protocol CKInitializable {
     init(record: CKRecord) throws
 }
