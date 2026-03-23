@@ -34,3 +34,17 @@ struct StatRow: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#Preview {
+    NavigationStack {
+        List {
+            StatRow(
+                config: StatConfig(title: "Events", color: .blue, showList: true),
+                period: .today,
+                stat: StatProvider(eventName: "event_name", periods: Period.all)
+            )
+        }
+    }
+}

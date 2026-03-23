@@ -29,3 +29,16 @@ struct ActivityRow: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#Preview {
+    NavigationStack {
+        List {
+            ActivityRow(
+                period: .daily,
+                activity: ActivityProvider()
+            )
+        }
+    }
+}
