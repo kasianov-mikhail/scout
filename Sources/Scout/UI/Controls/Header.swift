@@ -33,3 +33,12 @@ struct Header: View {
         .padding(.bottom, 4)
     }
 }
+
+// MARK: - Previews
+
+#Preview {
+    List {
+        Header(title: "Section Title")
+        Header(title: "Section Title") {}
+    }
+}

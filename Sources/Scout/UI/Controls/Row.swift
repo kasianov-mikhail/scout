@@ -29,3 +29,19 @@ struct Row<Content: View, Destination: View>: View {
         }
     }
 }
+
+// MARK: - Previews
+
+#Preview {
+    NavigationStack {
+        List {
+            Row {
+                Text("Label")
+                Spacer()
+                Text("Value")
+            } destination: {
+                Text("Detail")
+            }
+        }
+    }
+}
