@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
-import UIKit
 
 class NotificationListener {
     struct SetupError: LocalizedError {
