@@ -11,17 +11,16 @@ import Testing
 
 @Suite("QueueDispatcher")
 struct QueueDispatcherTests {
-
     @Test("Single work item executes to completion")
     func testSingleWorkExecutes() async throws {
         let dispatcher = QueueDispatcher()
-        var result = 0
+        let box = Box(0)
 
         try await dispatcher.perform {
-            result = 42
+            box.value = 42
         }
 
-        #expect(result == 42)
+        #expect(box.value == 42)
     }
 
     @Test("Error from work is propagated to the caller")
@@ -38,30 +37,38 @@ struct QueueDispatcherTests {
     @Test("After an error, new work can still be performed")
     func testRecoveryAfterError() async throws {
         let dispatcher = QueueDispatcher()
-        var afterError = false
+        let box = Box(false)
 
         _ = try? await dispatcher.perform {
             throw MonitorError.notFound
         }
 
         try await dispatcher.perform {
-            afterError = true
+            box.value = true
         }
 
-        #expect(afterError)
+        #expect(box.value)
     }
 
     @Test("Multiple sequential calls each execute their work")
     func testMultipleSequentialCalls() async throws {
         let dispatcher = QueueDispatcher()
-        var count = 0
+        let box = Box(0)
 
         for _ in 1...3 {
             try await dispatcher.perform {
-                count += 1
+                box.value += 1
             }
         }
 
-        #expect(count == 3)
+        #expect(box.value == 3)
+    }
+}
+
+private final class Box<T>: @unchecked Sendable {
+    var value: T
+
+    init(_ value: T) {
+        self.value = value
     }
 }
