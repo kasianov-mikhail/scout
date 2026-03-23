@@ -12,7 +12,7 @@ import Testing
 
 @MainActor
 @Suite("UserActivityObject+Monitor")
-struct UserActivityObjectMontitorTests {
+struct UserActivityObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Trigger") func trigger() async throws {
