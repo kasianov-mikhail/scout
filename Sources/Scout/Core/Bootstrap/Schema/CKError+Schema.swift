@@ -13,10 +13,10 @@ extension CKError {
     var isSchemaError: Bool {
         switch code {
         case .unknownItem:
-            let message = localizedDescription.lowercased()
+            let message = (userInfo["ServerErrorDescription"] as? String)?.lowercased() ?? ""
             return message.contains("record type")
         case .invalidArguments, .serverRejectedRequest:
-            let message = localizedDescription.lowercased()
+            let message = (userInfo["ServerErrorDescription"] as? String)?.lowercased() ?? ""
             return message.contains("record type")
                 || message.contains("field")
                 || message.contains("not marked queryable")
