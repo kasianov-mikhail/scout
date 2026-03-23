@@ -78,6 +78,21 @@ struct StatView: View {
     }
 }
 
+// MARK: - Preview
+
+#Preview("StatView") {
+    let stat = StatProvider(eventName: "app_launch", periods: Period.all)
+    stat.result = .success([])
+    return NavigationStack {
+        StatView(
+            config: StatView.Config(title: "App Launch", color: .blue, showList: true),
+            stat: stat,
+            period: .yesterday
+        )
+        .environmentObject(Tint())
+    }
+}
+
 // MARK: -
 
 extension StatView.Config: CustomDebugStringConvertible {

@@ -44,3 +44,13 @@ extension ChartExtent<ActivityPeriod> {
         segment(from: matrices.points(on: period))
     }
 }
+
+// MARK: - Preview
+
+#Preview("ActivityView") {
+    let activity = ActivityProvider()
+    activity.result = .success([])
+    return NavigationStack {
+        ActivityView(activity: activity, period: .daily)
+    }
+}
