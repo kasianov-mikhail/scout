@@ -74,7 +74,10 @@ struct SchemaErrorTests {
         let nsError = NSError(
             domain: CKErrorDomain,
             code: code.rawValue,
-            userInfo: [NSLocalizedDescriptionKey: message]
+            userInfo: [
+                NSLocalizedDescriptionKey: message,
+                "ServerErrorDescription": message,
+            ]
         )
         return CKError(_nsError: nsError)
     }
