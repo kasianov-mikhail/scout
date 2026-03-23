@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct DateAddTests {
+struct DateAddComponentTests {
     let base = Date(timeIntervalSinceReferenceDate: 0)  // 2001-01-01 00:00:00 UTC
 
     // MARK: - Adding (non-mutating)
