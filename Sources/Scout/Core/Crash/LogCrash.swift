@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
-import Logging
 
 func logCrash(_ crash: CrashInfo, context: NSManagedObjectContext) throws {
     let entity = NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!
