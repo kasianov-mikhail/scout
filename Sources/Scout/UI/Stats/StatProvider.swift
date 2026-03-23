@@ -19,8 +19,9 @@ class StatProvider: QueryProvider<GridMatrix<Int>> {
             let dateRange = Calendar.utc.defaultRange
 
             let predicate = NSPredicate(
-                format: "date >= %@ AND name == %@",
+                format: "date >= %@ AND date < %@ AND name == %@",
                 dateRange.lowerBound as NSDate,
+                dateRange.upperBound as NSDate,
                 eventName
             )
 
