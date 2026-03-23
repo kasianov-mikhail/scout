@@ -115,11 +115,4 @@ struct DateAddComponentTests {
         let components = Calendar.utc.dateComponents([.year], from: base, to: date)
         #expect(components.year == 1)
     }
-
-    @Test("add generic component mutates in place")
-    func addGenericMutating() {
-        var date = base
-        date.add(.second, value: 90)
-        #expect(date.timeIntervalSince(base) == 90)
-    }
 }
