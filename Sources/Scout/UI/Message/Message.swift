@@ -21,5 +21,4 @@ extension View {
     func message(_ message: Binding<Message?>) -> some View {
         modifier(MessageView.Presenter(message: message))
     }
-
 }
