@@ -51,11 +51,6 @@ struct AnalyticsView: View {
             search.events?.removeAll()
         }
         .navigationTitle("Events")
-        .onPreferenceChange(Message.Key.self) { message in
-            MainActor.assumeIsolated {
-                provider.message = message
-            }
-        }
         .onAppear {
             tint.value = nil
         }

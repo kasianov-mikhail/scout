@@ -16,10 +16,6 @@ struct CrashDetailView: View {
         List {
             headerSection
 
-            //            if let reason = crash.reason {
-            //                reasonSection(reason)
-            //            }
-
             if !crash.stackTrace.isEmpty {
                 stackTraceSection
             }

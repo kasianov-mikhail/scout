@@ -22,17 +22,4 @@ extension View {
         modifier(MessageView.Presenter(message: message))
     }
 
-    func navigationMessage(_ message: Message?) -> some View {
-        preference(key: Message.Key.self, value: message)
-    }
-}
-
-extension Message {
-    struct Key: PreferenceKey {
-        static let defaultValue: Message? = nil
-
-        static func reduce(value: inout Message?, nextValue: () -> Message?) {
-            value = nextValue()
-        }
-    }
 }

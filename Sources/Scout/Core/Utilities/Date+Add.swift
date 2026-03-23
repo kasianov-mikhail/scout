@@ -34,10 +34,6 @@ extension Date {
 }
 
 extension Date {
-    mutating func add(_ component: Calendar.Component, value: Int = 1) {
-        self = adding(component, value: value)
-    }
-
     mutating func addDay(_ value: Int = 1) {
         self = addingDay(value)
     }
