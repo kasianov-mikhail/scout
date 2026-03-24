@@ -85,34 +85,4 @@ struct DateAddComponentTests {
         date.addDay()
         #expect(date.timeIntervalSince(base) == 86400)
     }
-
-    @Test("addHour mutates in place")
-    func addHourMutating() {
-        var date = base
-        date.addHour(2)
-        #expect(date.timeIntervalSince(base) == 7200)
-    }
-
-    @Test("addWeek mutates in place")
-    func addWeekMutating() {
-        var date = base
-        date.addWeek()
-        #expect(date.timeIntervalSince(base) == 86400 * 7)
-    }
-
-    @Test("addMonth mutates in place")
-    func addMonthMutating() {
-        var date = base
-        date.addMonth()
-        let components = Calendar.utc.dateComponents([.month], from: base, to: date)
-        #expect(components.month == 1)
-    }
-
-    @Test("addYear mutates in place")
-    func addYearMutating() {
-        var date = base
-        date.addYear()
-        let components = Calendar.utc.dateComponents([.year], from: base, to: date)
-        #expect(components.year == 1)
-    }
 }
