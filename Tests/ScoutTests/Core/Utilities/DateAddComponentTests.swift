@@ -85,5 +85,4 @@ struct DateAddComponentTests {
         date.addDay()
         #expect(date.timeIntervalSince(base) == 86400)
     }
-
 }
