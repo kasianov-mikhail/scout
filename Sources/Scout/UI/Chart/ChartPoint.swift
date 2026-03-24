@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import CloudKit
 
 struct ChartPoint<T: ChartNumeric>: Identifiable, ChartSeries {
     let id = UUID()
