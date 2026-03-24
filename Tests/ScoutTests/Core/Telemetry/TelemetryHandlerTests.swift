@@ -11,7 +11,6 @@ import Testing
 @testable import Scout
 
 struct TelemetryHandlerTests {
-
     @Test("CKTelemetryHandler stores label")
     func storesLabel() {
         let handler = CKTelemetryHandler(label: "test_label", dimensions: [])
