@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
+import Foundation
 
 struct ChartPoint<T: ChartNumeric>: Identifiable, ChartSeries {
     let id = UUID()
