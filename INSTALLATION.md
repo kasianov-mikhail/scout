@@ -17,7 +17,7 @@ Upload the [schema file](https://github.com/kasianov-mikhail/scout/blob/main/Sch
 xcrun cktool save-token
 ```
 
-Then run the upload script included in the repository. It will update both development and production environments:
+Then run the upload script included in the repository. It will upload the schema to the development environment:
 ```bash
 ./upload-schema.sh <your-team-id> <your-container-id>
 ```
