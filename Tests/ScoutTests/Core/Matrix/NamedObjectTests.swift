@@ -19,9 +19,9 @@ struct NamedObjectTests {
     @Test("parse(of:) groups by hour and counts")
     func testParseOf() throws {
         let batch: [NamedObject] = [
-            .stub(name: "crash", date: date, in: context),
-            .stub(name: "crash", date: date, in: context),
-            .stub(name: "crash", date: date.addingHour(), in: context),
+            try .stub(name: "crash", date: date, in: context),
+            try .stub(name: "crash", date: date, in: context),
+            try .stub(name: "crash", date: date.addingHour(), in: context),
         ]
 
         let cells = NamedObject.parse(of: batch)
@@ -33,8 +33,8 @@ struct NamedObjectTests {
     @Test("matrix(of:) produces correct record type and name")
     func testMatrixOf() throws {
         let batch: [NamedObject] = [
-            .stub(name: "signal", date: date, in: context),
-            .stub(name: "signal", date: date.addingHour(), in: context),
+            try .stub(name: "signal", date: date, in: context),
+            try .stub(name: "signal", date: date.addingHour(), in: context),
         ]
 
         let matrix = try NamedObject.matrix(of: batch)
@@ -48,7 +48,7 @@ struct NamedObjectTests {
     @Test("matrix(of:) throws when name is missing")
     func testMatrixThrowsOnMissingName() throws {
         let batch: [NamedObject] = [
-            .stub(name: nil, date: date, in: context)
+            try .stub(name: nil, date: date, in: context)
         ]
 
         #expect(throws: MatrixPropertyError.self) {
@@ -58,7 +58,7 @@ struct NamedObjectTests {
 
     @Test("matrix(of:) throws when week is missing")
     func testMatrixThrowsOnMissingWeek() throws {
-        let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+        let entity = try #require(NSEntityDescription.entity(forEntityName: "EventObject", in: context))
         let object = EventObject(entity: entity, insertInto: context)
         object.name = "test"
 
@@ -75,8 +75,8 @@ extension NamedObject {
         name: String?,
         date: Date,
         in context: NSManagedObjectContext
-    ) -> NamedObject {
-        let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
+    ) throws -> NamedObject {
+        let entity = try #require(NSEntityDescription.entity(forEntityName: "EventObject", in: context))
         let object = EventObject(entity: entity, insertInto: context)
         object.name = name
         object.date = date

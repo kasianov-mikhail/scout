@@ -14,9 +14,9 @@ struct UserDefaultsUUIDTests {
     let defaults: UserDefaults
     let prefix: String
 
-    init() {
+    init() throws {
         prefix = UUID().uuidString
-        defaults = UserDefaults(suiteName: "UserDefaultsUUIDTests_\(prefix)")!
+        defaults = try #require(UserDefaults(suiteName: "UserDefaultsUUIDTests_\(prefix)"))
     }
 
     @Test("UUID round-trips through UserDefaults")

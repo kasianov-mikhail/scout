@@ -17,18 +17,18 @@ struct RangeLabelTests {
         return formatter
     }()
 
-    @Test("Single day range") func testSingleDayRange() {
-        let startDate = formatter.date(from: "2024-01-01")!
-        let endDate = formatter.date(from: "2024-01-02")!
+    @Test("Single day range") func testSingleDayRange() throws {
+        let startDate = try #require(formatter.date(from: "2024-01-01"))
+        let endDate = try #require(formatter.date(from: "2024-01-02"))
         let range = startDate..<endDate
         let label = range.label(using: formatter)
 
         #expect(label == "2024-01-01")
     }
 
-    @Test("Multiple days range") func testMultipleDaysRange() {
-        let startDate = formatter.date(from: "2024-01-01")!
-        let endDate = formatter.date(from: "2024-01-04")!
+    @Test("Multiple days range") func testMultipleDaysRange() throws {
+        let startDate = try #require(formatter.date(from: "2024-01-01"))
+        let endDate = try #require(formatter.date(from: "2024-01-04"))
         let range = startDate..<endDate
         let label = range.label(using: formatter)
 

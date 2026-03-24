@@ -14,7 +14,7 @@ struct DateStartTests {
     let date: Date
     let set: Set<Calendar.Component> = [.year, .month, .day, .hour, .minute, .second]
 
-    init() {
+    init() throws {
         let components = DateComponents(
             year: 2030,
             month: 3,
@@ -23,7 +23,7 @@ struct DateStartTests {
             minute: 9,
             second: 11
         )
-        date = Calendar.utc.date(from: components)!
+        date = try #require(Calendar.utc.date(from: components))
     }
 
     @Test("Start of an hour") func startOfHour() {

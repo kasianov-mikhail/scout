@@ -18,13 +18,13 @@ struct ArrayGroupingTests {
     }
 
     @Test("Group by weekday and hour")
-    func testGroupedByWeekdayAndHour() {
+    func testGroupedByWeekdayAndHour() throws {
         // 2025-08-24 10:00 UTC is a Sunday
-        let date1 = ISO8601DateFormatter().date(from: "2025-08-24T10:00:00Z")!
+        let date1 = try #require(ISO8601DateFormatter().date(from: "2025-08-24T10:00:00Z"))
         // 2025-08-24 11:00 UTC, same day, different hour
-        let date2 = ISO8601DateFormatter().date(from: "2025-08-24T11:00:00Z")!
+        let date2 = try #require(ISO8601DateFormatter().date(from: "2025-08-24T11:00:00Z"))
         // 2025-08-25 10:00 UTC is a Monday
-        let date3 = ISO8601DateFormatter().date(from: "2025-08-25T10:00:00Z")!
+        let date3 = try #require(ISO8601DateFormatter().date(from: "2025-08-25T10:00:00Z"))
 
         let data = [
             TestElement(id: 1, date: date1),
