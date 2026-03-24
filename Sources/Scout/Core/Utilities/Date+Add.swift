@@ -37,20 +37,4 @@ extension Date {
     mutating func addDay(_ value: Int = 1) {
         self = addingDay(value)
     }
-
-    mutating func addHour(_ value: Int = 1) {
-        self = addingHour(value)
-    }
-
-    mutating func addWeek(_ value: Int = 1) {
-        self = addingWeek(value)
-    }
-
-    mutating func addMonth(_ value: Int = 1) {
-        self = addingMonth(value)
-    }
-
-    mutating func addYear(_ value: Int = 1) {
-        self = addingYear(value)
-    }
 }
