@@ -37,6 +37,4 @@ public func setup(container: CKContainer) async throws {
     SyncController.shared.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
     MetricsSystem.bootstrap(TelemetryFactory())
-
-    try await container.verifySchema()
 }
