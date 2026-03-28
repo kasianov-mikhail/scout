@@ -12,7 +12,7 @@ struct SchemaError: LocalizedError {
 
     var errorDescription: String? {
         let list = recordTypes.joined(separator: ", ")
-        return "CloudKit schema is outdated. Missing record types: \(list). Run upload-schema.sh to fix."
+        return "CloudKit schema is outdated. Missing record types: \(list). Upload the Schema file via CloudKit Console."
     }
 }
 
@@ -51,7 +51,7 @@ extension CKContainer {
         if !invalid.isEmpty {
             let containerID = containerIdentifier ?? "<container-id>"
 
-            print("[Scout] Upload the schema to your CloudKit container using: ./upload-schema.sh <team-id> \(containerID)")
+            print("[Scout] Upload the Schema file to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")
             print("[Scout] For details, see INSTALLATION.md")
 
             throw SchemaError(recordTypes: invalid)
