@@ -19,6 +19,11 @@ func installExceptionHandler() {
             stackTrace: exception.callStackSymbols
         )
         CrashArchive.system.write(crash)
+
+        // Reset SIGABRT to default so the abort() that follows
+        // doesn't produce a duplicate crash report.
+        signal(SIGABRT, SIG_DFL)
+
         previousExceptionHandler?(exception)
     }
 }
