@@ -25,7 +25,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 
 Add the dependency to your `Package.swift`:
 ```swift
-.package(url: "https://github.com/kasianov-mikhail/scout.git", from: "2.0.0")
+.package(url: "https://github.com/kasianov-mikhail/scout.git", from: "3.0.0")
 ```
 
 For CloudKit setup and schema upload, see the full [Installation Guide](INSTALLATION.md).
