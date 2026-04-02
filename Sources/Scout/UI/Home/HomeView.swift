@@ -7,6 +7,7 @@
 
 import CloudKit
 import SwiftUI
+import UIKit
 
 public struct HomeView: View {
     let container: CKContainer
@@ -40,6 +41,11 @@ public struct HomeView: View {
         }
         .task {
             await checker.verify(container: container)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            Task {
+                await checker.verify(container: container)
+            }
         }
         .tint(tint.value)
         .environmentObject(tint)
