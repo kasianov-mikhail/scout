@@ -56,7 +56,7 @@ public struct HomeView: View {
     }
 
     private func errorView(error: SchemaError) -> some View {
-        ErrorView(error: error) {
+        ErrorView(description: error.styledDescription) {
             Task {
                 await checker.verify(container: container)
             }
@@ -64,9 +64,21 @@ public struct HomeView: View {
     }
 }
 
+extension SchemaError {
+    fileprivate var styledDescription: Text {
+        let types = recordTypes.joined(separator: ", ")
+
+        return Text("CloudKit schema is outdated. Missing record types: ")
+            + Text(types).underline()
+            + Text(". Upload the Schema file via CloudKit Console.")
+    }
+}
+
 #Preview("Schema Error") {
     ErrorView(
-        error: SchemaError(recordTypes: [CrashObject.recordType, PeriodCell<Int>.recordType]),
+        description: Text("CloudKit schema is outdated. Missing record types: ")
+            + Text("Crash, PeriodValue").underline()
+            + Text(". Upload the Schema file via CloudKit Console."),
         retry: {}
     )
 }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ErrorView: View {
-    let error: Error
+    let description: Text
     let retry: (() -> Void)?
 
     var body: some View {
@@ -23,7 +23,7 @@ struct ErrorView: View {
                 .font(.title2)
                 .bold()
 
-            Text(error.localizedDescription)
+            description
                 .font(.body)
                 .multilineTextAlignment(.center)
 
@@ -48,14 +48,9 @@ struct ErrorView: View {
 }
 
 #Preview("ErrorView") {
-    let errorText =
-        "This is a sample error message that is intentionally made very long to test how the \(ErrorView.self) handles multiline text display. It should properly wrap and be readable without any issues."
-
     ErrorView(
-        error: NSError(
-            domain: "",
-            code: 0,
-            userInfo: [NSLocalizedDescriptionKey: errorText]
+        description: Text(
+            "This is a sample error message that is intentionally made very long to test how the ErrorView handles multiline text display. It should properly wrap and be readable without any issues."
         ),
         retry: {}
     )

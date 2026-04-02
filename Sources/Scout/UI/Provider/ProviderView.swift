@@ -20,7 +20,7 @@ struct ProviderView<P: Provider, Content: View>: View {
         case .success(let data):
             content(data)
         case .failure(let error):
-            ErrorView(error: error, retry: fetch)
+            ErrorView(description: Text(error.localizedDescription), retry: fetch)
         }
     }
 
