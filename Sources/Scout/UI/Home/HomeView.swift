@@ -14,8 +14,6 @@ public struct HomeView: View {
 
     @StateObject private var tint = Tint()
     @StateObject private var checker = HomeChecker()
-    @Environment(\.dismiss) var dismiss
-
     public init(container: CKContainer) {
         self.container = container
     }
@@ -32,13 +30,7 @@ public struct HomeView: View {
                     errorView(error: error)
                 }
             }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Close") {
-                        dismiss()
-                    }
-                }
-            }
+            .dismissToolbar()
             .iCloudWarning(checker.iCloudWarning)
             .navigationBarTitle("Home")
         }
