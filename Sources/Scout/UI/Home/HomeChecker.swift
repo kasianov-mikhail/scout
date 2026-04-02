@@ -19,10 +19,11 @@ class HomeChecker: ObservableObject {
     @Published var iCloudWarning = false
 
     func verify(container: CKContainer) async {
-        let status = (try? await container.accountStatus()) ?? .couldNotDetermine
+        let status = try? await container.accountStatus()
         iCloudWarning = status != .available
 
         do {
+            state = .loading
             try await container.verifySchema()
             state = .ready
         } catch let error as SchemaError {
