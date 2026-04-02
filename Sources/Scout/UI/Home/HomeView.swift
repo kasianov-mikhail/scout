@@ -23,10 +23,13 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack {
             Group {
-                if let schemaError = checker.schemaError {
-                    errorView(error: schemaError)
-                } else {
+                switch checker.state {
+                case .loading:
+                    ProgressView()
+                case .ready:
                     HomeContent()
+                case .schemaError(let error):
+                    errorView(error: error)
                 }
             }
             .toolbar {

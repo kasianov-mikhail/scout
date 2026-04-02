@@ -9,7 +9,13 @@ import CloudKit
 
 @MainActor
 class HomeChecker: ObservableObject {
-    @Published var schemaError: SchemaError?
+    enum State {
+        case loading
+        case ready
+        case schemaError(SchemaError)
+    }
+
+    @Published var state: State = .loading
     @Published var iCloudWarning = false
 
     func verify(container: CKContainer) async {
@@ -18,11 +24,12 @@ class HomeChecker: ObservableObject {
 
         do {
             try await container.verifySchema()
-            schemaError = nil
+            state = .ready
         } catch let error as SchemaError {
-            schemaError = error
+            state = .schemaError(error)
         } catch {
             // Ignore other errors (network, auth, etc.)
+            state = .ready
         }
     }
 }
