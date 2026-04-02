@@ -76,9 +76,7 @@ extension SchemaError {
 
 #Preview("Schema Error") {
     ErrorView(
-        description: Text("CloudKit schema is outdated. Missing record types: ")
-            + Text("Crash, PeriodValue").underline()
-            + Text(". Upload the Schema file via CloudKit Console."),
+        description: SchemaError(recordTypes: ["Crash", "PeriodValue"]).styledDescription,
         retry: {}
     )
 }
