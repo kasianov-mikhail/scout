@@ -34,13 +34,8 @@ public struct HomeView: View {
             .iCloudWarning(checker.iCloudWarning)
             .navigationBarTitle("Home")
         }
-        .task {
+        .foregroundTask {
             await checker.verify(container: container)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
-            Task {
-                await checker.verify(container: container)
-            }
         }
         .tint(tint.value)
         .environmentObject(tint)
