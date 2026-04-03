@@ -26,7 +26,8 @@ struct EventList: View {
                 Placeholder(
                     text: "No results",
                     systemImage: "list.bullet",
-                    description: "Events will appear here once your app starts logging"
+                    description: "Events will appear here once your app starts logging",
+                    code: "logger.info(\"button_tapped\")"
                 )
                 .frame(maxHeight: .infinity)
             } else {

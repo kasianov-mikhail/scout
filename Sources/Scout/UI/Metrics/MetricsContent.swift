@@ -29,7 +29,8 @@ struct MetricsContent<T: ChartNumeric>: View {
                 Placeholder(
                     text: "No results",
                     systemImage: "chart.bar",
-                    description: "Metrics will appear here once your app records data"
+                    description: "Metrics will appear here once your app records data",
+                    code: "Counter(label: \"api_calls\").increment()"
                 )
                 .frame(maxHeight: .infinity)
             } else {
@@ -73,7 +74,8 @@ struct MetricsContent<T: ChartNumeric>: View {
         Placeholder(
             text: "No results",
             systemImage: "chart.bar",
-            description: "Metrics will appear here once your app records data"
+            description: "Metrics will appear here once your app records data",
+            code: "Counter(label: \"api_calls\").increment()"
         )
         .frame(maxHeight: .infinity)
         .navigationTitle("Metrics")
