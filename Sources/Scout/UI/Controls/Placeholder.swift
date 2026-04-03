@@ -43,6 +43,7 @@ struct Placeholder: View {
             }
         }
         .padding()
+        .frame(maxHeight: .infinity)
     }
 }
 
