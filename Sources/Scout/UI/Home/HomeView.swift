@@ -13,7 +13,8 @@ public struct HomeView: View {
     let container: CKContainer
 
     @StateObject private var tint = Tint()
-    @StateObject private var checker = HomeChecker()
+    @StateObject private var schema = SchemaLoader()
+
     public init(container: CKContainer) {
         self.container = container
     }
@@ -21,7 +22,7 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack {
             Group {
-                switch checker.state {
+                switch schema.status {
                 case .loading:
                     ProgressView()
                 case .ready:
@@ -30,13 +31,13 @@ public struct HomeView: View {
                     errorView(error: error)
                 }
             }
-            .dismissable()
-            .iCloudWarning(checker.iCloudWarning)
+            .task {
+                await schema.verify(in: container)
+            }
             .navigationBarTitle("Home")
         }
-        .foregroundTask {
-            await checker.verify(container: container)
-        }
+        .dismissable()
+        .iCloudWarning(container: container)
         .tint(tint.value)
         .environmentObject(tint)
         .environment(\.database, container.publicCloudDatabase)
@@ -45,7 +46,7 @@ public struct HomeView: View {
     private func errorView(error: SchemaError) -> some View {
         ErrorView(description: error.styledDescription) {
             Task {
-                await checker.verify(container: container)
+                await schema.verify(in: container)
             }
         }
     }
@@ -60,7 +61,6 @@ extension SchemaError {
             + Text(". Upload the Schema file via CloudKit Console.")
     }
 }
-
 #Preview("Schema Error") {
     ErrorView(
         description: SchemaError(recordTypes: ["Crash", "PeriodValue"]).styledDescription,
