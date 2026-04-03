@@ -21,7 +21,6 @@ struct CrashListView: View {
                         systemImage: "checkmark.shield",
                         description: "No crash reports have been recorded"
                     )
-                    .frame(maxHeight: .infinity)
                 } else {
                     List {
                         ForEach(crashes, content: row)
@@ -95,7 +94,6 @@ struct CrashListView: View {
             systemImage: "checkmark.shield",
             description: "No crash reports have been recorded"
         )
-        .frame(maxHeight: .infinity)
         .navigationTitle("Crashes")
     }
 }

@@ -32,7 +32,6 @@ struct MetricsContent<T: ChartNumeric>: View {
                     description: "Metrics will appear here once your app records data",
                     code: "Counter(label: \"api_calls\").increment()"
                 )
-                .frame(maxHeight: .infinity)
             } else {
                 List(ranked) { group in
                     Row {
@@ -77,7 +76,6 @@ struct MetricsContent<T: ChartNumeric>: View {
             description: "Metrics will appear here once your app records data",
             code: "Counter(label: \"api_calls\").increment()"
         )
-        .frame(maxHeight: .infinity)
         .navigationTitle("Metrics")
     }
 }

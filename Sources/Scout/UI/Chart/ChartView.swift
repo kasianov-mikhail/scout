@@ -30,7 +30,9 @@ struct ChartView<T: ChartNumeric>: View {
         }
         .chartBackground { _ in
             if segment.total == .zero {
-                Placeholder(text: "No results")
+                Text("No results")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.gray.opacity(0.7))
             }
         }
         .aspectRatio(4 / 3, contentMode: .fit)

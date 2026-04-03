@@ -29,7 +29,6 @@ struct EventList: View {
                     description: "Events will appear here once your app starts logging",
                     code: "logger.info(\"button_tapped\")"
                 )
-                .frame(maxHeight: .infinity)
             } else {
                 List {
                     ForEach(events, content: row)
