@@ -38,6 +38,6 @@ extension ChartExtent {
 #Preview {
     PeriodPicker(
         extent: .constant(ChartExtent(period: Period.today)),
-        periods: Period.all
+        periods: Period.allCases
     )
 }
