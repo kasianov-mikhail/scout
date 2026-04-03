@@ -16,7 +16,12 @@ struct CrashListView: View {
         Group {
             if let crashes = provider.crashes {
                 if crashes.isEmpty {
-                    Placeholder(text: "No crashes").frame(maxHeight: .infinity)
+                    Placeholder(
+                        text: "No crashes",
+                        systemImage: "checkmark.shield",
+                        description: "No crash reports have been recorded"
+                    )
+                    .frame(maxHeight: .infinity)
                 } else {
                     List {
                         ForEach(crashes, content: row)
@@ -80,5 +85,17 @@ struct CrashListView: View {
 #Preview {
     NavigationStack {
         CrashListView()
+    }
+}
+
+#Preview("Empty State") {
+    NavigationStack {
+        Placeholder(
+            text: "No crashes",
+            systemImage: "checkmark.shield",
+            description: "No crash reports have been recorded"
+        )
+        .frame(maxHeight: .infinity)
+        .navigationTitle("Crashes")
     }
 }

@@ -23,7 +23,12 @@ struct EventList: View {
     var body: some View {
         if let events = provider.events {
             if events.isEmpty {
-                Placeholder(text: "No results").frame(maxHeight: .infinity)
+                Placeholder(
+                    text: "No results",
+                    systemImage: "list.bullet",
+                    description: "Events will appear here once your app starts logging"
+                )
+                .frame(maxHeight: .infinity)
             } else {
                 List {
                     ForEach(events, content: row)
@@ -81,5 +86,15 @@ struct EventList: View {
         .alignmentGuide(.listRowSeparatorTrailing) { dimension in
             dimension[.trailing]
         }
+    }
+}
+
+// MARK: - Previews
+
+#Preview("Empty State") {
+    let provider = EventProvider()
+    provider.events = []
+    return NavigationStack {
+        EventList(provider: provider)
     }
 }
