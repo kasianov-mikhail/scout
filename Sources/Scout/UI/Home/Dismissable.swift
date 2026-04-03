@@ -8,12 +8,12 @@
 import SwiftUI
 
 extension View {
-    func dismissToolbar() -> some View {
-        modifier(DismissToolbarModifier())
+    func dismissable() -> some View {
+        modifier(DismissableModifier())
     }
 }
 
-private struct DismissToolbarModifier: ViewModifier {
+private struct DismissableModifier: ViewModifier {
     @Environment(\.dismiss) var dismiss
 
     func body(content: Content) -> some View {
