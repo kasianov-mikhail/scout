@@ -30,7 +30,7 @@ public struct HomeView: View {
                     errorView(error: error)
                 }
             }
-            .dismissToolbar()
+            .dismissable()
             .iCloudWarning(checker.iCloudWarning)
             .navigationBarTitle("Home")
         }
