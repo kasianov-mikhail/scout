@@ -9,7 +9,7 @@ import Foundation
 
 enum Period: String, Identifiable {
     static let all = [Period.today, .yesterday, .week, .month, .year]
-    static let sessions = [Period.week, .month, .year]
+    static let summary = [Period.week, .month, .year]
 
     case today
     case yesterday

@@ -11,14 +11,15 @@ struct HomeContent: View {
     @Environment(\.database) var database
 
     @StateObject var activity = ActivityProvider()
-    @StateObject var sessionStat = StatProvider(eventName: "Session", periods: Period.sessions)
+    @StateObject var sessionStat = StatProvider(eventName: "Session", periods: Period.summary)
+    @StateObject var crashStat = StatProvider(eventName: "Crash", periods: Period.summary)
 
     var body: some View {
         List {
             logSection
+            crashSection
             activitySection
             sessionSection
-            crashSection
         }
         .listStyle(.plain)
     }
@@ -45,6 +46,35 @@ struct HomeContent: View {
         }
     }
 
+    private var crashSection: some View {
+        Section {
+            let statConfig = StatConfig(
+                title: "Crashes",
+                color: .red,
+                showList: false
+            )
+            ForEach(Period.summary) { period in
+                StatRow(
+                    config: statConfig,
+                    period: period,
+                    stat: crashStat
+                )
+            }
+
+            Row {
+                Text("All")
+                Spacer()
+            } destination: {
+                CrashListView()
+            }
+            .foregroundStyle(.red)
+        } header: {
+            Header(title: "Crashes").task {
+                await crashStat.fetchIfNeeded(in: database)
+            }
+        }
+    }
+
     private var activitySection: some View {
         Section {
             ForEach(ActivityPeriod.allCases) { period in
@@ -68,7 +98,7 @@ struct HomeContent: View {
                 color: .purple,
                 showList: false
             )
-            ForEach(Period.sessions) { period in
+            ForEach(Period.summary) { period in
                 StatRow(
                     config: statConfig,
                     period: period,
@@ -79,20 +109,6 @@ struct HomeContent: View {
             Header(title: "Sessions").task {
                 await sessionStat.fetchIfNeeded(in: database)
             }
-        }
-    }
-
-    private var crashSection: some View {
-        Section {
-            Row {
-                Text("All Crashes")
-                Spacer()
-            } destination: {
-                CrashListView()
-            }
-            .foregroundStyle(.red)
-        } header: {
-            Header(title: "Crashes")
         }
     }
 }
