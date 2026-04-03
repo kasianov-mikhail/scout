@@ -66,7 +66,7 @@ extension EventView {
             _stat = StateObject(
                 wrappedValue: StatProvider(
                     eventName: eventName,
-                    periods: Period.all
+                    periods: Period.allCases
                 )
             )
         }
@@ -80,7 +80,7 @@ extension EventView {
                 color: .blue,
                 showList: true
             )
-            ForEach(Period.all) { period in
+            ForEach(Period.allCases) { period in
                 StatRow(
                     config: statConfig,
                     period: period,

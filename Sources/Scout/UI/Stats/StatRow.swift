@@ -43,7 +43,7 @@ struct StatRow: View {
             StatRow(
                 config: StatConfig(title: "Events", color: .blue, showList: true),
                 period: .today,
-                stat: StatProvider(eventName: "event_name", periods: Period.all)
+                stat: StatProvider(eventName: "event_name", periods: Period.allCases)
             )
         }
     }
