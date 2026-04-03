@@ -22,7 +22,7 @@ struct MetricsView<T: ChartNumeric>: View {
 
     var body: some View {
         Picker("Period", selection: $extent.period) {
-            ForEach(Period.all) { period in
+            ForEach(Period.allCases) { period in
                 Text(period.shortTitle.uppercased())
             }
         }

@@ -81,7 +81,7 @@ struct StatView: View {
 // MARK: - Preview
 
 #Preview("StatView") {
-    let stat = StatProvider(eventName: "app_launch", periods: Period.all)
+    let stat = StatProvider(eventName: "app_launch", periods: Period.allCases)
     stat.result = .success([])
     return NavigationStack {
         StatView(
