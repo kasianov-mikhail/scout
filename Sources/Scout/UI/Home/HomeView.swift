@@ -12,6 +12,7 @@ import UIKit
 public struct HomeView: View {
     let container: CKContainer
 
+    @AppStorage("scout_onboarding_completed") private var onboardingCompleted = false
     @StateObject private var tint = Tint()
     @StateObject private var schema = SchemaLoader()
 
@@ -37,6 +38,14 @@ public struct HomeView: View {
             .navigationBarTitle("Home")
         }
         .dismissable()
+        .sheet(
+            isPresented: .init(
+                get: { !onboardingCompleted },
+                set: { onboardingCompleted = !$0 }
+            )
+        ) {
+            OnboardingView()
+        }
         .iCloudWarning(container: container)
         .tint(tint.value)
         .environmentObject(tint)
