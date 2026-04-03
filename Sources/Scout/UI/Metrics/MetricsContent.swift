@@ -26,7 +26,12 @@ struct MetricsContent<T: ChartNumeric>: View {
             let ranked = groups.ranked(on: period)
 
             if ranked.isEmpty {
-                Placeholder(text: "No results").frame(maxHeight: .infinity)
+                Placeholder(
+                    text: "No results",
+                    systemImage: "chart.bar",
+                    description: "Metrics will appear here once your app records data"
+                )
+                .frame(maxHeight: .infinity)
             } else {
                 List(ranked) { group in
                     Row {
@@ -58,5 +63,19 @@ struct MetricsContent<T: ChartNumeric>: View {
         .monospaced()
         .font(.system(size: 17))
         .lineLimit(1)
+    }
+}
+
+// MARK: - Previews
+
+#Preview("Empty State") {
+    NavigationStack {
+        Placeholder(
+            text: "No results",
+            systemImage: "chart.bar",
+            description: "Metrics will appear here once your app records data"
+        )
+        .frame(maxHeight: .infinity)
+        .navigationTitle("Metrics")
     }
 }
