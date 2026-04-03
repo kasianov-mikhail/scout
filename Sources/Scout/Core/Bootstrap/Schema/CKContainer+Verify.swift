@@ -10,9 +10,13 @@ import CloudKit
 struct SchemaError: LocalizedError {
     let recordTypes: [String]
 
+    var noun: String {
+        recordTypes.count == 1 ? "record type" : "record types"
+    }
+
     var errorDescription: String? {
         let list = recordTypes.joined(separator: ", ")
-        return "CloudKit schema is outdated. Missing record types: \(list). Upload the Schema file via CloudKit Console."
+        return "CloudKit schema is outdated. Missing \(noun): \(list). Upload the Schema file via CloudKit Console."
     }
 }
 

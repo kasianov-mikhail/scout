@@ -58,10 +58,10 @@ public struct HomeView: View {
 
 extension SchemaError {
     fileprivate var styledDescription: Text {
-        let types = recordTypes.joined(separator: ", ")
+        let list = recordTypes.joined(separator: ", ")
 
-        return Text("CloudKit schema is outdated. Missing record types: ")
-            + Text(types).underline()
+        return Text("CloudKit schema is outdated. Missing \(noun): ")
+            + Text(list).underline()
             + Text(". Upload the Schema file via CloudKit Console.")
     }
 }
