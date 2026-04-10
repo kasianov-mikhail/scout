@@ -9,7 +9,6 @@ import Charts
 import SwiftUI
 
 struct StatView: View {
-    let title: String
     let color: Color
     let showList: Bool
 
@@ -17,8 +16,7 @@ struct StatView: View {
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(title: String, color: Color, showList: Bool, stat: StatProvider, period: Period) {
-        self.title = title
+    init(color: Color, showList: Bool, stat: StatProvider, period: Period) {
         self.color = color
         self.showList = showList
         self.stat = stat
@@ -48,7 +46,6 @@ struct StatView: View {
                 .scrollDisabled(true)
             }
         }
-        .navigationTitle(title)
         .onAppear {
             tint.value = nil
         }
@@ -83,12 +80,12 @@ struct StatView: View {
     stat.result = .success([])
     return NavigationStack {
         StatView(
-            title: "App Launch",
             color: .blue,
             showList: true,
             stat: stat,
             period: .yesterday
         )
+        .navigationTitle("App Launch")
         .environmentObject(Tint())
     }
 }

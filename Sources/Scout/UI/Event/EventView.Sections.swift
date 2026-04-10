@@ -82,12 +82,12 @@ extension EventView {
                     stat: stat
                 ) {
                     StatView(
-                        title: "Stats",
                         color: .blue,
                         showList: true,
                         stat: stat,
                         period: period
                     )
+                    .navigationTitle("Stats")
                 }
             }
         }

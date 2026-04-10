@@ -55,12 +55,12 @@ struct HomeContent: View {
                     stat: crashStat
                 ) {
                     StatView(
-                        title: "Crashes",
                         color: .red,
                         showList: false,
                         stat: crashStat,
                         period: period
                     )
+                    .navigationTitle("Crashes")
                 }
             }
 
@@ -103,12 +103,12 @@ struct HomeContent: View {
                     stat: sessionStat
                 ) {
                     StatView(
-                        title: "Sessions",
                         color: .purple,
                         showList: false,
                         stat: sessionStat,
                         period: period
                     )
+                    .navigationTitle("Sessions")
                 }
             }
         } header: {
