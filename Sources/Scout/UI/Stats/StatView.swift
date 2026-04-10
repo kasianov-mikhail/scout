@@ -9,20 +9,18 @@ import Charts
 import SwiftUI
 
 struct StatView: View {
-    struct Config {
-        let title: String
-        let color: Color
-        let showList: Bool
-    }
-
-    let config: Config
+    let title: String
+    let color: Color
+    let showList: Bool
 
     @State var extent: ChartExtent<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(config: Config, stat: StatProvider, period: Period) {
-        self.config = config
+    init(title: String, color: Color, showList: Bool, stat: StatProvider, period: Period) {
+        self.title = title
+        self.color = color
+        self.showList = showList
         self.stat = stat
         self._extent = State(wrappedValue: ChartExtent(period: period))
     }
@@ -39,10 +37,10 @@ struct StatView: View {
                     let segment = extent.segment(from: points)
 
                     ChartView(segment: segment, timing: extent)
-                        .foregroundStyle(config.color)
-                        .listRowSeparator(config.showList ? .visible : .hidden, edges: .bottom)
+                        .foregroundStyle(color)
+                        .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
-                    if config.showList {
+                    if showList {
                         total(count: segment.total)
                     }
                 }
@@ -50,7 +48,7 @@ struct StatView: View {
                 .scrollDisabled(true)
             }
         }
-        .navigationTitle(config.title)
+        .navigationTitle(title)
         .onAppear {
             tint.value = nil
         }
@@ -85,18 +83,12 @@ struct StatView: View {
     stat.result = .success([])
     return NavigationStack {
         StatView(
-            config: StatView.Config(title: "App Launch", color: .blue, showList: true),
+            title: "App Launch",
+            color: .blue,
+            showList: true,
             stat: stat,
             period: .yesterday
         )
         .environmentObject(Tint())
-    }
-}
-
-// MARK: -
-
-extension StatView.Config: CustomDebugStringConvertible {
-    var debugDescription: String {
-        "StatView.Configuration(title: \(title), color: \(color), showList: \(showList))"
     }
 }
