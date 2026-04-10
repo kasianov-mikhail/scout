@@ -57,8 +57,8 @@ struct HomeContent: View {
                     StatView(
                         color: .red,
                         showList: false,
-                        stat: crashStat,
-                        period: period
+                        extent: ChartExtent(period: period),
+                        stat: crashStat
                     )
                     .navigationTitle("Crashes")
                 }
@@ -105,8 +105,8 @@ struct HomeContent: View {
                     StatView(
                         color: .purple,
                         showList: false,
-                        stat: sessionStat,
-                        period: period
+                        extent: ChartExtent(period: period),
+                        stat: sessionStat
                     )
                     .navigationTitle("Sessions")
                 }

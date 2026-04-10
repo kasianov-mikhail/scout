@@ -16,13 +16,6 @@ struct StatView: View {
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
 
-    init(color: Color, showList: Bool, stat: StatProvider, period: Period) {
-        self.color = color
-        self.showList = showList
-        self.stat = stat
-        self._extent = State(wrappedValue: ChartExtent(period: period))
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             PeriodPicker(extent: $extent, periods: stat.periods)
@@ -78,12 +71,13 @@ struct StatView: View {
 #Preview("StatView") {
     let stat = StatProvider(eventName: "app_launch", periods: Period.allCases)
     stat.result = .success([])
+
     return NavigationStack {
         StatView(
             color: .blue,
             showList: true,
-            stat: stat,
-            period: .yesterday
+            extent: ChartExtent(period: .yesterday),
+            stat: stat
         )
         .navigationTitle("App Launch")
         .environmentObject(Tint())
