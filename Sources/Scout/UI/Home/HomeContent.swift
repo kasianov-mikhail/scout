@@ -55,11 +55,11 @@ struct HomeContent: View {
                     stat: crashStat
                 ) {
                     StatView(
-                        color: .red,
                         showList: false,
                         extent: ChartExtent(period: period),
                         stat: crashStat
                     )
+                    .environment(\.chartColor, .red)
                     .navigationTitle("Crashes")
                 }
             }
@@ -103,11 +103,11 @@ struct HomeContent: View {
                     stat: sessionStat
                 ) {
                     StatView(
-                        color: .purple,
                         showList: false,
                         extent: ChartExtent(period: period),
                         stat: sessionStat
                     )
+                    .environment(\.chartColor, .purple)
                     .navigationTitle("Sessions")
                 }
             }

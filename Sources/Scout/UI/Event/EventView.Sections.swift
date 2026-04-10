@@ -82,7 +82,6 @@ extension EventView {
                     stat: stat
                 ) {
                     StatView(
-                        color: .blue,
                         showList: true,
                         extent: ChartExtent(period: period),
                         stat: stat
