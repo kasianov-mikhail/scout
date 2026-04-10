@@ -84,8 +84,8 @@ extension EventView {
                     StatView(
                         color: .blue,
                         showList: true,
-                        stat: stat,
-                        period: period
+                        extent: ChartExtent(period: period),
+                        stat: stat
                     )
                     .navigationTitle("Stats")
                 }
