@@ -25,3 +25,11 @@ let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
 
 try await setup(container: container)
 ```
+
+## Flutter
+
+For Flutter projects, use [scout_sdk](https://pub.dev/packages/scout_sdk):
+```yaml
+dependencies:
+  scout_sdk: ^0.1.0
+```
