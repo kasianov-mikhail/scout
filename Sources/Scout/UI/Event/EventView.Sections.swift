@@ -75,14 +75,11 @@ extension EventView {
             Header(title: "Stats").task {
                 await stat.fetchIfNeeded(in: database)
             }
-            let statConfig = StatConfig(
-                title: "Stats",
-                color: .blue,
-                showList: true
-            )
             ForEach(Period.allCases) { period in
                 StatRow(
-                    config: statConfig,
+                    title: "Stats",
+                    color: .blue,
+                    showList: true,
                     period: period,
                     stat: stat
                 )

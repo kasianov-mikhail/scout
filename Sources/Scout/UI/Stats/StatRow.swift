@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-typealias StatConfig = StatView.Config
-
 struct StatRow: View {
-    let config: StatConfig
+    let title: String
+    let color: Color
+    let showList: Bool
     let period: Period
 
     @ObservedObject var stat: StatProvider
@@ -28,9 +28,15 @@ struct StatRow: View {
 
                 RedactedText(count: count)
             }
-            .foregroundColor(config.color)
+            .foregroundColor(color)
         } destination: {
-            StatView(config: config, stat: stat, period: period)
+            StatView(
+                title: title,
+                color: color,
+                showList: showList,
+                stat: stat,
+                period: period
+            )
         }
     }
 }
@@ -41,7 +47,9 @@ struct StatRow: View {
     NavigationStack {
         List {
             StatRow(
-                config: StatConfig(title: "Events", color: .blue, showList: true),
+                title: "Events",
+                color: .blue,
+                showList: true,
                 period: .today,
                 stat: StatProvider(eventName: "event_name", periods: Period.allCases)
             )

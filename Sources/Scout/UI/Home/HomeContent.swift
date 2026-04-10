@@ -48,14 +48,11 @@ struct HomeContent: View {
 
     private var crashSection: some View {
         Section {
-            let statConfig = StatConfig(
-                title: "Crashes",
-                color: .red,
-                showList: false
-            )
             ForEach(Period.summary) { period in
                 StatRow(
-                    config: statConfig,
+                    title: "Crashes",
+                    color: .red,
+                    showList: false,
                     period: period,
                     stat: crashStat
                 )
@@ -93,14 +90,11 @@ struct HomeContent: View {
 
     private var sessionSection: some View {
         Section {
-            let statConfig = StatConfig(
-                title: "Sessions",
-                color: .purple,
-                showList: false
-            )
             ForEach(Period.summary) { period in
                 StatRow(
-                    config: statConfig,
+                    title: "Sessions",
+                    color: .purple,
+                    showList: false,
                     period: period,
                     stat: sessionStat
                 )
