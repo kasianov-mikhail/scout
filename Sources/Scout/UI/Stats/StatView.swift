@@ -9,12 +9,12 @@ import Charts
 import SwiftUI
 
 struct StatView: View {
-    let color: Color
     let showList: Bool
 
     @State var extent: ChartExtent<Period>
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
+    @Environment(\.chartColor) var color
 
     var body: some View {
         VStack(spacing: 0) {
@@ -66,7 +66,9 @@ struct StatView: View {
     }
 }
 
-// MARK: - Preview
+extension EnvironmentValues {
+    @Entry var chartColor: Color = .blue
+}
 
 #Preview("StatView") {
     let stat = StatProvider(eventName: "app_launch", periods: Period.allCases)
@@ -74,7 +76,6 @@ struct StatView: View {
 
     return NavigationStack {
         StatView(
-            color: .blue,
             showList: true,
             extent: ChartExtent(period: .yesterday),
             stat: stat
