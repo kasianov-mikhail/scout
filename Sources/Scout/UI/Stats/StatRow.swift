@@ -7,13 +7,12 @@
 
 import SwiftUI
 
-struct StatRow: View {
-    let title: String
+struct StatRow<Destination: View>: View {
     let color: Color
-    let showList: Bool
     let period: Period
 
     @ObservedObject var stat: StatProvider
+    @ViewBuilder let destination: () -> Destination
 
     var body: some View {
         Row {
@@ -30,13 +29,7 @@ struct StatRow: View {
             }
             .foregroundColor(color)
         } destination: {
-            StatView(
-                title: title,
-                color: color,
-                showList: showList,
-                stat: stat,
-                period: period
-            )
+            destination()
         }
     }
 }
@@ -47,12 +40,12 @@ struct StatRow: View {
     NavigationStack {
         List {
             StatRow(
-                title: "Events",
                 color: .blue,
-                showList: true,
                 period: .today,
                 stat: StatProvider(eventName: "event_name", periods: Period.allCases)
-            )
+            ) {
+                Text("Detail")
+            }
         }
     }
 }

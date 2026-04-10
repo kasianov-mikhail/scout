@@ -77,12 +77,18 @@ extension EventView {
             }
             ForEach(Period.allCases) { period in
                 StatRow(
-                    title: "Stats",
                     color: .blue,
-                    showList: true,
                     period: period,
                     stat: stat
-                )
+                ) {
+                    StatView(
+                        title: "Stats",
+                        color: .blue,
+                        showList: true,
+                        stat: stat,
+                        period: period
+                    )
+                }
             }
         }
     }

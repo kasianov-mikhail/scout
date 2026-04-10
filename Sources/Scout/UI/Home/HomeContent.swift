@@ -50,12 +50,18 @@ struct HomeContent: View {
         Section {
             ForEach(Period.summary) { period in
                 StatRow(
-                    title: "Crashes",
                     color: .red,
-                    showList: false,
                     period: period,
                     stat: crashStat
-                )
+                ) {
+                    StatView(
+                        title: "Crashes",
+                        color: .red,
+                        showList: false,
+                        stat: crashStat,
+                        period: period
+                    )
+                }
             }
 
             Row {
@@ -92,12 +98,18 @@ struct HomeContent: View {
         Section {
             ForEach(Period.summary) { period in
                 StatRow(
-                    title: "Sessions",
                     color: .purple,
-                    showList: false,
                     period: period,
                     stat: sessionStat
-                )
+                ) {
+                    StatView(
+                        title: "Sessions",
+                        color: .purple,
+                        showList: false,
+                        stat: sessionStat,
+                        period: period
+                    )
+                }
             }
         } header: {
             Header(title: "Sessions").task {
