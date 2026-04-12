@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import Foundation
 
 /// A UI-layer specialization of `MatrixValue` for chart rendering.
 ///
