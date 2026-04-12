@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import SwiftUI
 import Testing
 
 @testable import Scout
@@ -38,11 +39,37 @@ struct FilterCriteriaTests {
         #expect(criteria.isApplyEnabled)
     }
 
-    @Test("Check apply functionality") func testApply() {
-        criteria.toggle(.one)
-        criteria.apply()
+    @Test("Apply writes cache back to the binding on deinit") func testApply() {
+        final class Holder { var value = Set<TestEnum>() }
+        let holder = Holder()
+        let binding = Binding<Set<TestEnum>>(
+            get: { holder.value },
+            set: { holder.value = $0 }
+        )
 
-        #expect(criteria.isApplyEnabled)
+        do {
+            let criteria = FilterCriteria(selected: binding)
+            criteria.toggle(.one)
+            criteria.apply()
+        }
+
+        #expect(holder.value == [.one])
+    }
+
+    @Test("Binding is unchanged when apply is not called") func testApplyNotCalled() {
+        final class Holder { var value = Set<TestEnum>() }
+        let holder = Holder()
+        let binding = Binding<Set<TestEnum>>(
+            get: { holder.value },
+            set: { holder.value = $0 }
+        )
+
+        do {
+            let criteria = FilterCriteria(selected: binding)
+            criteria.toggle(.one)
+        }
+
+        #expect(holder.value.isEmpty)
     }
 
     @Test("Check if reset button is disabled when no items are enabled") func testIsResetEnabled() {
