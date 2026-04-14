@@ -68,9 +68,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: |
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Collect changes
+        id: changes
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -n "$LAST_TAG" ]; then
+            LOG=$(git log --format="- %s" "$LAST_TAG"..HEAD)
+          else
+            LOG=$(git log --format="- %s" -10)
+          fi
+          echo "log<<EOF" >> $GITHUB_OUTPUT
+          echo "$LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Trigger scout-ip
+        run: |
+          jq -n --arg log "${{ steps.changes.outputs.log }}" --arg sha "${{ github.sha }}" \
+            '{"event_type":"scout-updated","client_payload":{"sha":$sha,"changes":$log}}' | \
           curl -X POST \
             -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/kasianov-mikhail/scout-ip/dispatches \
-            -d '{"event_type":"scout-updated"}'
+            -d @-
