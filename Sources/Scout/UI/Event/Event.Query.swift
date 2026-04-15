@@ -12,7 +12,7 @@ extension Event {
         var levels = Set(Level.allCases)
         var text = ""
         var name = ""
-        var userID: UUID?
+        var installID: UUID?
         var sessionID: UUID?
         var dates: Range<Date>?
 
@@ -28,8 +28,8 @@ extension Event {
             if !name.isEmpty {
                 predicates.append(.init(format: "name == %@", name))
             }
-            if let userID = userID?.uuidString {
-                predicates.append(.init(format: "user_id == %@", userID))
+            if let installID = installID?.uuidString {
+                predicates.append(.init(format: "install_id == %@", installID))
             }
             if let sessionID = sessionID?.uuidString {
                 predicates.append(.init(format: "session_id == %@", sessionID))
@@ -62,8 +62,8 @@ extension Event.Query: CustomStringConvertible {
         if !name.isEmpty {
             components.append("name: \(name)")
         }
-        if let userID {
-            components.append("userID: \(userID)")
+        if let installID {
+            components.append("installID: \(installID)")
         }
         if let sessionID {
             components.append("sessionID: \(sessionID)")

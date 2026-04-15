@@ -9,12 +9,14 @@ import CoreData
 
 @objc(IDObject)
 class IDObject: DateObject {
+    @NSManaged var deviceID: UUID?
+    @NSManaged var installID: UUID?
     @NSManaged var launchID: UUID?
-    @NSManaged var userID: UUID?
 
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(IDs.user, forKey: #keyPath(IDObject.userID))
+        setPrimitiveValue(IDs.device, forKey: #keyPath(IDObject.deviceID))
+        setPrimitiveValue(IDs.install, forKey: #keyPath(IDObject.installID))
         setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
     }
 
@@ -24,8 +26,9 @@ class IDObject: DateObject {
         fields["day"] = day
         fields["week"] = week
         fields["month"] = month
+        fields["device_id"] = deviceID?.uuidString
+        fields["install_id"] = installID?.uuidString
         fields["launch_id"] = launchID?.uuidString
-        fields["user_id"] = userID?.uuidString
         fields["version"] = 1
         return fields
     }

@@ -37,7 +37,7 @@ import Testing
     #expect(event.hour == date.startOfHour)
     #expect(event.week == date.startOfWeek)
     #expect(event.eventID != nil)
-    #expect(event.userID == IDs.user)
+    #expect(event.installID == IDs.install)
     #expect(event.paramCount == 1)
 
     let paramData = try #require(event.params)

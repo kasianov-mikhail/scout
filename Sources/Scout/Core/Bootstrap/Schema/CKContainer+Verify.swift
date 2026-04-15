@@ -26,6 +26,7 @@ private let schemaRecordTypes = [
     LaunchObject.recordType,
     VersionObject.recordType,
     InstallObject.recordType,
+    DeviceObject.recordType,
     CrashObject.recordType,
     Int.recordType,
     Double.recordType,

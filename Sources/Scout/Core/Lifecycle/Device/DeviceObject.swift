@@ -8,27 +8,28 @@
 import CloudKit
 import CoreData
 
-@objc(InstallObject)
-final class InstallObject: SyncableObject, Syncable {
-    static let recordType = "Install"
+@objc(DeviceObject)
+final class DeviceObject: SyncableObject, Syncable {
+    static let recordType = "Device"
 
-    static func group(in context: NSManagedObjectContext) throws -> [InstallObject]? {
+    static func group(in context: NSManagedObjectContext) throws -> [DeviceObject]? {
         try batch(in: context, matching: [\.week])
     }
 
-    func versions(in context: NSManagedObjectContext) throws -> [VersionObject] {
-        let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "installID == %@", installID! as CVarArg)
+    func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
+        let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
+        request.predicate = NSPredicate(format: "deviceID == %@", deviceID! as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         return try context.fetch(request)
     }
 }
 
-extension InstallObject: CKRepresentable {
+extension DeviceObject: CKRepresentable {
     var toRecord: CKRecord {
         let record = CKRecord(recordType: Self.recordType)
 
         record["date"] = date
+        record["device_id"] = deviceID?.uuidString
 
         record.setValuesForKeys(metadata)
 

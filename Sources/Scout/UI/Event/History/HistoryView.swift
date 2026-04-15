@@ -79,7 +79,7 @@ struct HistoryView: View {
     NavigationStack {
         let filter = HistoryFilter(
             name: "event_name",
-            userID: UUID(),
+            installID: UUID(),
             sessionID: UUID(),
             category: .session
         )

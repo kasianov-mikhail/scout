@@ -9,7 +9,7 @@ import Foundation
 
 struct HistoryFilter {
     let name: String
-    let userID: UUID
+    let installID: UUID
     let sessionID: UUID
     var category: Category
     var option = Option.event
@@ -17,12 +17,12 @@ struct HistoryFilter {
 
 extension HistoryFilter {
     init?(event: Event, category: Category) {
-        guard let userID = event.userID, let sessionID = event.sessionID else {
+        guard let installID = event.installID, let sessionID = event.sessionID else {
             return nil
         }
 
         self.name = event.name
-        self.userID = userID
+        self.installID = installID
         self.sessionID = sessionID
         self.category = category
     }
@@ -41,7 +41,7 @@ extension HistoryFilter {
         let eventFilter =
             switch category {
             case .user:
-                Event.Query(name: name, userID: userID)
+                Event.Query(name: name, installID: installID)
             case .session:
                 Event.Query(name: name, sessionID: sessionID)
             }
@@ -94,6 +94,6 @@ extension HistoryFilter {
 
 extension HistoryFilter: CustomStringConvertible {
     var description: String {
-        "HistoryFilter(name: \(name), userID: \(userID), sessionID: \(sessionID), category: \(category))"
+        "HistoryFilter(name: \(name), installID: \(installID), sessionID: \(sessionID), category: \(category))"
     }
 }

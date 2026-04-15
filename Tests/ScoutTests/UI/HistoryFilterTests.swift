@@ -11,7 +11,7 @@ import Testing
 @testable import Scout
 
 struct HistoryFilterTests {
-    let userID = UUID()
+    let installID = UUID()
     let sessionID = UUID()
 
     @Test("Query Event option and User category") func testEventUser() {
@@ -19,7 +19,7 @@ struct HistoryFilterTests {
         let query = filter.query()
 
         #expect(query.name == "Test Event")
-        #expect(query.userID == userID)
+        #expect(query.installID == installID)
         #expect(query.sessionID == nil)
     }
 
@@ -28,7 +28,7 @@ struct HistoryFilterTests {
         let query = filter.query()
 
         #expect(query.name == "")
-        #expect(query.userID == filter.userID)
+        #expect(query.installID == filter.installID)
         #expect(query.sessionID == nil)
     }
 
@@ -37,7 +37,7 @@ struct HistoryFilterTests {
         let query = filter.query()
 
         #expect(query.name == "Test Event")
-        #expect(query.userID == nil)
+        #expect(query.installID == nil)
         #expect(query.sessionID == sessionID)
     }
 
@@ -46,7 +46,7 @@ struct HistoryFilterTests {
         let query = filter.query()
 
         #expect(query.name == "")
-        #expect(query.userID == nil)
+        #expect(query.installID == nil)
         #expect(query.sessionID == filter.sessionID)
     }
 
@@ -55,7 +55,7 @@ struct HistoryFilterTests {
     {
         var filter = HistoryFilter(
             name: "Test Event",
-            userID: userID,
+            installID: installID,
             sessionID: sessionID,
             category: category
         )

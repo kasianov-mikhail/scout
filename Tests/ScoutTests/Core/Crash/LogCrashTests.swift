@@ -36,7 +36,7 @@ struct LogCrashTests {
         #expect(object.reason == "Fatal error")
         #expect(object.date == crash.date)
         #expect(object.crashID != nil)
-        #expect(object.value(forKey: "userID") as? UUID == crash.userID)
+        #expect(object.value(forKey: "installID") as? UUID == crash.installID)
         #expect(object.value(forKey: "launchID") as? UUID == crash.launchID)
     }
 

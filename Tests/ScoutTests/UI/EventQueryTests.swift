@@ -49,13 +49,13 @@ struct EventQueryTests {
         #expect(predicate.predicateFormat.contains("name == \"Login\""))
     }
 
-    @Test("Filter by userID") func userID() {
+    @Test("Filter by installID") func installID() {
         let id = UUID()
         var query = Event.Query()
-        query.userID = id
+        query.installID = id
         let predicate = query.buildPredicate()
 
-        #expect(predicate.predicateFormat.contains("user_id"))
+        #expect(predicate.predicateFormat.contains("install_id"))
         #expect(predicate.predicateFormat.contains(id.uuidString))
     }
 
