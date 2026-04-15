@@ -26,11 +26,7 @@ extension Version {
     ]
 }
 
-extension Version {
-    init(results: (CKRecord.ID, Result<CKRecord, Error>)) throws {
-        try self.init(record: results.1.get())
-    }
-
+extension Version: RecordDecodable {
     init(record: CKRecord) throws {
         date = record["date"]
         appVersion = record["app_version"]

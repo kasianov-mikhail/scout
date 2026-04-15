@@ -22,11 +22,7 @@ extension Install {
     ]
 }
 
-extension Install {
-    init(results: (CKRecord.ID, Result<CKRecord, Error>)) throws {
-        try self.init(record: results.1.get())
-    }
-
+extension Install: RecordDecodable {
     init(record: CKRecord) throws {
         date = record["date"]
         id = record.recordID

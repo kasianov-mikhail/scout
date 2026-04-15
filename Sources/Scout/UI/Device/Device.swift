@@ -20,11 +20,7 @@ extension Device {
     ]
 }
 
-extension Device {
-    init(results: (CKRecord.ID, Result<CKRecord, Error>)) throws {
-        try self.init(record: results.1.get())
-    }
-
+extension Device: RecordDecodable {
     init(record: CKRecord) throws {
         date = record["date"]
         id = record.recordID
