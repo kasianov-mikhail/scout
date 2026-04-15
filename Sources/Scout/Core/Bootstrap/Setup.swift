@@ -35,6 +35,8 @@ public func setup(container: CKContainer) async throws {
 
     try NotificationListener.appState.setup()
     try await persistentContainer.performBackgroundTask(LaunchObject.trigger)
+    try await persistentContainer.performBackgroundTask(VersionObject.trigger)
+    try await persistentContainer.performBackgroundTask(InstallObject.trigger)
     SyncController.shared.container = container
     LoggingSystem.bootstrap(CKLogHandler.init)
     MetricsSystem.bootstrap(TelemetryFactory())

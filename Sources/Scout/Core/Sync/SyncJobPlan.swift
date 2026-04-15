@@ -15,6 +15,8 @@ struct SyncJobPlan: Sendable {
             { try await engine.send(type: EventObject.self) },
             { try await engine.send(type: SessionObject.self) },
             { try await engine.send(type: LaunchObject.self) },
+            { try await engine.send(type: VersionObject.self) },
+            { try await engine.send(type: InstallObject.self) },
             { try await engine.send(type: UserActivityObject.self) },
             { try await engine.send(type: IntMetricsObject.self) },
             { try await engine.send(type: DoubleMetricsObject.self) },
