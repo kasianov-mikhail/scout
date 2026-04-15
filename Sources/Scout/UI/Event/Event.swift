@@ -30,11 +30,7 @@ extension Event {
     ]
 }
 
-extension Event {
-    init(results: (CKRecord.ID, Result<CKRecord, Error>)) throws {
-        try self.init(record: results.1.get())
-    }
-
+extension Event: RecordDecodable {
     init(record: CKRecord) throws {
         name = record["name"] ?? ""
         level = record["level"].flatMap { Level(rawValue: $0) }

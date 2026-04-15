@@ -26,11 +26,7 @@ extension Session {
     ]
 }
 
-extension Session {
-    init(results: (CKRecord.ID, Result<CKRecord, Error>)) throws {
-        try self.init(record: results.1.get())
-    }
-
+extension Session: RecordDecodable {
     init(record: CKRecord) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
