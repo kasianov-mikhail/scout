@@ -13,7 +13,7 @@ struct Crash: Identifiable {
     let stackTrace: [String]
     let date: Date?
     let id: CKRecord.ID
-    let userID: UUID?
+    let installID: UUID?
     let launchID: UUID?
 }
 
@@ -24,7 +24,7 @@ extension Crash {
         "stack_trace",
         "date",
         "uuid",
-        "user_id",
+        "install_id",
         "launch_id",
     ]
 }
@@ -39,7 +39,7 @@ extension Crash {
         reason = record["reason"]
         date = record["date"]
         id = record.recordID
-        userID = record["user_id"].flatMap(UUID.init)
+        installID = record["install_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
 
         if let data = record["stack_trace"] as? Data, let decoded = try? JSONDecoder().decode([String].self, from: data) {

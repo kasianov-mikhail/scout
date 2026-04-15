@@ -12,7 +12,7 @@ struct CrashInfo: Codable {
     let reason: String?
     let stackTrace: [String]
     let date: Date
-    let userID: UUID
+    let installID: UUID
     let launchID: UUID
 
     init(name: String, reason: String?, stackTrace: [String]) {
@@ -20,7 +20,7 @@ struct CrashInfo: Codable {
         self.reason = reason
         self.stackTrace = stackTrace
         self.date = Date()
-        self.userID = IDs.user
+        self.installID = IDs.install
         self.launchID = IDs.launch
     }
 }

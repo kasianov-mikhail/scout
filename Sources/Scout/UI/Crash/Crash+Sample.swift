@@ -28,7 +28,7 @@ extension Crash {
             record["reason"] = crash.reason
             record["date"] = Date().addingTimeInterval(TimeInterval(-index * 7200))
             record["uuid"] = UUID().uuidString
-            record["user_id"] = UUID().uuidString
+            record["install_id"] = UUID().uuidString
             record["launch_id"] = UUID().uuidString
 
             let stackTrace = [

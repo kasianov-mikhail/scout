@@ -20,7 +20,7 @@ final class VersionObject: SyncableObject, Syncable {
 
     func install(in context: NSManagedObjectContext) throws -> InstallObject? {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
-        request.predicate = NSPredicate(format: "userID == %@", userID! as CVarArg)
+        request.predicate = NSPredicate(format: "installID == %@", installID! as CVarArg)
         request.fetchLimit = 1
         return try context.fetch(request).first
     }

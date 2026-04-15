@@ -45,8 +45,8 @@ extension Event {
         return eventLevels.enumerated().map { index, event in
             let record = CKRecord(recordType: EventObject.recordType, recordID: CKRecord.ID())
             record["name"] = event.key
-            record["userID"] = UUID().uuidString
-            record["sessionID"] = UUID().uuidString
+            record["install_id"] = UUID().uuidString
+            record["session_id"] = UUID().uuidString
             record["date"] = Date().addingTimeInterval(TimeInterval(-index * 80))
             record["level"] = event.value.rawValue
             record["param_count"] = Int64(parameters.count)

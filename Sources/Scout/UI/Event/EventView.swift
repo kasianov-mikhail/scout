@@ -81,7 +81,7 @@ extension EventView {
             paramCount: 3,
             uuid: UUID(),
             id: .init(),
-            userID: UUID(),
+            installID: UUID(),
             sessionID: UUID()
         )
         EventView(event: event)

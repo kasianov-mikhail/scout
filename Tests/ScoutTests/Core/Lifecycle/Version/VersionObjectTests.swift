@@ -65,20 +65,20 @@ struct VersionObjectTests {
         #expect(launches.allSatisfy { $0.launchID == launchID1 || $0.launchID == launchID2 })
     }
 
-    @Test("install(in:) returns install matching userID")
+    @Test("install(in:) returns install matching installID")
     func testInstall() throws {
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        let userID = version.userID!
+        let installID = version.installID!
 
         let install = InstallObject.stub(date: week, in: context)
-        install.userID = userID
+        install.installID = installID
 
-        // Install with different userID
-        InstallObject.stub(date: week, in: context).userID = UUID()
+        // Install with different installID
+        InstallObject.stub(date: week, in: context).installID = UUID()
 
         try context.save()
 
         let result = try version.install(in: context)
-        #expect(result?.userID == userID)
+        #expect(result?.installID == installID)
     }
 }

@@ -14,7 +14,7 @@ struct Event: Identifiable {
     let paramCount: Int?
     let uuid: UUID?
     let id: CKRecord.ID
-    let userID: UUID?
+    let installID: UUID?
     let sessionID: UUID?
 }
 
@@ -25,7 +25,7 @@ extension Event {
         "date",
         "param_count",
         "uuid",
-        "user_id",
+        "install_id",
         "session_id",
     ]
 }
@@ -42,7 +42,7 @@ extension Event {
         paramCount = record["param_count"]
         uuid = record["uuid"].flatMap(UUID.init)
         id = record.recordID
-        userID = record["user_id"].flatMap(UUID.init)
+        installID = record["install_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
     }
 }
