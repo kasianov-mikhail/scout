@@ -1,0 +1,35 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import CoreData
+import Testing
+
+@testable import Scout
+
+@MainActor
+@Suite("LaunchObject")
+struct LaunchObjectTests {
+    let context = NSManagedObjectContext.inMemoryContext()
+    let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
+
+    @Test("parse(of:) produces correct GridCell<Int> counts by date")
+    func testParseOf() throws {
+        let batch: [LaunchObject] = [
+            .stub(date: week, synced: false, in: context),
+            .stub(date: week, synced: false, in: context),
+            .stub(date: week.addingHour(), synced: false, in: context),
+        ]
+
+        let cells = LaunchObject.parse(of: batch)
+
+        #expect(
+            cells.sorted() == [
+                GridCell(row: 1, column: 0, value: 2),
+                GridCell(row: 1, column: 1, value: 1),
+            ])
+    }
+}

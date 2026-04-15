@@ -16,6 +16,7 @@ extension NotificationListener {
         },
         UIApplication.didEnterBackgroundNotification: {
             try await persistentContainer.performBackgroundTask(SessionObject.complete)
+            try await persistentContainer.performBackgroundTask(LaunchObject.complete)
             try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
             try await SyncController.shared.synchronize()
         },

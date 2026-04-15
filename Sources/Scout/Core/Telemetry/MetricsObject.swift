@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 @objc(MetricsObject)
-class MetricsObject: SyncableObject {
+class MetricsObject: TrackedObject {
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 

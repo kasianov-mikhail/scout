@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 @objc(SessionObject)
-final class SessionObject: SyncableObject, Syncable {
+final class SessionObject: TrackedObject, Syncable {
     static let recordType = "Session"
     @NSManaged var endDate: Date?
 
@@ -25,6 +25,7 @@ extension SessionObject: CKRepresentable {
         record["start_date"] = date
         record["end_date"] = endDate
         record["session_id"] = sessionID?.uuidString
+        record["launch_id"] = launchID?.uuidString
 
         record.setValuesForKeys(metadata)
 

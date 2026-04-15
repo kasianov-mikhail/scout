@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 @objc(UserActivityObject)
-final class UserActivityObject: SyncableObject, Syncable {
+final class UserActivityObject: TrackedObject, Syncable {
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32
     @NSManaged var period: String?
