@@ -14,8 +14,6 @@ struct EventList: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
 
-
-
     var body: some View {
         if let events = provider.events {
             if events.isEmpty {
