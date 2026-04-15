@@ -23,6 +23,13 @@ final class LaunchObject: SyncableObject, Syncable {
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         return try context.fetch(request)
     }
+
+    func version(in context: NSManagedObjectContext) throws -> VersionObject? {
+        let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
+        request.predicate = NSPredicate(format: "launchID == %@", launchID! as CVarArg)
+        request.fetchLimit = 1
+        return try context.fetch(request).first
+    }
 }
 
 extension LaunchObject: CKRepresentable {

@@ -16,6 +16,13 @@ final class SessionObject: TrackedObject, Syncable {
     static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
         try batch(in: context, matching: [\.week])
     }
+
+    func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
+        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
+        request.predicate = NSPredicate(format: "launchID == %@", launchID! as CVarArg)
+        request.fetchLimit = 1
+        return try context.fetch(request).first
+    }
 }
 
 extension SessionObject: CKRepresentable {

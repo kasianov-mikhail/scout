@@ -547,6 +547,48 @@ DEFINE SCHEMA
         GRANT READ TO "_world"
     );
 
+    RECORD TYPE Version (
+        "___createTime" TIMESTAMP,
+        "___createdBy"  REFERENCE,
+        "___etag"       STRING,
+        "___modTime"    TIMESTAMP,
+        "___modifiedBy" REFERENCE,
+        "___recordID"   REFERENCE QUERYABLE,
+        app_version     STRING QUERYABLE SEARCHABLE SORTABLE,
+        build_number    STRING QUERYABLE SEARCHABLE SORTABLE,
+        date            TIMESTAMP QUERYABLE SORTABLE,
+        day             TIMESTAMP QUERYABLE SORTABLE,
+        hour            TIMESTAMP QUERYABLE SORTABLE,
+        launch_id       STRING QUERYABLE SEARCHABLE SORTABLE,
+        month           TIMESTAMP QUERYABLE SORTABLE,
+        user_id         STRING QUERYABLE SEARCHABLE SORTABLE,
+        version         INT64 QUERYABLE SORTABLE,
+        week            TIMESTAMP QUERYABLE SORTABLE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
+    RECORD TYPE Install (
+        "___createTime" TIMESTAMP,
+        "___createdBy"  REFERENCE,
+        "___etag"       STRING,
+        "___modTime"    TIMESTAMP,
+        "___modifiedBy" REFERENCE,
+        "___recordID"   REFERENCE QUERYABLE,
+        date            TIMESTAMP QUERYABLE SORTABLE,
+        day             TIMESTAMP QUERYABLE SORTABLE,
+        hour            TIMESTAMP QUERYABLE SORTABLE,
+        launch_id       STRING QUERYABLE SEARCHABLE SORTABLE,
+        month           TIMESTAMP QUERYABLE SORTABLE,
+        user_id         STRING QUERYABLE SEARCHABLE SORTABLE,
+        version         INT64 QUERYABLE SORTABLE,
+        week            TIMESTAMP QUERYABLE SORTABLE,
+        GRANT WRITE TO "_creator",
+        GRANT CREATE TO "_icloud",
+        GRANT READ TO "_world"
+    );
+
     RECORD TYPE Session (
         "___createTime" TIMESTAMP,
         "___createdBy"  REFERENCE,

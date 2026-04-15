@@ -32,4 +32,21 @@ struct SessionObjectTests {
                 GridCell(row: 1, column: 1, value: 1),
             ])
     }
+
+    @Test("launch(in:) returns launch matching launchID")
+    func testLaunch() throws {
+        let session = SessionObject.stub(date: week, in: context)
+        let launchID = session.launchID!
+
+        let launch = LaunchObject.stub(date: week, in: context)
+        launch.launchID = launchID
+
+        // Launch with different launchID
+        LaunchObject.stub(date: week, in: context).launchID = UUID()
+
+        try context.save()
+
+        let result = try session.launch(in: context)
+        #expect(result?.launchID == launchID)
+    }
 }
