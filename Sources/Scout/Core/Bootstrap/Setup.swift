@@ -32,6 +32,7 @@ public func setup(container: CKContainer) async throws {
     installSignalHandler()
 
     await CrashArchive.system.flush()
+    try await persistentContainer.performBackgroundTask(completeStaleSessions)
 
     try NotificationListener.appState.setup()
     try await persistentContainer.performBackgroundTask(LaunchObject.trigger)
