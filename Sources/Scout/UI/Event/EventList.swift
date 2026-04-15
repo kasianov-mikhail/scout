@@ -14,11 +14,7 @@ struct EventList: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
 
-    let dateFormatter: RelativeDateTimeFormatter = {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter
-    }()
+
 
     var body: some View {
         if let events = provider.events {
@@ -64,11 +60,7 @@ struct EventList: View {
 
                 if let date = event.date {
                     TimelineView(.periodic(from: timeline, by: 1)) { _ in
-                        if date.timeIntervalSinceNow < -60 {
-                            Text(dateFormatter.localizedString(for: date, relativeTo: Date()))
-                        } else {
-                            Text("recently")
-                        }
+                        date.relativeText
                     }
                     .font(.system(size: 15))
                     .foregroundStyle(Color.gray)
