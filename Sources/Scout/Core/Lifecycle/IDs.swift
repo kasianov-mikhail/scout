@@ -10,7 +10,10 @@ import Foundation
 
 enum IDs {
     static var session: UUID? {
-        let context = persistentContainer.viewContext
+        session(in: persistentContainer.viewContext)
+    }
+
+    static func session(in context: NSManagedObjectContext) -> UUID? {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
         request.predicate = NSPredicate(format: "launchID == %@", launch as CVarArg)

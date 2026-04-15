@@ -23,6 +23,7 @@ struct SchemaError: LocalizedError {
 private let schemaRecordTypes = [
     EventObject.recordType,
     SessionObject.recordType,
+    LaunchObject.recordType,
     CrashObject.recordType,
     Int.recordType,
     Double.recordType,

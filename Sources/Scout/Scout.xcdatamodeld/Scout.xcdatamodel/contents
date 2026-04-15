@@ -23,26 +23,31 @@
     </entity>
     <entity name="IDObject" representedClassName="IDObject" isAbstract="YES" parentEntity="DateObject" syncable="YES" codeGenerationType="none">
         <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="userID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="none">
         <attribute name="value" attributeType="Integer 64" usesScalarValueType="YES"/>
     </entity>
-    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="LaunchObject" representedClassName="LaunchObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
         <attribute name="name" attributeType="String"/>
         <attribute name="telemetry" attributeType="String"/>
     </entity>
-    <entity name="NamedObject" representedClassName="NamedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="NamedObject" representedClassName="NamedObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
         <attribute name="name" attributeType="String"/>
     </entity>
-    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="none">
         <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
     </entity>
-    <entity name="UserActivityObject" representedClassName="UserActivityObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="UserActivityObject" representedClassName="UserActivityObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="period" attributeType="String"/>
