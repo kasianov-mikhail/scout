@@ -7,31 +7,30 @@
 
 import CoreData
 
-func logMetrics<T: MatrixValue>(
-    _ name: String,
-    telemetry: Telemetry.Export,
-    value: T,
-    sync: @escaping SyncAction
-) {
-    Task {
-        do {
-            try await persistentContainer.performBackgroundTask { context in
-                try logMetrics(
-                    name,
-                    date: Date(),
-                    telemetry: telemetry,
-                    value: value,
-                    context
-                )
+extension CKTelemetryHandler {
+    func logMetrics<T: MatrixValue>(telemetry: Telemetry.Export, value: T) {
+        let label = self.label
+        let sync = self.sync
+        Task {
+            do {
+                try await persistentContainer.performBackgroundTask { context in
+                    try saveMetrics(
+                        label,
+                        date: Date(),
+                        telemetry: telemetry,
+                        value: value,
+                        context
+                    )
+                }
+                try await sync()
+            } catch {
+                print("Failed to save metrics: \(error.localizedDescription)")
             }
-            try await sync()
-        } catch {
-            print("Failed to save metrics: \(error.localizedDescription)")
         }
     }
 }
 
-func logMetrics<T: MatrixValue>(
+func saveMetrics<T: MatrixValue>(
     _ name: String,
     date: Date,
     telemetry: Telemetry.Export,

@@ -12,14 +12,14 @@ import Testing
 @testable import Scout
 
 @MainActor
-@Suite("logMetrics")
+@Suite("saveMetrics")
 struct LogMetricsTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSinceReferenceDate: 0)
 
     @Test("Persists an IntMetricsObject with correct fields")
     func persistsIntMetrics() throws {
-        try logMetrics("api_calls", date: date, telemetry: .counter, value: 5, context)
+        try saveMetrics("api_calls", date: date, telemetry: .counter, value: 5, context)
 
         let request = NSFetchRequest<IntMetricsObject>(entityName: "IntMetricsObject")
         let results = try context.fetch(request)
@@ -35,7 +35,7 @@ struct LogMetricsTests {
 
     @Test("Persists a DoubleMetricsObject with correct fields")
     func persistsDoubleMetrics() throws {
-        try logMetrics("response_time", date: date, telemetry: .timer, value: 1.5, context)
+        try saveMetrics("response_time", date: date, telemetry: .timer, value: 1.5, context)
 
         let request = NSFetchRequest<DoubleMetricsObject>(entityName: "DoubleMetricsObject")
         let results = try context.fetch(request)
@@ -50,7 +50,7 @@ struct LogMetricsTests {
 
     @Test("Saves to the context")
     func savesToContext() throws {
-        try logMetrics("metric", date: date, telemetry: .counter, value: 1, context)
+        try saveMetrics("metric", date: date, telemetry: .counter, value: 1, context)
 
         #expect(!context.hasChanges)
     }

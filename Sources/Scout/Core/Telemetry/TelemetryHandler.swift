@@ -24,18 +24,18 @@ final class CKTelemetryHandler: NSObject {
 
 extension CKTelemetryHandler: CounterHandler {
     func increment(by value: Int64) {
-        logMetrics(label, telemetry: .counter, value: Int(value), sync: sync)
+        logMetrics(telemetry: .counter, value: Int(value))
     }
 }
 
 extension CKTelemetryHandler: FloatingPointCounterHandler {
     func increment(by value: Double) {
-        logMetrics(label, telemetry: .floatingCounter, value: value, sync: sync)
+        logMetrics(telemetry: .floatingCounter, value: value)
     }
 }
 
 extension CKTelemetryHandler: TimerHandler {
     func recordNanoseconds(_ duration: Int64) {
-        logMetrics(label, telemetry: .timer, value: Double(duration) / 1_000_000_000, sync: sync)
+        logMetrics(telemetry: .timer, value: Double(duration) / 1_000_000_000)
     }
 }
