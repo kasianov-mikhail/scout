@@ -29,7 +29,7 @@ extension GridBatch where Self: Syncable {
 }
 
 extension GridBatch where Self: DateObject {
-    static func matrix(of batch: [Self]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+    static func matrix(of batch: [Self]) throws -> GridMatrix<Int> {
         guard let week = batch.first?.week else {
             throw .init("week")
         }

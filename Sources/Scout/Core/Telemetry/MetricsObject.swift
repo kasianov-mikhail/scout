@@ -23,7 +23,7 @@ class MetricsObject: TrackedObject {
         try batch(in: context, matching: [\.name, \.telemetry, \.week])
     }
 
-    static func matrix<T: MetricsValued>(of batch: [T]) throws(MatrixPropertyError) -> Matrix<T.Cell> {
+    static func matrix<T: MetricsValued>(of batch: [T]) throws -> Matrix<T.Cell> {
         guard let name = batch.first?.name else {
             throw .init("name")
         }

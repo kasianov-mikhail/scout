@@ -19,7 +19,7 @@ final class CrashObject: NamedObject, Syncable {
         try batch(in: context, matching: [\.name, \.week])
     }
 
-    static func matrix(of batch: [CrashObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+    static func matrix(of batch: [CrashObject]) throws -> GridMatrix<Int> {
         try NamedObject.matrix(of: batch)
     }
 }
