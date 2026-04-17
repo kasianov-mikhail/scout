@@ -8,6 +8,8 @@
 import Foundation
 import Logging
 
+/// A log handler that persists log events to CloudKit via Core Data.
+///
 struct CKLogHandler: LogHandler {
     let label: String
 
