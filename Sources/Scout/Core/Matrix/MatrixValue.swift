@@ -8,9 +8,12 @@
 import CloudKit
 import CoreData
 
-protocol MatrixValue: AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
-    associatedtype Object: MetricsValued where Object.Value == Self
+protocol RecordTyped {
     static var recordType: String { get }
+}
+
+protocol MatrixValue: RecordTyped & AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
+    associatedtype Object: MetricsValued where Object.Value == Self
 }
 
 extension Int: MatrixValue {

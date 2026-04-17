@@ -9,7 +9,7 @@ import CloudKit
 import CoreData
 
 @objc(EventObject)
-final class EventObject: NamedObject, Syncable, MatrixBatch {
+final class EventObject: NamedObject, Syncable {
     static let recordType = "Event"
     @NSManaged var eventID: UUID?
     @NSManaged var level: String?

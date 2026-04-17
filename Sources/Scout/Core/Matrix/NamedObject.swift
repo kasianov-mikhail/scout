@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(NamedObject)
-class NamedObject: TrackedObject {
+class NamedObject: TrackedObject, MatrixBatch {
     @NSManaged var name: String?
 
     static func matrix(of batch: [NamedObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
@@ -24,9 +24,5 @@ class NamedObject: TrackedObject {
             name: name,
             cells: parse(of: batch)
         )
-    }
-
-    static func parse(of batch: [NamedObject]) -> [GridCell<Int>] {
-        batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
     }
 }
