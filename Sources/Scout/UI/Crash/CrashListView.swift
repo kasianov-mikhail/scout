@@ -26,8 +26,8 @@ struct CrashListView: View {
                         ForEach(crashes, content: row)
 
                         if let cursor = provider.cursor {
-                            PaginationFooter(cursor: cursor) {
-                                await provider.fetchMore(cursor: $0, in: database)
+                            PaginationFooter {
+                                await provider.fetchMore(cursor: cursor, in: database)
                             }
                         }
                     }
