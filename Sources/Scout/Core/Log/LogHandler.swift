@@ -32,7 +32,6 @@ struct CKLogHandler: LogHandler {
         function: String,
         line: UInt
     ) {
-        let sync = self.sync
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
@@ -44,7 +43,7 @@ struct CKLogHandler: LogHandler {
                         context: context
                     )
                 }
-                try await sync()
+                try await self.sync()
             } catch {
                 print(error.localizedDescription)
             }

@@ -21,7 +21,7 @@ typealias SyncAction = @MainActor () async throws -> Void
 
     func synchronize() async throws {
         guard try await container.accountStatus() == .available else {
-            throw Error.notLoggedIn
+            throw NotLoggedInError()
         }
 
         let engine = SyncEngine(
@@ -37,14 +37,7 @@ typealias SyncAction = @MainActor () async throws -> Void
         }
     }
 
-    enum Error: LocalizedError {
-        case notLoggedIn
-
-        var errorDescription: String? {
-            switch self {
-            case .notLoggedIn:
-                "User is not logged in to iCloud"
-            }
-        }
+    struct NotLoggedInError: LocalizedError {
+        let errorDescription: String? = "User is not logged in to iCloud"
     }
 }
