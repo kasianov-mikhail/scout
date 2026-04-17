@@ -5,6 +5,12 @@ on:
     workflows: [Swift]
     types: [completed]
 
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+  id-token: write
+
 jobs:
   fix:
     if: github.event.workflow_run.conclusion == 'failure'
