@@ -13,14 +13,14 @@ import Testing
 struct TelemetryHandlerTests {
     @Test("CKTelemetryHandler stores label")
     func storesLabel() {
-        let handler = CKTelemetryHandler(label: "test_label", dimensions: [])
+        let handler = CKTelemetryHandler(label: "test_label", dimensions: [], sync: {})
         #expect(handler.label == "test_label")
     }
 
     @Test("CKTelemetryHandler stores dimensions")
     func storesDimensions() {
         let dims = [("key1", "value1"), ("key2", "value2")]
-        let handler = CKTelemetryHandler(label: "test", dimensions: dims)
+        let handler = CKTelemetryHandler(label: "test", dimensions: dims, sync: {})
         #expect(handler.dimensions.count == 2)
         #expect(handler.dimensions[0].0 == "key1")
         #expect(handler.dimensions[1].1 == "value2")
@@ -28,19 +28,19 @@ struct TelemetryHandlerTests {
 
     @Test("CKTelemetryHandler conforms to CounterHandler")
     func conformsToCounter() {
-        let handler = CKTelemetryHandler(label: "test", dimensions: [])
+        let handler = CKTelemetryHandler(label: "test", dimensions: [], sync: {})
         #expect(handler is CounterHandler)
     }
 
     @Test("CKTelemetryHandler conforms to FloatingPointCounterHandler")
     func conformsToFloatingPointCounter() {
-        let handler = CKTelemetryHandler(label: "test", dimensions: [])
+        let handler = CKTelemetryHandler(label: "test", dimensions: [], sync: {})
         #expect(handler is FloatingPointCounterHandler)
     }
 
     @Test("CKTelemetryHandler conforms to TimerHandler")
     func conformsToTimer() {
-        let handler = CKTelemetryHandler(label: "test", dimensions: [])
+        let handler = CKTelemetryHandler(label: "test", dimensions: [], sync: {})
         #expect(handler is TimerHandler)
     }
 
