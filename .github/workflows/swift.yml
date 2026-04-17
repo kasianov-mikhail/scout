@@ -32,7 +32,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-14
+          - os: macos-15
             device: iPhone 15
             ios: 17
           - os: macos-15
@@ -47,7 +47,7 @@ jobs:
 
       - name: Prepare simulator
         run: |
-          if ! xcrun simctl list devices available | grep -q "iPhone"; then
+          if ! xcrun simctl list devices available | grep -q "${{ matrix.device }}"; then
             xcodebuild -downloadPlatform iOS
           fi
 
