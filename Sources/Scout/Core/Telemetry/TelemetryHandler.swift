@@ -11,10 +11,12 @@ import Metrics
 final class CKTelemetryHandler: NSObject {
     let label: String
     let dimensions: [(String, String)]
+    let sync: SyncAction
 
-    init(label: String, dimensions: [(String, String)]) {
+    init(label: String, dimensions: [(String, String)], sync: @escaping SyncAction) {
         self.label = label
         self.dimensions = dimensions
+        self.sync = sync
     }
 
     func reset() {}
@@ -22,18 +24,18 @@ final class CKTelemetryHandler: NSObject {
 
 extension CKTelemetryHandler: CounterHandler {
     func increment(by value: Int64) {
-        logMetrics(label, telemetry: .counter, value: Int(value))
+        logMetrics(label, telemetry: .counter, value: Int(value), sync: sync)
     }
 }
 
 extension CKTelemetryHandler: FloatingPointCounterHandler {
     func increment(by value: Double) {
-        logMetrics(label, telemetry: .floatingCounter, value: value)
+        logMetrics(label, telemetry: .floatingCounter, value: value, sync: sync)
     }
 }
 
 extension CKTelemetryHandler: TimerHandler {
     func recordNanoseconds(_ duration: Int64) {
-        logMetrics(label, telemetry: .timer, value: Double(duration) / 1_000_000_000)
+        logMetrics(label, telemetry: .timer, value: Double(duration) / 1_000_000_000, sync: sync)
     }
 }

@@ -7,21 +7,19 @@
 
 import CloudKit
 
-@MainActor class SyncController {
-    static let shared = SyncController()
+typealias SyncAction = @MainActor () async throws -> Void
 
-    var container: CKContainer?
+@MainActor class SyncController {
+    let container: CKContainer
 
     private let dispatcher: Dispatcher
 
-    private init(dispatcher: Dispatcher = QueueDispatcher()) {
+    init(container: CKContainer, dispatcher: Dispatcher = QueueDispatcher()) {
+        self.container = container
         self.dispatcher = dispatcher
     }
 
     func synchronize() async throws {
-        guard let container else {
-            throw Error.containerNotFound
-        }
         guard try await container.accountStatus() == .available else {
             throw Error.notLoggedIn
         }
@@ -40,13 +38,10 @@ import CloudKit
     }
 
     enum Error: LocalizedError {
-        case containerNotFound
         case notLoggedIn
 
         var errorDescription: String? {
             switch self {
-            case .containerNotFound:
-                "CloudKit container not found. Call `setup(container:)` while initializing the app."
             case .notLoggedIn:
                 "User is not logged in to iCloud"
             }
