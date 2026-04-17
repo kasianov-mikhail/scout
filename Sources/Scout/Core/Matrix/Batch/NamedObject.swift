@@ -19,10 +19,10 @@ class NamedObject: TrackedObject, MatrixBatch {
 
     static func matrix(of batch: [NamedObject]) throws -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
-            throw .init("name")
+            throw MatrixPropertyError("name")
         }
         guard let week = batch.first?.week else {
-            throw .init("week")
+            throw MatrixPropertyError("week")
         }
         return Matrix(
             recordType: Int.recordType,

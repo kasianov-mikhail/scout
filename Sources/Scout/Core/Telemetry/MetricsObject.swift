@@ -25,13 +25,13 @@ class MetricsObject: TrackedObject {
 
     static func matrix<T: MetricsValued>(of batch: [T]) throws -> Matrix<T.Cell> {
         guard let name = batch.first?.name else {
-            throw .init("name")
+            throw MatrixPropertyError("name")
         }
         guard let telemetry = batch.first?.telemetry else {
-            throw .init("telemetry")
+            throw MatrixPropertyError("telemetry")
         }
         guard let week = batch.first?.week else {
-            throw .init("week")
+            throw MatrixPropertyError("week")
         }
         return Matrix(
             recordType: T.Value.recordType,
