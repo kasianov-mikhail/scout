@@ -11,7 +11,7 @@ import Testing
 @testable import Scout
 
 struct TelemetryFactoryTests {
-    let factory = TelemetryFactory()
+    let factory = TelemetryFactory(sync: {})
 
     @Test("makeCounter returns CKTelemetryHandler")
     func makeCounter() {
