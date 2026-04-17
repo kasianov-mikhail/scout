@@ -8,17 +8,19 @@
 import UIKit
 
 extension NotificationListener {
-    @MainActor static let appState = NotificationListener(table: [
-        UIApplication.willEnterForegroundNotification: {
-            try await persistentContainer.performBackgroundTask(SessionObject.trigger)
-            try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
-            try await SyncController.shared.synchronize()
-        },
-        UIApplication.didEnterBackgroundNotification: {
-            try await persistentContainer.performBackgroundTask(SessionObject.complete)
-            try await persistentContainer.performBackgroundTask(LaunchObject.complete)
-            try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
-            try await SyncController.shared.synchronize()
-        },
-    ])
+    @MainActor static func appState(sync: @escaping SyncAction) -> NotificationListener {
+        NotificationListener(table: [
+            UIApplication.willEnterForegroundNotification: {
+                try await persistentContainer.performBackgroundTask(SessionObject.trigger)
+                try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
+                try await sync()
+            },
+            UIApplication.didEnterBackgroundNotification: {
+                try await persistentContainer.performBackgroundTask(SessionObject.complete)
+                try await persistentContainer.performBackgroundTask(LaunchObject.complete)
+                try await persistentContainer.performBackgroundTask(UserActivityObject.trigger)
+                try await sync()
+            },
+        ])
+    }
 }

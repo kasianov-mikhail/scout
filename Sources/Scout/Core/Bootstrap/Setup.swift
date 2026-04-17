@@ -34,12 +34,18 @@ public func setup(container: CKContainer) async throws {
     await CrashArchive.system.flush()
     try await persistentContainer.performBackgroundTask(completeStaleSessions)
 
-    try NotificationListener.appState.setup()
+    let syncController = SyncController(container: container)
+    let sync = syncController.synchronize
+
+    try NotificationListener.appState(sync: sync).setup()
+
     try await persistentContainer.performBackgroundTask(DeviceObject.trigger)
     try await persistentContainer.performBackgroundTask(InstallObject.trigger)
     try await persistentContainer.performBackgroundTask(VersionObject.trigger)
     try await persistentContainer.performBackgroundTask(LaunchObject.trigger)
-    SyncController.shared.container = container
-    LoggingSystem.bootstrap(CKLogHandler.init)
-    MetricsSystem.bootstrap(TelemetryFactory())
+
+    LoggingSystem.bootstrap { label in
+        CKLogHandler(sync: sync, label: label)
+    }
+    MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
 }

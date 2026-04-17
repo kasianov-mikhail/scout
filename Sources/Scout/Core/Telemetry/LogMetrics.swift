@@ -10,7 +10,8 @@ import CoreData
 func logMetrics<T: MatrixValue>(
     _ name: String,
     telemetry: Telemetry.Export,
-    value: T
+    value: T,
+    sync: @escaping SyncAction
 ) {
     Task {
         do {
@@ -23,7 +24,7 @@ func logMetrics<T: MatrixValue>(
                     context
                 )
             }
-            try await SyncController.shared.synchronize()
+            try await sync()
         } catch {
             print("Failed to save metrics: \(error.localizedDescription)")
         }

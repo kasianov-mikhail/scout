@@ -11,11 +11,8 @@ import Logging
 /// A log handler that persists log events to CloudKit via Core Data.
 ///
 struct CKLogHandler: LogHandler {
+    let sync: SyncAction
     let label: String
-
-    init(label: String) {
-        self.label = label
-    }
 
     var metadata: Logger.Metadata = [:]
 
@@ -35,6 +32,7 @@ struct CKLogHandler: LogHandler {
         function: String,
         line: UInt
     ) {
+        let sync = self.sync
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
@@ -46,7 +44,7 @@ struct CKLogHandler: LogHandler {
                         context: context
                     )
                 }
-                try await SyncController.shared.synchronize()
+                try await sync()
             } catch {
                 print(error.localizedDescription)
             }
