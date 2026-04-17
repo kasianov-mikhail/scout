@@ -39,10 +39,12 @@ public func setup(container: CKContainer) async throws {
 
     try NotificationListener.appState(sync: sync).setup()
 
-    try await persistentContainer.performBackgroundTask(DeviceObject.trigger)
-    try await persistentContainer.performBackgroundTask(InstallObject.trigger)
-    try await persistentContainer.performBackgroundTask(VersionObject.trigger)
-    try await persistentContainer.performBackgroundTask(LaunchObject.trigger)
+    try await persistentContainer.performBackgroundTasks(
+        DeviceObject.trigger,
+        InstallObject.trigger,
+        VersionObject.trigger,
+        LaunchObject.trigger
+    )
 
     LoggingSystem.bootstrap { label in
         CKLogHandler(sync: sync, label: label)
