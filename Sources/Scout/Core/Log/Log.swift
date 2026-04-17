@@ -35,6 +35,9 @@ func log(
 }
 
 extension Logger.MetadataValue {
+
+    /// Extracts a plain string representation from a metadata value.
+    ///
     fileprivate var stringValue: String? {
         switch self {
         case .string(let string):
