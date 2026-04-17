@@ -29,7 +29,17 @@ jobs:
 
             1. Run `gh run view ${{ github.event.workflow_run.id }} --log-failed` to get the failure logs
             2. Diagnose the root cause
-            3. If the fix is in code or CI config, make the changes and create a PR targeting the failed branch. Do NOT enable auto-merge. Request review from kasianov-mikhail.
+            3. If the fix is in code or CI config, make the changes and create a PR targeting the failed branch
             4. If the failure is environmental (network, Apple services, flaky test), just post a summary comment on the run
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude_args: "--model claude-opus-4-6"
+
+      - name: Request review
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          PR=$(gh pr list --author "github-actions[bot]" --json number --jq '.[0].number')
+          if [ -n "$PR" ]; then
+            gh pr merge "$PR" --disable-auto
+            gh pr edit "$PR" --add-reviewer kasianov-mikhail
+          fi
