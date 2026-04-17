@@ -28,14 +28,9 @@ struct EventList: View {
                     ForEach(events, content: row)
 
                     if let cursor = provider.cursor {
-                        ProgressView()
-                            .task {
-                                await provider.fetchMore(cursor: cursor, in: database)
-                            }
-                            .id(UUID())
-                            .frame(height: 72)
-                            .frame(maxWidth: .infinity)
-                            .listRowSeparator(.hidden, edges: .bottom)
+                        PaginationFooter(cursor: cursor) {
+                            await provider.fetchMore(cursor: $0, in: database)
+                        }
                     }
                 }
                 .listStyle(.plain)
