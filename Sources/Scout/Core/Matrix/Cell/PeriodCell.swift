@@ -23,15 +23,13 @@ extension PeriodCell: CellProtocol {
     }
 
     init(key: String, value: T) {
-        let parts = key.components(separatedBy: "_")
-
-        guard parts.count == 3 else {
+        guard let parts = parseCellKey(key) else {
             fatalError("Invalid key format")
         }
-        guard let period = ActivityPeriod(rawValue: String(parts[1])) else {
+        guard let period = ActivityPeriod(rawValue: parts.first) else {
             fatalError("Invalid period")
         }
-        guard let day = Int(parts[2]) else {
+        guard let day = Int(parts.second) else {
             fatalError("Invalid day")
         }
 

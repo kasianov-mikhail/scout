@@ -23,6 +23,16 @@ protocol CellProtocol: Combining, Sendable, Equatable {
     init(key: String, value: Scalar)
 }
 
+/// Splits a cell key like `"cell_X_Y"` into its three components.
+///
+/// Returns `nil` if the key doesn't have exactly three underscore-separated parts.
+///
+func parseCellKey(_ key: String) -> (prefix: String, first: String, second: String)? {
+    let parts = key.components(separatedBy: "_")
+    guard parts.count == 3 else { return nil }
+    return (parts[0], parts[1], parts[2])
+}
+
 extension Int {
     var leadingZero: String {
         String(format: "%02d", self)

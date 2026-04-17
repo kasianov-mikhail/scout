@@ -23,15 +23,13 @@ extension GridCell: CellProtocol {
     }
 
     init(key: String, value: T) {
-        let parts = key.components(separatedBy: "_")
-
-        guard parts.count == 3 else {
+        guard let parts = parseCellKey(key) else {
             fatalError("Invalid key format")
         }
-        guard let row = Int(parts[1]) else {
+        guard let row = Int(parts.first) else {
             fatalError("Invalid row index")
         }
-        guard let column = Int(parts[2]) else {
+        guard let column = Int(parts.second) else {
             fatalError("Invalid column index")
         }
 
