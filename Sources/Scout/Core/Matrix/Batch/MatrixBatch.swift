@@ -7,11 +7,20 @@
 
 import Foundation
 
+/// A group of records that can be reduced into a single `Matrix`.
+///
+/// Conformers decide how their batch maps to cells via `matrix(of:)`.
+/// For the common "count records by hour-of-week" case see the default
+/// `parse(of:)` below; for lifecycle records see `GridBatch`.
+///
 protocol MatrixBatch {
     associatedtype Cell: CellProtocol
     static func matrix(of batch: [Self]) throws(MatrixPropertyError) -> Matrix<Cell>
 }
 
+/// Thrown when a batch is missing a property required to form a matrix
+/// (e.g. no `week` on the seed record).
+///
 struct MatrixPropertyError: LocalizedError {
     let errorDescription: String?
 

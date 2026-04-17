@@ -8,10 +8,20 @@
 import CloudKit
 import CoreData
 
+/// A type that identifies itself by a CloudKit record type name.
 protocol RecordTyped {
     static var recordType: String { get }
 }
 
+/// A scalar type that can live in a matrix cell — currently `Int` and
+/// `Double`.
+///
+/// Carries its own CloudKit `recordType` (e.g. `"DateIntMatrix"`) and a
+/// back-reference to the `MetricsObject` subclass that stores it
+/// (`IntMetricsObject` / `DoubleMetricsObject`). The back-reference lets
+/// `logMetrics<T: MatrixValue>` construct the right managed-object
+/// subclass generically.
+///
 protocol MatrixValue: RecordTyped & AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
     associatedtype Object: MetricsValued where Object.Value == Self
 }

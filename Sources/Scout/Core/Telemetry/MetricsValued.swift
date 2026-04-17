@@ -7,6 +7,13 @@
 
 import CoreData
 
+/// A concrete `MetricsObject` that stores a typed scalar `Value`
+/// (either `Int` or `Double`) and participates in the sync/matrix
+/// pipeline.
+///
+/// Required by `logMetrics<T: MatrixValue>` so it can construct the right
+/// `T.Object` managed-object subclass generically from a scalar value.
+///
 protocol MetricsValued: MetricsObject & Syncable & MatrixBatch {
     associatedtype Value where Cell.Scalar == Value
     var value: Value { get set }

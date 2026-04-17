@@ -7,10 +7,12 @@
 
 import CloudKit
 
+/// Can be constructed from a `CKRecord` fetched from CloudKit.
 protocol CKInitializable {
     init(record: CKRecord) throws
 }
 
+/// Can be serialized into a `CKRecord` to write back to CloudKit.
 protocol CKRepresentable {
     var toRecord: CKRecord { get }
 }

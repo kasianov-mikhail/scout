@@ -7,6 +7,12 @@
 
 import CoreData
 
+/// `TrackedObject` with a user-facing `name` attribute and a shared
+/// `matrix(of:)` that groups records by their own `name`.
+///
+/// Base for `EventObject` and `CrashObject` — both aggregate by event name
+/// (e.g. "login", "fatal") rather than by `recordType`.
+///
 @objc(NamedObject)
 class NamedObject: TrackedObject, MatrixBatch {
     @NSManaged var name: String?

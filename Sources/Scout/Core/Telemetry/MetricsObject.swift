@@ -8,6 +8,12 @@
 import CloudKit
 import CoreData
 
+/// `TrackedObject` for telemetry records, scoped by `name` (metric name)
+/// and `telemetry` (kind of telemetry — counter, gauge, …).
+///
+/// Abstract; concrete subclasses `IntMetricsObject` and
+/// `DoubleMetricsObject` add a typed `value` via `MetricsValued`.
+///
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
     @NSManaged var name: String?

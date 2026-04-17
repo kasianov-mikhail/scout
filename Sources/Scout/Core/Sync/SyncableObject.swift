@@ -7,10 +7,20 @@
 
 import CoreData
 
+/// Marker for `SyncableObject` subclasses that know how to gather
+/// themselves into sync-ready batches.
+///
+/// `group(in:)` returns the next pending batch (e.g. all unsynced records
+/// sharing the same week), or `nil` if nothing pending.
+///
 protocol Syncable: SyncableObject {
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
 }
 
+/// `IDObject` that tracks sync state via `isSynced` and provides
+/// `batch(in:matching:)` — fetch all unsynced peers that share the same
+/// values on a given set of key paths (used to build a batch from a seed).
+///
 @objc(SyncableObject)
 class SyncableObject: IDObject {
     @NSManaged var isSynced: Bool
