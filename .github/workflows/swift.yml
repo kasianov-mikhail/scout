@@ -48,7 +48,7 @@ jobs:
       - name: Prepare simulator
         run: |
           if ! xcrun simctl list devices available | grep -q "${{ matrix.device }}"; then
-            xcodebuild -downloadPlatform iOS
+            xcodebuild -downloadPlatform "iOS ${{ matrix.ios }}"
           fi
 
       - name: Build
