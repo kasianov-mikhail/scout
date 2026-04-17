@@ -5,58 +5,8 @@ on:
     branches: [main]
 
 jobs:
-  find:
-    runs-on: ubuntu-latest
-    outputs:
-      prs: ${{ steps.check.outputs.prs }}
-    steps:
-      - name: Find conflicted PRs
-        id: check
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
-          sleep 30
-          PRS=$(gh pr list --repo ${{ github.repository }} --json number,mergeable --jq '[.[] | select(.mergeable == "CONFLICTING") | .number]')
-          echo "prs=$PRS" >> $GITHUB_OUTPUT
-
   resolve:
-    needs: find
-    if: needs.find.outputs.prs != '[]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-
-    permissions:
-      contents: write
-      pull-requests: write
-      actions: read
-      id-token: write
-
-    strategy:
-      matrix:
-        pr: ${{ fromJson(needs.find.outputs.prs) }}
-
-    steps:
-      - name: Get PR branch
-        id: pr
-        env:
-          GH_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
-          BRANCH=$(gh pr view ${{ matrix.pr }} --repo ${{ github.repository }} --json headRefName --jq '.headRefName')
-          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
-
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ steps.pr.outputs.branch }}
-          fetch-depth: 0
-          token: ${{ secrets.GH_PAT }}
-
-      - uses: anthropics/claude-code-action@v1
-        with:
-          prompt: |
-            PR #${{ matrix.pr }} has merge conflicts with main.
-
-            1. Run `git merge origin/main` to see the conflicts
-            2. Resolve all conflicts
-            3. Commit the merge and push
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-opus-4-6"
+    uses: kasianov-mikhail/.github/.github/workflows/resolve-conflicts.yml@main
+    secrets:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GH_PAT: ${{ secrets.GH_PAT }}
