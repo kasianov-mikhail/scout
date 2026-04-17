@@ -15,7 +15,7 @@ import Foundation
 ///
 protocol MatrixBatch {
     associatedtype Cell: CellProtocol
-    static func matrix(of batch: [Self]) throws(MatrixPropertyError) -> Matrix<Cell>
+    static func matrix(of batch: [Self]) throws -> Matrix<Cell>
 }
 
 /// Thrown when a batch is missing a property required to form a matrix

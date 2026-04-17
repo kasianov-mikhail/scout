@@ -17,7 +17,7 @@ import CoreData
 class NamedObject: TrackedObject, MatrixBatch {
     @NSManaged var name: String?
 
-    static func matrix(of batch: [NamedObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+    static func matrix(of batch: [NamedObject]) throws -> GridMatrix<Int> {
         guard let name = batch.first?.name else {
             throw .init("name")
         }

@@ -20,7 +20,7 @@ final class EventObject: NamedObject, Syncable {
         try batch(in: context, matching: [\.name, \.week])
     }
 
-    static func matrix(of batch: [EventObject]) throws(MatrixPropertyError) -> GridMatrix<Int> {
+    static func matrix(of batch: [EventObject]) throws -> GridMatrix<Int> {
         try NamedObject.matrix(of: batch)
     }
 }

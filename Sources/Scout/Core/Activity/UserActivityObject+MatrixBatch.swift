@@ -8,7 +8,7 @@
 import Foundation
 
 extension UserActivityObject: MatrixBatch {
-    static func matrix(of batch: [UserActivityObject]) throws(MatrixPropertyError) -> Matrix<PeriodCell<Int>> {
+    static func matrix(of batch: [UserActivityObject]) throws -> Matrix<PeriodCell<Int>> {
         guard let month = batch.first?.month else {
             throw .init("month")
         }
