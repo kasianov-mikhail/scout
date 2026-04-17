@@ -26,9 +26,9 @@ extension Telemetry {
         }
     }
 
-    init(name: String, value: Double) throws(ExportError) {
+    init(name: String, value: Double) throws {
         guard let type = Export(rawValue: name) else {
-            throw .invalidName
+            throw ExportError.invalidName
         }
 
         switch type {
