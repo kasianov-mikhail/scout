@@ -11,7 +11,7 @@ import Logging
 
 /// Persists a log event to Core Data.
 ///
-func log(
+ func log(
     _ name: String,
     level: Logger.Level,
     metadata: Logger.Metadata?,
