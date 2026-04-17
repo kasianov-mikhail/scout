@@ -15,7 +15,7 @@ struct EventList: View {
     @ObservedObject var provider: EventProvider
 
     var body: some View {
-        if let events = provider.events {
+        if let events = provider.items {
             if events.isEmpty {
                 Placeholder(
                     text: "No results",
@@ -83,7 +83,7 @@ struct EventList: View {
 
 #Preview("Empty State") {
     let provider = EventProvider()
-    provider.events = []
+    provider.items = []
     return NavigationStack {
         EventList(provider: provider)
     }

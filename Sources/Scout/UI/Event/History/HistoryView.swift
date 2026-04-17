@@ -52,13 +52,13 @@ struct HistoryView: View {
         }
         .onChange(of: filter.category) { _ in
             Task {
-                provider.events = nil
+                provider.items = nil
                 await fetch()
             }
         }
         .onChange(of: filter.option) { _ in
             Task {
-                provider.events = nil
+                provider.items = nil
                 await fetch()
             }
         }

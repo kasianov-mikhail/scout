@@ -9,39 +9,19 @@ import CloudKit
 import SwiftUI
 
 @MainActor
-class CrashProvider: ObservableObject {
-    @Published var crashes: [Crash]?
-    @Published var cursor: CKQueryOperation.Cursor?
-
+class CrashProvider: PaginatingProvider<Crash> {
     func fetch(in database: AppDatabase) async {
-        do {
-            let query = CKQuery(recordType: CrashObject.recordType, predicate: Self.predicate)
-            query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-
-            let results = try await database.read(
-                matching: query,
-                fields: Crash.desiredKeys
-            )
-
-            self.cursor = results.cursor
-            self.crashes = try results.records.map(Crash.init)
-        } catch {
-            self.crashes = []
-        }
+        let query = CKQuery(recordType: CrashObject.recordType, predicate: Self.predicate)
+        query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        await fetch(matching: query, fields: Crash.desiredKeys, in: database)
     }
 
-    func fetchMore(cursor: CKQueryOperation.Cursor, in database: AppDatabase) async {
-        do {
-            let results = try await database.readMore(
-                from: cursor,
-                fields: nil
-            )
+    override func handleFetchError(_ error: Error) {
+        self.items = []
+    }
 
-            self.cursor = results.cursor
-            self.crashes?.append(contentsOf: try results.records.map(Crash.init))
-        } catch {
-            // Keep existing data on pagination failure
-        }
+    override func handlePaginationError(_ error: Error) {
+        // Keep existing data on pagination failure
     }
 
     private static var predicate: NSPredicate {

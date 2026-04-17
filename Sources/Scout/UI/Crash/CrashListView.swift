@@ -14,7 +14,7 @@ struct CrashListView: View {
 
     var body: some View {
         Group {
-            if let crashes = provider.crashes {
+            if let crashes = provider.items {
                 if crashes.isEmpty {
                     Placeholder(
                         text: "No crashes",

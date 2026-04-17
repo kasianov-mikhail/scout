@@ -10,39 +10,10 @@ import Foundation
 import SwiftUI
 
 @MainActor
-class EventProvider: ObservableObject {
-    @Published var events: [Event]?
-    @Published var cursor: CKQueryOperation.Cursor?
-    @Published var message: Message?
-
+class EventProvider: PaginatingProvider<Event> {
     func fetch(for filter: Event.Query, in database: AppDatabase) async {
-        do {
-            let query = CKQuery(recordType: EventObject.recordType, predicate: filter.buildPredicate())
-            query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-
-            let results = try await database.read(
-                matching: query,
-                fields: Event.desiredKeys
-            )
-
-            self.cursor = results.cursor
-            self.events = try results.records.map(Event.init)
-        } catch {
-            self.message = Message(error.localizedDescription, level: .error)
-        }
-    }
-
-    func fetchMore(cursor: CKQueryOperation.Cursor, in database: AppDatabase) async {
-        do {
-            let results = try await database.readMore(
-                from: cursor,
-                fields: nil
-            )
-
-            self.cursor = results.cursor
-            self.events?.append(contentsOf: try results.records.map(Event.init))
-        } catch {
-            self.message = Message(error.localizedDescription, level: .error)
-        }
+        let query = CKQuery(recordType: EventObject.recordType, predicate: filter.buildPredicate())
+        query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        await fetch(matching: query, fields: Event.desiredKeys, in: database)
     }
 }

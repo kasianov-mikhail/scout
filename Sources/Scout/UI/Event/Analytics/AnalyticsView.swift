@@ -28,7 +28,7 @@ struct AnalyticsView: View {
         .autocorrectionDisabled(true)  // stop keyboard suggestions
         .keyboardType(.alphabet)  // stop keyboard suggestions
         .searchSuggestions {
-            if let events = provider.events, filter.text.isEmpty {
+            if let events = provider.items, filter.text.isEmpty {
                 ForEach(events.unique(by: \.name, max: 7), id: \.self) {
                     Suggestion(text: $0)
                 }
@@ -43,12 +43,12 @@ struct AnalyticsView: View {
             )  // hide keyboard on suggestion selected
 
             Task {
-                search.events = nil
+                search.items = nil
                 await search.fetch(for: filter, in: database)
             }
         }
         .onChange(of: filter.text) { _ in
-            search.events?.removeAll()
+            search.items?.removeAll()
         }
         .navigationTitle("Events")
         .onAppear {
@@ -72,7 +72,7 @@ struct AnalyticsView: View {
             }
             .onChange(of: filter.levels) { _ in
                 Task {
-                    provider.events = nil
+                    provider.items = nil
                     await fetch()
                 }
             }
