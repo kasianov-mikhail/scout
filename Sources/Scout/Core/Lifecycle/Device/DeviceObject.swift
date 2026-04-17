@@ -9,12 +9,8 @@ import CloudKit
 import CoreData
 
 @objc(DeviceObject)
-final class DeviceObject: SyncableObject, Syncable {
+final class DeviceObject: SyncableObject, Syncable, GridBatch {
     static let recordType = "Device"
-
-    static func group(in context: NSManagedObjectContext) throws -> [DeviceObject]? {
-        try batch(in: context, matching: [\.week])
-    }
 
     func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
@@ -24,7 +20,7 @@ final class DeviceObject: SyncableObject, Syncable {
     }
 }
 
-extension DeviceObject: CKRepresentable {
+extension DeviceObject {
     var toRecord: CKRecord {
         let record = CKRecord(recordType: Self.recordType)
 

@@ -9,13 +9,10 @@ import CloudKit
 import CoreData
 
 @objc(SessionObject)
-final class SessionObject: TrackedObject, Syncable {
+final class SessionObject: TrackedObject, Syncable, GridBatch {
     static let recordType = "Session"
-    @NSManaged var endDate: Date?
 
-    static func group(in context: NSManagedObjectContext) throws -> [SessionObject]? {
-        try batch(in: context, matching: [\.week])
-    }
+    @NSManaged var endDate: Date?
 
     func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
@@ -25,7 +22,7 @@ final class SessionObject: TrackedObject, Syncable {
     }
 }
 
-extension SessionObject: CKRepresentable {
+extension SessionObject {
     var toRecord: CKRecord {
         let record = CKRecord(recordType: Self.recordType)
 
