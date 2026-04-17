@@ -7,6 +7,12 @@
 
 import CoreData
 
+/// `DateObject` that carries the three app-context IDs
+/// (`deviceID`, `installID`, `launchID`) populated from global `IDs` on insert.
+///
+/// Used to correlate records back to the specific device/install/launch
+/// they were produced in.
+///
 @objc(IDObject)
 class IDObject: DateObject {
     @NSManaged var deviceID: UUID?
