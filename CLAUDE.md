@@ -2,4 +2,4 @@ When pushing new commits to an existing PR, update its title and description to 
 
 Multi-line doc comments (`///`) must end with a trailing empty `///` line. Single-line doc comments do not need this.
 
-When changing GitHub Actions workflows, update `.github/WORKFLOWS.md` to reflect the changes.
+When changing GitHub Actions workflows, update `.github/workflows/README.md` to reflect the changes.
