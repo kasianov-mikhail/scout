@@ -7,8 +7,6 @@
 
 import CoreData
 
-let maxSyncAttempts = 10
-
 /// Marker for `SyncableObject` subclasses that know how to gather
 /// themselves into sync-ready batches.
 ///
@@ -23,14 +21,6 @@ protocol Syncable: SyncableObject {
 class SyncableObject: IDObject {
     @NSManaged var isSynced: Bool
     @NSManaged var syncAttempts: Int
-
-    static var stalePredicate: NSPredicate {
-        NSPredicate(format: "endDate == nil AND launchID != %@", IDs.launch as CVarArg)
-    }
-
-    static var pendingPredicate: NSPredicate {
-        NSPredicate(format: "isSynced == false AND syncAttempts <= %d", maxSyncAttempts)
-    }
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
