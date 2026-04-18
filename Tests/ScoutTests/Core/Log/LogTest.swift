@@ -11,16 +11,22 @@ import Testing
 
 @testable import Scout
 
+private func makeEvent(
+    _ message: String, level: Logger.Level = .info, metadata: Logger.Metadata? = nil
+) -> LogEvent {
+    LogEvent(
+        level: level, message: "\(message)", metadata: metadata,
+        source: nil, file: #file, function: #function, line: #line
+    )
+}
+
 @MainActor
 @Test("Logging an event") func testLogEvent() throws {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date()
-    let metadata: Logger.Metadata = ["key": .string("value")]
 
     try log(
-        "Test Event",
-        level: .info,
-        metadata: metadata,
+        makeEvent("Test Event", metadata: ["key": .string("value")]),
         date: date,
         context: context
     )
@@ -53,7 +59,7 @@ import Testing
         "tags": .array([.string("a"), .string("b"), .string("c")])
     ]
 
-    try log("Array Event", level: .info, metadata: metadata, date: Date(), context: context)
+    try log(makeEvent("Array Event", metadata: metadata), date: Date(), context: context)
 
     let events = try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject"))
     let paramData = try #require(events.first?.params)
@@ -69,7 +75,7 @@ import Testing
         "user": .dictionary(["name": .string("Alice"), "role": .string("admin")])
     ]
 
-    try log("Dict Event", level: .info, metadata: metadata, date: Date(), context: context)
+    try log(makeEvent("Dict Event", metadata: metadata), date: Date(), context: context)
 
     let events = try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject"))
     let paramData = try #require(events.first?.params)
@@ -87,7 +93,7 @@ import Testing
         "map": .dictionary(["key": .string("val")]),
     ]
 
-    try log("Mixed Event", level: .info, metadata: metadata, date: Date(), context: context)
+    try log(makeEvent("Mixed Event", metadata: metadata), date: Date(), context: context)
 
     let events = try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject"))
     let paramData = try #require(events.first?.params)
