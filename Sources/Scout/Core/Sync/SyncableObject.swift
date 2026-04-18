@@ -7,6 +7,8 @@
 
 import CoreData
 
+private let maxSyncAttempts = 10
+
 /// Marker for `SyncableObject` subclasses that know how to gather
 /// themselves into sync-ready batches.
 ///
@@ -17,26 +19,27 @@ protocol Syncable: SyncableObject {
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
 }
 
-/// `IDObject` that tracks sync state via `isSynced` and provides
-/// `batch(in:matching:)` — fetch all unsynced peers that share the same
-/// values on a given set of key paths (used to build a batch from a seed).
-///
 @objc(SyncableObject)
 class SyncableObject: IDObject {
     @NSManaged var isSynced: Bool
+    @NSManaged var syncAttempts: Int
+
+    static let pendingPredicate = NSPredicate(
+        format: "isSynced == false AND syncAttempts <= %d", maxSyncAttempts
+    )
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
 
         let seedRequest = NSFetchRequest<T>(entityName: entityName)
-        seedRequest.predicate = NSPredicate(format: "isSynced == false")
+        seedRequest.predicate = pendingPredicate
         seedRequest.fetchLimit = 1
 
         guard let seed = try context.fetch(seedRequest).first else {
             return nil
         }
 
-        var predicates = [NSPredicate(format: "isSynced == false")]
+        var predicates = [pendingPredicate]
 
         for keyPath in keyPaths {
             if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject {
