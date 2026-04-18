@@ -7,6 +7,11 @@
 
 import CloudKit
 
+/// A type that identifies itself by a CloudKit record type name.
+protocol RecordTyped {
+    static var recordType: String { get }
+}
+
 /// Can be constructed from a `CKRecord` fetched from CloudKit.
 protocol CKInitializable {
     init(record: CKRecord) throws

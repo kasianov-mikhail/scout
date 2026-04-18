@@ -8,11 +8,6 @@
 import CloudKit
 import CoreData
 
-/// A type that identifies itself by a CloudKit record type name.
-protocol RecordTyped {
-    static var recordType: String { get }
-}
-
 /// A scalar type that can live in a matrix cell — currently `Int` and
 /// `Double`.
 ///
