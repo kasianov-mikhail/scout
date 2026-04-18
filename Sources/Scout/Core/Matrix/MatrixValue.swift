@@ -8,15 +8,7 @@
 import CloudKit
 import CoreData
 
-/// A scalar type that can live in a matrix cell — currently `Int` and
-/// `Double`.
-///
-/// Carries its own CloudKit `recordType` (e.g. `"DateIntMatrix"`) and a
-/// back-reference to the `MetricsObject` subclass that stores it
-/// (`IntMetricsObject` / `DoubleMetricsObject`). The back-reference lets
-/// `logMetrics<T: MatrixValue>` construct the right managed-object
-/// subclass generically.
-///
+/// A scalar type suitable for matrix cells and syncing.
 protocol MatrixValue: RecordTyped & AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
     associatedtype Object: MetricsValued where Object.Value == Self
 }
