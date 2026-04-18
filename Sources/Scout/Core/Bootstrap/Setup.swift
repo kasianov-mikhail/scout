@@ -23,7 +23,8 @@ public func setup(container: CKContainer) async throws {
 
     await CrashArchive.system.flush()
     try await persistentContainer.performBackgroundTasks(
-        completeStaleSessions,
+        SessionObject.completeStale,
+        LaunchObject.completeStale,
         SyncableObject.cleanup
     )
 
