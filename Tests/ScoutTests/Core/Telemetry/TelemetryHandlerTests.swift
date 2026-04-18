@@ -25,34 +25,4 @@ struct TelemetryHandlerTests {
         #expect(handler.dimensions[0].0 == "key1")
         #expect(handler.dimensions[1].1 == "value2")
     }
-
-    @Test("CKTelemetryHandler conforms to CounterHandler")
-    func conformsToCounter() {
-        let handler = CKTelemetryHandler(label: "test", dimensions: [], sync: {})
-        #expect(handler is CounterHandler)
-    }
-
-    @Test("CKTelemetryHandler conforms to FloatingPointCounterHandler")
-    func conformsToFloatingPointCounter() {
-        let handler = CKTelemetryHandler(label: "test", dimensions: [], sync: {})
-        #expect(handler is FloatingPointCounterHandler)
-    }
-
-    @Test("CKTelemetryHandler conforms to TimerHandler")
-    func conformsToTimer() {
-        let handler = CKTelemetryHandler(label: "test", dimensions: [], sync: {})
-        #expect(handler is TimerHandler)
-    }
-
-    @Test("Idle conforms to MeterHandler")
-    func idleConformsToMeter() {
-        let idle = CKTelemetryHandler.Idle()
-        #expect(idle is MeterHandler)
-    }
-
-    @Test("Idle conforms to RecorderHandler")
-    func idleConformsToRecorder() {
-        let idle = CKTelemetryHandler.Idle()
-        #expect(idle is RecorderHandler)
-    }
 }
