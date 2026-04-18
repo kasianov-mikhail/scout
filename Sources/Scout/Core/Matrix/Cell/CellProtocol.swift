@@ -7,13 +7,7 @@
 
 import CloudKit
 
-/// A single cell of a `Matrix`: a stringly-typed coordinate `key`
-/// (e.g. `"cell_3_14"`) plus a `value` of scalar type `Scalar`.
-///
-/// CloudKit records store cells as one flat field per cell keyed by
-/// `key`, so `init(key:value:)` parses the coordinate back from the
-/// string when reading a matrix.
-///
+/// A single cell of a matrix: a coordinate key and a scalar value.
 protocol CellProtocol: Combining, Sendable, Equatable {
     associatedtype Scalar: MatrixValue
 

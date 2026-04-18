@@ -7,18 +7,10 @@
 
 import CoreData
 
-/// A `MatrixBatch` of weekly lifecycle records
-/// (`DeviceObject`, `InstallObject`, `LaunchObject`, `SessionObject`,
-/// `VersionObject`).
+/// Groups weekly lifecycle records into matrices for syncing.
 ///
-/// Provides defaults for all three steps of the sync pipeline:
-/// - `group(in:)` — fetches all unsynced records sharing a week,
-/// - `parse(of:)` — groups them by hour-of-week and counts them,
-/// - `matrix(of:)` — wraps the cells in a `GridMatrix<Int>` named after
-///   the object's `recordType`.
-///
-/// Conformers only declare their `recordType` and `toRecord` — everything
-/// else is inherited.
+/// Conformers only need to declare `recordType` and `toRecord`;
+/// all batch grouping and parsing is inherited.
 ///
 protocol GridBatch: MatrixBatch & RecordTyped & CKRepresentable where Cell == GridCell<Int> {}
 

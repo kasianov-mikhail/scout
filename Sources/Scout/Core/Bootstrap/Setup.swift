@@ -10,22 +10,12 @@ import Foundation
 import Logging
 import Metrics
 
-/// Sets up the application's core services and infrastructure.
+/// Initializes Scout's global infrastructure.
 ///
-/// This function initializes the global CloudKit container, configures the logging and metrics systems,
-/// crash handler, and prepares notification activity listeners. It should be called on the main actor
-/// during application startup, and should only be invoked once.
+/// - Parameter container: The CloudKit container for all operations.
+/// - Throws: An error if initialization fails.
+/// - Important: Call from the main actor during app startup.
 ///
-/// - Parameter container: The `CKContainer` instance to be used for all CloudKit operations.
-///
-/// - Throws: An error if the notification listener setup fails.
-///
-/// - Important: This function must be called from the main actor context.
-///
-/// Example usage:
-/// ```swift
-/// try await setup(container: CKContainer.default())
-/// ```
 @MainActor
 public func setup(container: CKContainer) async throws {
     installExceptionHandler()
