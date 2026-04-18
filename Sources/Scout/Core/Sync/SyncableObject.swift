@@ -24,9 +24,9 @@ class SyncableObject: IDObject {
     @NSManaged var isSynced: Bool
     @NSManaged var syncAttempts: Int
 
-    static let pendingPredicate = NSPredicate(
-        format: "isSynced == false AND syncAttempts <= %d", maxSyncAttempts
-    )
+    static var pendingPredicate: NSPredicate {
+        NSPredicate(format: "isSynced == false AND syncAttempts <= %d", maxSyncAttempts)
+    }
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
