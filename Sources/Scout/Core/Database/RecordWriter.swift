@@ -28,7 +28,7 @@ extension CKDatabase: RecordWriter {
                 try await database.modifyRecords(
                     saving: chunk,
                     deleting: [],
-                    savePolicy: .ifServerRecordUnchanged,
+                    savePolicy: .allKeys,
                     atomically: true
                 )
             }
