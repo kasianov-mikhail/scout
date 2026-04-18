@@ -29,9 +29,6 @@ struct ActivityRow: View {
         }
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         List {

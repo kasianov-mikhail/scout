@@ -12,9 +12,6 @@ import Foundation
 protocol ChartComposing: CellProtocol {
     var secondsSinceBase: Int { get }
 }
-
-// MARK: - Conformers
-
 extension PeriodCell: ChartComposing {
     var secondsSinceBase: Int {
         (day - 1) * 86_400
@@ -26,9 +23,6 @@ extension GridCell: ChartComposing {
         (row - 1) * 86_400 + column * 3_600
     }
 }
-
-// MARK: - Chart Point Mapping
-
 extension Matrix where T: ChartComposing, T.Scalar: ChartNumeric {
     var points: [ChartPoint<T.Scalar>] {
         cells.map { $0.point(baseDate: date) }

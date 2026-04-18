@@ -33,9 +33,6 @@ struct StatRow<Destination: View>: View {
         }
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         List {

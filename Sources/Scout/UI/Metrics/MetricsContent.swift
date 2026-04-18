@@ -65,9 +65,6 @@ struct MetricsContent<T: ChartNumeric>: View {
         .lineLimit(1)
     }
 }
-
-// MARK: - Previews
-
 #Preview("Empty State") {
     NavigationStack {
         Placeholder(

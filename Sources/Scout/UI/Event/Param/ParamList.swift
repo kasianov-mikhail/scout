@@ -83,9 +83,6 @@ struct ParamRow: View {
         }
     }
 }
-
-// MARK: - Preview
-
 #Preview {
     NavigationStack {
         let items = [

@@ -82,9 +82,6 @@ struct AnalyticsView: View {
         await provider.fetch(for: filter, in: database)
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         AnalyticsView()

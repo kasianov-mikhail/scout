@@ -11,9 +11,6 @@ struct RecordChunk {
     let records: [CKRecord]
     let cursor: CKQueryOperation.Cursor?
 }
-
-// MARK: - CloudKit Mapping
-
 extension RecordChunk {
     init(results: ([(CKRecord.ID, Result<CKRecord, Error>)], CKQueryOperation.Cursor?)) throws {
         records = try results.0.records()
@@ -26,9 +23,6 @@ extension [(CKRecord.ID, Result<CKRecord, Error>)] {
         try map { try $0.1.get() }
     }
 }
-
-// MARK: - Operators
-
 extension RecordChunk {
     static func += (lhs: inout Self, rhs: Self) {
         lhs = lhs + rhs

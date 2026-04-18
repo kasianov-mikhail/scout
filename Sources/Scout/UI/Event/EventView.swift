@@ -41,9 +41,6 @@ struct EventView: View {
         .navigationTitle(event.name)
     }
 }
-
-// MARK: - Header
-
 extension EventView {
     struct EventHeader: View {
         let event: Event
@@ -69,9 +66,6 @@ extension EventView {
         }
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         let event = Event(

@@ -12,9 +12,6 @@ struct GridCell<T: MatrixValue>: Hashable {
     let column: Int
     let value: T
 }
-
-// MARK: - Matrix
-
 typealias GridMatrix<T: MatrixValue> = Matrix<GridCell<T>>
 
 extension GridCell: CellProtocol {
@@ -38,9 +35,6 @@ extension GridCell: CellProtocol {
         self.init(row: row, column: column, value: value)
     }
 }
-
-// MARK: - Combining
-
 extension GridCell: Combining {
     func isDuplicate(of other: GridCell<T>) -> Bool {
         row == other.row && column == other.column
@@ -54,9 +48,6 @@ extension GridCell: Combining {
         )
     }
 }
-
-// MARK: -
-
 extension GridCell: Comparable {
     static func < (lhs: GridCell<T>, rhs: GridCell<T>) -> Bool {
         guard lhs.row == rhs.row else {

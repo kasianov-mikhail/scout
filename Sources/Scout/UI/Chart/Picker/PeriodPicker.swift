@@ -32,9 +32,6 @@ extension ChartExtent {
         isRightEnabled
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     PeriodPicker(
         extent: .constant(ChartExtent(period: Period.today)),

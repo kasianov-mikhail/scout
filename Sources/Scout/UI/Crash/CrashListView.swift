@@ -73,9 +73,6 @@ struct CrashListView: View {
         }
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         CrashListView()

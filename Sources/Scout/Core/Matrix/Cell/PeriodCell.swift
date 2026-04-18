@@ -14,9 +14,6 @@ struct PeriodCell<T: MatrixValue> {
     let day: Int
     let value: T
 }
-
-// MARK: - Matrix
-
 extension PeriodCell: CellProtocol {
     var key: String {
         "cell_\(period.rawValue)_\((day + 1).leadingZero)"
@@ -38,9 +35,6 @@ extension PeriodCell: CellProtocol {
         self.init(period: period, day: day - 1, value: value)
     }
 }
-
-// MARK: - Combining
-
 extension PeriodCell: Combining {
     func isDuplicate(of other: Self) -> Bool {
         period == other.period && day == other.day
@@ -54,9 +48,6 @@ extension PeriodCell: Combining {
         )
     }
 }
-
-// MARK: -
-
 extension PeriodCell: CustomStringConvertible {
     var description: String {
         "\(period) \(day): \(value)"

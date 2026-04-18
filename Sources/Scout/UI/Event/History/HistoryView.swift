@@ -72,9 +72,6 @@ struct HistoryView: View {
         )
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         let filter = HistoryFilter(

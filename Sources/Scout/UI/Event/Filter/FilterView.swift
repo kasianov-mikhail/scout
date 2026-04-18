@@ -75,9 +75,6 @@ struct FilterButton: View {
         .tint(.blue)
     }
 }
-
-// MARK: - Previews
-
 #Preview {
     FilterButton(levels: .constant([]))
 }

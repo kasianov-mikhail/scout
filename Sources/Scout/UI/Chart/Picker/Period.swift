@@ -35,9 +35,6 @@ extension Period {
         }
     }
 }
-
-// MARK: - Chart
-
 extension Period: ChartTimeScale {
     var horizonDate: Date {
         if case .today = self {
@@ -71,9 +68,6 @@ extension Period: ChartTimeScale {
         }
     }
 }
-
-// MARK: -
-
 extension Period: CustomStringConvertible {
     var description: String {
         rawValue.capitalized

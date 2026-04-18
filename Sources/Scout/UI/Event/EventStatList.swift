@@ -42,9 +42,6 @@ struct EventStatList: View {
         await provider.fetch(for: query, in: database)
     }
 }
-
-// MARK: - Preview
-
 #Preview {
     NavigationStack {
         EventStatList(eventName: "Event", range: Period.week.initialRange)

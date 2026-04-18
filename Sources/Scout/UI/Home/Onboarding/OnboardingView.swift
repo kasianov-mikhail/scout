@@ -26,9 +26,6 @@ struct OnboardingView: View {
         }
     }
 }
-
-// MARK: - Previews
-
 #Preview("Page 1 – Welcome") {
     OnboardingView()
 }

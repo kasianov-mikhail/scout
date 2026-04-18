@@ -28,9 +28,6 @@ extension Message {
         }
     }
 }
-
-// MARK: - Debug
-
 extension Message.Level {
     var text: String {
         "This is \(article) \(rawValue) message"

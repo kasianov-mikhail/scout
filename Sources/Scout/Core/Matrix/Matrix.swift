@@ -15,9 +15,6 @@ struct Matrix<T: CellProtocol> {
     var record: CKRecord?
     let cells: [T]
 }
-
-// MARK: - Combining
-
 extension Matrix: Combining {
     func isDuplicate(of other: Matrix<T>) -> Bool {
         date == other.date
@@ -37,9 +34,6 @@ extension Matrix: Combining {
         )
     }
 }
-
-// MARK: - Operators
-
 extension Matrix: Equatable {
     static func == (lhs: Matrix<T>, rhs: Matrix<T>) -> Bool {
         lhs.recordType == rhs.recordType
@@ -64,9 +58,6 @@ extension Matrix: Comparable {
         return lhs.recordType < rhs.recordType
     }
 }
-
-// MARK: - Debug
-
 extension Matrix: CustomStringConvertible {
     var description: String {
         """
