@@ -1,0 +1,40 @@
+name: PR Size
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Label PR by size
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ADDITIONS=$(gh pr view ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --json additions --jq '.additions')
+
+          if [ "$ADDITIONS" -le 10 ]; then
+            SIZE="XS"
+          elif [ "$ADDITIONS" -le 50 ]; then
+            SIZE="S"
+          elif [ "$ADDITIONS" -le 200 ]; then
+            SIZE="M"
+          elif [ "$ADDITIONS" -le 500 ]; then
+            SIZE="L"
+          else
+            SIZE="XL"
+          fi
+
+          for LABEL in XS S M L XL; do
+            if [ "$LABEL" != "$SIZE" ]; then
+              gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --remove-label "$LABEL" 2>/dev/null || true
+            fi
+          done
+
+          gh pr edit ${{ github.event.pull_request.number }} --repo ${{ github.repository }} --add-label "$SIZE"
