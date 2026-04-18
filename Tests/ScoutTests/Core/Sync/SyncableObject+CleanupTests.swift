@@ -12,11 +12,11 @@ import Testing
 
 @MainActor
 @Suite("SyncableObject.cleanup")
-struct CleanupTests {
+struct SyncableObjectCleanupTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
-    @Test("Deletes synced objects older than 7 days")
-    func deletesSyncedOld() throws {
+    @Test("Deletes synced events older than 7 days")
+    func deletesSyncedOldEvent() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
         EventObject.stub(name: "old", date: old, synced: true, in: context)
         try context.save()
@@ -24,6 +24,18 @@ struct CleanupTests {
         try SyncableObject.cleanup(in: context)
 
         let request = NSFetchRequest<EventObject>(entityName: "EventObject")
+        #expect(try context.fetch(request).isEmpty)
+    }
+
+    @Test("Deletes synced launches older than 7 days")
+    func deletesSyncedOldLaunch() throws {
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        LaunchObject.stub(date: old, synced: true, in: context)
+        try context.save()
+
+        try SyncableObject.cleanup(in: context)
+
+        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
         #expect(try context.fetch(request).isEmpty)
     }
 
