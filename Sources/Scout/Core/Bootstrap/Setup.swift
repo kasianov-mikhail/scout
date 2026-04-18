@@ -22,7 +22,10 @@ public func setup(container: CKContainer) async throws {
     installSignalHandler()
 
     await CrashArchive.system.flush()
-    try await persistentContainer.performBackgroundTask(completeStaleSessions)
+    try await persistentContainer.performBackgroundTasks(
+        completeStaleSessions,
+        SyncableObject.cleanup
+    )
 
     let syncController = SyncController(container: container)
     let sync = syncController.synchronize

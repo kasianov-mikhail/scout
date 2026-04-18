@@ -7,7 +7,7 @@
 
 import CoreData
 
-private let maxSyncAttempts = 10
+let maxSyncAttempts = 10
 
 /// Marker for `SyncableObject` subclasses that know how to gather
 /// themselves into sync-ready batches.
