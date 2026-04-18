@@ -34,9 +34,9 @@ extension SyncCoordinator {
         do {
             try await database.write(record: snapshot.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
-            if retry > maxRetry {
-                try await upload(snapshot: matrix, retry: 1)
-            } else if let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
+            guard retry <= maxRetry else { throw error }
+
+            if let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
                 try await upload(snapshot: try Matrix(record: serverRecord) + matrix, retry: retry + 1)
             }
         }
