@@ -10,25 +10,18 @@ import CoreData
 import Logging
 
 /// Persists a log event to Core Data.
-///
-func log(
-    _ name: String,
-    level: Logger.Level,
-    metadata: Logger.Metadata?,
-    date: Date,
-    context: NSManagedObjectContext
-) throws {
+func log(_ event: LogEvent, date: Date, context: NSManagedObjectContext) throws {
     let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
-    let event = EventObject(entity: entity, insertInto: context)
+    let object = EventObject(entity: entity, insertInto: context)
 
-    event.eventID = UUID()
-    event.date = date
-    event.level = level.rawValue
-    event.name = name
+    object.eventID = UUID()
+    object.date = date
+    object.level = event.level.rawValue
+    object.name = event.message.description
 
-    if let params = metadata?.compactMapValues(\.stringValue) {
-        event.params = try JSONEncoder().encode(params)
-        event.paramCount = Int64(params.count)
+    if let params = event.metadata?.compactMapValues(\.stringValue) {
+        object.params = try JSONEncoder().encode(params)
+        object.paramCount = Int64(params.count)
     }
 
     try context.save()

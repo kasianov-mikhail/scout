@@ -9,7 +9,6 @@ import Foundation
 import Logging
 
 /// A log handler that persists log events to CloudKit via Core Data.
-///
 struct CKLogHandler: LogHandler {
     let sync: SyncAction
     let label: String
@@ -23,25 +22,11 @@ struct CKLogHandler: LogHandler {
         set { metadata[key] = newValue }
     }
 
-    func log(
-        level: Logger.Level,
-        message: Logger.Message,
-        metadata: Logger.Metadata?,
-        source: String,
-        file: String,
-        function: String,
-        line: UInt
-    ) {
+    func log(event: LogEvent) {
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
-                    try Scout.log(
-                        message.description,
-                        level: level,
-                        metadata: metadata,
-                        date: Date(),
-                        context: context
-                    )
+                    try Scout.log(event, date: Date(), context: context)
                 }
                 try await self.sync()
             } catch {
