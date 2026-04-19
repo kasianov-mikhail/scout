@@ -13,7 +13,7 @@ extension LaunchObject {
     ///
     static func completeStale(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = stalePredicate
+        request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", IDs.launch as CVarArg)
 
         for launch in try context.fetch(request) {
             launch.endDate = launch.date

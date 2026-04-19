@@ -28,14 +28,14 @@ class SyncableObject: IDObject {
         let entityName = String(describing: T.self)
 
         let seedRequest = NSFetchRequest<T>(entityName: entityName)
-        seedRequest.predicate = pendingPredicate
+        seedRequest.predicate = NSPredicate(format: "isSynced == false")
         seedRequest.fetchLimit = 1
 
         guard let seed = try context.fetch(seedRequest).first else {
             return nil
         }
 
-        var predicates = [pendingPredicate]
+        var predicates = [NSPredicate(format: "isSynced == false")]
 
         for keyPath in keyPaths {
             if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject {
