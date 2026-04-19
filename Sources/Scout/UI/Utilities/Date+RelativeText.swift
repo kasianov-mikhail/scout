@@ -19,6 +19,7 @@ extension Date {
 
 nonisolated(unsafe) private let relativeFormatter: RelativeDateTimeFormatter = {
     let formatter = RelativeDateTimeFormatter()
+    formatter.locale = Locale(identifier: "en_US")
     formatter.unitsStyle = .abbreviated
     return formatter
 }()
