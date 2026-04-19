@@ -16,7 +16,7 @@ struct EventStatList: View {
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
-        formatter.dateStyle = .short
+        formatter.locale = Locale(identifier: "en_US")
         formatter.dateFormat = "d MMM"
         return formatter
     }()
