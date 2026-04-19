@@ -59,37 +59,8 @@ struct SyncableObjectBatchTests {
             try SyncableObject.batch(
                 in: context,
                 matching: [\EventObject.name, \.week]
-            ))
-
-        #expect(batch.count == 1)
-        #expect(batch.first === event)
-    }
-
-    @Test("Batch excludes objects that exceeded sync attempt limit")
-    func testBatchExcludesStale() throws {
-        let event = EventObject.stub(name: "EventD", synced: false, in: context)
-        event.syncAttempts = 11
-        try context.save()
-
-        let batch = try SyncableObject.batch(
-            in: context,
-            matching: [\EventObject.name]
+            )
         )
-
-        #expect(batch == nil)
-    }
-
-    @Test("Batch includes objects at sync attempt limit")
-    func testBatchIncludesAtLimit() throws {
-        let event = EventObject.stub(name: "EventE", synced: false, in: context)
-        event.syncAttempts = 10
-        try context.save()
-
-        let batch = try #require(
-            try SyncableObject.batch(
-                in: context,
-                matching: [\EventObject.name]
-            ))
 
         #expect(batch.count == 1)
         #expect(batch.first === event)

@@ -31,6 +31,8 @@ typealias SyncAction = @MainActor () async throws -> Void
         let jobPlan = SyncJobPlan(engine: engine)
 
         try await dispatcher.performEnsuringBackground {
+            try SyncableObject.cleanup(in: persistentContainer.viewContext)
+
             for job in jobPlan.jobs.shuffled() {
                 try await job()
             }

@@ -7,6 +7,8 @@
 
 import CoreData
 
+private let maxSyncAttempts = 10
+
 extension SyncableObject {
     /// Deletes synced objects older than 7 days and objects that
     /// exceeded the sync attempt limit.
