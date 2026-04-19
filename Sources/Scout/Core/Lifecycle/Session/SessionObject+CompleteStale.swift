@@ -13,7 +13,7 @@ extension SessionObject {
     ///
     static func completeStale(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        request.predicate = stalePredicate
+        request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", IDs.launch as CVarArg)
 
         for session in try context.fetch(request) {
             session.endDate = session.date
