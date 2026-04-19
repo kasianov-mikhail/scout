@@ -21,6 +21,8 @@ class TrackedObject: SyncableObject {
 
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(TrackedObject.sessionID))
+        if let managedObjectContext {
+            setPrimitiveValue(IDs.session(in: managedObjectContext), forKey: #keyPath(TrackedObject.sessionID))
+        }
     }
 }
