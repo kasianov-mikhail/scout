@@ -8,7 +8,7 @@
 import Foundation
 
 enum IDs {
-    nonisolated(unsafe) static var session: UUID?
+    nonisolated(unsafe) static var session = UUID()
 
     static let launch = UUID()
 
