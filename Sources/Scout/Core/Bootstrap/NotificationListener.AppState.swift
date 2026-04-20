@@ -11,6 +11,8 @@ extension NotificationListener {
     @MainActor static func appState(sync: @escaping SyncAction) -> NotificationListener {
         NotificationListener(table: [
             UIApplication.willEnterForegroundNotification: {
+                IDs.session = UUID()
+
                 try await persistentContainer.performBackgroundTasks(
                     SessionObject.trigger,
                     UserActivityObject.trigger

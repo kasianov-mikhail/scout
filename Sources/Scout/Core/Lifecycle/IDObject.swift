@@ -21,9 +21,9 @@ class IDObject: DateObject {
 
     override func awakeFromInsert() {
         super.awakeFromInsert()
-        setPrimitiveValue(IDs.device, forKey: #keyPath(IDObject.deviceID))
-        setPrimitiveValue(IDs.install, forKey: #keyPath(IDObject.installID))
-        setPrimitiveValue(IDs.launch, forKey: #keyPath(IDObject.launchID))
+        deviceID = IDs.device
+        installID = IDs.install
+        launchID = IDs.launch
     }
 
     var metadata: [String: Any] {
