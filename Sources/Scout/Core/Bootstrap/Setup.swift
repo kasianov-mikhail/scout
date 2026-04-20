@@ -37,7 +37,8 @@ public func setup(container: CKContainer) async throws {
         InstallObject.trigger,
         VersionObject.trigger,
         LaunchObject.trigger,
-        SessionObject.trigger
+        SessionObject.trigger,
+        UserActivityObject.trigger
     )
 
     LoggingSystem.bootstrap { label in
