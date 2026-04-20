@@ -25,7 +25,6 @@ public func setup(container: CKContainer) async throws {
     try await persistentContainer.performBackgroundTasks(
         SessionObject.completeStale,
         LaunchObject.completeStale,
-        SyncableObject.cleanup
     )
 
     let syncController = SyncController(container: container)
