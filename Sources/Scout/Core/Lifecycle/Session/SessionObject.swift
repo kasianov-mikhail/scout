@@ -14,11 +14,6 @@ final class SessionObject: TrackedObject, Syncable, GridBatch {
 
     @NSManaged var endDate: Date?
 
-    override func awakeFromInsert() {
-        super.awakeFromInsert()
-        setPrimitiveValue(UUID(), forKey: #keyPath(TrackedObject.sessionID))
-    }
-
     func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
         request.predicate = NSPredicate(format: "launchID == %@", launchID! as CVarArg)
