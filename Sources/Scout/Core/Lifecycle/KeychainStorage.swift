@@ -22,10 +22,10 @@ final class KeychainStorage: Registry, Sendable {
         ]
 
         var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess, let data = result as? Data else {
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess else {
             return nil
         }
-        guard let string = String(data: data, encoding: .utf8) else {
+        guard let data = result as? Data, let string = String(data: data, encoding: .utf8) else {
             return nil
         }
         return UUID(uuidString: string)
