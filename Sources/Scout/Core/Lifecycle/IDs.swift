@@ -12,27 +12,7 @@ enum IDs {
 
     static let launch = UUID()
 
-    static let install: UUID = {
-        let key = "scout_install_id"
+    static let install = UserDefaults.standard.ensure("scout_install_id")
 
-        if let id = UserDefaults.standard.uuid(forKey: key) {
-            return id
-        }
-
-        let id = UUID()
-        UserDefaults.standard.set(id, forKey: key)
-        return id
-    }()
-
-    static let device: UUID = {
-        let key = "scout_device_id"
-
-        if let id = KeychainID.load(key: key) {
-            return id
-        }
-
-        let id = UUID()
-        KeychainID.save(key: key, value: id)
-        return id
-    }()
+    static let device = KeychainStorage.standard.ensure("scout_device_id")
 }
