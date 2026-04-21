@@ -8,8 +8,12 @@
 import Foundation
 import Security
 
-enum KeychainID {
-    static func load(key: String) -> UUID? {
+final class KeychainStorage: Registry, Sendable {
+    static let standard = KeychainStorage()
+
+    private init() {}
+
+    func resolve(_ key: String) -> UUID? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
@@ -18,16 +22,16 @@ enum KeychainID {
         ]
 
         var result: AnyObject?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-            let data = result as? Data,
-            let string = String(data: data, encoding: .utf8)
-        else {
+        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess, let data = result as? Data else {
+            return nil
+        }
+        guard let string = String(data: data, encoding: .utf8) else {
             return nil
         }
         return UUID(uuidString: string)
     }
 
-    static func save(key: String, value: UUID) {
+    func register(_ value: UUID, for key: String) {
         let data = value.uuidString.data(using: .utf8)!
 
         let query: [String: Any] = [

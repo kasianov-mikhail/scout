@@ -7,12 +7,12 @@
 
 import Foundation
 
-extension UserDefaults {
-    func set(_ value: UUID, forKey key: String) {
+extension UserDefaults: Registry {
+    func register(_ value: UUID, for key: String) {
         set(value.uuidString, forKey: key)
     }
 
-    func uuid(forKey key: String) -> UUID? {
+    func resolve(_ key: String) -> UUID? {
         guard let string = string(forKey: key) else { return nil }
         return UUID(uuidString: string)
     }
