@@ -42,7 +42,7 @@ public func setup(container: CKContainer) async throws {
     let syncController = SyncController(container: container)
     let sync = syncController.synchronize
 
-    try NotificationListener.appState(sync: sync).setup()
+    NotificationListener.appState(sync: sync).observe()
 
     try await persistentContainer.performBackgroundTasks(
         DeviceObject.trigger,
