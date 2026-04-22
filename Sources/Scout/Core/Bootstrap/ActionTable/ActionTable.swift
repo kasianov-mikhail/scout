@@ -1,26 +1,24 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
+import UIKit
 
-class NotificationListener {
+struct ActionTable {
     typealias Action = @Sendable () async throws -> Void
-    typealias ActionTable = [Notification.Name: Action]
 
-    private let table: ActionTable
+    let actions: [Notification.Name: Action]
 
-    init(table: ActionTable) {
-        self.table = table
-    }
-
-    func observe() {
-        for (name, action) in table {
+    func startListening(completion: @escaping Action) {
+        for (name, action) in actions {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
-                Task(operation: action)
+                Task {
+                    try await action()
+                    try await completion()
+                }
             }
         }
     }
