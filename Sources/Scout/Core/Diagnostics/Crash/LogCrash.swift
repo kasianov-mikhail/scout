@@ -17,9 +17,9 @@ func logCrash(_ crash: CrashInfo, context: NSManagedObjectContext) throws {
     object.reason = crash.reason
     object.stackTrace = try? JSONEncoder().encode(crash.stackTrace)
 
-    // Override IDs from crash info (captured at crash time)
-    object.setValue(crash.installID, forKey: "installID")
-    object.setValue(crash.launchID, forKey: "launchID")
+    // Override IDs set by awakeFromInsert with values captured at crash time
+    object.installID = crash.installID
+    object.launchID = crash.launchID
 
     try context.save()
 }
