@@ -9,10 +9,7 @@ import CoreData
 
 extension NSPersistentContainer {
     /// Executes multiple background tasks sequentially, each in its own context.
-    ///
-    func performBackgroundTasks(
-        _ tasks: @Sendable (NSManagedObjectContext) throws -> Void...
-    ) async throws {
+    func performBackgroundTasks(_ tasks: @Sendable (NSManagedObjectContext) throws -> Void...) async throws {
         for task in tasks {
             try await performBackgroundTask(task)
         }
