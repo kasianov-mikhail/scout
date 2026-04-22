@@ -8,34 +8,17 @@
 import CoreData
 
 class NotificationListener {
-    struct SetupError: LocalizedError {
-        let errorDescription: String? = "NotificationListener is already setup"
-        let recoverySuggestion: String? = "Review the code to ensure setup is called only once"
-    }
-
     typealias Action = @Sendable () async throws -> Void
     typealias ActionTable = [Notification.Name: Action]
 
     private let table: ActionTable
-    private var isSetup = false
 
     init(table: ActionTable) {
         self.table = table
     }
 
-    func setup() throws {
-        guard !isSetup else {
-            throw SetupError()
-        }
-
-        isSetup = true
-        table.observe()
-    }
-}
-
-extension NotificationListener.ActionTable {
-    fileprivate func observe() {
-        for (name, action) in self {
+    func observe() {
+        for (name, action) in table {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
                 Task(operation: action)
             }

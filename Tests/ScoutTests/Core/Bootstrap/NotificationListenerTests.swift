@@ -5,27 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Testing
 import XCTest
 
 @testable import Scout
-
-struct NotificationListenerTests {
-    @Test("Success setup") func testSuccessSetup() async throws {
-        let listener = NotificationListener(table: [:])
-        #expect(throws: Never.self) {
-            try listener.setup()
-        }
-    }
-
-    @Test("Failure setup") func testFailureSetup() async throws {
-        let listener = NotificationListener(table: [:])
-        #expect(throws: NotificationListener.SetupError.self) {
-            try listener.setup()
-            try listener.setup()
-        }
-    }
-}
 
 class NotificationListenerTestCase: XCTestCase {
     // Special case not covering with SwiftTesting
@@ -34,7 +16,7 @@ class NotificationListenerTestCase: XCTestCase {
         let listener = NotificationListener(table: [
             UIApplication.didBecomeActiveNotification: expectation.fulfill
         ])
-        try listener.setup()
+        listener.observe()
         NotificationCenter.default.post(
             name: UIApplication.didBecomeActiveNotification,
             object: nil
