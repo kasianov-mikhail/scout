@@ -9,6 +9,8 @@ import CoreData
 
 extension SessionObject: Monitor {
     static func trigger(in context: NSManagedObjectContext) throws {
+        IDs.session = UUID()
+
         let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
         let session = SessionObject(entity: entity, insertInto: context)
         session.date = Date()

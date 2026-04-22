@@ -10,7 +10,6 @@ import UIKit
 extension ActionTable {
     static let appState = ActionTable(actions: [
         UIApplication.willEnterForegroundNotification: {
-            IDs.session = UUID()
             try await persistentContainer.performBackgroundTasks(
                 SessionObject.trigger,
                 UserActivityObject.trigger
