@@ -36,8 +36,8 @@ struct LogCrashTests {
         #expect(object.reason == "Fatal error")
         #expect(object.date == crash.date)
         #expect(object.crashID != nil)
-        #expect(object.value(forKey: "installID") as? UUID == crash.installID)
-        #expect(object.value(forKey: "launchID") as? UUID == crash.launchID)
+        #expect(object.installID == crash.installID)
+        #expect(object.launchID == crash.launchID)
     }
 
     @Test("Encodes stack trace as JSON data")
