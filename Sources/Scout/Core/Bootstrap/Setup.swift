@@ -10,14 +10,26 @@ import Foundation
 import Logging
 import Metrics
 
+struct SetupError: LocalizedError {
+    let errorDescription: String? = "Scout is already setup"
+    let recoverySuggestion: String? = "Review the code to ensure setup is called only once"
+}
+
+@MainActor private var isSetup = false
+
 /// Initializes Scout's global infrastructure.
 ///
 /// - Parameter container: The CloudKit container for all operations.
-/// - Throws: An error if initialization fails.
+/// - Throws: An error if initialization fails or if called more than once.
 /// - Important: Call from the main actor during app startup.
 ///
 @MainActor
 public func setup(container: CKContainer) async throws {
+    guard !isSetup else {
+        throw SetupError()
+    }
+    isSetup = true
+
     installExceptionHandler()
     installSignalHandler()
 
