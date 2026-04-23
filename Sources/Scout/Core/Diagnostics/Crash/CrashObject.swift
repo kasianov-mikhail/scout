@@ -26,7 +26,8 @@ final class CrashObject: NamedObject, Syncable {
 
 extension CrashObject: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordID = CKRecord.ID(recordName: crashID!.uuidString)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["name"] = name
         record["reason"] = reason

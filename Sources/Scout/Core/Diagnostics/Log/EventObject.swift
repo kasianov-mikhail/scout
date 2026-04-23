@@ -27,7 +27,8 @@ final class EventObject: NamedObject, Syncable {
 
 extension EventObject: CKRepresentable {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordID = CKRecord.ID(recordName: eventID!.uuidString)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["name"] = name
         record["level"] = level
