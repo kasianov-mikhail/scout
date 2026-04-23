@@ -18,7 +18,6 @@ extension ActionTable {
         UIApplication.didEnterBackgroundNotification: {
             try await persistentContainer.performBackgroundTasks(
                 SessionObject.complete,
-                LaunchObject.complete,
                 UserActivityObject.trigger
             )
         },

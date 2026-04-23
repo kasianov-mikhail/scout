@@ -7,25 +7,17 @@
 
 import CoreData
 
-extension LaunchObject: Monitor {
+extension LaunchObject: PartialMonitor {
+    /// A launch represents the lifetime of the current process. It is
+    /// created once during `setup()` and finalised only on the next
+    /// process start via `completeStale`, which sets `endDate` from the
+    /// latest signal recorded under this `launchID` — the OS provides no
+    /// reliable hook for "process about to die".
+    ///
     static func trigger(in context: NSManagedObjectContext) throws {
         let entity = NSEntityDescription.entity(forEntityName: "LaunchObject", in: context)!
         let launch = LaunchObject(entity: entity, insertInto: context)
         launch.date = Date()
-        try context.save()
-    }
-
-    static func complete(in context: NSManagedObjectContext) throws {
-        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
-        request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
-        request.fetchLimit = 1
-
-        guard let launch = try context.fetch(request).first else {
-            throw MonitorError.notFound
-        }
-
-        launch.endDate = Date()
         try context.save()
     }
 }
