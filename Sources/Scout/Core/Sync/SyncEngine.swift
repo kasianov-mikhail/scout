@@ -18,6 +18,9 @@ struct SyncEngine: @unchecked Sendable {
                 object.syncAttempts += 1
             }
 
+            // Persist attempt counters so cleanup can retire records that keep failing.
+            try context.save()
+
             if let objects = batch as? [CKRepresentable] {
                 try await database.write(
                     records: objects.map(\.toRecord)
