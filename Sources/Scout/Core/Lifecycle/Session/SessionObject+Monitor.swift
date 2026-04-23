@@ -17,6 +17,13 @@ extension SessionObject: Monitor {
         try context.save()
     }
 
+    /// Marks the latest session for the current launch as ended.
+    ///
+    /// Idempotent — returns without changes when the session is already
+    /// closed. Background-entry notifications can fire repeatedly
+    /// (scene lifecycle, state restoration), and a no-op on the second
+    /// call preserves the first observed end time.
+    ///
     static func complete(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
@@ -26,12 +33,10 @@ extension SessionObject: Monitor {
         guard let session = try context.fetch(request).first else {
             throw MonitorError.notFound
         }
-        if let endDate = session.endDate {
-            throw MonitorError.alreadyCompleted(endDate)
-        }
 
-        let date = Date()
-        session.endDate = date
-        try context.save()
+        if session.endDate == nil {
+            session.endDate = Date()
+            try context.save()
+        }
     }
 }
