@@ -48,6 +48,20 @@ struct CompleteStaleSessionTests {
 
         #expect(session.endDate == endDate)
     }
+
+    @Test("Uses latest child event date as endDate")
+    func endDateFromChildEvent() throws {
+        let session = SessionObject.stub(date: date, in: context)
+        session.launchID = UUID()
+
+        let latest = date.addingTimeInterval(120)
+        EventObject.stub(name: "x", date: latest, in: context)
+
+        try context.save()
+        try SessionObject.completeStale(in: context)
+
+        #expect(session.endDate == latest)
+    }
 }
 
 @MainActor
@@ -87,5 +101,24 @@ struct CompleteStaleLaunchTests {
         try LaunchObject.completeStale(in: context)
 
         #expect(launch.endDate == endDate)
+    }
+
+    @Test("Uses latest child timestamp as endDate")
+    func endDateFromChild() throws {
+        let staleLaunchID = UUID()
+        let launch = LaunchObject.stub(date: date, in: context)
+        launch.launchID = staleLaunchID
+
+        let session = SessionObject.stub(date: date.addingTimeInterval(10), in: context)
+        session.launchID = staleLaunchID
+
+        let latest = date.addingTimeInterval(300)
+        let event = EventObject.stub(name: "x", date: latest, in: context)
+        event.launchID = staleLaunchID
+
+        try context.save()
+        try LaunchObject.completeStale(in: context)
+
+        #expect(launch.endDate == latest)
     }
 }
