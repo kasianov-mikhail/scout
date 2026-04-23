@@ -36,7 +36,7 @@ struct SessionObjectTests {
     @Test("launch(in:) returns launch matching launchID")
     func testLaunch() throws {
         let session = SessionObject.stub(date: week, in: context)
-        let launchID = session.launchID!
+        let launchID = session.launchID
 
         let launch = LaunchObject.stub(date: week, in: context)
         launch.launchID = launchID

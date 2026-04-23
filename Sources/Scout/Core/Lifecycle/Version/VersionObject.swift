@@ -17,7 +17,7 @@ final class VersionObject: SyncableObject, Syncable, GridBatch {
 
     func install(in context: NSManagedObjectContext) throws -> InstallObject? {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
-        request.predicate = NSPredicate(format: "installID == %@", installID! as CVarArg)
+        request.predicate = NSPredicate(format: "installID == %@", installID as CVarArg)
         request.fetchLimit = 1
         return try context.fetch(request).first
     }
@@ -42,7 +42,7 @@ extension VersionObject {
         record["date"] = date
         record["app_version"] = appVersion
         record["build_number"] = buildNumber
-        record["launch_id"] = launchID?.uuidString
+        record["launch_id"] = launchID.uuidString
 
         record.setValuesForKeys(metadata)
 

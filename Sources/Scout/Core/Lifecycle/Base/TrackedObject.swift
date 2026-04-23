@@ -17,7 +17,7 @@ import CoreData
 ///
 @objc(TrackedObject)
 class TrackedObject: SyncableObject {
-    @NSManaged var sessionID: UUID?
+    @NSManaged var sessionID: UUID
 
     override func awakeFromInsert() {
         super.awakeFromInsert()
