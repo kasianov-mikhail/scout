@@ -51,11 +51,14 @@ struct CompleteStaleSessionTests {
 
     @Test("Uses latest child event date as endDate")
     func endDateFromChildEvent() throws {
+        let staleSessionID = UUID()
         let session = SessionObject.stub(date: date, in: context)
         session.launchID = UUID()
+        session.sessionID = staleSessionID
 
         let latest = date.addingTimeInterval(120)
-        EventObject.stub(name: "x", date: latest, in: context)
+        let event = EventObject.stub(name: "x", date: latest, in: context)
+        event.sessionID = staleSessionID
 
         try context.save()
         try SessionObject.completeStale(in: context)
