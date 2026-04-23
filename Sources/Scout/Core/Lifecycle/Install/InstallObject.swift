@@ -14,7 +14,7 @@ final class InstallObject: SyncableObject, Syncable, GridBatch {
 
     func versions(in context: NSManagedObjectContext) throws -> [VersionObject] {
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "installID == %@", installID! as CVarArg)
+        request.predicate = NSPredicate(format: "installID == %@", installID as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         return try context.fetch(request)
     }

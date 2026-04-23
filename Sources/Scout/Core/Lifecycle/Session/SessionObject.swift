@@ -16,7 +16,7 @@ final class SessionObject: TrackedObject, Syncable, GridBatch {
 
     func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "launchID == %@", launchID! as CVarArg)
+        request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
         request.fetchLimit = 1
         return try context.fetch(request).first
     }
@@ -28,8 +28,8 @@ extension SessionObject {
 
         record["start_date"] = date
         record["end_date"] = endDate
-        record["session_id"] = sessionID?.uuidString
-        record["launch_id"] = launchID?.uuidString
+        record["session_id"] = sessionID.uuidString
+        record["launch_id"] = launchID.uuidString
 
         record.setValuesForKeys(metadata)
 

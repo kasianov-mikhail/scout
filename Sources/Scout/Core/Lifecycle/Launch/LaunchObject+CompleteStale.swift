@@ -32,8 +32,6 @@ extension LaunchObject {
     }
 
     private func inferredEndDate(in context: NSManagedObjectContext) throws -> Date? {
-        guard let launchID else { return nil }
-
         let request = NSFetchRequest<IDObject>(entityName: "IDObject")
         request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]

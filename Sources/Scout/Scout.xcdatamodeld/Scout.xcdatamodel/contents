@@ -50,7 +50,7 @@
         <attribute name="syncAttempts" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
-        <attribute name="sessionID" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="sessionID" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
     <entity name="VersionObject" representedClassName="VersionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>

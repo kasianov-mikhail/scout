@@ -35,7 +35,7 @@ extension EventObject: CKRepresentable {
         record["param_count"] = paramCount
         record["date"] = date
         record["uuid"] = eventID?.uuidString
-        record["session_id"] = sessionID?.uuidString
+        record["session_id"] = sessionID.uuidString
 
         record.setValuesForKeys(metadata)
 

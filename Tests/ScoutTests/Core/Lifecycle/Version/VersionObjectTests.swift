@@ -68,7 +68,7 @@ struct VersionObjectTests {
     @Test("install(in:) returns install matching installID")
     func testInstall() throws {
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        let installID = version.installID!
+        let installID = version.installID
 
         let install = InstallObject.stub(date: week, in: context)
         install.installID = installID

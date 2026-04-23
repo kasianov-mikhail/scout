@@ -36,7 +36,7 @@ struct LaunchObjectTests {
     @Test("sessions(in:) returns sessions matching launchID")
     func testSessions() throws {
         let launch = LaunchObject.stub(date: week, in: context)
-        let launchID = launch.launchID!
+        let launchID = launch.launchID
 
         let session1 = SessionObject.stub(date: week, in: context)
         session1.launchID = launchID
@@ -58,7 +58,7 @@ struct LaunchObjectTests {
     @Test("version(in:) returns version matching launchID")
     func testVersion() throws {
         let launch = LaunchObject.stub(date: week, in: context)
-        let launchID = launch.launchID!
+        let launchID = launch.launchID
 
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
         version.launchID = launchID
