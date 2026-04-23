@@ -8,8 +8,9 @@
 import CoreData
 
 extension LaunchObject: PartialMonitor {
-    /// A launch represents the lifetime of the current process. It is
-    /// created once during `setup()` and finalised only on the next
+    /// A launch represents the lifetime of the current process.
+    ///
+    /// Created once during `setup()` and finalised only on the next
     /// process start via `completeStale`, which sets `endDate` from the
     /// latest signal recorded under this `launchID` — the OS provides no
     /// reliable hook for "process about to die".
