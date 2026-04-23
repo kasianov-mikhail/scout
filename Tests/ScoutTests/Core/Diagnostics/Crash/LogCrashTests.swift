@@ -38,6 +38,25 @@ struct LogCrashTests {
         #expect(object.crashID != nil)
         #expect(object.installID == crash.installID)
         #expect(object.launchID == crash.launchID)
+        #expect(object.sessionID == crash.sessionID)
+    }
+
+    @Test("Preserves sessionID captured at crash time, not the recovery session")
+    func preservesCapturedSessionID() throws {
+        // Phase 1: "crashed" process captures its sessionID.
+        let crashedSessionID = UUID()
+        IDs.session = crashedSessionID
+        let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [])
+
+        // Phase 2: recovery process has a fresh sessionID — awakeFromInsert
+        // would use this unless logCrash overrides it.
+        IDs.session = UUID()
+        #expect(IDs.session != crashedSessionID)
+
+        try logCrash(crash, context: context)
+
+        let object = try #require(try context.fetch(NSFetchRequest<CrashObject>(entityName: "CrashObject")).first)
+        #expect(object.sessionID == crashedSessionID)
     }
 
     @Test("Encodes stack trace as JSON data")
