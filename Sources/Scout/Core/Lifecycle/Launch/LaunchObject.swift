@@ -31,7 +31,8 @@ final class LaunchObject: SyncableObject, Syncable, GridBatch {
 
 extension LaunchObject {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordID = CKRecord.ID(recordName: launchID.uuidString)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["start_date"] = date
         record["end_date"] = endDate
