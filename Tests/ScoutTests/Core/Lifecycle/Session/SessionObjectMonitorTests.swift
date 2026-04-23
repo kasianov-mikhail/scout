@@ -31,15 +31,12 @@ struct SessionObjectMonitorTests {
         try SessionObject.trigger(in: context)
         try SessionObject.complete(in: context)
 
-        let firstEndDate = try #require(try context
-            .fetch(NSFetchRequest<SessionObject>(entityName: "SessionObject"))
-            .first?.endDate)
+        let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
+        let firstEndDate = try #require(try context.fetch(request).first?.endDate)
 
         try SessionObject.complete(in: context)
 
-        let session = try #require(try context
-            .fetch(NSFetchRequest<SessionObject>(entityName: "SessionObject"))
-            .first)
+        let session = try #require(try context.fetch(request).first)
         #expect(session.endDate == firstEndDate)
     }
 
