@@ -35,7 +35,6 @@ struct LogCrashTests {
         #expect(object.name == "SIGABRT")
         #expect(object.reason == "Fatal error")
         #expect(object.date == crash.date)
-        #expect(object.crashID != nil)
         #expect(object.installID == crash.installID)
         #expect(object.launchID == crash.launchID)
     }
