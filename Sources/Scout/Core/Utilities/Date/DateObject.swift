@@ -35,4 +35,13 @@ class DateObject: NSManagedObject, Identifiable {
             month = newValue?.startOfMonth
         }
     }
+
+    var metadata: [String: Any] {
+        var fields: [String: Any] = [:]
+        fields["hour"] = hour
+        fields["day"] = day
+        fields["week"] = week
+        fields["month"] = month
+        return fields
+    }
 }

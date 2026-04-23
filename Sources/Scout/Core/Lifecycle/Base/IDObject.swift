@@ -26,12 +26,8 @@ class IDObject: DateObject {
         launchID = IDs.launch
     }
 
-    var metadata: [String: Any] {
-        var fields: [String: Any] = [:]
-        fields["hour"] = hour
-        fields["day"] = day
-        fields["week"] = week
-        fields["month"] = month
+    override var metadata: [String: Any] {
+        var fields = super.metadata
         fields["device_id"] = deviceID.uuidString
         fields["install_id"] = installID.uuidString
         fields["launch_id"] = launchID.uuidString
