@@ -22,7 +22,8 @@ final class InstallObject: SyncableObject, Syncable, GridBatch {
 
 extension InstallObject {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordID = CKRecord.ID(recordName: installID.uuidString)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["date"] = date
 

@@ -37,7 +37,9 @@ final class VersionObject: SyncableObject, Syncable, GridBatch {
 
 extension VersionObject {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordName = "\(installID.uuidString)-\(appVersion ?? "")-\(buildNumber ?? "")"
+        let recordID = CKRecord.ID(recordName: recordName)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["date"] = date
         record["app_version"] = appVersion

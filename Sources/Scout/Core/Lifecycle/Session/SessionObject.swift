@@ -24,7 +24,8 @@ final class SessionObject: TrackedObject, Syncable, GridBatch {
 
 extension SessionObject {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordID = CKRecord.ID(recordName: sessionID.uuidString)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["start_date"] = date
         record["end_date"] = endDate

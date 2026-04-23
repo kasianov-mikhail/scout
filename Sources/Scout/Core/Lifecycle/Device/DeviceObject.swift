@@ -22,7 +22,8 @@ final class DeviceObject: SyncableObject, Syncable, GridBatch {
 
 extension DeviceObject {
     var toRecord: CKRecord {
-        let record = CKRecord(recordType: Self.recordType)
+        let recordID = CKRecord.ID(recordName: deviceID.uuidString)
+        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["date"] = date
         record["device_id"] = deviceID.uuidString
