@@ -20,6 +20,7 @@ func logCrash(_ crash: CrashInfo, context: NSManagedObjectContext) throws {
     // Override IDs set by awakeFromInsert with values captured at crash time
     object.installID = crash.installID
     object.launchID = crash.launchID
+    object.sessionID = crash.sessionID
 
     try context.save()
 }
