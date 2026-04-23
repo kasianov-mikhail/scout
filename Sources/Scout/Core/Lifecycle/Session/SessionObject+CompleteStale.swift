@@ -32,8 +32,6 @@ extension SessionObject {
     }
 
     private func inferredEndDate(in context: NSManagedObjectContext) throws -> Date? {
-        guard let sessionID else { return nil }
-
         let request = NSFetchRequest<TrackedObject>(entityName: "TrackedObject")
         request.predicate = NSPredicate(format: "sessionID == %@", sessionID as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]

@@ -19,7 +19,7 @@ struct DeviceObjectTests {
     @Test("installs(in:) returns installs matching deviceID")
     func testInstalls() throws {
         let device = DeviceObject.stub(date: week, in: context)
-        let deviceID = device.deviceID!
+        let deviceID = device.deviceID
 
         let i1 = InstallObject.stub(date: week, in: context)
         i1.deviceID = deviceID

@@ -14,7 +14,7 @@ final class DeviceObject: SyncableObject, Syncable, GridBatch {
 
     func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
-        request.predicate = NSPredicate(format: "deviceID == %@", deviceID! as CVarArg)
+        request.predicate = NSPredicate(format: "deviceID == %@", deviceID as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
         return try context.fetch(request)
     }
@@ -25,7 +25,7 @@ extension DeviceObject {
         let record = CKRecord(recordType: Self.recordType)
 
         record["date"] = date
-        record["device_id"] = deviceID?.uuidString
+        record["device_id"] = deviceID.uuidString
 
         record.setValuesForKeys(metadata)
 
