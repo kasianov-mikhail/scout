@@ -19,3 +19,11 @@ protocol Monitor: PartialMonitor {
 protocol PartialMonitor {
     static func trigger(in context: NSManagedObjectContext) throws
 }
+
+/// Marker for types that need to finalise records left open by a prior
+/// process — crashes, OS kills, swipe-terminations — at the next process
+/// start.
+///
+protocol RecoveryMonitor {
+    static func completeStale(in context: NSManagedObjectContext) throws
+}
