@@ -10,6 +10,7 @@ import CoreData
 extension InstallObject: PartialMonitor {
     static func trigger(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
+        request.predicate = NSPredicate(format: "installID == %@", IDs.install as CVarArg)
         request.fetchLimit = 1
 
         guard try context.fetch(request).isEmpty else {
