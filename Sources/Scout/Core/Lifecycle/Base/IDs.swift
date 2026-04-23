@@ -8,7 +8,19 @@
 import Foundation
 
 enum IDs {
-    nonisolated(unsafe) static var session = UUID()
+    private static let sessionQueue = DispatchQueue(label: "scout.ids.session")
+
+    nonisolated(unsafe) private static var sessionStorage = UUID()
+
+    /// Rotates on every `SessionObject.trigger`. `TrackedObject.awakeFromInsert`
+    /// reads it from arbitrary Core Data background contexts, so access is
+    /// serialised through a dispatch queue to avoid torn reads when rotation
+    /// races with concurrent inserts.
+    ///
+    static var session: UUID {
+        get { sessionQueue.sync { sessionStorage } }
+        set { sessionQueue.sync { sessionStorage = newValue } }
+    }
 
     static let launch = UUID()
 
