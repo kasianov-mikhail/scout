@@ -14,6 +14,7 @@ extension VersionObject {
         date: Date,
         synced: Bool = false,
         appVersion: String = "1.0",
+        buildNumber: String? = nil,
         in context: NSManagedObjectContext
     ) -> VersionObject {
         let entity = NSEntityDescription.entity(forEntityName: "VersionObject", in: context)!
@@ -22,6 +23,7 @@ extension VersionObject {
         version.date = date
         version.isSynced = synced
         version.appVersion = appVersion
+        version.buildNumber = buildNumber
 
         return version
     }
