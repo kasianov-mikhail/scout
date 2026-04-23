@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension LaunchObject {
+extension LaunchObject: RecoveryMonitor {
     /// Closes launches from previous app runs that were not properly
     /// completed — typically because the app crashed.
     ///

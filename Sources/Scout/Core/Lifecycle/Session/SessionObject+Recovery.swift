@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension SessionObject {
+extension SessionObject: RecoveryMonitor {
     /// Closes sessions from previous launches that were not properly
     /// completed — typically because the app crashed.
     ///
