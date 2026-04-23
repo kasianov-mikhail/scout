@@ -11,7 +11,7 @@ import CoreData
 @objc(EventObject)
 final class EventObject: NamedObject, Syncable {
     static let recordType = "Event"
-    @NSManaged var eventID: UUID?
+    @NSManaged var eventID: UUID
     @NSManaged var level: String?
     @NSManaged var paramCount: Int64
     @NSManaged var params: Data?
@@ -27,7 +27,7 @@ final class EventObject: NamedObject, Syncable {
 
 extension EventObject: CKRepresentable {
     var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: eventID!.uuidString)
+        let recordID = CKRecord.ID(recordName: eventID.uuidString)
         let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["name"] = name
@@ -35,7 +35,7 @@ extension EventObject: CKRepresentable {
         record["params"] = params
         record["param_count"] = paramCount
         record["date"] = date
-        record["uuid"] = eventID?.uuidString
+        record["uuid"] = eventID.uuidString
         record["session_id"] = sessionID.uuidString
 
         record.setValuesForKeys(metadata)

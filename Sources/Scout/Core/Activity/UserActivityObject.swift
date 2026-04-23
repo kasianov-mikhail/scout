@@ -13,7 +13,7 @@ final class UserActivityObject: TrackedObject, Syncable {
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32
     @NSManaged var period: String?
-    @NSManaged var userActivityID: UUID?
+    @NSManaged var userActivityID: UUID
     @NSManaged var weekCount: Int32
 
     static func group(in context: NSManagedObjectContext) throws -> [UserActivityObject]? {

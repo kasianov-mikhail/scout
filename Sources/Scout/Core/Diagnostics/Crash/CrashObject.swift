@@ -11,7 +11,7 @@ import CoreData
 @objc(CrashObject)
 final class CrashObject: NamedObject, Syncable {
     static let recordType = "Crash"
-    @NSManaged var crashID: UUID?
+    @NSManaged var crashID: UUID
     @NSManaged var reason: String?
     @NSManaged var stackTrace: Data?
 
@@ -26,14 +26,14 @@ final class CrashObject: NamedObject, Syncable {
 
 extension CrashObject: CKRepresentable {
     var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: crashID!.uuidString)
+        let recordID = CKRecord.ID(recordName: crashID.uuidString)
         let record = CKRecord(recordType: Self.recordType, recordID: recordID)
 
         record["name"] = name
         record["reason"] = reason
         record["stack_trace"] = stackTrace
         record["date"] = date
-        record["uuid"] = crashID?.uuidString
+        record["uuid"] = crashID.uuidString
 
         record.setValuesForKeys(metadata)
 

@@ -50,7 +50,7 @@ struct StableRecordIDTests {
     @Test("EventObject.toRecord is stable across calls")
     func eventStable() {
         let event = EventObject.stub(name: "test", date: date, in: context)
-        let expected = event.eventID!.uuidString
+        let expected = event.eventID.uuidString
         #expect(event.toRecord.recordID == event.toRecord.recordID)
         #expect(event.toRecord.recordID.recordName == expected)
     }
