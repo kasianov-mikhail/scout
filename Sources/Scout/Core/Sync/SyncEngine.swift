@@ -14,6 +14,8 @@ struct SyncEngine: @unchecked Sendable {
 
     @MainActor func send<T: Syncable & MatrixBatch>(type syncable: T.Type) async throws {
         while let batch = try syncable.group(in: context) {
+            try Task.checkCancellation()
+
             for object in batch {
                 object.syncAttempts += 1
             }

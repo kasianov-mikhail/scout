@@ -30,6 +30,7 @@ typealias SyncAction = @MainActor () async throws -> Void
         try SyncableObject.cleanup(in: persistentContainer.viewContext)
         try await dispatcher.performEnsuringBackground {
             for job in jobPlan.jobs.shuffled() {
+                try Task.checkCancellation()
                 try await job()
             }
         }
