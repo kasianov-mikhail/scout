@@ -20,11 +20,11 @@ typealias SyncAction = @MainActor () async throws -> Void
     }
 
     func synchronize() async throws {
+        try SyncableObject.cleanup(in: persistentContainer.viewContext)
+
         guard try await container.accountStatus() == .available else {
             throw NotLoggedInError()
         }
-
-        try SyncableObject.cleanup(in: persistentContainer.viewContext)
 
         let engine = SyncEngine(database: container.publicCloudDatabase, context: persistentContainer.viewContext)
         let jobPlan = SyncJobPlan(engine: engine)
