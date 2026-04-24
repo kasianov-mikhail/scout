@@ -16,13 +16,15 @@ extension Dispatcher {
 }
 
 extension Dispatcher {
+    /// Cancels `work` on expiration rather than letting iOS silently revoke background time.
     func performEnsuringBackground(_ work: @escaping Work) async throws {
         try await perform { @MainActor in
-            let task = UIApplication.shared.beginBackgroundTask()
+            let work = Task(operation: work)
+            let task = UIApplication.shared.beginBackgroundTask(withName: "scout.sync", expirationHandler: work.cancel)
 
             defer { UIApplication.shared.endBackgroundTask(task) }
 
-            try await work()
+            try await work.value
         }
     }
 }
