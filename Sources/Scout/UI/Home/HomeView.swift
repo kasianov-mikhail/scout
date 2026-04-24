@@ -22,11 +22,11 @@ public struct HomeView: View {
         NavigationStack {
             HomeContent()
                 .navigationBarTitle("Home")
+                .iCloudWarning(container: container)
+                .schemaWarning(container: container)
+                .dismissable()
         }
-        .dismissable()
         .onboardingSheet()
-        .iCloudWarning(container: container)
-        .schemaWarning(container: container)
         .tint(tint.value)
         .environmentObject(tint)
         .environment(\.database, container.publicCloudDatabase)
