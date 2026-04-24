@@ -24,15 +24,11 @@ typealias SyncAction = @MainActor () async throws -> Void
             throw NotLoggedInError()
         }
 
-        let engine = SyncEngine(
-            database: container.publicCloudDatabase,
-            context: persistentContainer.viewContext
-        )
+        let engine = SyncEngine(database: container.publicCloudDatabase, context: persistentContainer.viewContext)
         let jobPlan = SyncJobPlan(engine: engine)
 
+        try SyncableObject.cleanup(in: persistentContainer.viewContext)
         try await dispatcher.performEnsuringBackground {
-            try SyncableObject.cleanup(in: persistentContainer.viewContext)
-
             for job in jobPlan.jobs.shuffled() {
                 try await job()
             }
