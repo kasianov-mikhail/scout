@@ -50,7 +50,9 @@ struct ErrorView: View {
 #Preview("ErrorView") {
     ErrorView(
         description: Text(
-            verbatim: "This is a sample error message that is intentionally made very long to test how the ErrorView handles multiline text display. It should properly wrap and be readable without any issues."
+            verbatim: "This is a sample error message that is intentionally made very long "
+                + "to test how the ErrorView handles multiline text display. "
+                + "It should properly wrap and be readable without any issues."
         ),
         retry: {}
     )

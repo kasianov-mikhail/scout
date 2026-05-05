@@ -35,7 +35,7 @@ private struct SchemaWarningModifier: ViewModifier {
                 }
             }
             .alert(Text(verbatim: "Schema Outdated"), isPresented: $isAlertPresented) {
-                Button(role: .cancel) {} label: {
+                Button(role: .cancel, action: {}) {
                     Text(verbatim: "OK")
                 }
             } message: {
