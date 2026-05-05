@@ -10,6 +10,7 @@ import Foundation
 extension Calendar.Component {
     var chartFormat: Date.FormatStyle {
         var style = Date.FormatStyle()
+        style.locale = Locale(identifier: "en_US")
         style.timeZone = TimeZone(secondsFromGMT: 0)!
 
         return switch self {
