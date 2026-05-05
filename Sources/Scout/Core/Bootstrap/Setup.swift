@@ -38,8 +38,7 @@ public func setup(container: CKContainer) async throws {
         LaunchObject.completeStale,
     )
 
-    let syncController = SyncController(container: container)
-    let sync = syncController.synchronize
+    let sync = SyncController(container: container).synchronize
 
     ActionTable.appState.startListening(completion: sync)
 
