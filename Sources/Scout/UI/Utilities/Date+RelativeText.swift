@@ -8,12 +8,16 @@
 import SwiftUI
 
 extension Date {
-    var relativeText: Text {
+    var relativeString: String {
         if timeIntervalSinceNow < -60 {
-            Text(relativeFormatter.localizedString(for: self, relativeTo: Date()))
+            relativeFormatter.localizedString(for: self, relativeTo: Date())
         } else {
-            Text(verbatim: "recently")
+            "recently"
         }
+    }
+
+    var relativeText: Text {
+        Text(verbatim: relativeString)
     }
 }
 
