@@ -35,7 +35,7 @@ private struct ICloudWarningModifier: ViewModifier {
                 }
             }
             .alert(Text(verbatim: "iCloud Unavailable"), isPresented: $isAlertPresented) {
-                Button(role: .cancel) {} label: {
+                Button(role: .cancel, action: {}) {
                     Text(verbatim: "OK")
                 }
             } message: {
