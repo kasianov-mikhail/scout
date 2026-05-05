@@ -12,7 +12,7 @@ extension Date {
         if timeIntervalSinceNow < -60 {
             Text(relativeFormatter.localizedString(for: self, relativeTo: Date()))
         } else {
-            Text("recently")
+            Text(verbatim: "recently")
         }
     }
 }

@@ -20,11 +20,11 @@ struct ReadyPage: View {
                 .font(.system(size: 64))
                 .foregroundStyle(.green)
 
-            Text("You're all set")
+            Text(verbatim: "You're all set")
                 .font(.title)
                 .bold()
 
-            Text("Run your app and come back here to see your data.")
+            Text(verbatim: "Run your app and come back here to see your data.")
                 .font(.body)
                 .kerning(0.3)
                 .foregroundStyle(.secondary)
@@ -34,7 +34,7 @@ struct ReadyPage: View {
             Button {
                 dismiss()
             } label: {
-                Text("Get Started")
+                Text(verbatim: "Get Started")
                     .bold()
                     .frame(maxWidth: .infinity)
                     .padding()

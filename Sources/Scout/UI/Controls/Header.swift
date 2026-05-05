@@ -24,7 +24,7 @@ struct Header: View {
                 Spacer()
 
                 Button(action: action) {
-                    Text("See all").foregroundStyle(.blue)
+                    Text(verbatim: "See all").foregroundStyle(.blue)
                 }
                 .buttonStyle(.plain)
             }

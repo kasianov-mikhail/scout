@@ -34,10 +34,12 @@ private struct ICloudWarningModifier: ViewModifier {
                     }
                 }
             }
-            .alert("iCloud Unavailable", isPresented: $isAlertPresented) {
-                Button("OK", role: .cancel) {}
+            .alert(Text(verbatim: "iCloud Unavailable"), isPresented: $isAlertPresented) {
+                Button(role: .cancel) {} label: {
+                    Text(verbatim: "OK")
+                }
             } message: {
-                Text("Sign in to iCloud to sync data.")
+                Text(verbatim: "Sign in to iCloud to sync data.")
             }
             .task {
                 await verify()

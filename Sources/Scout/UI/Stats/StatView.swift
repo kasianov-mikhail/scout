@@ -47,7 +47,7 @@ struct StatView: View {
     func total(count: Int) -> some View {
         ZStack {
             HStack {
-                Text("Events")
+                Text(verbatim: "Events")
                 Spacer()
                 Text(count == 0 ? "—" : "\(count)")
             }
@@ -80,7 +80,7 @@ extension EnvironmentValues {
             extent: ChartExtent(period: .yesterday),
             stat: stat
         )
-        .navigationTitle("App Launch")
+        .navigationTitle(Text(verbatim: "App Launch"))
         .environmentObject(Tint())
     }
 }

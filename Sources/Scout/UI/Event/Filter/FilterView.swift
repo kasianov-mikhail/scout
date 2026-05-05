@@ -37,15 +37,19 @@ struct FilterView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Reset") {
+                    Button {
                         criteria.reset()
+                    } label: {
+                        Text(verbatim: "Reset")
                     }
                     .disabled(!criteria.isResetEnabled)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Apply") {
+                    Button {
                         criteria.apply()
                         dismiss()
+                    } label: {
+                        Text(verbatim: "Apply")
                     }
                     .disabled(!criteria.isApplyEnabled)
                     .fontWeight(.semibold)
@@ -54,7 +58,7 @@ struct FilterView: View {
             .padding(.top)
             .listStyle(.plain)
             .scrollDisabled(true)
-            .navigationTitle("Filter")
+            .navigationTitle(Text(verbatim: "Filter"))
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -66,8 +70,10 @@ struct FilterButton: View {
     @State private var isFilterPresented = false
 
     var body: some View {
-        Button("Filter") {
+        Button {
             isFilterPresented = true
+        } label: {
+            Text(verbatim: "Filter")
         }
         .sheet(isPresented: $isFilterPresented) {
             FilterView(selected: $levels).presentationDetents([.height(392)])

@@ -76,6 +76,6 @@ struct MetricsContent<T: ChartNumeric>: View {
             description: "Metrics will appear here once your app records data",
             code: "Counter(label: \"api_calls\").increment()"
         )
-        .navigationTitle("Metrics")
+        .navigationTitle(Text(verbatim: "Metrics"))
     }
 }

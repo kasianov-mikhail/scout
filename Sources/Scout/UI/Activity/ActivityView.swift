@@ -35,7 +35,7 @@ struct ActivityView: View {
                 .scrollDisabled(true)
             }
         }
-        .navigationTitle("Active Users")
+        .navigationTitle(Text(verbatim: "Active Users"))
     }
 }
 

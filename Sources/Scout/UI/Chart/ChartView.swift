@@ -30,7 +30,7 @@ struct ChartView<T: ChartNumeric>: View {
         }
         .chartBackground { _ in
             if segment.total == .zero {
-                Text("No results")
+                Text(verbatim: "No results")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.gray.opacity(0.7))
             }
@@ -44,10 +44,10 @@ struct ChartView<T: ChartNumeric>: View {
 
 #Preview("ChartView – Month") {
     VStack(alignment: .leading, spacing: 24) {
-        Text("With Data").font(.headline)
+        Text(verbatim: "With Data").font(.headline)
         ChartView(segment: .sample, timing: ChartExtent(period: Period.month))
 
-        Text("Empty State").font(.headline)
+        Text(verbatim: "Empty State").font(.headline)
         ChartView(segment: .empty, timing: ChartExtent(period: Period.month))
     }
     .padding()

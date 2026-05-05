@@ -36,11 +36,11 @@ struct Row<Content: View, Destination: View>: View {
     NavigationStack {
         List {
             Row {
-                Text("Label")
+                Text(verbatim: "Label")
                 Spacer()
-                Text("Value")
+                Text(verbatim: "Value")
             } destination: {
-                Text("Detail")
+                Text(verbatim: "Detail")
             }
         }
     }

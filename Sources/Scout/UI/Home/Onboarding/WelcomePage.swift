@@ -14,7 +14,7 @@ struct WelcomePage: View {
             Spacer()
             Spacer()
 
-            Text("Welcome to Scout")
+            Text(verbatim: "Welcome to Scout")
                 .font(.title)
                 .bold()
 

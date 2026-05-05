@@ -14,7 +14,7 @@ struct SetupPage: View {
             Spacer()
             Spacer()
 
-            Text("Quick Setup")
+            Text(verbatim: "Quick Setup")
                 .font(.title)
                 .bold()
 

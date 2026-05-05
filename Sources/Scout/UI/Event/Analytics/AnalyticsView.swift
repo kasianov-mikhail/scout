@@ -24,7 +24,7 @@ struct AnalyticsView: View {
                 eventList
             }
         }
-        .searchable(text: $filter.text, placement: .navigationBarDrawer(displayMode: .always))
+        .searchable(text: $filter.text, placement: .navigationBarDrawer(displayMode: .always), prompt: Text(verbatim: "Search"))
         .autocorrectionDisabled(true)  // stop keyboard suggestions
         .keyboardType(.alphabet)  // stop keyboard suggestions
         .searchSuggestions {
@@ -50,7 +50,7 @@ struct AnalyticsView: View {
         .onChange(of: filter.text) { _ in
             search.events?.removeAll()
         }
-        .navigationTitle("Events")
+        .navigationTitle(Text(verbatim: "Events"))
         .onAppear {
             tint.value = nil
         }
