@@ -10,13 +10,15 @@ import UIKit
 
 extension CKDatabase {
     @discardableResult func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
-        guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
+        let sync = activeSetupOptions.sync
+
+        guard await UIApplication.shared.backgroundTimeRemaining > sync.backgroundTimeThreshold else {
             throw RunnerError()
         }
 
         let configuration = CKOperation.Configuration()
-        configuration.timeoutIntervalForRequest = 10
-        configuration.timeoutIntervalForResource = 10
+        configuration.timeoutIntervalForRequest = sync.requestTimeout
+        configuration.timeoutIntervalForResource = sync.requestTimeout
 
         return try await configuredWith(configuration: configuration, body: body)
     }

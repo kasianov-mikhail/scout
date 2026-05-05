@@ -17,7 +17,7 @@ struct SetupError: LocalizedError {
 
 @MainActor private var isSetup = false
 
-/// Initializes Scout's global infrastructure.
+/// Initializes Scout's global infrastructure with the default options.
 ///
 /// - Parameter container: The CloudKit container for all operations.
 /// - Throws: An error if initialization fails or if called more than once.
@@ -25,15 +25,32 @@ struct SetupError: LocalizedError {
 ///
 @MainActor
 public func setup(container: CKContainer) async throws {
+    try await setup(container: container, options: SetupOptions())
+}
+
+/// Initializes Scout's global infrastructure with custom options.
+///
+/// - Parameters:
+///   - container: The CloudKit container for all operations.
+///   - options: Feature gates and tuning values; defaults preserve the
+///     behavior of ``setup(container:)``.
+/// - Throws: An error if initialization fails or if called more than once.
+/// - Important: Call from the main actor during app startup.
+///
+@MainActor
+public func setup(container: CKContainer, options: SetupOptions) async throws {
     guard !isSetup else {
         throw SetupError()
     }
-    isSetup = true
 
-    installExceptionHandler()
-    installSignalHandler()
+    activeSetupOptions = options
 
-    await CrashArchive.system.flush()
+    if case .enabled = options.crashReporting {
+        installExceptionHandler()
+        installSignalHandler()
+        await CrashArchive.system.flush()
+    }
+
     try await persistentContainer.performBackgroundTasks(
         SessionObject.completeStale,
         LaunchObject.completeStale,
@@ -53,8 +70,14 @@ public func setup(container: CKContainer) async throws {
         UserActivityObject.trigger
     )
 
-    LoggingSystem.bootstrap { label in
-        CKLogHandler(sync: sync, label: label)
+    if case .enabled = options.logging {
+        LoggingSystem.bootstrap { label in
+            CKLogHandler(sync: sync, label: label)
+        }
     }
-    MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
+    if case .enabled = options.metrics {
+        MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
+    }
+
+    isSetup = true
 }

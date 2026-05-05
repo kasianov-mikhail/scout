@@ -31,7 +31,7 @@ struct SyncEngine: @unchecked Sendable {
 
             try await SyncCoordinator(
                 database: database,
-                maxRetry: 3,
+                maxRetry: activeSetupOptions.sync.maxConflictRetries,
                 batch: batch
             )
             .upload()
