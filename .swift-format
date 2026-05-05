@@ -7,11 +7,19 @@
   "rules": {
     "AlwaysUseLiteralForEmptyCollectionInit": true,
     "BeginDocumentationCommentWithOneLineSummary": true,
+    "GroupNumericLiterals": true,
     "NeverUseImplicitlyUnwrappedOptionals": true,
+    "NoAccessLevelOnExtensionDeclaration": true,
+    "NoBlockComments": true,
     "NoEmptyLinesOpeningClosingBraces": true,
     "NoLeadingUnderscores": true,
     "OmitExplicitReturns": true,
+    "OneCasePerLine": true,
+    "OrderedImports": true,
+    "ReturnVoidInsteadOfEmptyTuple": true,
     "UseEarlyExits": true,
+    "UseShorthandTypeNames": true,
+    "UseSynthesizedInitializer": true,
     "UseWhereClausesInForLoops": true,
     "ValidateDocumentationComments": true
   }
