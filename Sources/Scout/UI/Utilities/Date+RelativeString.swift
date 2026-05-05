@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import SwiftUI
+import Foundation
 
 extension Date {
     var relativeString: String {
@@ -14,10 +14,6 @@ extension Date {
         } else {
             "recently"
         }
-    }
-
-    var relativeText: Text {
-        Text(verbatim: relativeString)
     }
 }
 

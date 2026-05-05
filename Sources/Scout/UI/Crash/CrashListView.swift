@@ -55,7 +55,7 @@ struct CrashListView: View {
                 Spacer()
 
                 if let date = crash.date {
-                    date.relativeText
+                    Text(verbatim: date.relativeString)
                         .font(.system(size: 15))
                         .foregroundStyle(Color.gray)
                 }
