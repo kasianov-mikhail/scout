@@ -28,7 +28,6 @@ public func setup(container: CKContainer) async throws {
     guard !isSetup else {
         throw SetupError()
     }
-    isSetup = true
 
     installExceptionHandler()
     installSignalHandler()
@@ -57,4 +56,6 @@ public func setup(container: CKContainer) async throws {
         CKLogHandler(sync: sync, label: label)
     }
     MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
+
+    isSetup = true
 }
