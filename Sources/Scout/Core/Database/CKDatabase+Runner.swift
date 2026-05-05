@@ -25,6 +25,6 @@ extension CKDatabase {
         let errorDescription: String? = "The operation was aborted because the remaining background time is insufficient."
         let failureReason: String? = "Not enough background time remaining."
         let helpAnchor: String? = "https://developer.apple.com/documentation/uikit/uiapplication/backgroundtimeremaining"
-        let recoveringSuggestion: String? = "Try again later."
+        let recoverySuggestion: String? = "Try again later."
     }
 }
