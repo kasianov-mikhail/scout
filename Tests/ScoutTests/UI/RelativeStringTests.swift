@@ -5,37 +5,33 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import SwiftUI
+import Foundation
 import Testing
 
 @testable import Scout
 
-struct RelativeTextTests {
+struct RelativeStringTests {
     @Test("Old date shows relative string")
     func oldDate() {
         let date = Date(timeIntervalSinceNow: -3600)
-        let text = date.relativeText
-        #expect(text != Text("recently"))
+        #expect(date.relativeString != "recently")
     }
 
     @Test("Recent date shows 'recently'")
     func recentDate() {
         let date = Date(timeIntervalSinceNow: -30)
-        let text = date.relativeText
-        #expect(text == Text("recently"))
+        #expect(date.relativeString == "recently")
     }
 
     @Test("Future date shows 'recently'")
     func futureDate() {
         let date = Date(timeIntervalSinceNow: 100)
-        let text = date.relativeText
-        #expect(text == Text("recently"))
+        #expect(date.relativeString == "recently")
     }
 
     @Test("Boundary at exactly 60 seconds")
     func boundary() {
         let date = Date(timeIntervalSinceNow: -59)
-        let text = date.relativeText
-        #expect(text == Text("recently"))
+        #expect(date.relativeString == "recently")
     }
 }
