@@ -6,9 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-import os
-
-private let logger = Logger(subsystem: "Scout", category: "Sync")
 
 typealias SyncAction = @MainActor () async throws -> Void
 
@@ -39,7 +36,6 @@ typealias SyncAction = @MainActor () async throws -> Void
                 } catch let error where Task.isCancelled {
                     throw error
                 } catch {
-                    logger.error("Sync job failed: \(error.localizedDescription, privacy: .public)")
                     continue
                 }
             }
