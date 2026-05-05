@@ -80,7 +80,7 @@ extension EnvironmentValues {
             extent: ChartExtent(period: .yesterday),
             stat: stat
         )
-        .navigationTitle(Text(verbatim: "App Launch"))
+        .navigationTitle(en: "App Launch")
         .environmentObject(Tint())
     }
 }

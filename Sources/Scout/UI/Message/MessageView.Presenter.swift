@@ -79,7 +79,7 @@ extension MessageView {
             }
             .disabled(message == nil)
         }
-        .navigationTitle(Text(verbatim: "Message Presenter"))
+        .navigationTitle(en: "Message Presenter")
         .navigationBarTitleDisplayMode(.inline)
     }
     .message($message)

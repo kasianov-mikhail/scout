@@ -50,7 +50,7 @@ struct AnalyticsView: View {
         .onChange(of: filter.text) { _ in
             search.events?.removeAll()
         }
-        .navigationTitle(Text(verbatim: "Events"))
+        .navigationTitle(en: "Events")
         .onAppear {
             tint.value = nil
         }
