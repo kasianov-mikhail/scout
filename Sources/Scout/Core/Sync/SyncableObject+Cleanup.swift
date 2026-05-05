@@ -14,11 +14,13 @@ extension SyncableObject {
     /// exceeded the sync attempt limit.
     ///
     static func cleanup(in context: NSManagedObjectContext) throws {
-        let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date())! as NSDate
+        guard let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
+            return
+        }
 
         let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
         request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
-            NSPredicate(format: "isSynced == true AND datePrimitive < %@", cutoff),
+            NSPredicate(format: "isSynced == true AND datePrimitive < %@", cutoff as NSDate),
             NSPredicate(format: "isSynced == false AND syncAttempts > %d", maxSyncAttempts),
         ])
 
