@@ -54,26 +54,32 @@ extension MessageView {
 
     NavigationStack {
         VStack(spacing: 32) {
-            Button("Show Info") {
+            Button {
                 message = Message(
                     Message.Level.info.text,
                     level: .info
                 )
+            } label: {
+                Text(verbatim: "Show Info")
             }
 
-            Button("Show Multiline Warning") {
+            Button {
                 message = Message(
                     Message.Level.warning.longText,
                     level: .warning
                 )
+            } label: {
+                Text(verbatim: "Show Multiline Warning")
             }
 
-            Button("Hide") {
+            Button {
                 message = nil
+            } label: {
+                Text(verbatim: "Hide")
             }
             .disabled(message == nil)
         }
-        .navigationTitle("Message Presenter")
+        .navigationTitle(Text(verbatim: "Message Presenter"))
         .navigationBarTitleDisplayMode(.inline)
     }
     .message($message)

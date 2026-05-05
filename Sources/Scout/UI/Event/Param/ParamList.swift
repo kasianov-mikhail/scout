@@ -20,7 +20,7 @@ struct ParamList: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle("Params")
+        .navigationTitle(Text(verbatim: "Params"))
         .onAppear {
             tint.value = nil
         }

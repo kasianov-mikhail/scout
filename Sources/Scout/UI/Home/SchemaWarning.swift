@@ -34,8 +34,10 @@ private struct SchemaWarningModifier: ViewModifier {
                     }
                 }
             }
-            .alert("Schema Outdated", isPresented: $isAlertPresented) {
-                Button("OK", role: .cancel) {}
+            .alert(Text(verbatim: "Schema Outdated"), isPresented: $isAlertPresented) {
+                Button(role: .cancel) {} label: {
+                    Text(verbatim: "OK")
+                }
             } message: {
                 if let schemaError {
                     Text(schemaError.errorDescription ?? "")

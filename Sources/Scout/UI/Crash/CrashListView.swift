@@ -38,7 +38,7 @@ struct CrashListView: View {
                 ProgressView().frame(maxHeight: .infinity)
             }
         }
-        .navigationTitle("Crashes")
+        .navigationTitle(Text(verbatim: "Crashes"))
         .task {
             await provider.fetch(in: database)
         }
@@ -89,6 +89,6 @@ struct CrashListView: View {
             systemImage: "checkmark.shield",
             description: "No crash reports have been recorded"
         )
-        .navigationTitle("Crashes")
+        .navigationTitle(Text(verbatim: "Crashes"))
     }
 }

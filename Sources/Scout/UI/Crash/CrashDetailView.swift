@@ -41,7 +41,7 @@ struct CrashDetailView: View {
             }
 
             if let reason = crash.reason {
-                Text("REASON:   ").fontWeight(.bold)
+                Text(verbatim: "REASON:   ").fontWeight(.bold)
                     + Text(reason).fontWeight(.bold).foregroundColor(.red)
             }
         }

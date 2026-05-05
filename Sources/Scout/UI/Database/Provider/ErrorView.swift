@@ -19,7 +19,7 @@ struct ErrorView: View {
                 .font(.system(size: 48))
                 .foregroundColor(.yellow)
 
-            Text("An error occurred")
+            Text(verbatim: "An error occurred")
                 .font(.title2)
                 .bold()
 
@@ -29,7 +29,7 @@ struct ErrorView: View {
 
             if let retry {
                 Button(action: retry) {
-                    Text("Retry")
+                    Text(verbatim: "Retry")
                         .bold()
                         .padding()
                         .frame(maxWidth: .infinity)
@@ -50,7 +50,7 @@ struct ErrorView: View {
 #Preview("ErrorView") {
     ErrorView(
         description: Text(
-            "This is a sample error message that is intentionally made very long to test how the ErrorView handles multiline text display. It should properly wrap and be readable without any issues."
+            verbatim: "This is a sample error message that is intentionally made very long to test how the ErrorView handles multiline text display. It should properly wrap and be readable without any issues."
         ),
         retry: {}
     )

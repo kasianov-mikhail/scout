@@ -21,10 +21,12 @@ struct MetricsView<T: ChartNumeric>: View {
     }
 
     var body: some View {
-        Picker("Period", selection: $extent.period) {
+        Picker(selection: $extent.period) {
             ForEach(Period.allCases) { period in
                 Text(period.shortTitle.uppercased())
             }
+        } label: {
+            Text(verbatim: "Period")
         }
         .padding(.horizontal)
         .pickerStyle(.segmented)

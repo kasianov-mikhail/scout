@@ -28,16 +28,16 @@ struct HomeContent: View {
         Section {
             Group {
                 Row {
-                    Text("Events")
+                    Text(verbatim: "Events")
                     Spacer()
                 } destination: {
                     AnalyticsView()
                 }
                 Row {
-                    Text("Metrics")
+                    Text(verbatim: "Metrics")
                     Spacer()
                 } destination: {
-                    MetricsList().navigationTitle("Metrics")
+                    MetricsList().navigationTitle(Text(verbatim: "Metrics"))
                 }
             }
             .foregroundStyle(.blue)
@@ -60,12 +60,12 @@ struct HomeContent: View {
                         stat: crashStat
                     )
                     .environment(\.chartColor, .red)
-                    .navigationTitle("Crashes")
+                    .navigationTitle(Text(verbatim: "Crashes"))
                 }
             }
 
             Row {
-                Text("All")
+                Text(verbatim: "All")
                 Spacer()
             } destination: {
                 CrashListView()
@@ -108,7 +108,7 @@ struct HomeContent: View {
                         stat: sessionStat
                     )
                     .environment(\.chartColor, .purple)
-                    .navigationTitle("Sessions")
+                    .navigationTitle(Text(verbatim: "Sessions"))
                 }
             }
         } header: {

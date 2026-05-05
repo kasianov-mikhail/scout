@@ -19,8 +19,10 @@ private struct DismissableModifier: ViewModifier {
     func body(content: Content) -> some View {
         content.toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button("Close") {
+                Button {
                     dismiss()
+                } label: {
+                    Text(verbatim: "Close")
                 }
             }
         }
