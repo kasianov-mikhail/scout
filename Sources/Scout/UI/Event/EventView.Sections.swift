@@ -86,7 +86,7 @@ extension EventView {
                         extent: ChartExtent(period: period),
                         stat: stat
                     )
-                    .navigationTitle(Text(verbatim: "Stats"))
+                    .navigationTitle(en: "Stats")
                 }
             }
         }

@@ -62,7 +62,7 @@ struct HistoryView: View {
                 await fetch()
             }
         }
-        .navigationTitle(Text(verbatim: "History"))
+        .navigationTitle(en: "History")
     }
 
     func fetch() async {

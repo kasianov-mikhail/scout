@@ -67,6 +67,6 @@ struct MetricsList: View {
 #Preview("Metrics List") {
     NavigationStack {
         MetricsList()
-            .navigationTitle(Text(verbatim: "Metrics"))
+            .navigationTitle(en: "Metrics")
     }
 }

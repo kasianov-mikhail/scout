@@ -58,7 +58,7 @@ struct FilterView: View {
             .padding(.top)
             .listStyle(.plain)
             .scrollDisabled(true)
-            .navigationTitle(Text(verbatim: "Filter"))
+            .navigationTitle(en: "Filter")
             .navigationBarTitleDisplayMode(.inline)
         }
     }

@@ -37,7 +37,7 @@ struct HomeContent: View {
                     Text(verbatim: "Metrics")
                     Spacer()
                 } destination: {
-                    MetricsList().navigationTitle(Text(verbatim: "Metrics"))
+                    MetricsList().navigationTitle(en: "Metrics")
                 }
             }
             .foregroundStyle(.blue)
@@ -60,7 +60,7 @@ struct HomeContent: View {
                         stat: crashStat
                     )
                     .environment(\.chartColor, .red)
-                    .navigationTitle(Text(verbatim: "Crashes"))
+                    .navigationTitle(en: "Crashes")
                 }
             }
 
@@ -108,7 +108,7 @@ struct HomeContent: View {
                         stat: sessionStat
                     )
                     .environment(\.chartColor, .purple)
-                    .navigationTitle(Text(verbatim: "Sessions"))
+                    .navigationTitle(en: "Sessions")
                 }
             }
         } header: {
