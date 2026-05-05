@@ -53,7 +53,7 @@ struct EventList: View {
 
                 if let date = event.date {
                     TimelineView(.periodic(from: timeline, by: 1)) { _ in
-                        date.relativeText
+                        Text(verbatim: date.relativeString)
                     }
                     .font(.system(size: 15))
                     .foregroundStyle(Color.gray)
