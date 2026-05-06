@@ -76,7 +76,7 @@ struct FilterButton: View {
             Text(verbatim: "Filter")
         }
         .sheet(isPresented: $isFilterPresented) {
-            FilterView(selected: $levels).presentationDetents([.height(392)])
+            FilterView(selected: $levels).presentationDetents([.height(440)])
         }
         .tint(.blue)
     }
