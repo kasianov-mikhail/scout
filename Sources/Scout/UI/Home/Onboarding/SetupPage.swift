@@ -18,10 +18,22 @@ struct SetupPage: View {
                 .font(.title)
                 .bold()
 
-            VStack(spacing: 12) {
-                codeStep("try await setup(container: .default())")
-                codeStep("logger.info(\"hello\")")
-                codeStep("Counter(label: \"taps\").increment()")
+            VStack(alignment: .leading, spacing: 20) {
+                Step(
+                    number: 1,
+                    label: "Initialize Scout in your app",
+                    code: "try await setup(container: .default())"
+                )
+                Step(
+                    number: 2,
+                    label: "Log a structured event",
+                    code: "logger.info(\"hello\")"
+                )
+                Step(
+                    number: 3,
+                    label: "Track a metric",
+                    code: "Counter(label: \"taps\").increment()"
+                )
             }
             .padding(.horizontal, 24)
 
@@ -33,14 +45,36 @@ struct SetupPage: View {
         }
     }
 
-    private func codeStep(_ code: String) -> some View {
-        Text(code)
-            .font(.system(size: 13, design: .monospaced))
-            .foregroundStyle(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3), lineWidth: 1))
+    private struct Step: View {
+        let number: Int
+        let label: String
+        let code: String
+
+        var body: some View {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 10) {
+                    Text("\(number)")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(.white)
+                        .frame(width: 22, height: 22)
+                        .background(Circle().fill(.blue))
+                    Text(label)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                }
+                Text(code)
+                    .font(.system(size: 14, design: .monospaced))
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.12))
+                    )
+                    .padding(.leading, 32)
+            }
+        }
     }
 }
 
