@@ -9,12 +9,18 @@ import SwiftUI
 
 struct ActivityRow: View {
     let period: ActivityPeriod
+    var systemImage: String? = nil
 
     @ObservedObject var activity: ActivityProvider
 
     var body: some View {
         Row {
+            if let systemImage {
+                Image(systemName: systemImage)
+                    .frame(width: 24)
+            }
             Text(period.title)
+                .foregroundColor(.primary)
             Spacer()
 
             let count = try? activity.result?.get()

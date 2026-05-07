@@ -10,24 +10,29 @@ import SwiftUI
 struct StatRow<Destination: View>: View {
     let color: Color
     let period: Period
+    var systemImage: String? = nil
 
     @ObservedObject var stat: StatProvider
     @ViewBuilder let destination: () -> Destination
 
     var body: some View {
         Row {
-            Group {
-                Text(period.title)
-                Spacer()
-
-                let count = try? stat.result?.get()
-                    .flatMap(\.points)
-                    .bucket(on: period)
-                    .total
-
-                RedactedText(count: count)
+            if let systemImage {
+                Image(systemName: systemImage)
+                    .foregroundColor(color)
+                    .frame(width: 24)
             }
-            .foregroundColor(color)
+            Text(period.title)
+                .foregroundColor(systemImage == nil ? color : .primary)
+            Spacer()
+
+            let count = try? stat.result?.get()
+                .flatMap(\.points)
+                .bucket(on: period)
+                .total
+
+            RedactedText(count: count)
+                .foregroundColor(color)
         } destination: {
             destination()
         }
