@@ -26,21 +26,24 @@ struct HomeContent: View {
 
     private var logSection: some View {
         Section {
-            Group {
-                Row {
-                    Text(verbatim: "Events")
-                    Spacer()
-                } destination: {
-                    AnalyticsView()
-                }
-                Row {
-                    Text(verbatim: "Metrics")
-                    Spacer()
-                } destination: {
-                    MetricsList().navigationTitle(en: "Metrics")
-                }
+            Row {
+                Image(systemName: "list.bullet")
+                    .foregroundColor(.blue)
+                    .frame(width: 24)
+                Text(verbatim: "Events")
+                Spacer()
+            } destination: {
+                AnalyticsView()
             }
-            .foregroundStyle(.blue)
+            Row {
+                Image(systemName: "chart.bar")
+                    .foregroundColor(.blue)
+                    .frame(width: 24)
+                Text(verbatim: "Metrics")
+                Spacer()
+            } destination: {
+                MetricsList().navigationTitle(en: "Metrics")
+            }
         } header: {
             Header(title: "Log")
         }
@@ -52,6 +55,7 @@ struct HomeContent: View {
                 StatRow(
                     color: .red,
                     period: period,
+                    systemImage: "exclamationmark.triangle",
                     stat: crashStat
                 ) {
                     StatView(
@@ -65,12 +69,14 @@ struct HomeContent: View {
             }
 
             Row {
+                Image(systemName: "tray.full")
+                    .foregroundColor(.red)
+                    .frame(width: 24)
                 Text(verbatim: "All")
                 Spacer()
             } destination: {
                 CrashListView()
             }
-            .foregroundStyle(.red)
         } header: {
             Header(title: "Crashes").task {
                 await crashStat.fetchIfNeeded(in: database)
@@ -83,6 +89,7 @@ struct HomeContent: View {
             ForEach(ActivityPeriod.allCases) { period in
                 ActivityRow(
                     period: period,
+                    systemImage: "person.2",
                     activity: activity
                 )
             }
@@ -100,6 +107,7 @@ struct HomeContent: View {
                 StatRow(
                     color: .purple,
                     period: period,
+                    systemImage: "clock",
                     stat: sessionStat
                 ) {
                     StatView(
@@ -116,5 +124,11 @@ struct HomeContent: View {
                 await sessionStat.fetchIfNeeded(in: database)
             }
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        HomeContent()
     }
 }
