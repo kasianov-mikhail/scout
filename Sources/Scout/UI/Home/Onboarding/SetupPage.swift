@@ -62,7 +62,7 @@ struct SetupPage: View {
                         .font(.subheadline)
                         .fontWeight(.medium)
                 }
-                Text(code)
+                Text(code.swiftSyntax)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .codeChipStyle()
                     .padding(.leading, 32)
