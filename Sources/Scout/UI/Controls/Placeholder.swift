@@ -35,11 +35,14 @@ struct Placeholder: View {
 
             if let code {
                 Text(code)
-                    .font(.system(size: 13, design: .monospaced))
-                    .foregroundStyle(.secondary)
+                    .font(.system(size: 14, design: .monospaced))
+                    .foregroundStyle(.primary)
                     .padding(.horizontal, 12)
-                    .padding(.vertical, 8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.gray.opacity(0.3), lineWidth: 1))
+                    .padding(.vertical, 10)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.12))
+                    )
             }
         }
         .padding()
