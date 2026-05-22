@@ -63,15 +63,8 @@ struct SetupPage: View {
                         .fontWeight(.medium)
                 }
                 Text(code)
-                    .font(.system(size: 14, design: .monospaced))
-                    .foregroundStyle(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.gray.opacity(0.12))
-                    )
+                    .codeChipStyle()
                     .padding(.leading, 32)
             }
         }

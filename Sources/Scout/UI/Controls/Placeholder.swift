@@ -34,15 +34,7 @@ struct Placeholder: View {
             }
 
             if let code {
-                Text(code)
-                    .font(.system(size: 14, design: .monospaced))
-                    .foregroundStyle(.primary)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 10)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8)
-                            .fill(Color.gray.opacity(0.12))
-                    )
+                Text(code).codeChipStyle()
             }
         }
         .padding()
