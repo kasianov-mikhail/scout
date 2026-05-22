@@ -34,7 +34,7 @@ struct Placeholder: View {
             }
 
             if let code {
-                Text(code).codeChipStyle()
+                Text(code.swiftSyntax).codeChipStyle()
             }
         }
         .padding()
