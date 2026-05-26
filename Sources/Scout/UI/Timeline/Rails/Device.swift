@@ -7,26 +7,38 @@
 
 import CloudKit
 
-struct Install: Identifiable {
+struct DeviceRail: Identifiable {
+    let device: Device
+    let installs: [InstallRail]
+
+    var id: CKRecord.ID { device.id }
+}
+
+struct Device: Identifiable {
     let date: Date?
     let id: CKRecord.ID
-    let installID: UUID?
     let deviceID: UUID?
 }
 
-extension Install {
+extension Device: RecordDecodable {
     static let desiredKeys = [
         "date",
-        "install_id",
         "device_id",
     ]
-}
 
-extension Install: RecordDecodable {
     init(record: CKRecord) throws {
         date = record["date"]
         id = record.recordID
-        installID = record["install_id"].flatMap(UUID.init)
         deviceID = record["device_id"].flatMap(UUID.init)
+    }
+}
+
+extension Device {
+    static func sample(at date: Date) -> Device {
+        Device(
+            date: date,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            deviceID: nil
+        )
     }
 }
