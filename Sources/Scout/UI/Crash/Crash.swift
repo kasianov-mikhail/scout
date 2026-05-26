@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Crash: Identifiable {
+struct Crash: Identifiable, Hashable {
     let name: String
     let reason: String?
     let stackTrace: [String]
@@ -45,3 +45,18 @@ extension Crash: RecordDecodable {
         }
     }
 }
+
+extension Crash {
+    static func sample(_ name: String, at date: Date) -> Crash {
+        Crash(
+            name: name,
+            reason: nil,
+            stackTrace: [],
+            date: date,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            installID: nil,
+            launchID: nil
+        )
+    }
+}
+
