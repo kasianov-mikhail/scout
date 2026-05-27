@@ -11,7 +11,6 @@ import Testing
 @testable import Scout
 
 struct RailMergeTests {
-
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
     private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
 
@@ -122,5 +121,4 @@ struct RailMergeTests {
         let dates = merged.installs[0].launches[0].sessions[0].events.compactMap(\.date)
         #expect(dates == dates.sorted())
     }
-
 }
