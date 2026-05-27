@@ -54,7 +54,7 @@ extension DeviceRail {
                                         .sample("search", at: at(-3000)),
                                     ],
                                     crashes: []
-                                ),
+                                )
                             ]
                         ),
                         LaunchRail(
@@ -64,11 +64,11 @@ extension DeviceRail {
                                     session: .sample(at: at(-200)),
                                     events: [.sample("ip_lookup", at: at(-30))],
                                     crashes: []
-                                ),
+                                )
                             ]
                         ),
                     ]
-                ),
+                )
             ]
         )
     }

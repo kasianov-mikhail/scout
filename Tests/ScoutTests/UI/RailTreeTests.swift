@@ -11,7 +11,6 @@ import Testing
 @testable import Scout
 
 struct RailTreeTests {
-
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
     private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
 

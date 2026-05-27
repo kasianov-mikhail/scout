@@ -8,14 +8,7 @@
 import Foundation
 
 extension DeviceRail {
-    static func tree(
-        devices: [Device],
-        installs: [Install],
-        launches: [Launch],
-        sessions: [Session],
-        events: [Event],
-        crashes: [Crash]
-    ) -> [DeviceRail] {
+    static func tree(devices: [Device], installs: [Install], launches: [Launch], sessions: [Session], events: [Event], crashes: [Crash]) -> [DeviceRail] {
         let installs = Dictionary(grouping: installs, by: \.deviceID)
         let launches = Dictionary(grouping: launches, by: \.installID)
         let sessions = Dictionary(grouping: sessions, by: \.launchID)
