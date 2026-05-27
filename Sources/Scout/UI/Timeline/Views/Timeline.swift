@@ -29,7 +29,8 @@ struct Timeline: View {
 
                     for item in merged {
                         guard let date = item.date else { continue }
-                        let active: Set<Rail> = item.isCrash
+                        let active: Set<Rail> =
+                            item.isCrash
                             ? [.install]
                             : [.install, .launch, .session]
                         result.append(Row(id: item.id, name: item.name, date: date, active: active, isCrash: item.isCrash))
@@ -91,8 +92,8 @@ struct Timeline: View {
     }
 }
 
-private extension Timeline {
-    struct Row: Identifiable {
+extension Timeline {
+    fileprivate struct Row: Identifiable {
         let id: CKRecord.ID
         let name: String
         let date: Date
@@ -100,7 +101,7 @@ private extension Timeline {
         let isCrash: Bool
     }
 
-    enum Item {
+    fileprivate enum Item {
         case event(Event)
         case crash(Crash)
 
