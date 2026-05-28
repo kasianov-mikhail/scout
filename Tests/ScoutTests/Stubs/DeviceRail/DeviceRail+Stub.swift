@@ -17,8 +17,8 @@ extension DeviceRail {
         sessionID: UUID = UUID(),
         baseDate: Date = Date()
     ) -> DeviceRail {
-        DeviceRail.tree(
-            devices: [.stub(deviceID: deviceID, date: baseDate)],
+        DeviceRail(
+            device: .stub(deviceID: deviceID, date: baseDate),
             installs: [.stub(installID: installID, deviceID: deviceID, date: baseDate)],
             launches: [.stub(launchID: launchID, installID: installID, startDate: baseDate)],
             sessions: [.stub(sessionID: sessionID, launchID: launchID, startDate: baseDate.addingTimeInterval(50))],
@@ -27,6 +27,6 @@ extension DeviceRail {
                 .stub(name: "b", sessionID: sessionID, date: baseDate.addingTimeInterval(200)),
             ],
             crashes: []
-        ).first!
+        )
     }
 }

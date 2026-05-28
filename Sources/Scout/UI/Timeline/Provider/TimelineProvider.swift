@@ -13,7 +13,6 @@ import SwiftUI
 final class TimelineProvider: ObservableObject {
     @Published var result: ProviderResult<DeviceRail>?
     @Published private(set) var pagination: Pagination = .idle
-    @Published private(set) var focus: TimelineFocus?
 
     var pendingInstalls: [UUID] = []
     var sessionCursor: CKQueryOperation.Cursor?
@@ -21,11 +20,10 @@ final class TimelineProvider: ObservableObject {
 
     let sessionsPerBatch = 10
 
-    func start(deviceID: UUID, focus: TimelineFocus? = nil, range: DateInterval? = nil, in database: AppDatabase) async {
+    func start(deviceID: UUID, range: DateInterval? = nil, in database: AppDatabase) async {
         guard pagination != .loading else { return }
         pagination = .loading
 
-        self.focus = focus
         self.range = range
 
         do {
@@ -34,31 +32,19 @@ final class TimelineProvider: ObservableObject {
 
             result = rail.map(ProviderResult.success)
 
-            let sortedInstallIDs =
-                (rail?.installs ?? [])
+            pendingInstalls =
+                rail?
+                .installs
                 .map(\.install)
-                .sorted {
-                    ($0.date ?? .distantPast) > ($1.date ?? .distantPast)
-                }
-                .compactMap(\.installID)
+                .sorted(byDate: \.date, ascending: false)
+                .compactMap(\.installID) ?? []
 
-            pendingInstalls = reorderForFocus(sortedInstallIDs, focus: focus)
             sessionCursor = nil
             pagination = pendingInstalls.isEmpty ? .exhausted : .idle
         } catch {
             result = .failure(error)
             pagination = .idle
         }
-    }
-
-    private func reorderForFocus(_ installs: [UUID], focus: TimelineFocus?) -> [UUID] {
-        guard let focusID = focus?.installID, let idx = installs.firstIndex(of: focusID) else {
-            return installs
-        }
-        var reordered = installs
-        reordered.remove(at: idx)
-        reordered.insert(focusID, at: 0)
-        return reordered
     }
 
     func loadMore(in database: AppDatabase) async {

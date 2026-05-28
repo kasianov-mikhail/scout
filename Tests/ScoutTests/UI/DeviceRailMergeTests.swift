@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct RailMergeTests {
+struct DeviceRailMergeTests {
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
     private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
 
@@ -81,8 +81,8 @@ struct RailMergeTests {
         let sessionID = UUID()
         let eventID = CKRecord.ID(recordName: UUID().uuidString)
 
-        let original = DeviceRail.tree(
-            devices: [.stub(deviceID: deviceID)],
+        let original = DeviceRail(
+            device: .stub(deviceID: deviceID),
             installs: [.stub(installID: installID, deviceID: deviceID)],
             launches: [.stub(launchID: launchID, installID: installID)],
             sessions: [.stub(sessionID: sessionID, launchID: launchID)],
@@ -94,7 +94,7 @@ struct RailMergeTests {
                 )
             ],
             crashes: []
-        ).first!
+        )
 
         let replacement = Event(
             name: "new-name", level: nil, date: at(10),

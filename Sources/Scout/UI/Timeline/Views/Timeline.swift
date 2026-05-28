@@ -13,7 +13,7 @@ struct Timeline: View {
     let timeline = Date()
 
     @State private var showLegend = false
-    @State private var expandedRail: Rail?
+    @State private var expandedKind: RailKind?
 
     private var rows: [Row] {
         var result: [Row] = []
@@ -23,13 +23,11 @@ struct Timeline: View {
                 for session in launch.sessions {
                     let events = session.events.map { Item.event($0) }
                     let crashes = session.crashes.map { Item.crash($0) }
-                    let merged = (events + crashes).sorted {
-                        ($0.date ?? .distantPast) < ($1.date ?? .distantPast)
-                    }
+                    let merged = (events + crashes).sorted(byDate: \.date)
 
                     for item in merged {
                         guard let date = item.date else { continue }
-                        let active: Set<Rail> =
+                        let active: Set<RailKind> =
                             item.isCrash
                             ? [.install]
                             : [.install, .launch, .session]
@@ -45,7 +43,7 @@ struct Timeline: View {
     var body: some View {
         VStack(spacing: 0) {
             if showLegend {
-                TimelineLegend(rails: Rail.allCases, expanded: $expandedRail)
+                TimelineLegend(kinds: RailKind.allCases, expanded: $expandedKind)
             }
 
             ScrollView {
@@ -57,19 +55,19 @@ struct Timeline: View {
                             date: row.date,
                             timeline: timeline
                         ) {
-                            ForEach(Rail.allCases, id: \.self) { rail in
+                            ForEach(RailKind.allCases, id: \.self) { kind in
                                 let prev = rows[safe: index - 1]
                                 let next = rows[safe: index + 1]
 
                                 TimelineSegment(
-                                    color: rail.color,
-                                    isActive: row.active.contains(rail),
-                                    prevActive: prev?.active.contains(rail) ?? false,
-                                    nextActive: next?.active.contains(rail) ?? false
+                                    color: kind.color,
+                                    isActive: row.active.contains(kind),
+                                    prevActive: prev?.active.contains(kind) ?? false,
+                                    nextActive: next?.active.contains(kind) ?? false
                                 )
                             }
                         }
-                        Divider().padding(.leading, CGFloat(Rail.allCases.count) * 16 + 8)
+                        Divider().padding(.leading, CGFloat(RailKind.allCases.count) * 16 + 8)
                     }
                 }
                 .padding()
@@ -82,7 +80,7 @@ struct Timeline: View {
                 Button {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                         showLegend.toggle()
-                        if !showLegend { expandedRail = nil }
+                        if !showLegend { expandedKind = nil }
                     }
                 } label: {
                     Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
@@ -97,7 +95,7 @@ extension Timeline {
         let id: CKRecord.ID
         let name: String
         let date: Date
-        let active: Set<Rail>
+        let active: Set<RailKind>
         let isCrash: Bool
     }
 
