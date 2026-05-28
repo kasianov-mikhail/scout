@@ -8,23 +8,16 @@
 import CloudKit
 
 extension DeviceRail {
-    func merged(
-        installs: [Install] = [],
-        launches: [Launch] = [],
-        sessions: [Session] = [],
-        events: [Event] = [],
-        crashes: [Crash] = []
-    ) -> DeviceRail {
+    func merged(installs: [Install] = [], launches: [Launch] = [], sessions: [Session] = [], events: [Event] = [], crashes: [Crash] = []) -> DeviceRail {
         let existing = flattened
-        let trees = DeviceRail.tree(
-            devices: [device],
+        return DeviceRail(
+            device: device,
             installs: dedup(new: installs, old: existing.installs),
             launches: dedup(new: launches, old: existing.launches),
             sessions: dedup(new: sessions, old: existing.sessions),
             events: dedup(new: events, old: existing.events),
             crashes: dedup(new: crashes, old: existing.crashes)
         )
-        return trees.first ?? self
     }
 }
 
@@ -45,17 +38,4 @@ extension DeviceRail {
         let crashes = self.installs.flatMap { $0.launches.flatMap { $0.sessions.flatMap(\.crashes) } }
         return (installs, launches, sessions, events, crashes)
     }
-}
-
-private func dedup<T: Identifiable>(new: [T], old: [T]) -> [T] where T.ID == CKRecord.ID {
-    var seen: Set<CKRecord.ID> = []
-    var result: [T] = []
-    result.reserveCapacity(new.count + old.count)
-    for item in new where seen.insert(item.id).inserted {
-        result.append(item)
-    }
-    for item in old where seen.insert(item.id).inserted {
-        result.append(item)
-    }
-    return result
 }

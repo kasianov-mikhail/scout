@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-enum Rail: CaseIterable, Hashable {
+enum RailKind: CaseIterable, Hashable {
     case install
     case launch
     case session
 }
 
-extension Rail {
+extension RailKind {
     var label: String {
         switch self {
         case .install: "Install"
