@@ -17,15 +17,11 @@ struct RailRoot {
         let installs = try await installs()
         let launches = try await launches()
 
-        return DeviceRail.tree(
-            devices: [device],
+        return DeviceRail(
+            device: device,
             installs: installs,
             launches: launches,
-            sessions: [],
-            events: [],
-            crashes: []
         )
-        .first
     }
 
     private func device() async throws -> Device {

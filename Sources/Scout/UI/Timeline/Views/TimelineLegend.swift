@@ -8,31 +8,31 @@
 import SwiftUI
 
 struct TimelineLegend: View {
-    let rails: [Rail]
-    @Binding var expanded: Rail?
+    let kinds: [RailKind]
+    @Binding var expanded: RailKind?
 
     var body: some View {
         VStack(spacing: 0) {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
-                    ForEach(rails, id: \.self) { rail in
+                    ForEach(kinds, id: \.self) { kind in
                         Button {
                             withAnimation(.easeInOut(duration: 0.18)) {
-                                expanded = (expanded == rail) ? nil : rail
+                                expanded = (expanded == kind) ? nil : kind
                             }
                         } label: {
                             HStack(spacing: 6) {
                                 Circle()
-                                    .fill(rail.color)
+                                    .fill(kind.color)
                                     .frame(width: 8, height: 8)
-                                Text(rail.label)
+                                Text(kind.label)
                                     .font(.system(size: 13))
                                     .foregroundStyle(.primary)
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 5)
                             .background(
-                                Capsule().fill(rail.color.opacity(expanded == rail ? 0.25 : 0.10))
+                                Capsule().fill(kind.color.opacity(expanded == kind ? 0.25 : 0.10))
                             )
                         }
                         .buttonStyle(.plain)

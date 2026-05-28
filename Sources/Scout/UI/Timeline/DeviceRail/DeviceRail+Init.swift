@@ -8,7 +8,7 @@
 import Foundation
 
 extension DeviceRail {
-    static func tree(devices: [Device], installs: [Install], launches: [Launch], sessions: [Session], events: [Event], crashes: [Crash]) -> [DeviceRail] {
+    init(device: Device, installs: [Install], launches: [Launch], sessions: [Session] = [], events: [Event] = [], crashes: [Crash] = []) {
         let installs = Dictionary(grouping: installs, by: \.deviceID)
         let launches = Dictionary(grouping: launches, by: \.installID)
         let sessions = Dictionary(grouping: sessions, by: \.launchID)
@@ -37,17 +37,7 @@ extension DeviceRail {
             )
         }
 
-        return devices.sorted(byDate: \.date).map { device in
-            DeviceRail(
-                device: device,
-                installs: installs[device.deviceID]?.sorted(byDate: \.date).map(installRail) ?? []
-            )
-        }
-    }
-}
-
-extension Array {
-    fileprivate func sorted(byDate keyPath: KeyPath<Element, Date?>) -> [Element] {
-        sorted { ($0[keyPath: keyPath] ?? .distantPast) < ($1[keyPath: keyPath] ?? .distantPast) }
+        self.device = device
+        self.installs = installs[device.deviceID]?.sorted(byDate: \.date).map(installRail) ?? []
     }
 }
