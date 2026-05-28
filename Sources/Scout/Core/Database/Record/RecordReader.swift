@@ -9,10 +9,15 @@ import CloudKit
 
 protocol RecordReader: Sendable {
     func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk
+    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?, limit: Int) async throws -> RecordChunk
     func readMore(from cursor: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk
 }
 
 extension RecordReader {
+    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?, limit: Int) async throws -> RecordChunk {
+        try await read(matching: query, fields: fields)
+    }
+
     func readAll(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> [CKRecord] {
         var chunk = try await read(matching: query, fields: fields)
         while let cursor = chunk.cursor {
@@ -24,12 +29,16 @@ extension RecordReader {
 
 extension CKDatabase: RecordReader {
     func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+        try await read(matching: query, fields: fields, limit: CKQueryOperation.maximumResults)
+    }
+
+    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?, limit: Int) async throws -> RecordChunk {
         try await runner { database in
             try await RecordChunk(
                 results: database.records(
                     matching: query,
                     desiredKeys: fields,
-                    resultsLimit: CKQueryOperation.maximumResults
+                    resultsLimit: limit
                 )
             )
         }
