@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Session: Identifiable {
+struct Session: Identifiable, Hashable {
     let startDate: Date?
     let endDate: Date?
     let id: CKRecord.ID
@@ -16,7 +16,7 @@ struct Session: Identifiable {
     let installID: UUID?
 }
 
-extension Session {
+extension Session: RecordDecodable {
     static let desiredKeys = [
         "start_date",
         "end_date",
@@ -24,9 +24,7 @@ extension Session {
         "launch_id",
         "install_id",
     ]
-}
 
-extension Session: RecordDecodable {
     init(record: CKRecord) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
@@ -34,5 +32,18 @@ extension Session: RecordDecodable {
         sessionID = record["session_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
+    }
+}
+
+extension Session {
+    static func sample(at date: Date) -> Session {
+        Session(
+            startDate: date,
+            endDate: nil,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            sessionID: UUID(),
+            launchID: nil,
+            installID: nil
+        )
     }
 }

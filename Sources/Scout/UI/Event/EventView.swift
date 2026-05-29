@@ -82,7 +82,8 @@ extension EventView {
             uuid: UUID(),
             id: .init(),
             installID: UUID(),
-            sessionID: UUID()
+            sessionID: UUID(),
+            deviceID: UUID()
         )
         EventView(event: event)
     }

@@ -105,6 +105,29 @@ extension EventView {
             ForEach(HistoryFilter.Category.allCases) { category in
                 row(category: category)
             }
+
+            if let deviceID = event.deviceID {
+                timelineRow(deviceID: deviceID)
+            }
+        }
+
+        func timelineRow(deviceID: UUID) -> some View {
+            ZStack {
+                HStack {
+                    Text(verbatim: "Timeline").foregroundStyle(.blue)
+                    Spacer()
+                }
+
+                NavigationLink {
+                    Timeline(deviceID: deviceID)
+                } label: {
+                    EmptyView()
+                }
+                .opacity(0)
+            }
+            .alignmentGuide(.listRowSeparatorTrailing) { dimension in
+                dimension[.trailing]
+            }
         }
 
         func row(category: HistoryFilter.Category) -> some View {

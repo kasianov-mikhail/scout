@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Launch: Identifiable {
+struct Launch: Identifiable, Hashable {
     let startDate: Date?
     let endDate: Date?
     let id: CKRecord.ID
@@ -15,21 +15,31 @@ struct Launch: Identifiable {
     let installID: UUID?
 }
 
-extension Launch {
+extension Launch: RecordDecodable {
     static let desiredKeys = [
         "start_date",
         "end_date",
         "launch_id",
         "install_id",
     ]
-}
 
-extension Launch: RecordDecodable {
     init(record: CKRecord) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
         id = record.recordID
         launchID = record["launch_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
+    }
+}
+
+extension Launch {
+    static func sample(at date: Date) -> Launch {
+        Launch(
+            startDate: date,
+            endDate: nil,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            launchID: UUID(),
+            installID: nil
+        )
     }
 }

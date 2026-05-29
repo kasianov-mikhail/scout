@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Event: Identifiable {
+struct Event: Identifiable, Hashable {
     let name: String
     let level: Level?
     let date: Date?
@@ -16,6 +16,7 @@ struct Event: Identifiable {
     let id: CKRecord.ID
     let installID: UUID?
     let sessionID: UUID?
+    let deviceID: UUID?
 }
 
 extension Event {
@@ -27,6 +28,7 @@ extension Event {
         "uuid",
         "install_id",
         "session_id",
+        "device_id",
     ]
 }
 
@@ -40,5 +42,22 @@ extension Event: RecordDecodable {
         id = record.recordID
         installID = record["install_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
+        deviceID = record["device_id"].flatMap(UUID.init)
+    }
+}
+
+extension Event {
+    static func sample(_ name: String, at date: Date) -> Event {
+        Event(
+            name: name,
+            level: nil,
+            date: date,
+            paramCount: nil,
+            uuid: nil,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            installID: nil,
+            sessionID: nil,
+            deviceID: nil
+        )
     }
 }

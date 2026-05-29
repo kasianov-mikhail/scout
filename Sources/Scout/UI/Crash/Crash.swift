@@ -7,7 +7,7 @@
 
 import CloudKit
 
-struct Crash: Identifiable {
+struct Crash: Identifiable, Hashable {
     let name: String
     let reason: String?
     let stackTrace: [String]
@@ -15,6 +15,7 @@ struct Crash: Identifiable {
     let id: CKRecord.ID
     let installID: UUID?
     let launchID: UUID?
+    let sessionID: UUID?
 }
 
 extension Crash {
@@ -26,6 +27,7 @@ extension Crash {
         "uuid",
         "install_id",
         "launch_id",
+        "session_id",
     ]
 }
 
@@ -37,11 +39,27 @@ extension Crash: RecordDecodable {
         id = record.recordID
         installID = record["install_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
+        sessionID = record["session_id"].flatMap(UUID.init)
 
         if let data = record["stack_trace"] as? Data, let decoded = try? JSONDecoder().decode([String].self, from: data) {
             stackTrace = decoded
         } else {
             stackTrace = []
         }
+    }
+}
+
+extension Crash {
+    static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Crash {
+        Crash(
+            name: name,
+            reason: nil,
+            stackTrace: [],
+            date: date,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            installID: nil,
+            launchID: nil,
+            sessionID: sessionID
+        )
     }
 }

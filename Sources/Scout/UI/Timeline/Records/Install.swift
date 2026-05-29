@@ -7,32 +7,35 @@
 
 import CloudKit
 
-struct Version: Identifiable {
+struct Install: Identifiable, Hashable {
     let date: Date?
-    let appVersion: String?
-    let buildNumber: String?
     let id: CKRecord.ID
-    let launchID: UUID?
     let installID: UUID?
+    let deviceID: UUID?
 }
 
-extension Version {
+extension Install: RecordDecodable {
     static let desiredKeys = [
         "date",
-        "app_version",
-        "build_number",
-        "launch_id",
         "install_id",
+        "device_id",
     ]
-}
 
-extension Version: RecordDecodable {
     init(record: CKRecord) throws {
         date = record["date"]
-        appVersion = record["app_version"]
-        buildNumber = record["build_number"]
         id = record.recordID
-        launchID = record["launch_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
+        deviceID = record["device_id"].flatMap(UUID.init)
+    }
+}
+
+extension Install {
+    static func sample(at date: Date) -> Install {
+        Install(
+            date: date,
+            id: CKRecord.ID(recordName: UUID().uuidString),
+            installID: UUID(),
+            deviceID: nil
+        )
     }
 }
