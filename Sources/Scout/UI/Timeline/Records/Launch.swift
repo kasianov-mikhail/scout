@@ -7,13 +7,6 @@
 
 import CloudKit
 
-struct LaunchRail: Identifiable {
-    let launch: Launch
-    let sessions: [SessionRail]
-
-    var id: CKRecord.ID { launch.id }
-}
-
 struct Launch: Identifiable, Hashable {
     let startDate: Date?
     let endDate: Date?
