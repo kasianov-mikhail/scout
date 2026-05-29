@@ -14,6 +14,7 @@ extension Event {
         name: String = "event",
         sessionID: UUID? = nil,
         installID: UUID? = nil,
+        deviceID: UUID? = nil,
         date: Date? = Date()
     ) -> Event {
         Event(
@@ -24,7 +25,8 @@ extension Event {
             uuid: nil,
             id: .init(recordName: UUID().uuidString),
             installID: installID,
-            sessionID: sessionID
+            sessionID: sessionID,
+            deviceID: deviceID
         )
     }
 }

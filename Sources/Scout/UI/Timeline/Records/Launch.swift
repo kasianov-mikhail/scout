@@ -38,7 +38,7 @@ extension Launch {
             startDate: date,
             endDate: nil,
             id: CKRecord.ID(recordName: UUID().uuidString),
-            launchID: nil,
+            launchID: UUID(),
             installID: nil
         )
     }

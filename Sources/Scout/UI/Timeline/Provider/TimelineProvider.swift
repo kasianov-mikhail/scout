@@ -18,8 +18,11 @@ final class TimelineProvider: ObservableObject {
     var range: DateInterval?
 
     func start(deviceID: UUID, range: DateInterval? = nil, in database: AppDatabase) async {
-        guard case .idle = result else {
+        switch result {
+        case .loading, .paging, .loaded, .exhausted:
             return
+        case .idle, .failure:
+            break
         }
 
         result = .loading
@@ -34,7 +37,7 @@ final class TimelineProvider: ObservableObject {
             sessionCursor = nil
 
             if let rail {
-                result.setRail(rail)
+                result = pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
             } else {
                 result = .idle
             }
@@ -61,15 +64,9 @@ final class TimelineProvider: ObservableObject {
                 pendingInstalls.removeFirst()
                 sessionCursor = nil
             }
-            result.setRail(rail)
+            result = pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
         } catch {
             result = .failure(error)
         }
-    }
-}
-
-extension FeedResult<DeviceRail> {
-    fileprivate mutating func setRail(_ rail: DeviceRail) {
-        self = rail.pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
     }
 }

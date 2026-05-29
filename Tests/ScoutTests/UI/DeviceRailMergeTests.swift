@@ -90,7 +90,7 @@ struct DeviceRailMergeTests {
                 Event(
                     name: "old-name", level: nil, date: at(10),
                     paramCount: nil, uuid: nil, id: eventID,
-                    installID: nil, sessionID: sessionID
+                    installID: nil, sessionID: sessionID, deviceID: nil
                 )
             ],
             crashes: []
@@ -99,7 +99,7 @@ struct DeviceRailMergeTests {
         let replacement = Event(
             name: "new-name", level: nil, date: at(10),
             paramCount: nil, uuid: nil, id: eventID,
-            installID: nil, sessionID: sessionID
+            installID: nil, sessionID: sessionID, deviceID: nil
         )
         let merged = original.merged(events: [replacement])
 
