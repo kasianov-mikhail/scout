@@ -41,7 +41,7 @@ extension Session {
             startDate: date,
             endDate: nil,
             id: CKRecord.ID(recordName: UUID().uuidString),
-            sessionID: nil,
+            sessionID: UUID(),
             launchID: nil,
             installID: nil
         )
