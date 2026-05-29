@@ -44,8 +44,7 @@ struct RailRoot {
             recordType: InstallObject.recordType,
             predicate: range.predicate(field: "device_id", equals: deviceID, dateField: "date")
         )
-        return
-            try await database
+        return try await database
             .readAll(matching: query, fields: nil)
             .map(Install.init)
     }
@@ -55,8 +54,7 @@ struct RailRoot {
             recordType: LaunchObject.recordType,
             predicate: range.predicate(field: "device_id", equals: deviceID, dateField: "start_date")
         )
-        return
-            try await database
+        return try await database
             .readAll(matching: query, fields: nil)
             .map(Launch.init)
     }

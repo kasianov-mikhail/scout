@@ -45,8 +45,7 @@ struct RailPage {
             recordType: EventObject.recordType,
             predicate: range.predicate(sessionIDsIn: sessionIDs, dateField: "date")
         )
-        return
-            try await database
+        return try await database
             .readAll(matching: query, fields: nil)
             .map(Event.init)
     }
