@@ -20,7 +20,7 @@ struct RailRoot {
         return DeviceRail(
             device: device,
             installs: installs,
-            launches: launches,
+            launches: launches
         )
     }
 
