@@ -22,3 +22,9 @@ struct DeviceRail: Identifiable {
             .compactMap(\.installID)
     }
 }
+
+extension DeviceRail {
+    static var sample: DeviceRail {
+        DeviceRail(device: .sample(at: Date().addingTimeInterval(-600)), installs: [.sample])
+    }
+}

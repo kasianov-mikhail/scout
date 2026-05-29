@@ -7,14 +7,6 @@
 
 import CloudKit
 
-struct SessionRail: Identifiable {
-    let session: Session
-    let events: [Event]
-    let crashes: [Crash]
-
-    var id: CKRecord.ID { session.id }
-}
-
 struct Session: Identifiable, Hashable {
     let startDate: Date?
     let endDate: Date?

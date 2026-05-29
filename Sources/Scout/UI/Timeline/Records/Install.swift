@@ -7,13 +7,6 @@
 
 import CloudKit
 
-struct InstallRail: Identifiable {
-    let install: Install
-    let launches: [LaunchRail]
-
-    var id: CKRecord.ID { install.id }
-}
-
 struct Install: Identifiable, Hashable {
     let date: Date?
     let id: CKRecord.ID
