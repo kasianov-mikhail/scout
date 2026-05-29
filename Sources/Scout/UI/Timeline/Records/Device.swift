@@ -7,7 +7,6 @@
 
 import CloudKit
 
-
 struct Device: Identifiable {
     let date: Date?
     let id: CKRecord.ID
