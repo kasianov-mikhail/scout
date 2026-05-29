@@ -34,7 +34,7 @@ extension Install {
         Install(
             date: date,
             id: CKRecord.ID(recordName: UUID().uuidString),
-            installID: nil,
+            installID: UUID(),
             deviceID: nil
         )
     }
