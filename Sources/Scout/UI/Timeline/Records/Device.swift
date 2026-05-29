@@ -7,12 +7,6 @@
 
 import CloudKit
 
-struct DeviceRail: Identifiable {
-    let device: Device
-    let installs: [InstallRail]
-
-    var id: CKRecord.ID { device.id }
-}
 
 struct Device: Identifiable {
     let date: Date?
