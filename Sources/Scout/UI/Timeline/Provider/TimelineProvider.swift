@@ -11,18 +11,18 @@ import SwiftUI
 
 @MainActor
 final class TimelineProvider: ObservableObject {
-    @Published var result: ProviderResult<DeviceRail>?
-    @Published private(set) var pagination: Pagination = .idle
+    @Published private(set) var result: FeedResult<DeviceRail> = .idle
 
     var pendingInstalls: [UUID] = []
     var sessionCursor: CKQueryOperation.Cursor?
     var range: DateInterval?
 
-    let sessionsPerBatch = 10
-
     func start(deviceID: UUID, range: DateInterval? = nil, in database: AppDatabase) async {
-        guard pagination != .loading else { return }
-        pagination = .loading
+        guard case .idle = result else {
+            return
+        }
+
+        result = .loading
 
         self.range = range
 
@@ -30,37 +30,30 @@ final class TimelineProvider: ObservableObject {
             let root = RailRoot(deviceID: deviceID, range: range, database: database)
             let rail = try await root.load()
 
-            result = rail.map(ProviderResult.success)
-
-            pendingInstalls =
-                rail?
-                .installs
-                .map(\.install)
-                .sorted(byDate: \.date, ascending: false)
-                .compactMap(\.installID) ?? []
-
+            pendingInstalls = rail?.pendingInstalls ?? []
             sessionCursor = nil
-            pagination = pendingInstalls.isEmpty ? .exhausted : .idle
+
+            if let rail {
+                result.setRail(rail)
+            } else {
+                result = .idle
+            }
         } catch {
             result = .failure(error)
-            pagination = .idle
         }
     }
 
     func loadMore(in database: AppDatabase) async {
-        guard pagination == .idle, let installID = pendingInstalls.first, case .success(let rail) = result else {
+        guard case .loaded(let rail) = result, let installID = pendingInstalls.first else {
             return
         }
 
-        pagination = .loading
+        result = .paging(rail)
 
         do {
-            let page = RailPage(installID: installID, range: range, cursor: sessionCursor, limit: sessionsPerBatch, database: database)
+            let page = RailPage(installID: installID, range: range, cursor: sessionCursor, database: database)
             let (sessions, events, cursor) = try await page.load()
-
-            if sessions.count > 0 {
-                result = .success(rail.merged(sessions: sessions, events: events))
-            }
+            let rail = rail.merged(sessions: sessions, events: events)
 
             if let cursor {
                 sessionCursor = cursor
@@ -68,10 +61,15 @@ final class TimelineProvider: ObservableObject {
                 pendingInstalls.removeFirst()
                 sessionCursor = nil
             }
-            pagination = pendingInstalls.isEmpty ? .exhausted : .idle
+            result.setRail(rail)
         } catch {
             result = .failure(error)
-            pagination = .idle
         }
+    }
+}
+
+extension FeedResult<DeviceRail> {
+    fileprivate mutating func setRail(_ rail: DeviceRail) {
+        self = rail.pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
     }
 }

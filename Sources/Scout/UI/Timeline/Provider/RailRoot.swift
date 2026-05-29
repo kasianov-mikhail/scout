@@ -20,7 +20,7 @@ struct RailRoot {
         return DeviceRail(
             device: device,
             installs: installs,
-            launches: launches,
+            launches: launches
         )
     }
 
@@ -42,10 +42,9 @@ struct RailRoot {
     private func installs() async throws -> [Install] {
         let query = CKQuery(
             recordType: InstallObject.recordType,
-            predicate: predicate(field: "device_id", equals: deviceID, dateField: "date")
+            predicate: range.predicate(field: "device_id", equals: deviceID, dateField: "date")
         )
-        return
-            try await database
+        return try await database
             .readAll(matching: query, fields: nil)
             .map(Install.init)
     }
@@ -53,23 +52,10 @@ struct RailRoot {
     private func launches() async throws -> [Launch] {
         let query = CKQuery(
             recordType: LaunchObject.recordType,
-            predicate: predicate(field: "device_id", equals: deviceID, dateField: "start_date")
+            predicate: range.predicate(field: "device_id", equals: deviceID, dateField: "start_date")
         )
-        return
-            try await database
+        return try await database
             .readAll(matching: query, fields: nil)
             .map(Launch.init)
-    }
-
-    private func predicate(field: String, equals id: UUID, dateField: String) -> NSPredicate {
-        guard let range else {
-            return NSPredicate(format: "%K == %@", field, id.uuidString)
-        }
-        return NSPredicate(
-            format: "%K == %@ AND %K >= %@ AND %K <= %@",
-            field, id.uuidString,
-            dateField, range.start as NSDate,
-            dateField, range.end as NSDate
-        )
     }
 }
