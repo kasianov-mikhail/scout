@@ -1,5 +1,7 @@
 When pushing new commits to an existing PR, update its title and description to reflect the full scope of changes.
 
+Always create commits using the repository's git `user.name`/`user.email` identity. Never set the author or committer to "Claude <noreply@anthropic.com>" or any other bot identity, and do not add "Co-Authored-By" trailers.
+
 Multi-line doc comments (`///`) must end with a trailing empty `///` line. Single-line doc comments do not need this.
 
 Never remove or rename fields, record types, or index modifiers (`QUERYABLE`/`SEARCHABLE`/`SORTABLE`) in the CloudKit `Schema` file — Production schemas are append-only and `cktool import-schema` will reject removals with `cannot remove field … which exists in active production type …`. To deprecate a field, stop writing it in code but keep its declaration in `Schema`.
