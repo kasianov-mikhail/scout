@@ -9,7 +9,6 @@ import CloudKit
 
 struct RailRoot {
     let deviceID: UUID
-    let range: DateInterval?
     let database: AppDatabase
 
     func load() async throws -> DeviceRail? {
@@ -42,7 +41,7 @@ struct RailRoot {
     private func installs() async throws -> [Install] {
         let query = CKQuery(
             recordType: InstallObject.recordType,
-            predicate: range.predicate(field: "device_id", equals: deviceID, dateField: "date")
+            predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
         )
         return try await database
             .readAll(matching: query, fields: nil)
@@ -52,7 +51,7 @@ struct RailRoot {
     private func launches() async throws -> [Launch] {
         let query = CKQuery(
             recordType: LaunchObject.recordType,
-            predicate: range.predicate(field: "device_id", equals: deviceID, dateField: "start_date")
+            predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
         )
         return try await database
             .readAll(matching: query, fields: nil)
