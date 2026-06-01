@@ -10,6 +10,8 @@ import SwiftUI
 
 struct TimelineList: View {
     let rail: DeviceRail
+    var eventName: String? = nil
+    @Binding var scope: TimelineScope
     var onLoadMore: (() async -> Void)?
     var isPaging = false
 
@@ -41,6 +43,10 @@ struct TimelineList: View {
                     }
                 }
             }
+        }
+
+        if scope == .event, let eventName {
+            return result.filter { $0.name == eventName }
         }
 
         return result
@@ -91,6 +97,16 @@ struct TimelineList: View {
             }
         }
         .toolbar {
+            if eventName != nil {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        scope.toggle()
+                    } label: {
+                        Image(systemName: scope.symbol)
+                    }
+                }
+            }
+
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
@@ -105,6 +121,12 @@ struct TimelineList: View {
     }
 }
 
-#Preview {
-    NavigationView { TimelineList(rail: .sample) }
+#Preview("All") {
+    NavigationView { TimelineList(rail: .sample, scope: .constant(.all)) }
+}
+
+#Preview("Event filter") {
+    NavigationView {
+        TimelineList(rail: .sample, eventName: "ip_lookup", scope: .constant(.event))
+    }
 }

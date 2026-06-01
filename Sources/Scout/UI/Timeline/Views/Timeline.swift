@@ -9,9 +9,11 @@ import SwiftUI
 
 struct Timeline: View {
     let deviceID: UUID
+    var eventName: String? = nil
 
     @Environment(\.database) var database
     @StateObject private var provider = TimelineProvider()
+    @State private var scope: TimelineScope = .event
 
     var body: some View {
         Group {
@@ -21,11 +23,11 @@ struct Timeline: View {
             case .failure(let error):
                 ErrorView(description: Text(verbatim: error.localizedDescription), retry: load)
             case .loaded(let rail):
-                TimelineList(rail: rail, onLoadMore: loadMore)
+                TimelineList(rail: rail, eventName: eventName, scope: $scope, onLoadMore: loadMore)
             case .paging(let rail):
-                TimelineList(rail: rail, isPaging: true)
+                TimelineList(rail: rail, eventName: eventName, scope: $scope, isPaging: true)
             case .exhausted(let rail):
-                TimelineList(rail: rail)
+                TimelineList(rail: rail, eventName: eventName, scope: $scope)
             }
         }
         .navigationTitle(en: "Multi-Rail")
@@ -41,5 +43,22 @@ struct Timeline: View {
 
     private func loadMore() async {
         await provider.loadMore(in: database)
+    }
+}
+
+/// Which events the timeline shows: the originating event by name, or all events.
+///
+enum TimelineScope {
+    case event, all
+
+    var symbol: String {
+        switch self {
+        case .event: "line.3.horizontal.decrease.circle.fill"
+        case .all: "line.3.horizontal.decrease.circle"
+        }
+    }
+
+    mutating func toggle() {
+        self = self == .event ? .all : .event
     }
 }
