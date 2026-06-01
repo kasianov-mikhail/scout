@@ -115,7 +115,7 @@ extension EventView {
                 }
 
                 NavigationLink {
-                    Timeline(deviceID: deviceID, eventName: event.name)
+                    Timeline(deviceID: deviceID, event: event)
                 } label: {
                     EmptyView()
                 }

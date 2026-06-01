@@ -24,12 +24,11 @@ extension DeviceRail {
             .compactMap(\.installID)
     }
 
-    var eventCount: Int {
+    var events: [Event] {
         installs
             .flatMap(\.launches)
             .flatMap(\.sessions)
-            .compactMap(\.events.count)
-            .reduce(0, +)
+            .flatMap(\.events)
     }
 }
 

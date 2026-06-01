@@ -45,7 +45,7 @@ final class TimelineProvider: ObservableObject {
             // briefly publishing an empty `.loaded`/`.paging` over a blank list.
             var feed = try await loadPage(into: rail, in: database)
 
-            while case .loaded(let rail) = feed, rail.eventCount == 0 {
+            while case .loaded(let rail) = feed, rail.events.count == 0 {
                 feed = try await loadPage(into: rail, in: database)
             }
 

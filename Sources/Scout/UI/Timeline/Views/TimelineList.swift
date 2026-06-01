@@ -14,6 +14,7 @@ struct TimelineList: View {
     @Binding var expandedKind: RailKind?
     var onLoadMore: (() async -> Void)?
     var isPaging = false
+    var highlightedID: CKRecord.ID? = nil
 
     let timeline = Date()
 
@@ -72,6 +73,13 @@ struct TimelineList: View {
                                 )
                             }
                         }
+                        .background {
+                            if row.id == highlightedID {
+                                // Bleed past the stack's 16pt inset so the tint spans
+                                // edge to edge, like warning/error rows in EventList.
+                                Color.accentColor.opacity(0.12).padding(.horizontal, -16)
+                            }
+                        }
 
                         if let next = rows[safe: index + 1], sameSection(row, next) {
                             Divider().padding(.leading, CGFloat(RailKind.allCases.count) * 16 + 8)
@@ -86,13 +94,23 @@ struct TimelineList: View {
                         }
                     }
                 }
-                .padding()
+                .padding(16)
             }
         }
     }
 }
 
-#Preview {
+#Preview("Highlighted") {
+    let rail = DeviceRail.sample
+    // Highlight one specific `ip_lookup` instance — the other same-named event stays plain.
+    let event = rail.events.first { $0.name == "ip_lookup" }
+
+    return NavigationView {
+        TimelineList(rail: rail, showLegend: .constant(false), expandedKind: .constant(nil), highlightedID: event?.id)
+    }
+}
+
+#Preview("Plain") {
     NavigationView {
         TimelineList(rail: .sample, showLegend: .constant(false), expandedKind: .constant(nil))
     }
