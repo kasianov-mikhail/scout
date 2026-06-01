@@ -45,10 +45,6 @@ struct TimelineList: View {
             }
         }
 
-        if scope == .event, let eventName {
-            return result.filter { $0.name == eventName }
-        }
-
         return result
     }
 
@@ -102,7 +98,7 @@ struct TimelineList: View {
                     Button {
                         scope.toggle()
                     } label: {
-                        Image(systemName: scope.symbol)
+                        Text(verbatim: scope.title)
                     }
                 }
             }
@@ -121,12 +117,8 @@ struct TimelineList: View {
     }
 }
 
-#Preview("All") {
-    NavigationView { TimelineList(rail: .sample, scope: .constant(.all)) }
-}
-
-#Preview("Event filter") {
+#Preview {
     NavigationView {
-        TimelineList(rail: .sample, eventName: "ip_lookup", scope: .constant(.event))
+        TimelineList(rail: .sample, eventName: "ip_lookup", scope: .constant(.all))
     }
 }

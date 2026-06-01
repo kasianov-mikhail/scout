@@ -9,6 +9,7 @@ import CloudKit
 
 struct RailPage {
     let installID: UUID
+    let eventName: String?
     let cursor: CKQueryOperation.Cursor?
     let database: AppDatabase
 
@@ -40,10 +41,15 @@ struct RailPage {
 
         guard sessionIDs.count > 0 else { return [] }
 
-        let query = CKQuery(
-            recordType: EventObject.recordType,
-            predicate: NSPredicate(format: "session_id IN %@", sessionIDs)
-        )
+        let predicate: NSPredicate =
+            if let eventName {
+                NSPredicate(format: "session_id IN %@ AND name == %@", sessionIDs, eventName)
+            } else {
+                NSPredicate(format: "session_id IN %@", sessionIDs)
+            }
+
+        let query = CKQuery(recordType: EventObject.recordType, predicate: predicate)
+
         return try await database
             .readAll(matching: query, fields: nil)
             .map(Event.init)
