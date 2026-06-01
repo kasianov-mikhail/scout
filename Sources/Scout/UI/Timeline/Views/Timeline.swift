@@ -15,6 +15,10 @@ struct Timeline: View {
     @StateObject private var provider = TimelineProvider()
     @State private var scope: TimelineScope = .event
 
+    private var filter: String? {
+        scope == .event ? eventName : nil
+    }
+
     var body: some View {
         Group {
             switch provider.result {
@@ -33,32 +37,22 @@ struct Timeline: View {
         .navigationTitle(en: "Multi-Rail")
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            await provider.start(deviceID: deviceID, in: database)
+            await provider.start(deviceID: deviceID, eventName: filter, in: database)
+        }
+        .onChange(of: scope) { _ in
+            Task {
+                await provider.reload(deviceID: deviceID, eventName: filter, in: database)
+            }
         }
     }
 
     private func load() {
-        Task { await provider.start(deviceID: deviceID, in: database) }
+        Task {
+            await provider.start(deviceID: deviceID, eventName: filter, in: database)
+        }
     }
 
     private func loadMore() async {
         await provider.loadMore(in: database)
-    }
-}
-
-/// Which events the timeline shows: the originating event by name, or all events.
-///
-enum TimelineScope {
-    case event, all
-
-    var symbol: String {
-        switch self {
-        case .event: "line.3.horizontal.decrease.circle.fill"
-        case .all: "line.3.horizontal.decrease.circle"
-        }
-    }
-
-    mutating func toggle() {
-        self = self == .event ? .all : .event
     }
 }
