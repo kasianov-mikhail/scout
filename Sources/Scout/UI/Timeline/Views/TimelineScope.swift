@@ -7,17 +7,16 @@
 
 /// Which events the timeline shows: the originating event by name, or all events.
 ///
-enum TimelineScope {
-    case event, all
+enum TimelineScope: CaseIterable, Identifiable {
+    case event
+    case all
+
+    var id: Self { self }
 
     var title: String {
         switch self {
         case .event: "Event"
         case .all: "All"
         }
-    }
-
-    mutating func toggle() {
-        self = self == .event ? .all : .event
     }
 }

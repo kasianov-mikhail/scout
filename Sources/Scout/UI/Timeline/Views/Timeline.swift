@@ -40,12 +40,14 @@ struct Timeline: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             if eventName != nil {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        scope.toggle()
-                    } label: {
-                        Text(verbatim: scope.title)
+                ToolbarItem(placement: .principal) {
+                    Picker("", selection: $scope) {
+                        ForEach(TimelineScope.allCases) { scope in
+                            Text(verbatim: scope.title).tag(scope)
+                        }
                     }
+                    .pickerStyle(.segmented)
+                    .frame(width: 160)
                 }
             }
 
