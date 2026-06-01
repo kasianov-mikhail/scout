@@ -9,16 +9,16 @@ import SwiftUI
 
 struct Timeline: View {
     let deviceID: UUID
-    var eventName: String? = nil
+    var event: Event? = nil
 
     @Environment(\.database) var database
     @StateObject private var provider = TimelineProvider()
-    @State private var scope: TimelineScope = .event
+    @State private var scope: TimelineScope = .all
     @State private var showLegend = false
     @State private var expandedKind: RailKind?
 
     private var filter: String? {
-        scope == .event ? eventName : nil
+        scope == .event ? event?.name : nil
     }
 
     var body: some View {
@@ -29,17 +29,17 @@ struct Timeline: View {
             case .failure(let error):
                 ErrorView(description: Text(verbatim: error.localizedDescription), retry: load)
             case .loaded(let rail):
-                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, onLoadMore: loadMore)
+                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, onLoadMore: loadMore, highlightedID: event?.id)
             case .paging(let rail):
-                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, isPaging: true)
+                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, isPaging: true, highlightedID: event?.id)
             case .exhausted(let rail):
-                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind)
+                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, highlightedID: event?.id)
             }
         }
         .navigationTitle(en: "Multi-Rail")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            if eventName != nil {
+            if event != nil {
                 ToolbarItem(placement: .principal) {
                     Picker("", selection: $scope) {
                         ForEach(TimelineScope.allCases) { scope in
