@@ -14,12 +14,22 @@ struct DeviceRail: Identifiable {
     var id: CKRecord.ID {
         device.id
     }
+}
 
+extension DeviceRail {
     var pendingInstalls: [UUID] {
         installs
             .map(\.install)
             .sorted(byDate: \.date, ascending: false)
             .compactMap(\.installID)
+    }
+
+    var eventCount: Int {
+        installs
+            .flatMap(\.launches)
+            .flatMap(\.sessions)
+            .compactMap(\.events.count)
+            .reduce(0, +)
     }
 }
 

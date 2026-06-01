@@ -31,42 +31,59 @@ final class TimelineProvider: ObservableObject {
 
         do {
             let root = RailRoot(deviceID: deviceID, range: range, database: database)
-            let rail = try await root.load()
 
-            pendingInstalls = rail?.pendingInstalls ?? []
+            guard let rail = try await root.load() else {
+                result = .idle
+                return
+            }
+
+            pendingInstalls = rail.pendingInstalls
             sessionCursor = nil
 
-            if let rail {
-                result = pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
-            } else {
-                result = .idle
+            // Fold the first content-bearing page into the initial load so the
+            // centred loader stays up until there are rows to show, rather than
+            // briefly publishing an empty `.loaded`/`.paging` over a blank list.
+            var feed = try await loadPage(into: rail, in: database)
+
+            while case .loaded(let rail) = feed, rail.eventCount == 0 {
+                feed = try await loadPage(into: rail, in: database)
             }
+
+            result = feed
         } catch {
             result = .failure(error)
         }
     }
 
     func loadMore(in database: AppDatabase) async {
-        guard case .loaded(let rail) = result, let installID = pendingInstalls.first else {
+        guard case .loaded(let rail) = result else {
             return
         }
 
         result = .paging(rail)
 
         do {
-            let page = RailPage(installID: installID, range: range, cursor: sessionCursor, database: database)
-            let (sessions, events, cursor) = try await page.load()
-            let rail = rail.merged(sessions: sessions, events: events)
-
-            if let cursor {
-                sessionCursor = cursor
-            } else {
-                pendingInstalls.removeFirst()
-                sessionCursor = nil
-            }
-            result = pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
+            result = try await loadPage(into: rail, in: database)
         } catch {
             result = .failure(error)
         }
+    }
+
+    private func loadPage(into rail: DeviceRail, in database: AppDatabase) async throws -> FeedResult<DeviceRail> {
+        guard let installID = pendingInstalls.first else {
+            return .exhausted(rail)
+        }
+
+        let page = RailPage(installID: installID, range: range, cursor: sessionCursor, database: database)
+        let (sessions, events, cursor) = try await page.load()
+        let rail = rail.merged(sessions: sessions, events: events)
+
+        if let cursor {
+            sessionCursor = cursor
+        } else {
+            pendingInstalls.removeFirst()
+            sessionCursor = nil
+        }
+        return pendingInstalls.isEmpty ? .exhausted(rail) : .loaded(rail)
     }
 }
