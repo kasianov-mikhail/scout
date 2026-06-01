@@ -15,9 +15,8 @@ final class TimelineProvider: ObservableObject {
 
     var pendingInstalls: [UUID] = []
     var sessionCursor: CKQueryOperation.Cursor?
-    var range: DateInterval?
 
-    func start(deviceID: UUID, range: DateInterval? = nil, in database: AppDatabase) async {
+    func start(deviceID: UUID, in database: AppDatabase) async {
         switch result {
         case .loading, .paging, .loaded, .exhausted:
             return
@@ -27,10 +26,8 @@ final class TimelineProvider: ObservableObject {
 
         result = .loading
 
-        self.range = range
-
         do {
-            let root = RailRoot(deviceID: deviceID, range: range, database: database)
+            let root = RailRoot(deviceID: deviceID, database: database)
 
             guard let rail = try await root.load() else {
                 result = .idle
@@ -74,7 +71,7 @@ final class TimelineProvider: ObservableObject {
             return .exhausted(rail)
         }
 
-        let page = RailPage(installID: installID, range: range, cursor: sessionCursor, database: database)
+        let page = RailPage(installID: installID, cursor: sessionCursor, database: database)
         let (sessions, events, cursor) = try await page.load()
         let rail = rail.merged(sessions: sessions, events: events)
 

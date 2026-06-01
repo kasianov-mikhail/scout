@@ -9,7 +9,6 @@ import CloudKit
 
 struct RailPage {
     let installID: UUID
-    let range: DateInterval?
     let cursor: CKQueryOperation.Cursor?
     let database: AppDatabase
 
@@ -28,7 +27,7 @@ struct RailPage {
 
         let query = CKQuery(
             recordType: SessionObject.recordType,
-            predicate: range.predicate(field: "install_id", equals: installID, dateField: "start_date")
+            predicate: NSPredicate(format: "install_id == %@", installID.uuidString)
         )
         query.sortDescriptors = [
             NSSortDescriptor(key: "start_date", ascending: false)
@@ -43,24 +42,10 @@ struct RailPage {
 
         let query = CKQuery(
             recordType: EventObject.recordType,
-            predicate: range.predicate(sessionIDsIn: sessionIDs, dateField: "date")
+            predicate: NSPredicate(format: "session_id IN %@", sessionIDs)
         )
         return try await database
             .readAll(matching: query, fields: nil)
             .map(Event.init)
-    }
-}
-
-extension Optional where Wrapped == DateInterval {
-    fileprivate func predicate(sessionIDsIn sessionIDs: [String], dateField: String) -> NSPredicate {
-        guard let range = self else {
-            return NSPredicate(format: "session_id IN %@", sessionIDs)
-        }
-        return NSPredicate(
-            format: "session_id IN %@ AND %K >= %@ AND %K <= %@",
-            sessionIDs,
-            dateField, range.start as NSDate,
-            dateField, range.end as NSDate
-        )
     }
 }
