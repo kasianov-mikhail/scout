@@ -10,15 +10,12 @@ import SwiftUI
 
 struct TimelineList: View {
     let rail: DeviceRail
-    var eventName: String? = nil
-    @Binding var scope: TimelineScope
+    @Binding var showLegend: Bool
+    @Binding var expandedKind: RailKind?
     var onLoadMore: (() async -> Void)?
     var isPaging = false
 
     let timeline = Date()
-
-    @State private var showLegend = false
-    @State private var expandedKind: RailKind?
 
     private var rows: [TimelineItem] {
         var result: [TimelineItem] = []
@@ -92,33 +89,11 @@ struct TimelineList: View {
                 .padding()
             }
         }
-        .toolbar {
-            if eventName != nil {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        scope.toggle()
-                    } label: {
-                        Text(verbatim: scope.title)
-                    }
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                        showLegend.toggle()
-                        if !showLegend { expandedKind = nil }
-                    }
-                } label: {
-                    Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
-                }
-            }
-        }
     }
 }
 
 #Preview {
     NavigationView {
-        TimelineList(rail: .sample, eventName: "ip_lookup", scope: .constant(.all))
+        TimelineList(rail: .sample, showLegend: .constant(false), expandedKind: .constant(nil))
     }
 }

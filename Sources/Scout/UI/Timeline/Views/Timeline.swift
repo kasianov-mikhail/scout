@@ -14,6 +14,8 @@ struct Timeline: View {
     @Environment(\.database) var database
     @StateObject private var provider = TimelineProvider()
     @State private var scope: TimelineScope = .event
+    @State private var showLegend = false
+    @State private var expandedKind: RailKind?
 
     private var filter: String? {
         scope == .event ? eventName : nil
@@ -27,15 +29,37 @@ struct Timeline: View {
             case .failure(let error):
                 ErrorView(description: Text(verbatim: error.localizedDescription), retry: load)
             case .loaded(let rail):
-                TimelineList(rail: rail, eventName: eventName, scope: $scope, onLoadMore: loadMore)
+                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, onLoadMore: loadMore)
             case .paging(let rail):
-                TimelineList(rail: rail, eventName: eventName, scope: $scope, isPaging: true)
+                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, isPaging: true)
             case .exhausted(let rail):
-                TimelineList(rail: rail, eventName: eventName, scope: $scope)
+                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind)
             }
         }
         .navigationTitle(en: "Multi-Rail")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if eventName != nil {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        scope.toggle()
+                    } label: {
+                        Text(verbatim: scope.title)
+                    }
+                }
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                        showLegend.toggle()
+                        if !showLegend { expandedKind = nil }
+                    }
+                } label: {
+                    Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
+                }
+            }
+        }
         .task {
             await provider.start(deviceID: deviceID, eventName: filter, in: database)
         }
