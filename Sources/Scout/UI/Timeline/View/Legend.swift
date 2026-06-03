@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct TimelineLegend: View {
-    let kinds: [RailKind]
-    @Binding var expanded: RailKind?
+struct Legend: View {
+    let kinds: [LegendKind]
+    @Binding var expanded: LegendKind?
 
     var body: some View {
         VStack(spacing: 0) {

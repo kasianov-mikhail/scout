@@ -7,23 +7,11 @@
 
 import CloudKit
 
-struct RailRoot {
+struct TimelineFeed {
     let deviceID: UUID
     let database: AppDatabase
 
-    func load() async throws -> DeviceRail? {
-        let device = try await device()
-        let installs = try await installs()
-        let launches = try await launches()
-
-        return DeviceRail(
-            device: device,
-            installs: installs,
-            launches: launches
-        )
-    }
-
-    private func device() async throws -> Device {
+    func device() async throws -> Device {
         let query = CKQuery(
             recordType: DeviceObject.recordType,
             predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
@@ -38,22 +26,24 @@ struct RailRoot {
         )
     }
 
-    private func installs() async throws -> [Install] {
+    func installs() async throws -> [Install] {
         let query = CKQuery(
             recordType: InstallObject.recordType,
             predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
         )
-        return try await database
+        return
+            try await database
             .readAll(matching: query, fields: nil)
             .map(Install.init)
     }
 
-    private func launches() async throws -> [Launch] {
+    func launches() async throws -> [Launch] {
         let query = CKQuery(
             recordType: LaunchObject.recordType,
             predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
         )
-        return try await database
+        return
+            try await database
             .readAll(matching: query, fields: nil)
             .map(Launch.init)
     }

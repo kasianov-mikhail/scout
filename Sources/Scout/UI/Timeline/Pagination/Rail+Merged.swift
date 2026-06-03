@@ -7,21 +7,21 @@
 
 import CloudKit
 
-extension DeviceRail {
-    func merged(installs: [Install] = [], launches: [Launch] = [], sessions: [Session] = [], events: [Event] = [], crashes: [Crash] = []) -> DeviceRail {
+extension Rail {
+    func merged(sessions: [Session], events: [Event]) -> Rail {
         let existing = flattened
-        return DeviceRail(
+        return Rail(
             device: device,
-            installs: dedup(new: installs, old: existing.installs),
-            launches: dedup(new: launches, old: existing.launches),
+            installs: existing.installs,
+            launches: existing.launches,
             sessions: dedup(new: sessions, old: existing.sessions),
             events: dedup(new: events, old: existing.events),
-            crashes: dedup(new: crashes, old: existing.crashes)
+            crashes: existing.crashes
         )
     }
 }
 
-extension DeviceRail {
+extension Rail {
     fileprivate typealias Flattened = (
         installs: [Install],
         launches: [Launch],

@@ -8,15 +8,15 @@
 /// Which events the timeline shows: the originating event by name, or all events.
 ///
 enum TimelineScope: CaseIterable, Identifiable {
-    case event
     case all
+    case event
 
     var id: Self { self }
 
     var title: String {
         switch self {
-        case .event: "Event"
         case .all: "All"
+        case .event: "Event"
         }
     }
 }

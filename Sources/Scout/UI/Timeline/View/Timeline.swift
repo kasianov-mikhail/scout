@@ -13,27 +13,20 @@ struct Timeline: View {
 
     @Environment(\.database) var database
     @StateObject private var provider = TimelineProvider()
+
     @State private var scope: TimelineScope = .all
     @State private var showLegend = false
-    @State private var expandedKind: RailKind?
-
-    private var filter: String? {
-        scope == .event ? event?.name : nil
-    }
+    @State private var expandedKind: LegendKind?
 
     var body: some View {
         Group {
             switch provider.result {
-            case .idle, .loading:
+            case nil:
                 ProgressView().frame(maxHeight: .infinity)
             case .failure(let error):
-                ErrorView(description: Text(verbatim: error.localizedDescription), retry: load)
-            case .loaded(let rail):
-                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, onLoadMore: loadMore, highlightedID: event?.id)
-            case .paging(let rail):
-                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, isPaging: true, highlightedID: event?.id)
-            case .exhausted(let rail):
-                TimelineList(rail: rail, showLegend: $showLegend, expandedKind: $expandedKind, highlightedID: event?.id)
+                errorView(for: error)
+            case .success(let rail):
+                list(for: rail)
             }
         }
         .navigationTitle(en: "Multi-Rail")
@@ -62,23 +55,41 @@ struct Timeline: View {
                 }
             }
         }
-        .task {
-            await provider.start(deviceID: deviceID, eventName: filter, in: database)
-        }
+        .task(load)
         .onChange(of: scope) { _ in
-            Task {
-                await provider.reload(deviceID: deviceID, eventName: filter, in: database)
+            Task(operation: load)
+        }
+    }
+
+    private func list(for rail: Rail) -> some View {
+        VStack(spacing: 0) {
+            if showLegend {
+                Legend(kinds: LegendKind.allCases, expanded: $expandedKind)
             }
+            TimelineList(
+                items: TimelineItem.items(from: rail),
+                highlightedID: event?.id,
+                older: { RailPagination(lane: provider.older, result: $provider.result) },
+                newer: { RailPagination(lane: provider.newer, result: $provider.result) }
+            )
         }
     }
 
-    private func load() {
-        Task {
-            await provider.start(deviceID: deviceID, eventName: filter, in: database)
+    private func errorView(for error: Error) -> some View {
+        ErrorView(description: Text(verbatim: error.localizedDescription)) {
+            Task(operation: load)
         }
     }
 
-    private func loadMore() async {
-        await provider.loadMore(in: database)
+    private func load() async {
+        let feed = TimelineFeed(
+            deviceID: deviceID,
+            database: database
+        )
+        await provider.start(
+            feed: feed,
+            anchorEvent: event,
+            eventName: scope == .event ? event?.name : nil,
+        )
     }
 }
