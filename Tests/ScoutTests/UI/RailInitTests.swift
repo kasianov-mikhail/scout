@@ -10,13 +10,13 @@ import Testing
 
 @testable import Scout
 
-struct DeviceRailInitTests {
+struct RailInitTests {
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
     private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
 
     @Test("Device with no children has empty installs")
     func testNoChildren() {
-        let rail = DeviceRail(
+        let rail = Rail(
             device: .stub(deviceID: UUID()),
             installs: [], launches: [], sessions: [], events: [], crashes: []
         )
@@ -30,7 +30,7 @@ struct DeviceRailInitTests {
         let launchID = UUID()
         let sessionID = UUID()
 
-        let rail = DeviceRail(
+        let rail = Rail(
             device: .stub(deviceID: deviceID),
             installs: [.stub(installID: installID, deviceID: deviceID)],
             launches: [.stub(launchID: launchID, installID: installID)],
@@ -54,7 +54,7 @@ struct DeviceRailInitTests {
         let sID1 = UUID()
         let sID2 = UUID()
 
-        let rail = DeviceRail(
+        let rail = Rail(
             device: .stub(deviceID: deviceID),
             installs: [
                 .stub(installID: iID2, deviceID: deviceID, date: at(200)),
@@ -92,7 +92,7 @@ struct DeviceRailInitTests {
         let deviceID = UUID()
         let sessionID = UUID()
 
-        let rail = DeviceRail(
+        let rail = Rail(
             device: .stub(deviceID: deviceID),
             installs: [.stub(deviceID: UUID())],
             launches: [],
@@ -112,7 +112,7 @@ struct DeviceRailInitTests {
         let sessionA = UUID()
         let sessionB = UUID()
 
-        let rail = DeviceRail(
+        let rail = Rail(
             device: .stub(deviceID: deviceID),
             installs: [.stub(installID: installID, deviceID: deviceID)],
             launches: [.stub(launchID: launchID, installID: installID)],

@@ -10,14 +10,14 @@ import Testing
 
 @testable import Scout
 
-struct DeviceRailMergeTests {
+struct RailMergeTests {
     private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
     private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
 
     @Test("Empty merge returns equivalent tree")
     func testEmptyMerge() {
-        let rail = DeviceRail.stub(baseDate: baseDate)
-        let merged = rail.merged()
+        let rail = Rail.stub(baseDate: baseDate)
+        let merged = rail.merged(sessions: [], events: [])
 
         #expect(merged.device.deviceID == rail.device.deviceID)
         #expect(merged.installs.count == rail.installs.count)
@@ -28,10 +28,13 @@ struct DeviceRailMergeTests {
 
     @Test("Adds new event to an existing session")
     func testAddsEvent() {
-        let rail = DeviceRail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: baseDate)
         let sessionID = rail.installs[0].launches[0].sessions[0].session.sessionID!
 
-        let merged = rail.merged(events: [.stub(name: "new-event", sessionID: sessionID, date: at(150))])
+        let merged = rail.merged(
+            sessions: [],
+            events: [.stub(name: "new-event", sessionID: sessionID, date: at(150))]
+        )
 
         let events = merged.installs[0].launches[0].sessions[0].events
         #expect(events.contains { $0.name == "new-event" })
@@ -40,32 +43,24 @@ struct DeviceRailMergeTests {
 
     @Test("Adds new session under an existing launch")
     func testAddsSession() {
-        let rail = DeviceRail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: baseDate)
         let launchID = rail.installs[0].launches[0].launch.launchID!
 
         let newSession = Session.stub(launchID: launchID, startDate: at(900))
-        let merged = rail.merged(sessions: [newSession])
+        let merged = rail.merged(sessions: [newSession], events: [])
 
         let sessions = merged.installs[0].launches[0].sessions
         #expect(sessions.contains { $0.session.sessionID == newSession.sessionID })
         #expect(sessions.count == rail.installs[0].launches[0].sessions.count + 1)
     }
 
-    @Test("Adds new install under the device")
-    func testAddsInstall() {
-        let rail = DeviceRail.stub(baseDate: baseDate)
-        let newInstall = Install.stub(deviceID: rail.device.deviceID, date: at(2000))
-
-        let merged = rail.merged(installs: [newInstall])
-
-        #expect(merged.installs.contains { $0.install.installID == newInstall.installID })
-        #expect(merged.installs.count == rail.installs.count + 1)
-    }
-
     @Test("Drops new items whose parent is not in the existing tree")
     func testDropsOrphans() {
-        let rail = DeviceRail.stub(baseDate: baseDate)
-        let merged = rail.merged(events: [.stub(name: "orphan", sessionID: UUID())])
+        let rail = Rail.stub(baseDate: baseDate)
+        let merged = rail.merged(
+            sessions: [],
+            events: [.stub(name: "orphan", sessionID: UUID())]
+        )
 
         let allEventNames = merged.installs.flatMap {
             $0.launches.flatMap { $0.sessions.flatMap { $0.events.map(\.name) } }
@@ -81,7 +76,7 @@ struct DeviceRailMergeTests {
         let sessionID = UUID()
         let eventID = CKRecord.ID(recordName: UUID().uuidString)
 
-        let original = DeviceRail(
+        let original = Rail(
             device: .stub(deviceID: deviceID),
             installs: [.stub(installID: installID, deviceID: deviceID)],
             launches: [.stub(launchID: launchID, installID: installID)],
@@ -101,7 +96,7 @@ struct DeviceRailMergeTests {
             paramCount: nil, uuid: nil, id: eventID,
             installID: nil, sessionID: sessionID, deviceID: nil
         )
-        let merged = original.merged(events: [replacement])
+        let merged = original.merged(sessions: [], events: [replacement])
 
         let events = merged.installs[0].launches[0].sessions[0].events
         #expect(events.count == 1)
@@ -110,13 +105,16 @@ struct DeviceRailMergeTests {
 
     @Test("Sort order maintained after merge")
     func testSortMaintained() {
-        let rail = DeviceRail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: baseDate)
         let sessionID = rail.installs[0].launches[0].sessions[0].session.sessionID!
         let originalDates = rail.installs[0].launches[0].sessions[0].events.compactMap(\.date)
 
         // Insert an event whose date falls between two existing ones.
         let middle = originalDates[0].addingTimeInterval(1)
-        let merged = rail.merged(events: [.stub(name: "mid", sessionID: sessionID, date: middle)])
+        let merged = rail.merged(
+            sessions: [],
+            events: [.stub(name: "mid", sessionID: sessionID, date: middle)]
+        )
 
         let dates = merged.installs[0].launches[0].sessions[0].events.compactMap(\.date)
         #expect(dates == dates.sorted())

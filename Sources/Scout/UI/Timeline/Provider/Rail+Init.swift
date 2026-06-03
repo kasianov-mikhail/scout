@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension DeviceRail {
+extension Rail {
     init(device: Device, installs: [Install], launches: [Launch], sessions: [Session] = [], events: [Event] = [], crashes: [Crash] = []) {
         let installs = Dictionary(grouping: installs, by: \.deviceID)
         let launches = Dictionary(grouping: launches, by: \.installID)
@@ -15,22 +15,22 @@ extension DeviceRail {
         let events = Dictionary(grouping: events, by: \.sessionID)
         let crashes = Dictionary(grouping: crashes, by: \.sessionID)
 
-        func installRail(_ install: Install) -> InstallRail {
-            InstallRail(
+        func installRoot(_ install: Install) -> InstallRoot {
+            InstallRoot(
                 install: install,
-                launches: launches[install.installID]?.sorted(byDate: \.startDate).map(launchRail) ?? []
+                launches: launches[install.installID]?.sorted(byDate: \.startDate).map(launchRoot) ?? []
             )
         }
 
-        func launchRail(_ launch: Launch) -> LaunchRail {
-            LaunchRail(
+        func launchRoot(_ launch: Launch) -> LaunchRoot {
+            LaunchRoot(
                 launch: launch,
-                sessions: sessions[launch.launchID]?.sorted(byDate: \.startDate).map(sessionRail) ?? []
+                sessions: sessions[launch.launchID]?.sorted(byDate: \.startDate).map(sessionRoot) ?? []
             )
         }
 
-        func sessionRail(_ session: Session) -> SessionRail {
-            SessionRail(
+        func sessionRoot(_ session: Session) -> SessionRoot {
+            SessionRoot(
                 session: session,
                 events: events[session.sessionID]?.sorted(byDate: \.date) ?? [],
                 crashes: crashes[session.sessionID]?.sorted(byDate: \.date) ?? []
@@ -38,6 +38,6 @@ extension DeviceRail {
         }
 
         self.device = device
-        self.installs = installs[device.deviceID]?.sorted(byDate: \.date).map(installRail) ?? []
+        self.installs = installs[device.deviceID]?.sorted(byDate: \.date).map(installRoot) ?? []
     }
 }
