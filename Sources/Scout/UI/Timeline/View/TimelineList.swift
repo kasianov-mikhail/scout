@@ -17,22 +17,7 @@ struct TimelineList<Pagination: View>: View {
 
     let timeline = Date()
 
-    @State private var scrollID: CKRecord.ID?
-
     var body: some View {
-        if #available(iOS 17.0, *) {
-            ScrollView {
-                stack.scrollTargetLayout()
-            }
-            .scrollPosition(id: $scrollID, anchor: .center)
-            .onAppear { scrollID = highlightedID }
-        } else {
-            ScrollView { stack }
-        }
-    }
-
-    @ViewBuilder
-    private var stack: some View {
         LazyVStack(spacing: 0) {
             older()
 
@@ -76,11 +61,13 @@ struct TimelineList<Pagination: View>: View {
 
 #Preview {
     NavigationView {
-        TimelineList(
-            items: TimelineItem.samples,
-            highlightedID: TimelineItem.samples.randomElement()?.id,
-            older: { EmptyView() },
-            newer: { EmptyView() }
-        )
+        ScrollView {
+            TimelineList(
+                items: TimelineItem.samples,
+                highlightedID: TimelineItem.samples.randomElement()?.id,
+                older: { EmptyView() },
+                newer: { EmptyView() }
+            )
+        }
     }
 }
