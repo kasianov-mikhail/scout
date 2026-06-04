@@ -31,15 +31,3 @@ extension Launch: RecordDecodable {
         installID = record["install_id"].flatMap(UUID.init)
     }
 }
-
-extension Launch {
-    static func sample(at date: Date) -> Launch {
-        Launch(
-            startDate: date,
-            endDate: nil,
-            id: CKRecord.ID(recordName: UUID().uuidString),
-            launchID: UUID(),
-            installID: nil
-        )
-    }
-}

@@ -34,16 +34,3 @@ extension Session: RecordDecodable {
         installID = record["install_id"].flatMap(UUID.init)
     }
 }
-
-extension Session {
-    static func sample(at date: Date) -> Session {
-        Session(
-            startDate: date,
-            endDate: nil,
-            id: CKRecord.ID(recordName: UUID().uuidString),
-            sessionID: UUID(),
-            launchID: nil,
-            installID: nil
-        )
-    }
-}

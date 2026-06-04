@@ -28,14 +28,3 @@ extension Install: RecordDecodable {
         deviceID = record["device_id"].flatMap(UUID.init)
     }
 }
-
-extension Install {
-    static func sample(at date: Date) -> Install {
-        Install(
-            date: date,
-            id: CKRecord.ID(recordName: UUID().uuidString),
-            installID: UUID(),
-            deviceID: nil
-        )
-    }
-}

@@ -12,7 +12,6 @@ struct TimelineItem: Identifiable {
     let name: String
     let date: Date
     let active: Set<LegendKind>
-    let isCrash: Bool
     let installID: UUID?
     let launchID: UUID?
     let sessionID: UUID?

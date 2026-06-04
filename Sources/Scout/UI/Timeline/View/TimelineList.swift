@@ -23,7 +23,7 @@ struct TimelineList<Pagination: View>: View {
 
             ForEach(Array(items.enumerated()), id: \.element.id) { index, row in
                 TimelineRow(
-                    color: row.isCrash ? .red : .primary,
+                    color: .primary,
                     name: row.name,
                     date: row.date,
                     timeline: timeline
