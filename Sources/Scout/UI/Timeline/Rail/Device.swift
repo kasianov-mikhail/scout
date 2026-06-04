@@ -25,13 +25,3 @@ extension Device: RecordDecodable {
         deviceID = record["device_id"].flatMap(UUID.init)
     }
 }
-
-extension Device {
-    static func sample(at date: Date) -> Device {
-        Device(
-            date: date,
-            id: CKRecord.ID(recordName: UUID().uuidString),
-            deviceID: nil
-        )
-    }
-}

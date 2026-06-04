@@ -22,7 +22,6 @@ extension TimelineItem {
                                     name: event.name,
                                     date: date,
                                     active: [.install, .launch, .session],
-                                    isCrash: false,
                                     installID: install.install.installID,
                                     launchID: launch.launch.launchID,
                                     sessionID: session.session.sessionID

@@ -21,7 +21,6 @@ extension TimelineItem {
                 name: name,
                 date: start.addingTimeInterval(offset),
                 active: [.install, .launch, .session],
-                isCrash: false,
                 installID: installID,
                 launchID: launchID,
                 sessionID: sessionID
