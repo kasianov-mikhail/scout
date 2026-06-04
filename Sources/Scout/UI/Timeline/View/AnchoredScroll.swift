@@ -39,11 +39,15 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
                 let icon = Image(systemName: "scope")
                     .font(.title3)
                     .padding(12)
-                if #available(iOS 26.0, *) {
-                    icon.glassEffect(.regular.interactive(), in: Circle())
-                } else {
+                #if compiler(>=6.2)
+                    if #available(iOS 26.0, *) {
+                        icon.glassEffect(.regular.interactive(), in: Circle())
+                    } else {
+                        icon.background(Circle().fill(.regularMaterial))
+                    }
+                #else
                     icon.background(Circle().fill(.regularMaterial))
-                }
+                #endif
             }
             .padding(20)
             .transition(.scale.combined(with: .opacity))
