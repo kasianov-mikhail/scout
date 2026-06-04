@@ -12,6 +12,13 @@ struct EventView: View {
     let event: Event
 
     @EnvironmentObject var tint: Tint
+    @StateObject private var param: ParamProvider
+    @State private var isParamPresented = false
+
+    init(event: Event) {
+        self.event = event
+        _param = StateObject(wrappedValue: ParamProvider(recordID: event.id))
+    }
 
     var body: some View {
         let color = event.level?.color
@@ -22,7 +29,8 @@ struct EventView: View {
             if let paramCount = event.paramCount, paramCount > 0 {
                 ParamSection(
                     count: paramCount,
-                    param: ParamProvider(recordID: event.id)
+                    param: param,
+                    isParamPresented: $isParamPresented
                 )
             }
 
@@ -39,6 +47,11 @@ struct EventView: View {
         .toolbarBackground(color?.opacity(0.12) ?? .clear, for: .navigationBar)
         .toolbarBackground(color == nil ? .automatic : .visible, for: .navigationBar)
         .navigationTitle(event.name)
+        .navigationDestination(isPresented: $isParamPresented) {
+            if let items = try? param.result?.get() {
+                ParamList(items: items)
+            }
+        }
     }
 }
 

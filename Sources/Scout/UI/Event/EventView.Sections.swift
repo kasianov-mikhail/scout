@@ -13,24 +13,13 @@ extension EventView {
     struct ParamSection: View {
         let count: Int
 
-        @State private var isParamPresented = false
-
-        @StateObject var param: ParamProvider
+        @ObservedObject var param: ParamProvider
+        @Binding var isParamPresented: Bool
         @Environment(\.database) var database
-
-        init(count: Int, param: ParamProvider) {
-            self.count = count
-            self._param = StateObject(wrappedValue: param)
-        }
 
         var body: some View {
             Header(title: "Params", action: seeAll).task {
                 await param.fetchIfNeeded(in: database)
-            }
-            .navigationDestination(isPresented: $isParamPresented) {
-                if let items = try? param.result?.get() {
-                    ParamList(items: items)
-                }
             }
 
             if let items = try? param.result?.get() {
