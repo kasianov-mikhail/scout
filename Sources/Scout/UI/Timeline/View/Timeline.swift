@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import SwiftUI
 
 struct Timeline: View {
@@ -72,6 +73,7 @@ struct Timeline: View {
                 older: { RailPagination(lane: provider.older, result: $provider.result) },
                 newer: { RailPagination(lane: provider.newer, result: $provider.result) }
             )
+            .anchoredScroll(anchorID: event?.id)
         }
     }
 
