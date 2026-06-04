@@ -91,7 +91,7 @@ struct Timeline: View {
         await provider.start(
             feed: feed,
             anchorEvent: event,
-            eventName: scope == .event ? event?.name : nil,
+            eventName: scope == .event ? event?.name : nil
         )
     }
 }
