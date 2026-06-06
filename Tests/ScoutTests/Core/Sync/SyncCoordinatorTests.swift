@@ -46,14 +46,16 @@ struct SyncCoordinatorTests {
         #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 
-    @Test("Upload falls back to newMatrix after max retries")
-    func testUploadMaxRetryFallback() async throws {
+    @Test("Upload gives up without writing a duplicate after max retries")
+    func testUploadMaxRetryThrows() async throws {
         for _ in 0..<(coordinator.maxRetry + 1) {
             database.writeErrors.append(createMergeError())
         }
-        try await coordinator.upload()
 
-        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
+        await #expect(throws: CKError.self) {
+            try await coordinator.upload()
+        }
+        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 0)
     }
 }
 

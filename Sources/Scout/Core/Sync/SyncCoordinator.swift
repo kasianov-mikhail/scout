@@ -35,7 +35,10 @@ extension SyncCoordinator {
             try await database.write(record: snapshot.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
             if retry > maxRetry {
-                try await upload(snapshot: matrix, retry: 1)
+                // Give up instead of writing `matrix`: it has no backing
+                // CKRecord, so a write would mint a fresh recordID and create a
+                // duplicate for this bucket. Stay unsynced and retry next cycle.
+                throw error
             } else if let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
                 try await upload(snapshot: try Matrix(record: serverRecord) + matrix, retry: retry + 1)
             }
