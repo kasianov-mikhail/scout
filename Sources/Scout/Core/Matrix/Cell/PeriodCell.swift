@@ -22,17 +22,17 @@ extension PeriodCell: CellProtocol {
         "cell_\(period.rawValue)_\((day + 1).leadingZero)"
     }
 
-    init(key: String, value: T) {
+    init(key: String, value: T) throws {
         let parts = key.components(separatedBy: "_")
 
         guard parts.count == 3 else {
-            fatalError("Invalid key format")
+            throw CellKeyError.malformed(key)
         }
         guard let period = ActivityPeriod(rawValue: String(parts[1])) else {
-            fatalError("Invalid period")
+            throw CellKeyError.invalidComponent(field: "period", value: parts[1])
         }
         guard let day = Int(parts[2]) else {
-            fatalError("Invalid day")
+            throw CellKeyError.invalidComponent(field: "day", value: parts[2])
         }
 
         self.init(period: period, day: day - 1, value: value)

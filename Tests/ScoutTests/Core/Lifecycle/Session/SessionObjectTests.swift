@@ -24,7 +24,7 @@ struct SessionObjectTests {
             .stub(date: week.addingHour(), synced: false, in: context),
         ]
 
-        let cells = SessionObject.parse(of: batch)
+        let cells = try SessionObject.parse(of: batch)
 
         #expect(
             cells.sorted() == [

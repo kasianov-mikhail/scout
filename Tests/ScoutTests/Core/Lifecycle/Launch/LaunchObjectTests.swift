@@ -24,7 +24,7 @@ struct LaunchObjectTests {
             .stub(date: week.addingHour(), synced: false, in: context),
         ]
 
-        let cells = LaunchObject.parse(of: batch)
+        let cells = try LaunchObject.parse(of: batch)
 
         #expect(
             cells.sorted() == [

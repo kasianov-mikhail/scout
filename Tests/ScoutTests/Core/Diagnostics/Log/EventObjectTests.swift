@@ -24,7 +24,7 @@ struct EventObjectTests {
             .stub(name: "name", date: date.addingHour(), in: context),
         ]
 
-        let cells = EventObject.parse(of: batch)
+        let cells = try EventObject.parse(of: batch)
 
         let counts = cells.map(\.value)
         #expect(counts.contains(2))

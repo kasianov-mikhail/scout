@@ -24,7 +24,7 @@ struct VersionObjectTests {
             .stub(date: week.addingHour(), synced: false, in: context),
         ]
 
-        let cells = VersionObject.parse(of: batch)
+        let cells = try VersionObject.parse(of: batch)
 
         #expect(
             cells.sorted() == [

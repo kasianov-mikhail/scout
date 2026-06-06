@@ -32,7 +32,7 @@ extension Matrix: CKInitializable {
             throw MapError.invalidCells
         }
 
-        self.cells = cellDict.map(T.init)
+        self.cells = try cellDict.map(T.init)
     }
 }
 

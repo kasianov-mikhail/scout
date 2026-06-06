@@ -33,27 +33,40 @@ struct PeriodCellTests {
     // MARK: - Key Parsing
 
     @Test("Init from key parses correctly")
-    func initFromKey() {
-        let cell = PeriodCell<Int>(key: "cell_d_05", value: 10)
+    func initFromKey() throws {
+        let cell = try PeriodCell<Int>(key: "cell_d_05", value: 10)
         #expect(cell.period == .daily)
         #expect(cell.day == 4)
         #expect(cell.value == 10)
     }
 
     @Test("Init from key parses weekly")
-    func initFromKeyWeekly() {
-        let cell = PeriodCell<Int>(key: "cell_w_01", value: 3)
+    func initFromKeyWeekly() throws {
+        let cell = try PeriodCell<Int>(key: "cell_w_01", value: 3)
         #expect(cell.period == .weekly)
         #expect(cell.day == 0)
         #expect(cell.value == 3)
     }
 
+    @Test("Init throws on a malformed key instead of crashing")
+    func initRejectsMalformedKey() {
+        #expect(throws: CellKeyError.self) {
+            try PeriodCell<Int>(key: "cell_d", value: 1)
+        }
+        #expect(throws: CellKeyError.self) {
+            try PeriodCell<Int>(key: "cell_x_01", value: 1)
+        }
+        #expect(throws: CellKeyError.self) {
+            try PeriodCell<Int>(key: "cell_d_zz", value: 1)
+        }
+    }
+
     // MARK: - Round-trip
 
     @Test("Key round-trips through init")
-    func keyRoundTrip() {
+    func keyRoundTrip() throws {
         let original = PeriodCell<Int>(period: .monthly, day: 6, value: 42)
-        let restored = PeriodCell<Int>(key: original.key, value: original.value)
+        let restored = try PeriodCell<Int>(key: original.key, value: original.value)
 
         #expect(restored.period == original.period)
         #expect(restored.day == original.day)

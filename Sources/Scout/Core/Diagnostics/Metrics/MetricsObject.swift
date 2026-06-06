@@ -33,12 +33,12 @@ class MetricsObject: TrackedObject {
             date: week,
             name: name,
             category: telemetry,
-            cells: T.parse(of: batch)
+            cells: try T.parse(of: batch)
         )
     }
 
-    static func parse<T: MetricsValued>(of batch: [T]) -> [T.Cell] {
-        batch.grouped(by: \.hour).mapValues { items in
+    static func parse<T: MetricsValued>(of batch: [T]) throws -> [T.Cell] {
+        try batch.grouped(by: \.hour).mapValues { items in
             items.reduce(.zero) { $0 + $1.value }
         }
         .map(T.Cell.init)

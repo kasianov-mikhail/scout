@@ -28,7 +28,7 @@ class NamedObject: TrackedObject, MatrixBatch {
             recordType: Int.recordType,
             date: week,
             name: name,
-            cells: parse(of: batch)
+            cells: try parse(of: batch)
         )
     }
 }
