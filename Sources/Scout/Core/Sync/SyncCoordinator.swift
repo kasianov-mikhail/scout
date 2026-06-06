@@ -22,6 +22,9 @@ extension SyncCoordinator {
 }
 
 extension SyncCoordinator {
+    /// Merges into the bucket's existing record when one exists,
+    /// otherwise creates a new one.
+    ///
     func upload() async throws {
         if let existing = try await matrix.lookupExisting(in: database) {
             try await upload(snapshot: matrix + existing)
@@ -30,14 +33,21 @@ extension SyncCoordinator {
         }
     }
 
+    /// On a `serverRecordChanged` conflict, merges the server's counts with
+    /// ours and retries; once retries run out, or no server record is
+    /// provided, writes a new matrix instead.
+    ///
+    /// Duplicates are harmless — reads sum a bucket's records via
+    /// `mergeDuplicates`.
+    ///
     func upload(snapshot: Matrix<T>, retry: Int = 1) async throws {
         do {
             try await database.write(record: snapshot.toRecord)
         } catch let error as CKError where error.code == CKError.serverRecordChanged {
-            if retry > maxRetry {
-                try await upload(snapshot: matrix, retry: 1)
-            } else if let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
+            if retry <= maxRetry, let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
                 try await upload(snapshot: try Matrix(record: serverRecord) + matrix, retry: retry + 1)
+            } else {
+                try await upload(snapshot: matrix, retry: 1)
             }
         }
     }
