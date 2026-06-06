@@ -34,7 +34,7 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
     private var recenterButton: some View {
         if let anchorID, scrollID != anchorID {
             Button {
-                withAnimation { scrollID = anchorID }
+                scrollID = anchorID
             } label: {
                 let icon = Image(systemName: "scope")
                     .font(.title3)
