@@ -29,7 +29,7 @@ extension GridBatch where Self: DateObject {
             recordType: Int.recordType,
             date: week,
             name: Self.recordType,
-            cells: parse(of: batch)
+            cells: try parse(of: batch)
         )
     }
 }

@@ -14,7 +14,27 @@ protocol CellProtocol: Combining, Sendable, Equatable {
     var key: String { get }
     var value: Scalar { get }
 
-    init(key: String, value: Scalar)
+    init(key: String, value: Scalar) throws
+}
+
+/// An unparseable cell key from a CloudKit record.
+///
+/// Thrown for a malformed or hostile record in the public database, and
+/// surfaced through `Matrix.init(record:)` so callers can reject the record
+/// instead of crashing the host app.
+///
+enum CellKeyError: LocalizedError {
+    case malformed(String)
+    case invalidComponent(field: String, value: String)
+
+    var errorDescription: String? {
+        switch self {
+        case .malformed(let key):
+            "Malformed cell key: \(key)"
+        case .invalidComponent(let field, let value):
+            "Invalid \(field) in cell key: \(value)"
+        }
+    }
 }
 
 extension Int {

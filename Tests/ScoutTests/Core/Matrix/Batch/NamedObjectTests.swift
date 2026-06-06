@@ -24,7 +24,7 @@ struct NamedObjectTests {
             try .stub(name: "crash", date: date.addingHour(), in: context),
         ]
 
-        let cells = NamedObject.parse(of: batch)
+        let cells = try NamedObject.parse(of: batch)
 
         #expect(cells.count == 2)
         #expect(cells.map(\.value).reduce(0, +) == 3)

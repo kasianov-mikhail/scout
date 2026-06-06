@@ -31,7 +31,7 @@ struct MatrixPropertyError: LocalizedError {
 
 /// Groups records by hour-of-week and counts them into `GridCell<Int>`.
 extension MatrixBatch where Self: DateObject, Cell == GridCell<Int> {
-    static func parse(of batch: [Self]) -> [GridCell<Int>] {
-        batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
+    static func parse(of batch: [Self]) throws -> [GridCell<Int>] {
+        try batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
     }
 }

@@ -22,17 +22,17 @@ extension GridCell: CellProtocol {
         "cell_\(row)_\(column.leadingZero)"
     }
 
-    init(key: String, value: T) {
+    init(key: String, value: T) throws {
         let parts = key.components(separatedBy: "_")
 
         guard parts.count == 3 else {
-            fatalError("Invalid key format")
+            throw CellKeyError.malformed(key)
         }
         guard let row = Int(parts[1]) else {
-            fatalError("Invalid row index")
+            throw CellKeyError.invalidComponent(field: "row", value: parts[1])
         }
         guard let column = Int(parts[2]) else {
-            fatalError("Invalid column index")
+            throw CellKeyError.invalidComponent(field: "column", value: parts[2])
         }
 
         self.init(row: row, column: column, value: value)

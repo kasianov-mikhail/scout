@@ -16,3 +16,14 @@ import Testing
 
     #expect(c == GridCell(row: 1, column: 2, value: 7))
 }
+
+@Test("GridCell parses a valid key") func testValidKey() throws {
+    let cell = try GridCell<Int>(key: "cell_1_02", value: 5)
+    #expect(cell == GridCell(row: 1, column: 2, value: 5))
+}
+
+@Test("GridCell throws on a malformed key instead of crashing") func testMalformedKey() {
+    #expect(throws: CellKeyError.self) { try GridCell<Int>(key: "cell_1", value: 5) }
+    #expect(throws: CellKeyError.self) { try GridCell<Int>(key: "cell_x_02", value: 5) }
+    #expect(throws: CellKeyError.self) { try GridCell<Int>(key: "cell_1_zz", value: 5) }
+}
