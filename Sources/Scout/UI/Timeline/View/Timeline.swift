@@ -63,17 +63,19 @@ struct Timeline: View {
     }
 
     private func list(for rail: Rail) -> some View {
-        VStack(spacing: 0) {
+        let items = TimelineItem.items(from: rail)
+
+        return VStack(spacing: 0) {
             if showLegend {
                 Legend(kinds: LegendKind.allCases, expanded: $expandedKind)
             }
             TimelineList(
-                items: TimelineItem.items(from: rail),
+                items: items,
                 highlightedID: event?.id,
                 older: { RailPagination(lane: provider.older, result: $provider.result) },
                 newer: { RailPagination(lane: provider.newer, result: $provider.result) }
             )
-            .anchoredScroll(anchorID: event?.id)
+            .anchoredScroll(cursor: items.first { $0.id == event?.id })
         }
     }
 
