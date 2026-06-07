@@ -21,12 +21,3 @@ func connected(_ a: TimelineItem?, _ b: TimelineItem?, on kind: LegendKind) -> B
     }
     return groupA == groupB
 }
-
-/// Two rows are in the same section when they share a (non-nil) session.
-///
-func sameSection(_ a: TimelineItem, _ b: TimelineItem) -> Bool {
-    guard let sessionA = a.sessionID, let sessionB = b.sessionID else {
-        return false
-    }
-    return sessionA == sessionB
-}
