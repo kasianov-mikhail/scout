@@ -122,12 +122,10 @@ extension View {
     }
 }
 
-#if DEBUG
-    private struct CursorItem: ScrollCursor {
-        let id: Int
+private struct CursorItem: ScrollCursor {
+    let id: Int
 
-        static func < (lhs: CursorItem, rhs: CursorItem) -> Bool {
-            lhs.id < rhs.id
-        }
+    static func < (lhs: CursorItem, rhs: CursorItem) -> Bool {
+        lhs.id < rhs.id
     }
-#endif
+}
