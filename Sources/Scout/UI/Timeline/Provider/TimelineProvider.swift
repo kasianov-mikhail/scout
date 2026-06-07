@@ -29,7 +29,17 @@ final class TimelineProvider: ObservableObject {
             older.pendingInstalls = split.older
             newer.pendingInstalls = split.newer
 
-            result = .success(rail)
+            // Seed the first chunk of both lanes before showing the list, so the
+            // user goes straight from the loading spinner to events instead of
+            // flashing an empty list while the pagination footers self-load.
+            var seeded = rail
+
+            for lane in [older, newer] where !lane.pendingInstalls.isEmpty {
+                let (sessions, events) = try await lane.loadMore(in: feed.database)
+                seeded = seeded.merged(sessions: sessions, events: events)
+            }
+
+            result = .success(seeded)
         } catch {
             result = .failure(error)
         }
