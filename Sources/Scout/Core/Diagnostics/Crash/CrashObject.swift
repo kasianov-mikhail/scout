@@ -9,19 +9,12 @@ import CloudKit
 import CoreData
 
 @objc(CrashObject)
-final class CrashObject: NamedObject, Syncable {
+final class CrashObject: TrackedObject, Syncable, GridBatch {
     static let recordType = "Crash"
+    @NSManaged var name: String?
     @NSManaged var crashID: UUID
     @NSManaged var reason: String?
     @NSManaged var stackTrace: Data?
-
-    static func group(in context: NSManagedObjectContext) throws -> [CrashObject]? {
-        try batch(in: context, matching: [\.name, \.week])
-    }
-
-    static func matrix(of batch: [CrashObject]) throws -> GridMatrix<Int> {
-        try NamedObject.matrix(of: batch)
-    }
 }
 
 extension CrashObject: CKRepresentable {
