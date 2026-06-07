@@ -10,7 +10,7 @@ Multi-line doc comments (`///`) must end with a trailing empty `///` line. Singl
 
 `guard` statements with multiple conditions or pattern matching (`case .x = y`) should keep the conditions on a single line but expand the `else` block to multiple lines (`else {` / body / `}`). Single-condition simple guards (`guard let x = y else { return }`, `guard !x else { return }`) stay fully inline.
 
-Function/method signatures should be written on a single line, even with many parameters or default values — do not wrap parameters onto separate lines.
+Function/method **signatures** (declarations) should be written on a single line, even with many parameters or default values — do not wrap parameters onto separate lines. This applies to declarations only, not to call sites: a function or initializer **call** with several arguments wraps each argument onto its own line.
 
 # Scout conventions
 
