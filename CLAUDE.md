@@ -6,7 +6,7 @@ Always create commits using the repository's git `user.name`/`user.email` identi
 
 # Swift code style
 
-Multi-line doc comments (`///`) must end with a trailing empty `///` line. Single-line doc comments do not need this.
+Multi-line doc comments (`///`) must end with a trailing empty `///` line, except when they document a single-line property declaration (a stored `let`/`var` written on one line), where the trailing empty `///` is omitted. Single-line doc comments never need it.
 
 `guard` statements with multiple conditions or pattern matching (`case .x = y`) should keep the conditions on a single line but expand the `else` block to multiple lines (`else {` / body / `}`). Single-condition simple guards (`guard let x = y else { return }`, `guard !x else { return }`) stay fully inline.
 
