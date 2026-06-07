@@ -24,3 +24,17 @@ struct TimelineItem: Identifiable {
         }
     }
 }
+
+extension TimelineItem: ScrollCursor {
+    static func < (lhs: TimelineItem, rhs: TimelineItem) -> Bool {
+        lhs.date < rhs.date
+    }
+
+    static func == (lhs: TimelineItem, rhs: TimelineItem) -> Bool {
+        lhs.id == rhs.id
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}

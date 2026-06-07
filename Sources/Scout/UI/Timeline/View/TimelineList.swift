@@ -21,7 +21,7 @@ struct TimelineList<Pagination: View>: View {
         LazyVStack(spacing: 0) {
             older()
 
-            ForEach(Array(items.enumerated()), id: \.element.id) { index, row in
+            ForEach(Array(items.enumerated()), id: \.element) { index, row in
                 TimelineRow(
                     color: .primary,
                     name: row.name,
@@ -55,6 +55,7 @@ struct TimelineList<Pagination: View>: View {
 
             newer()
         }
+        .scrollTargetLayoutIfAvailable()
         .padding(16)
     }
 }
