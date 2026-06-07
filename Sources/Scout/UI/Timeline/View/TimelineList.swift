@@ -48,7 +48,7 @@ struct TimelineList<Pagination: View>: View {
                     }
                 }
 
-                if let next = items[safe: index + 1], sameSection(row, next) {
+                if index < items.count - 1 {
                     Divider().padding(.leading, CGFloat(LegendKind.allCases.count) * 16 + 8)
                 }
             }
