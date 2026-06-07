@@ -89,9 +89,8 @@ extension EventView {
         let event: Event
 
         var body: some View {
-            Header(title: "History")
-
             if let deviceID = event.deviceID {
+                Header(title: "History")
                 timelineRow(deviceID: deviceID)
             }
         }
