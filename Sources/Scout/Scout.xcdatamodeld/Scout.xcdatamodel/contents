@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A362" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="NamedObject" syncable="YES" codeGenerationType="none">
+    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
         <attribute name="crashID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
         <attribute name="reason" optional="YES" attributeType="String"/>
         <attribute name="stackTrace" optional="YES" attributeType="Binary"/>
     </entity>
