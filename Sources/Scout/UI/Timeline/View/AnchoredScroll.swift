@@ -23,6 +23,11 @@ struct AnchoredScroll<Cursor: ScrollCursor>: ViewModifier {
 
     @State private var scroll: Cursor?
 
+    init(cursor: Cursor?) {
+        self.cursor = cursor
+        _scroll = State(initialValue: cursor)
+    }
+
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
             ScrollView {
@@ -97,7 +102,7 @@ extension View {
 
 @available(iOS 17.0, *)
 #Preview {
-    @Previewable @State var cursor = CursorItem(id: 5)
+    let cursor = CursorItem(id: 20)
 
     let items = (0..<40).map(CursorItem.init)
 
@@ -116,10 +121,6 @@ extension View {
     }
     .scrollTargetLayoutIfAvailable()
     .anchoredScroll(cursor: cursor)
-    .task {
-        await Task.yield()
-        cursor = CursorItem(id: 30)
-    }
 }
 
 private struct CursorItem: ScrollCursor {
