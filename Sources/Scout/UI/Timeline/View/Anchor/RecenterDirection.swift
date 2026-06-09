@@ -23,7 +23,7 @@ enum RecenterDirection {
 
     var symbol: String {
         switch self {
-        case .up: 
+        case .up:
             "chevron.up"
         case .down:
             "chevron.down"
