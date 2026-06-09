@@ -10,9 +10,11 @@ import SwiftUI
 struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let id: ID?
 
-    /// The anchor's position in the list (rows above it). It only changes when
-    /// pagination inserts rows above the anchor, which is exactly when the
-    /// anchor needs re-centering to absorb the layout shift.
+    /// The anchor's position in the list (rows above it).
+    ///
+    /// It only changes when pagination inserts rows above the anchor, which is
+    /// exactly when the anchor needs re-centering to absorb the layout shift.
+    ///
     let revision: Int
 
     @State private var anchorFrame: CGRect?
