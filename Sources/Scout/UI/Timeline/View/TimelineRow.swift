@@ -7,33 +7,74 @@
 
 import SwiftUI
 
-struct TimelineRow<Rails: View>: View {
-    let color: Color
-    let name: String
-    let date: Date
+struct TimelineRow: View {
     let timeline: Date
-
-    @ViewBuilder let rails: () -> Rails
+    let highlighted: Bool
+    let row: TimelineItem
+    let prev: TimelineItem?
+    let next: TimelineItem?
+    let showsSeparator: Bool
 
     var body: some View {
-        HStack(spacing: 4) {
-            rails()
+        VStack(spacing: 0) {
+            HStack(spacing: 4) {
+                ForEach(LegendKind.allCases, id: \.self) { kind in
+                    TimelineSegment(kind: kind, row: row, prev: prev, next: next)
+                }
 
-            Text(name)
-                .font(.system(size: 17))
-                .lineLimit(1)
-                .monospaced()
-                .foregroundStyle(color)
-                .padding(.leading, 8)
+                Text(row.name)
+                    .font(.system(size: 17))
+                    .lineLimit(1)
+                    .monospaced()
+                    .padding(.leading, 8)
 
-            Spacer()
+                Spacer()
 
-            TimelineView(.periodic(from: timeline, by: 1)) { _ in
-                Text(date.relativeString)
+                TimelineView(.periodic(from: timeline, by: 1)) { _ in
+                    Text(row.date.relativeString)
+                }
+                .font(.system(size: 15))
+                .foregroundStyle(.gray)
             }
-            .font(.system(size: 15))
-            .foregroundStyle(.gray)
+            .frame(height: 43)
+            .padding(.horizontal, 16)
+            .background {
+                if highlighted {
+                    Color.accentColor.opacity(0.12)
+                }
+            }
+
+            if showsSeparator {
+                Divider()
+                    .padding(.leading, 16 + CGFloat(LegendKind.allCases.count) * 16 + 20)
+                    .padding(.trailing, 16)
+            }
         }
-        .frame(height: 43)
+    }
+}
+
+extension TimelineRow {
+    init(items: [TimelineItem], index: Int, timeline: Date, highlighted: Bool) {
+        self.timeline = timeline
+        self.highlighted = highlighted
+        self.row = items[index]
+        self.prev = items[safe: index - 1]
+        self.next = items[safe: index + 1]
+        self.showsSeparator = index < items.count - 1
+    }
+}
+
+#Preview {
+    let items = TimelineItem.samples
+
+    VStack(spacing: 0) {
+        ForEach(Array(items.enumerated()), id: \.element) { index, row in
+            TimelineRow(
+                items: items,
+                index: index,
+                timeline: Date(),
+                highlighted: index == 1
+            )
+        }
     }
 }
