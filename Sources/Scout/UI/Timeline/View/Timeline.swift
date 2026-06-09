@@ -64,7 +64,7 @@ struct Timeline: View {
 
     private func list(for rail: Rail) -> some View {
         let items = TimelineItem.items(from: rail)
-        let anchorIndex = items.firstIndex { $0.id == event?.id }
+        let anchorIndex = event.flatMap { event in items.firstIndex { $0.id == event.id } }
 
         // The legend floats over the top of the list instead of sitting above
         // it in a `VStack`: pushing the scroll view down resizes its viewport,
