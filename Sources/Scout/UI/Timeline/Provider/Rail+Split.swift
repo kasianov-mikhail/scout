@@ -20,7 +20,12 @@ extension Rail {
         }
 
         let older = sorted[0...anchorIndex].reversed().compactMap(\.installID)
-        let newer = sorted[(anchorIndex + 1)...].compactMap(\.installID)
+
+        // With an anchor date the lanes split the anchor install between them
+        // (`start_date` bound in `Session.fetchChunk` keeps them disjoint);
+        // without one the whole anchor install stays in the older lane.
+        let newerStart = anchor?.date == nil ? anchorIndex + 1 : anchorIndex
+        let newer = sorted[newerStart...].compactMap(\.installID)
 
         return (Array(older), Array(newer))
     }

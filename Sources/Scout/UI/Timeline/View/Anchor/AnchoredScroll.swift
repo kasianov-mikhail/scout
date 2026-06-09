@@ -10,9 +10,13 @@ import SwiftUI
 struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let id: ID?
 
+    /// The anchor's position in the list (rows above it). It only changes when
+    /// pagination inserts rows above the anchor, which is exactly when the
+    /// anchor needs re-centering to absorb the layout shift.
+    let revision: Int
+
     @State private var anchorFrame: CGRect?
     @State private var isCentered = false
-    @State private var isUserDriven = false
 
     func body(content: Content) -> some View {
         GeometryReader { proxy in
@@ -29,36 +33,39 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
                         }
                     }
                 }
-                .simultaneousGesture(
-                    DragGesture().onChanged { _ in
-                        isUserDriven = true
-                    }
-                )
                 .onAppear {
                     center(with: proxy)
+                }
+                .onChange(of: revision) { _ in
+                    // Rows were prepended above the anchor. While the anchor is
+                    // still on screen, re-center so the inserted chunk doesn't
+                    // push it away; once the user has scrolled it off, leave
+                    // the list alone.
+                    if let anchorFrame, RecenterDirection(frame: anchorFrame, viewport: viewport) == nil {
+                        center(with: proxy)
+                    }
                 }
                 .onPreferenceChange(AnchorFrameKey.self) { frame in
                     guard let frame else { return }
 
                     anchorFrame = frame
 
-                    // Until the user scrolls on their own, keep the anchor
-                    // pinned to the center: the first pass lands the initial
-                    // centering once the anchor row is actually laid out (the
-                    // `onAppear` scroll only aims at estimated lazy-row
-                    // positions), and subsequent passes absorb layout shifts
-                    // from pagination chunks prepending rows above the anchor.
-                    if !isUserDriven {
+                    // The first reported frame means the anchor row has just
+                    // been laid out; the `onAppear` scroll only aimed at
+                    // estimated lazy-row positions, so finish the initial
+                    // centering with one precise pass.
+                    if !isCentered {
                         isCentered = true
                         center(with: proxy)
                     }
                 }
             }
-            // Publish a null viewport until the anchor settles: at the list's
-            // initial offset the top pagination footer momentarily sits inside
-            // the real viewport and would otherwise self-load off-screen,
-            // pushing the anchor down.
-            .environment(\.scrollViewport, isCentered || id == nil ? viewport : .null)
+            .environment(\.scrollViewport, viewport)
+            // Footers must not self-load while the list still sits at its
+            // initial offset — the top one is momentarily "visible" there and
+            // would push the anchor away. The flag flips once the anchor lands
+            // (or right away when there is no anchor to land).
+            .environment(\.isScrollSettled, isCentered || id == nil)
         }
     }
 
@@ -70,8 +77,8 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
 }
 
 extension View {
-    func anchoredScroll<ID: Hashable>(id: ID?) -> some View {
-        modifier(AnchoredScroll(id: id))
+    func anchoredScroll<ID: Hashable>(id: ID?, revision: Int = 0) -> some View {
+        modifier(AnchoredScroll(id: id, revision: revision))
     }
 }
 
@@ -85,6 +92,10 @@ struct AnchorFrameKey: PreferenceKey {
 
 extension EnvironmentValues {
     @Entry var scrollViewport: CGRect = .infinite
+
+    /// Whether the anchored scroll has finished its initial positioning;
+    /// pagination footers hold off self-loading until it has.
+    @Entry var isScrollSettled = true
 }
 
 #Preview {
