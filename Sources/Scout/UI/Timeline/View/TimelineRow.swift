@@ -41,6 +41,9 @@ struct TimelineRow: View {
             .background {
                 if highlighted {
                     Color.accentColor.opacity(0.12)
+                    GeometryReader { geo in
+                        Color.clear.preference(key: AnchorFrameKey.self, value: geo.frame(in: .global))
+                    }
                 }
             }
 
