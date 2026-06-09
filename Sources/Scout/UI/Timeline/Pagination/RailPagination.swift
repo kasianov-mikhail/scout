@@ -12,15 +12,35 @@ struct RailPagination: View {
     @Binding var result: Result<Rail, Error>?
 
     @Environment(\.database) var database
+    @Environment(\.scrollViewport) var viewport
 
     var body: some View {
-        if lane.isLoading {
-            ProgressView().frame(height: 72).frame(maxWidth: .infinity)
-        } else if lane.pendingInstalls.isEmpty {
+        if lane.pendingInstalls.isEmpty {
             EmptyView()
+        } else if lane.isLoading {
+            ProgressView().frame(height: 72).frame(maxWidth: .infinity)
         } else {
-            PaginationFooter(action: loadMore)
+            Color.clear.frame(height: 1).background {
+                GeometryReader { geo in
+                    let frame = geo.frame(in: .global)
+
+                    Color.clear
+                        .onAppear { loadIfVisible(frame) }
+                        .onChange(of: frame.minY) { _ in loadIfVisible(frame) }
+                }
+            }
         }
+    }
+
+    private func loadIfVisible(_ frame: CGRect) {
+        let visible = frame.maxY > viewport.minY && frame.minY < viewport.maxY
+
+        guard visible, !lane.isLoading else {
+            return
+        }
+
+        lane.isLoading = true
+        Task { await loadMore() }
     }
 
     private func loadMore() async {
