@@ -10,10 +10,18 @@ import Foundation
 
 @MainActor
 final class RailLane: ObservableObject {
-    let eventName: String?
+    var eventName: String? {
+        didSet {
+            pendingInstalls = []
+            cursor = nil
+            isLoading = false
+        }
+    }
 
-    init(eventName: String? = nil) {
-        self.eventName = eventName
+    let ascending: Bool
+
+    init(ascending: Bool) {
+        self.ascending = ascending
     }
 
     @Published var pendingInstalls: [UUID] = []
@@ -42,7 +50,7 @@ final class RailLane: ObservableObject {
             cursor = newCursor
         } else {
             cursor = nil
-            pendingInstalls.removeFirst()
+            pendingInstalls = []
         }
 
         return (sessions, events)
@@ -50,7 +58,7 @@ final class RailLane: ObservableObject {
 
     private func chunk(in database: AppDatabase) async throws -> RecordChunk {
         guard let cursor else {
-            return try await Session.fetchChunk(installID: pendingInstalls[0], in: database)
+            return try await Session.fetchChunk(installIDs: pendingInstalls, ascending: ascending, in: database)
         }
         return try await database.readMore(from: cursor, fields: nil)
     }
