@@ -12,11 +12,17 @@ import Foundation
 final class RailLane: ObservableObject {
     var eventName: String? {
         didSet {
+            generation += 1
             pendingInstalls = []
             cursor = nil
             isLoading = false
         }
     }
+
+    /// Bounds session chunks to this lane's side of the anchor event, so both
+    /// lanes grow strictly outward from the anchor instead of spending early
+    /// chunks on sessions far past it.
+    var anchorDate: Date?
 
     let ascending: Bool
 
@@ -29,11 +35,29 @@ final class RailLane: ObservableObject {
 
     private var cursor: CKQueryOperation.Cursor?
 
+    /// Bumped by every reset; an in-flight load compares against it after each
+    /// suspension and bails out instead of mixing a stale chunk (or a wiped
+    /// cursor) into the fresh timeline.
+    private var generation = 0
+
     func loadMore(in database: AppDatabase) async throws -> (sessions: [Session], events: [Event]) {
+        guard cursor != nil || pendingInstalls.count > 0 else {
+            throw CancellationError()
+        }
+
+        let generation = generation
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            if generation == self.generation {
+                isLoading = false
+            }
+        }
 
         let sessionChunk = try await chunk(in: database)
+
+        guard generation == self.generation else {
+            throw CancellationError()
+        }
 
         let sessions =
             try sessionChunk
@@ -45,6 +69,10 @@ final class RailLane: ObservableObject {
             name: eventName,
             in: database
         )
+
+        guard generation == self.generation else {
+            throw CancellationError()
+        }
 
         if let newCursor = sessionChunk.cursor {
             cursor = newCursor
@@ -58,7 +86,7 @@ final class RailLane: ObservableObject {
 
     private func chunk(in database: AppDatabase) async throws -> RecordChunk {
         guard let cursor else {
-            return try await Session.fetchChunk(installIDs: pendingInstalls, ascending: ascending, in: database)
+            return try await Session.fetchChunk(installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, in: database)
         }
         return try await database.readMore(from: cursor, fields: nil)
     }

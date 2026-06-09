@@ -64,6 +64,7 @@ struct Timeline: View {
 
     private func list(for rail: Rail) -> some View {
         let items = TimelineItem.items(from: rail)
+        let anchorIndex = items.firstIndex { $0.id == event?.id }
 
         // The legend floats over the top of the list instead of sitting above
         // it in a `VStack`: pushing the scroll view down resizes its viewport,
@@ -76,7 +77,7 @@ struct Timeline: View {
             older: { RailPagination(lane: provider.older, result: $provider.result) },
             newer: { RailPagination(lane: provider.newer, result: $provider.result) }
         )
-        .anchoredScroll(id: items.first { $0.id == event?.id })
+        .anchoredScroll(id: anchorIndex.map { items[$0] }, revision: anchorIndex ?? 0)
         .overlay(alignment: .top) {
             if showLegend {
                 Legend(kinds: LegendKind.allCases, expanded: $expandedKind)

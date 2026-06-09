@@ -13,6 +13,7 @@ struct RailPagination: View {
 
     @Environment(\.database) var database
     @Environment(\.scrollViewport) var viewport
+    @Environment(\.isScrollSettled) var isSettled
 
     var body: some View {
         if lane.pendingInstalls.isEmpty {
@@ -27,7 +28,7 @@ struct RailPagination: View {
                     Color.clear
                         .onAppear { loadIfVisible(frame) }
                         .onChange(of: frame.minY) { _ in loadIfVisible(frame) }
-                        .onChange(of: viewport) { _ in loadIfVisible(frame) }
+                        .onChange(of: isSettled) { _ in loadIfVisible(frame) }
                 }
             }
         }
@@ -36,7 +37,7 @@ struct RailPagination: View {
     private func loadIfVisible(_ frame: CGRect) {
         let visible = frame.maxY > viewport.minY && frame.minY < viewport.maxY
 
-        guard visible, !lane.isLoading else {
+        guard isSettled, visible, !lane.isLoading else {
             return
         }
 
@@ -51,6 +52,8 @@ struct RailPagination: View {
                 return
             }
             result = .success(rail.merged(sessions: sessions, events: events))
+        } catch is CancellationError {
+            // The lane was reset while this load was in flight; drop it.
         } catch {
             result = .failure(error)
         }
