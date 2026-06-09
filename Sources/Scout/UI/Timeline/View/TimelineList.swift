@@ -10,7 +10,7 @@ import SwiftUI
 
 struct TimelineList<Pagination: View>: View {
     let items: [TimelineItem]
-    var highlightedID: CKRecord.ID? = nil
+    let highlightedID: CKRecord.ID?
 
     @ViewBuilder let older: () -> Pagination
     @ViewBuilder let newer: () -> Pagination
@@ -23,49 +23,26 @@ struct TimelineList<Pagination: View>: View {
 
             ForEach(Array(items.enumerated()), id: \.element) { index, row in
                 TimelineRow(
-                    color: .primary,
-                    name: row.name,
-                    date: row.date,
-                    timeline: timeline
-                ) {
-                    ForEach(LegendKind.allCases, id: \.self) { kind in
-                        let prev = items[safe: index - 1]
-                        let next = items[safe: index + 1]
-
-                        TimelineSegment(
-                            color: kind.color,
-                            isActive: row.active.contains(kind),
-                            prevActive: connected(prev, row, on: kind),
-                            nextActive: connected(next, row, on: kind)
-                        )
-                    }
-                }
-                .background {
-                    if row.id == highlightedID {
-                        // Bleed past the stack's 16pt inset so the tint spans
-                        // edge to edge, like warning/error rows in EventList.
-                        Color.accentColor.opacity(0.12).padding(.horizontal, -16)
-                    }
-                }
-
-                if index < items.count - 1 {
-                    Divider().padding(.leading, CGFloat(LegendKind.allCases.count) * 16 + 8)
-                }
+                    items: items,
+                    index: index,
+                    timeline: timeline,
+                    highlighted: row.id == highlightedID
+                )
             }
 
             newer()
         }
-        .scrollTargetLayoutIfAvailable()
-        .padding(16)
     }
 }
 
 #Preview {
     NavigationView {
         ScrollView {
+            let items = TimelineItem.samples
+
             TimelineList(
-                items: TimelineItem.samples,
-                highlightedID: TimelineItem.samples.randomElement()?.id,
+                items: items,
+                highlightedID: items.randomElement()?.id,
                 older: { EmptyView() },
                 newer: { EmptyView() }
             )
