@@ -8,15 +8,15 @@
 import CloudKit
 
 extension Session {
-    static func fetchChunk(installID: UUID, in database: AppDatabase) async throws -> RecordChunk {
+    static func fetchChunk(installIDs: [UUID], ascending: Bool, in database: AppDatabase) async throws -> RecordChunk {
         let query = CKQuery(
             recordType: SessionObject.recordType,
-            predicate: NSPredicate(format: "install_id == %@", installID.uuidString)
+            predicate: NSPredicate(format: "install_id IN %@", installIDs.map(\.uuidString))
         )
         query.sortDescriptors = [
-            NSSortDescriptor(key: "start_date", ascending: false)
+            NSSortDescriptor(key: "start_date", ascending: ascending)
         ]
 
-        return try await database.read(matching: query, fields: nil, limit: 10)
+        return try await database.read(matching: query, fields: nil, limit: 25)
     }
 }
