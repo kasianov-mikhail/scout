@@ -11,6 +11,8 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let id: ID?
 
     @State private var anchorFrame: CGRect?
+    @State private var isCentered = false
+    @State private var isUserDriven = false
 
     func body(content: Content) -> some View {
         GeometryReader { proxy in
@@ -27,16 +29,36 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
                         }
                     }
                 }
+                .simultaneousGesture(
+                    DragGesture().onChanged { _ in
+                        isUserDriven = true
+                    }
+                )
                 .onAppear {
                     center(with: proxy)
                 }
-            }
-            .environment(\.scrollViewport, viewport)
-            .onPreferenceChange(AnchorFrameKey.self) { frame in
-                if let frame {
+                .onPreferenceChange(AnchorFrameKey.self) { frame in
+                    guard let frame else { return }
+
                     anchorFrame = frame
+
+                    // Until the user scrolls on their own, keep the anchor
+                    // pinned to the center: the first pass lands the initial
+                    // centering once the anchor row is actually laid out (the
+                    // `onAppear` scroll only aims at estimated lazy-row
+                    // positions), and subsequent passes absorb layout shifts
+                    // from pagination chunks prepending rows above the anchor.
+                    if !isUserDriven {
+                        isCentered = true
+                        center(with: proxy)
+                    }
                 }
             }
+            // Publish a null viewport until the anchor settles: at the list's
+            // initial offset the top pagination footer momentarily sits inside
+            // the real viewport and would otherwise self-load off-screen,
+            // pushing the anchor down.
+            .environment(\.scrollViewport, isCentered || id == nil ? viewport : .null)
         }
     }
 

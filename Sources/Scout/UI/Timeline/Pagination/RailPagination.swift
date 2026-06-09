@@ -27,6 +27,7 @@ struct RailPagination: View {
                     Color.clear
                         .onAppear { loadIfVisible(frame) }
                         .onChange(of: frame.minY) { _ in loadIfVisible(frame) }
+                        .onChange(of: viewport) { _ in loadIfVisible(frame) }
                 }
             }
         }
