@@ -29,10 +29,12 @@ struct TimelineSegment: View {
 }
 
 extension TimelineSegment {
-    init(color: Color, isActive: Bool, prevActive: Bool, nextActive: Bool) {
-        self.color = color
-        self.isActive = isActive
-        self.topRadius = (isActive && !prevActive) ? 4 : 0
-        self.bottomRadius = (isActive && !nextActive) ? 4 : 0
+    init(kind: LegendKind, row: TimelineItem, prev: TimelineItem?, next: TimelineItem?) {
+        let active = row.active.contains(kind)
+
+        self.color = kind.color
+        self.isActive = active
+        self.topRadius = (active && !connected(prev, row, on: kind)) ? 4 : 0
+        self.bottomRadius = (active && !connected(next, row, on: kind)) ? 4 : 0
     }
 }
