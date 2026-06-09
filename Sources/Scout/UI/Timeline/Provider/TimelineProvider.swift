@@ -24,10 +24,11 @@ final class TimelineProvider: ObservableObject {
         startToken = token
 
         result = nil
-        older.eventName = eventName
-        newer.eventName = eventName
-        older.anchorDate = anchorEvent?.date
-        newer.anchorDate = anchorEvent?.date
+
+        for lane in [older, newer] {
+            lane.eventName = eventName
+            lane.anchorDate = anchorEvent?.date
+        }
 
         do {
             let rail = try await feed.rail()

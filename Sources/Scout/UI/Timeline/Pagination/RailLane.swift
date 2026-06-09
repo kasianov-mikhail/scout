@@ -15,6 +15,7 @@ final class RailLane: ObservableObject {
             generation += 1
             pendingInstalls = []
             cursor = nil
+            anchorDate = nil
             isLoading = false
         }
     }

@@ -16,7 +16,6 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let revision: Int
 
     @State private var anchorFrame: CGRect?
-    @State private var isCentered = false
 
     func body(content: Content) -> some View {
         GeometryReader { proxy in
@@ -48,14 +47,15 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
                 .onPreferenceChange(AnchorFrameKey.self) { frame in
                     guard let frame else { return }
 
+                    let isFirst = anchorFrame == nil
+
                     anchorFrame = frame
 
                     // The first reported frame means the anchor row has just
                     // been laid out; the `onAppear` scroll only aimed at
                     // estimated lazy-row positions, so finish the initial
                     // centering with one precise pass.
-                    if !isCentered {
-                        isCentered = true
+                    if isFirst {
                         center(with: proxy)
                     }
                 }
@@ -65,7 +65,7 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
             // initial offset — the top one is momentarily "visible" there and
             // would push the anchor away. The flag flips once the anchor lands
             // (or right away when there is no anchor to land).
-            .environment(\.isScrollSettled, isCentered || id == nil)
+            .environment(\.isScrollSettled, anchorFrame != nil || id == nil)
         }
     }
 
