@@ -65,17 +65,24 @@ struct Timeline: View {
     private func list(for rail: Rail) -> some View {
         let items = TimelineItem.items(from: rail)
 
-        return VStack(spacing: 0) {
+        // The legend floats over the top of the list instead of sitting above
+        // it in a `VStack`: pushing the scroll view down resizes its viewport,
+        // and `scrollPosition(anchor: .center)` then re-anchors the centered row,
+        // so the whole list visibly scrolls (and scrolls back when hidden). An
+        // overlay leaves the scroll view's size untouched, so nothing moves.
+        return TimelineList(
+            items: items,
+            highlightedID: event?.id,
+            older: { RailPagination(lane: provider.older, result: $provider.result) },
+            newer: { RailPagination(lane: provider.newer, result: $provider.result) }
+        )
+        .anchoredScroll(cursor: items.first { $0.id == event?.id })
+        .overlay(alignment: .top) {
             if showLegend {
                 Legend(kinds: LegendKind.allCases, expanded: $expandedKind)
+                    .background(.bar)
+                    .transition(.move(edge: .top).combined(with: .opacity))
             }
-            TimelineList(
-                items: items,
-                highlightedID: event?.id,
-                older: { RailPagination(lane: provider.older, result: $provider.result) },
-                newer: { RailPagination(lane: provider.newer, result: $provider.result) }
-            )
-            .anchoredScroll(cursor: items.first { $0.id == event?.id })
         }
     }
 
