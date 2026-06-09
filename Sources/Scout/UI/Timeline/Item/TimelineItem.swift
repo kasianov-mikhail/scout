@@ -25,11 +25,7 @@ struct TimelineItem: Identifiable {
     }
 }
 
-extension TimelineItem: ScrollCursor {
-    static func < (lhs: TimelineItem, rhs: TimelineItem) -> Bool {
-        lhs.date < rhs.date
-    }
-
+extension TimelineItem: Hashable {
     static func == (lhs: TimelineItem, rhs: TimelineItem) -> Bool {
         lhs.id == rhs.id
     }

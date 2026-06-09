@@ -76,7 +76,7 @@ struct Timeline: View {
             older: { RailPagination(lane: provider.older, result: $provider.result) },
             newer: { RailPagination(lane: provider.newer, result: $provider.result) }
         )
-        .anchoredScroll(cursor: items.first { $0.id == event?.id })
+        .anchoredScroll(id: items.first { $0.id == event?.id })
         .overlay(alignment: .top) {
             if showLegend {
                 Legend(kinds: LegendKind.allCases, expanded: $expandedKind)
