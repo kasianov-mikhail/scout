@@ -23,7 +23,7 @@ extension EventObject {
         event.name = name
         event.date = date
         event.eventID = UUID()
-        event.isSynced = synced
+        event.syncState = synced ? .synced : .pending
         event.level = level.rawValue
 
         return event

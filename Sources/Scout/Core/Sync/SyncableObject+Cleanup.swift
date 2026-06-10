@@ -20,8 +20,8 @@ extension SyncableObject {
 
         let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
         request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
-            NSPredicate(format: "isSynced == true AND datePrimitive < %@", cutoff as NSDate),
-            NSPredicate(format: "isSynced == false AND syncAttempts > %d", maxSyncAttempts),
+            NSPredicate(format: "syncStatePrimitive == %d AND datePrimitive < %@", SyncState.synced.rawValue, cutoff as NSDate),
+            NSPredicate(format: "syncStatePrimitive != %d AND syncAttempts > %d", SyncState.synced.rawValue, maxSyncAttempts),
         ])
 
         for object in try context.fetch(request) {

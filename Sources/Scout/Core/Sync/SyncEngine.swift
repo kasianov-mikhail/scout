@@ -31,7 +31,7 @@ struct SyncEngine: @unchecked Sendable {
 
             // Records already counted into the server matrix on a previous
             // attempt must not contribute again, or the matrix double-counts.
-            let pending = batch.filter { !$0.isAggregated }
+            let pending = batch.filter { $0.syncState == .pending }
 
             if pending.count > 0 {
                 try await SyncCoordinator(
@@ -42,7 +42,7 @@ struct SyncEngine: @unchecked Sendable {
                 .upload()
 
                 for object in pending {
-                    object.isAggregated = true
+                    object.syncState = .aggregated
                 }
 
                 // Persist right away so a crash before the final save
@@ -51,7 +51,7 @@ struct SyncEngine: @unchecked Sendable {
             }
 
             for object in batch {
-                object.isSynced = true
+                object.syncState = .synced
             }
 
             try context.save()
