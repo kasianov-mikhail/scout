@@ -12,6 +12,7 @@ struct ChartExtent<T: ChartTimeScale> {
         didSet { domain = period.initialRange }
     }
     var domain: Range<Date>
+    var isComparing = false
 }
 
 extension ChartExtent {

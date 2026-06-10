@@ -23,13 +23,18 @@ struct ActivityView: View {
 
             ProviderView(provider: activity) { data in
                 RangeControl(extent: $extent)
+                CompareControl(extent: $extent)
 
                 List {
                     let segment = extent.segment(from: data)
 
-                    ChartView(segment: segment, timing: extent)
-                        .foregroundStyle(.green)
-                        .listRowSeparator(.hidden)
+                    ChartView(
+                        segment: segment,
+                        timing: extent,
+                        comparison: extent.comparison(from: data)
+                    )
+                    .foregroundStyle(.green)
+                    .listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
@@ -42,6 +47,10 @@ struct ActivityView: View {
 extension ChartExtent<ActivityPeriod> {
     fileprivate func segment(from matrices: [ActivityMatrix]) -> [ChartPoint<Int>] {
         segment(from: matrices.points(on: period))
+    }
+
+    fileprivate func comparison(from matrices: [ActivityMatrix]) -> [ChartPoint<Int>]? {
+        comparison(from: matrices.points(on: period))
     }
 }
 

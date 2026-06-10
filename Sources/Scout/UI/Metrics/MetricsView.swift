@@ -32,14 +32,19 @@ struct MetricsView<T: ChartNumeric>: View {
         .pickerStyle(.segmented)
 
         RangeControl(extent: $extent)
+        CompareControl(extent: $extent)
 
         List {
             let segment = extent.segment(from: group.points)
 
-            ChartView(segment: segment, timing: extent)
-                .chartYAxis(content: { formattedMarks })
-                .foregroundStyle(.blue)
-                .listRowSeparator(.hidden)
+            ChartView(
+                segment: segment,
+                timing: extent,
+                comparison: extent.comparison(from: group.points)
+            )
+            .chartYAxis(content: { formattedMarks })
+            .foregroundStyle(.blue)
+            .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
         .navigationTitle(group.name)

@@ -22,14 +22,19 @@ struct StatView: View {
 
             ProviderView(provider: stat) { data in
                 RangeControl(extent: $extent)
+                CompareControl(extent: $extent)
 
                 List {
                     let points = data.flatMap(\.points)
                     let segment = extent.segment(from: points)
 
-                    ChartView(segment: segment, timing: extent)
-                        .foregroundStyle(color)
-                        .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
+                    ChartView(
+                        segment: segment,
+                        timing: extent,
+                        comparison: extent.comparison(from: points)
+                    )
+                    .foregroundStyle(color)
+                    .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
                     if showList {
                         total(count: segment.total)
