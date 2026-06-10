@@ -47,9 +47,8 @@
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="none">
-        <attribute name="isAggregated" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="isSynced" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="syncAttempts" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="syncStatePrimitive" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>
     <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
         <attribute name="sessionID" attributeType="UUID" usesScalarValueType="NO"/>

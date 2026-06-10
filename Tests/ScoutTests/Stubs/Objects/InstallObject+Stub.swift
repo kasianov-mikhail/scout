@@ -19,7 +19,7 @@ extension InstallObject {
         let install = InstallObject(entity: entity, insertInto: context)
 
         install.date = date
-        install.isSynced = synced
+        install.syncState = synced ? .synced : .pending
 
         return install
     }

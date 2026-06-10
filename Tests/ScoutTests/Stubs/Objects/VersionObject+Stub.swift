@@ -21,7 +21,7 @@ extension VersionObject {
         let version = VersionObject(entity: entity, insertInto: context)
 
         version.date = date
-        version.isSynced = synced
+        version.syncState = synced ? .synced : .pending
         version.appVersion = appVersion
         version.buildNumber = buildNumber
 

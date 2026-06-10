@@ -17,31 +17,51 @@ protocol Syncable: SyncableObject {
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
 }
 
+/// Progress of a record through the sync pipeline.
+///
+/// A record advances `pending → aggregated → synced`. The intermediate
+/// `aggregated` state marks records whose counts are already merged into
+/// the server matrix, so a retry after a partial sync failure doesn't
+/// re-contribute them and double-count the matrix.
+///
+enum SyncState: Int16 {
+    /// Not uploaded yet; the next sync cycle picks the record up.
+    case pending = 0
+
+    /// Counts are merged into the server matrix, but the cycle hasn't
+    /// finished — the record is still re-sent as a raw upload (idempotent).
+    case aggregated = 1
+
+    /// Fully uploaded; eligible for cleanup once old enough.
+    case synced = 2
+}
+
 @objc(SyncableObject)
 class SyncableObject: IDObject {
-    @NSManaged var isSynced: Bool
-
-    /// Whether this record's counts have been merged into the server matrix.
-    ///
-    /// Tracked separately from `isSynced` so a retry after a partial sync
-    /// failure doesn't re-contribute the batch to the aggregated matrix.
-    ///
-    @NSManaged var isAggregated: Bool
-
+    @NSManaged var syncStatePrimitive: Int16
     @NSManaged var syncAttempts: Int
+
+    var syncState: SyncState {
+        get {
+            SyncState(rawValue: syncStatePrimitive) ?? .pending
+        }
+        set {
+            syncStatePrimitive = newValue.rawValue
+        }
+    }
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
         let entityName = String(describing: T.self)
 
         let seedRequest = NSFetchRequest<T>(entityName: entityName)
-        seedRequest.predicate = NSPredicate(format: "isSynced == false")
+        seedRequest.predicate = NSPredicate(format: "syncStatePrimitive != %d", SyncState.synced.rawValue)
         seedRequest.fetchLimit = 1
 
         guard let seed = try context.fetch(seedRequest).first else {
             return nil
         }
 
-        var predicates = [NSPredicate(format: "isSynced == false")]
+        var predicates = [NSPredicate(format: "syncStatePrimitive != %d", SyncState.synced.rawValue)]
 
         for keyPath in keyPaths {
             if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject {

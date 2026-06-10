@@ -43,8 +43,7 @@ struct SyncEngineTests {
         let engine = SyncEngine(database: database, context: context)
         try await engine.send(type: EventObject.self)
 
-        #expect(event.isAggregated)
-        #expect(event.isSynced)
+        #expect(event.syncState == .synced)
         #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 
@@ -53,13 +52,13 @@ struct SyncEngineTests {
         // Simulate a crash after the matrix upload was persisted but before
         // the final save: the record is aggregated yet still unsynced.
         let event = EventObject.stub(name: "x", in: context)
-        event.isAggregated = true
+        event.syncState = .aggregated
         try context.save()
 
         let engine = SyncEngine(database: database, context: context)
         try await engine.send(type: EventObject.self)
 
-        #expect(event.isSynced)
+        #expect(event.syncState == .synced)
         #expect(database.events.count == 1)
         #expect(database.records.filter { $0.recordType == Int.recordType }.count == 0)
     }

@@ -81,7 +81,7 @@ extension NamedObject {
         object.name = name
         object.date = date
         object.eventID = UUID()
-        object.isSynced = false
+        object.syncState = .pending
         object.level = "info"
         return object
     }

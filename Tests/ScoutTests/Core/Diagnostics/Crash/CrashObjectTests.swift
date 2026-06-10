@@ -38,7 +38,7 @@ struct CrashObjectTests {
         object.name = name
         object.date = date
         object.crashID = UUID()
-        object.isSynced = false
+        object.syncState = .pending
         return object
     }
 }
