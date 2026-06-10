@@ -10,8 +10,10 @@ import Charts
 import SwiftUI
 
 /// An inline sparkline for Home rows: the period's slice values drawn as a
-/// smooth line over a gradient fill fading to the baseline. While the series
-/// is loading, a redacted placeholder of the same size keeps rows stable.
+/// smooth line over a gradient fill fading to the baseline.
+///
+/// While the series is loading, a redacted placeholder of the same size
+/// keeps rows stable.
 ///
 struct MiniChart: View {
     /// Pinned size so charts and placeholders align across Home rows.

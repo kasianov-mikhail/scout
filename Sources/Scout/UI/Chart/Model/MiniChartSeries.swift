@@ -29,9 +29,11 @@ extension MiniChartSeries {
         case latest
     }
 
-    /// Splits `range` into `sliceCount` equal time slices and aggregates the
-    /// points that fall into each one. Points outside `range` are ignored;
-    /// a point exactly on a slice boundary belongs to the later slice.
+    /// Splits `range` into `sliceCount` equal time slices and aggregates
+    /// the points that fall into each one.
+    ///
+    /// Points outside `range` are ignored; a point exactly on a slice
+    /// boundary belongs to the later slice.
     ///
     init(points: [ChartPoint<Int>], range: Range<Date>, aggregation: Aggregation) {
         let step = range.upperBound.timeIntervalSince(range.lowerBound) / Double(Self.sliceCount)

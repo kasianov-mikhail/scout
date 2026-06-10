@@ -9,8 +9,10 @@
 import SwiftUI
 
 /// The trailing summary of a Home row: a mini-chart next to the period's
-/// count, both tinted with the row's color. The chart's fixed size and the
-/// count's minimum width stack the summaries into aligned columns.
+/// count, both tinted with the row's color.
+///
+/// The chart's fixed size and the count's minimum width stack the
+/// summaries into aligned columns.
 ///
 struct RowSummary: View {
     /// Minimum count width: rows whose counts fit it get their charts and
