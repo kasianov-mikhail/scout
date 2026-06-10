@@ -12,6 +12,7 @@ struct StatView: View {
     let showList: Bool
 
     @State var extent: ChartExtent<Period>
+    @State var comparison: ChartComparison? = nil
     @ObservedObject var stat: StatProvider
     @EnvironmentObject var tint: Tint
     @Environment(\.chartColor) var color
@@ -22,21 +23,21 @@ struct StatView: View {
 
             ProviderView(provider: stat) { data in
                 RangeControl(extent: $extent)
+                ComparisonPicker(comparison: $comparison)
 
                 List {
                     let points = data.flatMap(\.points)
-                    let segment = extent.segment(from: points)
 
-                    ChartView(segment: segment, timing: extent)
+                    ComparisonChartView(points: points, extent: extent, comparison: comparison)
                         .foregroundStyle(color)
                         .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
                     if showList {
-                        total(count: segment.total)
+                        total(count: extent.segment(from: points).total)
                     }
                 }
                 .listStyle(.plain)
-                .scrollDisabled(true)
+                .scrollDisabled(comparison == nil)
             }
         }
         .onAppear {

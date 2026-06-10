@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ActivityView: View {
     @State var extent: ChartExtent<ActivityPeriod>
+    @State var comparison: ChartComparison?
     @ObservedObject var activity: ActivityProvider
 
     init(activity: ActivityProvider, period: ActivityPeriod) {
@@ -23,25 +24,20 @@ struct ActivityView: View {
 
             ProviderView(provider: activity) { data in
                 RangeControl(extent: $extent)
+                ComparisonPicker(comparison: $comparison)
 
                 List {
-                    let segment = extent.segment(from: data)
+                    let points = data.points(on: extent.period)
 
-                    ChartView(segment: segment, timing: extent)
+                    ComparisonChartView(points: points, extent: extent, comparison: comparison)
                         .foregroundStyle(.green)
                         .listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
-                .scrollDisabled(true)
+                .scrollDisabled(comparison == nil)
             }
         }
         .navigationTitle(en: "Active Users")
-    }
-}
-
-extension ChartExtent<ActivityPeriod> {
-    fileprivate func segment(from matrices: [ActivityMatrix]) -> [ChartPoint<Int>] {
-        segment(from: matrices.points(on: period))
     }
 }
 

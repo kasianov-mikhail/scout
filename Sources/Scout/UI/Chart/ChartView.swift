@@ -10,16 +10,29 @@ import SwiftUI
 
 struct ChartView<T: ChartNumeric>: View {
     let segment: [ChartPoint<T>]
+    var comparison: [ChartPoint<T>]? = nil
+    var aspectRatio: CGFloat = 4 / 3
     let timing: ChartTiming
 
     var body: some View {
         let unit = timing.unit
 
-        Chart(segment, id: \.date) { point in
-            BarMark(
-                x: .value("X", point.date, unit: unit),
-                y: .value("Y", point.count)
-            )
+        Chart {
+            ForEach(segment, id: \.date) { point in
+                BarMark(
+                    x: .value("X", point.date, unit: unit),
+                    y: .value("Y", point.count)
+                )
+            }
+            if let comparison {
+                ForEach(comparison, id: \.date) { point in
+                    LineMark(
+                        x: .value("X", point.date, unit: unit),
+                        y: .value("Y", point.count)
+                    )
+                    .foregroundStyle(.gray)
+                }
+            }
         }
         .chartXAxis {
             if let values = timing.tickValues {
@@ -29,13 +42,13 @@ struct ChartView<T: ChartNumeric>: View {
             }
         }
         .chartBackground { _ in
-            if segment.total == .zero {
+            if segment.total == .zero, (comparison ?? []).total == .zero {
                 Text(verbatim: "No results")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.gray.opacity(0.7))
             }
         }
-        .aspectRatio(4 / 3, contentMode: .fit)
+        .aspectRatio(aspectRatio, contentMode: .fit)
         .padding()
         .padding(.bottom)
         .listRowInsets(EdgeInsets())

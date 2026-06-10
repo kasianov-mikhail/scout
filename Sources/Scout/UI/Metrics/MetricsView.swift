@@ -13,6 +13,7 @@ struct MetricsView<T: ChartNumeric>: View {
     let formatter: KeyPath<T, String>
 
     @State var extent: ChartExtent<Period>
+    @State var comparison: ChartComparison?
 
     init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period) {
         self.group = group
@@ -32,18 +33,17 @@ struct MetricsView<T: ChartNumeric>: View {
         .pickerStyle(.segmented)
 
         RangeControl(extent: $extent)
+        ComparisonPicker(comparison: $comparison)
 
         List {
-            let segment = extent.segment(from: group.points)
-
-            ChartView(segment: segment, timing: extent)
+            ComparisonChartView(points: group.points, extent: extent, comparison: comparison)
                 .chartYAxis(content: { formattedMarks })
                 .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
         }
         .listStyle(.plain)
         .navigationTitle(group.name)
-        .scrollDisabled(true)
+        .scrollDisabled(comparison == nil)
     }
 
     private var formattedMarks: some AxisContent {
