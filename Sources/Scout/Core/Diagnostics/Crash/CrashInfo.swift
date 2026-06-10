@@ -23,13 +23,13 @@ struct CrashInfo: Codable {
     let launchID: UUID
     let sessionID: UUID
 
-    init(name: String, reason: String?, stackTrace: [String]) {
+    init(name: String, reason: String?, stackTrace: [String], sessionID: UUID = IDs.session) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
         self.date = Date()
         self.installID = IDs.install
         self.launchID = IDs.launch
-        self.sessionID = IDs.session
+        self.sessionID = sessionID
     }
 }

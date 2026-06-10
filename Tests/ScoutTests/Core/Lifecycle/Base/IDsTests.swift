@@ -10,7 +10,9 @@ import Testing
 
 @testable import Scout
 
-@Suite("IDs")
+// Serialized: both tests mutate the process-wide `IDs.session`, so the
+// round-trip check must not overlap the concurrent-access stress test.
+@Suite("IDs", .serialized)
 struct IDsTests {
     @Test("session getter/setter round-trip")
     func sessionRoundTrip() {
