@@ -35,29 +35,21 @@ struct MetricsView<T: ChartNumeric>: View {
         RangeControl(extent: $extent)
 
         List {
-            chart(segment: extent.segment(from: group.points))
-                .chartYAxis(content: { formattedMarks })
-                .listRowSeparator(.hidden)
+            ComparableChart(
+                segment: extent.segment(from: group.points),
+                points: group.points,
+                extent: extent,
+                color: .blue,
+                isComparing: isComparing
+            )
+            .chartYAxis(content: { formattedMarks })
+            .listRowSeparator(.hidden)
 
             ComparisonToggle(isOn: $isComparing)
         }
         .listStyle(.plain)
         .navigationTitle(group.name)
         .scrollDisabled(true)
-    }
-
-    @ViewBuilder func chart(segment: [ChartPoint<T>]) -> some View {
-        if isComparing {
-            ComparisonChartView(
-                segment: segment,
-                reference: extent.referenceSegment(from: group.points),
-                timing: extent,
-                color: .blue
-            )
-        } else {
-            ChartView(segment: segment, timing: extent)
-                .foregroundStyle(.blue)
-        }
     }
 
     private var formattedMarks: some AxisContent {

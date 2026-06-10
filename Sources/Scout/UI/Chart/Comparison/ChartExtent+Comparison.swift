@@ -14,12 +14,16 @@ extension ChartExtent {
     }
 
     /// Buckets `points` into the previous window and places the results on
-    /// the current window's bucket dates, so each previous value lines up
-    /// with the bucket it should be compared against.
+    /// the bucket dates of `segment`, pairing buckets by their offset from
+    /// the period's end.
     ///
-    func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        let current = segment(from: points)
+    /// `segment` is the current window's segment, which callers have already
+    /// computed. When the previous window spans fewer buckets (calendar
+    /// months differ in length), the oldest current buckets have no
+    /// counterpart and are omitted; the chart draws no reference for them.
+    ///
+    func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>]) -> [ChartPoint<U>] {
         let previous = points.bucket(in: previousDomain, component: period.pointComponent)
-        return zip(current, previous).map { ChartPoint(date: $0.date, count: $1.count) }
+        return zip(segment, previous).map { ChartPoint(date: $0.date, count: $1.count) }
     }
 }

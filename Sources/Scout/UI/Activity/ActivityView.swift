@@ -26,8 +26,16 @@ struct ActivityView: View {
                 RangeControl(extent: $extent)
 
                 List {
-                    chart(data: data)
-                        .listRowSeparator(.hidden)
+                    let points = data.points(on: extent.period)
+
+                    ComparableChart(
+                        segment: extent.segment(from: points),
+                        points: points,
+                        extent: extent,
+                        color: .green,
+                        isComparing: isComparing
+                    )
+                    .listRowSeparator(.hidden)
 
                     ComparisonToggle(isOn: $isComparing)
                 }
@@ -36,22 +44,6 @@ struct ActivityView: View {
             }
         }
         .navigationTitle(en: "Active Users")
-    }
-
-    @ViewBuilder func chart(data: [ActivityMatrix]) -> some View {
-        let points = data.points(on: extent.period)
-
-        if isComparing {
-            ComparisonChartView(
-                segment: extent.segment(from: points),
-                reference: extent.referenceSegment(from: points),
-                timing: extent,
-                color: .green
-            )
-        } else {
-            ChartView(segment: extent.segment(from: points), timing: extent)
-                .foregroundStyle(.green)
-        }
     }
 }
 
