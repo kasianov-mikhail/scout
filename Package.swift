@@ -28,7 +28,10 @@ let package = Package(
         ),
         .testTarget(
             name: "ScoutTests",
-            dependencies: ["Scout"]
+            dependencies: ["Scout"],
+            resources: [
+                .copy("Fixtures")
+            ]
         ),
     ]
 )
