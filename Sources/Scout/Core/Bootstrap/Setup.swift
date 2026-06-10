@@ -57,4 +57,6 @@ public func setup(container: CKContainer) async throws {
     MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
 
     isSetup = true
+
+    verifyParallelismIfDue(container: container)
 }

@@ -14,11 +14,9 @@ extension CKDatabase {
             throw RunnerError()
         }
 
-        let configuration = CKOperation.Configuration()
-        configuration.timeoutIntervalForRequest = 10
-        configuration.timeoutIntervalForResource = 10
-
-        return try await configuredWith(configuration: configuration, body: body)
+        return try await requestLimiter.withSlot {
+            try await configuredWith(configuration: .scout, body: body)
+        }
     }
 
     struct RunnerError: LocalizedError {
@@ -26,5 +24,15 @@ extension CKDatabase {
         let failureReason: String? = "Not enough background time remaining."
         let helpAnchor: String? = "https://developer.apple.com/documentation/uikit/uiapplication/backgroundtimeremaining"
         let recoverySuggestion: String? = "Try again later."
+    }
+}
+
+extension CKOperation.Configuration {
+    /// The configuration for every Scout CloudKit request, measurement requests included.
+    static var scout: CKOperation.Configuration {
+        let configuration = CKOperation.Configuration()
+        configuration.timeoutIntervalForRequest = 10
+        configuration.timeoutIntervalForResource = 10
+        return configuration
     }
 }
