@@ -8,12 +8,6 @@
 import Charts
 import SwiftUI
 
-/// Horizontal portion of each bucket slot occupied by a bar, derived from
-/// `chartBarRatio` and shared by the marks and the `ReferenceOverlay` so the
-/// reference marks match the bars exactly.
-///
-let barSlot: ClosedRange<Double> = (0.5 - chartBarRatio / 2)...(0.5 + chartBarRatio / 2)
-
 /// A bar chart of the current period with the previous period's per-bucket
 /// levels drawn on top of it.
 ///
@@ -37,12 +31,12 @@ struct ComparisonChartView<T: ChartNumeric>: View {
     let color: Color
 
     var body: some View {
-        let pairs = self.pairs
+        let pairs = segment.paired(with: reference, unit: timing.unit)
 
         Chart(pairs) { pair in
             marks(for: pair)
         }
-        .chartXScale(domain: xDomain(of: pairs))
+        .chartXScale(domain: pairs.xDomain())
         .chartXAxis {
             AxisMarks(format: timing.unit.chartFormat, values: timing.tickDates(for: segment))
         }
@@ -67,67 +61,25 @@ struct ComparisonChartView<T: ChartNumeric>: View {
         .listRowInsets(EdgeInsets())
     }
 
-    var pairs: [ComparisonPair<T>] {
-        let counts = Dictionary(reference.map { ($0.date, $0.count) }, uniquingKeysWith: +)
-        return segment.map { point in
-            ComparisonPair(
-                date: point.date,
-                bin: binRange(of: point.date, unit: timing.unit),
-                count: point.count,
-                reference: counts[point.date]
-            )
-        }
-    }
-
-    /// Full bucket bands, so the edge bars are inset from the plot edges the
-    /// same way binned `BarMark` charts are.
-    ///
-    func xDomain(of pairs: [ComparisonPair<T>]) -> ClosedRange<Date> {
-        guard let first = pairs.map(\.bin.lowerBound).min(), let last = pairs.map(\.bin.upperBound).max() else {
-            return Date().startOfDay...Date().startOfDay.addingDay()
-        }
-        return first...last
-    }
-
     /// The bar for the current value, plus an invisible mark at the previous
     /// level so the y scale grows to a rounded maximum that fits reference
     /// contours rising above the bars.
     ///
     @ChartContentBuilder func marks(for pair: ComparisonPair<T>) -> some ChartContent {
-        let length = pair.bin.upperBound.timeIntervalSince(pair.bin.lowerBound)
-        let start: PlottableValue<Date> = .value("Start", pair.bin.lowerBound.addingTimeInterval(length * barSlot.lowerBound))
-        let end: PlottableValue<Date> = .value("End", pair.bin.lowerBound.addingTimeInterval(length * barSlot.upperBound))
-        let zero: PlottableValue<T> = .value("Zero", .zero)
-        let count: PlottableValue<T> = .value("Count", pair.count)
-
-        RectangleMark(xStart: start, xEnd: end, yStart: zero, yEnd: count)
-            .foregroundStyle(color)
-            .cornerRadius(3)
+        RectangleMark(
+            xStart: .value("Start", pair.barStart),
+            xEnd: .value("End", pair.barEnd),
+            yStart: .value("Zero", T.zero),
+            yEnd: .value("Count", pair.count)
+        )
+        .foregroundStyle(color)
+        .cornerRadius(3)
 
         if let reference = pair.reference {
-            let center: PlottableValue<Date> = .value("Center", pair.bin.lowerBound.addingTimeInterval(length / 2))
-            let level: PlottableValue<T> = .value("Reference", reference)
-
-            PointMark(x: center, y: level)
+            PointMark(x: .value("Center", pair.binCenter), y: .value("Reference", reference))
                 .opacity(0)
         }
     }
-}
-
-/// One bucket of the comparison: the current value and the previous-period
-/// value it is compared against, both on the current bucket's date.
-///
-/// `reference` is nil when the previous window has no counterpart bucket —
-/// calendar months differ in length, so the oldest buckets of a longer
-/// current window have nothing to compare against.
-///
-struct ComparisonPair<T: ChartNumeric>: Identifiable {
-    let date: Date
-    let bin: Range<Date>
-    let count: T
-    let reference: T?
-
-    var id: Date { date }
 }
 
 // MARK: - Previews
