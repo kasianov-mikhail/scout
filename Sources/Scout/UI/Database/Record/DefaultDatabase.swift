@@ -16,6 +16,8 @@ struct DefaultDatabase: AppDatabase {
             records = Crash.sampleRecords
         case Int.recordType:
             records = GridMatrix<Int>.sampleRecords
+        case PeriodCell<Int>.recordType:
+            records = ActivityMatrix.sampleRecords
         default:
             records = Event.sampleRecords
         }

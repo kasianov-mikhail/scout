@@ -8,6 +8,10 @@ Always create commits using the repository's git `user.name`/`user.email` identi
 
 Keep an eye on the folder and file structure as the codebase evolves, and reorganize it when needed: when a folder accumulates too many files at one level, group related files into subfolders following the conventions already present nearby (e.g. `UI/Chart` groups files into `Model`, `Scale`, `View`, `Comparison`, `Picker`, `Range`). Move files as-is without code changes, and ship structure-only reorganizations as their own PR, separate from functional changes.
 
+# Code organization
+
+Minimize code duplication. Extract logic and computations out of SwiftUI views into separate types covered by unit tests. Keep views from bloating: when a view accumulates non-trivial logic, computations, or repeated layout, extract them into model types or subviews.
+
 # Swift code style
 
 Multi-line doc comments (`///`) must end with a trailing empty `///` line, except when they document a single-line property declaration (a stored `let`/`var` written on one line), where the trailing empty `///` is omitted. Single-line doc comments never need it.

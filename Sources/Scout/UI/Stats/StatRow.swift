@@ -26,16 +26,23 @@ struct StatRow<Destination: View>: View {
                 .foregroundColor(systemImage == nil ? color : .primary)
             Spacer()
 
-            let count = try? stat.result?.get()
-                .flatMap(\.points)
-                .bucket(on: period)
-                .total
-
-            RedactedText(count: count)
-                .foregroundColor(color)
+            RowSummary(series: series, count: count, color: color)
         } destination: {
             destination()
         }
+    }
+
+    /// All fetched points; `nil` while the provider is still loading.
+    private var points: [ChartPoint<Int>]? {
+        try? stat.result?.get().flatMap(\.points)
+    }
+
+    private var series: MiniChartSeries? {
+        points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) }
+    }
+
+    private var count: Int? {
+        points?.bucket(on: period).total
     }
 }
 

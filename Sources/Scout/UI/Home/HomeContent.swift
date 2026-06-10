@@ -89,11 +89,11 @@ struct HomeContent: View {
             ForEach(ActivityPeriod.allCases) { period in
                 ActivityRow(
                     period: period,
+                    color: .green,
                     systemImage: "person.2",
                     activity: activity
                 )
             }
-            .foregroundStyle(.green)
         } header: {
             Header(title: "Users").task {
                 await activity.fetchIfNeeded(in: database)

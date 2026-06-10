@@ -17,7 +17,9 @@ protocol ChartComposing: CellProtocol {
 
 extension PeriodCell: ChartComposing {
     var secondsSinceBase: Int {
-        (day - 1) * 86_400
+        // `day` is 0-based (unlike GridCell's 1-based `row`), so the first
+        // day of the period lands exactly on the matrix base date.
+        day * 86_400
     }
 }
 
