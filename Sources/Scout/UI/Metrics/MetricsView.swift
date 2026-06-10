@@ -13,6 +13,7 @@ struct MetricsView<T: ChartNumeric>: View {
     let formatter: KeyPath<T, String>
 
     @State var extent: ChartExtent<Period>
+    @State private var isComparing = false
 
     init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period) {
         self.group = group
@@ -34,16 +35,29 @@ struct MetricsView<T: ChartNumeric>: View {
         RangeControl(extent: $extent)
 
         List {
-            let segment = extent.segment(from: group.points)
-
-            ChartView(segment: segment, timing: extent)
+            chart(segment: extent.segment(from: group.points))
                 .chartYAxis(content: { formattedMarks })
-                .foregroundStyle(.blue)
                 .listRowSeparator(.hidden)
+
+            ComparisonToggle(isOn: $isComparing)
         }
         .listStyle(.plain)
         .navigationTitle(group.name)
         .scrollDisabled(true)
+    }
+
+    @ViewBuilder func chart(segment: [ChartPoint<T>]) -> some View {
+        if isComparing {
+            ComparisonChartView(
+                segment: segment,
+                reference: extent.referenceSegment(from: group.points),
+                timing: extent,
+                color: .blue
+            )
+        } else {
+            ChartView(segment: segment, timing: extent)
+                .foregroundStyle(.blue)
+        }
     }
 
     private var formattedMarks: some AxisContent {
