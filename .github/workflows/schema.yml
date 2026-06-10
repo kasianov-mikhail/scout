@@ -1,8 +1,10 @@
 name: Schema
 
+# No paths filter: this is a required status check, and a required check that
+# never runs blocks the merge. With no Schema changes the diff is empty and the
+# job passes in seconds.
 on:
   pull_request:
-    paths: [ Schema ]
 
 permissions:
   contents: read

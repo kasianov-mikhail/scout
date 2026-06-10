@@ -1,8 +1,10 @@
 name: Core Data
 
+# No paths filter: this is a required status check, and a required check that
+# never runs blocks the merge. With no model changes the diff is empty and the
+# job passes in seconds.
 on:
   pull_request:
-    paths: [ 'Sources/Scout/Scout.xcdatamodeld/**' ]
 
 permissions:
   contents: read
