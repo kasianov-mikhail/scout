@@ -42,14 +42,13 @@ struct LogCrashTests {
 
     @Test("Preserves sessionID captured at crash time, not the recovery session")
     func preservesCapturedSessionID() throws {
-        // Phase 1: "crashed" process captures its sessionID.
+        // The "crashed" process snapshot carries its own sessionID. A fresh
+        // UUID can never match the recovery session that `awakeFromInsert`
+        // assigns, so the test doesn't need to touch the `IDs.session`
+        // global — other suites mutate it concurrently.
         let crashedSessionID = UUID()
-        IDs.session = crashedSessionID
-        let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [])
+        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], sessionID: crashedSessionID)
 
-        // Phase 2: recovery process has a fresh sessionID — awakeFromInsert
-        // would use this unless logCrash overrides it.
-        IDs.session = UUID()
         #expect(IDs.session != crashedSessionID)
 
         try logCrash(crash, context: context)
