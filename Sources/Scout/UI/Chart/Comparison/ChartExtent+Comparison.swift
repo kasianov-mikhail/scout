@@ -26,9 +26,10 @@ extension ChartExtent {
         zip(segment, previousSegment(from: points)).map { ChartPoint(date: $0.date, count: $1.count) }
     }
 
-    /// Whether the comparison overlay has anything to show: true when the
-    /// current or the previous window holds any data. When both are empty
-    /// the comparison toggle is shown disabled.
+    /// Whether the comparison overlay has anything to show.
+    ///
+    /// True when the current or the previous window holds any data; when
+    /// both are empty the comparison toggle is shown disabled.
     ///
     /// `segment` is the current window's segment, which callers have already
     /// computed.
