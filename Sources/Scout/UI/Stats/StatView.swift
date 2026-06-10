@@ -32,6 +32,7 @@ struct StatView: View {
                         .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
                     ComparisonToggle(isOn: $isComparing)
+                        .disabled(!extent.canCompare(points: points, segment: segment))
 
                     if showList {
                         total(count: segment.total)
