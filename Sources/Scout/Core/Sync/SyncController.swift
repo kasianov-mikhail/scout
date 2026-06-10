@@ -30,15 +30,14 @@ typealias SyncAction = @MainActor () async throws -> Void
         let jobPlan = SyncJobPlan(engine: engine)
 
         try await dispatcher.performEnsuringBackground {
-            for job in jobPlan.jobs.shuffled() {
-                do {
-                    try await job()
-                } catch let error where Task.isCancelled {
-                    throw error
-                } catch {
-                    continue
+            await withTaskGroup(of: Void.self) { group in
+                for job in jobPlan.jobs.shuffled() {
+                    group.addTask {
+                        try? await job()
+                    }
                 }
             }
+            try Task.checkCancellation()
         }
     }
 

@@ -13,6 +13,8 @@ protocol RecordLookup {
 
 extension CKDatabase: RecordLookup {
     func lookup(id: CKRecord.ID) async throws -> CKRecord {
-        try await record(for: id)
+        try await runner { database in
+            try await database.record(for: id)
+        }
     }
 }

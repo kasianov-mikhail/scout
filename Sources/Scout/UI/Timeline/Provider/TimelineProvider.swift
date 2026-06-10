@@ -52,10 +52,16 @@ final class TimelineProvider: ObservableObject {
                     break
                 }
 
-                for lane in lanes {
-                    let chunk = try await lane.loadMore(in: feed.database)
-                    sessions += chunk.sessions
-                    events += chunk.events
+                try await withThrowingTaskGroup(of: (sessions: [Session], events: [Event]).self) { group in
+                    for lane in lanes {
+                        group.addTask {
+                            try await lane.loadMore(in: feed.database)
+                        }
+                    }
+                    for try await chunk in group {
+                        sessions += chunk.sessions
+                        events += chunk.events
+                    }
                 }
             }
 
@@ -74,10 +80,13 @@ final class TimelineProvider: ObservableObject {
 
 extension TimelineFeed {
     fileprivate func rail() async throws -> Rail {
-        try await Rail(
-            device: device(),
-            installs: installs(),
-            launches: launches()
+        async let device = self.device()
+        async let installs = self.installs()
+        async let launches = self.launches()
+        return try await Rail(
+            device: device,
+            installs: installs,
+            launches: launches
         )
     }
 }

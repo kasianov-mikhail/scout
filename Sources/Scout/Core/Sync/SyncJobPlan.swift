@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 struct SyncJobPlan: Sendable {
-    typealias Job = () async throws -> Void
+    typealias Job = @Sendable () async throws -> Void
 
     let engine: SyncEngine
 

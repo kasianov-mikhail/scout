@@ -64,11 +64,3 @@ struct QueueDispatcherTests {
         #expect(box.value == 3)
     }
 }
-
-private final class Box<T>: @unchecked Sendable {
-    var value: T
-
-    init(_ value: T) {
-        self.value = value
-    }
-}
