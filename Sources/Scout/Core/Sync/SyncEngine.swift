@@ -29,12 +29,26 @@ struct SyncEngine: @unchecked Sendable {
                 )
             }
 
-            try await SyncCoordinator(
-                database: database,
-                maxRetry: 3,
-                batch: batch
-            )
-            .upload()
+            // Records already counted into the server matrix on a previous
+            // attempt must not contribute again, or the matrix double-counts.
+            let pending = batch.filter { !$0.isAggregated }
+
+            if pending.count > 0 {
+                try await SyncCoordinator(
+                    database: database,
+                    maxRetry: 3,
+                    batch: pending
+                )
+                .upload()
+
+                for object in pending {
+                    object.isAggregated = true
+                }
+
+                // Persist right away so a crash before the final save
+                // doesn't replay the matrix contribution on the next cycle.
+                try context.save()
+            }
 
             for object in batch {
                 object.isSynced = true

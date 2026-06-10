@@ -20,6 +20,14 @@ protocol Syncable: SyncableObject {
 @objc(SyncableObject)
 class SyncableObject: IDObject {
     @NSManaged var isSynced: Bool
+
+    /// Whether this record's counts have been merged into the server matrix.
+    ///
+    /// Tracked separately from `isSynced` so a retry after a partial sync
+    /// failure doesn't re-contribute the batch to the aggregated matrix.
+    ///
+    @NSManaged var isAggregated: Bool
+
     @NSManaged var syncAttempts: Int
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
