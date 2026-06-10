@@ -1,0 +1,34 @@
+name: Schema
+
+on:
+  pull_request:
+    paths: [ Schema ]
+
+permissions:
+  contents: read
+
+jobs:
+  append-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check that no schema lines were removed
+        run: |
+          git show "origin/${{ github.base_ref }}:Schema" > /tmp/base-schema
+          awk '
+            NR == FNR { head[$0]++; next }
+            /^[[:space:]]*$/ { next }
+            head[$0]-- <= 0 { print }
+          ' Schema /tmp/base-schema > /tmp/removed-lines
+          if [ -s /tmp/removed-lines ]; then
+            echo "Production CloudKit schemas are append-only: cktool import-schema rejects removals."
+            echo "These lines exist on ${{ github.base_ref }} but are missing from this branch:"
+            echo
+            cat /tmp/removed-lines
+            exit 1
+          fi
