@@ -27,9 +27,10 @@ struct ActivityView: View {
 
                 List {
                     let points = data.points(on: extent.period)
+                    let segment = extent.segment(from: points)
 
                     ComparableChart(
-                        segment: extent.segment(from: points),
+                        segment: segment,
                         points: points,
                         extent: extent,
                         color: .green,
@@ -38,6 +39,7 @@ struct ActivityView: View {
                     .listRowSeparator(.hidden)
 
                     ComparisonToggle(isOn: $isComparing)
+                        .disabled(!extent.canCompare(points: points, segment: segment))
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)

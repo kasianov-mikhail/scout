@@ -23,7 +23,22 @@ extension ChartExtent {
     /// counterpart and are omitted; the chart draws no reference for them.
     ///
     func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        let previous = points.bucket(in: previousDomain, component: period.pointComponent)
-        return zip(segment, previous).map { ChartPoint(date: $0.date, count: $1.count) }
+        zip(segment, previousSegment(from: points)).map { ChartPoint(date: $0.date, count: $1.count) }
+    }
+
+    /// Whether the comparison overlay has anything to show: true when the
+    /// current or the previous window holds any data. When both are empty
+    /// the comparison toggle is shown disabled.
+    ///
+    /// `segment` is the current window's segment, which callers have already
+    /// computed.
+    ///
+    func canCompare<U: ChartNumeric>(points: [ChartPoint<U>], segment: [ChartPoint<U>]) -> Bool {
+        segment.total != .zero || previousSegment(from: points).total != .zero
+    }
+
+    /// Buckets `points` into the previous window.
+    private func previousSegment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
+        points.bucket(in: previousDomain, component: period.pointComponent)
     }
 }

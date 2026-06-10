@@ -23,6 +23,8 @@ struct ComparisonToggle: View {
     List {
         ComparisonToggle(isOn: .constant(true))
         ComparisonToggle(isOn: .constant(false))
+        ComparisonToggle(isOn: .constant(false))
+            .disabled(true)
     }
     .listStyle(.plain)
 }

@@ -35,8 +35,10 @@ struct MetricsView<T: ChartNumeric>: View {
         RangeControl(extent: $extent)
 
         List {
+            let segment = extent.segment(from: group.points)
+
             ComparableChart(
-                segment: extent.segment(from: group.points),
+                segment: segment,
                 points: group.points,
                 extent: extent,
                 color: .blue,
@@ -46,6 +48,7 @@ struct MetricsView<T: ChartNumeric>: View {
             .listRowSeparator(.hidden)
 
             ComparisonToggle(isOn: $isComparing)
+                .disabled(!extent.canCompare(points: group.points, segment: segment))
         }
         .listStyle(.plain)
         .navigationTitle(group.name)
