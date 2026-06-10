@@ -34,4 +34,33 @@ struct SyncEngineTests {
         #expect(event.syncAttempts == 1)
         #expect(!context.hasChanges)
     }
+
+    @Test("Uploads the matrix once and marks the batch aggregated")
+    func marksBatchAggregated() async throws {
+        let event = EventObject.stub(name: "x", in: context)
+        try context.save()
+
+        let engine = SyncEngine(database: database, context: context)
+        try await engine.send(type: EventObject.self)
+
+        #expect(event.isAggregated)
+        #expect(event.isSynced)
+        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
+    }
+
+    @Test("Does not re-contribute an aggregated batch to the matrix on retry")
+    func skipsMatrixUploadOnRetry() async throws {
+        // Simulate a crash after the matrix upload was persisted but before
+        // the final save: the record is aggregated yet still unsynced.
+        let event = EventObject.stub(name: "x", in: context)
+        event.isAggregated = true
+        try context.save()
+
+        let engine = SyncEngine(database: database, context: context)
+        try await engine.send(type: EventObject.self)
+
+        #expect(event.isSynced)
+        #expect(database.events.count == 1)
+        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 0)
+    }
 }
