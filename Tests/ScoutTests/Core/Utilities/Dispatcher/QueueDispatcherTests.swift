@@ -63,4 +63,25 @@ struct QueueDispatcherTests {
 
         #expect(box.value == 3)
     }
+
+    @Test("Work submitted mid-run coalesces into a single follow-up run")
+    func testCoalescesPendingWork() async throws {
+        let dispatcher = QueueDispatcher()
+        let box = Box([Int]())
+
+        let first = Task {
+            try await dispatcher.perform {
+                box.value.append(1)
+                try? await Task.sleep(for: .milliseconds(100))
+            }
+        }
+
+        // Let the first work item start, then pile up two submissions behind it.
+        try? await Task.sleep(for: .milliseconds(20))
+        try await dispatcher.perform { box.value.append(2) }
+        try await dispatcher.perform { box.value.append(3) }
+        try await first.value
+
+        #expect(box.value == [1, 3])
+    }
 }
