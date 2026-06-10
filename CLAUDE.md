@@ -16,6 +16,10 @@ Multi-line doc comments (`///`) must end with a trailing empty `///` line, excep
 
 Function/method **signatures** (declarations) should be written on a single line, even with many parameters or default values — do not wrap parameters onto separate lines. This applies to declarations only, not to call sites: a function or initializer **call** with several arguments wraps each argument onto its own line.
 
+# Design
+
+When planning visual design (layout proportions, spacing, sizing of UI elements), prefer the golden ratio (≈1.618) for proportions where a ratio choice is otherwise arbitrary.
+
 # Scout conventions
 
 Scout UI strings must always render in source English: use `Text(verbatim: …)` for literals (or `.navigationTitle(en: …)` for titles) so they don't resolve through the host app's `LocalizedStringKey` catalog.
