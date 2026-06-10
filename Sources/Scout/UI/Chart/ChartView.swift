@@ -8,6 +8,14 @@
 import Charts
 import SwiftUI
 
+/// Fraction of its slot a bar occupies.
+///
+/// Pinned explicitly on both the plain bar marks and the comparison chart's
+/// geometry, so the two modes render identical bars regardless of the
+/// framework's default width.
+///
+let chartBarRatio: Double = 0.7
+
 struct ChartView<T: ChartNumeric>: View {
     let segment: [ChartPoint<T>]
     let timing: ChartTiming
@@ -18,21 +26,16 @@ struct ChartView<T: ChartNumeric>: View {
         Chart(segment, id: \.date) { point in
             BarMark(
                 x: .value("X", point.date, unit: unit),
-                y: .value("Y", point.count)
+                y: .value("Y", point.count),
+                width: .ratio(chartBarRatio)
             )
         }
         .chartXAxis {
-            if let values = timing.tickValues {
-                AxisMarks(format: unit.chartFormat, values: values)
-            } else {
-                AxisMarks(format: unit.chartFormat)
-            }
+            AxisMarks(format: unit.chartFormat, values: timing.tickDates(for: segment))
         }
         .chartBackground { _ in
             if segment.total == .zero {
-                Text(verbatim: "No results")
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundStyle(.gray.opacity(0.7))
+                ChartPlaceholder()
             }
         }
         .aspectRatio(4 / 3, contentMode: .fit)

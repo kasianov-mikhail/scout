@@ -23,7 +23,7 @@ struct ChartComparisonTests {
         let points = makePoints(in: extent.domain, count: 2) + makePoints(in: extent.previousDomain, count: 5)
 
         let segment = extent.segment(from: points)
-        let reference = extent.referenceSegment(from: points)
+        let reference = extent.referenceSegment(from: points, alignedTo: segment)
 
         #expect(reference.count == segment.count)
         #expect(reference.map(\.date) == segment.map(\.date))
@@ -31,13 +31,28 @@ struct ChartComparisonTests {
         #expect(segment.allSatisfy { $0.count == 2 })
     }
 
+    @Test("Reference segment pairs buckets by offset across month lengths") func testMonthLengthMismatch() {
+        let domain = Date(year: 2026, month: 5, day: 10)..<Date(year: 2026, month: 6, day: 10)
+        let extent = ChartExtent(period: Period.month, domain: domain)
+        let points = makePoints(in: extent.domain, count: 2) + makePoints(in: extent.previousDomain, count: 5)
+
+        let segment = extent.segment(from: points)
+        let reference = extent.referenceSegment(from: points, alignedTo: segment)
+
+        #expect(segment.count == 31)
+        #expect(reference.count == 30)
+        #expect(reference.map(\.date) == segment.prefix(30).map(\.date))
+        #expect(reference.allSatisfy { $0.count == 5 })
+    }
+
     @Test("Reference segment is zero without previous data") func testEmptyReference() {
         let extent = ChartExtent(period: Period.week)
         let points = makePoints(in: extent.domain, count: 3)
 
-        let reference = extent.referenceSegment(from: points)
+        let segment = extent.segment(from: points)
+        let reference = extent.referenceSegment(from: points, alignedTo: segment)
 
-        #expect(reference.count == extent.segment(from: points).count)
+        #expect(reference.count == segment.count)
         #expect(reference.allSatisfy { $0.count == 0 })
     }
 

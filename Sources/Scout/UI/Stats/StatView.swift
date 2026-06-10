@@ -28,7 +28,7 @@ struct StatView: View {
                     let points = data.flatMap(\.points)
                     let segment = extent.segment(from: points)
 
-                    chart(segment: segment, points: points)
+                    ComparableChart(segment: segment, points: points, extent: extent, color: color, isComparing: isComparing)
                         .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
                     ComparisonToggle(isOn: $isComparing)
@@ -43,20 +43,6 @@ struct StatView: View {
         }
         .onAppear {
             tint.value = nil
-        }
-    }
-
-    @ViewBuilder func chart(segment: [ChartPoint<Int>], points: [ChartPoint<Int>]) -> some View {
-        if isComparing {
-            ComparisonChartView(
-                segment: segment,
-                reference: extent.referenceSegment(from: points),
-                timing: extent,
-                color: color
-            )
-        } else {
-            ChartView(segment: segment, timing: extent)
-                .foregroundStyle(color)
         }
     }
 
