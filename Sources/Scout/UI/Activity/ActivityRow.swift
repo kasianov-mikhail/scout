@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ActivityRow: View {
     let period: ActivityPeriod
+    let color: Color
     var systemImage: String? = nil
 
     @ObservedObject var activity: ActivityProvider
@@ -17,22 +18,32 @@ struct ActivityRow: View {
         Row {
             if let systemImage {
                 Image(systemName: systemImage)
+                    .foregroundColor(color)
                     .frame(width: 24)
             }
             Text(period.title)
                 .foregroundColor(.primary)
             Spacer()
 
-            let count = try? activity.result?.get()
-                .points(on: period)
-                .bucket(on: period)
-                .max()?
-                .count
-
-            RedactedText(count: count)
+            RowSummary(series: series, count: count, color: color)
         } destination: {
             ActivityView(activity: activity, period: period)
         }
+    }
+
+    /// Daily activity values; `nil` while the provider is still loading.
+    private var days: [ChartPoint<Int>]? {
+        try? activity.result?.get()
+            .points(on: period)
+            .bucket(on: period)
+    }
+
+    private var series: MiniChartSeries? {
+        days.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .latest) }
+    }
+
+    private var count: Int? {
+        days?.max()?.count
     }
 }
 
@@ -43,6 +54,7 @@ struct ActivityRow: View {
         List {
             ActivityRow(
                 period: .daily,
+                color: .green,
                 activity: ActivityProvider()
             )
         }
