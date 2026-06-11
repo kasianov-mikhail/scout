@@ -8,24 +8,51 @@
 import SwiftUI
 
 struct ParamView: View {
-    let item: ParamProvider.Item
+    private let key: String
+    private let value: ParamValue
+    private let raw: String
 
     @EnvironmentObject var tint: Tint
 
+    /// Shows a fetched parameter, keeping its raw text for sharing.
+    init(item: ParamProvider.Item) {
+        key = item.key
+        value = ParamValue(parsing: item.value)
+        raw = item.value
+    }
+
+    /// Shows a nested value reached by drilling into a container.
+    init(node: ParamValue.Node) {
+        key = node.label
+        value = node.value
+        raw = node.value.text
+    }
+
     var body: some View {
-        ScrollView {
-            Text(item.value)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal)
-                .monospaced()
-                .textSelection(.enabled)
-                .navigationTitle(item.key)
-            Spacer()
+        Group {
+            if value.isContainer {
+                List(value.nodes) { node in
+                    ZStack {
+                        ParamNodeRow(node: node)
+
+                        NavigationLink {
+                            ParamView(node: node)
+                        } label: {
+                            EmptyView()
+                        }
+                        .opacity(0)
+                    }
+                }
+                .listStyle(.plain)
+            } else {
+                ParamScalarView(raw: raw, value: value)
+            }
         }
+        .navigationTitle(key)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                ShareLink(item: item.value)
-                CopyButton(text: item.value)
+                ShareLink(item: raw)
+                CopyButton(text: raw)
                 Spacer()
             }
         }
@@ -35,22 +62,80 @@ struct ParamView: View {
     }
 }
 
+/// The scalar layout of a parameter value: a kind badge for recognized scalars
+/// above the verbatim text.
+///
+private struct ParamScalarView: View {
+    let raw: String
+    let value: ParamValue
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 13) {
+                if case .stringConvertible(let convertible) = value {
+                    ParamBadge(convertible: convertible)
+                }
+
+                Text(raw)
+                    .monospaced()
+                    .textSelection(.enabled)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+        }
+    }
+}
+
+/// A row of the expandable value tree: a colored kind icon, the key or index,
+/// and the scalar value or a child count for containers.
+///
+struct ParamNodeRow: View {
+    let node: ParamValue.Node
+
+    var body: some View {
+        HStack(spacing: 13) {
+            ParamIcon(value: node.value)
+
+            Text(node.label)
+                .foregroundStyle(node.value.isContainer ? .primary : .secondary)
+
+            Spacer()
+
+            Text(node.value.summary)
+                .monospaced()
+                .font(.system(size: 16))
+                .foregroundStyle(node.value.isContainer ? .tertiary : .primary)
+                .lineLimit(1)
+        }
+    }
+}
+
 // MARK: - Preview
 
-#Preview {
+#Preview("Dictionary") {
     NavigationStack {
-        ParamView(
-            item: ParamProvider.Item(
-                key: "payload",
-                value: """
-                    {
-                      "query": "8.8.8.8",
-                      "country": "United States",
-                      "isp": "Google LLC"
-                    }
-                    """
-            )
-        )
+        ParamView(item: ParamProvider.Item.sampleProfile.first { $0.key == "preferences" }!)
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Array") {
+    NavigationStack {
+        ParamView(item: ParamProvider.Item.sampleExperiments.first { $0.key == "assignments" }!)
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Scalar") {
+    NavigationStack {
+        ParamView(item: ParamProvider.Item.samplePurchase.first { $0.key == "purchased_at" }!)
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Text") {
+    NavigationStack {
+        ParamView(item: ParamProvider.Item.sampleCrash.first { $0.key == "stack_trace" }!)
     }
     .environmentObject(Tint())
 }
