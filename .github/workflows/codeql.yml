@@ -19,7 +19,6 @@ jobs:
     permissions:
       contents: read
       security-events: write
-      actions: read
 
     steps:
       - uses: actions/checkout@v6
@@ -41,5 +40,3 @@ jobs:
             build
 
       - uses: github/codeql-action/analyze@v4
-        with:
-          category: "/language:swift"
