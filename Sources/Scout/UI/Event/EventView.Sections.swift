@@ -68,6 +68,7 @@ extension EventView {
                 StatRow(
                     color: .blue,
                     period: period,
+                    systemImage: "calendar",
                     stat: stat
                 ) {
                     StatView(

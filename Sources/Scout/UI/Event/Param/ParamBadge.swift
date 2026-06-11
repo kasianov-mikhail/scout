@@ -17,15 +17,15 @@ struct ParamIcon: View {
             switch value.icon {
             case .symbol(let name):
                 Image(systemName: name)
-                    .font(.footnote.weight(.medium))
+                    .font(.body)
             case .text(let text):
                 Text(text)
-                    .font(.footnote.weight(.semibold))
+                    .font(.body.weight(.semibold))
                     .fixedSize()
             }
         }
         .foregroundStyle(value.color)
-        .frame(width: 21)
+        .frame(width: 24)
     }
 }
 
@@ -47,7 +47,7 @@ extension ParamValue {
     /// The accent color of the value's kind.
     var color: Color {
         switch self {
-        case .string: .gray
+        case .string: .primary
         case .stringConvertible(let convertible): convertible.color
         case .dictionary: .indigo
         case .array: .brown

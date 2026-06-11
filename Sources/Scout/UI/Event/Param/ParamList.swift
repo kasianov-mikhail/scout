@@ -70,7 +70,7 @@ struct ParamRow: View {
             } else {
                 HStack(spacing: 13) {
                     Redacted(length: 2)
-                        .frame(width: 21)
+                        .frame(width: 24)
                         .opacity(0.5)
 
                     Redacted(length: 8).opacity(0.5)
