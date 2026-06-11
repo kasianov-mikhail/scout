@@ -13,6 +13,11 @@ struct ParamList: View {
 
     @EnvironmentObject var tint: Tint
 
+    /// All parameters as `key: value` lines, used for sharing and copying.
+    private var text: String {
+        items.map(\.description).joined(separator: "\n")
+    }
+
     var body: some View {
         List {
             ForEach(items) { item in
@@ -21,6 +26,13 @@ struct ParamList: View {
         }
         .listStyle(.plain)
         .navigationTitle(en: "Params")
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                ShareLink(item: text)
+                CopyButton(text: text)
+                Spacer()
+            }
+        }
         .onAppear {
             tint.value = nil
         }
@@ -32,29 +44,41 @@ struct ParamRow: View {
 
     var body: some View {
         ZStack {
-            HStack {
-                if let key = item?.key {
-                    Text(key).foregroundStyle(.secondary)
-                } else {
-                    Redacted(length: 8).opacity(0.5)
-                }
-
-                Spacer()
-
-                if let value = item?.value {
-                    Text(value).monospaced().font(.system(size: 16))
-                } else {
-                    Redacted(length: 8).opacity(0.5)
-                }
-            }
-
             if let item {
+                let value = ParamValue(parsing: item.value)
+
+                HStack(spacing: 13) {
+                    ParamIcon(value: value)
+
+                    Text(item.key)
+                        .foregroundStyle(.secondary)
+
+                    Spacer()
+
+                    Text(value.summary)
+                        .monospaced()
+                        .font(.system(size: 16))
+                        .foregroundStyle(value.isContainer ? .secondary : .primary)
+                }
+
                 NavigationLink {
                     ParamView(item: item)
                 } label: {
                     EmptyView()
                 }
                 .opacity(0)
+            } else {
+                HStack(spacing: 13) {
+                    Redacted(length: 2)
+                        .frame(width: 21)
+                        .opacity(0.5)
+
+                    Redacted(length: 8).opacity(0.5)
+
+                    Spacer()
+
+                    Redacted(length: 8).opacity(0.5)
+                }
             }
         }
         .lineLimit(1)
@@ -68,12 +92,7 @@ struct ParamRow: View {
 
 #Preview {
     NavigationStack {
-        let items = [
-            ParamProvider.Item(key: "key1", value: "value1"),
-            ParamProvider.Item(key: "key2", value: "value2"),
-            ParamProvider.Item(key: "key3", value: "value3"),
-        ]
-        ParamList(items: items)
+        ParamList(items: ParamProvider.Item.sampleMetrics)
     }
     .environmentObject(Tint())
 }
