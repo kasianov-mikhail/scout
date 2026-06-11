@@ -89,7 +89,7 @@ extension TimelineExport {
     private func header(for launch: Launch) -> String {
         var parts = ["### Launch"]
         if let date = launch.startDate {
-            parts.append(Self.minute.format(date))
+            parts.append(Self.minute(date))
         }
         if let id = launch.launchID {
             parts.append("(\(shortID(id)))")
@@ -113,11 +113,11 @@ extension TimelineExport {
     ///
     private func range(from start: Date, to end: Date?) -> String {
         guard let end else {
-            return Self.minute.format(start)
+            return Self.minute(start)
         }
         let sameDay = Self.day.format(start) == Self.day.format(end)
-        let suffix = sameDay ? Self.time.format(end) : Self.minute.format(end)
-        return "\(Self.minute.format(start))–\(suffix)"
+        let suffix = sameDay ? Self.time.format(end) : Self.minute(end)
+        return "\(Self.minute(start))–\(suffix)"
     }
 }
 
@@ -157,8 +157,11 @@ extension TimelineExport {
 
     private static let timestamp = Date.ISO8601FormatStyle()
     private static let day = utcStyle("\(year: .padded(4))-\(month: .twoDigits)-\(day: .twoDigits)")
-    private static let minute = utcStyle("\(year: .padded(4))-\(month: .twoDigits)-\(day: .twoDigits) \(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits)")
     private static let time = utcStyle("\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits)")
+
+    private static func minute(_ date: Date) -> String {
+        "\(day.format(date)) \(time.format(date))"
+    }
 
     private static func utcStyle(_ format: Date.FormatString) -> Date.VerbatimFormatStyle {
         Date.VerbatimFormatStyle(format: format, timeZone: .gmt, calendar: Calendar(identifier: .gregorian))
