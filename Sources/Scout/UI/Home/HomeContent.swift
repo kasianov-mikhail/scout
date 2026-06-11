@@ -68,15 +68,15 @@ struct HomeContent: View {
                     .padding(.bottom, 4)
             }
             .task(id: section) {
-                    switch section {
-                    case .sessions:
-                        await sessionStat.fetchIfNeeded(in: database)
-                    case .crashes:
-                        await crashStat.fetchIfNeeded(in: database)
-                    case .users:
-                        await activity.fetchIfNeeded(in: database)
-                    }
+                switch section {
+                case .sessions:
+                    await sessionStat.fetchIfNeeded(in: database)
+                case .crashes:
+                    await crashStat.fetchIfNeeded(in: database)
+                case .users:
+                    await activity.fetchIfNeeded(in: database)
                 }
+            }
         }
     }
 

@@ -41,9 +41,10 @@ enum HomeSection: CaseIterable, Identifiable {
     }
 }
 
-/// A capsule-per-section switcher that tints the selected capsule with the
-/// section color. Capsules are made of Liquid Glass where available and fall
-/// back to solid fills on older systems.
+/// A capsule-per-section switcher tinted with the selected section's color.
+///
+/// Capsules are made of Liquid Glass where available and fall back to solid
+/// fills on older systems.
 ///
 struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
