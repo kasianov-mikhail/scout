@@ -9,6 +9,10 @@ import CloudKit
 
 extension Event {
     static func fetch(sessionIDs: [UUID], name: String?, in database: AppDatabase) async throws -> [Event] {
+        guard sessionIDs.count > 0 else {
+            return []
+        }
+
         let ids = sessionIDs.map(\.uuidString)
         let predicate = predicate(ids: ids, name: name)
         let query = CKQuery(recordType: EventObject.recordType, predicate: predicate)
