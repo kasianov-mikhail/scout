@@ -74,10 +74,7 @@ struct Timeline: View {
         guard case .success(let rail) = provider.result else {
             return nil
         }
-        let text = TimelineItem.items(from: rail)
-            .map { "\($0.date.formatted(.iso8601))  \($0.name)" }
-            .joined(separator: "\n")
-        return text.count > 0 ? text : nil
+        return TimelineExport(rail: rail).text
     }
 
     private func list(for rail: Rail) -> some View {
