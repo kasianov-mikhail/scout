@@ -61,6 +61,7 @@ struct MetricsContent<T: ChartNumeric>: View {
             Text(group.points.total[keyPath: formatter])
         }
         .monospaced()
+        .italic()
         .font(.system(size: 17))
         .lineLimit(1)
     }
