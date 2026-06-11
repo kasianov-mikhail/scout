@@ -27,10 +27,14 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
                 ScrollView {
                     content
                 }
-                .overlay(alignment: .bottomTrailing) {
-                    if let anchorFrame, let direction = RecenterDirection(frame: anchorFrame, viewport: viewport) {
-                        RecenterButton(direction: direction) {
-                            center(with: proxy)
+                .toolbar {
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        if let direction = recenterDirection(in: viewport) {
+                            Button {
+                                center(with: proxy)
+                            } label: {
+                                Image(systemName: direction.symbol)
+                            }
                         }
                     }
                 }
@@ -71,6 +75,10 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
         }
     }
 
+    private func recenterDirection(in viewport: CGRect) -> RecenterDirection? {
+        anchorFrame.flatMap { frame in RecenterDirection(frame: frame, viewport: viewport) }
+    }
+
     private func center(with proxy: ScrollViewProxy) {
         if let id {
             proxy.scrollTo(id, anchor: .center)
@@ -103,18 +111,42 @@ extension EnvironmentValues {
 #Preview {
     let anchor = 38
 
-    LazyVStack(spacing: 0) {
-        ForEach(0..<40, id: \.self) { row in
-            HStack {
-                Text("Row \(row)").monospaced()
-                Spacer()
-                if row == anchor {
-                    Text("anchor").foregroundStyle(.tint).font(.caption)
+    NavigationStack {
+        LazyVStack(spacing: 0) {
+            ForEach(0..<40, id: \.self) { row in
+                HStack {
+                    Text("Row \(row)").monospaced()
+                    Spacer()
+                    if row == anchor {
+                        Text("anchor").foregroundStyle(.tint).font(.caption)
+                    }
+                }
+                .padding()
+                .background {
+                    if row == anchor {
+                        Color.accentColor.opacity(0.12)
+                        GeometryReader { geo in
+                            Color.clear.preference(key: AnchorFrameKey.self, value: geo.frame(in: .global))
+                        }
+                    }
                 }
             }
-            .padding()
-            .background(row == anchor ? Color.accentColor.opacity(0.12) : .clear)
+        }
+        .anchoredScroll(id: anchor)
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                Button {
+                } label: {
+                    Image(systemName: "square.and.arrow.up")
+                }
+
+                Button {
+                } label: {
+                    Image(systemName: "doc.on.doc")
+                }
+
+                Spacer()
+            }
         }
     }
-    .anchoredScroll(id: anchor)
 }

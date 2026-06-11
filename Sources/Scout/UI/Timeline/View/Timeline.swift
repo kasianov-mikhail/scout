@@ -55,11 +55,29 @@ struct Timeline: View {
                     Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
                 }
             }
+
+            ToolbarItemGroup(placement: .bottomBar) {
+                if let text = exportText {
+                    ShareLink(item: text)
+                    CopyButton(text: text)
+                    Spacer()
+                }
+            }
         }
         .task(load)
         .onChange(of: scope) { _ in
             Task(operation: load)
         }
+    }
+
+    private var exportText: String? {
+        guard case .success(let rail) = provider.result else {
+            return nil
+        }
+        let text = TimelineItem.items(from: rail)
+            .map { "\($0.date.formatted(.iso8601))  \($0.name)" }
+            .joined(separator: "\n")
+        return text.count > 0 ? text : nil
     }
 
     private func list(for rail: Rail) -> some View {
