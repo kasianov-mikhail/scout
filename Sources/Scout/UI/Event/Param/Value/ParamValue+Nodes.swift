@@ -18,8 +18,10 @@ extension ParamValue {
         var id: String { label }
     }
 
-    /// The direct children of a container: dictionary entries keyed by name,
-    /// array elements keyed by index. Scalars have none.
+    /// The direct children of a container.
+    ///
+    /// Dictionary entries are keyed by name, array elements by index.
+    /// Scalars have none.
     ///
     var nodes: [Node] {
         switch self {
