@@ -29,6 +29,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
+    permissions:
+      contents: read
+      id-token: write
+
     strategy:
       matrix:
         include:
@@ -73,3 +77,16 @@ jobs:
             xcrun xccov view --report --only-targets TestResults.xcresult
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Convert coverage to Cobertura
+        run: |
+          brew install a7ex/homebrew-formulae/xcresultparser
+          xcresultparser --output-format cobertura TestResults.xcresult > coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage.xml
+          flags: ios-${{ matrix.ios }}
+          disable_search: true
+          use_oidc: true
