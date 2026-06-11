@@ -50,7 +50,20 @@ struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
 
     var body: some View {
-        if #available(iOS 26.0, *) {
+        #if compiler(>=6.2)
+            if #available(iOS 26.0, *) {
+                glassPicker
+            } else {
+                solidPicker
+            }
+        #else
+            solidPicker
+        #endif
+    }
+
+    #if compiler(>=6.2)
+        @available(iOS 26.0, *)
+        private var glassPicker: some View {
             GlassEffectContainer(spacing: 16) {
                 HStack(spacing: 16) {
                     ForEach(HomeSection.allCases) { section in
@@ -59,12 +72,14 @@ struct HomeSectionPicker: View {
                     }
                 }
             }
-        } else {
-            HStack(spacing: 16) {
-                ForEach(HomeSection.allCases) { section in
-                    segment(for: section)
-                        .background(Capsule().fill(selection == section ? section.color : Color(.systemGray6)))
-                }
+        }
+    #endif
+
+    private var solidPicker: some View {
+        HStack(spacing: 16) {
+            ForEach(HomeSection.allCases) { section in
+                segment(for: section)
+                    .background(Capsule().fill(selection == section ? section.color : Color(.systemGray6)))
             }
         }
     }
