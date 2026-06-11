@@ -62,26 +62,6 @@ struct ParamRow: View {
             dimension[.trailing]
         }
     }
-
-    struct ParamView: View {
-        let item: ParamProvider.Item
-
-        @EnvironmentObject var tint: Tint
-
-        var body: some View {
-            ScrollView {
-                Text(item.value)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
-                    .monospaced()
-                    .navigationTitle(item.key)
-                Spacer()
-            }
-            .onAppear {
-                tint.value = nil
-            }
-        }
-    }
 }
 
 // MARK: - Preview
