@@ -101,7 +101,7 @@ extension EventView {
                 Image(systemName: "calendar.day.timeline.left")
                     .foregroundColor(.blue)
                     .frame(width: 24)
-                Text(verbatim: "Timeline")
+                Text(verbatim: "Timeline").foregroundStyle(.blue)
                 Spacer()
             } destination: {
                 Timeline(deviceID: deviceID, event: event)
