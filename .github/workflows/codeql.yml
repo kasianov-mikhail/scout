@@ -18,7 +18,7 @@ concurrency:
 jobs:
   analyze:
     runs-on: macos-26
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     permissions:
       contents: read
@@ -33,11 +33,15 @@ jobs:
           languages: swift
           build-mode: manual
 
+      # CodeQL tracing slows compilation down severalfold, so build a single
+      # architecture: the generic simulator destination would otherwise build
+      # both arm64 and x86_64, doubling the traced work for no analysis gain.
       - name: Build
         run: |
           xcodebuild \
             -scheme Scout \
             -destination 'generic/platform=iOS Simulator' \
+            ARCHS=arm64 \
             build
 
       - uses: github/codeql-action/analyze@v4
