@@ -1,0 +1,97 @@
+name: API
+
+# No paths filter: this is a required status check, and a required check that
+# never runs blocks the merge. The labeled/unlabeled triggers let the
+# api-breaking label re-evaluate an intentional break without a new push.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api-breakage:
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
+      # only processed by the Xcode build system), so instead of
+      # `swift package diagnose-api-breaking-changes` we build both versions
+      # with xcodebuild and compare swift-api-digester dumps.
+      - name: Dump current API
+        run: |
+          xcodebuild \
+            -scheme Scout \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath /tmp/dd-current \
+            -quiet \
+            build
+          ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
+          xcrun swift-api-digester -dump-sdk -module Scout -o /tmp/current.json \
+            -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+            -target "arm64-apple-ios${ios}-simulator" \
+            -I /tmp/dd-current/Build/Products/Debug-iphonesimulator
+
+      - name: Dump baseline API
+        run: |
+          baseline=$(git tag --sort=-v:refname | head -1)
+          if [ -z "$baseline" ]; then
+            echo "No release tags found, nothing to compare against."
+            exit 0
+          fi
+          echo "Comparing against $baseline"
+          git worktree add /tmp/baseline "$baseline"
+          cd /tmp/baseline
+          xcodebuild \
+            -scheme Scout \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath /tmp/dd-baseline \
+            -quiet \
+            build
+          ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
+          xcrun swift-api-digester -dump-sdk -module Scout -o /tmp/baseline.json \
+            -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
+            -target "arm64-apple-ios${ios}-simulator" \
+            -I /tmp/dd-baseline/Build/Products/Debug-iphonesimulator
+
+      - name: Compare
+        run: |
+          if [ ! -f /tmp/baseline.json ]; then
+            exit 0
+          fi
+          xcrun swift-api-digester -diagnose-sdk \
+            -input-paths /tmp/baseline.json -input-paths /tmp/current.json \
+            > /tmp/report.txt 2>&1
+          breakage=$(grep -v -e '^/\*' -e '^[[:space:]]*$' /tmp/report.txt || true)
+          if [ -z "$breakage" ]; then
+            echo "No public API changes against the latest release." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          {
+            echo "### Public API changes against the latest release"
+            echo '```'
+            echo "$breakage"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "$breakage"
+          if ${{ contains(github.event.pull_request.labels.*.name, 'api-breaking') }}; then
+            echo
+            echo "The api-breaking label is set, treating the break as intentional."
+            exit 0
+          fi
+          echo
+          echo "This PR changes the public API of Scout: existing integrations may stop"
+          echo "compiling, which requires a major release. If the break is intentional,"
+          echo "add the api-breaking label to this PR to acknowledge it."
+          exit 1
