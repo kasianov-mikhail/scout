@@ -97,22 +97,15 @@ extension EventView {
         }
 
         func timelineRow(deviceID: UUID) -> some View {
-            ZStack {
-                HStack {
-                    Text(verbatim: "Timeline").foregroundStyle(.blue)
-                    Spacer()
-                }
-
-                NavigationLink {
-                    Timeline(deviceID: deviceID, event: event)
-                } label: {
-                    EmptyView()
-                }
-                .opacity(0)
+            Row {
+                Image(systemName: "calendar.day.timeline.left")
+                    .frame(width: 24)
+                Text(verbatim: "Timeline")
+                Spacer()
+            } destination: {
+                Timeline(deviceID: deviceID, event: event)
             }
-            .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                dimension[.trailing]
-            }
+            .foregroundStyle(.blue)
         }
     }
 }
