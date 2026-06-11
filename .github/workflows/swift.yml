@@ -82,6 +82,7 @@ jobs:
         env:
           HOMEBREW_REQUIRE_TAP_TRUST: 1
         run: |
+          brew update --quiet
           brew trust --formula a7ex/homebrew-formulae/xcresultparser
           brew install a7ex/homebrew-formulae/xcresultparser
           xcresultparser --output-format cobertura TestResults.xcresult > coverage.xml
