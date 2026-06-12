@@ -1,5 +1,12 @@
 <img width="1371" alt="logo" src="https://github.com/user-attachments/assets/9e27f4e8-603b-4ec5-b0b0-e3d2f8d0d8d9">
 
+[![Swift](https://github.com/kasianov-mikhail/scout/actions/workflows/swift.yml/badge.svg)](https://github.com/kasianov-mikhail/scout/actions/workflows/swift.yml)
+[![codecov](https://codecov.io/gh/kasianov-mikhail/scout/branch/main/graph/badge.svg)](https://codecov.io/gh/kasianov-mikhail/scout)
+[![Release](https://img.shields.io/github/v/release/kasianov-mikhail/scout)](https://github.com/kasianov-mikhail/scout/releases)
+![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange)
+![Platform](https://img.shields.io/badge/platform-iOS%2016%2B-blue)
+[![License](https://img.shields.io/github/license/kasianov-mikhail/scout)](LICENSE)
+
 ## Description
 Scout is an iOS logging and analytics framework backed by CloudKit. It collects structured logs, metrics, and crash reports from your app and syncs them to a public CloudKit database where you can inspect them through a built-in SwiftUI dashboard.
 
