@@ -26,8 +26,8 @@ struct Timeline: View {
                 ProgressView().frame(maxHeight: .infinity)
             case .failure(let error):
                 errorView(for: error)
-            case .success(let rail):
-                list(for: rail)
+            case .success:
+                list
             }
         }
         .navigationTitle(en: "Multi-Rail")
@@ -57,7 +57,7 @@ struct Timeline: View {
             }
 
             ToolbarItemGroup(placement: .bottomBar) {
-                if let text = exportText {
+                if let text = provider.exportText {
                     ShareLink(item: text)
                     CopyButton(text: text)
                     Spacer()
@@ -70,15 +70,8 @@ struct Timeline: View {
         }
     }
 
-    private var exportText: String? {
-        guard case .success(let rail) = provider.result else {
-            return nil
-        }
-        return TimelineExport(rail: rail).text
-    }
-
-    private func list(for rail: Rail) -> some View {
-        let items = TimelineItem.items(from: rail)
+    private var list: some View {
+        let items = provider.items
         let anchorIndex = event.flatMap { event in items.firstIndex { $0.id == event.id } }
 
         // The legend floats over the top of the list instead of sitting above

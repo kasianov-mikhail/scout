@@ -14,7 +14,7 @@ extension TimelineItem {
         for install in rail.installs {
             for launch in install.launches {
                 for session in launch.sessions {
-                    for event in session.events.sorted(byDate: \.date) {
+                    for event in session.events {
                         if let date = event.date {
                             result.append(
                                 TimelineItem(

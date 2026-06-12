@@ -19,7 +19,7 @@ extension Event {
 
         return
             try await database
-            .readAll(matching: query, fields: nil)
+            .readAll(matching: query, fields: Event.desiredKeys)
             .map(Event.init)
     }
 

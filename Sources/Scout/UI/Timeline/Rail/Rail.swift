@@ -7,6 +7,13 @@
 
 import CloudKit
 
+/// A device's full lifecycle tree: installs, their launches, their sessions,
+/// and the events and crashes inside each session.
+///
+/// Invariant: every level is sorted ascending by date — `Rail.init` sorts the
+/// tree once at construction, so consumers (rows, split, export) can rely on
+/// the order instead of re-sorting.
+///
 struct Rail: Identifiable {
     let device: Device
     var installs: [InstallRoot]
