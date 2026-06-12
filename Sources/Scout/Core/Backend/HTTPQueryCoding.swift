@@ -45,10 +45,14 @@ struct HTTPSort: Codable, Equatable, Sendable {
 /// server has no equivalent for it.
 ///
 struct UnsupportedQueryError: LocalizedError {
-    let predicate: NSPredicate
+    let format: String
+
+    init(predicate: NSPredicate) {
+        format = predicate.predicateFormat
+    }
 
     var errorDescription: String? {
-        "The predicate '\(predicate.predicateFormat)' cannot be sent to a Scout server"
+        "The predicate '\(format)' cannot be sent to a Scout server"
     }
 }
 
