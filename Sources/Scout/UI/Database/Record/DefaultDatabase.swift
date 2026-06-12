@@ -29,7 +29,7 @@ struct DefaultDatabase: AppDatabase {
         RecordChunk(records: [], cursor: nil)
     }
 
-    func lookup(id: CKRecord.ID) async throws -> CKRecord {
+    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
         Event.sampleRecords.randomElement()!
     }
 }

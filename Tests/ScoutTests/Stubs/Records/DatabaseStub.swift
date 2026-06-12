@@ -40,7 +40,7 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
         return counts[recordType] ?? 0
     }
 
-    func lookup(id: CKRecord.ID) async throws -> CKRecord {
+    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
         throw CKError(.unknownItem)
     }
 
