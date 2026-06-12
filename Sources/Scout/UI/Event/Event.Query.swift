@@ -9,17 +9,17 @@ import Foundation
 
 extension Event {
     struct Query {
-        var levels = Set(Level.allCases)
+        private static let allLevels = Set(Level.allCases)
+
+        var levels = Query.allLevels
         var text = ""
         var name = ""
-        var installID: UUID?
-        var sessionID: UUID?
         var dates: Range<Date>?
 
         func buildPredicate() -> NSPredicate {
             var predicates: [NSPredicate] = []
 
-            if levels != Set(Level.allCases) {
+            if levels != Query.allLevels {
                 predicates.append(.init(format: "level IN %@", levels.map(\.rawValue)))
             }
             if !text.isEmpty {
@@ -28,50 +28,11 @@ extension Event {
             if !name.isEmpty {
                 predicates.append(.init(format: "name == %@", name))
             }
-            if let installID = installID?.uuidString {
-                predicates.append(.init(format: "install_id == %@", installID))
-            }
-            if let sessionID = sessionID?.uuidString {
-                predicates.append(.init(format: "session_id == %@", sessionID))
-            }
             if let dates {
-                predicates.append(
-                    .init(
-                        format: "date >= %@ AND date < %@",
-                        dates.lowerBound as NSDate,
-                        dates.upperBound as NSDate
-                    )
-                )
+                predicates.append(dates.datePredicate)
             }
 
             return NSCompoundPredicate(type: .and, subpredicates: predicates)
         }
-    }
-}
-
-extension Event.Query: CustomStringConvertible {
-    var description: String {
-        var components: [String] = []
-
-        if levels != Set(Event.Level.allCases) {
-            components.append("levels: \(levels.map(\.description).joined(separator: ", "))")
-        }
-        if !text.isEmpty {
-            components.append("text: \(text)")
-        }
-        if !name.isEmpty {
-            components.append("name: \(name)")
-        }
-        if let installID {
-            components.append("installID: \(installID)")
-        }
-        if let sessionID {
-            components.append("sessionID: \(sessionID)")
-        }
-        if let dates {
-            components.append("dates: \(dates.lowerBound) - \(dates.upperBound)")
-        }
-
-        return components.joined(separator: ", \n")
     }
 }
