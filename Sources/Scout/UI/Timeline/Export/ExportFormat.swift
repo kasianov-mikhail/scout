@@ -36,7 +36,9 @@ enum ExportFormat {
     }
 
     /// Formats a date range, repeating the date in the end bound only when
-    /// the range spans more than one day. An open range renders as its start.
+    /// the range spans more than one day.
+    ///
+    /// An open range renders as its start.
     ///
     static func range(from start: Date, to end: Date?) -> String {
         guard let end else {
