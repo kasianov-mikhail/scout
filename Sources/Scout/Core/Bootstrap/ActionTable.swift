@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import UIKit
+import Foundation
 
 struct ActionTable {
     typealias Action = @Sendable () async throws -> Void

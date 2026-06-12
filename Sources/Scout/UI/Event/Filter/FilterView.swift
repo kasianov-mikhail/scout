@@ -59,7 +59,7 @@ struct FilterView: View {
             .listStyle(.plain)
             .scrollDisabled(true)
             .navigationTitle(en: "Filter")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
         }
     }
 }
@@ -76,7 +76,7 @@ struct FilterButton: View {
             Text(verbatim: "Filter")
         }
         .sheet(isPresented: $isFilterPresented) {
-            FilterView(selected: $levels).presentationDetents([.height(440)])
+            FilterView(selected: $levels).presentationHeight(440)
         }
         .tint(.primary)
     }
