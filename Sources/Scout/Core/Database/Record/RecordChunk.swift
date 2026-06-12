@@ -9,7 +9,7 @@ import CloudKit
 
 struct RecordChunk {
     let records: [CKRecord]
-    let cursor: CKQueryOperation.Cursor?
+    let cursor: RecordCursor?
 }
 
 // MARK: - CloudKit Mapping
@@ -17,7 +17,7 @@ struct RecordChunk {
 extension RecordChunk {
     init(results: ([(CKRecord.ID, Result<CKRecord, Error>)], CKQueryOperation.Cursor?)) throws {
         records = try results.0.records()
-        cursor = results.1
+        cursor = results.1.map(RecordCursor.cloudKit)
     }
 }
 

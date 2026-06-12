@@ -15,9 +15,14 @@ struct SetupError: LocalizedError {
     let recoverySuggestion: String? = "Review the code to ensure setup is called only once"
 }
 
+struct NoBackendsError: LocalizedError {
+    let errorDescription: String? = "Scout requires at least one backend"
+    let recoverySuggestion: String? = "Pass a CloudKit container or a Scout server to setup"
+}
+
 @MainActor private var isSetup = false
 
-/// Initializes Scout's global infrastructure.
+/// Initializes Scout's global infrastructure against a CloudKit container.
 ///
 /// - Parameter container: The CloudKit container for all operations.
 /// - Throws: An error if initialization fails or if called more than once.
@@ -25,8 +30,27 @@ struct SetupError: LocalizedError {
 ///
 @MainActor
 public func setup(container: CKContainer) async throws {
+    try await setup(backends: [.cloudKit(container)])
+}
+
+/// Initializes Scout's global infrastructure against one or more backends.
+///
+/// Every raw record is synced to every backend. CloudKit backends also
+/// receive client-maintained matrix records; Scout servers aggregate
+/// natively and receive raw metric values instead.
+///
+/// - Parameter backends: The backends to sync to, in any combination of
+///   CloudKit containers and Scout servers.
+/// - Throws: An error if initialization fails or if called more than once.
+/// - Important: Call from the main actor during app startup.
+///
+@MainActor
+public func setup(backends: [Backend]) async throws {
     guard !isSetup else {
         throw SetupError()
+    }
+    guard !backends.isEmpty else {
+        throw NoBackendsError()
     }
 
     installExceptionHandler()
@@ -38,7 +62,7 @@ public func setup(container: CKContainer) async throws {
         LaunchObject.completeStale,
     )
 
-    let sync = SyncController(container: container).synchronize
+    let sync = SyncController(backends: backends.map(\.resolved)).synchronize
 
     ActionTable.appState.startListening(completion: sync)
 
@@ -58,5 +82,7 @@ public func setup(container: CKContainer) async throws {
 
     isSetup = true
 
-    verifyParallelismIfDue(container: container)
+    for case .cloudKit(let container) in backends {
+        verifyParallelismIfDue(container: container)
+    }
 }

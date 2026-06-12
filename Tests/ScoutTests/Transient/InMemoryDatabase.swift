@@ -9,10 +9,17 @@ import CloudKit
 
 @testable import Scout
 
-final class InMemoryDatabase: Database, @unchecked Sendable {
+final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
     var records: [CKRecord] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
+
+    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
+        guard let record = records.first(where: { $0.recordID == id }) else {
+            throw CKError(.unknownItem)
+        }
+        return record
+    }
 
     func write(record: CKRecord) async throws {
         if let error = writeErrors.popLast() ?? errors.popLast() {
@@ -42,7 +49,7 @@ final class InMemoryDatabase: Database, @unchecked Sendable {
         )
     }
 
-    func readMore(from cursor: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
         if let error = errors.popLast() {
             throw error
         }

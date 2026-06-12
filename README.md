@@ -27,6 +27,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 | 📊 | **Metrics** | Integrates with [swift-metrics](https://github.com/apple/swift-metrics). Counters, timers, and floating-point counters are recorded alongside logs. |
 | 💥 | **Crash Reporting** | Captures uncaught exceptions and signals (SIGABRT, SIGSEGV, etc.) with stack traces. Reports are flushed on the next launch. |
 | ☁️ | **CloudKit Sync** | All data is stored locally with Core Data and synced to a public [CloudKit](https://developer.apple.com/icloud/cloudkit/) database. No custom backend required. |
+| 🌐 | **Multiple Backends** | Sync to CloudKit, to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server), or to any combination of them at once. |
 | 📱 | **SwiftUI Dashboard** | A built-in `HomeView` with charts, event lists, crash details, and activity tracking for debugging in development builds. |
 
 ## Requirements
@@ -56,6 +57,15 @@ let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
 try await setup(container: container)
 ```
 
+To sync somewhere other than CloudKit — or to several destinations at once — pass a list of backends instead. Every raw record is uploaded to every backend, and the dashboard reads from the first one:
+```swift
+try await setup(backends: [
+    .cloudKit(container),
+    .server(url: URL(string: "https://scout.example.com")!, apiKey: "YOUR_API_KEY"),
+])
+```
+A [Scout server](https://github.com/kasianov-mikhail/scout-server) aggregates analytics natively, so it needs no schema upload and receives raw metric values instead of client-maintained matrices.
+
 After setup, use the standard [swift-log](https://github.com/apple/swift-log) API to write logs:
 ```swift
 import Logging
@@ -84,6 +94,10 @@ Timer(label: "response_time").recordSeconds(duration)
 Present `HomeView` to browse logs, metrics, crashes, and user activity:
 ```swift
 HomeView(container: container)
+```
+When running against Scout servers, hand it the same backend list you passed to `setup`:
+```swift
+HomeView(backends: [.server(url: serverURL, apiKey: "YOUR_API_KEY")])
 ```
 > Use this only in debug builds to avoid exposing log data in production.
 

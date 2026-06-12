@@ -64,7 +64,7 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
         return RecordChunk(records: Array(records.prefix(limit)), cursor: nil)
     }
 
-    func readMore(from cursor: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 }
