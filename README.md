@@ -5,6 +5,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 
 ## Table of Contents
 - [Features](#features)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Dashboard](#dashboard)
@@ -20,6 +21,12 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 | 💥 | **Crash Reporting** | Captures uncaught exceptions and signals (SIGABRT, SIGSEGV, etc.) with stack traces. Reports are flushed on the next launch. |
 | ☁️ | **CloudKit Sync** | All data is stored locally with Core Data and synced to a public [CloudKit](https://developer.apple.com/icloud/cloudkit/) database. No custom backend required. |
 | 📱 | **SwiftUI Dashboard** | A built-in `HomeView` with charts, event lists, crash details, and activity tracking for debugging in development builds. |
+
+## Requirements
+
+- iOS 16.0+
+- Swift 6.0+
+- An [Apple Developer](https://developer.apple.com) account with [CloudKit](https://developer.apple.com/icloud/cloudkit/) enabled
 
 ## Installation
 
