@@ -3,10 +3,9 @@ name: Server
 # Contract tests against a live scout-server. The HTTP wire format
 # (HTTPQueryCoding/HTTPRecordCoding) is shared with that repository, and unit
 # tests can only verify Scout's side of it, so this workflow boots the server
-# and runs ServerContractTests through HTTPDatabase. It runs when the backend
-# code changes here and when scout-server pushes to main (repository_dispatch
-# sent by its Notify workflow). While scout-server has no implementation yet
-# (no Package.swift), the contract run is skipped.
+# on top of PostgreSQL and runs ServerContractTests through HTTPDatabase.
+# It runs when the backend code changes here and when scout-server pushes to
+# main (repository_dispatch sent by its Notify workflow).
 on:
   pull_request:
     paths:
@@ -37,26 +36,29 @@ jobs:
           repository: kasianov-mikhail/scout-server
           path: scout-server
 
-      - name: Probe server implementation
-        id: probe
+      # The server's default Fluent config: user scout, password scout,
+      # database scout on localhost:5432.
+      - name: Start PostgreSQL
         run: |
-          if [ -f scout-server/Package.swift ]; then
-            echo "runnable=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "scout-server has no Package.swift yet, skipping the contract run."
-            echo "runnable=false" >> "$GITHUB_OUTPUT"
-          fi
+          brew install postgresql@17
+          pgbin="$(brew --prefix postgresql@17)/bin"
+          brew services start postgresql@17
+          for _ in $(seq 1 30); do
+            if "$pgbin/pg_isready" -q -h 127.0.0.1; then
+              break
+            fi
+            sleep 1
+          done
+          "$pgbin/psql" -h 127.0.0.1 -d postgres -c "CREATE ROLE scout LOGIN PASSWORD 'scout'"
+          "$pgbin/createdb" -h 127.0.0.1 -O scout scout
 
-      # The contract this step encodes: `swift run` in a scout-server checkout
-      # must boot a server listening on 127.0.0.1:8080 with default config.
       - name: Start scout-server
-        if: steps.probe.outputs.runnable == 'true'
         working-directory: scout-server
         run: |
           swift build
           nohup swift run --skip-build > server.log 2>&1 &
           for _ in $(seq 1 60); do
-            if curl -s -o /dev/null http://127.0.0.1:8080; then
+            if curl -fs -o /dev/null http://127.0.0.1:8080/healthz; then
               exit 0
             fi
             sleep 1
@@ -64,24 +66,18 @@ jobs:
           echo "scout-server did not come up on port 8080"
           exit 1
 
-      - name: Prepare simulator
-        if: steps.probe.outputs.runnable == 'true'
-        run: |
-          if ! xcrun simctl list devices available | grep -q "iPhone"; then
-            xcodebuild -downloadPlatform iOS
-          fi
-
+      # The contract is platform-independent, so the tests run on the macOS
+      # destination — no simulator needed.
       - name: Run contract tests
-        if: steps.probe.outputs.runnable == 'true'
         env:
           TEST_RUNNER_SCOUT_SERVER_URL: http://127.0.0.1:8080
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -destination 'platform=macOS' \
             -only-testing:ScoutTests/ServerContractTests \
             test
 
       - name: Dump server log
-        if: failure() && steps.probe.outputs.runnable == 'true'
+        if: failure()
         run: cat scout-server/server.log
