@@ -1,0 +1,83 @@
+name: Server
+
+# Contract tests against a live scout-server. The HTTP wire format
+# (HTTPQueryCoding/HTTPRecordCoding) is shared with that repository, and unit
+# tests can only verify Scout's side of it, so this workflow boots the server
+# on top of PostgreSQL and runs ServerContractTests through HTTPDatabase.
+# It runs when the backend code changes here and when scout-server pushes to
+# main (repository_dispatch sent by its Notify workflow).
+on:
+  pull_request:
+    paths:
+      - "Sources/Scout/Core/Backend/**"
+      - "Tests/ScoutTests/Core/Backend/**"
+      - ".github/workflows/server.yml"
+  repository_dispatch:
+    types: [scout-server-updated]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: server-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  contract:
+    runs-on: macos-26
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/checkout@v6
+        with:
+          repository: kasianov-mikhail/scout-server
+          path: scout-server
+
+      # The server's default Fluent config: user scout, password scout,
+      # database scout on localhost:5432.
+      - name: Start PostgreSQL
+        run: |
+          brew install postgresql@17
+          pgbin="$(brew --prefix postgresql@17)/bin"
+          brew services start postgresql@17
+          for _ in $(seq 1 30); do
+            if "$pgbin/pg_isready" -q -h 127.0.0.1; then
+              break
+            fi
+            sleep 1
+          done
+          "$pgbin/psql" -h 127.0.0.1 -d postgres -c "CREATE ROLE scout LOGIN PASSWORD 'scout'"
+          "$pgbin/createdb" -h 127.0.0.1 -O scout scout
+
+      - name: Start scout-server
+        working-directory: scout-server
+        run: |
+          swift build
+          nohup swift run --skip-build > server.log 2>&1 &
+          for _ in $(seq 1 60); do
+            if curl -fs -o /dev/null http://127.0.0.1:8080/healthz; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "scout-server did not come up on port 8080"
+          exit 1
+
+      # The contract is platform-independent, so the tests run on the macOS
+      # destination — no simulator needed.
+      - name: Run contract tests
+        env:
+          TEST_RUNNER_SCOUT_SERVER_URL: http://127.0.0.1:8080
+        run: |
+          xcodebuild \
+            -scheme Scout \
+            -destination 'platform=macOS' \
+            -only-testing:ScoutTests/ServerContractTests \
+            test
+
+      - name: Dump server log
+        if: failure()
+        run: cat scout-server/server.log
