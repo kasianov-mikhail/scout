@@ -40,7 +40,7 @@ struct FilterView: View {
                     Button {
                         criteria.reset()
                     } label: {
-                        Text(verbatim: "Reset")
+                        Image(systemName: "arrow.counterclockwise")
                     }
                     .disabled(!criteria.isResetEnabled)
                 }
@@ -49,7 +49,7 @@ struct FilterView: View {
                         criteria.apply()
                         dismiss()
                     } label: {
-                        Text(verbatim: "Apply")
+                        Image(systemName: "checkmark")
                     }
                     .disabled(!criteria.isApplyEnabled)
                     .fontWeight(.semibold)
@@ -76,7 +76,9 @@ struct FilterButton: View {
             Text(verbatim: "Filter")
         }
         .sheet(isPresented: $isFilterPresented) {
-            FilterView(selected: $levels).presentationHeight(440)
+            FilterView(selected: $levels)
+                .presentationHeight(440)
+                .opaquePresentationBackground()
         }
         .tint(.primary)
     }
