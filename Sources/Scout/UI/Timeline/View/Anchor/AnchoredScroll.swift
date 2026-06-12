@@ -31,7 +31,9 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
                     ToolbarItemGroup(placement: .bottomBar) {
                         if let direction = recenterDirection(in: viewport) {
                             Button {
-                                center(with: proxy)
+                                withAnimation {
+                                    center(with: proxy)
+                                }
                             } label: {
                                 Image(systemName: direction.symbol)
                             }
