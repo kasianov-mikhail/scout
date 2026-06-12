@@ -19,41 +19,9 @@ struct HomeContent: View {
     var body: some View {
         List {
             statSection
-            logSection
+            HomeLogSection()
         }
         .listStyle(.plain)
-    }
-
-    @ViewBuilder
-    private var logSection: some View {
-        Header(title: "Log")
-        Row {
-            Image(systemName: "list.bullet")
-                .foregroundColor(.blue)
-                .frame(width: 24)
-            Text(verbatim: "Events")
-            Spacer()
-        } destination: {
-            AnalyticsView()
-        }
-        Row {
-            Image(systemName: "chart.bar")
-                .foregroundColor(.blue)
-                .frame(width: 24)
-            Text(verbatim: "Metrics")
-            Spacer()
-        } destination: {
-            MetricsList().navigationTitle(en: "Metrics")
-        }
-        Row {
-            Image(systemName: "exclamationmark.triangle")
-                .foregroundColor(.red)
-                .frame(width: 24)
-            Text(verbatim: "Crashes")
-            Spacer()
-        } destination: {
-            CrashListView()
-        }
     }
 
     private var statSection: some View {
