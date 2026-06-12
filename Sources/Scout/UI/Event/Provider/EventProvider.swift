@@ -12,7 +12,7 @@ import SwiftUI
 @MainActor
 class EventProvider: ObservableObject {
     @Published var events: [Event]?
-    @Published var cursor: CKQueryOperation.Cursor?
+    @Published var cursor: RecordCursor?
     @Published var message: Message?
 
     func fetch(for filter: Event.Query, in database: AppDatabase) async {
@@ -32,7 +32,7 @@ class EventProvider: ObservableObject {
         }
     }
 
-    func fetchMore(cursor: CKQueryOperation.Cursor, in database: AppDatabase) async {
+    func fetchMore(cursor: RecordCursor, in database: AppDatabase) async {
         do {
             let results = try await database.readMore(
                 from: cursor,

@@ -25,7 +25,7 @@ struct DefaultDatabase: AppDatabase {
         return RecordChunk(records: records, cursor: nil)
     }
 
-    func readMore(from cursor: CKQueryOperation.Cursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 

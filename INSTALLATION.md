@@ -25,3 +25,16 @@ let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
 
 try await setup(container: container)
 ```
+
+## Using a Scout Server
+
+Instead of CloudKit — or in addition to it — Scout can sync to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server). A server needs no schema upload: it aggregates analytics natively.
+
+```swift
+try await setup(backends: [
+    .cloudKit(container),
+    .server(url: URL(string: "https://scout.example.com")!, apiKey: "YOUR_API_KEY"),
+])
+```
+
+See the [server repository](https://github.com/kasianov-mikhail/scout-server) for deployment instructions and Docker images.

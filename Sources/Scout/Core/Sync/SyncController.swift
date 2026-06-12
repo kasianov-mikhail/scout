@@ -10,23 +10,30 @@ import CloudKit
 typealias SyncAction = @MainActor () async throws -> Void
 
 @MainActor class SyncController {
-    let container: CKContainer
+    let backends: [ResolvedBackend]
 
     private let dispatcher: Dispatcher
 
-    init(container: CKContainer, dispatcher: Dispatcher = QueueDispatcher()) {
-        self.container = container
+    init(backends: [ResolvedBackend], dispatcher: Dispatcher = QueueDispatcher()) {
+        self.backends = backends
         self.dispatcher = dispatcher
+    }
+
+    convenience init(container: CKContainer, dispatcher: Dispatcher = QueueDispatcher()) {
+        self.init(backends: [Backend.cloudKit(container).resolved], dispatcher: dispatcher)
     }
 
     func synchronize() async throws {
         try SyncableObject.cleanup(in: persistentContainer.viewContext)
 
-        guard try await container.accountStatus() == .available else {
-            throw NotLoggedInError()
+        // Sync advances a record's state once for all backends, so every
+        // backend must be reachable before any upload starts — otherwise a
+        // record could be marked synced without reaching the missing one.
+        for backend in backends {
+            try await backend.checkAvailability()
         }
 
-        let engine = SyncEngine(database: container.publicCloudDatabase, context: persistentContainer.viewContext)
+        let engine = SyncEngine(backends: backends, context: persistentContainer.viewContext)
         let jobPlan = SyncJobPlan(engine: engine)
 
         try await dispatcher.performEnsuringBackground {

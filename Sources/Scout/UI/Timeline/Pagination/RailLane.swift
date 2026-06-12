@@ -34,7 +34,7 @@ final class RailLane: ObservableObject {
     @Published var pendingInstalls: [UUID] = []
     @Published var isLoading = false
 
-    private var cursor: CKQueryOperation.Cursor?
+    private var cursor: RecordCursor?
 
     /// Bumped by every reset; an in-flight load compares against it after each
     /// suspension and bails out instead of mixing a stale chunk (or a wiped

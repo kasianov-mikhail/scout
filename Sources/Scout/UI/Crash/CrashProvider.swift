@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 class CrashProvider: ObservableObject {
     @Published var crashes: [Crash]?
-    @Published var cursor: CKQueryOperation.Cursor?
+    @Published var cursor: RecordCursor?
 
     func fetch(in database: AppDatabase) async {
         do {
@@ -33,7 +33,7 @@ class CrashProvider: ObservableObject {
         }
     }
 
-    func fetchMore(cursor: CKQueryOperation.Cursor, in database: AppDatabase) async {
+    func fetchMore(cursor: RecordCursor, in database: AppDatabase) async {
         do {
             let results = try await database.readMore(
                 from: cursor,
