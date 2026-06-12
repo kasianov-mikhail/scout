@@ -18,8 +18,8 @@ struct HomeContent: View {
 
     var body: some View {
         List {
-            logSection
             statSection
+            logSection
         }
         .listStyle(.plain)
     }
@@ -62,21 +62,18 @@ struct HomeContent: View {
         Section {
             sectionRows
         } header: {
-            VStack(alignment: .leading, spacing: 12) {
-                Header(title: "Stats")
-                HomeSectionPicker(selection: $section)
-                    .padding(.bottom, 4)
-            }
-            .task(id: section) {
-                switch section {
-                case .sessions:
-                    await sessionStat.fetchIfNeeded(in: database)
-                case .crashes:
-                    await crashStat.fetchIfNeeded(in: database)
-                case .users:
-                    await activity.fetchIfNeeded(in: database)
+            HomeSectionPicker(selection: $section)
+                .padding(.bottom, 4)
+                .task(id: section) {
+                    switch section {
+                    case .sessions:
+                        await sessionStat.fetchIfNeeded(in: database)
+                    case .crashes:
+                        await crashStat.fetchIfNeeded(in: database)
+                    case .users:
+                        await activity.fetchIfNeeded(in: database)
+                    }
                 }
-            }
         }
     }
 
