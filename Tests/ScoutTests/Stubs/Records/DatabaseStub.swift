@@ -10,11 +10,13 @@ import Foundation
 
 @testable import Scout
 
-/// In-memory `AppDatabase` that answers every query with the canned records
-/// of the query's record type that match its predicate, truncated to the
-/// requested limit (without a continuation cursor). Reads can be suspended
-/// behind a `Gate` to freeze a fetch mid-flight, and are counted per record
-/// type so tests can assert how many queries a flow issued.
+/// In-memory `AppDatabase` for timeline tests.
+///
+/// Answers every query with the canned records of the query's record type
+/// that match its predicate, truncated to the requested limit (without a
+/// continuation cursor). Reads can be suspended behind a `Gate` to freeze a
+/// fetch mid-flight, and are counted per record type so tests can assert how
+/// many queries a flow issued.
 ///
 final class DatabaseStub: AppDatabase, @unchecked Sendable {
     private let lock = NSLock()
