@@ -54,7 +54,7 @@ struct HomeLogSection: View {
             Text(verbatim: title)
             Spacer()
             RedactedText(count: count)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(color)
                 .frame(minWidth: RowSummary.countWidth, alignment: .trailing)
         } destination: {
             destination()
