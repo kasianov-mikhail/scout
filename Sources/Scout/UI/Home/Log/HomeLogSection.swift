@@ -46,7 +46,7 @@ struct HomeLogSection: View {
         period.initialRange
     }
 
-    private func row<Destination: View>(title: String, systemImage: String, color: Color, count: Int?, @ViewBuilder destination: @escaping () -> Destination) -> some View {
+    private func row(title: String, systemImage: String, color: Color, count: Int?, @ViewBuilder destination: @escaping () -> some View) -> some View {
         Row {
             Image(systemName: systemImage)
                 .foregroundColor(color)

@@ -7,9 +7,10 @@
 
 import SwiftUI
 
-/// The selected period's title set like a section header title, but in
-/// secondary color; tapping it opens a menu of all periods. Sits at the
-/// trailing edge of a section header.
+/// The selected period's title that opens a menu of all periods.
+///
+/// Set like a section header title, but in secondary color, compact
+/// enough to sit at the trailing edge of a section header.
 ///
 struct CompactPeriodPicker: View {
     @Binding var selection: Period
