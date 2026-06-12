@@ -10,13 +10,12 @@ import CloudKit
 class MetricsProvider<T: ChartNumeric>: QueryProvider<GridMatrix<T>> {
     init(telemetry: Telemetry.Export) {
         super.init {
-            let dateRange = Calendar.utc.defaultRange
-
-            let predicate = NSPredicate(
-                format: "date >= %@ AND date < %@ AND category == %@",
-                dateRange.lowerBound as NSDate,
-                dateRange.upperBound as NSDate,
-                telemetry.rawValue
+            let predicate = NSCompoundPredicate(
+                type: .and,
+                subpredicates: [
+                    Calendar.utc.defaultRange.datePredicate,
+                    NSPredicate(format: "category == %@", telemetry.rawValue),
+                ]
             )
 
             return CKQuery(
