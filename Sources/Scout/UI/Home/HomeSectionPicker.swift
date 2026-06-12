@@ -10,33 +10,33 @@ import SwiftUI
 
 /// A Home screen stat section selectable in ``HomeSectionPicker``.
 enum HomeSection: CaseIterable, Identifiable {
+    case users
     case sessions
     case crashes
-    case users
 
     var id: Self { self }
 
     var title: String {
         switch self {
+        case .users: "Users"
         case .sessions: "Sessions"
         case .crashes: "Crashes"
-        case .users: "Users"
         }
     }
 
     var color: Color {
         switch self {
+        case .users: .green
         case .sessions: .purple
         case .crashes: .red
-        case .users: .green
         }
     }
 
     var systemImage: String {
         switch self {
+        case .users: "person.2"
         case .sessions: "clock"
         case .crashes: "exclamationmark.triangle"
-        case .users: "person.2"
         }
     }
 }
