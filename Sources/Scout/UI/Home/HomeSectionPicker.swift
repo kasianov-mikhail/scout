@@ -41,61 +41,19 @@ enum HomeSection: CaseIterable, Identifiable {
     }
 }
 
-/// A capsule-per-section switcher tinted with the selected section's color.
-///
-/// Capsules are made of Liquid Glass where available and fall back to solid
-/// fills on older systems.
-///
+/// A segmented control switching between the Home screen stat sections.
 struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
 
     var body: some View {
-        #if compiler(>=6.2)
-            if #available(iOS 26.0, *) {
-                glassPicker
-            } else {
-                solidPicker
-            }
-        #else
-            solidPicker
-        #endif
-    }
-
-    #if compiler(>=6.2)
-        @available(iOS 26.0, *)
-        private var glassPicker: some View {
-            GlassEffectContainer(spacing: 16) {
-                HStack(spacing: 16) {
-                    ForEach(HomeSection.allCases) { section in
-                        segment(for: section)
-                            .glassEffect(selection == section ? .regular.tint(section.color).interactive() : .regular.interactive())
-                    }
-                }
-            }
-        }
-    #endif
-
-    private var solidPicker: some View {
-        HStack(spacing: 16) {
+        Picker(selection: $selection) {
             ForEach(HomeSection.allCases) { section in
-                segment(for: section)
-                    .background(Capsule().fill(selection == section ? section.color : Color(.systemGray6)))
+                Text(verbatim: section.title)
             }
+        } label: {
+            Text(verbatim: "Section")
         }
-    }
-
-    private func segment(for section: HomeSection) -> some View {
-        Text(verbatim: section.title)
-            .font(.subheadline.weight(selection == section ? .medium : .regular))
-            .foregroundColor(selection == section ? .white : .primary)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .contentShape(Capsule())
-            .onTapGesture {
-                withAnimation(.easeOut(duration: 0.15)) {
-                    selection = section
-                }
-            }
+        .pickerStyle(.segmented)
     }
 }
 
