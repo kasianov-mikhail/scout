@@ -18,7 +18,7 @@ class ParamProvider: ObservableObject, Provider {
 
     func fetch(in database: AppDatabase) async throws -> Output {
         try await database
-            .lookup(id: recordID)["params"]
+            .lookup(id: recordID, fields: ["params"])["params"]
             .map(Item.fromData)?
             .sorted() ?? []
     }
