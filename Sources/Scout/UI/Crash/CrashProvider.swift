@@ -15,7 +15,10 @@ class CrashProvider: ObservableObject {
 
     func fetch(in database: AppDatabase) async {
         do {
-            let query = CKQuery(recordType: CrashObject.recordType, predicate: Self.predicate)
+            let query = CKQuery(
+                recordType: CrashObject.recordType,
+                predicate: Calendar.utc.defaultRange.datePredicate
+            )
             query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
 
             let results = try await database.read(
@@ -42,15 +45,5 @@ class CrashProvider: ObservableObject {
         } catch {
             // Keep existing data on pagination failure
         }
-    }
-
-    private static var predicate: NSPredicate {
-        let dateRange = Calendar.utc.defaultRange
-
-        return NSPredicate(
-            format: "date >= %@ AND date < %@",
-            dateRange.lowerBound as NSDate,
-            dateRange.upperBound as NSDate
-        )
     }
 }

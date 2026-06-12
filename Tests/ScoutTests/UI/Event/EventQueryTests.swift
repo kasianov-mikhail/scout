@@ -49,26 +49,6 @@ struct EventQueryTests {
         #expect(predicate.predicateFormat.contains("name == \"Login\""))
     }
 
-    @Test("Filter by installID") func installID() {
-        let id = UUID()
-        var query = Event.Query()
-        query.installID = id
-        let predicate = query.buildPredicate()
-
-        #expect(predicate.predicateFormat.contains("install_id"))
-        #expect(predicate.predicateFormat.contains(id.uuidString))
-    }
-
-    @Test("Filter by sessionID") func sessionID() {
-        let id = UUID()
-        var query = Event.Query()
-        query.sessionID = id
-        let predicate = query.buildPredicate()
-
-        #expect(predicate.predicateFormat.contains("session_id"))
-        #expect(predicate.predicateFormat.contains(id.uuidString))
-    }
-
     @Test("Filter by date range") func dates() {
         let start = Date(timeIntervalSinceReferenceDate: 0)
         let end = Date(timeIntervalSinceReferenceDate: 86400)

@@ -10,13 +10,12 @@ import CloudKit
 class ActivityProvider: QueryProvider<ActivityMatrix> {
     init() {
         super.init {
-            let dateRange = Calendar.utc.defaultRange
-
-            let predicate = NSPredicate(
-                format: "date >= %@ AND date < %@ AND name == %@",
-                dateRange.lowerBound as NSDate,
-                dateRange.upperBound as NSDate,
-                "ActiveUser"
+            let predicate = NSCompoundPredicate(
+                type: .and,
+                subpredicates: [
+                    Calendar.utc.defaultRange.datePredicate,
+                    NSPredicate(format: "name == %@", "ActiveUser"),
+                ]
             )
 
             return CKQuery(

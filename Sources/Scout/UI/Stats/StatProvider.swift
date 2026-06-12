@@ -16,13 +16,12 @@ class StatProvider: QueryProvider<GridMatrix<Int>> {
         self.periods = periods
 
         super.init {
-            let dateRange = Calendar.utc.defaultRange
-
-            let predicate = NSPredicate(
-                format: "date >= %@ AND date < %@ AND name == %@",
-                dateRange.lowerBound as NSDate,
-                dateRange.upperBound as NSDate,
-                eventName
+            let predicate = NSCompoundPredicate(
+                type: .and,
+                subpredicates: [
+                    Calendar.utc.defaultRange.datePredicate,
+                    NSPredicate(format: "name == %@", eventName),
+                ]
             )
 
             return CKQuery(
