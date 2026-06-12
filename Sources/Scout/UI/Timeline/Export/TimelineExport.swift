@@ -13,8 +13,7 @@ import Foundation
 /// The document mirrors the rail hierarchy: a title with the device ID and a
 /// summary of counts, then a section per install, launch, and session, with
 /// events and crashes as chronological list rows under their session. Dates
-/// are rendered in UTC — headers in a human-readable form, rows as ISO 8601
-/// timestamps — so the text reads well and stays machine-parseable.
+/// and identifiers are rendered through ``ExportFormat``.
 ///
 struct TimelineExport {
     let rail: Rail
@@ -52,7 +51,7 @@ struct TimelineExport {
 extension TimelineExport {
     private var title: String {
         if let deviceID = rail.device.deviceID {
-            return "# Scout Timeline — Device \(shortID(deviceID))"
+            return "# Scout Timeline — Device \(ExportFormat.shortID(deviceID))"
         }
         return "# Scout Timeline"
     }
@@ -64,13 +63,13 @@ extension TimelineExport {
         let crashes = sessions.flatMap(\.crashes).filter { $0.date != nil }
 
         var parts = [
-            counted(rail.installs.count, "install", "installs"),
-            counted(launches.count, "launch", "launches"),
-            counted(sessions.count, "session", "sessions"),
-            counted(events.count, "event", "events"),
+            ExportFormat.counted(rail.installs.count, "install", "installs"),
+            ExportFormat.counted(launches.count, "launch", "launches"),
+            ExportFormat.counted(sessions.count, "session", "sessions"),
+            ExportFormat.counted(events.count, "event", "events"),
         ]
         if crashes.count > 0 {
-            parts.append(counted(crashes.count, "crash", "crashes"))
+            parts.append(ExportFormat.counted(crashes.count, "crash", "crashes"))
         }
         return parts.joined(separator: " · ")
     }
@@ -78,10 +77,10 @@ extension TimelineExport {
     private func header(for install: Install) -> String {
         var parts = ["## Install"]
         if let date = install.date {
-            parts.append(Self.day.format(date))
+            parts.append(ExportFormat.day(date))
         }
         if let id = install.installID {
-            parts.append("(\(shortID(id)))")
+            parts.append("(\(ExportFormat.shortID(id)))")
         }
         return parts.joined(separator: " ")
     }
@@ -89,10 +88,10 @@ extension TimelineExport {
     private func header(for launch: Launch) -> String {
         var parts = ["### Launch"]
         if let date = launch.startDate {
-            parts.append(Self.minute(date))
+            parts.append(ExportFormat.minute(date))
         }
         if let id = launch.launchID {
-            parts.append("(\(shortID(id)))")
+            parts.append("(\(ExportFormat.shortID(id)))")
         }
         return parts.joined(separator: " ")
     }
@@ -100,24 +99,12 @@ extension TimelineExport {
     private func header(for session: Session) -> String {
         var parts = ["#### Session"]
         if let start = session.startDate {
-            parts.append(range(from: start, to: session.endDate))
+            parts.append(ExportFormat.range(from: start, to: session.endDate))
         }
         if let id = session.sessionID {
-            parts.append("(\(shortID(id)))")
+            parts.append("(\(ExportFormat.shortID(id)))")
         }
         return parts.joined(separator: " ")
-    }
-
-    /// Formats a session range, repeating the date in the end bound only when
-    /// the session spans more than one day.
-    ///
-    private func range(from start: Date, to end: Date?) -> String {
-        guard let end else {
-            return Self.minute(start)
-        }
-        let sameDay = Self.day.format(start) == Self.day.format(end)
-        let suffix = sameDay ? Self.time.format(end) : Self.minute(end)
-        return "\(Self.minute(start))–\(suffix)"
     }
 }
 
@@ -133,7 +120,7 @@ extension TimelineExport {
         }
         return (events + crashes)
             .sorted { $0.date < $1.date }
-            .map { "- \(Self.timestamp.format($0.date))  \($0.label)" }
+            .map { "- \(ExportFormat.timestamp($0.date))  \($0.label)" }
     }
 
     private func label(for crash: Crash) -> String {
@@ -141,29 +128,5 @@ extension TimelineExport {
             return "⚠️ crash: \(crash.name) (\(reason))"
         }
         return "⚠️ crash: \(crash.name)"
-    }
-}
-
-// MARK: - Formatting
-
-extension TimelineExport {
-    private func shortID(_ id: UUID) -> String {
-        String(id.uuidString.lowercased().prefix(8))
-    }
-
-    private func counted(_ count: Int, _ singular: String, _ plural: String) -> String {
-        "\(count) \(count == 1 ? singular : plural)"
-    }
-
-    private static let timestamp = Date.ISO8601FormatStyle()
-    private static let day = utcStyle("\(year: .padded(4))-\(month: .twoDigits)-\(day: .twoDigits)")
-    private static let time = utcStyle("\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits)")
-
-    private static func minute(_ date: Date) -> String {
-        "\(day.format(date)) \(time.format(date))"
-    }
-
-    private static func utcStyle(_ format: Date.FormatString) -> Date.VerbatimFormatStyle {
-        Date.VerbatimFormatStyle(format: format, timeZone: .gmt, calendar: Calendar(identifier: .gregorian))
     }
 }
