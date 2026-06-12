@@ -18,7 +18,12 @@ extension EventView {
         @Environment(\.database) var database
 
         var body: some View {
-            Header(title: "Params", action: seeAll).task {
+            Header(title: "Params") {
+                if let seeAll {
+                    SeeAllButton(action: seeAll)
+                }
+            }
+            .task {
                 await param.fetchIfNeeded(in: database)
             }
 

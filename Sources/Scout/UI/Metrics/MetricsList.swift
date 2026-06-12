@@ -14,6 +14,15 @@ struct MetricsList: View {
         case timer
 
         var id: Self { self }
+
+        /// The telemetry category this scope lists.
+        var telemetry: Telemetry.Export {
+            switch self {
+            case .int: .counter
+            case .double: .floatingCounter
+            case .timer: .timer
+            }
+        }
     }
 
     @State private var period: Period = .today
@@ -46,19 +55,19 @@ struct MetricsList: View {
             MetricsContent(
                 period: period,
                 formatter: \Int.plain,
-                telemetry: .counter
+                telemetry: scope.telemetry
             )
         case .double:
             MetricsContent(
                 period: period,
                 formatter: \Double.decimal,
-                telemetry: .floatingCounter
+                telemetry: scope.telemetry
             )
         case .timer:
             MetricsContent(
                 period: period,
                 formatter: \TimeInterval.duration,
-                telemetry: .timer
+                telemetry: scope.telemetry
             )
         }
     }

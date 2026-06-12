@@ -14,6 +14,23 @@ import CoreData
 ///
 protocol GridBatch: MatrixBatch & RecordTyped & CKRepresentable where Cell == GridCell<Int> {}
 
+/// Matrix names taken by the lifecycle `GridBatch` conformers, which name
+/// their weekly matrices after their record type — unlike user events,
+/// whose matrices are named after the event itself.
+///
+/// Update alongside the conformers when a lifecycle record type is added.
+///
+enum LifecycleMatrix {
+    static let names: Set<String> = [
+        DeviceObject.recordType,
+        InstallObject.recordType,
+        LaunchObject.recordType,
+        SessionObject.recordType,
+        VersionObject.recordType,
+        CrashObject.recordType,
+    ]
+}
+
 extension GridBatch where Self: Syncable {
     static func group(in context: NSManagedObjectContext) throws -> [Self]? {
         try batch(in: context, matching: [\.week])

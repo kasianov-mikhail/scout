@@ -7,30 +7,38 @@
 
 import SwiftUI
 
-struct Header: View {
+struct Header<Trailing: View>: View {
     let title: String
-    let action: (() -> Void)?
 
-    init(title: String, action: (() -> Void)? = nil) {
+    @ViewBuilder let trailing: () -> Trailing
+
+    init(title: String, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
         self.title = title
-        self.action = action
+        self.trailing = trailing
     }
 
     var body: some View {
         HStack {
             Text(title.uppercased()).font(.system(size: 16, weight: .bold))
 
-            if let action {
-                Spacer()
+            Spacer()
 
-                Button(action: action) {
-                    Text(verbatim: "See all").foregroundStyle(.blue)
-                }
-                .buttonStyle(.plain)
-            }
+            trailing()
         }
         .padding(.top, 16)
         .padding(.bottom, 4)
+    }
+}
+
+/// The tappable "See all" link shown at the trailing edge of a `Header`.
+struct SeeAllButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(verbatim: "See all").foregroundStyle(.blue)
+        }
+        .buttonStyle(.plain)
     }
 }
 
@@ -39,6 +47,8 @@ struct Header: View {
 #Preview {
     List {
         Header(title: "Section Title")
-        Header(title: "Section Title") {}
+        Header(title: "Section Title") {
+            SeeAllButton {}
+        }
     }
 }
