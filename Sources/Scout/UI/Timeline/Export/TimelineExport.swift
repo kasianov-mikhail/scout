@@ -27,15 +27,15 @@ struct TimelineExport {
 
         var lines = [title, summary]
 
-        for install in rail.installs.sorted(byDate: \.install.date) {
+        for install in rail.installs {
             lines.append("")
             lines.append(header(for: install.install))
 
-            for launch in install.launches.sorted(byDate: \.launch.startDate) {
+            for launch in install.launches {
                 lines.append("")
                 lines.append(header(for: launch.launch))
 
-                for session in launch.sessions.sorted(byDate: \.session.startDate) {
+                for session in launch.sessions {
                     lines.append("")
                     lines.append(header(for: session.session))
                     lines.append(contentsOf: rows(for: session))

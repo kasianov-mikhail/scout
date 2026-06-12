@@ -16,7 +16,7 @@ struct TimelineFeed {
             recordType: DeviceObject.recordType,
             predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
         )
-        if let record = try await database.readAll(matching: query, fields: nil).first {
+        if let record = try await database.read(matching: query, fields: Device.desiredKeys, limit: 1).records.first {
             return try Device(record: record)
         }
         return Device(
@@ -33,7 +33,7 @@ struct TimelineFeed {
         )
         return
             try await database
-            .readAll(matching: query, fields: nil)
+            .readAll(matching: query, fields: Install.desiredKeys)
             .map(Install.init)
     }
 
@@ -44,7 +44,7 @@ struct TimelineFeed {
         )
         return
             try await database
-            .readAll(matching: query, fields: nil)
+            .readAll(matching: query, fields: Launch.desiredKeys)
             .map(Launch.init)
     }
 }

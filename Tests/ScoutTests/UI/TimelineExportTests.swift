@@ -164,11 +164,23 @@ struct TimelineExportTests {
         #expect(text?.contains("1 event") == true)
     }
 
-    @Test("Sessions are sorted by start date")
+    @Test("Sessions render in the tree's chronological order")
     func testSessionsSorted() {
-        let later = SessionRoot(session: .stub(startDate: at(2800)), events: [], crashes: [])
-        let earlier = SessionRoot(session: .stub(startDate: at(40)), events: [], crashes: [])
-        let rail = rail(sessions: [later, earlier])
+        let deviceID = UUID()
+        let installID = UUID()
+        let launchID = UUID()
+
+        // `Rail.init` sorts the tree; the export relies on that invariant
+        // instead of re-sorting, so feed it unsorted input.
+        let rail = Rail(
+            device: .stub(deviceID: deviceID),
+            installs: [.stub(installID: installID, deviceID: deviceID, date: baseDate)],
+            launches: [.stub(launchID: launchID, installID: installID, startDate: baseDate)],
+            sessions: [
+                .stub(launchID: launchID, startDate: at(2800)),
+                .stub(launchID: launchID, startDate: at(40)),
+            ]
+        )
 
         let text = TimelineExport(rail: rail).text!
         let first = text.range(of: "#### Session 2023-11-14 22:14")

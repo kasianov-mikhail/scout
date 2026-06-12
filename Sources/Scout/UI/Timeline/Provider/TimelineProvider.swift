@@ -10,7 +10,21 @@ import SwiftUI
 
 @MainActor
 final class TimelineProvider: ObservableObject {
-    @Published var result: Result<Rail, Error>?
+    @Published var result: Result<Rail, Error>? {
+        didSet {
+            let rail = try? result?.get()
+            items = rail.map(TimelineItem.items(from:)) ?? []
+            exportText = rail.flatMap { TimelineExport(rail: $0).text }
+        }
+    }
+
+    /// Derived from `result` once per change, so view body re-evaluations
+    /// (legend toggles, scroll) don't rebuild the row list from the tree.
+    private(set) var items: [TimelineItem] = []
+
+    /// The Markdown export of `result`, rebuilt once per change rather than
+    /// on every toolbar render.
+    private(set) var exportText: String?
 
     let older = RailLane(ascending: false)
     let newer = RailLane(ascending: true)
@@ -33,8 +47,17 @@ final class TimelineProvider: ObservableObject {
         do {
             let rail = try await feed.rail()
 
-            guard let split = rail.split(at: anchorEvent) else {
-                return
+            let split: (older: [UUID], newer: [UUID])
+            if let anchored = rail.split(at: anchorEvent) {
+                split = anchored
+            } else {
+                // No usable anchor (no event, or its install isn't in the
+                // rail yet): load the whole timeline from its start through
+                // the ascending lane instead of spinning forever.
+                for lane in [older, newer] {
+                    lane.anchorDate = nil
+                }
+                split = (older: [], newer: rail.installs.compactMap(\.install.installID))
             }
 
             older.pendingInstalls = split.older
@@ -46,6 +69,12 @@ final class TimelineProvider: ObservableObject {
             // Count only events that will actually render: `TimelineItem.items`
             // drops events without a date, so raw counts overestimate the seed.
             while events.count(where: { $0.date != nil }) < 50 {
+                // A newer `start` owns the lanes now; bail out before touching
+                // them, or this loop would consume the chunks it seeds with.
+                guard token == startToken else {
+                    throw CancellationError()
+                }
+
                 let lanes = [older, newer].filter { $0.pendingInstalls.count > 0 }
 
                 guard lanes.count > 0 else {

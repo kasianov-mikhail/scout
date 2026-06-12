@@ -41,14 +41,36 @@ final class RailLane: ObservableObject {
     /// cursor) into the fresh timeline.
     private var generation = 0
 
+    /// Whether a load currently holds the cursor; concurrent `loadMore` calls
+    /// wait for it instead of racing the cursor and dropping a chunk.
+    private var isFetching = false
+
+    /// Continuations of `loadMore` calls parked behind an in-flight load.
+    private var waiters: [CheckedContinuation<Void, Never>] = []
+
     func loadMore(in database: AppDatabase) async throws -> (sessions: [Session], events: [Event]) {
-        guard cursor != nil || pendingInstalls.count > 0 else {
+        // Snapshot before parking: a reset that lands while this call waits
+        // means the chunk now belongs to a newer timeline, not this caller.
+        let generation = generation
+
+        // A stale in-flight load (e.g. from a superseded `start`) may still
+        // advance the cursor; wait for it to land instead of racing it.
+        while isFetching {
+            await withCheckedContinuation { waiters.append($0) }
+        }
+
+        guard generation == self.generation, cursor != nil || pendingInstalls.count > 0 else {
             throw CancellationError()
         }
 
-        let generation = generation
+        isFetching = true
         isLoading = true
         defer {
+            isFetching = false
+            let parked = waiters
+            waiters = []
+            parked.forEach { $0.resume() }
+
             if generation == self.generation {
                 isLoading = false
             }
@@ -85,10 +107,15 @@ final class RailLane: ObservableObject {
         return (sessions, events)
     }
 
+    /// Sessions per chunk: a filtered timeline keeps only the matching events,
+    /// so it needs a bigger net per round to reach the seed target without a
+    /// long tail of follow-up requests.
+    private var chunkLimit: Int { eventName == nil ? 25 : 100 }
+
     private func chunk(in database: AppDatabase) async throws -> RecordChunk {
         guard let cursor else {
-            return try await Session.fetchChunk(installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, in: database)
+            return try await Session.fetchChunk(installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, limit: chunkLimit, in: database)
         }
-        return try await database.readMore(from: cursor, fields: nil)
+        return try await database.readMore(from: cursor, fields: Session.desiredKeys)
     }
 }
