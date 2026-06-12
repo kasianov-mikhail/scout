@@ -6,13 +6,18 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-import UIKit
+
+#if os(iOS)
+    import UIKit
+#endif
 
 extension CKDatabase {
     @discardableResult func runner<R>(body: @Sendable (CKDatabase) async throws -> R) async throws -> R {
-        guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
-            throw RunnerError()
-        }
+        #if os(iOS)
+            guard await UIApplication.shared.backgroundTimeRemaining > 15 else {
+                throw RunnerError()
+            }
+        #endif
 
         return try await requestLimiter.withSlot {
             try await configuredWith(configuration: .scout, body: body)

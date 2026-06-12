@@ -7,7 +7,6 @@
 
 import CloudKit
 import SwiftUI
-import UIKit
 
 extension View {
     func iCloudWarning(container: CKContainer) -> some View {
@@ -44,7 +43,7 @@ private struct ICloudWarningModifier: ViewModifier {
             .task {
                 await verify()
             }
-            .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+            .onReceive(NotificationCenter.default.publisher(for: AppLifecycle.willEnterForeground)) { _ in
                 Task {
                     await verify()
                 }

@@ -21,8 +21,7 @@ struct OnboardingView: View {
                 SetupPage().tag(1)
                 ReadyPage().tag(2)
             }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .always))
+            .pagedTabs()
         }
     }
 }

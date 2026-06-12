@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Testing
-import UIKit
 
 @testable import Scout
 
@@ -31,7 +30,7 @@ struct ComparisonChartViewTests {
             .frame(width: 400, height: 300)
         )
 
-        #expect(renderer.uiImage?.size == CGSize(width: 400, height: 300))
+        #expect(renderedSize(of: renderer) == CGSize(width: 400, height: 300))
     }
 
     @Test("Renders the placeholder when both periods are empty") @MainActor func testEmptyRender() {
@@ -42,7 +41,16 @@ struct ComparisonChartViewTests {
                 .frame(width: 400, height: 300)
         )
 
-        #expect(renderer.uiImage?.size == CGSize(width: 400, height: 300))
+        #expect(renderedSize(of: renderer) == CGSize(width: 400, height: 300))
+    }
+
+    /// The rendered image size in points: `uiImage` on iOS, `nsImage` on macOS.
+    @MainActor func renderedSize(of renderer: ImageRenderer<some View>) -> CGSize? {
+        #if os(iOS)
+            renderer.uiImage?.size
+        #else
+            renderer.nsImage?.size
+        #endif
     }
 
     func makePoints(in range: Range<Date>, count: Int) -> [ChartPoint<Int>] {

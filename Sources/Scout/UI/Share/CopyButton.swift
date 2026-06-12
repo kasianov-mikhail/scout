@@ -18,7 +18,12 @@ struct CopyButton: View {
 
     var body: some View {
         Button {
-            UIPasteboard.general.string = text
+            #if os(iOS)
+                UIPasteboard.general.string = text
+            #else
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(text, forType: .string)
+            #endif
             isCopied = true
 
             revertTask?.cancel()
@@ -40,7 +45,7 @@ struct CopyButton: View {
     NavigationStack {
         Text(verbatim: "Content")
             .navigationTitle(en: "Copy Button")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     CopyButton(text: "Copied text")

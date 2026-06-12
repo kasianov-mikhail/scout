@@ -5,17 +5,17 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import UIKit
+import Foundation
 
 extension ActionTable {
     static let appState = ActionTable(actions: [
-        UIApplication.willEnterForegroundNotification: {
+        AppLifecycle.willEnterForeground: {
             try await persistentContainer.performBackgroundTasks(
                 SessionObject.trigger,
                 UserActivityObject.trigger
             )
         },
-        UIApplication.didEnterBackgroundNotification: {
+        AppLifecycle.didEnterBackground: {
             try await persistentContainer.performBackgroundTasks(
                 SessionObject.complete,
                 UserActivityObject.trigger

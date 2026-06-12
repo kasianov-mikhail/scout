@@ -24,9 +24,9 @@ struct AnalyticsView: View {
                 eventList
             }
         }
-        .searchable(text: $filter.text, placement: .navigationBarDrawer(displayMode: .always), prompt: Text(verbatim: "Search"))
+        .searchable(text: $filter.text, placement: .pinned, prompt: Text(verbatim: "Search"))
         .autocorrectionDisabled(true)  // stop keyboard suggestions
-        .keyboardType(.alphabet)  // stop keyboard suggestions
+        .alphabetKeyboard()  // stop keyboard suggestions
         .searchSuggestions {
             if let events = provider.events, filter.text.isEmpty {
                 ForEach(events.unique(by: \.name, max: 7), id: \.self) {
@@ -35,12 +35,14 @@ struct AnalyticsView: View {
             }
         }
         .onSubmit(of: .search) {
-            UIApplication.shared.sendAction(
-                #selector(UIResponder.resignFirstResponder),
-                to: nil,
-                from: nil,
-                for: nil
-            )  // hide keyboard on suggestion selected
+            #if os(iOS)
+                UIApplication.shared.sendAction(
+                    #selector(UIResponder.resignFirstResponder),
+                    to: nil,
+                    from: nil,
+                    for: nil
+                )  // hide keyboard on suggestion selected
+            #endif
 
             Task {
                 search.events = nil

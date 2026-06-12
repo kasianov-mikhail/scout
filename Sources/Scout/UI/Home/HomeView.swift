@@ -7,7 +7,6 @@
 
 import CloudKit
 import SwiftUI
-import UIKit
 
 public struct HomeView: View {
     let container: CKContainer
@@ -21,7 +20,7 @@ public struct HomeView: View {
     public var body: some View {
         NavigationStack {
             HomeContent()
-                .navigationBarTitle("Home")
+                .navigationTitle(en: "Home")
                 .iCloudWarning(container: container)
                 .schemaWarning(container: container)
                 .dismissable()

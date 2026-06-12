@@ -31,7 +31,7 @@ struct Timeline: View {
             }
         }
         .navigationTitle(en: "Multi-Rail")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
         .toolbar {
             if event != nil {
                 ToolbarItem(placement: .principal) {
