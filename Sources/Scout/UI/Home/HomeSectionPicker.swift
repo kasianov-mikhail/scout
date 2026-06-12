@@ -9,7 +9,7 @@
 import SwiftUI
 
 /// A Home screen stat section selectable in ``HomeSectionPicker``.
-enum HomeSection: CaseIterable, Identifiable {
+enum HomeSection: String, CaseIterable, Identifiable {
     case users
     case sessions
     case crashes

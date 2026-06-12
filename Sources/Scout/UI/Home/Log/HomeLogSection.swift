@@ -14,7 +14,7 @@ import SwiftUI
 struct HomeLogSection: View {
     @Environment(\.database) var database
 
-    @State private var period = Period.today
+    @AppStorage("scout_home_log_period") private var period = Period.today
 
     @StateObject private var provider = HomeLogProvider()
 
