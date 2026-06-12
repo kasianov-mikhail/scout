@@ -10,7 +10,7 @@ import SwiftUI
 struct HomeContent: View {
     @Environment(\.database) var database
 
-    @State private var section = HomeSection.sessions
+    @AppStorage("scout_home_section") private var section = HomeSection.sessions
 
     @StateObject var activity = ActivityProvider()
     @StateObject var sessionStat = StatProvider(eventName: "Session", periods: Period.summary)
