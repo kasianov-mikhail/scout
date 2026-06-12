@@ -39,7 +39,7 @@ struct ServerContractTests {
         #expect(restored.recordType == "Event")
         #expect(restored.recordID.recordName == record.recordID.recordName)
         #expect(restored["name"] == "login")
-        #expect(restored["index"] == Int64(1))
+        #expect(restored["param_count"] == Int64(1))
         #expect(restored["date"] == eventDate)
     }
 
@@ -52,7 +52,7 @@ struct ServerContractTests {
         let restored = try await database.lookup(id: record.recordID, fields: ["name"])
 
         #expect(restored["name"] == "login")
-        #expect(restored["index"] == nil)
+        #expect(restored["param_count"] == nil)
     }
 
     @Test("Queries filter and sort on the server")
@@ -63,7 +63,7 @@ struct ServerContractTests {
 
         let chunk = try await database.read(matching: makeQuery(marker: marker), fields: nil)
 
-        #expect(chunk.records.compactMap { $0["index"] as? Int64 } == [0, 1, 2])
+        #expect(chunk.records.compactMap { $0["param_count"] as? Int64 } == [0, 1, 2])
         #expect(chunk.cursor == nil)
     }
 
@@ -74,12 +74,12 @@ struct ServerContractTests {
         try await database.write(records: (0..<5).map { makeEvent(name: marker, index: $0) })
 
         var chunk = try await database.read(matching: makeQuery(marker: marker), fields: nil, limit: 2)
-        var indices = chunk.records.compactMap { $0["index"] as? Int64 }
+        var indices = chunk.records.compactMap { $0["param_count"] as? Int64 }
         #expect(indices.count == 2)
 
         while let cursor = chunk.cursor {
             chunk = try await database.readMore(from: cursor, fields: nil)
-            indices += chunk.records.compactMap { $0["index"] as? Int64 }
+            indices += chunk.records.compactMap { $0["param_count"] as? Int64 }
         }
 
         #expect(indices == [0, 1, 2, 3, 4])
@@ -92,14 +92,14 @@ struct ServerContractTests {
 
     private func makeQuery(marker: String) -> CKQuery {
         let query = CKQuery(recordType: "Event", predicate: NSPredicate(format: "name == %@", marker))
-        query.sortDescriptors = [NSSortDescriptor(key: "index", ascending: true)]
+        query.sortDescriptors = [NSSortDescriptor(key: "param_count", ascending: true)]
         return query
     }
 
     private func makeEvent(name: String, index: Int) -> CKRecord {
         let record = CKRecord(recordType: "Event", recordID: CKRecord.ID(recordName: "contract-\(UUID().uuidString)"))
         record["name"] = name
-        record["index"] = Int64(index)
+        record["param_count"] = Int64(index)
         record["date"] = eventDate
         return record
     }
