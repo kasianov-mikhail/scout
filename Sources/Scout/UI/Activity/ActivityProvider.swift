@@ -24,4 +24,18 @@ class ActivityProvider: QueryProvider<ActivityMatrix> {
             )
         }
     }
+
+    /// A Scout server aggregates DAU/WAU/MAU natively, so read its flat series
+    /// and rebuild the chart's matrices from it.
+    ///
+    /// CloudKit backends still answer the `PeriodMatrix` query the initializer
+    /// builds.
+    ///
+    override func fetch(in database: AppDatabase) async throws -> [ActivityMatrix] {
+        guard let server = database as? ActiveUsersReading else {
+            return try await super.fetch(in: database)
+        }
+        let series = try await server.activeUsers(in: Calendar.utc.defaultRange)
+        return ActivityMatrix.from(series: series)
+    }
 }
