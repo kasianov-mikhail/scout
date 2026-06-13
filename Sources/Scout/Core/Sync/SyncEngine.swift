@@ -21,6 +21,7 @@ struct SyncEngine: @unchecked Sendable {
         self.init(
             backends: [
                 ResolvedBackend(
+                    id: "default",
                     database: database,
                     needsClientAggregation: true,
                     acceptsRawMetrics: false,
@@ -42,43 +43,79 @@ struct SyncEngine: @unchecked Sendable {
             // Persist attempt counters so cleanup can retire records that keep failing.
             try context.save()
 
-            // Raw uploads are idempotent upserts keyed by record name, so a
-            // batch that failed on one backend safely re-runs on all of them.
+            // Each backend is an independent destination: a failure on one
+            // must not abort uploads to the others. Collect the first error
+            // and surface it once the batch has done all it can this cycle.
+            var firstError: Error?
+
+            // Raw fan-out. Skip backends that already hold the record (their
+            // delivery was recorded on an earlier cycle), so a healthy backend
+            // is never re-written while a failing one is retried.
             for backend in backends {
-                if let records = records(of: batch, for: backend) {
-                    try await backend.database.write(records: records)
+                do {
+                    let undelivered = batch.filter { !$0.deliveredRaw.contains(backend.id) }
+                    if let records = records(of: undelivered, for: backend), records.count > 0 {
+                        try await backend.database.write(records: records)
+                        for object in undelivered {
+                            object.markRawDelivered(to: backend.id)
+                        }
+                        // Persist per backend so its delivery survives a later
+                        // backend failing in the same cycle.
+                        try context.save()
+                    }
+                } catch {
+                    firstError = firstError ?? error
                 }
             }
 
-            // Records already counted into the server matrix on a previous
-            // attempt must not contribute again, or the matrix double-counts.
-            let pending = batch.filter { $0.syncState == .pending }
+            // Matrix contribution (CloudKit only). Records already counted on a
+            // previous attempt carry `.aggregated`, so they don't contribute
+            // again and double-count the matrix.
             let aggregating = backends.filter(\.needsClientAggregation)
+            let notAggregated = batch.filter { $0.syncState == .pending }
 
-            if pending.count > 0 && !aggregating.isEmpty {
-                for backend in aggregating {
-                    try await SyncCoordinator(
-                        database: backend.database,
-                        maxRetry: 3,
-                        batch: pending
-                    )
-                    .upload()
+            if notAggregated.count > 0 && !aggregating.isEmpty {
+                do {
+                    for backend in aggregating {
+                        try await SyncCoordinator(
+                            database: backend.database,
+                            maxRetry: 3,
+                            batch: notAggregated
+                        )
+                        .upload()
+                    }
+
+                    for object in notAggregated {
+                        object.syncState = .aggregated
+                    }
+
+                    // Persist right away so a crash before the final save
+                    // doesn't replay the matrix contribution on the next cycle.
+                    try context.save()
+                } catch {
+                    firstError = firstError ?? error
                 }
-
-                for object in pending {
-                    object.syncState = .aggregated
-                }
-
-                // Persist right away so a crash before the final save
-                // doesn't replay the matrix contribution on the next cycle.
-                try context.save()
             }
 
+            // A record is fully synced once its matrix is contributed (or no
+            // backend aggregates) and its raw record has reached every backend
+            // that takes one.
+            let matrixDone = aggregating.isEmpty
+            let rawBackends = backends.filter { records(of: batch, for: $0) != nil }
             for object in batch {
-                object.syncState = .synced
+                let rawDelivered = rawBackends.allSatisfy { object.deliveredRaw.contains($0.id) }
+                if rawDelivered && (matrixDone || object.syncState != .pending) {
+                    object.syncState = .synced
+                }
             }
 
             try context.save()
+
+            // Re-fetching the same unsynced batch would spin forever, so stop
+            // the cycle here; the next sync run retries only what's left.
+            if let firstError {
+                throw firstError
+            }
         }
     }
 
