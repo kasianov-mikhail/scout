@@ -94,6 +94,24 @@ struct ServerContractTests {
         #expect(indices == [0, 1, 2, 3, 4])
     }
 
+    @Test("The active-user series counts a written Session")
+    func activeUserSeries() async throws {
+        let database = try makeDatabase()
+        let install = UUID().uuidString
+        let day = eventDate.startOfDay
+
+        try await database.write(record: makeSession(installID: install, startDate: day.addingTimeInterval(3600)))
+
+        let series = try await database.activeUsers(in: day..<day.addingDay())
+        let point = try #require(series.first { $0.date == Int64((day.timeIntervalSince1970 * 1000).rounded()) })
+
+        // The server forward-marks the install as active that day across all
+        // three windows; shared data may push the counts higher.
+        #expect(point.dau >= 1)
+        #expect(point.wau >= 1)
+        #expect(point.mau >= 1)
+    }
+
     private func makeDatabase() throws -> HTTPDatabase {
         let url = try #require(serverURL)
         return HTTPDatabase(url: url, apiKey: ProcessInfo.processInfo.environment["SCOUT_SERVER_API_KEY"])
@@ -111,6 +129,14 @@ struct ServerContractTests {
         record["param_count"] = Int64(index)
         record["date"] = eventDate
         record["params"] = eventParams
+        return record
+    }
+
+    private func makeSession(installID: String, startDate: Date) -> CKRecord {
+        let record = CKRecord(recordType: "Session", recordID: CKRecord.ID(recordName: "contract-\(UUID().uuidString)"))
+        record["session_id"] = UUID().uuidString
+        record["install_id"] = installID
+        record["start_date"] = startDate
         return record
     }
 

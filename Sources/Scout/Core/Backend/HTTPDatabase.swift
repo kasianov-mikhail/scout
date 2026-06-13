@@ -101,6 +101,29 @@ extension HTTPDatabase: RecordLookup {
     }
 }
 
+// MARK: - Metrics
+
+extension HTTPDatabase: ActiveUsersReading {
+    /// Fetches the server's native DAU/WAU/MAU series over `range`.
+    ///
+    /// The server aggregates from raw `Session` records, so the client reads a
+    /// finished series instead of rebuilding it from `PeriodMatrix` cells.
+    ///
+    func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint] {
+        let from = Int64((range.lowerBound.timeIntervalSince1970 * 1000).rounded())
+        let to = Int64((range.upperBound.timeIntervalSince1970 * 1000).rounded())
+
+        guard let endpoint = URL(string: "api/v1/metrics/active-users?from=\(from)&to=\(to)", relativeTo: url) else {
+            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
+        }
+
+        let (data, response) = try await session.data(for: request(for: endpoint, method: "GET"))
+        try check(response, data: data)
+
+        return try JSONDecoder().decode(ActiveUsersResponse.self, from: data).series
+    }
+}
+
 // MARK: - Transport
 
 /// A non-2xx response from a Scout server.
