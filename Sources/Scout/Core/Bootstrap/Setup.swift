@@ -53,6 +53,8 @@ public func setup(backends: [Backend]) async throws {
         throw NoBackendsError()
     }
 
+    warnAboutCleartextKeys(in: backends)
+
     installExceptionHandler()
     installSignalHandler()
 
@@ -84,5 +86,15 @@ public func setup(backends: [Backend]) async throws {
 
     for case .cloudKit(let container) in backends {
         verifyParallelismIfDue(container: container)
+    }
+}
+
+/// Warns when an API key would be sent to a Scout server over a connection
+/// that isn't HTTPS, where the key — and every uploaded analytics record —
+/// would travel in cleartext and be readable by any network observer.
+///
+private func warnAboutCleartextKeys(in backends: [Backend]) {
+    for case .server(let url, _?) in backends where url.scheme?.lowercased() != "https" {
+        print("[Scout] The API key for '\(url)' will be sent over a non-HTTPS connection in cleartext. Use an https:// URL.")
     }
 }
