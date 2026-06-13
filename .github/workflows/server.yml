@@ -4,12 +4,19 @@ name: Server
 # (HTTPQueryCoding/HTTPRecordCoding) is shared with that repository, and unit
 # tests can only verify Scout's side of it, so this workflow boots the server
 # on top of PostgreSQL and runs ServerContractTests through HTTPDatabase.
-# It runs when the backend code changes here and when scout-server pushes to
-# main (repository_dispatch sent by its Notify workflow).
-# The backend code under contract reaches beyond Core/Backend: HTTPDatabase is
-# built on the RecordReader/RecordWriter/RecordChunk/RecordCursor types in
-# Core/Database/Record, whose pagination and cursor semantics travel over the
-# wire, so changes there must re-run the contract too.
+#
+# The expensive `contract` job runs only when the wire surface changes — the
+# Core/Backend and Core/Database/Record code that travels over it (HTTPDatabase
+# rides on the RecordReader/RecordWriter/RecordChunk/RecordCursor pagination and
+# cursor semantics), the contract tests, or this workflow — or when scout-server
+# pushes to main (repository_dispatch from its Notify workflow).
+#
+# A required status check must report on every PR, but a path-filtered job never
+# reports on PRs outside its paths, which would wedge them forever. So the PR
+# trigger is unfiltered, a lightweight `changes` job decides whether `contract`
+# runs, and an always-running `contract-gate` reports the result on every PR
+# (passing when `contract` succeeded or was not applicable). Make
+# `Server / contract-gate` the required check, not `Server / contract`.
 on:
   push:
     branches: [main]
@@ -19,11 +26,6 @@ on:
       - "Tests/ScoutTests/Core/Backend/**"
       - ".github/workflows/server.yml"
   pull_request:
-    paths:
-      - "Sources/Scout/Core/Backend/**"
-      - "Sources/Scout/Core/Database/Record/**"
-      - "Tests/ScoutTests/Core/Backend/**"
-      - ".github/workflows/server.yml"
   repository_dispatch:
     types: [scout-server-updated]
   workflow_dispatch:
@@ -36,7 +38,37 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Decide whether the wire surface changed. Required checks must report on
+  # every PR (see header), so this runs unconditionally and `contract` keys off
+  # its output; non-PR events always exercise the contract.
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Detect wire-surface changes
+        id: filter
+        run: |
+          if [ "${{ github.event_name }}" != "pull_request" ]; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          base="${{ github.event.pull_request.base.sha }}"
+          if git diff --name-only "$base"...HEAD \
+            | grep -qE '^(Sources/Scout/Core/Backend/|Sources/Scout/Core/Database/Record/|Tests/ScoutTests/Core/Backend/|\.github/workflows/server\.yml$)'; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+          fi
+
   contract:
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: macos-26
     timeout-minutes: 30
 
@@ -126,3 +158,31 @@ jobs:
       - name: Dump server log
         if: failure()
         run: cat scout-server/server.log
+
+  # The required status check. Always runs so it reports on every PR; passes
+  # when `contract` succeeded or was not applicable (skipped on PRs that leave
+  # the wire surface untouched), fails when `contract` failed or `changes` broke.
+  contract-gate:
+    name: contract-gate
+    needs: [changes, contract]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Require the contract to pass (or be N/A)
+        run: |
+          if [ "${{ needs.changes.result }}" != "success" ]; then
+            echo "::error::The changes job did not succeed (${{ needs.changes.result }})."
+            exit 1
+          fi
+          result="${{ needs.contract.result }}"
+          echo "contract job result: $result"
+          case "$result" in
+            success | skipped)
+              echo "Gate passes."
+              ;;
+            *)
+              echo "::error::The contract check did not pass (result: $result)."
+              exit 1
+              ;;
+          esac
