@@ -67,7 +67,7 @@ struct AnalyticsView: View {
                 }
             }
             .task {
-                await fetch()
+                await provider.fetchIfNeeded(for: filter, in: database)
             }
             .refreshable {
                 await fetch()

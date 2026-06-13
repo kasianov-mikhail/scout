@@ -15,6 +15,12 @@ class EventProvider: ObservableObject {
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
+    /// Fetches only when no events have been loaded yet, so returning to the list does not reload.
+    func fetchIfNeeded(for filter: Event.Query, in database: AppDatabase) async {
+        guard events == nil else { return }
+        await fetch(for: filter, in: database)
+    }
+
     func fetch(for filter: Event.Query, in database: AppDatabase) async {
         do {
             let query = CKQuery(recordType: EventObject.recordType, predicate: filter.buildPredicate())
