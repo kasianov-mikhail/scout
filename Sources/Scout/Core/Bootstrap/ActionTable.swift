@@ -5,7 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+#if canImport(UIKit)
+    import UIKit
+#else
+    import AppKit
+#endif
 
 struct ActionTable {
     typealias Action = @Sendable () async throws -> Void
@@ -21,5 +25,43 @@ struct ActionTable {
                 }
             }
         }
+    }
+}
+
+extension ActionTable {
+    static let appState = ActionTable(actions: [
+        AppLifecycle.willEnterForeground: {
+            try await persistentContainer.performBackgroundTasks(
+                SessionObject.trigger,
+                UserActivityObject.trigger
+            )
+        },
+        AppLifecycle.didEnterBackground: {
+            try await persistentContainer.performBackgroundTasks(
+                SessionObject.complete,
+                UserActivityObject.trigger
+            )
+        },
+    ])
+}
+
+/// Cross-platform application lifecycle notification names.
+enum AppLifecycle {
+    /// `willEnterForeground` on iOS, `willBecomeActive` on macOS.
+    static var willEnterForeground: Notification.Name {
+        #if canImport(UIKit)
+            UIApplication.willEnterForegroundNotification
+        #else
+            NSApplication.willBecomeActiveNotification
+        #endif
+    }
+
+    /// `didEnterBackground` on iOS, `didResignActive` on macOS.
+    static var didEnterBackground: Notification.Name {
+        #if canImport(UIKit)
+            UIApplication.didEnterBackgroundNotification
+        #else
+            NSApplication.didResignActiveNotification
+        #endif
     }
 }
