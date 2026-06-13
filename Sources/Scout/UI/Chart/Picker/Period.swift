@@ -27,11 +27,11 @@ extension Period {
         case .yesterday:
             "Yesterday"
         case .week:
-            "Last 7 days"
+            "7 days"
         case .month:
-            "Last 30 days"
+            "30 days"
         case .year:
-            "Last 365 days"
+            "365 days"
         }
     }
 }
