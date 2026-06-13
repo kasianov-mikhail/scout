@@ -17,28 +17,35 @@ protocol Syncable: SyncableObject {
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
 }
 
-/// Progress of a record's CloudKit matrix contribution.
+/// Whether a record still needs syncing.
 ///
-/// A record advances `pending → aggregated → synced`. The intermediate
-/// `aggregated` state marks records whose counts are already merged into
-/// the CloudKit matrix, so a retry after a partial sync failure doesn't
-/// re-contribute them and double-count the matrix.
-///
-/// Raw record fan-out across backends is tracked separately, per backend,
-/// in `deliveryData`: a record only reaches `synced` once its matrix is
-/// contributed *and* its raw record has been delivered to every backend
-/// that takes one.
+/// `pending` until every backend has everything it needs — which steps each
+/// backend has completed lives per backend in `delivery` — then `synced`.
 ///
 enum SyncState: Int16 {
-    /// Not uploaded yet; the next sync cycle picks the record up.
+    /// Not yet fully delivered; the next sync cycle picks the record up.
     case pending = 0
 
-    /// Counts are merged into the server matrix, but the cycle hasn't
-    /// finished — the record is still re-sent as a raw upload (idempotent).
+    /// Legacy. Written by builds before per-backend `delivery` tracking,
+    /// where it meant the CloudKit matrix had been contributed. New code
+    /// never writes it; `SyncEngine` migrates such records on the next cycle.
     case aggregated = 1
 
-    /// Fully uploaded; eligible for cleanup once old enough.
+    /// Delivered to every backend; eligible for cleanup once old enough.
     case synced = 2
+}
+
+/// Which steps of the sync pipeline a record has completed on one backend.
+///
+/// Raw uploads are idempotent upserts, so `.raw` only spares a healthy
+/// backend a redundant re-write. Matrix contributions are additive, so
+/// `.matrix` is what keeps a CloudKit matrix from double-counting on retry.
+///
+struct BackendProgress: OptionSet, Sendable {
+    let rawValue: Int
+
+    static let raw = BackendProgress(rawValue: 1 << 0)
+    static let matrix = BackendProgress(rawValue: 1 << 1)
 }
 
 @objc(SyncableObject)
@@ -46,7 +53,7 @@ class SyncableObject: IDObject {
     @NSManaged var syncStatePrimitive: Int16
     @NSManaged var syncAttempts: Int
 
-    /// JSON-encoded set of backend ids that have received the raw record.
+    /// JSON-encoded per-backend sync progress (`[backendID: rawValue]`).
     @NSManaged var deliveryData: Data?
 
     var syncState: SyncState {
@@ -58,27 +65,35 @@ class SyncableObject: IDObject {
         }
     }
 
-    /// The backends whose raw upload of this record has already succeeded.
+    /// How far this record has progressed on each backend, keyed by
+    /// `ResolvedBackend.id`.
     ///
-    /// Tracked per backend so a healthy backend isn't re-written while a
-    /// failing one is retried, and so a record only counts as fully synced
-    /// once every backend that needs the raw record has it.
+    /// Tracked per backend so a healthy backend isn't re-written or re-counted
+    /// while a failing one is retried, and so a record only reaches `synced`
+    /// once every backend has everything it needs.
     ///
-    var deliveredRaw: Set<String> {
+    var delivery: [String: BackendProgress] {
         get {
-            guard let deliveryData, let ids = try? JSONDecoder().decode([String].self, from: deliveryData) else {
-                return []
+            guard let deliveryData, let stored = try? JSONDecoder().decode([String: Int].self, from: deliveryData) else {
+                return [:]
             }
-            return Set(ids)
+            return stored.mapValues(BackendProgress.init(rawValue:))
         }
         set {
-            deliveryData = try? JSONEncoder().encode(newValue.sorted())
+            deliveryData = try? JSONEncoder().encode(newValue.mapValues(\.rawValue))
         }
     }
 
-    /// Records that `backendID` has received this record's raw upload.
-    func markRawDelivered(to backendID: String) {
-        deliveredRaw.insert(backendID)
+    /// The steps `backendID` has completed for this record.
+    func progress(for backendID: String) -> BackendProgress {
+        delivery[backendID] ?? []
+    }
+
+    /// Records that `steps` have completed for `backendID`.
+    func mark(_ steps: BackendProgress, for backendID: String) {
+        var map = delivery
+        map[backendID, default: []].formUnion(steps)
+        delivery = map
     }
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {

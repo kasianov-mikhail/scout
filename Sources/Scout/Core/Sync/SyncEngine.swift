@@ -43,70 +43,73 @@ struct SyncEngine: @unchecked Sendable {
             // Persist attempt counters so cleanup can retire records that keep failing.
             try context.save()
 
-            // Each backend is an independent destination: a failure on one
-            // must not abort uploads to the others. Collect the first error
-            // and surface it once the batch has done all it can this cycle.
+            // What each backend needs for this batch: a raw upload if it takes
+            // raw records for this type, plus a matrix contribution if it
+            // aggregates on the client. Computed once — `records(of:for:)` is
+            // uniform across a batch (it casts on the static type).
+            let requirements = backends.map { (backend: $0, need: required(for: $0, in: batch)) }
+
+            // Records left `.aggregated` by an older build already contributed
+            // their matrix and, by that build's ordering, raw-uploaded to every
+            // backend. Seed that progress so the new pipeline neither re-uploads
+            // nor double-counts, then drop the legacy state.
+            for object in batch where object.syncState == .aggregated {
+                for requirement in requirements {
+                    object.mark(requirement.need, for: requirement.backend.id)
+                }
+                object.syncState = .pending
+            }
+
+            // Each backend is an independent destination: a failure on one must
+            // not abort uploads to the others. Collect the first error and
+            // surface it once the batch has done all it can this cycle.
             var firstError: Error?
 
-            // Raw fan-out. Skip backends that already hold the record (their
-            // delivery was recorded on an earlier cycle), so a healthy backend
-            // is never re-written while a failing one is retried.
             for backend in backends {
                 do {
-                    let undelivered = batch.filter { !$0.deliveredRaw.contains(backend.id) }
-                    if let records = records(of: undelivered, for: backend), records.count > 0 {
+                    // Raw upload. Skip records this backend already holds, so a
+                    // healthy backend is never re-written while a failing one is
+                    // retried. Raw writes are idempotent upserts keyed by record
+                    // name, so a repeat after a partial failure is harmless.
+                    let needRaw = batch.filter { !$0.progress(for: backend.id).contains(.raw) }
+                    if let records = records(of: needRaw, for: backend), records.count > 0 {
                         try await backend.database.write(records: records)
-                        for object in undelivered {
-                            object.markRawDelivered(to: backend.id)
+                        for object in needRaw {
+                            object.mark(.raw, for: backend.id)
                         }
-                        // Persist per backend so its delivery survives a later
+                        // Persist per backend so its progress survives a later
                         // backend failing in the same cycle.
                         try context.save()
                     }
+
+                    // Matrix contribution. Tracked per backend because a matrix
+                    // is additive: a record already folded in must not contribute
+                    // again, even if another backend's matrix failed mid-cycle.
+                    if backend.needsClientAggregation {
+                        let needMatrix = batch.filter { !$0.progress(for: backend.id).contains(.matrix) }
+                        if needMatrix.count > 0 {
+                            try await SyncCoordinator(
+                                database: backend.database,
+                                maxRetry: 3,
+                                batch: needMatrix
+                            )
+                            .upload()
+                            for object in needMatrix {
+                                object.mark(.matrix, for: backend.id)
+                            }
+                            // Persist right away so a crash before the final save
+                            // doesn't replay the matrix contribution next cycle.
+                            try context.save()
+                        }
+                    }
                 } catch {
                     firstError = firstError ?? error
                 }
             }
 
-            // Matrix contribution (CloudKit only). Records already counted on a
-            // previous attempt carry `.aggregated`, so they don't contribute
-            // again and double-count the matrix.
-            let aggregating = backends.filter(\.needsClientAggregation)
-            let notAggregated = batch.filter { $0.syncState == .pending }
-
-            if notAggregated.count > 0 && !aggregating.isEmpty {
-                do {
-                    for backend in aggregating {
-                        try await SyncCoordinator(
-                            database: backend.database,
-                            maxRetry: 3,
-                            batch: notAggregated
-                        )
-                        .upload()
-                    }
-
-                    for object in notAggregated {
-                        object.syncState = .aggregated
-                    }
-
-                    // Persist right away so a crash before the final save
-                    // doesn't replay the matrix contribution on the next cycle.
-                    try context.save()
-                } catch {
-                    firstError = firstError ?? error
-                }
-            }
-
-            // A record is fully synced once its matrix is contributed (or no
-            // backend aggregates) and its raw record has reached every backend
-            // that takes one.
-            let matrixDone = aggregating.isEmpty
-            let rawBackends = backends.filter { records(of: batch, for: $0) != nil }
-            for object in batch {
-                let rawDelivered = rawBackends.allSatisfy { object.deliveredRaw.contains($0.id) }
-                if rawDelivered && (matrixDone || object.syncState != .pending) {
-                    object.syncState = .synced
-                }
+            // A record is synced once every backend has everything it needs.
+            for object in batch where requirements.allSatisfy({ object.progress(for: $0.backend.id).isSuperset(of: $0.need) }) {
+                object.syncState = .synced
             }
 
             try context.save()
@@ -117,6 +120,21 @@ struct SyncEngine: @unchecked Sendable {
                 throw firstError
             }
         }
+    }
+
+    /// The progress a backend must reach before it's done with this batch: a
+    /// raw upload when it takes raw records for this type, and a matrix
+    /// contribution when it aggregates on the client.
+    ///
+    private func required(for backend: ResolvedBackend, in batch: [some Syncable]) -> BackendProgress {
+        var need: BackendProgress = []
+        if records(of: batch, for: backend) != nil {
+            need.insert(.raw)
+        }
+        if backend.needsClientAggregation {
+            need.insert(.matrix)
+        }
+        return need
     }
 
     /// The raw records a batch contributes to a backend, if any.

@@ -15,6 +15,7 @@ import Testing
 @Suite("SyncEngine with multiple backends")
 struct SyncEngineBackendTests {
     let cloud = InMemoryDatabase()
+    let cloud2 = InMemoryDatabase()
     let server = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 
@@ -22,6 +23,16 @@ struct SyncEngineBackendTests {
         ResolvedBackend(
             id: "cloud",
             database: cloud,
+            needsClientAggregation: true,
+            acceptsRawMetrics: false,
+            checkAvailability: {}
+        )
+    }
+
+    var cloud2Backend: ResolvedBackend {
+        ResolvedBackend(
+            id: "cloud2",
+            database: cloud2,
             needsClientAggregation: true,
             acceptsRawMetrics: false,
             checkAvailability: {}
@@ -98,10 +109,29 @@ struct SyncEngineBackendTests {
 
         // CloudKit got its raw record and matrix; the server got nothing.
         #expect(event.syncState != .synced)
-        #expect(event.deliveredRaw.contains("cloud"))
-        #expect(!event.deliveredRaw.contains("server"))
+        #expect(event.progress(for: "cloud") == [.raw, .matrix])
+        #expect(event.progress(for: "server").isEmpty)
         #expect(cloud.records.filter { $0.recordType == "Event" }.count == 1)
         #expect(server.records.filter { $0.recordType == "Event" }.count == 0)
+    }
+
+    @Test("A matrix is contributed per CloudKit backend, never twice")
+    func matrixPerCloudKitBackend() async throws {
+        let event = EventObject.stub(name: "login", in: context)
+        // Simulate a prior cycle where the first CloudKit backend was fully
+        // delivered but the second only received the raw record.
+        event.mark([.raw, .matrix], for: "cloud")
+        event.mark(.raw, for: "cloud2")
+        try context.save()
+
+        let engine = SyncEngine(backends: [cloudBackend, cloud2Backend], context: context)
+        try await engine.send(type: EventObject.self)
+
+        #expect(event.syncState == .synced)
+        // The first backend's matrix isn't contributed a second time...
+        #expect(cloud.records.filter { $0.recordType == Int.recordType }.isEmpty)
+        // ...while the second backend's matrix is contributed exactly once.
+        #expect(cloud2.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 
     @Test("The recovered backend is retried alone; healthy ones aren't rewritten")
