@@ -35,8 +35,8 @@ struct SyncEngineTests {
         #expect(!context.hasChanges)
     }
 
-    @Test("Uploads the matrix once and marks the batch aggregated")
-    func marksBatchAggregated() async throws {
+    @Test("Uploads the matrix once and marks the batch synced")
+    func marksBatchSynced() async throws {
         let event = EventObject.stub(name: "x", in: context)
         try context.save()
 
@@ -47,10 +47,27 @@ struct SyncEngineTests {
         #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
 
-    @Test("Does not re-contribute an aggregated batch to the matrix on retry")
-    func skipsMatrixUploadOnRetry() async throws {
-        // Simulate a crash after the matrix upload was persisted but before
-        // the final save: the record is aggregated yet still unsynced.
+    @Test("Does not re-upload or re-contribute progress already recorded for a backend")
+    func skipsDeliveredStepsOnRetry() async throws {
+        // Simulate a crash after the raw upload and matrix contribution were
+        // persisted but before the final save: progress is recorded yet the
+        // record is still unsynced.
+        let event = EventObject.stub(name: "x", in: context)
+        event.mark([.raw, .matrix], for: "default")
+        try context.save()
+
+        let engine = SyncEngine(database: database, context: context)
+        try await engine.send(type: EventObject.self)
+
+        #expect(event.syncState == .synced)
+        #expect(database.events.isEmpty)
+        #expect(database.records.filter { $0.recordType == Int.recordType }.isEmpty)
+    }
+
+    @Test("Migrates a legacy aggregated record without re-uploading or re-counting")
+    func migratesLegacyAggregated() async throws {
+        // A record left `.aggregated` by an older build already reached every
+        // backend; the new pipeline must neither re-upload nor double-count it.
         let event = EventObject.stub(name: "x", in: context)
         event.syncState = .aggregated
         try context.save()
@@ -59,7 +76,6 @@ struct SyncEngineTests {
         try await engine.send(type: EventObject.self)
 
         #expect(event.syncState == .synced)
-        #expect(database.events.count == 1)
-        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 0)
+        #expect(database.records.isEmpty)
     }
 }
