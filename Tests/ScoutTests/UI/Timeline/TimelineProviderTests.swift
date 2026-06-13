@@ -76,4 +76,15 @@ struct TimelineProviderTests {
 
         #expect(provider.exportText?.contains("- 2023-11-14T22:13:50Z  e") == true)
     }
+
+    @Test("A backend with no records publishes an empty result")
+    func testEmptyBackendPublishesNoItems() async throws {
+        let provider = TimelineProvider()
+        let feed = TimelineFeed(deviceID: deviceID, database: DatabaseStub())
+
+        await provider.start(feed: feed, anchorEvent: nil, eventName: nil)
+
+        _ = try #require(provider.result).get()
+        #expect(provider.items.count == 0)
+    }
 }

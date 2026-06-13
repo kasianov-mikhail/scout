@@ -25,7 +25,9 @@ struct Timeline: View {
             case nil:
                 ProgressView().frame(maxHeight: .infinity)
             case .failure(let error):
-                errorView(for: error)
+                errorView(Text(verbatim: error.localizedDescription))
+            case .success where provider.items.count == 0:
+                errorView(Text(verbatim: "The timeline couldn't be loaded."))
             case .success:
                 list
             }
@@ -95,8 +97,8 @@ struct Timeline: View {
         }
     }
 
-    private func errorView(for error: Error) -> some View {
-        ErrorView(description: Text(verbatim: error.localizedDescription)) {
+    private func errorView(_ description: Text) -> some View {
+        ErrorView(description: description) {
             Task(operation: load)
         }
     }
