@@ -34,6 +34,14 @@ extension HTTPDatabase: BackendDatabase {}
 /// branches on.
 ///
 struct ResolvedBackend: Sendable {
+    /// Stable identity used to track per-record delivery across sync cycles.
+    ///
+    /// Derived from the destination itself — the CloudKit container
+    /// identifier or the server URL — so it survives reordering or
+    /// re-resolving the backend list.
+    ///
+    let id: String
+
     let database: any BackendDatabase
 
     /// Whether the client must maintain matrix records on this backend.
@@ -57,6 +65,7 @@ extension Backend {
         switch self {
         case .cloudKit(let container):
             ResolvedBackend(
+                id: container.containerIdentifier ?? "cloudKit",
                 database: container.publicCloudDatabase,
                 needsClientAggregation: true,
                 acceptsRawMetrics: false,
@@ -68,6 +77,7 @@ extension Backend {
             )
         case .server(let url, let apiKey):
             ResolvedBackend(
+                id: url.absoluteString,
                 database: HTTPDatabase(url: url, apiKey: apiKey),
                 needsClientAggregation: false,
                 acceptsRawMetrics: true,

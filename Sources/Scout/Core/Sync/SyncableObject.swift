@@ -17,12 +17,17 @@ protocol Syncable: SyncableObject {
     static func group(in context: NSManagedObjectContext) throws -> [Self]?
 }
 
-/// Progress of a record through the sync pipeline.
+/// Progress of a record's CloudKit matrix contribution.
 ///
 /// A record advances `pending → aggregated → synced`. The intermediate
 /// `aggregated` state marks records whose counts are already merged into
-/// the server matrix, so a retry after a partial sync failure doesn't
+/// the CloudKit matrix, so a retry after a partial sync failure doesn't
 /// re-contribute them and double-count the matrix.
+///
+/// Raw record fan-out across backends is tracked separately, per backend,
+/// in `deliveryData`: a record only reaches `synced` once its matrix is
+/// contributed *and* its raw record has been delivered to every backend
+/// that takes one.
 ///
 enum SyncState: Int16 {
     /// Not uploaded yet; the next sync cycle picks the record up.
@@ -41,6 +46,9 @@ class SyncableObject: IDObject {
     @NSManaged var syncStatePrimitive: Int16
     @NSManaged var syncAttempts: Int
 
+    /// JSON-encoded set of backend ids that have received the raw record.
+    @NSManaged var deliveryData: Data?
+
     var syncState: SyncState {
         get {
             SyncState(rawValue: syncStatePrimitive) ?? .pending
@@ -48,6 +56,29 @@ class SyncableObject: IDObject {
         set {
             syncStatePrimitive = newValue.rawValue
         }
+    }
+
+    /// The backends whose raw upload of this record has already succeeded.
+    ///
+    /// Tracked per backend so a healthy backend isn't re-written while a
+    /// failing one is retried, and so a record only counts as fully synced
+    /// once every backend that needs the raw record has it.
+    ///
+    var deliveredRaw: Set<String> {
+        get {
+            guard let deliveryData, let ids = try? JSONDecoder().decode([String].self, from: deliveryData) else {
+                return []
+            }
+            return Set(ids)
+        }
+        set {
+            deliveryData = try? JSONEncoder().encode(newValue.sorted())
+        }
+    }
+
+    /// Records that `backendID` has received this record's raw upload.
+    func markRawDelivered(to backendID: String) {
+        deliveredRaw.insert(backendID)
     }
 
     static func batch<T: SyncableObject>(in context: NSManagedObjectContext, matching keyPaths: [PartialKeyPath<T>]) throws -> [T]? {
