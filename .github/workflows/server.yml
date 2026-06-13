@@ -6,10 +6,22 @@ name: Server
 # on top of PostgreSQL and runs ServerContractTests through HTTPDatabase.
 # It runs when the backend code changes here and when scout-server pushes to
 # main (repository_dispatch sent by its Notify workflow).
+# The backend code under contract reaches beyond Core/Backend: HTTPDatabase is
+# built on the RecordReader/RecordWriter/RecordChunk/RecordCursor types in
+# Core/Database/Record, whose pagination and cursor semantics travel over the
+# wire, so changes there must re-run the contract too.
 on:
+  push:
+    branches: [main]
+    paths:
+      - "Sources/Scout/Core/Backend/**"
+      - "Sources/Scout/Core/Database/Record/**"
+      - "Tests/ScoutTests/Core/Backend/**"
+      - ".github/workflows/server.yml"
   pull_request:
     paths:
       - "Sources/Scout/Core/Backend/**"
+      - "Sources/Scout/Core/Database/Record/**"
       - "Tests/ScoutTests/Core/Backend/**"
       - ".github/workflows/server.yml"
   repository_dispatch:
@@ -49,6 +61,10 @@ jobs:
             fi
             sleep 1
           done
+          if ! "$pgbin/pg_isready" -q -h 127.0.0.1; then
+            echo "PostgreSQL did not become ready on 127.0.0.1:5432"
+            exit 1
+          fi
           "$pgbin/psql" -h 127.0.0.1 -d postgres -c "CREATE ROLE scout LOGIN PASSWORD 'scout'"
           "$pgbin/createdb" -h 127.0.0.1 -O scout scout
 
@@ -67,7 +83,12 @@ jobs:
           exit 1
 
       # The contract is platform-independent, so the tests run on the macOS
-      # destination — no simulator needed.
+      # destination — no simulator needed. xcodebuild forwards only variables
+      # with the TEST_RUNNER_ prefix into the test process (which reads them
+      # without it), so an API key would have to be set as
+      # TEST_RUNNER_SCOUT_SERVER_API_KEY — a bare SCOUT_SERVER_API_KEY never
+      # arrives. The default server accepts unauthenticated requests, so none
+      # is set today.
       - name: Run contract tests
         env:
           TEST_RUNNER_SCOUT_SERVER_URL: http://127.0.0.1:8080
@@ -76,7 +97,31 @@ jobs:
             -scheme Scout \
             -destination 'platform=macOS' \
             -only-testing:ScoutTests/ServerContractTests \
+            -resultBundlePath TestResults.xcresult \
             test
+
+      # The suite is skipped unless SCOUT_SERVER_URL reaches the test process,
+      # so a broken env hand-off (or an -only-testing identifier that matches
+      # nothing) would skip every test while xcodebuild still exits 0. Fail
+      # loudly when nothing actually ran rather than report a green that tested
+      # nothing.
+      - name: Verify the contract suite ran
+        run: |
+          summary="$(xcrun xcresulttool get test-results summary \
+            --path TestResults.xcresult --compact)"
+          # `0 passed` is a real count (jq's // keeps it); only a missing field
+          # yields empty, in which case the schema changed — warn, don't block.
+          passed="$(echo "$summary" | jq '.passedTests // empty')"
+          if [ -z "$passed" ]; then
+            echo "::warning::Could not read passedTests from the result bundle; skipping the ran-something check."
+            echo "$summary" | head -c 2000
+            exit 0
+          fi
+          echo "Contract tests passed: $passed"
+          if [ "$passed" -lt 1 ]; then
+            echo "::error::No contract tests executed — the suite skipped (SCOUT_SERVER_URL likely never reached the test process) or matched nothing."
+            exit 1
+          fi
 
       - name: Dump server log
         if: failure()

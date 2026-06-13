@@ -18,6 +18,10 @@ private let serverURL = ProcessInfo.processInfo.environment["SCOUT_SERVER_URL"].
 /// asserted against a known constant rather than a record round trip.
 private let eventDate = Date(timeIntervalSince1970: 1_750_000_000)
 
+/// Fixed `params` bytes every contract record carries, so the `bytes` wire
+/// coding (base64) is exercised end to end and not just in unit tests.
+private let eventParams = Data([0x00, 0x01, 0xFE, 0xFF])
+
 /// End-to-end checks against a live Scout server.
 ///
 /// The HTTP wire format (`HTTPQueryCoding`/`HTTPRecordCoding`) is a contract
@@ -41,6 +45,7 @@ struct ServerContractTests {
         #expect(restored["name"] == "login")
         #expect(restored["param_count"] == Int64(1))
         #expect(restored["date"] == eventDate)
+        #expect(restored["params"] == eventParams)
     }
 
     @Test("Lookup honors the requested field list")
@@ -63,7 +68,7 @@ struct ServerContractTests {
 
         let chunk = try await database.read(matching: makeQuery(marker: marker), fields: nil)
 
-        #expect(chunk.records.compactMap { $0["param_count"] as? Int64 } == [0, 1, 2])
+        #expect(paramCounts(in: chunk.records) == [0, 1, 2])
         #expect(chunk.cursor == nil)
     }
 
@@ -74,14 +79,18 @@ struct ServerContractTests {
         try await database.write(records: (0..<5).map { makeEvent(name: marker, index: $0) })
 
         var chunk = try await database.read(matching: makeQuery(marker: marker), fields: nil, limit: 2)
-        var indices = chunk.records.compactMap { $0["param_count"] as? Int64 }
+        var indices = paramCounts(in: chunk.records)
         #expect(indices.count == 2)
 
-        while let cursor = chunk.cursor {
+        // Bounded so a server that never stops handing back a cursor fails the
+        // assertion below rather than looping until the job's CI timeout.
+        for _ in 0..<10 {
+            guard let cursor = chunk.cursor else { break }
             chunk = try await database.readMore(from: cursor, fields: nil)
-            indices += chunk.records.compactMap { $0["param_count"] as? Int64 }
+            indices += paramCounts(in: chunk.records)
         }
 
+        #expect(chunk.cursor == nil)
         #expect(indices == [0, 1, 2, 3, 4])
     }
 
@@ -101,6 +110,11 @@ struct ServerContractTests {
         record["name"] = name
         record["param_count"] = Int64(index)
         record["date"] = eventDate
+        record["params"] = eventParams
         return record
+    }
+
+    private func paramCounts(in records: [CKRecord]) -> [Int64] {
+        records.compactMap { $0["param_count"] as? Int64 }
     }
 }
