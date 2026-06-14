@@ -44,9 +44,11 @@ struct MetricSeriesPoint: Decodable {
     let value: MetricValue
 }
 
-/// A typed series value: `int` for record counts and `IntMetric` sums,
-/// `double` for `DoubleMetric` sums. Encoded as a single-key object, e.g.
-/// `{"int": 42}`, matching the rest of the wire format.
+/// A typed series value.
+///
+/// `int` carries record counts and `IntMetric` sums, `double` carries
+/// `DoubleMetric` sums. Encoded as a single-key object, e.g. `{"int": 42}`,
+/// matching the rest of the wire format.
 ///
 enum MetricValue: Decodable, Equatable {
     case int(Int)
