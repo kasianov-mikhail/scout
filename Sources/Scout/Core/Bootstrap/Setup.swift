@@ -10,14 +10,27 @@ import Foundation
 import Logging
 import Metrics
 
-struct SetupError: LocalizedError {
-    let errorDescription: String? = "Scout is already setup"
-    let recoverySuggestion: String? = "Review the code to ensure setup is called only once"
-}
+enum SetupError: LocalizedError {
+    case alreadySetup
+    case noBackends
 
-struct NoBackendsError: LocalizedError {
-    let errorDescription: String? = "Scout requires at least one backend"
-    let recoverySuggestion: String? = "Pass a CloudKit container or a Scout server to setup"
+    var errorDescription: String? {
+        switch self {
+        case .alreadySetup:
+            "Scout is already setup"
+        case .noBackends:
+            "Scout requires at least one backend"
+        }
+    }
+
+    var recoverySuggestion: String? {
+        switch self {
+        case .alreadySetup:
+            "Review the code to ensure setup is called only once"
+        case .noBackends:
+            "Pass a CloudKit container or a Scout server to setup"
+        }
+    }
 }
 
 @MainActor private var isSetup = false
@@ -47,10 +60,10 @@ public func setup(container: CKContainer) async throws {
 @MainActor
 public func setup(backends: [Backend]) async throws {
     guard !isSetup else {
-        throw SetupError()
+        throw SetupError.alreadySetup
     }
     guard !backends.isEmpty else {
-        throw NoBackendsError()
+        throw SetupError.noBackends
     }
 
     warnAboutCleartextKeys(in: backends)
