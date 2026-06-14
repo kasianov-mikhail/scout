@@ -16,7 +16,7 @@ import SwiftUI
 ///
 struct DataSourceMenu: View {
     let servers: [ServerOption]
-    @Binding var activeID: ServerOption.ID?
+    @Binding var activeID: ServerOption.ID
 
     @State private var isPresented = false
 
@@ -36,7 +36,7 @@ struct DataSourceMenu: View {
 /// The server rows shown inside the ``DataSourceMenu`` dropdown.
 private struct DataSourceList: View {
     let servers: [ServerOption]
-    @Binding var activeID: ServerOption.ID?
+    @Binding var activeID: ServerOption.ID
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -101,7 +101,7 @@ extension View {
 // MARK: - Previews
 
 private struct DataSourceMenuPreview: View {
-    @State private var activeID: ServerOption.ID? = ServerOption.samples.first?.id
+    @State private var activeID = ServerOption.samples[0].id
 
     var body: some View {
         NavigationStack {
@@ -125,7 +125,7 @@ private struct DataSourceMenuPreview: View {
 }
 
 private struct StatefulDropdownPreview: View {
-    @State private var activeID: ServerOption.ID? = ServerOption.samples.first?.id
+    @State private var activeID = ServerOption.samples[0].id
     @State private var isPresented = true
 
     var body: some View {
