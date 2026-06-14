@@ -16,10 +16,11 @@ public struct HomeView: View {
         _dataSource = StateObject(wrappedValue: DataSourceModel(backends: [.cloudKit(container)]))
     }
 
-    /// Reads analytics from the active backend, defaulting to the first in the
-    /// list. When several backends are configured, a toolbar control lets the
-    /// user switch between them; CloudKit account and schema warnings only
-    /// apply while the active backend is a CloudKit container.
+    /// Reads analytics from the active backend, defaulting to the first.
+    ///
+    /// When several backends are configured, a toolbar control lets the user
+    /// switch between them; CloudKit account and schema warnings only apply
+    /// while the active backend is a CloudKit container.
     ///
     public init(backends: [Backend]) {
         _dataSource = StateObject(wrappedValue: DataSourceModel(backends: backends))
