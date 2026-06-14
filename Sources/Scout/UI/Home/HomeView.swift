@@ -12,10 +12,6 @@ public struct HomeView: View {
     @StateObject private var dataSource: DataSourceModel
     @StateObject private var tint = Tint()
 
-    public init(container: CKContainer) {
-        _dataSource = StateObject(wrappedValue: DataSourceModel(backends: [.cloudKit(container)]))
-    }
-
     /// Reads analytics from the active backend, defaulting to the first.
     ///
     /// When several backends are configured, a toolbar control lets the user
@@ -53,6 +49,18 @@ public struct HomeView: View {
                 DataSourceMenu(servers: dataSource.servers, activeID: $dataSource.activeID)
             }
         }
+    }
+}
+
+extension HomeView {
+    /// Reads analytics from a single CloudKit container.
+    ///
+    /// A convenience over ``init(backends:)`` for the CloudKit-only case;
+    /// prefer that initializer, passing `[.cloudKit(container)]`.
+    ///
+    @available(*, deprecated, message: "Use init(backends:) with [.cloudKit(container)] instead.")
+    public init(container: CKContainer) {
+        self.init(backends: [.cloudKit(container)])
     }
 }
 

@@ -35,17 +35,6 @@ enum SetupError: LocalizedError {
 
 @MainActor private var isSetup = false
 
-/// Initializes Scout's global infrastructure against a CloudKit container.
-///
-/// - Parameter container: The CloudKit container for all operations.
-/// - Throws: An error if initialization fails or if called more than once.
-/// - Important: Call from the main actor during app startup.
-///
-@MainActor
-public func setup(container: CKContainer) async throws {
-    try await setup(backends: [.cloudKit(container)])
-}
-
 /// Initializes Scout's global infrastructure against one or more backends.
 ///
 /// Every raw record is synced to every backend. CloudKit backends also
@@ -110,4 +99,10 @@ private func warnAboutCleartextKeys(in backends: [Backend]) {
     for case .server(let url, _?) in backends where url.scheme?.lowercased() != "https" {
         print("[Scout] The API key for '\(url)' will be sent over a non-HTTPS connection in cleartext. Use an https:// URL.")
     }
+}
+
+@MainActor
+@available(*, deprecated, message: "Use setup(backends:) with [.cloudKit(container)] instead.")
+public func setup(container: CKContainer) async throws {
+    try await setup(backends: [.cloudKit(container)])
 }
