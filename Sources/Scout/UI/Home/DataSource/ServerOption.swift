@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-/// Reachability of a data source, mirroring a backend's `checkAvailability`.
+/// Reachability of a data source, probed live for the status dots.
 enum ServerStatus: CaseIterable, Identifiable {
     case reachable
     case unreachable

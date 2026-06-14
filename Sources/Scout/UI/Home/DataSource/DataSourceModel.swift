@@ -25,18 +25,20 @@ final class DataSourceModel: ObservableObject {
         didSet { defaults.set(activeID, forKey: Self.storageKey) }
     }
 
-    /// Reachability per backend id, filled in by ``checkAvailability()``.
+    /// Reachability per backend id, filled in by ``refreshStatuses()``.
     @Published private(set) var statuses: [String: ServerStatus] = [:]
 
     private let resolved: [ResolvedBackend]
     private let defaults: UserDefaults
+    private let probe: @Sendable (Backend) async -> ServerStatus
 
     private static let storageKey = "scout_active_backend"
 
-    init(backends: [Backend], defaults: UserDefaults = .standard) {
+    init(backends: [Backend], defaults: UserDefaults = .standard, probe: @escaping @Sendable (Backend) async -> ServerStatus = { await $0.probeStatus() }) {
         self.backends = backends
         self.resolved = backends.map(\.resolved)
         self.defaults = defaults
+        self.probe = probe
 
         let ids = resolved.map(\.id)
         let stored = defaults.string(forKey: Self.storageKey)
@@ -79,17 +81,16 @@ final class DataSourceModel: ObservableObject {
         }
     }
 
-    /// Probes every backend concurrently and records whether it is reachable.
-    func checkAvailability() async {
+    /// Probes every backend concurrently and records its reachability for the
+    /// status dots.
+    ///
+    func refreshStatuses() async {
         await withTaskGroup(of: (String, ServerStatus).self) { group in
-            for backend in resolved {
-                group.addTask {
-                    do {
-                        try await backend.checkAvailability()
-                        return (backend.id, .reachable)
-                    } catch {
-                        return (backend.id, .unreachable)
-                    }
+            for index in backends.indices {
+                let id = resolved[index].id
+                let backend = backends[index]
+                group.addTask { [probe] in
+                    (id, await probe(backend))
                 }
             }
             for await (id, status) in group {

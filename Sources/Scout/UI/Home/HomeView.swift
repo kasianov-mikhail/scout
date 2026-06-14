@@ -36,7 +36,7 @@ public struct HomeView: View {
         }
         .task {
             if dataSource.hasChoice {
-                await dataSource.checkAvailability()
+                await dataSource.refreshStatuses()
             }
         }
         .onboardingSheet()

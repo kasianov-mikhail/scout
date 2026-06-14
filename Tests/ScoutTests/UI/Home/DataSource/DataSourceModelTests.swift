@@ -63,12 +63,18 @@ struct DataSourceModelTests {
         #expect(!DataSourceModel(backends: [.server(url: primary)], defaults: makeDefaults()).hasChoice)
     }
 
-    @Test("Reachability check marks reachable backends")
-    func checksAvailability() async {
-        let model = DataSourceModel(backends: backends, defaults: makeDefaults())
-        await model.checkAvailability()
+    @Test("Refresh records each backend's probed status by id")
+    func refreshRecordsProbedStatus() async {
+        let model = DataSourceModel(
+            backends: backends,
+            defaults: makeDefaults(),
+            probe: { $0.displayName == "a.scout.app" ? .reachable : .unreachable }
+        )
+        await model.refreshStatuses()
 
-        #expect(model.servers.allSatisfy { $0.status == .reachable })
+        let servers = model.servers
+        #expect(servers.first { $0.id == primary.absoluteString }?.status == .reachable)
+        #expect(servers.first { $0.id == secondary.absoluteString }?.status == .unreachable)
     }
 
     // MARK: - Factories
