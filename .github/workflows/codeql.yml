@@ -8,9 +8,6 @@ on:
 permissions:
   contents: read
 
-concurrency:
-  group: codeql-${{ github.ref }}
-
 jobs:
   analyze:
     runs-on: macos-26

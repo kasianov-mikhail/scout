@@ -23,7 +23,6 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
-          fetch-tags: true
 
       # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
       # only processed by the Xcode build system), so instead of
