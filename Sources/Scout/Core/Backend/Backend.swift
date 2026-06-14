@@ -24,6 +24,21 @@ public enum Backend: Sendable {
     case server(url: URL, apiKey: String? = nil)
 }
 
+extension Backend {
+    /// The self-hosted Scout server whose address is baked into the build (the
+    /// `SCOUT_IP` and `SCOUT_API_KEYS` build settings). Empty when the build
+    /// carries no address.
+    ///
+    public static func fromBundle() -> [Backend] {
+        guard let address = Bundle.main.infoDictionary?["SCOUT_IP"] as? String, !address.isEmpty, let url = URL(string: address) else {
+            return []
+        }
+
+        let apiKey = Bundle.main.infoDictionary?["SCOUT_API_KEYS"] as? String
+        return [.server(url: url, apiKey: apiKey?.isEmpty == false ? apiKey : nil)]
+    }
+}
+
 /// The full database surface a backend must provide.
 protocol BackendDatabase: RecordWriter, RecordReader, RecordLookup, Sendable {}
 
