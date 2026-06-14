@@ -101,6 +101,23 @@ extension HTTPDatabase: RecordLookup {
     }
 }
 
+// MARK: - Reachability
+
+extension HTTPDatabase {
+    /// A lightweight reachability probe for the data-source status dots.
+    ///
+    /// The server contract has no dedicated health route, so this issues a
+    /// bounded `records/query` that fails fast when the server is down or
+    /// rejects the API key. It is deliberately kept apart from the sync
+    /// pre-flight `checkAvailability`, which stays a no-op for servers so a
+    /// single down server never blocks syncing the others.
+    ///
+    func ping() async throws {
+        let query = CKQuery(recordType: "Event", predicate: NSPredicate(format: "name == %@", ""))
+        _ = try await read(matching: query, fields: nil, limit: 1)
+    }
+}
+
 // MARK: - Metrics
 
 extension HTTPDatabase: ActiveUsersReading {

@@ -112,6 +112,12 @@ struct ServerContractTests {
         #expect(point.mau >= 1)
     }
 
+    @Test("A reachability ping succeeds against a live server")
+    func reachabilityPing() async throws {
+        let database = try makeDatabase()
+        try await database.ping()
+    }
+
     private func makeDatabase() throws -> HTTPDatabase {
         let url = try #require(serverURL)
         return HTTPDatabase(url: url, apiKey: ProcessInfo.processInfo.environment["SCOUT_SERVER_API_KEY"])

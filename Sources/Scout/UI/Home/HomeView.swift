@@ -9,46 +9,50 @@ import CloudKit
 import SwiftUI
 
 public struct HomeView: View {
-    let database: any AppDatabase
-    let container: CKContainer?
-
+    @StateObject private var dataSource: DataSourceModel
     @StateObject private var tint = Tint()
 
     public init(container: CKContainer) {
-        self.database = container.publicCloudDatabase
-        self.container = container
+        _dataSource = StateObject(wrappedValue: DataSourceModel(backends: [.cloudKit(container)]))
     }
 
-    /// Reads analytics from the first backend in the list.
+    /// Reads analytics from the active backend, defaulting to the first.
     ///
-    /// CloudKit account and schema warnings only apply when that backend
-    /// is a CloudKit container.
+    /// When several backends are configured, a toolbar control lets the user
+    /// switch between them; CloudKit account and schema warnings only apply
+    /// while the active backend is a CloudKit container.
     ///
     public init(backends: [Backend]) {
-        if let primary = backends.primaryDatabase {
-            self.database = primary
-        } else {
-            self.database = DefaultDatabase()
-        }
-
-        if case .cloudKit(let container) = backends.first {
-            self.container = container
-        } else {
-            self.container = nil
-        }
+        _dataSource = StateObject(wrappedValue: DataSourceModel(backends: backends))
     }
 
     public var body: some View {
         NavigationStack {
             HomeContent()
+                .id(dataSource.activeID)
                 .navigationTitle(en: "Home")
-                .cloudKitWarnings(container: container)
+                .cloudKitWarnings(container: dataSource.activeContainer)
                 .dismissable()
+                .toolbar { dataSourceToolbar }
+        }
+        .task {
+            if dataSource.hasChoice {
+                await dataSource.refreshStatuses()
+            }
         }
         .onboardingSheet()
         .tint(tint.value)
         .environmentObject(tint)
-        .environment(\.database, database)
+        .environment(\.database, dataSource.activeDatabase)
+    }
+
+    @ToolbarContentBuilder
+    private var dataSourceToolbar: some ToolbarContent {
+        if dataSource.hasChoice {
+            ToolbarItem(placement: .topBarTrailing) {
+                DataSourceMenu(servers: dataSource.servers, activeID: $dataSource.activeID)
+            }
+        }
     }
 }
 
