@@ -43,13 +43,13 @@ Add the dependency to your `Package.swift`:
 .package(url: "https://github.com/kasianov-mikhail/scout.git", from: "3.3.0")
 ```
 
-For CloudKit setup and schema upload, see the full [Installation Guide](INSTALLATION.md).
+For CloudKit setup and schema upload, see the full [Installation Guide](docs/INSTALLATION.md).
 
 ## Usage
 
 Call `setup` once during app launch to bootstrap logging, metrics, and crash reporting, then write logs and metrics through the standard [swift-log](https://github.com/apple/swift-log) and [swift-metrics](https://github.com/apple/swift-metrics) APIs.
 
-For the full walkthrough — backends, logging, and metrics — see the [Usage Guide](USAGE.md).
+For the full walkthrough — backends, logging, and metrics — see the [Usage Guide](docs/USAGE.md).
 
 ## Dashboard
 
