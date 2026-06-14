@@ -15,26 +15,4 @@ Upload the [schema file](https://github.com/kasianov-mikhail/scout/blob/main/Sch
 3. Go to the "Schema" section and use "Import Schema" to upload the schema file.
 4. Click "Deploy to Production" to apply the schema.
 
-## Configure Scout
-
-```swift
-import CloudKit
-import Scout
-
-let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
-
-try await setup(container: container)
-```
-
-## Using a Scout Server
-
-Instead of CloudKit — or in addition to it — Scout can sync to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server). A server needs no schema upload: it aggregates analytics natively.
-
-```swift
-try await setup(backends: [
-    .cloudKit(container),
-    .server(url: URL(string: "https://scout.example.com")!, apiKey: "YOUR_API_KEY"),
-])
-```
-
-See the [server repository](https://github.com/kasianov-mikhail/scout-server) for deployment instructions and Docker images.
+Once CloudKit is enabled and the schema is uploaded, see the [Usage Guide](USAGE.md) for configuring `setup`, adding [Scout server](https://github.com/kasianov-mikhail/scout-server) backends, and writing logs and metrics.
