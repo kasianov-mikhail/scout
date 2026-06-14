@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 import Testing
 
 @testable import Scout
@@ -74,7 +74,7 @@ struct RailMergeTests {
         let installID = UUID()
         let launchID = UUID()
         let sessionID = UUID()
-        let eventID = CKRecord.ID(recordName: UUID().uuidString)
+        let eventID = RecordID(recordName: UUID().uuidString)
 
         let original = Rail(
             device: .stub(deviceID: deviceID),

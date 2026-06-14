@@ -5,14 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct Matrix<T: CellProtocol> {
     let recordType: String
     let date: Date
     let name: String
     var category: String?
-    var record: CKRecord?
+    var record: Record?
     let cells: [T]
 }
 

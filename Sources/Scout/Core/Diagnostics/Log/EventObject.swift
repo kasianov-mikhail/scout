@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 @objc(EventObject)
@@ -25,10 +24,9 @@ final class EventObject: NamedObject, Syncable {
     }
 }
 
-extension EventObject: CKRepresentable {
-    var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: eventID.uuidString)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+extension EventObject: RecordRepresentable {
+    var toRecord: Record {
+        var record = Record(recordType: Self.recordType, id: RecordID(recordName: eventID.uuidString))
 
         record["name"] = name
         record["level"] = level
@@ -38,7 +36,7 @@ extension EventObject: CKRepresentable {
         record["uuid"] = eventID.uuidString
         record["session_id"] = sessionID.uuidString
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }

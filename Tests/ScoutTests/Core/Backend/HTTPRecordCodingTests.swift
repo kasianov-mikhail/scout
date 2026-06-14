@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -13,14 +12,11 @@ import Testing
 
 @Suite("HTTPRecord coding")
 struct HTTPRecordCodingTests {
-    @Test("CKRecord round-trips through the wire format")
+    @Test("Record round-trips through the wire format")
     func recordRoundTrip() throws {
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let record = CKRecord(
-            recordType: "Event",
-            recordID: CKRecord.ID(recordName: "record-1")
-        )
+        var record = Record(recordType: "Event", id: RecordID(recordName: "record-1"))
         record["name"] = "login"
         record["param_count"] = Int64(2)
         record["value"] = 1.5
@@ -32,7 +28,7 @@ struct HTTPRecordCodingTests {
         let restored = try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord
 
         #expect(restored.recordType == "Event")
-        #expect(restored.recordID.recordName == "record-1")
+        #expect(restored.recordName == "record-1")
         #expect(restored["name"] == "login")
         #expect(restored["param_count"] == Int64(2))
         #expect(restored["value"] == 1.5)
@@ -42,17 +38,17 @@ struct HTTPRecordCodingTests {
 
     @Test("Integer and floating-point numbers keep their type")
     func numberTypes() throws {
-        #expect(HTTPFieldValue(recordValue: Int64(7)) == .int(7))
-        #expect(HTTPFieldValue(recordValue: 7 as Int) == .int(7))
-        #expect(HTTPFieldValue(recordValue: 7.5) == .double(7.5))
-        #expect(HTTPFieldValue(recordValue: 7.0) == .double(7))
+        #expect(RecordValue(any: Int64(7)) == .int(7))
+        #expect(RecordValue(any: 7 as Int) == .int(7))
+        #expect(RecordValue(any: 7.5) == .double(7.5))
+        #expect(RecordValue(any: 7.0) == .double(7))
     }
 
     @Test("Dates survive encoding with millisecond precision")
     func datePrecision() throws {
-        let value = HTTPFieldValue.date(Date(timeIntervalSince1970: 1_750_000_000.123))
+        let value = RecordValue.date(Date(timeIntervalSince1970: 1_750_000_000.123))
         let data = try JSONEncoder().encode(value)
-        let decoded = try JSONDecoder().decode(HTTPFieldValue.self, from: data)
+        let decoded = try JSONDecoder().decode(RecordValue.self, from: data)
 
         let original = try #require(value.dateValue?.timeIntervalSince1970)
         let restored = try #require(decoded.dateValue?.timeIntervalSince1970)
@@ -60,7 +56,7 @@ struct HTTPRecordCodingTests {
     }
 }
 
-extension HTTPFieldValue {
+extension RecordValue {
     fileprivate var dateValue: Date? {
         if case .date(let date) = self { return date }
         return nil

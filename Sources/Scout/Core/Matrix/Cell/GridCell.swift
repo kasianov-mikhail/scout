@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct GridCell<T: MatrixValue>: Hashable {
     let row: Int

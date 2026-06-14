@@ -5,19 +5,19 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 import Testing
 
 @testable import Scout
 
 struct DedupTests {
     private struct Item: Identifiable {
-        let id: CKRecord.ID
+        let id: RecordID
         let tag: String
     }
 
     private func item(_ name: String, tag: String = "") -> Item {
-        Item(id: CKRecord.ID(recordName: name), tag: tag)
+        Item(id: RecordID(recordName: name), tag: tag)
     }
 
     @Test("New items come first, then old items")

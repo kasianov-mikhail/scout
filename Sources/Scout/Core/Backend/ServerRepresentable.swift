@@ -5,24 +5,24 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 /// Can be serialized into a record for upload to a Scout server.
 ///
-/// Most types reuse their CloudKit record as-is. Metrics are the
-/// exception: on CloudKit they exist only as client-maintained matrices,
-/// but Scout servers aggregate natively and take the raw values instead,
-/// as `IntMetric`/`DoubleMetric` records.
+/// Most types reuse their record as-is. Metrics are the exception: on
+/// CloudKit they exist only as client-maintained matrices, but Scout servers
+/// aggregate natively and take the raw values instead, as
+/// `IntMetric`/`DoubleMetric` records.
 ///
 /// `UserActivityObject` is deliberately absent: servers derive DAU/WAU/MAU
 /// from `Session` records, so activity flags never leave the device.
 ///
 protocol ServerRepresentable {
-    var toServerRecord: CKRecord { get }
+    var toServerRecord: Record { get }
 }
 
-extension ServerRepresentable where Self: CKRepresentable {
-    var toServerRecord: CKRecord { toRecord }
+extension ServerRepresentable where Self: RecordRepresentable {
+    var toServerRecord: Record { toRecord }
 }
 
 extension EventObject: ServerRepresentable {}
@@ -46,9 +46,11 @@ extension MetricsObject {
     /// names the record — re-uploading the same object after a partial
     /// sync upserts instead of double-counting.
     ///
-    fileprivate func serverRecord(type: String, value: any CKRecordValueProtocol) -> CKRecord {
-        let recordID = CKRecord.ID(recordName: objectID.uriRepresentation().absoluteString)
-        let record = CKRecord(recordType: type, recordID: recordID)
+    fileprivate func serverRecord<V: RecordValueConvertible>(type: String, value: V) -> Record {
+        var record = Record(
+            recordType: type,
+            id: RecordID(recordName: objectID.uriRepresentation().absoluteString)
+        )
 
         record["name"] = name
         record["category"] = telemetry
@@ -56,7 +58,7 @@ extension MetricsObject {
         record["date"] = date
         record["session_id"] = sessionID.uuidString
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }
@@ -65,7 +67,7 @@ extension MetricsObject {
 extension IntMetricsObject: ServerRepresentable {
     static let serverRecordType = "IntMetric"
 
-    var toServerRecord: CKRecord {
+    var toServerRecord: Record {
         serverRecord(type: Self.serverRecordType, value: value)
     }
 }
@@ -73,7 +75,7 @@ extension IntMetricsObject: ServerRepresentable {
 extension DoubleMetricsObject: ServerRepresentable {
     static let serverRecordType = "DoubleMetric"
 
-    var toServerRecord: CKRecord {
+    var toServerRecord: Record {
         serverRecord(type: Self.serverRecordType, value: value)
     }
 }

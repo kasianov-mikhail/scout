@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 @MainActor
@@ -15,11 +14,11 @@ class CrashProvider: ObservableObject {
 
     func fetch(in database: AppDatabase) async {
         do {
-            let query = CKQuery(
+            let query = RecordQuery(
                 recordType: CrashObject.recordType,
-                predicate: Calendar.utc.defaultRange.datePredicate
+                filters: Calendar.utc.defaultRange.dateFilters,
+                sort: [RecordSort(field: "date", ascending: false)]
             )
-            query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
 
             let results = try await database.read(
                 matching: query,

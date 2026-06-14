@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 
 @testable import Scout
@@ -13,20 +12,20 @@ import Foundation
 /// In-memory `AppDatabase` for timeline tests.
 ///
 /// Answers every query with the canned records of the query's record type
-/// that match its predicate, truncated to the requested limit (without a
+/// that match its filters, truncated to the requested limit (without a
 /// continuation cursor). Reads can be suspended behind a `Gate` to freeze a
 /// fetch mid-flight, and are counted per record type so tests can assert how
 /// many queries a flow issued.
 ///
 final class DatabaseStub: AppDatabase, @unchecked Sendable {
     private let lock = NSLock()
-    private var storage: [String: [CKRecord]] = [:]
+    private var storage: [String: [Record]] = [:]
     private var counts: [String: Int] = [:]
 
     /// When set, every read suspends until the gate opens.
     var gate: Gate?
 
-    func add(_ records: CKRecord...) {
+    func add(_ records: Record...) {
         lock.lock()
         defer { lock.unlock() }
         for record in records {
@@ -40,31 +39,29 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
         return counts[recordType] ?? 0
     }
 
-    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
-        throw CKError(.unknownItem)
+    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+        throw RecordNotFoundError()
     }
 
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         try await read(matching: query, fields: fields, limit: Int.max)
     }
 
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?, limit: Int) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         await gate?.wait()
         return chunk(matching: query, limit: limit)
     }
 
-    private func chunk(matching query: CKQuery, limit: Int) -> RecordChunk {
+    private func chunk(matching query: RecordQuery, limit: Int) -> RecordChunk {
         lock.lock()
         defer { lock.unlock() }
         counts[query.recordType, default: 0] += 1
 
-        let predicate = query.predicate
-        predicate.allowEvaluation()
-        let records = (storage[query.recordType] ?? []).filter(predicate.evaluate)
+        let records = (storage[query.recordType] ?? []).filter { $0.matches(query) }
         return RecordChunk(records: Array(records.prefix(limit)), cursor: nil)
     }
 
-    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 }
@@ -102,24 +99,24 @@ final class Gate: @unchecked Sendable {
 
 // MARK: - Record builders
 
-extension CKRecord {
-    static func deviceStub(deviceID: UUID, date: Date) -> CKRecord {
-        let record = CKRecord(recordType: "Device", recordID: .init(recordName: deviceID.uuidString))
+extension Record {
+    static func deviceStub(deviceID: UUID, date: Date) -> Record {
+        var record = Record(recordType: "Device", id: RecordID(recordName: deviceID.uuidString))
         record["device_id"] = deviceID.uuidString
         record["date"] = date
         return record
     }
 
-    static func installStub(installID: UUID, deviceID: UUID, date: Date) -> CKRecord {
-        let record = CKRecord(recordType: "Install", recordID: .init(recordName: installID.uuidString))
+    static func installStub(installID: UUID, deviceID: UUID, date: Date) -> Record {
+        var record = Record(recordType: "Install", id: RecordID(recordName: installID.uuidString))
         record["install_id"] = installID.uuidString
         record["device_id"] = deviceID.uuidString
         record["date"] = date
         return record
     }
 
-    static func launchStub(launchID: UUID, installID: UUID, deviceID: UUID, startDate: Date) -> CKRecord {
-        let record = CKRecord(recordType: "Launch", recordID: .init(recordName: launchID.uuidString))
+    static func launchStub(launchID: UUID, installID: UUID, deviceID: UUID, startDate: Date) -> Record {
+        var record = Record(recordType: "Launch", id: RecordID(recordName: launchID.uuidString))
         record["launch_id"] = launchID.uuidString
         record["install_id"] = installID.uuidString
         record["device_id"] = deviceID.uuidString
@@ -127,8 +124,8 @@ extension CKRecord {
         return record
     }
 
-    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date) -> CKRecord {
-        let record = CKRecord(recordType: "Session", recordID: .init(recordName: sessionID.uuidString))
+    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date) -> Record {
+        var record = Record(recordType: "Session", id: RecordID(recordName: sessionID.uuidString))
         record["session_id"] = sessionID.uuidString
         record["launch_id"] = launchID.uuidString
         record["install_id"] = installID.uuidString
@@ -136,8 +133,8 @@ extension CKRecord {
         return record
     }
 
-    static func eventStub(name: String, sessionID: UUID, date: Date) -> CKRecord {
-        let record = CKRecord(recordType: "Event", recordID: .init(recordName: UUID().uuidString))
+    static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {
+        var record = Record(recordType: "Event", id: RecordID(recordName: UUID().uuidString))
         record["name"] = name
         record["session_id"] = sessionID.uuidString
         record["date"] = date

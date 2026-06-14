@@ -5,10 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 extension Event {
-    static var sampleRecords: [CKRecord] {
+    static var sampleRecords: [Record] {
         let eventLevels = [
             "User_Login": Event.Level.info,
             "Page_View": .info,
@@ -43,7 +43,7 @@ extension Event {
         ]
 
         return eventLevels.enumerated().map { index, event in
-            let record = CKRecord(recordType: EventObject.recordType, recordID: CKRecord.ID())
+            var record = Record(recordType: EventObject.recordType, id: RecordID(recordName: UUID().uuidString))
             record["name"] = event.key
             record["install_id"] = UUID().uuidString
             record["session_id"] = UUID().uuidString

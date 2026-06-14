@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 import Testing
 
 @testable import Scout
@@ -13,9 +13,9 @@ import Testing
 struct RecordChunkTests {
     @Test("Addition concatenates records")
     func addition() {
-        let r1 = CKRecord(recordType: "A")
-        let r2 = CKRecord(recordType: "B")
-        let r3 = CKRecord(recordType: "C")
+        let r1 = Record(recordType: "A", id: RecordID(recordName: UUID().uuidString))
+        let r2 = Record(recordType: "B", id: RecordID(recordName: UUID().uuidString))
+        let r3 = Record(recordType: "C", id: RecordID(recordName: UUID().uuidString))
 
         let a = RecordChunk(records: [r1], cursor: nil)
         let b = RecordChunk(records: [r2, r3], cursor: nil)
@@ -38,8 +38,8 @@ struct RecordChunkTests {
 
     @Test("Plus-equals mutates in place")
     func plusEquals() {
-        let r1 = CKRecord(recordType: "X")
-        let r2 = CKRecord(recordType: "Y")
+        let r1 = Record(recordType: "X", id: RecordID(recordName: UUID().uuidString))
+        let r2 = Record(recordType: "Y", id: RecordID(recordName: UUID().uuidString))
 
         var chunk = RecordChunk(records: [r1], cursor: nil)
         chunk += RecordChunk(records: [r2], cursor: nil)

@@ -5,10 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct TimelineItem: Identifiable {
-    let id: CKRecord.ID
+    let id: RecordID
     let name: String
     let date: Date
     let active: Set<LegendKind>

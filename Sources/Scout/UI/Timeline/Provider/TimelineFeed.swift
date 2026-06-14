@@ -5,31 +5,31 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct TimelineFeed {
     let deviceID: UUID
     let database: AppDatabase
 
     func device() async throws -> Device {
-        let query = CKQuery(
+        let query = RecordQuery(
             recordType: DeviceObject.recordType,
-            predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
+            filters: [RecordFilter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
         if let record = try await database.read(matching: query, fields: Device.desiredKeys, limit: 1).records.first {
             return try Device(record: record)
         }
         return Device(
             date: nil,
-            id: CKRecord.ID(recordName: deviceID.uuidString),
+            id: RecordID(recordName: deviceID.uuidString),
             deviceID: deviceID
         )
     }
 
     func installs() async throws -> [Install] {
-        let query = CKQuery(
+        let query = RecordQuery(
             recordType: InstallObject.recordType,
-            predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
+            filters: [RecordFilter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
         return
             try await database
@@ -38,9 +38,9 @@ struct TimelineFeed {
     }
 
     func launches() async throws -> [Launch] {
-        let query = CKQuery(
+        let query = RecordQuery(
             recordType: LaunchObject.recordType,
-            predicate: NSPredicate(format: "device_id == %@", deviceID.uuidString)
+            filters: [RecordFilter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
         return
             try await database

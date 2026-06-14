@@ -5,16 +5,16 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 @testable import Scout
 
-extension CKRecord {
+extension Record {
     static func matrixStub(
         name: String = "matrix",
         date: Date = Date()
-    ) -> CKRecord {
-        let matrix = CKRecord(recordType: Int.recordType)
+    ) -> Record {
+        var matrix = Record(recordType: Int.recordType, id: RecordID(recordName: UUID().uuidString))
         matrix["name"] = name
         matrix["date"] = date
         matrix["cell_1_01"] = 3

@@ -5,8 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
-
 /// A device's full lifecycle tree: installs, their launches, their sessions,
 /// and the events and crashes inside each session.
 ///
@@ -18,21 +16,21 @@ struct Rail: Identifiable {
     let device: Device
     var installs: [InstallRoot]
 
-    var id: CKRecord.ID { device.id }
+    var id: RecordID { device.id }
 }
 
 struct InstallRoot: Identifiable {
     let install: Install
     let launches: [LaunchRoot]
 
-    var id: CKRecord.ID { install.id }
+    var id: RecordID { install.id }
 }
 
 struct LaunchRoot: Identifiable {
     let launch: Launch
     let sessions: [SessionRoot]
 
-    var id: CKRecord.ID { launch.id }
+    var id: RecordID { launch.id }
 }
 
 struct SessionRoot: Identifiable {
@@ -40,5 +38,5 @@ struct SessionRoot: Identifiable {
     let events: [Event]
     let crashes: [Crash]
 
-    var id: CKRecord.ID { session.id }
+    var id: RecordID { session.id }
 }

@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
+import Foundation
 import Testing
 
 @testable import Scout
@@ -23,7 +23,7 @@ struct SyncEngineTests {
         event.eventID = UUID()
         try context.save()
 
-        database.writeErrors.append(CKError(.networkFailure))
+        database.writeErrors.append(NSError(domain: "TestError", code: 1))
 
         let engine = SyncEngine(database: database, context: context)
 

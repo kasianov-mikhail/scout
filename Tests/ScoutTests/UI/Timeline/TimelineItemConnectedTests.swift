@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -14,7 +13,7 @@ import Testing
 struct TimelineItemConnectedTests {
     private func makeItem(sessionID: UUID?, active: Set<LegendKind> = [.install, .launch, .session]) -> TimelineItem {
         TimelineItem(
-            id: CKRecord.ID(recordName: UUID().uuidString),
+            id: RecordID(recordName: UUID().uuidString),
             name: "e",
             date: Date(timeIntervalSince1970: 1_700_000_000),
             active: active,

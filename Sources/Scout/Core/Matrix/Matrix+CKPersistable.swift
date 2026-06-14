@@ -5,16 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
-extension Matrix: CKInitializable {
-    init(record: CKRecord) throws {
-        guard let date = record["date"] as? Date else {
-            throw MapError.missingField("date")
-        }
-        guard let name = record["name"] as? String else {
-            throw MapError.missingField("name")
-        }
+extension Matrix: RecordDecodable {
+    init(record: Record) throws {
+        guard let date: Date = record["date"] else { throw MapError.missingField("date") }
+        guard let name: String = record["name"] else { throw MapError.missingField("name") }
 
         self.recordType = record.recordType
         self.date = date
@@ -22,23 +18,26 @@ extension Matrix: CKInitializable {
         self.record = record
         self.category = record["category"]
 
-        let cellKeys = record.allKeys().filter { $0.hasPrefix("cell_") }
-        let cellDict = record.dictionaryWithValues(forKeys: cellKeys)
+        let cells = try record.fields
+            .filter { $0.key.hasPrefix("cell_") }
+            .map { key, value -> T in
+                guard let scalar = T.Scalar(recordValue: value) else {
+                    throw MapError.invalidCells
+                }
+                return try T(key: key, value: scalar)
+            }
 
-        guard cellDict.count > 0 else {
+        guard cells.count > 0 else {
             throw MapError.missingCells
         }
-        guard let cellDict = cellDict as? [String: T.Scalar] else {
-            throw MapError.invalidCells
-        }
 
-        self.cells = try cellDict.map(T.init)
+        self.cells = cells
     }
 }
 
-extension Matrix: CKRepresentable {
-    var toRecord: CKRecord {
-        let record = record ?? CKRecord(recordType: recordType)
+extension Matrix: RecordRepresentable {
+    var toRecord: Record {
+        var record = record ?? Record(recordType: recordType, id: RecordID(recordName: UUID().uuidString))
         record["date"] = date
         record["name"] = name
         record["category"] = category

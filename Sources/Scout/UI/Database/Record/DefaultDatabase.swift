@@ -5,11 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct DefaultDatabase: AppDatabase {
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
-        let records: [CKRecord]
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+        let records: [Record]
 
         switch query.recordType {
         case CrashObject.recordType:
@@ -25,11 +25,11 @@ struct DefaultDatabase: AppDatabase {
         return RecordChunk(records: records, cursor: nil)
     }
 
-    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 
-    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
+    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
         Event.sampleRecords.randomElement()!
     }
 }

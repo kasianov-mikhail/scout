@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 
 /// Maximum number of records per write request, matching the server's cap
@@ -32,11 +31,11 @@ struct HTTPDatabase: Sendable {
 // MARK: - Writing
 
 extension HTTPDatabase: RecordWriter {
-    func write(record: CKRecord) async throws {
+    func write(record: Record) async throws {
         try await write(records: [record])
     }
 
-    func write(records: [CKRecord]) async throws {
+    func write(records: [Record]) async throws {
         for chunk in records.chunked(into: maxBatchSize) {
             let request = HTTPWriteRequest(records: chunk.map(HTTPRecord.init))
             try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
@@ -51,15 +50,15 @@ extension HTTPDatabase: RecordWriter {
 // MARK: - Reading
 
 extension HTTPDatabase: RecordReader {
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: CKQueryOperation.maximumResults)
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+        try await read(matching: query, fields: fields, limit: defaultRecordPageSize)
     }
 
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?, limit: Int) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         try await run(query: HTTPQuery(query: query, fields: fields, limit: limit))
     }
 
-    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         guard case .server(let token) = cursor else {
             throw CursorMismatchError()
         }
@@ -80,7 +79,7 @@ extension HTTPDatabase: RecordReader {
 // MARK: - Lookup
 
 extension HTTPDatabase: RecordLookup {
-    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
+    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
         let allowed = CharacterSet.urlPathAllowed.subtracting(CharacterSet(charactersIn: "/"))
         let name = id.recordName.addingPercentEncoding(withAllowedCharacters: allowed) ?? id.recordName
 
@@ -113,7 +112,10 @@ extension HTTPDatabase {
     /// single down server never blocks syncing the others.
     ///
     func ping() async throws {
-        let query = CKQuery(recordType: "Event", predicate: NSPredicate(format: "name == %@", ""))
+        let query = RecordQuery(
+            recordType: "Event",
+            filters: [RecordFilter(field: "name", op: .equals, value: .string(""))]
+        )
         _ = try await read(matching: query, fields: nil, limit: 1)
     }
 }

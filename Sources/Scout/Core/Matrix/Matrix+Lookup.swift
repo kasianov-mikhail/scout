@@ -5,26 +5,25 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 extension Matrix {
     func lookupExisting(in database: RecordReader) async throws -> Self? {
-        let predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
-        let query = CKQuery(recordType: recordType, predicate: predicate)
+        let query = RecordQuery(recordType: recordType, filters: filters)
         let matrices = try await database.readAll(matching: query, fields: nil)
         let matrix = try matrices.randomElement().map(Matrix.init)
 
         return matrix
     }
 
-    private var predicates: [NSPredicate] {
-        var predicates = [
-            NSPredicate(format: "name == %@", name),
-            NSPredicate(format: "date == %@", date as NSDate),
+    private var filters: [RecordFilter] {
+        var filters = [
+            RecordFilter(field: "name", op: .equals, value: .string(name)),
+            RecordFilter(field: "date", op: .equals, value: .date(date)),
         ]
         if let category {
-            predicates.append(NSPredicate(format: "category == %@", category))
+            filters.append(RecordFilter(field: "category", op: .equals, value: .string(category)))
         }
-        return predicates
+        return filters
     }
 }

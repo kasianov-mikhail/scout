@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
+import Foundation
 import Testing
 
 @testable import Scout
@@ -99,7 +99,7 @@ struct SyncEngineBackendTests {
         let event = EventObject.stub(name: "login", in: context)
         try context.save()
 
-        server.writeErrors.append(CKError(.networkFailure))
+        server.writeErrors.append(NSError(domain: "TestError", code: 1))
 
         let engine = SyncEngine(backends: backends, context: context)
 
@@ -140,7 +140,7 @@ struct SyncEngineBackendTests {
         try context.save()
 
         // First cycle: the server is down.
-        server.writeErrors.append(CKError(.networkFailure))
+        server.writeErrors.append(NSError(domain: "TestError", code: 1))
         let engine = SyncEngine(backends: backends, context: context)
         await #expect(throws: (any Error).self) {
             try await engine.send(type: EventObject.self)
@@ -162,7 +162,7 @@ struct SyncEngineBackendTests {
         try context.save()
 
         // The server never accepts the record.
-        server.writeErrors.append(CKError(.networkFailure))
+        server.writeErrors.append(NSError(domain: "TestError", code: 1))
         let withServer = SyncEngine(backends: backends, context: context)
         await #expect(throws: (any Error).self) {
             try await withServer.send(type: EventObject.self)

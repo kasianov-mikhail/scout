@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import CloudKit
+import Foundation
 
 extension Matrix where T == PeriodCell<Int> {
-    static var sampleRecords: [CKRecord] {
+    static var sampleRecords: [Record] {
         let calendar = Calendar.utc
         let today = Date().startOfDay
 
@@ -18,7 +18,7 @@ extension Matrix where T == PeriodCell<Int> {
                 return nil
             }
 
-            let record = CKRecord(recordType: PeriodCell<Int>.recordType)
+            var record = Record(recordType: PeriodCell<Int>.recordType, id: RecordID(recordName: UUID().uuidString))
             record["date"] = weekStart
             record["name"] = "ActiveUser"
 

@@ -5,11 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct Device: Identifiable {
     let date: Date?
-    let id: CKRecord.ID
+    let id: RecordID
     let deviceID: UUID?
 }
 
@@ -19,9 +19,9 @@ extension Device: RecordDecodable {
         "device_id",
     ]
 
-    init(record: CKRecord) throws {
+    init(record: Record) throws {
         date = record["date"]
-        id = record.recordID
+        id = record.id
         deviceID = record["device_id"].flatMap(UUID.init)
     }
 }

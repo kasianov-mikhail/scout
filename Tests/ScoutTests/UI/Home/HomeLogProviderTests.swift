@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -55,12 +54,12 @@ struct HomeLogProviderTests {
 
     // MARK: - Factories
 
-    private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any CKRecordValueProtocol) -> CKRecord {
-        let record = CKRecord(recordType: type)
+    private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
+        var record = Record(recordType: type, id: RecordID(recordName: UUID().uuidString))
         record["name"] = name
         record["category"] = category
         record["date"] = date
-        record["cell_1_00"] = value
+        record.fields["cell_1_00"] = value.recordValue
         return record
     }
 }

@@ -16,23 +16,23 @@ extension Event {
         var name = ""
         var dates: Range<Date>?
 
-        func buildPredicate() -> NSPredicate {
-            var predicates: [NSPredicate] = []
+        func buildFilters() -> [RecordFilter] {
+            var filters: [RecordFilter] = []
 
             if levels != Query.allLevels {
-                predicates.append(.init(format: "level IN %@", levels.map(\.rawValue)))
+                filters.append(RecordFilter(field: "level", op: .in, value: .strings(levels.map(\.rawValue))))
             }
             if !text.isEmpty {
-                predicates.append(.init(format: "name BEGINSWITH %@", text))
+                filters.append(RecordFilter(field: "name", op: .beginsWith, value: .string(text)))
             }
             if !name.isEmpty {
-                predicates.append(.init(format: "name == %@", name))
+                filters.append(RecordFilter(field: "name", op: .equals, value: .string(name)))
             }
             if let dates {
-                predicates.append(dates.datePredicate)
+                filters.append(contentsOf: dates.dateFilters)
             }
 
-            return NSCompoundPredicate(type: .and, subpredicates: predicates)
+            return filters
         }
     }
 }

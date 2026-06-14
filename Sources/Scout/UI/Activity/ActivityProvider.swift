@@ -5,22 +5,16 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 class ActivityProvider: QueryProvider<ActivityMatrix> {
     init() {
         super.init {
-            let predicate = NSCompoundPredicate(
-                type: .and,
-                subpredicates: [
-                    Calendar.utc.defaultRange.datePredicate,
-                    NSPredicate(format: "name == %@", "ActiveUser"),
-                ]
-            )
-
-            return CKQuery(
+            RecordQuery(
                 recordType: PeriodCell<Int>.recordType,
-                predicate: predicate
+                filters: Calendar.utc.defaultRange.dateFilters + [
+                    RecordFilter(field: "name", op: .equals, value: .string("ActiveUser"))
+                ]
             )
         }
     }

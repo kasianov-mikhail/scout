@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 @objc(VersionObject)
@@ -36,17 +35,16 @@ final class VersionObject: SyncableObject, Syncable, GridBatch {
 }
 
 extension VersionObject {
-    var toRecord: CKRecord {
+    var toRecord: Record {
         let recordName = "\(installID.uuidString)-\(appVersion ?? "")-\(buildNumber ?? "")"
-        let recordID = CKRecord.ID(recordName: recordName)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+        var record = Record(recordType: Self.recordType, id: RecordID(recordName: recordName))
 
         record["date"] = date
         record["app_version"] = appVersion
         record["build_number"] = buildNumber
         record["launch_id"] = launchID.uuidString
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }

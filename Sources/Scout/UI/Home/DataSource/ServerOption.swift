@@ -7,22 +7,7 @@
 
 import SwiftUI
 
-/// Reachability of a data source, probed live for the status dots.
-enum ServerStatus: CaseIterable, Identifiable {
-    case reachable
-    case unreachable
-    case unknown
-
-    var id: Self { self }
-
-    var label: String {
-        switch self {
-        case .reachable: "Reachable"
-        case .unreachable: "Unreachable"
-        case .unknown: "Unknown"
-        }
-    }
-
+extension ServerStatus {
     var color: Color {
         switch self {
         case .reachable: .green

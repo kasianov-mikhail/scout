@@ -5,15 +5,17 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
-/// A typed record field value, the wire format shared with Scout servers.
+/// A typed record field value, the backend-neutral currency the rest of the
+/// package speaks instead of a `CKRecord` value.
 ///
-/// Encoded as a single-key JSON object, e.g. `{"string": "login"}`. Dates
-/// travel as integer milliseconds since the Unix epoch so equality survives
-/// the round trip; bytes travel as base64.
+/// It is also the wire format shared with Scout servers: encoded as a
+/// single-key JSON object, e.g. `{"string": "login"}`. Dates travel as integer
+/// milliseconds since the Unix epoch so equality survives the round trip;
+/// bytes travel as base64.
 ///
-enum HTTPFieldValue: Equatable, Sendable {
+enum RecordValue: Equatable, Sendable {
     case string(String)
     case int(Int64)
     case double(Double)
@@ -22,7 +24,7 @@ enum HTTPFieldValue: Equatable, Sendable {
     case strings([String])
 }
 
-extension HTTPFieldValue: Codable {
+extension RecordValue: Codable {
     private enum CodingKeys: String, CodingKey {
         case string, int, double, date, bytes, strings
     }
@@ -72,16 +74,17 @@ extension HTTPFieldValue: Codable {
     }
 }
 
-// MARK: - CloudKit Bridging
+// MARK: - Foundation Bridging
 
-extension HTTPFieldValue {
-    /// Maps a `CKRecord` value to its wire form.
+extension RecordValue {
+    /// Wraps a loosely-typed value — as produced by an object's `metadata`
+    /// dictionary — in its matching case, mirroring how a `CKRecord` stores it.
     ///
     /// Numbers are split by their Core Foundation storage: floating-point
     /// numbers become `double`, everything else `int`.
     ///
-    init?(recordValue: Any) {
-        switch recordValue {
+    init?(any value: Any) {
+        switch value {
         case let value as String:
             self = .string(value)
         case let value as Date:
@@ -100,47 +103,77 @@ extension HTTPFieldValue {
             return nil
         }
     }
-
-    var recordValue: any CKRecordValueProtocol {
-        switch self {
-        case .string(let value): value
-        case .int(let value): value
-        case .double(let value): value
-        case .date(let value): value
-        case .bytes(let value): value
-        case .strings(let value): value
-        }
-    }
 }
 
-// MARK: - Records
+// MARK: - Typed Access
 
-/// Wire representation of a single record.
-struct HTTPRecord: Codable, Equatable, Sendable {
-    let recordType: String
-    let recordName: String
-    var fields: [String: HTTPFieldValue]
+/// A scalar that can cross the boundary between a strongly-typed field and a
+/// ``RecordValue``, powering ``Record``'s typed subscript.
+///
+protocol RecordValueConvertible {
+    init?(recordValue: RecordValue)
+    var recordValue: RecordValue { get }
 }
 
-extension HTTPRecord {
-    init(record: CKRecord) {
-        recordType = record.recordType
-        recordName = record.recordID.recordName
-        fields = Dictionary(
-            uniqueKeysWithValues: record.allKeys().compactMap { key in
-                record[key].flatMap(HTTPFieldValue.init).map { (key, $0) }
-            }
-        )
+extension String: RecordValueConvertible {
+    init?(recordValue: RecordValue) {
+        guard case .string(let value) = recordValue else { return nil }
+        self = value
     }
 
-    var toRecord: CKRecord {
-        let record = CKRecord(
-            recordType: recordType,
-            recordID: CKRecord.ID(recordName: recordName)
-        )
-        for (key, value) in fields {
-            record[key] = value.recordValue
-        }
-        return record
+    var recordValue: RecordValue { .string(self) }
+}
+
+extension Int: RecordValueConvertible {
+    init?(recordValue: RecordValue) {
+        guard case .int(let value) = recordValue else { return nil }
+        self = Int(value)
     }
+
+    var recordValue: RecordValue { .int(Int64(self)) }
+}
+
+extension Int64: RecordValueConvertible {
+    init?(recordValue: RecordValue) {
+        guard case .int(let value) = recordValue else { return nil }
+        self = value
+    }
+
+    var recordValue: RecordValue { .int(self) }
+}
+
+extension Double: RecordValueConvertible {
+    init?(recordValue: RecordValue) {
+        guard case .double(let value) = recordValue else { return nil }
+        self = value
+    }
+
+    var recordValue: RecordValue { .double(self) }
+}
+
+extension Date: RecordValueConvertible {
+    init?(recordValue: RecordValue) {
+        guard case .date(let value) = recordValue else { return nil }
+        self = value
+    }
+
+    var recordValue: RecordValue { .date(self) }
+}
+
+extension Data: RecordValueConvertible {
+    init?(recordValue: RecordValue) {
+        guard case .bytes(let value) = recordValue else { return nil }
+        self = value
+    }
+
+    var recordValue: RecordValue { .bytes(self) }
+}
+
+extension Array: RecordValueConvertible where Element == String {
+    init?(recordValue: RecordValue) {
+        guard case .strings(let value) = recordValue else { return nil }
+        self = value
+    }
+
+    var recordValue: RecordValue { .strings(self) }
 }

@@ -5,17 +5,16 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 extension View {
-    func iCloudWarning(container: CKContainer) -> some View {
-        modifier(ICloudWarningModifier(container: container))
+    func accountWarning(_ backend: ResolvedBackend) -> some View {
+        modifier(AccountWarningModifier(backend: backend))
     }
 }
 
-private struct ICloudWarningModifier: ViewModifier {
-    let container: CKContainer
+private struct AccountWarningModifier: ViewModifier {
+    let backend: ResolvedBackend
 
     @State private var warning = false
     @State private var isAlertPresented = false
@@ -51,10 +50,6 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 
     private func verify() async {
-        do {
-            warning = try await container.accountStatus() != .available
-        } catch {
-            warning = false
-        }
+        warning = await backend.accountWarning()
     }
 }

@@ -5,23 +5,23 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 @testable import Scout
 
 final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
-    var records: [CKRecord] = []
+    var records: [Record] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
 
-    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
-        guard let record = records.first(where: { $0.recordID == id }) else {
-            throw CKError(.unknownItem)
+    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+        guard let record = records.first(where: { $0.id == id }) else {
+            throw RecordNotFoundError()
         }
         return record
     }
 
-    func write(record: CKRecord) async throws {
+    func write(record: Record) async throws {
         if let error = writeErrors.popLast() ?? errors.popLast() {
             throw error
         } else {
@@ -29,7 +29,7 @@ final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
         }
     }
 
-    func write(records: [CKRecord]) async throws {
+    func write(records: [Record]) async throws {
         if let error = writeErrors.popLast() ?? errors.popLast() {
             throw error
         } else {
@@ -37,19 +37,17 @@ final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
         }
     }
 
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         if let error = errors.popLast() {
             throw error
         }
-        let predicate = query.predicate
-        predicate.allowEvaluation()
         return RecordChunk(
-            records: records.filter(predicate.evaluate),
+            records: records.filter { $0.matches(query) },
             cursor: nil
         )
     }
 
-    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         if let error = errors.popLast() {
             throw error
         }
@@ -61,7 +59,7 @@ final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
 }
 
 extension InMemoryDatabase {
-    var events: [CKRecord] {
+    var events: [Record] {
         records.filter { $0.recordType == EventObject.recordType }
     }
 }

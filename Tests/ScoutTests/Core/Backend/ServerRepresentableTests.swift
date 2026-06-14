@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
+import Foundation
 import Testing
 
 @testable import Scout
@@ -25,7 +25,7 @@ struct ServerRepresentableTests {
 
         #expect(record.recordType == "Event")
         #expect(record["name"] == "login")
-        #expect(record.recordID == event.toRecord.recordID)
+        #expect(record.id == event.toRecord.id)
     }
 
     @Test("Int metrics serialize as raw IntMetric records")
@@ -39,8 +39,8 @@ struct ServerRepresentableTests {
         #expect(record["name"] == "requests")
         #expect(record["category"] == "counter")
         #expect(record["value"] == 5)
-        #expect(record["week"] != nil)
-        #expect(record["install_id"] != nil)
+        #expect(record.fields["week"] != nil)
+        #expect(record.fields["install_id"] != nil)
     }
 
     @Test("Metric record names are stable across repeated serialization")
@@ -52,7 +52,7 @@ struct ServerRepresentableTests {
 
         #expect(record.recordType == "DoubleMetric")
         #expect(record["value"] == 1.5)
-        #expect(record.recordID == metric.toServerRecord.recordID)
+        #expect(record.id == metric.toServerRecord.id)
     }
 }
 

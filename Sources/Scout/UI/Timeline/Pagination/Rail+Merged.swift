@@ -5,8 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
-
 extension Rail {
     func merged(sessions: [Session], events: [Event]) -> Rail {
         let existing = flattened

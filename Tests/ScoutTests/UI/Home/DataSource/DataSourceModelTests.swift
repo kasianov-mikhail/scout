@@ -16,8 +16,8 @@ struct DataSourceModelTests {
     let primary = URL(string: "https://a.scout.app")!
     let secondary = URL(string: "https://b.scout.app")!
 
-    var backends: [Backend] {
-        [.server(url: primary), .server(url: secondary)]
+    var backends: [any Backend] {
+        [ServerBackend(url: primary), ServerBackend(url: secondary)]
     }
 
     @Test("Defaults to the first backend")
@@ -60,7 +60,7 @@ struct DataSourceModelTests {
     @Test("A choice exists only with more than one backend")
     func hasChoice() {
         #expect(DataSourceModel(backends: backends, defaults: makeDefaults()).hasChoice)
-        #expect(!DataSourceModel(backends: [.server(url: primary)], defaults: makeDefaults()).hasChoice)
+        #expect(!DataSourceModel(backends: [ServerBackend(url: primary)], defaults: makeDefaults()).hasChoice)
     }
 
     @Test("Refresh records each backend's probed status by id")

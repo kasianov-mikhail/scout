@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Logging
 import Metrics
@@ -28,7 +27,7 @@ enum SetupError: LocalizedError {
         case .alreadySetup:
             "Review the code to ensure setup is called only once"
         case .noBackends:
-            "Pass a CloudKit container or a Scout server to setup"
+            "Pass a CloudKitBackend or a ServerBackend to setup"
         }
     }
 }
@@ -47,7 +46,7 @@ enum SetupError: LocalizedError {
 /// - Important: Call from the main actor during app startup.
 ///
 @MainActor
-public func setup(backends: [Backend]) async throws {
+public func setup(backends: [any Backend]) async throws {
     guard !isSetup else {
         throw SetupError.alreadySetup
     }
@@ -55,7 +54,13 @@ public func setup(backends: [Backend]) async throws {
         throw SetupError.noBackends
     }
 
-    warnAboutCleartextKeys(in: backends)
+    let resolved = backends.resolved
+
+    // Per-backend setup-time side effects: a parallelism check for CloudKit,
+    // a cleartext-key warning for an API key sent over plain HTTP.
+    for backend in resolved {
+        backend.onSetup()
+    }
 
     installExceptionHandler()
     installSignalHandler()
@@ -66,7 +71,7 @@ public func setup(backends: [Backend]) async throws {
         LaunchObject.completeStale,
     )
 
-    let sync = SyncController(backends: backends.map(\.resolved)).synchronize
+    let sync = SyncController(backends: resolved).synchronize
 
     ActionTable.appState.startListening(completion: sync)
 
@@ -85,24 +90,4 @@ public func setup(backends: [Backend]) async throws {
     MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
 
     isSetup = true
-
-    for case .cloudKit(let container) in backends {
-        verifyParallelismIfDue(container: container)
-    }
-}
-
-/// Warns when an API key would be sent to a Scout server over a connection
-/// that isn't HTTPS, where the key — and every uploaded analytics record —
-/// would travel in cleartext and be readable by any network observer.
-///
-private func warnAboutCleartextKeys(in backends: [Backend]) {
-    for case .server(let url, _?) in backends where url.scheme?.lowercased() != "https" {
-        print("[Scout] The API key for '\(url)' will be sent over a non-HTTPS connection in cleartext. Use an https:// URL.")
-    }
-}
-
-@MainActor
-@available(*, deprecated, message: "Use setup(backends:) with [.cloudKit(container)] instead.")
-public func setup(container: CKContainer) async throws {
-    try await setup(backends: [.cloudKit(container)])
 }

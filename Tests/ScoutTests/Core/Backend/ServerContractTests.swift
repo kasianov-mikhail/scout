@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -38,10 +37,10 @@ struct ServerContractTests {
         let record = makeEvent(name: "login", index: 1)
 
         try await database.write(record: record)
-        let restored = try await database.lookup(id: record.recordID, fields: nil)
+        let restored = try await database.lookup(id: record.id, fields: nil)
 
         #expect(restored.recordType == "Event")
-        #expect(restored.recordID.recordName == record.recordID.recordName)
+        #expect(restored.recordName == record.recordName)
         #expect(restored["name"] == "login")
         #expect(restored["param_count"] == Int64(1))
         #expect(restored["date"] == eventDate)
@@ -54,10 +53,10 @@ struct ServerContractTests {
         let record = makeEvent(name: "login", index: 1)
 
         try await database.write(record: record)
-        let restored = try await database.lookup(id: record.recordID, fields: ["name"])
+        let restored = try await database.lookup(id: record.id, fields: ["name"])
 
         #expect(restored["name"] == "login")
-        #expect(restored["param_count"] == nil)
+        #expect(restored.fields["param_count"] == nil)
     }
 
     @Test("Queries filter and sort on the server")
@@ -123,14 +122,16 @@ struct ServerContractTests {
         return HTTPDatabase(url: url, apiKey: ProcessInfo.processInfo.environment["SCOUT_SERVER_API_KEY"])
     }
 
-    private func makeQuery(marker: String) -> CKQuery {
-        let query = CKQuery(recordType: "Event", predicate: NSPredicate(format: "name == %@", marker))
-        query.sortDescriptors = [NSSortDescriptor(key: "param_count", ascending: true)]
-        return query
+    private func makeQuery(marker: String) -> RecordQuery {
+        RecordQuery(
+            recordType: "Event",
+            filters: [RecordFilter(field: "name", op: .equals, value: .string(marker))],
+            sort: [RecordSort(field: "param_count", ascending: true)]
+        )
     }
 
-    private func makeEvent(name: String, index: Int) -> CKRecord {
-        let record = CKRecord(recordType: "Event", recordID: CKRecord.ID(recordName: "contract-\(UUID().uuidString)"))
+    private func makeEvent(name: String, index: Int) -> Record {
+        var record = Record(recordType: "Event", id: RecordID(recordName: "contract-\(UUID().uuidString)"))
         record["name"] = name
         record["param_count"] = Int64(index)
         record["date"] = eventDate
@@ -138,15 +139,15 @@ struct ServerContractTests {
         return record
     }
 
-    private func makeSession(installID: String, startDate: Date) -> CKRecord {
-        let record = CKRecord(recordType: "Session", recordID: CKRecord.ID(recordName: "contract-\(UUID().uuidString)"))
+    private func makeSession(installID: String, startDate: Date) -> Record {
+        var record = Record(recordType: "Session", id: RecordID(recordName: "contract-\(UUID().uuidString)"))
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
         record["start_date"] = startDate
         return record
     }
 
-    private func paramCounts(in records: [CKRecord]) -> [Int64] {
-        records.compactMap { $0["param_count"] as? Int64 }
+    private func paramCounts(in records: [Record]) -> [Int64] {
+        records.compactMap { $0["param_count"] }
     }
 }

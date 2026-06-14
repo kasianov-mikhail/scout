@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 @objc(DeviceObject)
@@ -21,14 +20,13 @@ final class DeviceObject: SyncableObject, Syncable, GridBatch {
 }
 
 extension DeviceObject {
-    var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: deviceID.uuidString)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+    var toRecord: Record {
+        var record = Record(recordType: Self.recordType, id: RecordID(recordName: deviceID.uuidString))
 
         record["date"] = date
         record["device_id"] = deviceID.uuidString
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }

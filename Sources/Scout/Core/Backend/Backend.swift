@@ -5,33 +5,34 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 /// A destination Scout syncs analytics to and reads them back from.
 ///
-/// Scout can run against CloudKit, against one or more Scout servers, or
-/// against any mix of them at once: every raw record is uploaded to every
-/// backend, while reads go to the first backend in the list (the primary).
+/// Scout can run against CloudKit (``CloudKitBackend``), against one or more
+/// Scout servers (``ServerBackend``), or against any mix of them at once:
+/// every raw record is uploaded to every backend, while reads go to the first
+/// backend in the list (the primary).
 ///
-public enum Backend: Sendable {
-    /// The CloudKit container Scout traditionally syncs to. CloudKit cannot
-    /// aggregate server-side, so the client also maintains matrix records.
-    case cloudKit(CKContainer)
+/// The protocol is an empty marker: the host constructs concrete backends and
+/// passes them as `[any Backend]`, keeping each backend's transport — and, for
+/// CloudKit, its `CKContainer` — out of the neutral layer.
+///
+public protocol Backend: Sendable {}
 
-    /// A Scout server (`scout-server`). Aggregation happens in SQL on the
-    /// server, so only raw records are uploaded — including raw metric
-    /// values, which on CloudKit exist solely as matrices.
-    case server(url: URL, apiKey: String? = nil)
+/// A backend that can resolve itself into the capabilities Scout's pipeline
+/// and UI need. Concrete backends conform; the marker ``Backend`` stays empty
+/// so the public surface exposes nothing CloudKit- or HTTP-specific.
+///
+protocol BackendResolving: Backend {
+    var resolved: ResolvedBackend { get }
 }
 
 /// The full database surface a backend must provide.
 protocol BackendDatabase: RecordWriter, RecordReader, RecordLookup, Sendable {}
 
-extension CKDatabase: BackendDatabase {}
-extension HTTPDatabase: BackendDatabase {}
-
-/// A backend resolved into its database plus the traits the sync pipeline
-/// branches on.
+/// A backend resolved into its database plus the traits the sync pipeline and
+/// the data-source UI branch on.
 ///
 struct ResolvedBackend: Sendable {
     /// Stable identity used to track per-record delivery across sync cycles.
@@ -58,38 +59,38 @@ struct ResolvedBackend: Sendable {
 
     /// Throws when the backend cannot accept uploads right now.
     let checkAvailability: @Sendable () async throws -> Void
-}
 
-extension Backend {
-    var resolved: ResolvedBackend {
-        switch self {
-        case .cloudKit(let container):
-            ResolvedBackend(
-                id: container.containerIdentifier ?? "cloudKit",
-                database: container.publicCloudDatabase,
-                needsClientAggregation: true,
-                acceptsRawMetrics: false,
-                checkAvailability: {
-                    guard try await container.accountStatus() == .available else {
-                        throw SyncController.NotLoggedInError()
-                    }
-                }
-            )
-        case .server(let url, let apiKey):
-            ResolvedBackend(
-                id: url.absoluteString,
-                database: HTTPDatabase(url: url, apiKey: apiKey),
-                needsClientAggregation: false,
-                acceptsRawMetrics: true,
-                checkAvailability: {}
-            )
-        }
-    }
+    /// The name shown for this backend in the data-source picker.
+    var displayName: String = ""
+
+    /// The host line shown beneath the name in the data-source picker.
+    var displayHost: String = ""
+
+    /// A live reachability probe driving the data-source status dots.
+    var probeStatus: @Sendable () async -> ServerStatus = { .unknown }
+
+    /// Whether the backend should surface an account/sign-in warning.
+    var accountWarning: @Sendable () async -> Bool = { false }
+
+    /// Verifies the backend's schema, throwing a `SchemaError` if outdated.
+    var verifySchema: @Sendable () async throws -> Void = {}
+
+    /// A side effect to run once during `setup`, e.g. a parallelism check or a
+    /// cleartext-key warning. Runs on the main actor, like `setup` itself.
+    ///
+    var onSetup: @MainActor @Sendable () -> Void = {}
 }
 
 extension [Backend] {
+    /// The backends resolved into their capabilities, dropping any that cannot
+    /// resolve (an unknown custom conformer of the empty ``Backend`` marker).
+    ///
+    var resolved: [ResolvedBackend] {
+        compactMap { ($0 as? BackendResolving)?.resolved }
+    }
+
     /// The database UI reads go to — the first backend's.
     var primaryDatabase: (any BackendDatabase)? {
-        first?.resolved.database
+        resolved.first?.database
     }
 }

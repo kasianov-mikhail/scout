@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 /// A single cell of a matrix: a coordinate key and a scalar value.
 protocol CellProtocol: Combining, Sendable, Equatable {

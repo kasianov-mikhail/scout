@@ -5,11 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 /// A scalar type suitable for matrix cells and syncing.
-protocol MatrixValue: RecordTyped & AdditiveArithmetic & Comparable & Hashable & Sendable & CKRecordValueProtocol {
+protocol MatrixValue: RecordTyped & AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
     associatedtype Object: MetricsValued where Object.Value == Self
 }
 
