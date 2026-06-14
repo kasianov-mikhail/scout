@@ -7,10 +7,10 @@ import Scout
 
 let container = CKContainer(identifier: "YOUR_CONTAINER_ID")
 
-try await setup(container: container)
+try await setup(backends: [.cloudKit(container)])
 ```
 
-To sync somewhere other than CloudKit — or to several destinations at once — pass a list of backends instead. Every raw record is uploaded to every backend, and the dashboard reads from the first one:
+To sync somewhere other than CloudKit — or to several destinations at once — add more backends to the list. Every raw record is uploaded to every backend, and the dashboard reads from the first one:
 ```swift
 try await setup(backends: [
     .cloudKit(container),

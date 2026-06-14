@@ -53,11 +53,11 @@ For the full walkthrough — backends, logging, and metrics — see the [Usage G
 
 ## Dashboard
 
-Present `HomeView` to browse logs, metrics, crashes, and user activity:
+Present `HomeView` to browse logs, metrics, crashes, and user activity. Hand it the same backend list you passed to `setup`:
 ```swift
-HomeView(container: container)
+HomeView(backends: [.cloudKit(container)])
 ```
-When running against Scout servers, hand it the same backend list you passed to `setup`:
+Or point it at a Scout server:
 ```swift
 HomeView(backends: [.server(url: serverURL, apiKey: "YOUR_API_KEY")])
 ```
