@@ -47,8 +47,8 @@ struct Timeline: View {
                 }
             }
 
-            if showsList {
-                ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .topBarTrailing) {
+                if showsList {
                     Button {
                         withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
                             showLegend.toggle()
