@@ -1,0 +1,41 @@
+name: Telegram notify
+description: >
+  Send a single Telegram message through the Bot API. The caller passes a
+  ready-built HTML body and decides whether it arrives with sound; this action
+  only performs the sendMessage call. Shared across scout and scout-server so the
+  message-delivery details live in one place.
+
+inputs:
+  token:
+    description: Telegram bot token (from a secret, never inline).
+    required: true
+  chat-id:
+    description: Target chat id.
+    required: true
+  text:
+    description: Message body, HTML parse mode.
+    required: true
+  silent:
+    description: Deliver without sound ("true") or with sound ("false", for errors).
+    required: false
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: sendMessage
+      shell: bash
+      env:
+        TG_TOKEN: ${{ inputs.token }}
+        TG_CHAT: ${{ inputs.chat-id }}
+        TG_TEXT: ${{ inputs.text }}
+        TG_SILENT: ${{ inputs.silent }}
+      run: |
+        curl -fsS -X POST \
+          "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+          --data-urlencode "chat_id=${TG_CHAT}" \
+          --data-urlencode "text=${TG_TEXT}" \
+          --data-urlencode "parse_mode=HTML" \
+          --data-urlencode "disable_web_page_preview=true" \
+          --data-urlencode "disable_notification=${TG_SILENT}" \
+          -o /dev/null
