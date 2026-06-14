@@ -20,4 +20,35 @@ import Foundation
 /// matrix-to-chart transformations to guarantee that values are both
 /// persistable (domain layer) and plottable (UI layer).
 ///
-typealias ChartNumeric = MatrixValue & Plottable
+typealias ChartNumeric = MatrixValue & Plottable & MetricSeriesScalar
+
+/// Bridges a server `MetricValue` to a chart scalar so a flat `MetricSeries`
+/// can rebuild typed `GridMatrix` cells. `seriesValues` is the value flavor the
+/// `/metrics/series` endpoint expects for this scalar.
+///
+protocol MetricSeriesScalar {
+    static var seriesValues: String { get }
+    static func chartValue(_ value: MetricValue) -> Self
+}
+
+extension Int: MetricSeriesScalar {
+    static var seriesValues: String { "int" }
+
+    static func chartValue(_ value: MetricValue) -> Int {
+        switch value {
+        case .int(let value): value
+        case .double(let value): Int(value)
+        }
+    }
+}
+
+extension Double: MetricSeriesScalar {
+    static var seriesValues: String { "double" }
+
+    static func chartValue(_ value: MetricValue) -> Double {
+        switch value {
+        case .int(let value): Double(value)
+        case .double(let value): value
+        }
+    }
+}
