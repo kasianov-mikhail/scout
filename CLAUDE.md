@@ -10,7 +10,7 @@ Always create commits using the repository's git `user.name`/`user.email` identi
 
 # Project structure
 
-Keep an eye on the folder and file structure as the codebase evolves, and reorganize it when needed: when a folder accumulates too many files at one level, group related files into subfolders following the conventions already present nearby (e.g. `UI/Chart` groups files into `Model`, `Scale`, `View`, `Comparison`, `Picker`, `Range`). Move files as-is without code changes, and ship structure-only reorganizations as their own PR, separate from functional changes.
+Keep an eye on the folder and file structure as the codebase evolves, and reorganize it when needed: when a folder accumulates too many files at one level, group related files into subfolders following the conventions already present nearby (e.g. `UI/Chart` groups files into `Model`, `Scale`, `View`, `Comparison`, `Picker`, `Range`). Move files as-is without code changes, and ship structure-only reorganizations as their own PR, separate from functional changes. The `Tests/ScoutTests` tree mirrors `Sources/Scout`, so whenever you move or regroup source folders, apply the same move to the matching test folders in the same PR — don't leave the test layout behind.
 
 # Code organization
 
