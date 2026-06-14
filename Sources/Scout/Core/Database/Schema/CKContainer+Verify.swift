@@ -62,7 +62,7 @@ extension CKContainer {
             let containerID = containerIdentifier ?? "<container-id>"
 
             print("[Scout] Upload the Schema file to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")
-            print("[Scout] For details, see INSTALLATION.md")
+            print("[Scout] For details, see docs/INSTALLATION.md")
 
             throw SchemaError(recordTypes: invalid)
         }
