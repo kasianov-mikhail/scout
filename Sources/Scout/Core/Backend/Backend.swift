@@ -26,8 +26,9 @@ public enum Backend: Sendable {
 
 extension Backend {
     /// The self-hosted Scout server whose address is baked into the build (the
-    /// `SCOUT_IP` and `SCOUT_API_KEYS` build settings). Empty when the build
-    /// carries no address.
+    /// `SCOUT_IP` and `SCOUT_API_KEYS` build settings).
+    ///
+    /// Empty when the build carries no address.
     ///
     public static func fromBundle() -> [Backend] {
         guard let address = Bundle.main.infoDictionary?["SCOUT_IP"] as? String, !address.isEmpty, let url = URL(string: address) else {
