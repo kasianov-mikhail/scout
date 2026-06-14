@@ -47,14 +47,16 @@ struct Timeline: View {
                 }
             }
 
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                        showLegend.toggle()
-                        if !showLegend { expandedKind = nil }
+            if showsList {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                            showLegend.toggle()
+                            if !showLegend { expandedKind = nil }
+                        }
+                    } label: {
+                        Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
                     }
-                } label: {
-                    Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
                 }
             }
 
@@ -70,6 +72,19 @@ struct Timeline: View {
         .onChange(of: scope) { _ in
             Task(operation: load)
         }
+    }
+
+    /// Whether the timeline list is on screen.
+    ///
+    /// The legend toggled by the info button floats over the list, so the
+    /// button is only shown in this state — it has nothing to reveal while
+    /// loading or on an error or empty result.
+    ///
+    private var showsList: Bool {
+        if case .success = provider.result, provider.items.count > 0 {
+            return true
+        }
+        return false
     }
 
     private var list: some View {
