@@ -141,6 +141,30 @@ extension HTTPDatabase: ActiveUsersReading {
     }
 }
 
+extension HTTPDatabase: MetricSeriesReading {
+    /// Fetches the server's flat per-name series for a telemetry `category`.
+    ///
+    /// Requests sparse hourly buckets so a year-long range stays as compact as
+    /// the matrix it replaces; the metrics UI rebuilds the weekly grid the
+    /// chart consumes from the result.
+    ///
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        let from = Int64((range.lowerBound.timeIntervalSince1970 * 1000).rounded())
+        let to = Int64((range.upperBound.timeIntervalSince1970 * 1000).rounded())
+        let category = category.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? category
+
+        let path = "api/v1/metrics/series?category=\(category)&values=\(values)&bucket=hour&dense=false&from=\(from)&to=\(to)"
+        guard let endpoint = URL(string: path, relativeTo: url) else {
+            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
+        }
+
+        let (data, response) = try await session.data(for: request(for: endpoint, method: "GET"))
+        try check(response, data: data)
+
+        return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
+    }
+}
+
 // MARK: - Transport
 
 /// A non-2xx response from a Scout server.
