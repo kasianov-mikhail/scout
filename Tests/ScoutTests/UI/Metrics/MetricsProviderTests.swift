@@ -73,17 +73,17 @@ struct MetricsProviderTests {
     }
 }
 
-/// An `AppDatabase` that also answers the native metric series, standing in for
-/// a Scout server backend.
+/// An `AppDatabase` that returns a native metric series, standing in for a
+/// Scout server backend.
 ///
-private final class MetricsServerStub: AppDatabase, MetricSeriesReading, @unchecked Sendable {
+private final class MetricsServerStub: AppDatabase, @unchecked Sendable {
     let series: [MetricSeries]
 
     init(series: [MetricSeries]) {
         self.series = series
     }
 
-    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]? {
         series
     }
 

@@ -126,7 +126,7 @@ extension HTTPDatabase: ActiveUsersReading {
     /// The server aggregates from raw `Session` records, so the client reads a
     /// finished series instead of rebuilding it from `PeriodMatrix` cells.
     ///
-    func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint] {
+    func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint]? {
         let from = Int64((range.lowerBound.timeIntervalSince1970 * 1000).rounded())
         let to = Int64((range.upperBound.timeIntervalSince1970 * 1000).rounded())
 
@@ -153,7 +153,7 @@ extension HTTPDatabase: MetricSeriesReading {
     /// the matrix it replaces; the metrics UI rebuilds the weekly grid the
     /// chart consumes from the result.
     ///
-    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]? {
         let from = Int64((range.lowerBound.timeIntervalSince1970 * 1000).rounded())
         let to = Int64((range.upperBound.timeIntervalSince1970 * 1000).rounded())
         let category = category.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? category

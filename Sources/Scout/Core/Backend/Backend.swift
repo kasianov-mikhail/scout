@@ -32,7 +32,7 @@ protocol BackendResolving: Backend {
 }
 
 /// The full database surface a backend must provide.
-protocol BackendDatabase: RecordWriter, RecordReader, RecordLookup, Sendable {}
+protocol BackendDatabase: RecordWriter, RecordReader, RecordLookup, MetricSeriesReading, ActiveUsersReading, Sendable {}
 
 /// A backend resolved into its database plus the traits the sync pipeline and
 /// the data-source UI branch on.
