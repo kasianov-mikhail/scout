@@ -93,9 +93,7 @@ extension HTTPDatabase: RecordLookup {
             throw HTTPDatabaseError(status: 0, reason: "Malformed record URL")
         }
 
-        let (data, response) = try await session.data(for: request(for: endpoint, method: "GET"))
-        try check(response, data: data)
-
+        let data = try await perform(request(for: endpoint, method: "GET"))
         return try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord
     }
 }
@@ -136,9 +134,7 @@ extension HTTPDatabase: ActiveUsersReading {
             throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
         }
 
-        let (data, response) = try await session.data(for: request(for: endpoint, method: "GET"))
-        try check(response, data: data)
-
+        let data = try await perform(request(for: endpoint, method: "GET"))
         return try JSONDecoder().decode(ActiveUsersResponse.self, from: data).series
     }
 }
@@ -160,9 +156,7 @@ extension HTTPDatabase: MetricSeriesReading {
             throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
         }
 
-        let (data, response) = try await session.data(for: request(for: endpoint, method: "GET"))
-        try check(response, data: data)
-
+        let data = try await perform(request(for: endpoint, method: "GET"))
         return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
     }
 }
@@ -190,10 +184,20 @@ extension HTTPDatabase {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try JSONEncoder().encode(body)
 
+        let data = try await perform(request)
+        return try JSONDecoder().decode(Reply.self, from: data)
+    }
+
+    /// Runs one request, gating on background time and validating the response.
+    ///
+    /// Every network call funnels through here so the background-time guard that
+    /// protects CloudKit requests applies equally to hosted servers.
+    ///
+    private func perform(_ request: URLRequest) async throws -> Data {
+        try await requireBackgroundTime()
         let (data, response) = try await session.data(for: request)
         try check(response, data: data)
-
-        return try JSONDecoder().decode(Reply.self, from: data)
+        return data
     }
 
     private func request(for endpoint: URL, method: String) -> URLRequest {
