@@ -14,7 +14,7 @@ extension HTTPDatabase: BackendDatabase {}
 /// Aggregation happens in SQL on the server, so only raw records are uploaded
 /// — including raw metric values, which on CloudKit exist solely as matrices.
 ///
-public struct ServerBackend: Backend {
+public struct HostedBackend: Backend {
     let url: URL
     let apiKey: String?
 
@@ -24,7 +24,7 @@ public struct ServerBackend: Backend {
     }
 }
 
-extension ServerBackend: BackendResolving {
+extension HostedBackend: BackendResolving {
     var resolved: ResolvedBackend {
         let url = url
         let apiKey = apiKey

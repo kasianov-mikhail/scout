@@ -12,7 +12,7 @@ import Foundation
 /// How often debug builds re-validate `RequestLimiter.requestLimit` against CloudKit.
 private let parallelismCheckInterval: TimeInterval = 7 * 24 * 60 * 60
 
-/// In debug builds, re-runs `verifyCloudKitParallelism` once `parallelismCheckInterval`
+/// In debug builds, re-runs `verifyParallelismBenchmark` once `parallelismCheckInterval`
 /// has passed since the last check, so a change in CloudKit's server-side limits shows
 /// up in the console during development instead of going unnoticed.
 ///
@@ -26,7 +26,7 @@ private let parallelismCheckInterval: TimeInterval = 7 * 24 * 60 * 60
         }
 
         Task {
-            await verifyCloudKitParallelism(container: container)
+            await verifyParallelismBenchmark(container: container)
             UserDefaults.standard.set(Date(), forKey: key)
         }
     #endif

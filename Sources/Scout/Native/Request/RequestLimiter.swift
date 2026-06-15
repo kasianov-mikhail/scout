@@ -15,10 +15,10 @@ let requestLimiter = RequestLimiter(limit: RequestLimiter.requestLimit)
 /// scales near-perfectly up to 8 concurrent requests (×4.4 over sequential) and degrades
 /// beyond that — 16 in flight doubles batch latency with no throughput gain. The limit
 /// keeps Scout inside the well-scaling range no matter how many call sites fan out at
-/// once. Re-validate with `verifyCloudKitParallelism` if CloudKit behavior changes.
+/// once. Re-validate with `verifyParallelismBenchmark` if CloudKit behavior changes.
 ///
 actor RequestLimiter {
-    /// The measured CloudKit parallelism ceiling; `verifyCloudKitParallelism` re-checks it.
+    /// The measured CloudKit parallelism ceiling; `verifyParallelismBenchmark` re-checks it.
     static let requestLimit = 8
 
     private let limit: Int

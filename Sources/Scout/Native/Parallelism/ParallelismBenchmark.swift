@@ -92,7 +92,7 @@ private func runSweep(_ database: CKDatabase, recordType: String, counts: [Int],
 /// `RequestLimiter` slot for the duration, so regular Scout traffic neither skews the
 /// measurements nor competes with them — library requests queue up and resume after.
 ///
-@discardableResult public func verifyCloudKitParallelism(container: CKContainer, recordType: String = "Event") async -> Bool {
+@discardableResult public func verifyParallelismBenchmark(container: CKContainer, recordType: String = "Event") async -> Bool {
     print("[CKVerify] checking that \(RequestLimiter.requestLimit) in-flight CloudKit requests is still the right limit")
 
     return await requestLimiter.withAllSlots {

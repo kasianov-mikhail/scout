@@ -27,7 +27,7 @@ enum SetupError: LocalizedError {
         case .alreadySetup:
             "Review the code to ensure setup is called only once"
         case .noBackends:
-            "Pass a CloudKitBackend or a ServerBackend to setup"
+            "Pass a NativeBackend or a HostedBackend to setup"
         }
     }
 }

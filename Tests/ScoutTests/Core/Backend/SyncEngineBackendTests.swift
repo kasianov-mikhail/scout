@@ -115,10 +115,10 @@ struct SyncEngineBackendTests {
         #expect(server.records.filter { $0.recordType == "Event" }.count == 0)
     }
 
-    @Test("A matrix is contributed per CloudKit backend, never twice")
-    func matrixPerCloudKitBackend() async throws {
+    @Test("A matrix is contributed per native backend, never twice")
+    func matrixPerNativeBackend() async throws {
         let event = EventObject.stub(name: "login", in: context)
-        // Simulate a prior cycle where the first CloudKit backend was fully
+        // Simulate a prior cycle where the first native backend was fully
         // delivered but the second only received the raw record.
         event.mark([.raw, .matrix], for: "cloud")
         event.mark(.raw, for: "cloud2")

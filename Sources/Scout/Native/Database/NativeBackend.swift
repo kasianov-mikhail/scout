@@ -15,7 +15,7 @@ extension CKDatabase: BackendDatabase {}
 /// records. This is the one place the package holds a `CKContainer`; the host
 /// constructs it and hands it over as an `any Backend`.
 ///
-public struct CloudKitBackend: Backend {
+public struct NativeBackend: Backend {
     let container: CKContainer
 
     public init(container: CKContainer) {
@@ -23,7 +23,7 @@ public struct CloudKitBackend: Backend {
     }
 }
 
-extension CloudKitBackend: BackendResolving {
+extension NativeBackend: BackendResolving {
     var resolved: ResolvedBackend {
         let container = container
         return ResolvedBackend(

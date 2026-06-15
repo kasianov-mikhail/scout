@@ -9,8 +9,9 @@ import Foundation
 
 /// A destination Scout syncs analytics to and reads them back from.
 ///
-/// Scout can run against CloudKit (``CloudKitBackend``), against one or more
-/// Scout servers (``ServerBackend``), or against any mix of them at once:
+/// Scout can run against an Apple-native CloudKit container (``NativeBackend``),
+/// against one or more self-hosted Scout servers (``HostedBackend``), or against
+/// any mix of them at once:
 /// every raw record is uploaded to every backend, while reads go to the first
 /// backend in the list (the primary).
 ///
