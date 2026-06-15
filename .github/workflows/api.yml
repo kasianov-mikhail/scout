@@ -44,12 +44,14 @@ jobs:
 
       - name: Dump baseline API
         run: |
-          baseline=$(git tag --sort=-v:refname | head -1)
+          # Compare against the PR's base (main), so the check flags only the
+          # API changes this PR introduces — not cumulative drift since release.
+          baseline="${{ github.event.pull_request.base.sha }}"
           if [ -z "$baseline" ]; then
-            echo "No release tags found, nothing to compare against."
+            echo "No base revision to compare against."
             exit 0
           fi
-          echo "Comparing against $baseline"
+          echo "Comparing against base $baseline"
           git worktree add /tmp/baseline "$baseline"
           cd /tmp/baseline
           xcodebuild \
@@ -74,11 +76,11 @@ jobs:
             > /tmp/report.txt 2>&1
           breakage=$(grep -v -e '^/\*' -e '^[[:space:]]*$' /tmp/report.txt || true)
           if [ -z "$breakage" ]; then
-            echo "No public API changes against the latest release." >> "$GITHUB_STEP_SUMMARY"
+            echo "No public API changes against the base branch." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           {
-            echo "### Public API changes against the latest release"
+            echo "### Public API changes against the base branch"
             echo '```'
             echo "$breakage"
             echo '```'
