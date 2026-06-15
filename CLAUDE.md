@@ -30,7 +30,12 @@
 
 ## Doc comments
 
+- Document only public API: write doc comments (`///`) for `public`/`open` declarations only, and leave `internal`, `private`, and `fileprivate` declarations undocumented (an inline `//` note for genuinely non-obvious logic is still fine).
 - Multi-line doc comments (`///`) must end with a trailing empty `///` line, except when they document a single-line property declaration (a stored `let`/`var` written on one line), where the trailing empty `///` is omitted. Single-line doc comments never need it.
+
+## `MARK` comments
+
+- Don't use `// MARK:` comments to divide code into sections.
 
 ## `guard` statements
 
