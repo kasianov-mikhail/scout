@@ -14,8 +14,4 @@ import Foundation
 ///
 struct RecordID: Hashable, Sendable {
     let recordName: String
-
-    init(recordName: String) {
-        self.recordName = recordName
-    }
 }

@@ -8,8 +8,9 @@
 import Foundation
 
 /// Wire representation of a single record, the JSON shape exchanged with a
-/// Scout server. It converts to and from the neutral ``Record`` the rest of
-/// the package uses.
+/// Scout server.
+///
+/// It converts to and from the neutral ``Record`` the rest of the package uses.
 ///
 struct HTTPRecord: Codable, Equatable, Sendable {
     let recordType: String

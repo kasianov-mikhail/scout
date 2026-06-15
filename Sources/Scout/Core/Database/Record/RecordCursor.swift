@@ -8,8 +8,10 @@
 import Foundation
 
 /// An opaque continuation token a backend produces to resume one of its own
-/// paginated reads. CloudKit's `CKQueryOperation.Cursor` conforms in the
-/// CloudKit adapter, keeping its type out of the neutral layer.
+/// paginated reads.
+///
+/// CloudKit's `CKQueryOperation.Cursor` conforms in the CloudKit adapter,
+/// keeping its type out of the neutral layer.
 ///
 protocol RecordCursorToken: AnyObject {}
 

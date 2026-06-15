@@ -107,8 +107,7 @@ extension RecordValue {
 
 // MARK: - Typed Access
 
-/// A scalar that can cross the boundary between a strongly-typed field and a
-/// ``RecordValue``, powering ``Record``'s typed subscript.
+/// A scalar a record field converts to and from, powering its typed subscript.
 ///
 protocol RecordValueConvertible {
     init?(recordValue: RecordValue)

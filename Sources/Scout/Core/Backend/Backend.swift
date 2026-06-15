@@ -22,8 +22,10 @@ import Foundation
 public protocol Backend: Sendable {}
 
 /// A backend that can resolve itself into the capabilities Scout's pipeline
-/// and UI need. Concrete backends conform; the marker ``Backend`` stays empty
-/// so the public surface exposes nothing CloudKit- or HTTP-specific.
+/// and UI need.
+///
+/// Concrete backends conform; the marker ``Backend`` stays empty so the public
+/// surface exposes nothing CloudKit- or HTTP-specific.
 ///
 protocol BackendResolving: Backend {
     var resolved: ResolvedBackend { get }
@@ -77,7 +79,9 @@ struct ResolvedBackend: Sendable {
     var verifySchema: @Sendable () async throws -> Void = {}
 
     /// A side effect to run once during `setup`, e.g. a parallelism check or a
-    /// cleartext-key warning. Runs on the main actor, like `setup` itself.
+    /// cleartext-key warning.
+    ///
+    /// Runs on the main actor, like `setup` itself.
     ///
     var onSetup: @MainActor @Sendable () -> Void = {}
 }

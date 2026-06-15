@@ -32,7 +32,10 @@ final class DataSourceModel: ObservableObject {
 
     private static let storageKey = "scout_active_backend"
 
-    init(backends: [any Backend], defaults: UserDefaults = .standard, probe: @escaping @Sendable (ResolvedBackend) async -> BackendStatus = { await $0.probeStatus() }) {
+    init(
+        backends: [any Backend], defaults: UserDefaults = .standard,
+        probe: @escaping @Sendable (ResolvedBackend) async -> BackendStatus = { await $0.probeStatus() }
+    ) {
         self.resolved = backends.resolved
         self.defaults = defaults
         self.probe = probe

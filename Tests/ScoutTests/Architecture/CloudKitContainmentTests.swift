@@ -9,9 +9,11 @@ import Foundation
 import Testing
 
 /// Enforces the layer boundary the hexagonal refactor established: CloudKit is
-/// an adapter, not a dependency of the rest of the package. Only files under
-/// `Sources/Scout/Native/` may `import CloudKit`; `Core`, `Hosted`, and `UI`
-/// speak the neutral `Record`/`RecordQuery` vocabulary instead.
+/// an adapter, not a dependency of the rest of the package.
+///
+/// Only files under `Sources/Scout/Native/` may `import CloudKit`; `Core`,
+/// `Hosted`, and `UI` speak the neutral `Record`/`RecordQuery` vocabulary
+/// instead.
 ///
 @Suite("CloudKit containment")
 struct CloudKitContainmentTests {

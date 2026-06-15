@@ -32,7 +32,8 @@ extension Record {
     /// present so a conflict retry targets the right record version.
     ///
     var ckRecord: CKRecord {
-        let record = metadata.flatMap(CKRecord.decoded(systemFields:))
+        let record =
+            metadata.flatMap(CKRecord.decoded(systemFields:))
             ?? CKRecord(recordType: recordType, recordID: CKRecord.ID(recordName: id.recordName))
         for (key, value) in fields {
             record[key] = value.ckValue
