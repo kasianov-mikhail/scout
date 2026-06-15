@@ -17,6 +17,7 @@
 
 - Keep an eye on the folder and file structure as the codebase evolves, and reorganize it when needed: when a folder accumulates too many files at one level, group related files into subfolders following the conventions already present nearby (e.g. `UI/Chart` groups files into `Model`, `Scale`, `View`, `Comparison`, `Picker`, `Range`).
 - Move files as-is without code changes, and ship structure-only reorganizations as their own PR, separate from functional changes.
+- When a type or protocol is used in essentially one place, keep it next to that use site rather than in a neutral/shared folder. For an abstraction protocol a caller probes via a cast or call (e.g. `database as? ActiveUsersReading`), the "place of use" is the **consumer** that depends on it, not the types that conform to it — co-locate it with the consumer (dependency inversion). Broadly-used protocols (e.g. the `Record*` family in `RecordProtocols.swift`) still belong in a shared grouping.
 - The `Tests/ScoutTests` tree mirrors `Sources/Scout`, so whenever you move or regroup source folders, apply the same move to the matching test folders in the same PR — don't leave the test layout behind.
 
 # Code organization
