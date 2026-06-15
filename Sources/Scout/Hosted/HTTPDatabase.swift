@@ -137,6 +137,13 @@ extension HTTPDatabase: ActiveUsersReading {
         let data = try await perform(request(for: endpoint, method: "GET"))
         return try JSONDecoder().decode(ActiveUsersResponse.self, from: data).series
     }
+
+    /// The server's native active-user series — the response of
+    /// `GET /api/v1/metrics/active-users`.
+    ///
+    private struct ActiveUsersResponse: Decodable {
+        let series: [ActiveUserPoint]
+    }
 }
 
 extension HTTPDatabase: MetricSeriesReading {
@@ -158,6 +165,13 @@ extension HTTPDatabase: MetricSeriesReading {
 
         let data = try await perform(request(for: endpoint, method: "GET"))
         return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
+    }
+
+    /// The server's grouped metric series — the response of
+    /// `GET /api/v1/metrics/series`.
+    ///
+    private struct MetricSeriesResponse: Decodable {
+        let series: [MetricSeries]
     }
 }
 
