@@ -5,17 +5,16 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 extension View {
-    func schemaWarning(container: CKContainer) -> some View {
-        modifier(SchemaWarningModifier(container: container))
+    func schemaWarning(_ backend: ResolvedBackend) -> some View {
+        modifier(SchemaWarningModifier(backend: backend))
     }
 }
 
 private struct SchemaWarningModifier: ViewModifier {
-    let container: CKContainer
+    let backend: ResolvedBackend
 
     @State private var schemaError: SchemaError?
     @State private var isAlertPresented = false
@@ -50,7 +49,7 @@ private struct SchemaWarningModifier: ViewModifier {
 
     private func verify() async {
         do {
-            try await container.verifySchema()
+            try await backend.verifySchema()
         } catch let error as SchemaError {
             schemaError = error
         } catch {}

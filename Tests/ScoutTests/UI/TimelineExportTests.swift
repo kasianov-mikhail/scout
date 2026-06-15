@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import CloudKit
+import Foundation
 import Testing
 
 @testable import Scout
@@ -68,7 +68,7 @@ struct TimelineExportTests {
             session: Session(
                 startDate: nil,
                 endDate: nil,
-                id: .init(recordName: "session"),
+                id: RecordID(recordName: "session"),
                 sessionID: nil,
                 launchID: nil,
                 installID: nil
@@ -80,7 +80,7 @@ struct TimelineExportTests {
             launch: Launch(
                 startDate: nil,
                 endDate: nil,
-                id: .init(recordName: "launch"),
+                id: RecordID(recordName: "launch"),
                 launchID: nil,
                 installID: nil
             ),
@@ -89,14 +89,14 @@ struct TimelineExportTests {
         let install = InstallRoot(
             install: Install(
                 date: nil,
-                id: .init(recordName: "install"),
+                id: RecordID(recordName: "install"),
                 installID: nil,
                 deviceID: nil
             ),
             launches: [launch]
         )
         let rail = Rail(
-            device: Device(date: nil, id: .init(recordName: "device"), deviceID: nil),
+            device: Device(date: nil, id: RecordID(recordName: "device"), deviceID: nil),
             installs: [install]
         )
 
@@ -134,7 +134,7 @@ struct TimelineExportTests {
             reason: "unexpectedly found nil",
             stackTrace: [],
             date: at(10),
-            id: .init(recordName: "crash"),
+            id: RecordID(recordName: "crash"),
             installID: nil,
             launchID: nil,
             sessionID: nil

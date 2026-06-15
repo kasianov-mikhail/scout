@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 @objc(SessionObject)
@@ -23,16 +22,15 @@ final class SessionObject: TrackedObject, Syncable, GridBatch {
 }
 
 extension SessionObject {
-    var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: sessionID.uuidString)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+    var toRecord: Record {
+        var record = Record(recordType: Self.recordType, id: RecordID(recordName: sessionID.uuidString))
 
         record["start_date"] = date
         record["end_date"] = endDate
         record["session_id"] = sessionID.uuidString
         record["launch_id"] = launchID.uuidString
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }

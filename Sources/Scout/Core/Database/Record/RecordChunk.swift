@@ -5,26 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct RecordChunk {
-    let records: [CKRecord]
+    let records: [Record]
     let cursor: RecordCursor?
-}
-
-// MARK: - CloudKit Mapping
-
-extension RecordChunk {
-    init(results: ([(CKRecord.ID, Result<CKRecord, Error>)], CKQueryOperation.Cursor?)) throws {
-        records = try results.0.records()
-        cursor = results.1.map(RecordCursor.cloudKit)
-    }
-}
-
-extension [(CKRecord.ID, Result<CKRecord, Error>)] {
-    fileprivate func records() throws -> [CKRecord] {
-        try map { try $0.1.get() }
-    }
 }
 
 // MARK: - Operators

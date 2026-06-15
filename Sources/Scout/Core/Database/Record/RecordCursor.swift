@@ -5,17 +5,25 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
-/// A backend-agnostic continuation point for paginated reads.
+/// An opaque continuation token a backend produces to resume one of its own
+/// paginated reads.
 ///
-/// CloudKit hands back an opaque `CKQueryOperation.Cursor`; Scout servers
-/// return an opaque token string. Each `RecordReader` only ever receives
-/// cursors it produced itself, since paginated reads always continue on
-/// the database that started them.
+/// CloudKit's `CKQueryOperation.Cursor` conforms in the CloudKit adapter,
+/// keeping its type out of the neutral layer.
+///
+protocol RecordCursorToken: AnyObject {}
+
+/// A backend-neutral continuation point for paginated reads.
+///
+/// CloudKit hands back an opaque cursor object; Scout servers return an opaque
+/// token string. Each `RecordReader` only ever receives cursors it produced
+/// itself, since paginated reads always continue on the database that started
+/// them.
 ///
 enum RecordCursor: @unchecked Sendable {
-    case cloudKit(CKQueryOperation.Cursor)
+    case opaque(any RecordCursorToken)
     case server(String)
 }
 

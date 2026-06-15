@@ -5,12 +5,11 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 struct TimelineList<Pagination: View>: View {
     let items: [TimelineItem]
-    let highlightedID: CKRecord.ID?
+    let highlightedID: RecordID?
 
     @ViewBuilder let older: () -> Pagination
     @ViewBuilder let newer: () -> Pagination

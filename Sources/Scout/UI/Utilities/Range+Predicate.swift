@@ -8,12 +8,11 @@
 import Foundation
 
 extension Range<Date> {
-    /// A predicate matching records whose `date` falls within this range.
-    var datePredicate: NSPredicate {
-        NSPredicate(
-            format: "date >= %@ AND date < %@",
-            lowerBound as NSDate,
-            upperBound as NSDate
-        )
+    /// Filters matching records whose `date` falls within this range.
+    var dateFilters: [RecordFilter] {
+        [
+            RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(lowerBound)),
+            RecordFilter(field: "date", op: .lessThan, value: .date(upperBound)),
+        ]
     }
 }

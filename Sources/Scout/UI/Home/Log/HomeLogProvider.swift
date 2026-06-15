@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 /// Fetches the stat matrices backing the Home Log counters in one pass:
 /// every `DateIntMatrix` and `DateDoubleMatrix` of the default range,
@@ -27,7 +27,7 @@ class HomeLogProvider: ObservableObject, Provider {
         )
     }
 
-    private func query(for recordType: String) -> CKQuery {
-        CKQuery(recordType: recordType, predicate: Calendar.utc.defaultRange.datePredicate)
+    private func query(for recordType: String) -> RecordQuery {
+        RecordQuery(recordType: recordType, filters: Calendar.utc.defaultRange.dateFilters)
     }
 }

@@ -11,42 +11,39 @@ import Testing
 @testable import Scout
 
 struct EventQueryTests {
-    @Test("Empty query returns TRUEPREDICATE") func emptyQuery() {
-        let predicate = Event.Query().buildPredicate()
-        #expect(predicate.predicateFormat == "TRUEPREDICATE")
+    @Test("Empty query produces no filters") func emptyQuery() {
+        #expect(Event.Query().buildFilters().isEmpty)
     }
 
     @Test("Filter by levels") func levels() {
         var query = Event.Query()
         query.levels = [.error, .critical]
-        let predicate = query.buildPredicate()
+        let filters = query.buildFilters()
 
-        #expect(predicate.predicateFormat.contains("level IN"))
+        #expect(filters.contains { $0.field == "level" && $0.op == .in })
     }
 
-    @Test("All levels produces no level predicate") func allLevels() {
+    @Test("All levels produces no level filter") func allLevels() {
         var query = Event.Query()
         query.levels = Set(Event.Level.allCases)
-        let predicate = query.buildPredicate()
 
-        #expect(predicate.predicateFormat == "TRUEPREDICATE")
+        #expect(query.buildFilters().isEmpty)
     }
 
     @Test("Filter by text") func text() {
         var query = Event.Query()
         query.text = "Search"
-        let predicate = query.buildPredicate()
+        let filters = query.buildFilters()
 
-        #expect(predicate.predicateFormat.contains("BEGINSWITH"))
-        #expect(predicate.predicateFormat.contains("Search"))
+        #expect(filters.contains(RecordFilter(field: "name", op: .beginsWith, value: .string("Search"))))
     }
 
     @Test("Filter by name") func name() {
         var query = Event.Query()
         query.name = "Login"
-        let predicate = query.buildPredicate()
+        let filters = query.buildFilters()
 
-        #expect(predicate.predicateFormat.contains("name == \"Login\""))
+        #expect(filters.contains(RecordFilter(field: "name", op: .equals, value: .string("Login"))))
     }
 
     @Test("Filter by date range") func dates() {
@@ -55,22 +52,21 @@ struct EventQueryTests {
 
         var query = Event.Query()
         query.dates = start..<end
-        let predicate = query.buildPredicate()
+        let filters = query.buildFilters()
 
-        #expect(predicate.predicateFormat.contains("date >="))
-        #expect(predicate.predicateFormat.contains("date <"))
+        #expect(filters.contains(RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(start))))
+        #expect(filters.contains(RecordFilter(field: "date", op: .lessThan, value: .date(end))))
     }
 
-    @Test("Multiple filters combine with AND") func combined() {
+    @Test("Multiple filters combine") func combined() {
         var query = Event.Query()
         query.levels = [.error]
         query.text = "Search"
         query.name = "Login"
-        let predicate = query.buildPredicate()
+        let filters = query.buildFilters()
 
-        #expect(predicate.predicateFormat.contains("AND"))
-        #expect(predicate.predicateFormat.contains("level IN"))
-        #expect(predicate.predicateFormat.contains("BEGINSWITH"))
-        #expect(predicate.predicateFormat.contains("Login"))
+        #expect(filters.contains { $0.field == "level" && $0.op == .in })
+        #expect(filters.contains(RecordFilter(field: "name", op: .beginsWith, value: .string("Search"))))
+        #expect(filters.contains(RecordFilter(field: "name", op: .equals, value: .string("Login"))))
     }
 }

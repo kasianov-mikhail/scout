@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import SwiftUI
 
@@ -23,8 +22,11 @@ class EventProvider: ObservableObject {
 
     func fetch(for filter: Event.Query, in database: AppDatabase) async {
         do {
-            let query = CKQuery(recordType: EventObject.recordType, predicate: filter.buildPredicate())
-            query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+            let query = RecordQuery(
+                recordType: EventObject.recordType,
+                filters: filter.buildFilters(),
+                sort: [RecordSort(field: "date", ascending: false)]
+            )
 
             let results = try await database.read(
                 matching: query,

@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 class MetricsProvider<T: ChartNumeric>: QueryProvider<GridMatrix<T>> {
     private let telemetry: Telemetry.Export
@@ -13,17 +13,11 @@ class MetricsProvider<T: ChartNumeric>: QueryProvider<GridMatrix<T>> {
     init(telemetry: Telemetry.Export) {
         self.telemetry = telemetry
         super.init {
-            let predicate = NSCompoundPredicate(
-                type: .and,
-                subpredicates: [
-                    Calendar.utc.defaultRange.datePredicate,
-                    NSPredicate(format: "category == %@", telemetry.rawValue),
-                ]
-            )
-
-            return CKQuery(
+            RecordQuery(
                 recordType: T.recordType,
-                predicate: predicate
+                filters: Calendar.utc.defaultRange.dateFilters + [
+                    RecordFilter(field: "category", op: .equals, value: .string(telemetry.rawValue))
+                ]
             )
         }
     }

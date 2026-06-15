@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 
 extension TimelineItem {
@@ -17,7 +16,7 @@ extension TimelineItem {
 
         func item(_ name: String, offset: TimeInterval) -> TimelineItem {
             TimelineItem(
-                id: CKRecord.ID(recordName: UUID().uuidString),
+                id: RecordID(recordName: UUID().uuidString),
                 name: name,
                 date: start.addingTimeInterval(offset),
                 active: [.install, .launch, .session],

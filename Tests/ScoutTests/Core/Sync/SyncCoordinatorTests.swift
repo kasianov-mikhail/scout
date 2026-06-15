@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 import Testing
 
@@ -55,23 +54,10 @@ struct SyncCoordinatorTests {
 
         #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
     }
-
-    @Test("Upload creates a new matrix when the conflict carries no server record")
-    func testUploadConflictWithoutServerRecordCreatesNewMatrix() async throws {
-        database.writeErrors.append(CKError(.serverRecordChanged))
-
-        try await coordinator.upload()
-
-        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
-    }
 }
 
 private let now = Date()
 
-private func createMergeError() -> CKError {
-    let serverMatrix = CKRecord.matrixStub(date: now)
-    return CKError(
-        CKError.Code.serverRecordChanged,
-        userInfo: [CKRecordChangedErrorServerRecordKey: serverMatrix]
-    )
+private func createMergeError() -> RecordConflictError {
+    RecordConflictError(serverRecord: Record.matrixStub(date: now))
 }

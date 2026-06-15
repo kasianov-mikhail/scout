@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -17,8 +16,8 @@ struct EventProviderTests {
     func fetchIfNeededLoadsOnFirstCall() async throws {
         let database = DatabaseStub()
         database.add(
-            CKRecord.eventStub(name: "login", sessionID: UUID(), date: Date()),
-            CKRecord.eventStub(name: "logout", sessionID: UUID(), date: Date())
+            Record.eventStub(name: "login", sessionID: UUID(), date: Date()),
+            Record.eventStub(name: "logout", sessionID: UUID(), date: Date())
         )
 
         let provider = EventProvider()
@@ -31,7 +30,7 @@ struct EventProviderTests {
     @Test("fetchIfNeeded does not reload once events are present")
     func fetchIfNeededSkipsWhenLoaded() async throws {
         let database = DatabaseStub()
-        database.add(CKRecord.eventStub(name: "login", sessionID: UUID(), date: Date()))
+        database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
 
         let provider = EventProvider()
         await provider.fetchIfNeeded(for: Event.Query(), in: database)

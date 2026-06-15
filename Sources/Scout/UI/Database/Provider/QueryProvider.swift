@@ -5,18 +5,18 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
-class QueryProvider<T: Combining & CKInitializable>: ObservableObject, Provider {
+class QueryProvider<T: Combining & RecordDecodable>: ObservableObject, Provider {
     @Published var result: ProviderResult<[T]>?
 
-    private let queryBuilder: () -> CKQuery
+    private let queryBuilder: () -> RecordQuery
 
-    init(query: @escaping @autoclosure () -> CKQuery) {
+    init(query: @escaping @autoclosure () -> RecordQuery) {
         self.queryBuilder = query
     }
 
-    init(query: @escaping () -> CKQuery) {
+    init(query: @escaping () -> RecordQuery) {
         self.queryBuilder = query
     }
 

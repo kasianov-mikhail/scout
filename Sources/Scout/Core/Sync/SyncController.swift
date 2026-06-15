@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 typealias SyncAction = @MainActor () async throws -> Void
 
@@ -17,10 +17,6 @@ typealias SyncAction = @MainActor () async throws -> Void
     init(backends: [ResolvedBackend], dispatcher: Dispatcher = QueueDispatcher()) {
         self.backends = backends
         self.dispatcher = dispatcher
-    }
-
-    convenience init(container: CKContainer, dispatcher: Dispatcher = QueueDispatcher()) {
-        self.init(backends: [Backend.cloudKit(container).resolved], dispatcher: dispatcher)
     }
 
     func synchronize() async throws {

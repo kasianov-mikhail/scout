@@ -5,10 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 extension Matrix where T == GridCell<Int> {
-    static var sampleRecords: [CKRecord] {
+    static var sampleRecords: [Record] {
         let calendar = Calendar.utc
         let today = Date().startOfDay
 
@@ -17,7 +17,7 @@ extension Matrix where T == GridCell<Int> {
                 return nil
             }
 
-            let record = CKRecord(recordType: Int.recordType)
+            var record = Record(recordType: Int.recordType, id: RecordID(recordName: UUID().uuidString))
             record["date"] = weekStart
             record["name"] = "event_name"
 

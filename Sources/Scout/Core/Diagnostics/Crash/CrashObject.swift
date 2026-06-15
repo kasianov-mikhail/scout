@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 @objc(CrashObject)
@@ -17,10 +16,9 @@ final class CrashObject: TrackedObject, Syncable, GridBatch {
     @NSManaged var stackTrace: Data?
 }
 
-extension CrashObject: CKRepresentable {
-    var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: crashID.uuidString)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+extension CrashObject: RecordRepresentable {
+    var toRecord: Record {
+        var record = Record(recordType: Self.recordType, id: RecordID(recordName: crashID.uuidString))
 
         record["name"] = name
         record["reason"] = reason
@@ -28,7 +26,7 @@ extension CrashObject: CKRepresentable {
         record["date"] = date
         record["uuid"] = crashID.uuidString
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }

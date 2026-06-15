@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 public struct HomeView: View {
@@ -15,10 +14,10 @@ public struct HomeView: View {
     /// Reads analytics from the active backend, defaulting to the first.
     ///
     /// When several backends are configured, a toolbar control lets the user
-    /// switch between them; CloudKit account and schema warnings only apply
-    /// while the active backend is a CloudKit container.
+    /// switch between them; account and schema warnings only apply while the
+    /// active backend asks for them (CloudKit does; Scout servers don't).
     ///
-    public init(backends: [Backend]) {
+    public init(backends: [any Backend]) {
         _dataSource = StateObject(wrappedValue: DataSourceModel(backends: backends))
     }
 
@@ -27,7 +26,7 @@ public struct HomeView: View {
             HomeContent()
                 .id(dataSource.activeID)
                 .navigationTitle(en: "Home")
-                .cloudKitWarnings(container: dataSource.activeContainer)
+                .backendWarnings(dataSource.activeBackend)
                 .dismissable()
                 .toolbar { dataSourceToolbar }
         }
@@ -52,22 +51,10 @@ public struct HomeView: View {
     }
 }
 
-extension HomeView {
-    /// Reads analytics from a single CloudKit container.
-    ///
-    /// A convenience over ``init(backends:)`` for the CloudKit-only case;
-    /// prefer that initializer, passing `[.cloudKit(container)]`.
-    ///
-    @available(*, deprecated, message: "Use init(backends:) with [.cloudKit(container)] instead.")
-    public init(container: CKContainer) {
-        self.init(backends: [.cloudKit(container)])
-    }
-}
-
 extension View {
-    @ViewBuilder fileprivate func cloudKitWarnings(container: CKContainer?) -> some View {
-        if let container {
-            iCloudWarning(container: container).schemaWarning(container: container)
+    @ViewBuilder fileprivate func backendWarnings(_ backend: ResolvedBackend?) -> some View {
+        if let backend {
+            accountWarning(backend).schemaWarning(backend)
         } else {
             self
         }

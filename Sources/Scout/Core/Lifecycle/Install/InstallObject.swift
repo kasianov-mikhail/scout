@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 @objc(InstallObject)
@@ -21,13 +20,12 @@ final class InstallObject: SyncableObject, Syncable, GridBatch {
 }
 
 extension InstallObject {
-    var toRecord: CKRecord {
-        let recordID = CKRecord.ID(recordName: installID.uuidString)
-        let record = CKRecord(recordType: Self.recordType, recordID: recordID)
+    var toRecord: Record {
+        var record = Record(recordType: Self.recordType, id: RecordID(recordName: installID.uuidString))
 
         record["date"] = date
 
-        record.setValuesForKeys(metadata)
+        record.setValues(metadata)
 
         return record
     }

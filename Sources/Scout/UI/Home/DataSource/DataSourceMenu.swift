@@ -15,8 +15,8 @@ import SwiftUI
 /// flatten the status dots.
 ///
 struct DataSourceMenu: View {
-    let servers: [ServerOption]
-    @Binding var activeID: ServerOption.ID
+    let servers: [BackendOption]
+    @Binding var activeID: BackendOption.ID
 
     @State private var isPresented = false
 
@@ -35,8 +35,8 @@ struct DataSourceMenu: View {
 
 /// The server rows shown inside the ``DataSourceMenu`` dropdown.
 private struct DataSourceList: View {
-    let servers: [ServerOption]
-    @Binding var activeID: ServerOption.ID
+    let servers: [BackendOption]
+    @Binding var activeID: BackendOption.ID
     @Binding var isPresented: Bool
 
     var body: some View {
@@ -61,7 +61,7 @@ private struct DataSourceList: View {
 
 /// One server line: status dot, name and host, and an active checkmark.
 private struct ServerRow: View {
-    let server: ServerOption
+    let server: BackendOption
     let isActive: Bool
 
     var body: some View {
@@ -101,7 +101,7 @@ extension View {
 // MARK: - Previews
 
 private struct DataSourceMenuPreview: View {
-    @State private var activeID = ServerOption.samples[0].id
+    @State private var activeID = BackendOption.samples[0].id
 
     var body: some View {
         NavigationStack {
@@ -109,7 +109,7 @@ private struct DataSourceMenuPreview: View {
                 .navigationTitle(en: "Home")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        DataSourceMenu(servers: ServerOption.samples, activeID: $activeID)
+                        DataSourceMenu(servers: BackendOption.samples, activeID: $activeID)
                     }
                 }
         }
@@ -125,11 +125,11 @@ private struct DataSourceMenuPreview: View {
 }
 
 private struct StatefulDropdownPreview: View {
-    @State private var activeID = ServerOption.samples[0].id
+    @State private var activeID = BackendOption.samples[0].id
     @State private var isPresented = true
 
     var body: some View {
-        DataSourceList(servers: ServerOption.samples, activeID: $activeID, isPresented: $isPresented)
+        DataSourceList(servers: BackendOption.samples, activeID: $activeID, isPresented: $isPresented)
             .padding(.vertical, 4)
     }
 }

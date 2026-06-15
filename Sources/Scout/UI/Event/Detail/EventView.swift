@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 struct EventView: View {
@@ -93,7 +92,7 @@ extension EventView {
             date: Date(),
             paramCount: 3,
             uuid: UUID(),
-            id: .init(),
+            id: RecordID(recordName: UUID().uuidString),
             installID: UUID(),
             sessionID: UUID(),
             deviceID: UUID()

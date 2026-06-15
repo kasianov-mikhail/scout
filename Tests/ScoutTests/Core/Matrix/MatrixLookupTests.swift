@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -17,7 +16,7 @@ struct MatrixLookupTests {
 
     @Test("Returns nil when no matching records")
     func testNoMatches() async throws {
-        database.records = [CKRecord.matrixStub(name: "other", date: Date().addingTimeInterval(-3600))]
+        database.records = [Record.matrixStub(name: "other", date: Date().addingTimeInterval(-3600))]
 
         let matrix = Matrix<GridCell<Int>>(
             recordType: Int.recordType,
@@ -33,7 +32,7 @@ struct MatrixLookupTests {
     @Test("Returns a valid matrix when a match exists")
     func testSingleMatch() async throws {
         let date = Date()
-        let match = CKRecord.matrixStub(name: "target", date: date)
+        let match = Record.matrixStub(name: "target", date: date)
         database.records = [match]
 
         let query = Matrix<GridCell<Int>>(

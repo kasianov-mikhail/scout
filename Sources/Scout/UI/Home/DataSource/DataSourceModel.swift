@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 /// Holds the configured backends and tracks which one the UI reads from.
@@ -18,7 +17,7 @@ import SwiftUI
 ///
 @MainActor
 final class DataSourceModel: ObservableObject {
-    let backends: [Backend]
+    private let resolved: [ResolvedBackend]
 
     /// The id of the backend reads currently go to; persisted on change.
     @Published var activeID: String {
@@ -26,17 +25,18 @@ final class DataSourceModel: ObservableObject {
     }
 
     /// Reachability per backend id, filled in by ``refreshStatuses()``.
-    @Published private(set) var statuses: [String: ServerStatus] = [:]
+    @Published private(set) var statuses: [String: BackendStatus] = [:]
 
-    private let resolved: [ResolvedBackend]
     private let defaults: UserDefaults
-    private let probe: @Sendable (Backend) async -> ServerStatus
+    private let probe: @Sendable (ResolvedBackend) async -> BackendStatus
 
     private static let storageKey = "scout_active_backend"
 
-    init(backends: [Backend], defaults: UserDefaults = .standard, probe: @escaping @Sendable (Backend) async -> ServerStatus = { await $0.probeStatus() }) {
-        self.backends = backends
-        self.resolved = backends.map(\.resolved)
+    init(
+        backends: [any Backend], defaults: UserDefaults = .standard,
+        probe: @escaping @Sendable (ResolvedBackend) async -> BackendStatus = { await $0.probeStatus() }
+    ) {
+        self.resolved = backends.resolved
         self.defaults = defaults
         self.probe = probe
 
@@ -46,7 +46,7 @@ final class DataSourceModel: ObservableObject {
     }
 
     /// Whether there is more than one backend to switch between.
-    var hasChoice: Bool { backends.count > 1 }
+    var hasChoice: Bool { resolved.count > 1 }
 
     /// The database reads go to, falling back to the first backend, then to the
     /// sample ``DefaultDatabase`` when there are no backends at all.
@@ -58,25 +58,19 @@ final class DataSourceModel: ObservableObject {
         return DefaultDatabase()
     }
 
-    /// The CloudKit container of the active backend, if it is a CloudKit one —
-    /// used to scope account and schema warnings.
-    ///
-    var activeContainer: CKContainer? {
-        guard let index = resolved.firstIndex(where: { $0.id == activeID }) else { return nil }
-        guard case .cloudKit(let container) = backends[index] else {
-            return nil
-        }
-        return container
+    /// The resolved active backend, used to scope account and schema warnings.
+    var activeBackend: ResolvedBackend? {
+        resolved.first { $0.id == activeID }
     }
 
     /// The backends as pickable options, each carrying its latest status.
-    var servers: [ServerOption] {
-        backends.indices.map { index in
-            ServerOption(
-                id: resolved[index].id,
-                name: backends[index].displayName,
-                host: backends[index].displayHost,
-                status: statuses[resolved[index].id] ?? .unknown
+    var servers: [BackendOption] {
+        resolved.map { backend in
+            BackendOption(
+                id: backend.id,
+                name: backend.displayName,
+                host: backend.displayHost,
+                status: statuses[backend.id] ?? .unknown
             )
         }
     }
@@ -85,12 +79,10 @@ final class DataSourceModel: ObservableObject {
     /// status dots.
     ///
     func refreshStatuses() async {
-        await withTaskGroup(of: (String, ServerStatus).self) { group in
-            for index in backends.indices {
-                let id = resolved[index].id
-                let backend = backends[index]
+        await withTaskGroup(of: (String, BackendStatus).self) { group in
+            for backend in resolved {
                 group.addTask { [probe] in
-                    (id, await probe(backend))
+                    (backend.id, await probe(backend))
                 }
             }
             for await (id, status) in group {

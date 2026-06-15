@@ -5,14 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 extension Crash {
     static var sample: Crash {
         try! Crash(record: sampleRecords[2])
     }
 
-    static var sampleRecords: [CKRecord] {
+    static var sampleRecords: [Record] {
         let crashes: [(name: String, reason: String?)] = [
             ("NSInternalInconsistencyException", "Invalid update: invalid number of rows"),
             ("SIGSEGV", nil),
@@ -23,7 +23,7 @@ extension Crash {
         ]
 
         return crashes.enumerated().map { index, crash in
-            let record = CKRecord(recordType: CrashObject.recordType, recordID: CKRecord.ID())
+            var record = Record(recordType: CrashObject.recordType, id: RecordID(recordName: UUID().uuidString))
             record["name"] = crash.name
             record["reason"] = crash.reason
             record["date"] = Date().addingTimeInterval(TimeInterval(-index * 7200))
@@ -41,7 +41,7 @@ extension Crash {
                 "6   MyApp             0x0000000104a89e40 NetworkClient.request(_:) + 312",
                 "7   libswiftCore.dylib 0x00000001a4c2f100 Swift runtime + 1024",
             ]
-            record["stack_trace"] = try! JSONEncoder().encode(stackTrace) as CKRecordValue
+            record["stack_trace"] = try! JSONEncoder().encode(stackTrace)
 
             return record
         }

@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 import Testing
 
@@ -88,15 +87,15 @@ private final class MetricsServerStub: AppDatabase, MetricSeriesReading, @unchec
         series
     }
 
-    func lookup(id: CKRecord.ID, fields: [CKRecord.FieldKey]?) async throws -> CKRecord {
-        throw CKError(.unknownItem)
+    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+        throw RecordNotFoundError()
     }
 
-    func read(matching query: CKQuery, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 
-    func readMore(from cursor: RecordCursor, fields: [CKRecord.FieldKey]?) async throws -> RecordChunk {
+    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 }

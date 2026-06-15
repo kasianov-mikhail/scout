@@ -22,7 +22,7 @@ struct SetupPage: View {
                 Step(
                     number: 1,
                     label: "Initialize Scout in your app",
-                    code: "try await setup(backends: [.cloudKit(.default())])"
+                    code: "try await setup(backends: [NativeBackend(container: .default())])"
                 )
                 Step(
                     number: 2,

@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct Event: Identifiable, Hashable {
     let name: String
@@ -13,7 +13,7 @@ struct Event: Identifiable, Hashable {
     let date: Date?
     let paramCount: Int?
     let uuid: UUID?
-    let id: CKRecord.ID
+    let id: RecordID
     let installID: UUID?
     let sessionID: UUID?
     let deviceID: UUID?
@@ -33,13 +33,13 @@ extension Event {
 }
 
 extension Event: RecordDecodable {
-    init(record: CKRecord) throws {
+    init(record: Record) throws {
         name = record["name"] ?? ""
         level = record["level"].flatMap { Level(rawValue: $0) }
         date = record["date"]
         paramCount = record["param_count"]
         uuid = record["uuid"].flatMap(UUID.init)
-        id = record.recordID
+        id = record.id
         installID = record["install_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
         deviceID = record["device_id"].flatMap(UUID.init)
@@ -54,7 +54,7 @@ extension Event {
             date: date,
             paramCount: nil,
             uuid: nil,
-            id: CKRecord.ID(recordName: UUID().uuidString),
+            id: RecordID(recordName: UUID().uuidString),
             installID: nil,
             sessionID: nil,
             deviceID: nil

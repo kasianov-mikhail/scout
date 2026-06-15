@@ -5,14 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct Crash: Identifiable, Hashable {
     let name: String
     let reason: String?
     let stackTrace: [String]
     let date: Date?
-    let id: CKRecord.ID
+    let id: RecordID
     let installID: UUID?
     let launchID: UUID?
     let sessionID: UUID?
@@ -32,16 +32,16 @@ extension Crash {
 }
 
 extension Crash: RecordDecodable {
-    init(record: CKRecord) throws {
+    init(record: Record) throws {
         name = record["name"] ?? ""
         reason = record["reason"]
         date = record["date"]
-        id = record.recordID
+        id = record.id
         installID = record["install_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
 
-        if let data = record["stack_trace"] as? Data, let decoded = try? JSONDecoder().decode([String].self, from: data) {
+        if let data: Data = record["stack_trace"], let decoded = try? JSONDecoder().decode([String].self, from: data) {
             stackTrace = decoded
         } else {
             stackTrace = []
@@ -56,7 +56,7 @@ extension Crash {
             reason: nil,
             stackTrace: [],
             date: date,
-            id: CKRecord.ID(recordName: UUID().uuidString),
+            id: RecordID(recordName: UUID().uuidString),
             installID: nil,
             launchID: nil,
             sessionID: sessionID

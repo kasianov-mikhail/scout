@@ -12,7 +12,7 @@ import CoreData
 /// Conformers only need to declare `recordType` and `toRecord`;
 /// all batch grouping and parsing is inherited.
 ///
-protocol GridBatch: MatrixBatch & RecordTyped & CKRepresentable where Cell == GridCell<Int> {}
+protocol GridBatch: MatrixBatch & RecordTyped & RecordRepresentable where Cell == GridCell<Int> {}
 
 /// Matrix names taken by the lifecycle `GridBatch` conformers, which name
 /// their weekly matrices after their record type — unlike user events,

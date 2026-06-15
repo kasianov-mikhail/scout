@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct SyncCoordinator<T: CellProtocol>: Sendable {
     let database: Database
@@ -43,9 +43,9 @@ extension SyncCoordinator {
     func upload(snapshot: Matrix<T>, retry: Int = 1) async throws {
         do {
             try await database.write(record: snapshot.toRecord)
-        } catch let error as CKError where error.code == CKError.serverRecordChanged {
-            if retry <= maxRetry, let serverRecord = error.userInfo[CKRecordChangedErrorServerRecordKey] as? CKRecord {
-                try await upload(snapshot: try Matrix(record: serverRecord) + matrix, retry: retry + 1)
+        } catch let error as RecordConflictError {
+            if retry <= maxRetry {
+                try await upload(snapshot: try Matrix(record: error.serverRecord) + matrix, retry: retry + 1)
             } else {
                 try await upload(snapshot: matrix, retry: 1)
             }

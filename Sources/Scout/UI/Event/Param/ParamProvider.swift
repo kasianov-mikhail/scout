@@ -5,14 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import SwiftUI
 
 class ParamProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[Item]>?
 
-    private let recordID: CKRecord.ID
+    private let recordID: RecordID
 
-    init(recordID: CKRecord.ID) {
+    init(recordID: RecordID) {
         self.recordID = recordID
     }
 

@@ -5,12 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct Session: Identifiable, Hashable {
     let startDate: Date?
     let endDate: Date?
-    let id: CKRecord.ID
+    let id: RecordID
     let sessionID: UUID?
     let launchID: UUID?
     let installID: UUID?
@@ -25,10 +25,10 @@ extension Session: RecordDecodable {
         "install_id",
     ]
 
-    init(record: CKRecord) throws {
+    init(record: Record) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
-        id = record.recordID
+        id = record.id
         sessionID = record["session_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)

@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 
 struct SyncEngine: @unchecked Sendable {
@@ -143,11 +142,11 @@ struct SyncEngine: @unchecked Sendable {
     /// which exists for more types (raw metrics have no CloudKit record).
     /// Types with neither representation sync as matrices only.
     ///
-    private func records(of batch: [some Syncable], for backend: ResolvedBackend) -> [CKRecord]? {
+    private func records(of batch: [some Syncable], for backend: ResolvedBackend) -> [Record]? {
         if backend.acceptsRawMetrics, let objects = batch as? [ServerRepresentable] {
             return objects.map(\.toServerRecord)
         }
-        if let objects = batch as? [CKRepresentable] {
+        if let objects = batch as? [RecordRepresentable] {
             return objects.map(\.toRecord)
         }
         return nil
