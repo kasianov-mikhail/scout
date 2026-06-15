@@ -18,13 +18,6 @@ protocol ActiveUsersReading {
     func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint]
 }
 
-/// The server's native active-user series — the response of
-/// `GET /api/v1/metrics/active-users`.
-///
-struct ActiveUsersResponse: Decodable {
-    let series: [ActiveUserPoint]
-}
-
 /// One day of the series: distinct active installs as of `date`, counted over
 /// the trailing day (`dau`), 7 days (`wau`), and calendar month (`mau`).
 ///

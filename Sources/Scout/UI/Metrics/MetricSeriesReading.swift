@@ -21,13 +21,6 @@ protocol MetricSeriesReading {
     func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]
 }
 
-/// The server's grouped metric series — the response of
-/// `GET /api/v1/metrics/series`.
-///
-struct MetricSeriesResponse: Decodable {
-    let series: [MetricSeries]
-}
-
 /// One name's series over the requested range.
 ///
 struct MetricSeries: Decodable {
