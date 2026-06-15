@@ -26,10 +26,9 @@ class ActivityProvider: QueryProvider<ActivityMatrix> {
     /// builds.
     ///
     override func fetch(in database: AppDatabase) async throws -> [ActivityMatrix] {
-        guard let server = database as? ActiveUsersReading else {
+        guard let series = try await database.activeUsers(in: Calendar.utc.defaultRange) else {
             return try await super.fetch(in: database)
         }
-        let series = try await server.activeUsers(in: Calendar.utc.defaultRange)
         return ActivityMatrix.from(series: series)
     }
 }

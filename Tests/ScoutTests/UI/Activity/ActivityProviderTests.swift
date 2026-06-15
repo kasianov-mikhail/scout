@@ -63,17 +63,17 @@ struct ActivityProviderTests {
     }
 }
 
-/// An `AppDatabase` that also answers the native active-user series, standing
-/// in for a Scout server backend.
+/// An `AppDatabase` that returns a native active-user series, standing in for a
+/// Scout server backend.
 ///
-private final class ServerStub: AppDatabase, ActiveUsersReading, @unchecked Sendable {
+private final class ServerStub: AppDatabase, @unchecked Sendable {
     let series: [ActiveUserPoint]
 
     init(series: [ActiveUserPoint]) {
         self.series = series
     }
 
-    func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint] {
+    func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint]? {
         series
     }
 

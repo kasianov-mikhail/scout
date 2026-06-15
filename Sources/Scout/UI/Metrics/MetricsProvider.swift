@@ -29,14 +29,13 @@ class MetricsProvider<T: ChartNumeric>: QueryProvider<GridMatrix<T>> {
     /// query the initializer builds.
     ///
     override func fetch(in database: AppDatabase) async throws -> [GridMatrix<T>] {
-        guard let server = database as? MetricSeriesReading else {
-            return try await super.fetch(in: database)
-        }
-        let series = try await server.metricSeries(
+        guard let series = try await database.metricSeries(
             category: telemetry.rawValue,
             values: T.seriesValues,
             in: Calendar.utc.defaultRange
-        )
+        ) else {
+            return try await super.fetch(in: database)
+        }
         return series.gridMatrices()
     }
 }

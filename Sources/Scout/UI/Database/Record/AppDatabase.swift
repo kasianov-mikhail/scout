@@ -12,7 +12,7 @@ import SwiftUI
 /// It abstracts record lookup and query operations for use in SwiftUI
 /// and is intended for dependency injection via the environment.
 ///
-typealias AppDatabase = RecordLookup & RecordReader & Sendable
+typealias AppDatabase = RecordLookup & RecordReader & MetricSeriesReading & ActiveUsersReading & Sendable
 
 extension EnvironmentValues {
     @Entry var database: AppDatabase = DefaultDatabase()

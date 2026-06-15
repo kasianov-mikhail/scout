@@ -7,18 +7,27 @@
 
 import Foundation
 
-/// A backend that answers flat per-name metric series natively.
+/// Native flat per-name metric series, when the backend can aggregate.
 ///
-/// CloudKit cannot aggregate, so the client reads the `DateIntMatrix` /
-/// `DateDoubleMatrix` grids and flattens them. A Scout server aggregates over
-/// raw records and serves a finished series, so the client fetches a whole
-/// telemetry category in one request instead.
+/// CloudKit cannot aggregate, so it leaves the default `nil` and the client
+/// reads the `DateIntMatrix` / `DateDoubleMatrix` grids and flattens them. A
+/// Scout server aggregates over raw records and serves a finished series, so
+/// the client fetches a whole telemetry category in one request instead.
 ///
 protocol MetricSeriesReading {
     /// The series for every name in `category` of the given value flavor
-    /// (`"int"` or `"double"`) over `range`.
+    /// (`"int"` or `"double"`) over `range`, or `nil` when the backend does
+    /// not aggregate natively.
     ///
-    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]?
+}
+
+extension MetricSeriesReading {
+    /// Backends without native aggregation fall back to the matrix query.
+    ///
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]? {
+        nil
+    }
 }
 
 /// One name's series over the requested range.

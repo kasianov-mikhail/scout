@@ -101,7 +101,7 @@ struct ServerContractTests {
 
         try await database.write(record: makeSession(installID: install, startDate: day.addingTimeInterval(3600)))
 
-        let series = try await database.activeUsers(in: day..<day.addingDay())
+        let series = try #require(try await database.activeUsers(in: day..<day.addingDay()))
         let point = try #require(series.first { $0.date == Int64((day.timeIntervalSince1970 * 1000).rounded()) })
 
         // The server forward-marks the install as active that day across all
