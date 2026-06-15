@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-extension ServerStatus {
+extension BackendStatus {
     var color: Color {
         switch self {
         case .reachable: .green
@@ -25,25 +25,25 @@ extension ServerStatus {
 /// backend's own stable identifier (its container identifier or server URL),
 /// so a selection survives reordering or re-resolving the backend list.
 ///
-struct ServerOption: Identifiable {
+struct BackendOption: Identifiable {
     let id: String
     var name: String
     var host: String
-    var status: ServerStatus
+    var status: BackendStatus
 }
 
 // MARK: - Sample
 
-extension ServerOption {
-    static var sample: ServerOption {
-        ServerOption(id: "https://api.scout.app", name: "Production", host: "api.scout.app", status: .reachable)
+extension BackendOption {
+    static var sample: BackendOption {
+        BackendOption(id: "https://api.scout.app", name: "Production", host: "api.scout.app", status: .reachable)
     }
 
-    static var samples: [ServerOption] {
+    static var samples: [BackendOption] {
         [
-            ServerOption(id: "https://api.scout.app", name: "Production", host: "api.scout.app", status: .reachable),
-            ServerOption(id: "https://staging.scout.app", name: "Staging", host: "staging.scout.app", status: .unknown),
-            ServerOption(id: "http://localhost:8080", name: "Local", host: "localhost:8080", status: .unreachable),
+            BackendOption(id: "https://api.scout.app", name: "Production", host: "api.scout.app", status: .reachable),
+            BackendOption(id: "https://staging.scout.app", name: "Staging", host: "staging.scout.app", status: .unknown),
+            BackendOption(id: "http://localhost:8080", name: "Local", host: "localhost:8080", status: .unreachable),
         ]
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 /// Reachability of a backend, probed live for the status dots.
-enum ServerStatus: CaseIterable, Identifiable, Sendable {
+enum BackendStatus: CaseIterable, Identifiable, Sendable {
     case reachable
     case unreachable
     case unknown

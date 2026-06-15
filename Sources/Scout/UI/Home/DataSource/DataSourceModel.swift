@@ -25,14 +25,14 @@ final class DataSourceModel: ObservableObject {
     }
 
     /// Reachability per backend id, filled in by ``refreshStatuses()``.
-    @Published private(set) var statuses: [String: ServerStatus] = [:]
+    @Published private(set) var statuses: [String: BackendStatus] = [:]
 
     private let defaults: UserDefaults
-    private let probe: @Sendable (ResolvedBackend) async -> ServerStatus
+    private let probe: @Sendable (ResolvedBackend) async -> BackendStatus
 
     private static let storageKey = "scout_active_backend"
 
-    init(backends: [any Backend], defaults: UserDefaults = .standard, probe: @escaping @Sendable (ResolvedBackend) async -> ServerStatus = { await $0.probeStatus() }) {
+    init(backends: [any Backend], defaults: UserDefaults = .standard, probe: @escaping @Sendable (ResolvedBackend) async -> BackendStatus = { await $0.probeStatus() }) {
         self.resolved = backends.resolved
         self.defaults = defaults
         self.probe = probe
@@ -61,9 +61,9 @@ final class DataSourceModel: ObservableObject {
     }
 
     /// The backends as pickable options, each carrying its latest status.
-    var servers: [ServerOption] {
+    var servers: [BackendOption] {
         resolved.map { backend in
-            ServerOption(
+            BackendOption(
                 id: backend.id,
                 name: backend.displayName,
                 host: backend.displayHost,
@@ -76,7 +76,7 @@ final class DataSourceModel: ObservableObject {
     /// status dots.
     ///
     func refreshStatuses() async {
-        await withTaskGroup(of: (String, ServerStatus).self) { group in
+        await withTaskGroup(of: (String, BackendStatus).self) { group in
             for backend in resolved {
                 group.addTask { [probe] in
                     (backend.id, await probe(backend))

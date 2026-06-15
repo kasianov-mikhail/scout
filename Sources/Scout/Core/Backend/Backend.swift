@@ -68,7 +68,7 @@ struct ResolvedBackend: Sendable {
     var displayHost: String = ""
 
     /// A live reachability probe driving the data-source status dots.
-    var probeStatus: @Sendable () async -> ServerStatus = { .unknown }
+    var probeStatus: @Sendable () async -> BackendStatus = { .unknown }
 
     /// Whether the backend should surface an account/sign-in warning.
     var accountWarning: @Sendable () async -> Bool = { false }

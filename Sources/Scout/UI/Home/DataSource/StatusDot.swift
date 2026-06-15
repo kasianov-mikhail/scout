@@ -11,7 +11,7 @@ import SwiftUI
 /// reachable, red when unreachable, grey when unknown.
 ///
 struct StatusDot: View {
-    let status: ServerStatus
+    let status: BackendStatus
 
     var body: some View {
         Circle()
@@ -25,7 +25,7 @@ struct StatusDot: View {
 
 #Preview {
     VStack(alignment: .leading, spacing: 16) {
-        ForEach(ServerStatus.allCases) { status in
+        ForEach(BackendStatus.allCases) { status in
             HStack(spacing: 10) {
                 StatusDot(status: status)
                 Text(verbatim: status.label)
