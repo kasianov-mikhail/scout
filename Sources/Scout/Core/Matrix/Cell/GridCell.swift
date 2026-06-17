@@ -42,8 +42,8 @@ extension GridCell: CellProtocol {
 // MARK: - Combining
 
 extension GridCell: Combining {
-    func isDuplicate(of other: GridCell<T>) -> Bool {
-        row == other.row && column == other.column
+    var duplicateKey: String {
+        key
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {

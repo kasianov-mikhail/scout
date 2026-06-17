@@ -42,8 +42,8 @@ extension PeriodCell: CellProtocol {
 // MARK: - Combining
 
 extension PeriodCell: Combining {
-    func isDuplicate(of other: Self) -> Bool {
-        period == other.period && day == other.day
+    var duplicateKey: String {
+        key
     }
 
     static func + (lhs: PeriodCell, rhs: PeriodCell) -> PeriodCell {

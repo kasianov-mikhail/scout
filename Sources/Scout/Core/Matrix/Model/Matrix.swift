@@ -19,11 +19,15 @@ struct Matrix<T: CellProtocol> {
 // MARK: - Combining
 
 extension Matrix: Combining {
-    func isDuplicate(of other: Matrix<T>) -> Bool {
-        date == other.date
-            && name == other.name
-            && category == other.category
-            && recordType == other.recordType
+    struct DuplicateKey: Hashable {
+        let recordType: String
+        let date: Date
+        let name: String
+        let category: String?
+    }
+
+    var duplicateKey: DuplicateKey {
+        DuplicateKey(recordType: recordType, date: date, name: name, category: category)
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
