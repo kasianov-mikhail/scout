@@ -39,8 +39,8 @@
 
 ## `guard` statements
 
-- `guard` statements with multiple conditions or pattern matching (`case .x = y`) should keep the conditions on a single line but expand the `else` block to multiple lines (`else {` / body / `}`).
-- Single-condition simple guards (`guard let x = y else { return }`, `guard !x else { return }`) stay fully inline.
+- A short, single-condition `guard` stays fully inline — both simple bindings (`guard let x = y else { return }`, `guard !x else { return }`) and pattern matching (`guard case .x = y else { return nil }`).
+- Expand the `else` block onto multiple lines (`else {` / body / `}`) when the `guard` has multiple conditions, or when its condition or `else` body is long or complex. Multi-condition guards still keep their conditions on a single line.
 
 ## Function and method signatures
 
