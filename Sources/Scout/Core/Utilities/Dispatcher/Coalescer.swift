@@ -5,14 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-/// Runs work items one at a time, coalescing submissions that arrive mid-run.
-///
-/// Callers submit work that processes everything accumulated so far (a sync run),
-/// so keeping more than one pending item is pointless: while a run is in flight,
-/// each new submission replaces the pending one, and at most one follow-up run
-/// executes after the current run finishes.
-///
-actor QueueDispatcher: Dispatcher {
+actor Coalescer: Dispatcher {
     private var pending: Work?
     private var isRunning = false
 

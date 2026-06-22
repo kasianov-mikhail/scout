@@ -9,11 +9,11 @@ import Testing
 
 @testable import Scout
 
-@Suite("QueueDispatcher")
-struct QueueDispatcherTests {
+@Suite("Coalescer")
+struct CoalescerTests {
     @Test("Single work item executes to completion")
     func testSingleWorkExecutes() async throws {
-        let dispatcher = QueueDispatcher()
+        let dispatcher = Coalescer()
         let box = Box(0)
 
         try await dispatcher.perform {
@@ -25,7 +25,7 @@ struct QueueDispatcherTests {
 
     @Test("Error from work is propagated to the caller")
     func testErrorPropagates() async {
-        let dispatcher = QueueDispatcher()
+        let dispatcher = Coalescer()
 
         await #expect(throws: MonitorError.notFound) {
             try await dispatcher.perform {
@@ -36,7 +36,7 @@ struct QueueDispatcherTests {
 
     @Test("After an error, new work can still be performed")
     func testRecoveryAfterError() async throws {
-        let dispatcher = QueueDispatcher()
+        let dispatcher = Coalescer()
         let box = Box(false)
 
         _ = try? await dispatcher.perform {
@@ -52,7 +52,7 @@ struct QueueDispatcherTests {
 
     @Test("Multiple sequential calls each execute their work")
     func testMultipleSequentialCalls() async throws {
-        let dispatcher = QueueDispatcher()
+        let dispatcher = Coalescer()
         let box = Box(0)
 
         for _ in 1...3 {
@@ -66,7 +66,7 @@ struct QueueDispatcherTests {
 
     @Test("Work submitted mid-run coalesces into a single follow-up run")
     func testCoalescesPendingWork() async throws {
-        let dispatcher = QueueDispatcher()
+        let dispatcher = Coalescer()
         let box = Box([Int]())
 
         let first = Task {

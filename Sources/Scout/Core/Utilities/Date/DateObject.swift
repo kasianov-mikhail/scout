@@ -7,14 +7,6 @@
 
 import CoreData
 
-/// Root of the persisted-object hierarchy.
-///
-/// Stores a raw timestamp (`date`) and its bucketed variants
-/// (`hour`, `day`, `week`, `month`) that are used as grouping keys by
-/// matrix/analytics queries.
-///
-/// Subclass chain: `DateObject → IDObject → SyncableObject → TrackedObject`.
-///
 @objc(DateObject)
 class DateObject: NSManagedObject, Identifiable {
     @NSManaged var datePrimitive: Date?
