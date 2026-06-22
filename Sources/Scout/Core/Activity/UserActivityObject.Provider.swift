@@ -24,7 +24,6 @@ extension UserActivityObject.Provider {
         var activities = try existing(in: context)
         var recent = activities.last?.day?.addingDay() ?? range.lowerBound
 
-        // Fill in any missing activities
         while recent < range.upperBound {
             let activity = newActivity(for: recent, in: context)
             activities.append(activity)
@@ -60,11 +59,5 @@ extension UserActivityObject.Provider {
         activity.period = period.rawValue
 
         return activity
-    }
-}
-
-extension UserActivityObject.Provider: CustomDebugStringConvertible {
-    var debugDescription: String {
-        "Provider for \(period) activities on \(range)"
     }
 }

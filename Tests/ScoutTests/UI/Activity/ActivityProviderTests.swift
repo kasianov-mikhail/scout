@@ -12,31 +12,28 @@ import Testing
 
 @MainActor
 struct ActivityProviderTests {
-    @Test("Reads the native series from a Scout server and rebuilds matrices")
+    @Test("Returns the native series from a Scout server unchanged")
     func fetchUsesServerSeries() async throws {
         let database = ServerStub(series: [
-            ActiveUserPoint(date: ms(2026, 6, 10), dau: 2, wau: 2, mau: 2),
-            ActiveUserPoint(date: ms(2026, 6, 11), dau: 1, wau: 3, mau: 2),
-            ActiveUserPoint(date: ms(2026, 7, 1), dau: 0, wau: 0, mau: 5),
+            ActivityPoint(date: ms(2026, 6, 10), dau: 2, wau: 2, mau: 2),
+            ActivityPoint(date: ms(2026, 6, 11), dau: 1, wau: 3, mau: 2),
+            ActivityPoint(date: ms(2026, 7, 1), dau: 0, wau: 0, mau: 5),
         ])
 
         let provider = ActivityProvider()
         await provider.fetchIfNeeded(in: database)
-        let matrices = try #require(try provider.result?.get())
+        let series = try #require(try provider.result?.get())
 
-        // One matrix per month: June (all periods) and July (only its MAU cell).
-        #expect(matrices.count == 2)
+        let daily = series.points(on: .daily).sorted()
+        let weekly = series.points(on: .weekly).sorted()
+        let monthly = series.points(on: .monthly).sorted()
 
-        let daily = matrices.points(on: .daily).sorted()
-        let weekly = matrices.points(on: .weekly).sorted()
-        let monthly = matrices.points(on: .monthly).sorted()
-
-        // Zero-activity days never become cells.
+        // Zero-activity days never become points.
         #expect(daily.map(\.count) == [2, 1])
         #expect(weekly.map(\.count) == [2, 3])
         #expect(monthly.map(\.count) == [2, 2, 5])
 
-        // Day offsets resolve back to the original dates.
+        // Millisecond timestamps resolve back to the original dates.
         #expect(daily.first?.date == date(2026, 6, 10))
         #expect(monthly.last?.date == date(2026, 7, 1))
     }
@@ -63,18 +60,22 @@ struct ActivityProviderTests {
     }
 }
 
-/// An `AppDatabase` that returns a native active-user series, standing in for a
+/// A `DatabaseReader` that returns a native active-user series, standing in for a
 /// Scout server backend.
 ///
-private final class ServerStub: AppDatabase, @unchecked Sendable {
-    let series: [ActiveUserPoint]
+private final class ServerStub: DatabaseReader, @unchecked Sendable {
+    let series: [ActivityPoint]
 
-    init(series: [ActiveUserPoint]) {
+    init(series: [ActivityPoint]) {
         self.series = series
     }
 
-    func activeUsers(in range: Range<Date>) async throws -> [ActiveUserPoint]? {
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         series
+    }
+
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        []
     }
 
     func lookup(id: RecordID, fields: [String]?) async throws -> Record {
