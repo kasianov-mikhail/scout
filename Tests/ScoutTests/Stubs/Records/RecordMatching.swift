@@ -19,7 +19,7 @@ extension Record {
         recordType == query.recordType && query.filters.allSatisfy(matches)
     }
 
-    private func matches(_ filter: RecordFilter) -> Bool {
+    private func matches(_ filter: RecordQuery.Filter) -> Bool {
         guard let value = fields[filter.field] else { return false }
 
         switch filter.op {

@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Scout
 
-final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
+final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable {
     var records: [Record] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
@@ -56,7 +56,17 @@ final class InMemoryDatabase: BackendDatabase, @unchecked Sendable {
             cursor: nil
         )
     }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        try await reconstructedActivity(in: range)
+    }
+
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        try await reconstructedMetricSeries(category: category, values: values, in: range)
+    }
 }
+
+extension InMemoryDatabase: ClientAggregating {}
 
 extension InMemoryDatabase {
     var events: [Record] {

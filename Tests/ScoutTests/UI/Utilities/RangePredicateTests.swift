@@ -19,8 +19,8 @@ struct RangePredicateTests {
 
         #expect(
             filters == [
-                RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(start)),
-                RecordFilter(field: "date", op: .lessThan, value: .date(end)),
+                RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(start)),
+                RecordQuery.Filter(field: "date", op: .lessThan, value: .date(end)),
             ]
         )
     }

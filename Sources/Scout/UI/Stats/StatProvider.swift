@@ -17,9 +17,9 @@ class StatProvider: QueryProvider<GridMatrix<Int>> {
 
         super.init {
             RecordQuery(
-                recordType: Int.recordType,
+                recordType: GridMatrix<Int>.self,
                 filters: Calendar.utc.defaultRange.dateFilters + [
-                    RecordFilter(field: "name", op: .equals, value: .string(eventName))
+                    RecordQuery.Filter(field: "name", op: .equals, value: .string(eventName))
                 ]
             )
         }

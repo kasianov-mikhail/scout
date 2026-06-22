@@ -7,11 +7,8 @@
 
 import SwiftUI
 
-/// A small filled dot conveying a data source's reachability: green when
-/// reachable, red when unreachable, grey when unknown.
-///
 struct StatusDot: View {
-    let status: BackendStatus
+    let status: Backend.Status
 
     var body: some View {
         Circle()
@@ -21,11 +18,9 @@ struct StatusDot: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     VStack(alignment: .leading, spacing: 16) {
-        ForEach(BackendStatus.allCases) { status in
+        ForEach(Backend.Status.allCases) { status in
             HStack(spacing: 10) {
                 StatusDot(status: status)
                 Text(verbatim: status.label)

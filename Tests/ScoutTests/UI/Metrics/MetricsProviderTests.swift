@@ -12,7 +12,7 @@ import Testing
 
 @MainActor
 struct MetricsProviderTests {
-    @Test("Reads the flat series from a Scout server and rebuilds grid matrices")
+    @Test("Returns the native series from a Scout server unchanged")
     func fetchUsesServerSeries() async throws {
         let database = MetricsServerStub(series: [
             MetricSeries(
@@ -35,9 +35,9 @@ struct MetricsProviderTests {
 
         let provider = MetricsProvider<Int>(telemetry: .counter)
         await provider.fetchIfNeeded(in: database)
-        let matrices = try #require(try provider.result?.get())
+        let series = try #require(try provider.result?.get())
 
-        let groups = matrices.pointGroups()
+        let groups: [PointGroup<Int>] = series.pointGroups()
         #expect(Set(groups.map(\.name)) == ["api_calls", "errors"])
 
         let calls = try #require(groups.first { $0.name == "api_calls" })
@@ -73,18 +73,22 @@ struct MetricsProviderTests {
     }
 }
 
-/// An `AppDatabase` that returns a native metric series, standing in for a
+/// A `DatabaseReader` that returns a native metric series, standing in for a
 /// Scout server backend.
 ///
-private final class MetricsServerStub: AppDatabase, @unchecked Sendable {
+private final class MetricsServerStub: DatabaseReader, @unchecked Sendable {
     let series: [MetricSeries]
 
     init(series: [MetricSeries]) {
         self.series = series
     }
 
-    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]? {
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
         series
+    }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        []
     }
 
     func lookup(id: RecordID, fields: [String]?) async throws -> Record {

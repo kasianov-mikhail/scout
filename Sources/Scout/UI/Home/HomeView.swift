@@ -17,7 +17,7 @@ public struct HomeView: View {
     /// switch between them; account and schema warnings only apply while the
     /// active backend asks for them (CloudKit does; Scout servers don't).
     ///
-    public init(backends: [any Backend]) {
+    public init(backends: [Backend]) {
         _dataSource = StateObject(wrappedValue: DataSourceModel(backends: backends))
     }
 
@@ -52,7 +52,7 @@ public struct HomeView: View {
 }
 
 extension View {
-    @ViewBuilder fileprivate func backendWarnings(_ backend: ResolvedBackend?) -> some View {
+    @ViewBuilder fileprivate func backendWarnings(_ backend: Backend?) -> some View {
         if let backend {
             accountWarning(backend).schemaWarning(backend)
         } else {

@@ -102,7 +102,7 @@ struct HomeLogSummaryTests {
             date: date,
             name: name,
             category: category,
-            record: nil,
+            baseRecord: nil,
             cells: [GridCell(row: 1, column: 0, value: value)]
         )
     }

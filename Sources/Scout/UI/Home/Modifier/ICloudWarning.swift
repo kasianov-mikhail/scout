@@ -8,13 +8,13 @@
 import SwiftUI
 
 extension View {
-    func accountWarning(_ backend: ResolvedBackend) -> some View {
+    func accountWarning(_ backend: Backend) -> some View {
         modifier(AccountWarningModifier(backend: backend))
     }
 }
 
 private struct AccountWarningModifier: ViewModifier {
-    let backend: ResolvedBackend
+    let backend: Backend
 
     @State private var warning = false
     @State private var isAlertPresented = false

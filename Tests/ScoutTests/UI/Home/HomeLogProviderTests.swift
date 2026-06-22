@@ -54,7 +54,7 @@ struct HomeLogProviderTests {
 
     // MARK: - Factories
 
-    private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
+    private func makeRecord(type: RecordType, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
         var record = Record(recordType: type, id: RecordID(recordName: UUID().uuidString))
         record["name"] = name
         record["category"] = category

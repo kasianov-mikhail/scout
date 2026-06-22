@@ -8,13 +8,13 @@
 import SwiftUI
 
 extension View {
-    func schemaWarning(_ backend: ResolvedBackend) -> some View {
+    func schemaWarning(_ backend: Backend) -> some View {
         modifier(SchemaWarningModifier(backend: backend))
     }
 }
 
 private struct SchemaWarningModifier: ViewModifier {
-    let backend: ResolvedBackend
+    let backend: Backend
 
     @State private var schemaError: SchemaError?
     @State private var isAlertPresented = false

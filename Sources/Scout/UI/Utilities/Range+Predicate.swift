@@ -8,11 +8,10 @@
 import Foundation
 
 extension Range<Date> {
-    /// Filters matching records whose `date` falls within this range.
-    var dateFilters: [RecordFilter] {
+    var dateFilters: [RecordQuery.Filter] {
         [
-            RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(lowerBound)),
-            RecordFilter(field: "date", op: .lessThan, value: .date(upperBound)),
+            RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(lowerBound)),
+            RecordQuery.Filter(field: "date", op: .lessThan, value: .date(upperBound)),
         ]
     }
 }

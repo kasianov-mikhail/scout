@@ -8,7 +8,7 @@
 import Foundation
 
 struct TimelineItem: Identifiable {
-    let id: RecordID
+    let id: String
     let name: String
     let date: Date
     let active: Set<LegendKind>

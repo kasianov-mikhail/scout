@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Scout
 
-/// In-memory `AppDatabase` for timeline tests.
+/// In-memory `DatabaseReader` for timeline tests.
 ///
 /// Answers every query with the canned records of the query's record type
 /// that match its filters, truncated to the requested limit (without a
@@ -17,10 +17,10 @@ import Foundation
 /// fetch mid-flight, and are counted per record type so tests can assert how
 /// many queries a flow issued.
 ///
-final class DatabaseStub: AppDatabase, @unchecked Sendable {
+final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private let lock = NSLock()
-    private var storage: [String: [Record]] = [:]
-    private var counts: [String: Int] = [:]
+    private var storage: [RecordType: [Record]] = [:]
+    private var counts: [RecordType: Int] = [:]
 
     /// When set, every read suspends until the gate opens.
     var gate: Gate?
@@ -33,7 +33,7 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
         }
     }
 
-    func readCount(of recordType: String) -> Int {
+    func readCount(of recordType: RecordType) -> Int {
         lock.lock()
         defer { lock.unlock() }
         return counts[recordType] ?? 0
@@ -63,6 +63,14 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
 
     func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
+    }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        try await reconstructedActivity(in: range)
+    }
+
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        try await reconstructedMetricSeries(category: category, values: values, in: range)
     }
 }
 

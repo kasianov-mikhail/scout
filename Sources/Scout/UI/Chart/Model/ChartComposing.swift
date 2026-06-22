@@ -8,28 +8,9 @@
 import Charts
 import Foundation
 
-/// A matrix cell that can reconstruct its actual date from matrix context.
 protocol ChartComposing: CellProtocol {
     var secondsSinceBase: Int { get }
 }
-
-// MARK: - Conformers
-
-extension PeriodCell: ChartComposing {
-    var secondsSinceBase: Int {
-        // `day` is 0-based (unlike GridCell's 1-based `row`), so the first
-        // day of the period lands exactly on the matrix base date.
-        day * 86_400
-    }
-}
-
-extension GridCell: ChartComposing {
-    var secondsSinceBase: Int {
-        (row - 1) * 86_400 + column * 3_600
-    }
-}
-
-// MARK: - Chart Point Mapping
 
 extension Matrix where T: ChartComposing, T.Scalar: ChartNumeric {
     var points: [ChartPoint<T.Scalar>] {

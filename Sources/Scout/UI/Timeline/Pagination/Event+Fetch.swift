@@ -8,13 +8,13 @@
 import Foundation
 
 extension Event {
-    static func fetch(sessionIDs: [UUID], name: String?, in database: AppDatabase) async throws -> [Event] {
+    static func fetch(sessionIDs: [UUID], name: String?, in database: DatabaseReader) async throws -> [Event] {
         guard sessionIDs.count > 0 else {
             return []
         }
 
         let ids = sessionIDs.map(\.uuidString)
-        let query = RecordQuery(recordType: EventObject.recordType, filters: filters(ids: ids, name: name))
+        let query = RecordQuery(recordType: Event.self, filters: filters(ids: ids, name: name))
 
         return
             try await database
@@ -22,10 +22,10 @@ extension Event {
             .map(Event.init)
     }
 
-    private static func filters(ids: [String], name: String?) -> [RecordFilter] {
-        var filters = [RecordFilter(field: "session_id", op: .in, value: .strings(ids))]
+    private static func filters(ids: [String], name: String?) -> [RecordQuery.Filter] {
+        var filters = [RecordQuery.Filter(field: "session_id", op: .in, value: .strings(ids))]
         if let name {
-            filters.append(RecordFilter(field: "name", op: .equals, value: .string(name)))
+            filters.append(RecordQuery.Filter(field: "name", op: .equals, value: .string(name)))
         }
         return filters
     }

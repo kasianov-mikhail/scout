@@ -21,14 +21,6 @@ extension Box: Equatable where T: Equatable {
     }
 }
 
-extension Box: CustomDebugStringConvertible {
-    var debugDescription: String {
-        "\(value) of type \(T.self)"
-    }
-}
-
-// MARK: - Tint
-
 typealias Tint = Box<Color?>
 
 extension Tint {

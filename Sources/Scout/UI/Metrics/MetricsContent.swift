@@ -22,7 +22,7 @@ struct MetricsContent<T: ChartNumeric>: View {
 
     var body: some View {
         ProviderView(provider: metrics) { data in
-            let groups = data.pointGroups()
+            let groups: [PointGroup<T>] = data.pointGroups()
             let ranked = groups.ranked(on: period)
 
             if ranked.isEmpty {
@@ -66,8 +66,6 @@ struct MetricsContent<T: ChartNumeric>: View {
         .lineLimit(1)
     }
 }
-
-// MARK: - Previews
 
 #Preview("Empty State") {
     NavigationStack {
