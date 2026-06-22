@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(InstallObject)
-final class InstallObject: SyncableObject, Syncable, GridBatch {
+final class InstallObject: SyncableObject {
     static let recordType = "Install"
 
     func versions(in context: NSManagedObjectContext) throws -> [VersionObject] {
@@ -19,12 +19,11 @@ final class InstallObject: SyncableObject, Syncable, GridBatch {
     }
 }
 
-extension InstallObject {
-    var toRecord: Record {
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: installID.uuidString))
+extension InstallObject: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: installID.uuidString)
 
         record["date"] = date
-
         record.setValues(metadata)
 
         return record

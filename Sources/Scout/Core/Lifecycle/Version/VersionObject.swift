@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(VersionObject)
-final class VersionObject: SyncableObject, Syncable, GridBatch {
+final class VersionObject: SyncableObject {
     static let recordType = "Version"
 
     @NSManaged var appVersion: String?
@@ -34,10 +34,10 @@ final class VersionObject: SyncableObject, Syncable, GridBatch {
     }
 }
 
-extension VersionObject {
-    var toRecord: Record {
+extension VersionObject: RecordEncodable {
+    var record: Record {
         let recordName = "\(installID.uuidString)-\(appVersion ?? "")-\(buildNumber ?? "")"
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: recordName))
+        var record = Record(recordType: Self.recordType, recordID: recordName)
 
         record["date"] = date
         record["app_version"] = appVersion

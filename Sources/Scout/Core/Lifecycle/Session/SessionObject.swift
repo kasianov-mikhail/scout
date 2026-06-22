@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(SessionObject)
-final class SessionObject: TrackedObject, Syncable, GridBatch {
+final class SessionObject: TrackedObject {
     static let recordType = "Session"
 
     @NSManaged var endDate: Date?
@@ -21,9 +21,9 @@ final class SessionObject: TrackedObject, Syncable, GridBatch {
     }
 }
 
-extension SessionObject {
-    var toRecord: Record {
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: sessionID.uuidString))
+extension SessionObject: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: sessionID.uuidString)
 
         record["start_date"] = date
         record["end_date"] = endDate

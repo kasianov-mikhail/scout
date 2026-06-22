@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(DeviceObject)
-final class DeviceObject: SyncableObject, Syncable, GridBatch {
+final class DeviceObject: SyncableObject {
     static let recordType = "Device"
 
     func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
@@ -19,9 +19,9 @@ final class DeviceObject: SyncableObject, Syncable, GridBatch {
     }
 }
 
-extension DeviceObject {
-    var toRecord: Record {
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: deviceID.uuidString))
+extension DeviceObject: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: deviceID.uuidString)
 
         record["date"] = date
         record["device_id"] = deviceID.uuidString

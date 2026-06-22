@@ -16,18 +16,18 @@ struct VersionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
 
-    @Test("parse(of:) produces correct GridCell<Int> counts by date")
-    func testParseOf() throws {
+    @Test("matrix(of:) produces correct GridCell<Int> counts by date")
+    func testMatrixOf() throws {
         let batch: [VersionObject] = [
             .stub(date: week, synced: false, in: context),
             .stub(date: week, synced: false, in: context),
             .stub(date: week.addingHour(), synced: false, in: context),
         ]
 
-        let cells = try VersionObject.parse(of: batch)
+        let matrix = try VersionObject.matrix(of: batch)
 
         #expect(
-            cells.sorted() == [
+            matrix.cells.sorted() == [
                 GridCell(row: 1, column: 0, value: 2),
                 GridCell(row: 1, column: 1, value: 1),
             ])
