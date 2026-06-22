@@ -16,51 +16,51 @@ struct StableRecordIDTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSince1970: 1_724_457_600)
 
-    @Test("DeviceObject.toRecord is stable across calls")
+    @Test("DeviceObject.record is stable across calls")
     func deviceStable() {
         let device = DeviceObject.stub(date: date, in: context)
-        #expect(device.toRecord.id == device.toRecord.id)
-        #expect(device.toRecord.id.recordName == device.deviceID.uuidString)
+        #expect(device.record.id == device.record.id)
+        #expect(device.record.id.recordName == device.deviceID.uuidString)
     }
 
-    @Test("InstallObject.toRecord is stable across calls")
+    @Test("InstallObject.record is stable across calls")
     func installStable() {
         let install = InstallObject.stub(date: date, in: context)
-        #expect(install.toRecord.id == install.toRecord.id)
-        #expect(install.toRecord.id.recordName == install.installID.uuidString)
+        #expect(install.record.id == install.record.id)
+        #expect(install.record.id.recordName == install.installID.uuidString)
     }
 
-    @Test("LaunchObject.toRecord is stable across calls")
+    @Test("LaunchObject.record is stable across calls")
     func launchStable() {
         let launch = LaunchObject.stub(date: date, in: context)
         launch.launchID = UUID()
-        #expect(launch.toRecord.id == launch.toRecord.id)
-        #expect(launch.toRecord.id.recordName == launch.launchID.uuidString)
+        #expect(launch.record.id == launch.record.id)
+        #expect(launch.record.id.recordName == launch.launchID.uuidString)
     }
 
-    @Test("SessionObject.toRecord is stable across calls")
+    @Test("SessionObject.record is stable across calls")
     func sessionStable() {
         let session = SessionObject.stub(date: date, in: context)
         session.sessionID = UUID()
-        #expect(session.toRecord.id == session.toRecord.id)
-        #expect(session.toRecord.id.recordName == session.sessionID.uuidString)
+        #expect(session.record.id == session.record.id)
+        #expect(session.record.id.recordName == session.sessionID.uuidString)
     }
 
-    @Test("EventObject.toRecord is stable across calls")
+    @Test("EventObject.record is stable across calls")
     func eventStable() {
         let event = EventObject.stub(name: "test", date: date, in: context)
         let expected = event.eventID.uuidString
-        #expect(event.toRecord.id == event.toRecord.id)
-        #expect(event.toRecord.id.recordName == expected)
+        #expect(event.record.id == event.record.id)
+        #expect(event.record.id.recordName == expected)
     }
 
-    @Test("VersionObject.toRecord is stable across calls")
+    @Test("VersionObject.record is stable across calls")
     func versionStable() {
         let version = VersionObject.stub(date: date, appVersion: "1.2.3", in: context)
         version.buildNumber = "42"
         let expected = "\(version.installID.uuidString)-1.2.3-42"
-        #expect(version.toRecord.id == version.toRecord.id)
-        #expect(version.toRecord.id.recordName == expected)
+        #expect(version.record.id == version.record.id)
+        #expect(version.record.id.recordName == expected)
     }
 
     @Test("Different objects of the same type produce different recordIDs")
@@ -70,6 +70,6 @@ struct StableRecordIDTests {
         let launch2 = LaunchObject.stub(date: date, in: context)
         launch2.launchID = UUID()
 
-        #expect(launch1.toRecord.id != launch2.toRecord.id)
+        #expect(launch1.record.id != launch2.record.id)
     }
 }

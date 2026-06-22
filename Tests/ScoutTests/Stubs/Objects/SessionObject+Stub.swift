@@ -20,7 +20,7 @@ extension SessionObject {
         let session = SessionObject(entity: entity, insertInto: context)
 
         session.date = date
-        session.syncState = synced ? .synced : .pending
+        session.setSynced(synced, in: context)
         session.endDate = endDate
 
         return session

@@ -20,7 +20,7 @@ extension LaunchObject {
         let launch = LaunchObject(entity: entity, insertInto: context)
 
         launch.date = date
-        launch.syncState = synced ? .synced : .pending
+        launch.setSynced(synced, in: context)
         launch.endDate = endDate
 
         return launch

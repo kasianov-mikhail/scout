@@ -7,22 +7,19 @@
 
 import CoreData
 
-private let maxSyncAttempts = 10
-
 extension SyncableObject {
-    /// Deletes synced objects older than 7 days and objects that
-    /// exceeded the sync attempt limit.
-    ///
-    static func cleanup(in context: NSManagedObjectContext) throws {
+    static func cleanup(backends: [Backend], in context: NSManagedObjectContext) throws {
         guard let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
             return
         }
 
         let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
-        request.predicate = NSCompoundPredicate(orPredicateWithSubpredicates: [
-            NSPredicate(format: "syncStatePrimitive == %d AND datePrimitive < %@", SyncState.synced.rawValue, cutoff as NSDate),
-            NSPredicate(format: "syncStatePrimitive != %d AND syncAttempts > %d", SyncState.synced.rawValue, maxSyncAttempts),
-        ])
+        request.predicate = NSPredicate(
+            format: "SUBQUERY(deliveries, $d, $d.backendID IN %@ AND $d.progressPrimitive != 0 AND $d.attempts < %d).@count == 0 AND datePrimitive < %@",
+            backends.map(\.id),
+            SyncDelivery.maxAttempts,
+            cutoff as NSDate
+        )
 
         for object in try context.fetch(request) {
             context.delete(object)

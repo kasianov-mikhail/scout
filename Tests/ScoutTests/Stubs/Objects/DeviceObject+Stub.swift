@@ -19,7 +19,7 @@ extension DeviceObject {
         let device = DeviceObject(entity: entity, insertInto: context)
 
         device.date = date
-        device.syncState = synced ? .synced : .pending
+        device.setSynced(synced, in: context)
 
         return device
     }

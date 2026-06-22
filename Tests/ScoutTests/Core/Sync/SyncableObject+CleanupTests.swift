@@ -21,7 +21,7 @@ struct SyncableObjectCleanupTests {
         EventObject.stub(name: "old", date: old, synced: true, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(in: context)
+        try SyncableObject.cleanup(backends: [], in: context)
 
         let request = NSFetchRequest<EventObject>(entityName: "EventObject")
         #expect(try context.fetch(request).isEmpty)
@@ -33,7 +33,7 @@ struct SyncableObjectCleanupTests {
         LaunchObject.stub(date: old, synced: true, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(in: context)
+        try SyncableObject.cleanup(backends: [], in: context)
 
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
         #expect(try context.fetch(request).isEmpty)
@@ -45,31 +45,22 @@ struct SyncableObjectCleanupTests {
         EventObject.stub(name: "recent", date: recent, synced: true, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(in: context)
+        try SyncableObject.cleanup(backends: [], in: context)
 
         let request = NSFetchRequest<EventObject>(entityName: "EventObject")
         #expect(try context.fetch(request).count == 1)
     }
 
-    @Test("Deletes objects that exceeded sync attempt limit")
-    func deletesStale() throws {
-        let event = EventObject.stub(name: "stale", synced: false, in: context)
-        event.syncAttempts = 11
-        try context.save()
-
-        try SyncableObject.cleanup(in: context)
-
-        let request = NSFetchRequest<EventObject>(entityName: "EventObject")
-        #expect(try context.fetch(request).isEmpty)
-    }
-
-    @Test("Keeps unsynced objects under attempt limit")
+    @Test("Keeps objects with outstanding work regardless of age")
     func keepsUnsynced() throws {
-        let event = EventObject.stub(name: "pending", synced: false, in: context)
-        event.syncAttempts = 5
+        // Done-ness is derived from delivery rows: cleanup only purges objects
+        // whose configured backends are all settled, never ones still owing work.
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        let event = EventObject.stub(name: "pending", date: old, in: context)
+        event.seedDelivery([.raw], for: "cloud", in: context)
         try context.save()
 
-        try SyncableObject.cleanup(in: context)
+        try SyncableObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
 
         let request = NSFetchRequest<EventObject>(entityName: "EventObject")
         #expect(try context.fetch(request).count == 1)
