@@ -7,13 +7,7 @@
 
 import CloudKit
 
-// MARK: - Record ↔ CKRecord
-
 extension Record {
-    /// Reads a `CKRecord` into the neutral representation, stashing the
-    /// record's encoded system fields in ``metadata`` so a later write can
-    /// preserve its change tag.
-    ///
     init(ckRecord: CKRecord) {
         let fields = Dictionary(
             uniqueKeysWithValues: ckRecord.allKeys().compactMap { key in
@@ -22,19 +16,16 @@ extension Record {
         )
         self.init(
             recordType: ckRecord.recordType,
-            id: RecordID(recordName: ckRecord.recordID.recordName),
+            recordID: ckRecord.recordID.recordName,
             fields: fields,
             metadata: ckRecord.encodedSystemFields
         )
     }
 
-    /// Rebuilds a `CKRecord`, restoring system fields from ``metadata`` when
-    /// present so a conflict retry targets the right record version.
-    ///
     var ckRecord: CKRecord {
         let record =
             metadata.flatMap(CKRecord.decoded(systemFields:))
-            ?? CKRecord(recordType: recordType, recordID: CKRecord.ID(recordName: id.recordName))
+            ?? CKRecord(recordType: recordType, recordID: CKRecord.ID(recordName: recordID))
         for (key, value) in fields {
             record[key] = value.ckValue
         }
@@ -43,7 +34,6 @@ extension Record {
 }
 
 extension RecordValue {
-    /// The CloudKit-typed value to store under a record field.
     var ckValue: any CKRecordValueProtocol {
         switch self {
         case .string(let value): value
@@ -55,7 +45,6 @@ extension RecordValue {
         }
     }
 
-    /// The value to substitute into an `NSPredicate` `%@` placeholder.
     fileprivate var predicateValue: CVarArg {
         switch self {
         case .string(let value): value
@@ -85,8 +74,6 @@ extension CKRecord {
     }
 }
 
-// MARK: - RecordQuery → CKQuery
-
 extension CKQuery {
     convenience init(_ query: RecordQuery) {
         let predicate: NSPredicate =
@@ -94,7 +81,7 @@ extension CKQuery {
             ? NSPredicate(value: true)
             : NSCompoundPredicate(type: .and, subpredicates: query.filters.map(\.predicate))
 
-        self.init(recordType: query.recordType, predicate: predicate)
+        self.init(recordType: query.recordType.recordType, predicate: predicate)
 
         if query.sort.count > 0 {
             sortDescriptors = query.sort.map { NSSortDescriptor(key: $0.field, ascending: $0.ascending) }
@@ -102,7 +89,7 @@ extension CKQuery {
     }
 }
 
-extension RecordFilter {
+extension RecordQuery.Filter {
     fileprivate var predicate: NSPredicate {
         let value = value.predicateValue
         return switch op {
@@ -117,7 +104,3 @@ extension RecordFilter {
         }
     }
 }
-
-// MARK: - Cursor
-
-extension CKQueryOperation.Cursor: RecordCursorToken {}

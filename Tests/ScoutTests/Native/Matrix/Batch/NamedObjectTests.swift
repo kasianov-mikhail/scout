@@ -16,15 +16,15 @@ struct NamedObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(year: 2025, month: 1, day: 6)
 
-    @Test("parse(of:) groups by hour and counts")
-    func testParseOf() throws {
+    @Test("matrix(of:) groups by hour and counts")
+    func testMatrixCounts() throws {
         let batch: [NamedObject] = [
             try .stub(name: "crash", date: date, in: context),
             try .stub(name: "crash", date: date, in: context),
             try .stub(name: "crash", date: date.addingHour(), in: context),
         ]
 
-        let cells = try NamedObject.parse(of: batch)
+        let cells = try NamedObject.matrix(of: batch).cells
 
         #expect(cells.count == 2)
         #expect(cells.map(\.value).reduce(0, +) == 3)

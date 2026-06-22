@@ -7,9 +7,10 @@
 
 import Foundation
 
-/// A single cell of a matrix: a coordinate key and a scalar value.
 protocol CellProtocol: Combining, Sendable, Equatable {
     associatedtype Scalar: MatrixValue
+
+    static var recordType: String { get }
 
     var key: String { get }
     var value: Scalar { get }
@@ -17,22 +18,34 @@ protocol CellProtocol: Combining, Sendable, Equatable {
     init(key: String, value: Scalar) throws
 }
 
-/// An unparseable cell key from a CloudKit record.
-///
-/// Thrown for a malformed or hostile record in the public database, and
-/// surfaced through `Matrix.init(record:)` so callers can reject the record
-/// instead of crashing the host app.
-///
+extension String {
+    var fields: (String, String) {
+        get throws(CellKeyError) {
+            let parts = components(separatedBy: "_")
+            guard parts.count == 3 else {
+                throw .malformed(self)
+            }
+            guard parts[0] == "cell" else {
+                throw .prefix(expected: "cell", found: parts[0])
+            }
+            return (parts[1], parts[2])
+        }
+    }
+}
+
 enum CellKeyError: LocalizedError {
     case malformed(String)
-    case invalidComponent(field: String, value: String)
+    case mismatch(field: String, value: String)
+    case prefix(expected: String, found: String)
 
     var errorDescription: String? {
         switch self {
         case .malformed(let key):
             "Malformed cell key: \(key)"
-        case .invalidComponent(let field, let value):
+        case .mismatch(let field, let value):
             "Invalid \(field) in cell key: \(value)"
+        case .prefix(let expected, let found):
+            "Expected prefix '\(expected)' but found '\(found)' in cell key"
         }
     }
 }
@@ -40,19 +53,5 @@ enum CellKeyError: LocalizedError {
 extension Int {
     var leadingZero: String {
         String(format: "%02d", self)
-    }
-}
-
-// MARK: - Debug
-
-extension Array where Element: CellProtocol {
-    var summary: String {
-        if isEmpty {
-            return "[]"
-        }
-        let items = map { cell in
-            "\(cell.key)=\(String(describing: cell.value))"
-        }
-        return "[\(items.joined(separator: ", "))]"
     }
 }

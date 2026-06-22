@@ -7,13 +7,7 @@
 
 import CloudKit
 
-/// Maximum number of records per CloudKit modify request.
 private let maxBatchSize = 400
-
-/// Adapts a CloudKit database to the neutral record surface, mapping
-/// ``Record`` and ``RecordQuery`` to and from their CloudKit forms.
-
-// MARK: - Reading
 
 extension CKDatabase: RecordReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
@@ -21,41 +15,33 @@ extension CKDatabase: RecordReader {
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        try await runner { database in
-            try await RecordChunk(
-                results: database.records(
-                    matching: CKQuery(query),
-                    desiredKeys: fields,
-                    resultsLimit: limit
-                )
+        let results = try await runner { database in
+            try await database.records(
+                matching: CKQuery(query),
+                desiredKeys: fields,
+                resultsLimit: limit
             )
         }
+        return try chunk(from: results)
     }
 
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
-        guard case .opaque(let token) = cursor, let cursor = token as? CKQueryOperation.Cursor else {
-            throw CursorMismatchError()
+    private func chunk(from results: ([(CKRecord.ID, Result<CKRecord, Error>)], CKQueryOperation.Cursor?)) throws -> RecordChunk {
+        let records = try results.0.map { try Record(ckRecord: $0.1.get()) }
+        let cursor = results.1.map { token in
+            RecordCursor { fields in
+                let page = try await self.runner { database in
+                    try await database.records(
+                        continuingMatchFrom: token,
+                        desiredKeys: fields,
+                        resultsLimit: CKQueryOperation.maximumResults
+                    )
+                }
+                return try self.chunk(from: page)
+            }
         }
-        return try await runner { database in
-            try await RecordChunk(
-                results: database.records(
-                    continuingMatchFrom: cursor,
-                    desiredKeys: fields,
-                    resultsLimit: CKQueryOperation.maximumResults
-                )
-            )
-        }
+        return RecordChunk(records: records, cursor: cursor)
     }
 }
-
-extension RecordChunk {
-    fileprivate init(results: ([(CKRecord.ID, Result<CKRecord, Error>)], CKQueryOperation.Cursor?)) throws {
-        records = try results.0.map { try Record(ckRecord: $0.1.get()) }
-        cursor = results.1.map(RecordCursor.opaque)
-    }
-}
-
-// MARK: - Writing
 
 extension CKDatabase: RecordWriter {
     func write(record: Record) async throws {
@@ -85,12 +71,10 @@ extension CKDatabase: RecordWriter {
     }
 }
 
-// MARK: - Lookup
-
-extension CKDatabase: RecordLookup {
-    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+extension CKDatabase: RecordLocator {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
         try await runner { database in
-            let recordID = CKRecord.ID(recordName: id.recordName)
+            let recordID = CKRecord.ID(recordName: recordName)
             guard let result = try await database.records(for: [recordID], desiredKeys: fields)[recordID] else {
                 throw RecordNotFoundError()
             }

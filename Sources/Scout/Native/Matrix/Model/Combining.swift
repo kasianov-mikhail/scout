@@ -7,12 +7,6 @@
 
 import Foundation
 
-/// A value that can be merged pairwise with an "equivalent" instance.
-///
-/// `isDuplicate(of:)` answers whether two values refer to the same bucket
-/// (e.g. same matrix coordinate); `+` combines them. `Array.mergeDuplicates`
-/// uses both to collapse a sequence down to one entry per bucket.
-///
 protocol Combining {
     func isDuplicate(of other: Self) -> Bool
     static func + (lhs: Self, rhs: Self) -> Self

@@ -15,31 +15,24 @@ struct PeriodCell<T: MatrixValue> {
     let value: T
 }
 
-// MARK: - Matrix
-
 extension PeriodCell: CellProtocol {
     var key: String {
         "cell_\(period.rawValue)_\((day + 1).leadingZero)"
     }
 
-    init(key: String, value: T) throws {
-        let parts = key.components(separatedBy: "_")
+    init(key: String, value: T) throws(CellKeyError) {
+        let (periodPart, dayPart) = try key.fields
 
-        guard parts.count == 3 else {
-            throw CellKeyError.malformed(key)
+        guard let period = ActivityPeriod(rawValue: periodPart) else {
+            throw .mismatch(field: "period", value: periodPart)
         }
-        guard let period = ActivityPeriod(rawValue: String(parts[1])) else {
-            throw CellKeyError.invalidComponent(field: "period", value: parts[1])
-        }
-        guard let day = Int(parts[2]) else {
-            throw CellKeyError.invalidComponent(field: "day", value: parts[2])
+        guard let day = Int(dayPart) else {
+            throw .mismatch(field: "day", value: dayPart)
         }
 
         self.init(period: period, day: day - 1, value: value)
     }
 }
-
-// MARK: - Combining
 
 extension PeriodCell: Combining {
     func isDuplicate(of other: Self) -> Bool {
@@ -52,13 +45,5 @@ extension PeriodCell: Combining {
             day: lhs.day,
             value: lhs.value + rhs.value
         )
-    }
-}
-
-// MARK: -
-
-extension PeriodCell: CustomStringConvertible {
-    var description: String {
-        "\(period) \(day): \(value)"
     }
 }

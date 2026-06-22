@@ -7,9 +7,9 @@
 
 import CoreData
 
-/// A scalar type suitable for matrix cells and syncing.
-protocol MatrixValue: RecordTyped & AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
+protocol MatrixValue: AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
     associatedtype Object: MetricsValued where Object.Value == Self
+    static var recordType: String { get }
 }
 
 extension Int: MatrixValue {

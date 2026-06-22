@@ -7,15 +7,14 @@
 
 import Foundation
 
-extension Matrix: RecordDecodable {
+extension Matrix {
     init(record: Record) throws {
         guard let date: Date = record["date"] else { throw MapError.missingField("date") }
         guard let name: String = record["name"] else { throw MapError.missingField("name") }
 
-        self.recordType = record.recordType
         self.date = date
         self.name = name
-        self.record = record
+        self.baseRecord = record
         self.category = record["category"]
 
         let cells = try record.fields
@@ -35,9 +34,9 @@ extension Matrix: RecordDecodable {
     }
 }
 
-extension Matrix: RecordRepresentable {
-    var toRecord: Record {
-        var record = record ?? Record(recordType: recordType, id: RecordID(recordName: UUID().uuidString))
+extension Matrix: RecordEncodable {
+    var record: Record {
+        var record = baseRecord ?? Record(recordType: Self.recordType, recordID: UUID().uuidString)
         record["date"] = date
         record["name"] = name
         record["category"] = category

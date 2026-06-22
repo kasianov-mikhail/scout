@@ -74,28 +74,6 @@ struct PeriodCellTests {
         #expect(restored.value == original.value)
     }
 
-    // MARK: - Chart Mapping
-
-    @Test("First day maps onto the matrix base date")
-    func firstDayChartPoint() {
-        let base = Date(year: 2026, month: 6, day: 1)
-        let cell = PeriodCell<Int>(period: .daily, day: 0, value: 5)
-        let point = cell.point(baseDate: base)
-
-        #expect(point.date == base)
-        #expect(point.count == 5)
-    }
-
-    @Test("Later days advance from the base date by whole days")
-    func laterDayChartPoint() {
-        let base = Date(year: 2026, month: 6, day: 1)
-        let cell = PeriodCell<Int>(period: .weekly, day: 4, value: 2)
-        let point = cell.point(baseDate: base)
-
-        #expect(point.date == Date(year: 2026, month: 6, day: 5))
-        #expect(point.count == 2)
-    }
-
     // MARK: - Combining
 
     @Test("Addition combines values")

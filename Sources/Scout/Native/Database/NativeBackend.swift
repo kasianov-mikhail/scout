@@ -7,37 +7,17 @@
 
 import CloudKit
 
-extension CKDatabase: BackendDatabase {}
-
-/// The CloudKit container Scout traditionally syncs to.
-///
-/// CloudKit cannot aggregate server-side, so the client also maintains matrix
-/// records. This is the one place the package holds a `CKContainer`; the host
-/// constructs it and hands it over as an `any Backend`.
-///
-public struct NativeBackend: Backend {
-    let container: CKContainer
-
-    public init(container: CKContainer) {
-        self.container = container
-    }
-}
-
-extension NativeBackend: BackendResolving {
-    var resolved: ResolvedBackend {
-        let container = container
-        return ResolvedBackend(
+extension Backend {
+    public static func cloudKit(container: CKContainer) -> Backend {
+        Backend(
             id: container.containerIdentifier ?? "cloudKit",
             database: container.publicCloudDatabase,
-            needsClientAggregation: true,
-            acceptsRawMetrics: false,
             checkAvailability: {
-                guard try await container.accountStatus() == .available else {
-                    throw SyncController.NotLoggedInError()
-                }
+                (try? await container.accountStatus()) == .available
             },
             displayName: "iCloud",
             displayHost: container.containerIdentifier ?? "CloudKit",
+            aggregator: container.publicCloudDatabase,
             probeStatus: {
                 let status = try? await container.accountStatus()
                 return status == .available ? .reachable : .unreachable
@@ -45,12 +25,8 @@ extension NativeBackend: BackendResolving {
             accountWarning: {
                 (try? await container.accountStatus()) != .available
             },
-            verifySchema: {
-                try await container.verifySchema()
-            },
-            onSetup: {
-                verifyParallelismIfDue(container: container)
-            }
+            verifySchema: container.verifySchema,
+            onSetup: container.verifyParallelismIfDue
         )
     }
 }
