@@ -7,40 +7,23 @@
 
 import Foundation
 
-/// A record query in the server's wire format, the counterpart of a
-/// ``RecordQuery``.
-///
 struct HTTPQuery: Codable, Equatable, Sendable {
     var recordType: String?
-    var filters: [HTTPFilter]?
-    var sort: [HTTPSort]?
+    var filters: [RecordQuery.Filter]?
+    var sort: [RecordQuery.Sort]?
     var limit: Int?
     var fields: [String]?
     var cursor: String?
 }
 
-struct HTTPFilter: Codable, Equatable, Sendable {
-    let field: String
-    let op: RecordFilter.Operator
-    let value: RecordValue
-}
-
-struct HTTPSort: Codable, Equatable, Sendable {
-    let field: String
-    let ascending: Bool
-}
-
-// MARK: - RecordQuery Translation
-
 extension HTTPQuery {
     init(query: RecordQuery, fields: [String]?, limit: Int?) {
-        self.recordType = query.recordType
+        self.recordType = query.recordType.recordType
         self.fields = fields
-        self.filters = query.filters.map { HTTPFilter(field: $0.field, op: $0.op, value: $0.value) }
+        self.filters = query.filters
 
-        let sort = query.sort.map { HTTPSort(field: $0.field, ascending: $0.ascending) }
-        if !sort.isEmpty {
-            self.sort = sort
+        if !query.sort.isEmpty {
+            self.sort = query.sort
         }
 
         if let limit, limit != defaultRecordPageSize {
@@ -48,8 +31,6 @@ extension HTTPQuery {
         }
     }
 }
-
-// MARK: - Envelopes
 
 struct HTTPWriteRequest: Codable {
     let records: [HTTPRecord]

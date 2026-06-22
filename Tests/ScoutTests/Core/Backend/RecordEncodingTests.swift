@@ -12,20 +12,19 @@ import Testing
 @testable import Scout
 
 @MainActor
-@Suite("ServerRepresentable")
-struct ServerRepresentableTests {
+@Suite("Record encoding")
+struct RecordEncodingTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
-    @Test("CloudKit-representable types reuse their CloudKit record")
-    func reusesCloudKitRecord() throws {
+    @Test("Events encode to a raw Event record")
+    func eventRecord() throws {
         let event = EventObject.stub(name: "login", in: context)
         try context.save()
 
-        let record = event.toServerRecord
+        let record = event.record
 
         #expect(record.recordType == "Event")
         #expect(record["name"] == "login")
-        #expect(record.id == event.toRecord.id)
     }
 
     @Test("Int metrics serialize as raw IntMetric records")
@@ -33,7 +32,7 @@ struct ServerRepresentableTests {
         let metric = IntMetricsObject.stub(name: "requests", telemetry: "counter", value: 5, in: context)
         try context.save()
 
-        let record = metric.toServerRecord
+        let record = metric.record
 
         #expect(record.recordType == "IntMetric")
         #expect(record["name"] == "requests")
@@ -48,11 +47,11 @@ struct ServerRepresentableTests {
         let metric = DoubleMetricsObject.stub(name: "duration", telemetry: "timer", value: 1.5, in: context)
         try context.save()
 
-        let record = metric.toServerRecord
+        let record = metric.record
 
         #expect(record.recordType == "DoubleMetric")
         #expect(record["value"] == 1.5)
-        #expect(record.id == metric.toServerRecord.id)
+        #expect(record.id == metric.record.id)
     }
 }
 

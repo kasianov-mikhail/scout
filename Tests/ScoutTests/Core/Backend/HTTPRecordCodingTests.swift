@@ -28,7 +28,7 @@ struct HTTPRecordCodingTests {
         let restored = try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord
 
         #expect(restored.recordType == "Event")
-        #expect(restored.recordName == "record-1")
+        #expect(restored.recordID == "record-1")
         #expect(restored["name"] == "login")
         #expect(restored["param_count"] == Int64(2))
         #expect(restored["value"] == 1.5)

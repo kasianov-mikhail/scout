@@ -20,9 +20,9 @@ struct HTTPQueryCodingTests {
         let query = RecordQuery(
             recordType: "DateIntMatrix",
             filters: [
-                RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
-                RecordFilter(field: "date", op: .lessThan, value: .date(to)),
-                RecordFilter(field: "name", op: .equals, value: .string("login")),
+                RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
+                RecordQuery.Filter(field: "date", op: .lessThan, value: .date(to)),
+                RecordQuery.Filter(field: "name", op: .equals, value: .string("login")),
             ]
         )
 
@@ -43,9 +43,9 @@ struct HTTPQueryCodingTests {
         let query = RecordQuery(
             recordType: "Session",
             filters: [
-                RecordFilter(field: "install_id", op: .in, value: .strings(["a", "b"])),
-                RecordFilter(field: "name", op: .beginsWith, value: .string("cart_")),
-                RecordFilter(field: "param_count", op: .notEquals, value: .int(3)),
+                RecordQuery.Filter(field: "install_id", op: .in, value: .strings(["a", "b"])),
+                RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("cart_")),
+                RecordQuery.Filter(field: "param_count", op: .notEquals, value: .int(3)),
             ]
         )
 
@@ -71,7 +71,7 @@ struct HTTPQueryCodingTests {
     func sortAndLimit() {
         let query = RecordQuery(
             recordType: "Event",
-            sort: [RecordSort(field: "date", ascending: false)]
+            sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
 
         let http = HTTPQuery(query: query, fields: ["name", "date"], limit: 25)
