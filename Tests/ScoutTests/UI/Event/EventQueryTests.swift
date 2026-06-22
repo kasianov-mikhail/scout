@@ -35,7 +35,7 @@ struct EventQueryTests {
         query.text = "Search"
         let filters = query.buildFilters()
 
-        #expect(filters.contains(RecordFilter(field: "name", op: .beginsWith, value: .string("Search"))))
+        #expect(filters.contains(RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("Search"))))
     }
 
     @Test("Filter by name") func name() {
@@ -43,7 +43,7 @@ struct EventQueryTests {
         query.name = "Login"
         let filters = query.buildFilters()
 
-        #expect(filters.contains(RecordFilter(field: "name", op: .equals, value: .string("Login"))))
+        #expect(filters.contains(RecordQuery.Filter(field: "name", op: .equals, value: .string("Login"))))
     }
 
     @Test("Filter by date range") func dates() {
@@ -54,8 +54,8 @@ struct EventQueryTests {
         query.dates = start..<end
         let filters = query.buildFilters()
 
-        #expect(filters.contains(RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(start))))
-        #expect(filters.contains(RecordFilter(field: "date", op: .lessThan, value: .date(end))))
+        #expect(filters.contains(RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(start))))
+        #expect(filters.contains(RecordQuery.Filter(field: "date", op: .lessThan, value: .date(end))))
     }
 
     @Test("Multiple filters combine") func combined() {
@@ -66,7 +66,7 @@ struct EventQueryTests {
         let filters = query.buildFilters()
 
         #expect(filters.contains { $0.field == "level" && $0.op == .in })
-        #expect(filters.contains(RecordFilter(field: "name", op: .beginsWith, value: .string("Search"))))
-        #expect(filters.contains(RecordFilter(field: "name", op: .equals, value: .string("Login"))))
+        #expect(filters.contains(RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("Search"))))
+        #expect(filters.contains(RecordQuery.Filter(field: "name", op: .equals, value: .string("Login"))))
     }
 }

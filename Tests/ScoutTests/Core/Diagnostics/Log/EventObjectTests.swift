@@ -16,17 +16,15 @@ struct EventObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
 
-    @Test("parse(of:) produces correct GridCell<Int> counts by hour")
-    func testParseOf() throws {
+    @Test("matrix(of:) produces correct GridCell<Int> counts by hour")
+    func testMatrixOf() throws {
         let batch: [EventObject] = [
             .stub(name: "name", date: date, in: context),
             .stub(name: "name", date: date, in: context),
             .stub(name: "name", date: date.addingHour(), in: context),
         ]
 
-        let cells = try EventObject.parse(of: batch)
-
-        let counts = cells.map(\.value)
+        let counts = try EventObject.matrix(of: batch).cells.map(\.value)
         #expect(counts.contains(2))
         #expect(counts.contains(1))
         #expect(counts.reduce(0, +) == 3)

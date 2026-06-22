@@ -13,13 +13,16 @@ struct Event: Identifiable, Hashable {
     let date: Date?
     let paramCount: Int?
     let uuid: UUID?
-    let id: RecordID
+    let id: String
     let installID: UUID?
     let sessionID: UUID?
     let deviceID: UUID?
 }
 
-extension Event {
+extension Event: RecordDecodable {
+    static let recordType = EventObject.recordType
+    static let sampleRecords: [Record] = []
+
     static let desiredKeys = [
         "name",
         "level",
@@ -32,14 +35,14 @@ extension Event {
     ]
 }
 
-extension Event: RecordDecodable {
+extension Event {
     init(record: Record) throws {
         name = record["name"] ?? ""
         level = record["level"].flatMap { Level(rawValue: $0) }
         date = record["date"]
         paramCount = record["param_count"]
         uuid = record["uuid"].flatMap(UUID.init)
-        id = record.id
+        id = record.recordID
         installID = record["install_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
         deviceID = record["device_id"].flatMap(UUID.init)
@@ -54,7 +57,7 @@ extension Event {
             date: date,
             paramCount: nil,
             uuid: nil,
-            id: RecordID(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             installID: nil,
             sessionID: nil,
             deviceID: nil

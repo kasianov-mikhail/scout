@@ -8,17 +8,18 @@
 import CoreData
 
 @objc(CrashObject)
-final class CrashObject: TrackedObject, Syncable, GridBatch {
+final class CrashObject: TrackedObject {
     static let recordType = "Crash"
+
     @NSManaged var name: String?
     @NSManaged var crashID: UUID
     @NSManaged var reason: String?
     @NSManaged var stackTrace: Data?
 }
 
-extension CrashObject: RecordRepresentable {
-    var toRecord: Record {
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: crashID.uuidString))
+extension CrashObject: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: crashID.uuidString)
 
         record["name"] = name
         record["reason"] = reason

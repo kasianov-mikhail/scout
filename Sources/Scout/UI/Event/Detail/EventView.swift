@@ -54,8 +54,6 @@ struct EventView: View {
     }
 }
 
-// MARK: - Header
-
 extension EventView {
     struct EventHeader: View {
         let event: Event
@@ -82,8 +80,6 @@ extension EventView {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         let event = Event(
@@ -92,7 +88,7 @@ extension EventView {
             date: Date(),
             paramCount: 3,
             uuid: UUID(),
-            id: RecordID(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             installID: UUID(),
             sessionID: UUID(),
             deviceID: UUID()

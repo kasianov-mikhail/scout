@@ -27,7 +27,7 @@ struct CrashObjectTests {
         let matrix = try CrashObject.matrix(of: batch)
 
         #expect(matrix.recordType == Int.recordType)
-        #expect(matrix.name == CrashObject.recordType)
+        #expect(matrix.name == CrashObject.recordType.rawValue)
         #expect(matrix.date == date.startOfWeek)
         #expect(matrix.cells.map(\.value).reduce(0, +) == 3)
     }
