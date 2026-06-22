@@ -34,7 +34,7 @@ struct ModelMigrationTests {
             let storeURL = directory.appendingPathComponent(fixture.lastPathComponent)
             try FileManager.default.copyItem(at: fixture, to: storeURL)
 
-            let container = NSPersistentContainer.newContainer(named: "Scout")
+            let container = NSPersistentContainer(named: "Scout")
             container.persistentStoreDescriptions = [NSPersistentStoreDescription(url: storeURL)]
             try container.loadStore()
 

@@ -8,7 +8,7 @@
 import CoreData
 
 let persistentContainer: NSPersistentContainer = {
-    let container = NSPersistentContainer.newContainer(named: "Scout")
+    let container = NSPersistentContainer(named: "Scout")
 
     do {
         try container.loadStore()
@@ -20,7 +20,7 @@ let persistentContainer: NSPersistentContainer = {
 }()
 
 extension NSPersistentContainer {
-    static func newContainer(named name: String) -> NSPersistentContainer {
+    convenience init(named name: String) {
         guard let modelURL = Bundle.module.url(forResource: name, withExtension: "momd") else {
             fatalError("Failed to find data model")
         }
@@ -29,6 +29,23 @@ extension NSPersistentContainer {
             fatalError("Failed to create model from file: \(modelURL)")
         }
 
-        return NSPersistentContainer(name: name, managedObjectModel: model)
+        self.init(name: name, managedObjectModel: model)
+    }
+}
+
+extension NSPersistentContainer {
+    func loadStore() throws {
+        for description in persistentStoreDescriptions {
+            description.shouldMigrateStoreAutomatically = true
+            description.shouldInferMappingModelAutomatically = true
+        }
+
+        var captured: Error?
+        loadPersistentStores { _, error in
+            captured = error
+        }
+        if let captured {
+            throw captured
+        }
     }
 }

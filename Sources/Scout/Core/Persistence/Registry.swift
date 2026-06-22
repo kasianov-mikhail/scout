@@ -7,17 +7,12 @@
 
 import Foundation
 
-/// A key-value store for persistent identifiers.
 protocol Registry {
-    /// Returns the identifier for the given key, or `nil` if none exists.
     func resolve(_ key: String) -> UUID?
-
-    /// Stores the identifier for the given key.
     func register(_ value: UUID, for key: String)
 }
 
 extension Registry {
-    /// Returns the existing identifier for the key, or creates and stores a new one.
     func ensure(_ key: String) -> UUID {
         if let id = resolve(key) {
             return id
@@ -26,5 +21,16 @@ extension Registry {
         let id = UUID()
         register(id, for: key)
         return id
+    }
+}
+
+extension UserDefaults: Registry {
+    func register(_ value: UUID, for key: String) {
+        set(value.uuidString, forKey: key)
+    }
+
+    func resolve(_ key: String) -> UUID? {
+        guard let string = string(forKey: key) else { return nil }
+        return UUID(uuidString: string)
     }
 }
