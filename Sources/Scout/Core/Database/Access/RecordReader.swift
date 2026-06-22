@@ -7,20 +7,18 @@
 
 import Foundation
 
-/// Default page size for a paginated read, matching CloudKit's modify/query
-/// cap and the Scout server's own limit.
-///
-let defaultRecordPageSize = 400
-
 protocol RecordReader: Sendable {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk
 }
 
 extension RecordReader {
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         try await read(matching: query, fields: fields)
+    }
+
+    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
+        try await cursor.next(fields)
     }
 
     func readAll(matching query: RecordQuery, fields: [String]?) async throws -> [Record] {
@@ -29,5 +27,22 @@ extension RecordReader {
             chunk += try await readMore(from: cursor, fields: fields)
         }
         return chunk.records
+    }
+}
+
+struct RecordCursor: Sendable {
+    let next: @Sendable ([String]?) async throws -> RecordChunk
+}
+
+struct RecordChunk {
+    let records: [Record]
+    let cursor: RecordCursor?
+
+    static func += (lhs: inout Self, rhs: Self) {
+        lhs = lhs + rhs
+    }
+
+    static func + (lhs: Self, rhs: Self) -> Self {
+        RecordChunk(records: lhs.records + rhs.records, cursor: rhs.cursor)
     }
 }
