@@ -11,8 +11,8 @@ import Testing
 @testable import Scout
 
 @MainActor
-@Suite("DataSourceModel")
-struct DataSourceModelTests {
+@Suite("ConnectionSwitcher")
+struct ConnectionSwitcherTests {
     let primary = URL(string: "https://a.scout.app")!
     let secondary = URL(string: "https://b.scout.app")!
 
@@ -22,17 +22,17 @@ struct DataSourceModelTests {
 
     @Test("Defaults to the first backend")
     func defaultsToFirst() {
-        let model = DataSourceModel(backends: backends, defaults: makeDefaults())
+        let model = ConnectionSwitcher(backends: backends, defaults: makeDefaults())
         #expect(model.activeID == primary.absoluteString)
     }
 
     @Test("Restores a persisted selection across instances")
     func restoresSelection() {
         let defaults = makeDefaults()
-        let first = DataSourceModel(backends: backends, defaults: defaults)
+        let first = ConnectionSwitcher(backends: backends, defaults: defaults)
         first.activeID = secondary.absoluteString
 
-        let second = DataSourceModel(backends: backends, defaults: defaults)
+        let second = ConnectionSwitcher(backends: backends, defaults: defaults)
         #expect(second.activeID == secondary.absoluteString)
     }
 
@@ -41,40 +41,39 @@ struct DataSourceModelTests {
         let defaults = makeDefaults()
         defaults.set("https://gone.scout.app", forKey: "scout_active_backend")
 
-        let model = DataSourceModel(backends: backends, defaults: defaults)
+        let model = ConnectionSwitcher(backends: backends, defaults: defaults)
         #expect(model.activeID == primary.absoluteString)
     }
 
     @Test("Maps backends to options with unknown status by default")
-    func mapsServers() {
-        let model = DataSourceModel(backends: backends, defaults: makeDefaults())
-        let servers = model.servers
+    func mapsConnections() {
+        let model = ConnectionSwitcher(backends: backends, defaults: makeDefaults())
+        let connections = model.options
 
-        #expect(servers.count == 2)
-        #expect(servers[0].id == primary.absoluteString)
-        #expect(servers[0].name == "a.scout.app")
-        #expect(servers[0].host == primary.absoluteString)
-        #expect(servers.allSatisfy { $0.status == .unknown })
+        #expect(connections.count == 2)
+        #expect(connections[0].id == primary.absoluteString)
+        #expect(connections[0].name == "a.scout.app")
+        #expect(connections.allSatisfy { $0.status == .unknown })
     }
 
     @Test("A choice exists only with more than one backend")
     func hasChoice() {
-        #expect(DataSourceModel(backends: backends, defaults: makeDefaults()).hasChoice)
-        #expect(!DataSourceModel(backends: [.server(url: primary)], defaults: makeDefaults()).hasChoice)
+        #expect(ConnectionSwitcher(backends: backends, defaults: makeDefaults()).hasChoice)
+        #expect(!ConnectionSwitcher(backends: [.server(url: primary)], defaults: makeDefaults()).hasChoice)
     }
 
     @Test("Refresh records each backend's probed status by id")
     func refreshRecordsProbedStatus() async {
-        let model = DataSourceModel(
+        let model = ConnectionSwitcher(
             backends: backends,
             defaults: makeDefaults(),
             probe: { $0.displayName == "a.scout.app" ? .reachable : .unreachable }
         )
         await model.refreshStatuses()
 
-        let servers = model.servers
-        #expect(servers.first { $0.id == primary.absoluteString }?.status == .reachable)
-        #expect(servers.first { $0.id == secondary.absoluteString }?.status == .unreachable)
+        let connections = model.options
+        #expect(connections.first { $0.id == primary.absoluteString }?.status == .reachable)
+        #expect(connections.first { $0.id == secondary.absoluteString }?.status == .unreachable)
     }
 
     // MARK: - Factories

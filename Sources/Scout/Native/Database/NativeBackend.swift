@@ -16,7 +16,6 @@ extension Backend {
                 (try? await container.accountStatus()) == .available
             },
             displayName: "iCloud",
-            displayHost: container.containerIdentifier ?? "CloudKit",
             aggregator: container.publicCloudDatabase,
             probeStatus: {
                 let status = try? await container.accountStatus()

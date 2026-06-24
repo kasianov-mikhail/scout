@@ -12,11 +12,18 @@ public struct Backend: Sendable {
     let database: any Database
     let checkAvailability: @Sendable () async -> Bool
     let displayName: String
-    let displayHost: String
 
     var aggregator: (any ClientAggregating)? = nil
     var probeStatus: @Sendable () async -> Status = { .unknown }
     var accountWarning: @Sendable () async -> Bool = { false }
     var verifySchema: @Sendable () async throws -> Void = {}
     var onSetup: @MainActor @Sendable () -> Void = {}
+
+    enum Status: CaseIterable, Identifiable, Sendable {
+        case reachable
+        case unreachable
+        case unknown
+
+        var id: Self { self }
+    }
 }

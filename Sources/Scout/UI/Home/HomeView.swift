@@ -8,46 +8,39 @@
 import SwiftUI
 
 public struct HomeView: View {
-    @StateObject private var dataSource: DataSourceModel
+    let backends: [Backend]
+
+    @AppStorage("scout_active_backend") private var activeID = ""
     @StateObject private var tint = Tint()
 
-    /// Reads analytics from the active backend, defaulting to the first.
-    ///
-    /// When several backends are configured, a toolbar control lets the user
-    /// switch between them; account and schema warnings only apply while the
-    /// active backend asks for them (CloudKit does; Scout servers don't).
-    ///
     public init(backends: [Backend]) {
-        _dataSource = StateObject(wrappedValue: DataSourceModel(backends: backends))
+        self.backends = backends
+    }
+
+    private var activeBackend: Backend {
+        backends.first { $0.id == activeID } ?? backends.first!
     }
 
     public var body: some View {
         NavigationStack {
             HomeContent()
-                .id(dataSource.activeID)
+                .id(activeBackend.id)
                 .navigationTitle(en: "Home")
-                .backendWarnings(dataSource.activeBackend)
+                .backendWarnings(activeBackend)
                 .dismissable()
-                .toolbar { dataSourceToolbar }
         }
-        .task {
-            if dataSource.hasChoice {
-                await dataSource.refreshStatuses()
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ConnectionMenu(
+                    connections: backends.map(Connection.init),
+                    activeID: Binding(get: { activeBackend.id }, set: { activeID = $0 })
+                )
             }
         }
         .onboardingSheet()
         .tint(tint.value)
         .environmentObject(tint)
-        .environment(\.database, dataSource.activeDatabase)
-    }
-
-    @ToolbarContentBuilder
-    private var dataSourceToolbar: some ToolbarContent {
-        if dataSource.hasChoice {
-            ToolbarItem(placement: .topBarTrailing) {
-                DataSourceMenu(servers: dataSource.servers, activeID: $dataSource.activeID)
-            }
-        }
+        .environment(\.database, activeBackend.database)
     }
 }
 

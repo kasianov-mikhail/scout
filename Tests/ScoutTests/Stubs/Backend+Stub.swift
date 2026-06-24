@@ -15,7 +15,6 @@ func makeBackend(id: String) -> Backend {
         id: id,
         database: InMemoryDatabase(),
         checkAvailability: { true },
-        displayName: id,
-        displayHost: id
+        displayName: id
     )
 }

@@ -25,7 +25,6 @@ struct DeliverTests {
             database: cloud,
             checkAvailability: { true },
             displayName: "cloud",
-            displayHost: "cloud",
             aggregator: cloud
         )
     }
@@ -36,7 +35,6 @@ struct DeliverTests {
             database: cloud2,
             checkAvailability: { true },
             displayName: "cloud2",
-            displayHost: "cloud2",
             aggregator: cloud2
         )
     }
@@ -46,8 +44,7 @@ struct DeliverTests {
             id: "server",
             database: server,
             checkAvailability: { true },
-            displayName: "server",
-            displayHost: "server"
+            displayName: "server"
         )
     }
 

@@ -14,7 +14,6 @@ extension Backend {
             database: HTTPDatabase(url: url, apiKey: apiKey),
             checkAvailability: { true },
             displayName: url.host ?? url.absoluteString,
-            displayHost: url.absoluteString,
             probeStatus: {
                 do {
                     try await HTTPDatabase(url: url, apiKey: apiKey).ping()
