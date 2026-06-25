@@ -8,17 +8,19 @@
 import Foundation
 
 struct HTTPRecord: Codable, Equatable, Sendable {
+    let recordType: String
     let recordID: String
     let fields: [String: RecordValue]
 }
 
 extension HTTPRecord {
     init(record: Record) {
+        recordType = record.recordType
         recordID = record.recordID
         fields = record.fields
     }
 
-    func toRecord(recordType: String) -> Record {
+    func toRecord() -> Record {
         Record(recordType: recordType, recordID: recordID, fields: fields)
     }
 }

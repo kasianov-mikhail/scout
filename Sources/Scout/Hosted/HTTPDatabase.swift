@@ -50,9 +50,8 @@ extension HTTPDatabase: RecordReader {
 
     private func run(query: HTTPQuery) async throws -> RecordChunk {
         let response = try await send(query, to: "api/v1/records/query", into: HTTPQueryResponse.self)
-        let recordType = query.recordType ?? ""
         return RecordChunk(
-            records: response.records.map { $0.toRecord(recordType: recordType) },
+            records: response.records.map { $0.toRecord() },
             cursor: response.cursor.map { token in
                 RecordCursor { _ in
                     var next = HTTPQuery()
@@ -80,7 +79,7 @@ extension HTTPDatabase: RecordLocator {
         }
 
         let data = try await perform(request(for: endpoint, method: "GET"))
-        return try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord(recordType: "")
+        return try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord()
     }
 }
 
