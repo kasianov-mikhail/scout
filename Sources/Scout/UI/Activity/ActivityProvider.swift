@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 class ActivityProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ActivityPoint]>?
 
