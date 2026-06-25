@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
+@preconcurrency import CoreData
 
 typealias Synchronize = @MainActor () async throws -> Void
 
