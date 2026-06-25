@@ -19,7 +19,7 @@ extension Launch {
         Launch(
             startDate: startDate,
             endDate: endDate,
-            id: .init(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             launchID: launchID,
             installID: installID
         )

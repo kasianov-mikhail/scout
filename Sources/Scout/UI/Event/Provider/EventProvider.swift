@@ -14,18 +14,17 @@ class EventProvider: ObservableObject {
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
-    /// Fetches only when no events have been loaded yet, so returning to the list does not reload.
-    func fetchIfNeeded(for filter: Event.Query, in database: AppDatabase) async {
+    func fetchIfNeeded(for filter: Event.Query, in database: DatabaseReader) async {
         guard events == nil else { return }
         await fetch(for: filter, in: database)
     }
 
-    func fetch(for filter: Event.Query, in database: AppDatabase) async {
+    func fetch(for filter: Event.Query, in database: DatabaseReader) async {
         do {
             let query = RecordQuery(
-                recordType: EventObject.recordType,
+                recordType: Event.self,
                 filters: filter.buildFilters(),
-                sort: [RecordSort(field: "date", ascending: false)]
+                sort: [RecordQuery.Sort(field: "date", ascending: false)]
             )
 
             let results = try await database.read(
@@ -40,7 +39,7 @@ class EventProvider: ObservableObject {
         }
     }
 
-    func fetchMore(cursor: RecordCursor, in database: AppDatabase) async {
+    func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async {
         do {
             let results = try await database.readMore(
                 from: cursor,

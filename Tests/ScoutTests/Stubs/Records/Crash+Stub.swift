@@ -22,7 +22,7 @@ extension Crash {
             reason: nil,
             stackTrace: [],
             date: date,
-            id: .init(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             installID: installID,
             launchID: launchID,
             sessionID: sessionID

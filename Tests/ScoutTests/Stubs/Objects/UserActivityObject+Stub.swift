@@ -25,7 +25,7 @@ extension UserActivityObject {
         activity.month = month
         activity.day = day
         activity.period = period.rawValue
-        activity.syncState = isSynced ? .synced : .pending
+        activity.setSynced(isSynced, in: context)
 
         // Set all count fields to 0, then set the relevant one
         activity.dayCount = 0

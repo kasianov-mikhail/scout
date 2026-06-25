@@ -16,7 +16,7 @@ extension TimelineItem {
 
         func item(_ name: String, offset: TimeInterval) -> TimelineItem {
             TimelineItem(
-                id: RecordID(recordName: UUID().uuidString),
+                id: UUID().uuidString,
                 name: name,
                 date: start.addingTimeInterval(offset),
                 active: [.install, .launch, .session],

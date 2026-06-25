@@ -18,11 +18,11 @@ struct HTTPQueryCodingTests {
         let to = Date(timeIntervalSince1970: 1_800_000_000)
 
         let query = RecordQuery(
-            recordType: "DateIntMatrix",
+            recordType: GridMatrix<Int>.self,
             filters: [
-                RecordFilter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
-                RecordFilter(field: "date", op: .lessThan, value: .date(to)),
-                RecordFilter(field: "name", op: .equals, value: .string("login")),
+                RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
+                RecordQuery.Filter(field: "date", op: .lessThan, value: .date(to)),
+                RecordQuery.Filter(field: "name", op: .equals, value: .string("login")),
             ]
         )
 
@@ -31,9 +31,9 @@ struct HTTPQueryCodingTests {
         #expect(http.recordType == "DateIntMatrix")
         #expect(
             http.filters == [
-                HTTPFilter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
-                HTTPFilter(field: "date", op: .lessThan, value: .date(to)),
-                HTTPFilter(field: "name", op: .equals, value: .string("login")),
+                RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
+                RecordQuery.Filter(field: "date", op: .lessThan, value: .date(to)),
+                RecordQuery.Filter(field: "name", op: .equals, value: .string("login")),
             ]
         )
     }
@@ -41,11 +41,11 @@ struct HTTPQueryCodingTests {
     @Test("IN, BEGINSWITH, and inequality operators carry over")
     func operators() {
         let query = RecordQuery(
-            recordType: "Session",
+            recordType: Session.self,
             filters: [
-                RecordFilter(field: "install_id", op: .in, value: .strings(["a", "b"])),
-                RecordFilter(field: "name", op: .beginsWith, value: .string("cart_")),
-                RecordFilter(field: "param_count", op: .notEquals, value: .int(3)),
+                RecordQuery.Filter(field: "install_id", op: .in, value: .strings(["a", "b"])),
+                RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("cart_")),
+                RecordQuery.Filter(field: "param_count", op: .notEquals, value: .int(3)),
             ]
         )
 
@@ -53,16 +53,16 @@ struct HTTPQueryCodingTests {
 
         #expect(
             http.filters == [
-                HTTPFilter(field: "install_id", op: .in, value: .strings(["a", "b"])),
-                HTTPFilter(field: "name", op: .beginsWith, value: .string("cart_")),
-                HTTPFilter(field: "param_count", op: .notEquals, value: .int(3)),
+                RecordQuery.Filter(field: "install_id", op: .in, value: .strings(["a", "b"])),
+                RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("cart_")),
+                RecordQuery.Filter(field: "param_count", op: .notEquals, value: .int(3)),
             ]
         )
     }
 
     @Test("A query with no filters carries an empty filter list")
     func noFilters() {
-        let http = HTTPQuery(query: RecordQuery(recordType: "Event"), fields: nil, limit: nil)
+        let http = HTTPQuery(query: RecordQuery(recordType: Event.self), fields: nil, limit: nil)
 
         #expect(http.filters?.isEmpty == true)
     }
@@ -70,20 +70,20 @@ struct HTTPQueryCodingTests {
     @Test("Sort descriptors, fields, and limit carry over")
     func sortAndLimit() {
         let query = RecordQuery(
-            recordType: "Event",
-            sort: [RecordSort(field: "date", ascending: false)]
+            recordType: Event.self,
+            sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
 
         let http = HTTPQuery(query: query, fields: ["name", "date"], limit: 25)
 
-        #expect(http.sort == [HTTPSort(field: "date", ascending: false)])
+        #expect(http.sort == [RecordQuery.Sort(field: "date", ascending: false)])
         #expect(http.fields == ["name", "date"])
         #expect(http.limit == 25)
     }
 
     @Test("The default page size travels as no limit")
     func defaultLimit() {
-        let http = HTTPQuery(query: RecordQuery(recordType: "Event"), fields: nil, limit: defaultRecordPageSize)
+        let http = HTTPQuery(query: RecordQuery(recordType: Event.self), fields: nil, limit: defaultRecordPageSize)
 
         #expect(http.limit == nil)
     }

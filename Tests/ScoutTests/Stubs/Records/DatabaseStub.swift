@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Scout
 
-/// In-memory `AppDatabase` for timeline tests.
+/// In-memory `DatabaseReader` for timeline tests.
 ///
 /// Answers every query with the canned records of the query's record type
 /// that match its filters, truncated to the requested limit (without a
@@ -17,7 +17,7 @@ import Foundation
 /// fetch mid-flight, and are counted per record type so tests can assert how
 /// many queries a flow issued.
 ///
-final class DatabaseStub: AppDatabase, @unchecked Sendable {
+final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private let lock = NSLock()
     private var storage: [String: [Record]] = [:]
     private var counts: [String: Int] = [:]
@@ -39,7 +39,7 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
         return counts[recordType] ?? 0
     }
 
-    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
         throw RecordNotFoundError()
     }
 
@@ -55,14 +55,22 @@ final class DatabaseStub: AppDatabase, @unchecked Sendable {
     private func chunk(matching query: RecordQuery, limit: Int) -> RecordChunk {
         lock.lock()
         defer { lock.unlock() }
-        counts[query.recordType, default: 0] += 1
+        counts[query.recordType.recordType, default: 0] += 1
 
-        let records = (storage[query.recordType] ?? []).filter { $0.matches(query) }
+        let records = (storage[query.recordType.recordType] ?? []).filter { $0.matches(query) }
         return RecordChunk(records: Array(records.prefix(limit)), cursor: nil)
     }
 
     func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
+    }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        try await reconstructedActivity(in: range)
+    }
+
+    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        try await reconstructedMetricSeries(category: category, values: values, in: range)
     }
 }
 
@@ -101,14 +109,14 @@ final class Gate: @unchecked Sendable {
 
 extension Record {
     static func deviceStub(deviceID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Device", id: RecordID(recordName: deviceID.uuidString))
+        var record = Record(recordType: "Device", recordID: deviceID.uuidString)
         record["device_id"] = deviceID.uuidString
         record["date"] = date
         return record
     }
 
     static func installStub(installID: UUID, deviceID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Install", id: RecordID(recordName: installID.uuidString))
+        var record = Record(recordType: "Install", recordID: installID.uuidString)
         record["install_id"] = installID.uuidString
         record["device_id"] = deviceID.uuidString
         record["date"] = date
@@ -116,7 +124,7 @@ extension Record {
     }
 
     static func launchStub(launchID: UUID, installID: UUID, deviceID: UUID, startDate: Date) -> Record {
-        var record = Record(recordType: "Launch", id: RecordID(recordName: launchID.uuidString))
+        var record = Record(recordType: "Launch", recordID: launchID.uuidString)
         record["launch_id"] = launchID.uuidString
         record["install_id"] = installID.uuidString
         record["device_id"] = deviceID.uuidString
@@ -125,7 +133,7 @@ extension Record {
     }
 
     static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date) -> Record {
-        var record = Record(recordType: "Session", id: RecordID(recordName: sessionID.uuidString))
+        var record = Record(recordType: "Session", recordID: sessionID.uuidString)
         record["session_id"] = sessionID.uuidString
         record["launch_id"] = launchID.uuidString
         record["install_id"] = installID.uuidString
@@ -134,7 +142,7 @@ extension Record {
     }
 
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Event", id: RecordID(recordName: UUID().uuidString))
+        var record = Record(recordType: "Event", recordID: UUID().uuidString)
         record["name"] = name
         record["session_id"] = sessionID.uuidString
         record["date"] = date

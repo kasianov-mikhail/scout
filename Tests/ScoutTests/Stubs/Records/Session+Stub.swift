@@ -20,7 +20,7 @@ extension Session {
         Session(
             startDate: startDate,
             endDate: endDate,
-            id: .init(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             sessionID: sessionID,
             launchID: launchID,
             installID: installID

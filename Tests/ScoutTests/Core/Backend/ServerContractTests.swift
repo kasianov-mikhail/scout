@@ -37,10 +37,10 @@ struct ServerContractTests {
         let record = makeEvent(name: "login", index: 1)
 
         try await database.write(record: record)
-        let restored = try await database.lookup(id: record.id, fields: nil)
+        let restored = try await database.lookup(recordName: record.recordID, fields: nil)
 
         #expect(restored.recordType == "Event")
-        #expect(restored.recordName == record.recordName)
+        #expect(restored.recordID == record.recordID)
         #expect(restored["name"] == "login")
         #expect(restored["param_count"] == Int64(1))
         #expect(restored["date"] == eventDate)
@@ -53,7 +53,7 @@ struct ServerContractTests {
         let record = makeEvent(name: "login", index: 1)
 
         try await database.write(record: record)
-        let restored = try await database.lookup(id: record.id, fields: ["name"])
+        let restored = try await database.lookup(recordName: record.recordID, fields: ["name"])
 
         #expect(restored["name"] == "login")
         #expect(restored.fields["param_count"] == nil)
@@ -94,14 +94,14 @@ struct ServerContractTests {
     }
 
     @Test("The active-user series counts a written Session")
-    func activeUserSeries() async throws {
+    func activitySeries() async throws {
         let database = try makeDatabase()
         let install = UUID().uuidString
         let day = eventDate.startOfDay
 
         try await database.write(record: makeSession(installID: install, startDate: day.addingTimeInterval(3600)))
 
-        let series = try #require(try await database.activeUsers(in: day..<day.addingDay()))
+        let series = try await database.activity(in: day..<day.addingDay())
         let point = try #require(series.first { $0.date == Int64((day.timeIntervalSince1970 * 1000).rounded()) })
 
         // The server forward-marks the install as active that day across all
@@ -124,14 +124,14 @@ struct ServerContractTests {
 
     private func makeQuery(marker: String) -> RecordQuery {
         RecordQuery(
-            recordType: "Event",
-            filters: [RecordFilter(field: "name", op: .equals, value: .string(marker))],
-            sort: [RecordSort(field: "param_count", ascending: true)]
+            recordType: Event.self,
+            filters: [RecordQuery.Filter(field: "name", op: .equals, value: .string(marker))],
+            sort: [RecordQuery.Sort(field: "param_count", ascending: true)]
         )
     }
 
     private func makeEvent(name: String, index: Int) -> Record {
-        var record = Record(recordType: "Event", id: RecordID(recordName: "contract-\(UUID().uuidString)"))
+        var record = Record(recordType: "Event", recordID: "contract-\(UUID().uuidString)")
         record["name"] = name
         record["param_count"] = Int64(index)
         record["date"] = eventDate
@@ -140,7 +140,7 @@ struct ServerContractTests {
     }
 
     private func makeSession(installID: String, startDate: Date) -> Record {
-        var record = Record(recordType: "Session", id: RecordID(recordName: "contract-\(UUID().uuidString)"))
+        var record = Record(recordType: "Session", recordID: "contract-\(UUID().uuidString)")
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
         record["start_date"] = startDate

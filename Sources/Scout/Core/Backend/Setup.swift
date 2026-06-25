@@ -9,29 +9,6 @@ import Foundation
 import Logging
 import Metrics
 
-enum SetupError: LocalizedError {
-    case alreadySetup
-    case noBackends
-
-    var errorDescription: String? {
-        switch self {
-        case .alreadySetup:
-            "Scout is already setup"
-        case .noBackends:
-            "Scout requires at least one backend"
-        }
-    }
-
-    var recoverySuggestion: String? {
-        switch self {
-        case .alreadySetup:
-            "Review the code to ensure setup is called only once"
-        case .noBackends:
-            "Pass a NativeBackend or a HostedBackend to setup"
-        }
-    }
-}
-
 @MainActor private var isSetup = false
 
 /// Initializes Scout's global infrastructure against one or more backends.
@@ -46,7 +23,7 @@ enum SetupError: LocalizedError {
 /// - Important: Call from the main actor during app startup.
 ///
 @MainActor
-public func setup(backends: [any Backend]) async throws {
+public func setup(backends: [Backend]) async throws {
     guard !isSetup else {
         throw SetupError.alreadySetup
     }
@@ -54,11 +31,7 @@ public func setup(backends: [any Backend]) async throws {
         throw SetupError.noBackends
     }
 
-    let resolved = backends.resolved
-
-    // Per-backend setup-time side effects: a parallelism check for CloudKit,
-    // a cleartext-key warning for an API key sent over plain HTTP.
-    for backend in resolved {
+    for backend in backends {
         backend.onSetup()
     }
 
@@ -66,12 +39,17 @@ public func setup(backends: [any Backend]) async throws {
     installSignalHandler()
 
     await CrashArchive.system.flush()
+
     try await persistentContainer.performBackgroundTasks(
         SessionObject.completeStale,
         LaunchObject.completeStale,
     )
 
-    let sync = SyncController(backends: resolved).synchronize
+    let dispatcher = Coalescer()
+
+    @Sendable func sync() async throws {
+        try await synchronize(backends: backends, dispatcher: dispatcher)
+    }
 
     ActionTable.appState.startListening(completion: sync)
 
@@ -84,9 +62,7 @@ public func setup(backends: [any Backend]) async throws {
         UserActivityObject.trigger
     )
 
-    LoggingSystem.bootstrap { label in
-        CKLogHandler(sync: sync, label: label)
-    }
+    LoggingSystem.bootstrap { CKLogHandler(sync: sync, label: $0) }
     MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
 
     isSetup = true

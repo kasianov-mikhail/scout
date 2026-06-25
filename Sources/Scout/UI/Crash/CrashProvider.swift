@@ -12,12 +12,12 @@ class CrashProvider: ObservableObject {
     @Published var crashes: [Crash]?
     @Published var cursor: RecordCursor?
 
-    func fetch(in database: AppDatabase) async {
+    func fetch(in database: DatabaseReader) async {
         do {
             let query = RecordQuery(
-                recordType: CrashObject.recordType,
+                recordType: Crash.self,
                 filters: Calendar.utc.defaultRange.dateFilters,
-                sort: [RecordSort(field: "date", ascending: false)]
+                sort: [RecordQuery.Sort(field: "date", ascending: false)]
             )
 
             let results = try await database.read(
@@ -32,7 +32,7 @@ class CrashProvider: ObservableObject {
         }
     }
 
-    func fetchMore(cursor: RecordCursor, in database: AppDatabase) async {
+    func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async {
         do {
             let results = try await database.readMore(
                 from: cursor,
@@ -42,7 +42,6 @@ class CrashProvider: ObservableObject {
             self.cursor = results.cursor
             self.crashes?.append(contentsOf: try results.records.map(Crash.init))
         } catch {
-            // Keep existing data on pagination failure
         }
     }
 }

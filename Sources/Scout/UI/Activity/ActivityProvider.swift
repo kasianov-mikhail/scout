@@ -7,28 +7,21 @@
 
 import Foundation
 
-class ActivityProvider: QueryProvider<ActivityMatrix> {
-    init() {
-        super.init {
-            RecordQuery(
-                recordType: PeriodCell<Int>.recordType,
-                filters: Calendar.utc.defaultRange.dateFilters + [
-                    RecordFilter(field: "name", op: .equals, value: .string("ActiveUser"))
-                ]
-            )
-        }
-    }
+class ActivityProvider: ObservableObject, Provider {
+    @Published var result: ProviderResult<[ActivityPoint]>?
 
-    /// A Scout server aggregates DAU/WAU/MAU natively, so read its flat series
-    /// and rebuild the chart's matrices from it.
-    ///
-    /// CloudKit backends still answer the `PeriodMatrix` query the initializer
-    /// builds.
-    ///
-    override func fetch(in database: AppDatabase) async throws -> [ActivityMatrix] {
-        guard let series = try await database.activeUsers(in: Calendar.utc.defaultRange) else {
-            return try await super.fetch(in: database)
-        }
-        return ActivityMatrix.from(series: series)
+    func fetch(in database: DatabaseReader) async throws -> [ActivityPoint] {
+        try await database.activity(in: Calendar.utc.defaultRange)
     }
+}
+
+protocol ActivityReader: RecordReader {
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint]
+}
+
+struct ActivityPoint: Decodable, Equatable {
+    let date: Int64
+    let dau: Int
+    let wau: Int
+    let mau: Int
 }

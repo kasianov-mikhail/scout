@@ -8,14 +8,12 @@
 import CoreData
 
 @objc(UserActivityObject)
-final class UserActivityObject: TrackedObject, Syncable {
+final class UserActivityObject: TrackedObject {
+    override class var prefersRawDelivery: Bool? { false }
+
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32
     @NSManaged var period: String?
     @NSManaged var userActivityID: UUID
     @NSManaged var weekCount: Int32
-
-    static func group(in context: NSManagedObjectContext) throws -> [UserActivityObject]? {
-        try batch(in: context, matching: [\.month])
-    }
 }

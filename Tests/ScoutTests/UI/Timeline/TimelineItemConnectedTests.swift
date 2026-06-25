@@ -13,7 +13,7 @@ import Testing
 struct TimelineItemConnectedTests {
     private func makeItem(sessionID: UUID?, active: Set<LegendKind> = [.install, .launch, .session]) -> TimelineItem {
         TimelineItem(
-            id: RecordID(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             name: "e",
             date: Date(timeIntervalSince1970: 1_700_000_000),
             active: active,

@@ -9,27 +9,27 @@ import Foundation
 
 struct TimelineFeed {
     let deviceID: UUID
-    let database: AppDatabase
+    let database: DatabaseReader
 
     func device() async throws -> Device {
         let query = RecordQuery(
-            recordType: DeviceObject.recordType,
-            filters: [RecordFilter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
+            recordType: Device.self,
+            filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
         if let record = try await database.read(matching: query, fields: Device.desiredKeys, limit: 1).records.first {
             return try Device(record: record)
         }
         return Device(
             date: nil,
-            id: RecordID(recordName: deviceID.uuidString),
+            id: deviceID.uuidString,
             deviceID: deviceID
         )
     }
 
     func installs() async throws -> [Install] {
         let query = RecordQuery(
-            recordType: InstallObject.recordType,
-            filters: [RecordFilter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
+            recordType: Install.self,
+            filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
         return
             try await database
@@ -39,8 +39,8 @@ struct TimelineFeed {
 
     func launches() async throws -> [Launch] {
         let query = RecordQuery(
-            recordType: LaunchObject.recordType,
-            filters: [RecordFilter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
+            recordType: Launch.self,
+            filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
         return
             try await database

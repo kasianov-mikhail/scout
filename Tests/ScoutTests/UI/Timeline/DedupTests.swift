@@ -12,12 +12,12 @@ import Testing
 
 struct DedupTests {
     private struct Item: Identifiable {
-        let id: RecordID
+        let id: String
         let tag: String
     }
 
     private func item(_ name: String, tag: String = "") -> Item {
-        Item(id: RecordID(recordName: name), tag: tag)
+        Item(id: name, tag: tag)
     }
 
     @Test("New items come first, then old items")
@@ -26,7 +26,7 @@ struct DedupTests {
             new: [item("a"), item("b")],
             old: [item("c"), item("d")]
         )
-        #expect(result.map(\.id.recordName) == ["a", "b", "c", "d"])
+        #expect(result.map(\.id) == ["a", "b", "c", "d"])
     }
 
     @Test("New wins on id collision and the old duplicate is dropped")
@@ -35,7 +35,7 @@ struct DedupTests {
             new: [item("a", tag: "new")],
             old: [item("a", tag: "old"), item("b", tag: "old")]
         )
-        #expect(result.map(\.id.recordName) == ["a", "b"])
+        #expect(result.map(\.id) == ["a", "b"])
         #expect(result.first?.tag == "new")
     }
 
@@ -45,7 +45,7 @@ struct DedupTests {
             new: [item("a", tag: "first"), item("a", tag: "second")],
             old: []
         )
-        #expect(result.map(\.id.recordName) == ["a"])
+        #expect(result.map(\.id) == ["a"])
         #expect(result.first?.tag == "first")
     }
 

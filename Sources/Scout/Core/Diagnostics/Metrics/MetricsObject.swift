@@ -7,39 +7,26 @@
 
 import CoreData
 
-/// Persists named telemetry records scoped by metric name and type.
+protocol MetricsValued: MetricsObject {
+    associatedtype Value
+    var value: Value { get set }
+    init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
+}
+
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
+    override class var prefersRawDelivery: Bool? { nil }
+
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
+}
 
-    static func group<T: MetricsValued>(in context: NSManagedObjectContext) throws -> [T]? {
-        try batch(in: context, matching: [\.name, \.telemetry, \.week])
-    }
+@objc(DoubleMetricsObject)
+final class DoubleMetricsObject: MetricsObject, MetricsValued {
+    @NSManaged var value: Double
+}
 
-    static func matrix<T: MetricsValued>(of batch: [T]) throws -> Matrix<T.Cell> {
-        guard let name = batch.first?.name else {
-            throw MatrixPropertyError("name")
-        }
-        guard let telemetry = batch.first?.telemetry else {
-            throw MatrixPropertyError("telemetry")
-        }
-        guard let week = batch.first?.week else {
-            throw MatrixPropertyError("week")
-        }
-        return Matrix(
-            recordType: T.Value.recordType,
-            date: week,
-            name: name,
-            category: telemetry,
-            cells: try T.parse(of: batch)
-        )
-    }
-
-    static func parse<T: MetricsValued>(of batch: [T]) throws -> [T.Cell] {
-        try batch.grouped(by: \.hour).mapValues { items in
-            items.reduce(.zero) { $0 + $1.value }
-        }
-        .map(T.Cell.init)
-    }
+@objc(IntMetricsObject)
+final class IntMetricsObject: MetricsObject, MetricsValued {
+    @NSManaged var value: Int
 }

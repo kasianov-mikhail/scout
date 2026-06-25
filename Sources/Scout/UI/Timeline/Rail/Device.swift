@@ -9,19 +9,24 @@ import Foundation
 
 struct Device: Identifiable {
     let date: Date?
-    let id: RecordID
+    let id: String
     let deviceID: UUID?
 }
 
 extension Device: RecordDecodable {
+    static let recordType = DeviceObject.recordType
+    static let sampleRecords: [Record] = []
+
     static let desiredKeys = [
         "date",
         "device_id",
     ]
+}
 
+extension Device {
     init(record: Record) throws {
         date = record["date"]
-        id = record.id
+        id = record.recordID
         deviceID = record["device_id"].flatMap(UUID.init)
     }
 }

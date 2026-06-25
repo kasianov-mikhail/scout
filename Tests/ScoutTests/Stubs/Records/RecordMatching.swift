@@ -16,10 +16,10 @@ import Foundation
 ///
 extension Record {
     func matches(_ query: RecordQuery) -> Bool {
-        recordType == query.recordType && query.filters.allSatisfy(matches)
+        recordType == query.recordType.recordType && query.filters.allSatisfy(matches)
     }
 
-    private func matches(_ filter: RecordFilter) -> Bool {
+    private func matches(_ filter: RecordQuery.Filter) -> Bool {
         guard let value = fields[filter.field] else { return false }
 
         switch filter.op {

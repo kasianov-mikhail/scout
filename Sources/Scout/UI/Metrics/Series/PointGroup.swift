@@ -19,27 +19,18 @@ extension PointGroup: Comparable {
     }
 }
 
-extension Sequence {
-    func pointGroups<T: ChartNumeric>() -> [PointGroup<T>] where Element == GridMatrix<T> {
-        Dictionary(grouping: self, by: \.name)
-            .mapValues { $0.flatMap(\.points) }
-            .map(PointGroup.init)
-    }
-}
-
-extension PointGroup: CustomStringConvertible {
-    var description: String {
-        let dates = points.map(\.date)
-        let start = dates.min().map(ISO8601DateFormatter().string)!
-        let end = dates.max().map(ISO8601DateFormatter().string)!
-
-        return """
+extension [MetricSeries] {
+    func pointGroups<T: ChartNumeric>() -> [PointGroup<T>] {
+        map { series in
             PointGroup(
-              name: \(name),
-              points: \(points.count),
-              total: \(points.total),
-              range: \(start) – \(end)
+                name: series.name,
+                points: series.points.map { point in
+                    ChartPoint(
+                        date: Date(millisecondsSince1970: point.date),
+                        count: T.chartValue(point.value)
+                    )
+                }
             )
-            """
+        }
     }
 }

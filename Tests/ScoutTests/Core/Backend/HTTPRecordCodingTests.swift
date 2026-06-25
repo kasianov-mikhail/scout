@@ -16,7 +16,7 @@ struct HTTPRecordCodingTests {
     func recordRoundTrip() throws {
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        var record = Record(recordType: "Event", id: RecordID(recordName: "record-1"))
+        var record = Record(recordType: "Event", recordID: "record-1")
         record["name"] = "login"
         record["param_count"] = Int64(2)
         record["value"] = 1.5
@@ -25,10 +25,10 @@ struct HTTPRecordCodingTests {
 
         let wire = HTTPRecord(record: record)
         let data = try JSONEncoder().encode(wire)
-        let restored = try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord
+        let restored = try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord()
 
         #expect(restored.recordType == "Event")
-        #expect(restored.recordName == "record-1")
+        #expect(restored.recordID == "record-1")
         #expect(restored["name"] == "login")
         #expect(restored["param_count"] == Int64(2))
         #expect(restored["value"] == 1.5)

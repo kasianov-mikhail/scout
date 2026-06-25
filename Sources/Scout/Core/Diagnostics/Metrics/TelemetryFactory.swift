@@ -9,7 +9,7 @@ import Foundation
 import Metrics
 
 struct TelemetryFactory: MetricsFactory {
-    let sync: SyncAction
+    let sync: Synchronize
 
     func makeCounter(label: String, dimensions: [(String, String)]) -> CounterHandler {
         CKTelemetryHandler(label: label, dimensions: dimensions, sync: sync)

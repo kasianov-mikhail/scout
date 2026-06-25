@@ -12,13 +12,16 @@ struct Crash: Identifiable, Hashable {
     let reason: String?
     let stackTrace: [String]
     let date: Date?
-    let id: RecordID
+    let id: String
     let installID: UUID?
     let launchID: UUID?
     let sessionID: UUID?
 }
 
-extension Crash {
+extension Crash: RecordDecodable {
+    static let recordType = CrashObject.recordType
+    static let sampleRecords: [Record] = []
+
     static let desiredKeys = [
         "name",
         "reason",
@@ -31,12 +34,12 @@ extension Crash {
     ]
 }
 
-extension Crash: RecordDecodable {
+extension Crash {
     init(record: Record) throws {
         name = record["name"] ?? ""
         reason = record["reason"]
         date = record["date"]
-        id = record.id
+        id = record.recordID
         installID = record["install_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
@@ -50,13 +53,17 @@ extension Crash: RecordDecodable {
 }
 
 extension Crash {
+    static var sample: Crash {
+        Self.sample("NSRangeException", at: Date())
+    }
+
     static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Crash {
         Crash(
             name: name,
             reason: nil,
             stackTrace: [],
             date: date,
-            id: RecordID(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             installID: nil,
             launchID: nil,
             sessionID: sessionID

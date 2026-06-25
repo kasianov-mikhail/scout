@@ -12,7 +12,7 @@ import Testing
 
 extension NSManagedObjectContext {
     static func inMemoryContext() -> NSManagedObjectContext {
-        let container = NSPersistentContainer.newContainer(named: "Scout")
+        let container = NSPersistentContainer(named: "Scout")
 
         let description = NSPersistentStoreDescription()
         description.type = NSInMemoryStoreType

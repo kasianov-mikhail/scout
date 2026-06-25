@@ -7,14 +7,6 @@
 
 import CoreData
 
-/// `SyncableObject` that adds a per-record `sessionID`, for items that
-/// are logged inside a user session (events, crashes, metrics, activity,
-/// and `SessionObject` itself).
-///
-/// Lifecycle records that aren't session-scoped (`DeviceObject`,
-/// `InstallObject`, `LaunchObject`, `VersionObject`) sit on
-/// `SyncableObject` directly.
-///
 @objc(TrackedObject)
 class TrackedObject: SyncableObject {
     @NSManaged var sessionID: UUID
@@ -22,5 +14,13 @@ class TrackedObject: SyncableObject {
     override func awakeFromInsert() {
         super.awakeFromInsert()
         sessionID = IDs.session
+    }
+
+    func inferredEndDate(in context: NSManagedObjectContext) throws -> Date? {
+        let request = NSFetchRequest<TrackedObject>(entityName: "TrackedObject")
+        request.predicate = NSPredicate(format: "sessionID == %@", sessionID as CVarArg)
+        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
+        request.fetchLimit = 1
+        return try context.fetch(request).first?.date
     }
 }

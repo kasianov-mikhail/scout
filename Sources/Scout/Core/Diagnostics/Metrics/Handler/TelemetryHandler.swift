@@ -11,9 +11,9 @@ import Metrics
 final class CKTelemetryHandler: NSObject {
     let label: String
     let dimensions: [(String, String)]
-    let sync: SyncAction
+    let sync: Synchronize
 
-    init(label: String, dimensions: [(String, String)], sync: @escaping SyncAction) {
+    init(label: String, dimensions: [(String, String)], sync: @escaping Synchronize) {
         self.label = label
         self.dimensions = dimensions
         self.sync = sync

@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-func dedup<T: Identifiable>(new: [T], old: [T]) -> [T] where T.ID == RecordID {
-    var seen: Set<RecordID> = []
+func dedup<T: Identifiable>(new: [T], old: [T]) -> [T] where T.ID == String {
+    var seen: Set<String> = []
     var result: [T] = []
     result.reserveCapacity(new.count + old.count)
     for item in new where seen.insert(item.id).inserted {

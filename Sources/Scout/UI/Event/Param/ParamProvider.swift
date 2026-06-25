@@ -10,15 +10,15 @@ import SwiftUI
 class ParamProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[Item]>?
 
-    private let recordID: RecordID
+    private let recordID: String
 
-    init(recordID: RecordID) {
+    init(recordID: String) {
         self.recordID = recordID
     }
 
-    func fetch(in database: AppDatabase) async throws -> Output {
+    func fetch(in database: DatabaseReader) async throws -> Output {
         try await database
-            .lookup(id: recordID, fields: ["params"])["params"]
+            .lookup(recordName: recordID, fields: ["params"])["params"]
             .map(Item.fromData)?
             .sorted() ?? []
     }

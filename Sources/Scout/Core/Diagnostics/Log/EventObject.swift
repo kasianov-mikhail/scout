@@ -7,26 +7,28 @@
 
 import CoreData
 
+@objc(NamedObject)
+class NamedObject: TrackedObject {
+    @NSManaged var name: String?
+}
+
 @objc(EventObject)
-final class EventObject: NamedObject, Syncable {
+final class EventObject: NamedObject {
     static let recordType = "Event"
+
     @NSManaged var eventID: UUID
     @NSManaged var level: String?
     @NSManaged var paramCount: Int64
     @NSManaged var params: Data?
-
-    static func group(in context: NSManagedObjectContext) throws -> [EventObject]? {
-        try batch(in: context, matching: [\.name, \.week])
-    }
 
     static func matrix(of batch: [EventObject]) throws -> GridMatrix<Int> {
         try NamedObject.matrix(of: batch)
     }
 }
 
-extension EventObject: RecordRepresentable {
-    var toRecord: Record {
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: eventID.uuidString))
+extension EventObject: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: eventID.uuidString)
 
         record["name"] = name
         record["level"] = level

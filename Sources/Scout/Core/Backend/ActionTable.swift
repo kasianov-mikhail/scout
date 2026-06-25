@@ -45,9 +45,7 @@ extension ActionTable {
     ])
 }
 
-/// Cross-platform application lifecycle notification names.
 enum AppLifecycle {
-    /// `willEnterForeground` on iOS, `willBecomeActive` on macOS.
     static var willEnterForeground: Notification.Name {
         #if canImport(UIKit)
             UIApplication.willEnterForegroundNotification
@@ -56,7 +54,6 @@ enum AppLifecycle {
         #endif
     }
 
-    /// `didEnterBackground` on iOS, `didResignActive` on macOS.
     static var didEnterBackground: Notification.Name {
         #if canImport(UIKit)
             UIApplication.didEnterBackgroundNotification

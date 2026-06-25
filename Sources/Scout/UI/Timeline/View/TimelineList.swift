@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TimelineList<Pagination: View>: View {
     let items: [TimelineItem]
-    let highlightedID: RecordID?
+    let highlightedID: String?
 
     @ViewBuilder let older: () -> Pagination
     @ViewBuilder let newer: () -> Pagination

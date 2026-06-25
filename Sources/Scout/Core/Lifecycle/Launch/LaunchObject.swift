@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(LaunchObject)
-final class LaunchObject: SyncableObject, Syncable, GridBatch {
+final class LaunchObject: SyncableObject {
     static let recordType = "Launch"
 
     @NSManaged var endDate: Date?
@@ -28,9 +28,9 @@ final class LaunchObject: SyncableObject, Syncable, GridBatch {
     }
 }
 
-extension LaunchObject {
-    var toRecord: Record {
-        var record = Record(recordType: Self.recordType, id: RecordID(recordName: launchID.uuidString))
+extension LaunchObject: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: launchID.uuidString)
 
         record["start_date"] = date
         record["end_date"] = endDate

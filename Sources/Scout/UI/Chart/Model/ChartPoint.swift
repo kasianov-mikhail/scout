@@ -8,13 +8,13 @@
 import Charts
 import Foundation
 
+typealias ChartNumeric = MatrixValue & Plottable & MetricSeriesScalar
+
 struct ChartPoint<T: ChartNumeric>: Identifiable, ChartSeries {
     let id = UUID()
     let date: Date
     let count: T
 }
-
-// MARK: - Operators
 
 extension ChartPoint: Comparable {
     static func < (lhs: ChartPoint, rhs: ChartPoint) -> Bool {
@@ -37,16 +37,6 @@ extension ChartPoint {
         lhs = lhs + rhs
     }
 }
-
-// MARK: -
-
-extension ChartPoint: CustomStringConvertible {
-    var description: String {
-        "\(date): \(count)"
-    }
-}
-
-// MARK: - Sample Data
 
 extension [ChartPoint<Int>] {
     static let empty: Self = []

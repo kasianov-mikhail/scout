@@ -13,21 +13,6 @@
 import CloudKit
 import Foundation
 
-/// Measures how CloudKit query latency scales with the number of in-flight requests.
-///
-/// Runs a warm-up request first, then for each concurrency level in `counts` executes
-/// that many identical queries in parallel, `rounds` times. Prints the batch wall-clock
-/// time, the effective per-request time, and throttle errors (`serviceUnavailable` /
-/// `requestRateLimited`) if they occur. With perfect parallelism the batch time stays
-/// flat as the level grows; the level where it starts climbing is the practical ceiling.
-///
-/// Holds every `RequestLimiter` slot for the duration, so regular Scout traffic neither
-/// skews the measurements nor competes with them — library requests queue up and resume
-/// once the sweep is done.
-///
-/// June 2026 baseline: 1 → 409 ms, 2 → 562 ms, 4 → 652 ms, 8 → 751 ms, 16 → 1406 ms,
-/// no throttling — the ceiling `RequestLimiter.requestLimit` is based on.
-///
 public func benchmarkCloudKitParallelism(container: CKContainer, recordType: String = "Event", counts: [Int] = [1, 2, 4, 8, 16], rounds: Int = 2) async {
     let counts = counts.filter { $0 > 0 }
 
@@ -78,20 +63,6 @@ private func runSweep(_ database: CKDatabase, recordType: String, counts: [Int],
     }
 }
 
-/// Re-validates that `RequestLimiter.requestLimit` still matches CloudKit's behavior.
-///
-/// Compares the latency of a single request against a batch of `requestLimit` parallel
-/// requests and a batch of twice that. Returns `true` when the limit still looks right:
-/// the batch at the limit stays within ×3 of a single request and nothing gets throttled.
-/// Prints a FAIL with lowering advice when scaling broke down, and a NOTE with raising
-/// advice when twice the limit also scales cleanly.
-///
-/// CloudKit's server-side behavior can change without notice, so run this occasionally —
-/// from a nightly performance job, or manually in a debug build after iOS/CloudKit
-/// updates. Costs about `3 × requestLimit + 3` requests per run. Holds every
-/// `RequestLimiter` slot for the duration, so regular Scout traffic neither skews the
-/// measurements nor competes with them — library requests queue up and resume after.
-///
 @discardableResult public func verifyParallelismBenchmark(container: CKContainer, recordType: String = "Event") async -> Bool {
     print("[CKVerify] checking that \(RequestLimiter.requestLimit) in-flight CloudKit requests is still the right limit")
 
