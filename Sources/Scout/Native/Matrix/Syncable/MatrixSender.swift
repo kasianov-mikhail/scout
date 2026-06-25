@@ -7,7 +7,7 @@
 
 import CoreData
 
-struct MatrixSender: Sendable {
+struct MatrixSender: @unchecked Sendable {
     let id: String
     let aggregator: any ClientAggregating
     let context: NSManagedObjectContext

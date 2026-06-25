@@ -7,7 +7,7 @@
 
 import CoreData
 
-struct RecordSender: Sendable {
+struct RecordSender: @unchecked Sendable {
     let id: String
     let database: any Database
     let context: NSManagedObjectContext
