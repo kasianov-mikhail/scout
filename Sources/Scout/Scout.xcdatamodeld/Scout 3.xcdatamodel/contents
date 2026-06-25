@@ -17,7 +17,7 @@
         <attribute name="attempts" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="backendID" attributeType="String"/>
         <attribute name="progressPrimitive" attributeType="Integer 16" defaultValueString="0" renamingIdentifier="remainingPrimitive" usesScalarValueType="YES"/>
-        <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableObject" inverse="deliveries"/>
+        <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableObject" inverseName="deliveries" inverseEntity="SyncableObject"/>
         <fetchIndex name="byBackend">
             <fetchIndexElement property="backendID" type="Binary" order="ascending"/>
         </fetchIndex>
@@ -56,7 +56,7 @@
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
     </entity>
     <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="none">
-        <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SyncDelivery" inverse="object"/>
+        <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SyncDelivery" inverseName="object" inverseEntity="SyncDelivery"/>
     </entity>
     <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
         <attribute name="sessionID" attributeType="UUID" usesScalarValueType="NO"/>

@@ -34,7 +34,8 @@ extension Backend {
         }
 
         if !progress.isEmpty {
-            let row = SyncDelivery(context: context)
+            let entity = NSEntityDescription.entity(forEntityName: "SyncDelivery", in: context)!
+            let row = SyncDelivery(entity: entity, insertInto: context)
             row.backendID = id
             row.object = object
             row.progress = progress
