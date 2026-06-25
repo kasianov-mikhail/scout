@@ -8,12 +8,12 @@
 import Foundation
 
 extension Array {
-    func seed<Value>(_ keyPath: KeyPath<Element, Value?>) throws(SeedError) -> Value {
+    func seed<Value>(_ keyPath: KeyPath<Element, Value?>) throws -> Value {
         guard let first else {
-            throw .emptyArray
+            throw SeedError.emptyArray
         }
         guard let value = first[keyPath: keyPath] else {
-            throw .missingProperty(keyPath._kvcKeyPathString)
+            throw SeedError.missingProperty(keyPath._kvcKeyPathString)
         }
         return value
     }
