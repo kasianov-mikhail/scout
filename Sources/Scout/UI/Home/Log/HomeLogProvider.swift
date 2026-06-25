@@ -7,27 +7,33 @@
 
 import Foundation
 
-/// Fetches the stat matrices backing the Home Log counters in one pass:
-/// every `DateIntMatrix` and `DateDoubleMatrix` of the default range,
-/// so switching periods needs no further requests.
-///
 class HomeLogProvider: ObservableObject, Provider {
-    @Published var result: ProviderResult<HomeLogSummary>?
+    @Published var result: ProviderResult<([GridMatrix<Int>], [GridMatrix<Double>])>?
 
-    func fetch(in database: AppDatabase) async throws -> HomeLogSummary {
-        let intQuery = query(for: Int.recordType)
-        let doubleQuery = query(for: Double.recordType)
+    func fetch(in database: DatabaseReader) async throws -> ([GridMatrix<Int>], [GridMatrix<Double>]) {
+        async let intMatrices = matrices(of: Int.self, in: database)
+        async let doubleMatrices = matrices(of: Double.self, in: database)
 
-        async let intRecords = database.readAll(matching: intQuery, fields: nil)
-        async let doubleRecords = database.readAll(matching: doubleQuery, fields: nil)
-
-        return HomeLogSummary(
-            intMatrices: try await intRecords.map { try GridMatrix<Int>(record: $0) }.mergeDuplicates(),
-            doubleMatrices: try await doubleRecords.map { try GridMatrix<Double>(record: $0) }.mergeDuplicates()
-        )
+        return try await (intMatrices.filter { !lifecycleNames.contains($0.name) }, doubleMatrices)
     }
+}
 
-    private func query(for recordType: String) -> RecordQuery {
-        RecordQuery(recordType: recordType, filters: Calendar.utc.defaultRange.dateFilters)
-    }
+private let lifecycleNames = [
+    DeviceObject.recordType,
+    InstallObject.recordType,
+    LaunchObject.recordType,
+    SessionObject.recordType,
+    VersionObject.recordType,
+]
+
+private func matrices<T: MatrixValue>(of type: T.Type, in database: DatabaseReader) async throws -> [GridMatrix<T>] {
+    let query = RecordQuery(
+        recordType: GridMatrix<T>.self,
+        filters: Calendar.utc.defaultRange.dateFilters
+    )
+    return
+        try await database
+        .readAll(matching: query, fields: nil)
+        .map { try GridMatrix<T>(record: $0) }
+        .mergeDuplicates()
 }
