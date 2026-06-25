@@ -167,7 +167,7 @@ struct DeliverTests {
         let event = EventObject.stub(name: "login", synced: true, in: context)
         event.seedDelivery([.raw, .matrix], for: "cloud", in: context)
         // The server is already at the attempt ceiling and still owes its raw record.
-        event.seedDelivery([.raw], attempts: SyncDelivery.maxAttempts, for: "server", in: context)
+        event.seedDelivery([.raw], attempts: Int16(SyncDelivery.maxAttempts), for: "server", in: context)
         try context.save()
 
         try await deliver(EventObject.self, to: cloudBackend)

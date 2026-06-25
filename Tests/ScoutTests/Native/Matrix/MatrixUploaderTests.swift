@@ -21,7 +21,6 @@ struct MatrixUploaderTests {
             database: database,
             maxRetry: 3,
             matrix: Matrix(
-                recordType: Int.recordType,
                 date: now,
                 name: "matrix",
                 cells: []

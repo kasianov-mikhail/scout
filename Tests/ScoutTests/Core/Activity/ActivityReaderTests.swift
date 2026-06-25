@@ -15,22 +15,22 @@ struct ActivityReaderTests {
     func reconstructsFromMatrices() async throws {
         let database = DatabaseStub()
         database.add(
-            PeriodMatrix(
-                recordType: PeriodCell<Int>.recordType,
+            Matrix<PeriodCell<Int>>(
                 date: date(2026, 6, 1),
                 name: "ActiveUser",
                 category: nil,
                 baseRecord: nil,
                 cells: [
-                    PeriodCell(period: .daily, day: 9, value: 2), // June 10
+                    PeriodCell(period: .daily, day: 9, value: 2),  // June 10
                     PeriodCell(period: .weekly, day: 9, value: 5),
                     PeriodCell(period: .monthly, day: 9, value: 7),
-                    PeriodCell(period: .daily, day: 10, value: 1), // June 11
+                    PeriodCell(period: .daily, day: 10, value: 1),  // June 11
                 ]
             ).record
         )
 
-        let series = try await database
+        let series =
+            try await database
             .activity(in: date(2026, 6, 1)..<date(2026, 7, 1))
             .sorted { $0.date < $1.date }
 

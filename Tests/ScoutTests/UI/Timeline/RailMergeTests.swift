@@ -74,7 +74,7 @@ struct RailMergeTests {
         let installID = UUID()
         let launchID = UUID()
         let sessionID = UUID()
-        let eventID = RecordID(recordName: UUID().uuidString)
+        let eventID = UUID().uuidString
 
         let original = Rail(
             device: .stub(deviceID: deviceID),

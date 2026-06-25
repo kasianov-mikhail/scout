@@ -17,7 +17,7 @@ extension Install {
     ) -> Install {
         Install(
             date: date,
-            id: .init(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             installID: installID,
             deviceID: deviceID
         )

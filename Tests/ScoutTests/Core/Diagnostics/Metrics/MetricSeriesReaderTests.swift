@@ -16,13 +16,12 @@ struct MetricSeriesReaderTests {
         let database = DatabaseStub()
         database.add(
             GridMatrix<Int>(
-                recordType: Int.recordType,
                 date: date(2026, 6, 8),
                 name: "api_calls",
                 category: "counter",
                 baseRecord: nil,
                 cells: [
-                    GridCell(row: 4, column: 9, value: 2), // +3 days, +9h
+                    GridCell(row: 4, column: 9, value: 2),  // +3 days, +9h
                     GridCell(row: 4, column: 10, value: 3),
                 ]
             ).record
@@ -50,7 +49,6 @@ struct MetricSeriesReaderTests {
         let database = DatabaseStub()
         database.add(
             GridMatrix<Double>(
-                recordType: Double.recordType,
                 date: date(2026, 6, 8),
                 name: "latency",
                 category: "gauge",

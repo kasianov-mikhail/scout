@@ -23,7 +23,7 @@ extension Event {
             date: date,
             paramCount: nil,
             uuid: nil,
-            id: .init(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             installID: installID,
             sessionID: sessionID,
             deviceID: deviceID

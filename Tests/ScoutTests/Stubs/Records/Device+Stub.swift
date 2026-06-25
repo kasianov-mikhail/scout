@@ -16,7 +16,7 @@ extension Device {
     ) -> Device {
         Device(
             date: date,
-            id: .init(recordName: UUID().uuidString),
+            id: UUID().uuidString,
             deviceID: deviceID
         )
     }

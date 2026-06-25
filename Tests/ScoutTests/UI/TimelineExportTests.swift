@@ -68,7 +68,7 @@ struct TimelineExportTests {
             session: Session(
                 startDate: nil,
                 endDate: nil,
-                id: RecordID(recordName: "session"),
+                id: "session",
                 sessionID: nil,
                 launchID: nil,
                 installID: nil
@@ -80,7 +80,7 @@ struct TimelineExportTests {
             launch: Launch(
                 startDate: nil,
                 endDate: nil,
-                id: RecordID(recordName: "launch"),
+                id: "launch",
                 launchID: nil,
                 installID: nil
             ),
@@ -89,14 +89,14 @@ struct TimelineExportTests {
         let install = InstallRoot(
             install: Install(
                 date: nil,
-                id: RecordID(recordName: "install"),
+                id: "install",
                 installID: nil,
                 deviceID: nil
             ),
             launches: [launch]
         )
         let rail = Rail(
-            device: Device(date: nil, id: RecordID(recordName: "device"), deviceID: nil),
+            device: Device(date: nil, id: "device", deviceID: nil),
             installs: [install]
         )
 
@@ -134,7 +134,7 @@ struct TimelineExportTests {
             reason: "unexpectedly found nil",
             stackTrace: [],
             date: at(10),
-            id: RecordID(recordName: "crash"),
+            id: "crash",
             installID: nil,
             launchID: nil,
             sessionID: nil

@@ -13,9 +13,9 @@ import Testing
 struct RecordChunkTests {
     @Test("Addition concatenates records")
     func addition() {
-        let r1 = Record(recordType: "A", id: RecordID(recordName: UUID().uuidString))
-        let r2 = Record(recordType: "B", id: RecordID(recordName: UUID().uuidString))
-        let r3 = Record(recordType: "C", id: RecordID(recordName: UUID().uuidString))
+        let r1 = Record(recordType: "A", recordID: UUID().uuidString)
+        let r2 = Record(recordType: "B", recordID: UUID().uuidString)
+        let r3 = Record(recordType: "C", recordID: UUID().uuidString)
 
         let a = RecordChunk(records: [r1], cursor: nil)
         let b = RecordChunk(records: [r2, r3], cursor: nil)
@@ -38,8 +38,8 @@ struct RecordChunkTests {
 
     @Test("Plus-equals mutates in place")
     func plusEquals() {
-        let r1 = Record(recordType: "X", id: RecordID(recordName: UUID().uuidString))
-        let r2 = Record(recordType: "Y", id: RecordID(recordName: UUID().uuidString))
+        let r1 = Record(recordType: "X", recordID: UUID().uuidString)
+        let r2 = Record(recordType: "Y", recordID: UUID().uuidString)
 
         var chunk = RecordChunk(records: [r1], cursor: nil)
         chunk += RecordChunk(records: [r2], cursor: nil)

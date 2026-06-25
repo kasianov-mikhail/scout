@@ -26,8 +26,8 @@ struct CrashObjectTests {
 
         let matrix = try CrashObject.matrix(of: batch)
 
-        #expect(matrix.recordType == Int.recordType)
-        #expect(matrix.name == CrashObject.recordType.rawValue)
+        #expect(type(of: matrix).recordType == Int.recordType)
+        #expect(matrix.name == CrashObject.recordType)
         #expect(matrix.date == date.startOfWeek)
         #expect(matrix.cells.map(\.value).reduce(0, +) == 3)
     }
@@ -38,7 +38,6 @@ struct CrashObjectTests {
         object.name = name
         object.date = date
         object.crashID = UUID()
-        object.syncState = .pending
         return object
     }
 }

@@ -91,7 +91,7 @@ private final class MetricsServerStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
-    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
         throw RecordNotFoundError()
     }
 

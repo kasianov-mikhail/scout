@@ -51,7 +51,7 @@ struct RecordEncodingTests {
 
         #expect(record.recordType == "DoubleMetric")
         #expect(record["value"] == 1.5)
-        #expect(record.id == metric.record.id)
+        #expect(record.recordID == metric.record.recordID)
     }
 }
 

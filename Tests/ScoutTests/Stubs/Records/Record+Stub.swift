@@ -14,7 +14,7 @@ extension Record {
         name: String = "matrix",
         date: Date = Date()
     ) -> Record {
-        var matrix = Record(recordType: Int.recordType, id: RecordID(recordName: UUID().uuidString))
+        var matrix = Record(recordType: Int.recordType, recordID: UUID().uuidString)
         matrix["name"] = name
         matrix["date"] = date
         matrix["cell_1_01"] = 3

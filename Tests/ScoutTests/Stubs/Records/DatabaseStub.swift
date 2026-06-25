@@ -19,8 +19,8 @@ import Foundation
 ///
 final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private let lock = NSLock()
-    private var storage: [RecordType: [Record]] = [:]
-    private var counts: [RecordType: Int] = [:]
+    private var storage: [String: [Record]] = [:]
+    private var counts: [String: Int] = [:]
 
     /// When set, every read suspends until the gate opens.
     var gate: Gate?
@@ -33,13 +33,13 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         }
     }
 
-    func readCount(of recordType: RecordType) -> Int {
+    func readCount(of recordType: String) -> Int {
         lock.lock()
         defer { lock.unlock() }
         return counts[recordType] ?? 0
     }
 
-    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
         throw RecordNotFoundError()
     }
 
@@ -55,9 +55,9 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private func chunk(matching query: RecordQuery, limit: Int) -> RecordChunk {
         lock.lock()
         defer { lock.unlock() }
-        counts[query.recordType, default: 0] += 1
+        counts[query.recordType.recordType, default: 0] += 1
 
-        let records = (storage[query.recordType] ?? []).filter { $0.matches(query) }
+        let records = (storage[query.recordType.recordType] ?? []).filter { $0.matches(query) }
         return RecordChunk(records: Array(records.prefix(limit)), cursor: nil)
     }
 
@@ -109,14 +109,14 @@ final class Gate: @unchecked Sendable {
 
 extension Record {
     static func deviceStub(deviceID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Device", id: RecordID(recordName: deviceID.uuidString))
+        var record = Record(recordType: "Device", recordID: deviceID.uuidString)
         record["device_id"] = deviceID.uuidString
         record["date"] = date
         return record
     }
 
     static func installStub(installID: UUID, deviceID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Install", id: RecordID(recordName: installID.uuidString))
+        var record = Record(recordType: "Install", recordID: installID.uuidString)
         record["install_id"] = installID.uuidString
         record["device_id"] = deviceID.uuidString
         record["date"] = date
@@ -124,7 +124,7 @@ extension Record {
     }
 
     static func launchStub(launchID: UUID, installID: UUID, deviceID: UUID, startDate: Date) -> Record {
-        var record = Record(recordType: "Launch", id: RecordID(recordName: launchID.uuidString))
+        var record = Record(recordType: "Launch", recordID: launchID.uuidString)
         record["launch_id"] = launchID.uuidString
         record["install_id"] = installID.uuidString
         record["device_id"] = deviceID.uuidString
@@ -133,7 +133,7 @@ extension Record {
     }
 
     static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date) -> Record {
-        var record = Record(recordType: "Session", id: RecordID(recordName: sessionID.uuidString))
+        var record = Record(recordType: "Session", recordID: sessionID.uuidString)
         record["session_id"] = sessionID.uuidString
         record["launch_id"] = launchID.uuidString
         record["install_id"] = installID.uuidString
@@ -142,7 +142,7 @@ extension Record {
     }
 
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Event", id: RecordID(recordName: UUID().uuidString))
+        var record = Record(recordType: "Event", recordID: UUID().uuidString)
         record["name"] = name
         record["session_id"] = sessionID.uuidString
         record["date"] = date

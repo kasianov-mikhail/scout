@@ -14,8 +14,8 @@ final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable 
     var errors: [Error] = []
     var writeErrors: [Error] = []
 
-    func lookup(id: RecordID, fields: [String]?) async throws -> Record {
-        guard let record = records.first(where: { $0.id == id }) else {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
+        guard let record = records.first(where: { $0.recordID == recordName }) else {
             throw RecordNotFoundError()
         }
         return record

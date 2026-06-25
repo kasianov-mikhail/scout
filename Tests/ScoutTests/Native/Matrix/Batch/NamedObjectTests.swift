@@ -39,7 +39,7 @@ struct NamedObjectTests {
 
         let matrix = try NamedObject.matrix(of: batch)
 
-        #expect(matrix.recordType == Int.recordType)
+        #expect(type(of: matrix).recordType == Int.recordType)
         #expect(matrix.name == "signal")
         #expect(matrix.date == date.startOfWeek)
         #expect(matrix.cells.count == 2)
@@ -51,7 +51,7 @@ struct NamedObjectTests {
             try .stub(name: nil, date: date, in: context)
         ]
 
-        #expect(throws: MatrixPropertyError.self) {
+        #expect(throws: [NamedObject].SeedError.self) {
             try NamedObject.matrix(of: batch)
         }
     }
@@ -62,7 +62,7 @@ struct NamedObjectTests {
         let object = EventObject(entity: entity, insertInto: context)
         object.name = "test"
 
-        #expect(throws: MatrixPropertyError.self) {
+        #expect(throws: [NamedObject].SeedError.self) {
             try NamedObject.matrix(of: [object])
         }
     }
@@ -81,7 +81,6 @@ extension NamedObject {
         object.name = name
         object.date = date
         object.eventID = UUID()
-        object.syncState = .pending
         object.level = "info"
         return object
     }

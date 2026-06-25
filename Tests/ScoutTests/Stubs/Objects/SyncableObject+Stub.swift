@@ -12,7 +12,8 @@ import CoreData
 extension SyncableObject {
     @discardableResult
     func seedDelivery(_ progress: SyncDelivery.Progress, attempts: Int16 = 0, for backendID: String, in context: NSManagedObjectContext) -> SyncDelivery {
-        let row = delivery(for: backendID) ?? SyncDelivery(context: context)
+        let entity = NSEntityDescription.entity(forEntityName: "SyncDelivery", in: context)!
+        let row = delivery(for: backendID) ?? SyncDelivery(entity: entity, insertInto: context)
         row.backendID = backendID
         row.object = self
         row.progress = progress

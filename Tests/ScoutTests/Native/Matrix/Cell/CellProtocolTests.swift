@@ -30,27 +30,4 @@ struct CellProtocolTests {
     func tripleDigitLeadingZero() {
         #expect(100.leadingZero == "100")
     }
-
-    // MARK: - Array summary
-
-    @Test("Empty array summary is []")
-    func emptySummary() {
-        let cells: [GridCell<Int>] = []
-        #expect(cells.summary == "[]")
-    }
-
-    @Test("Single cell summary")
-    func singleCellSummary() {
-        let cells = [GridCell(row: 0, column: 1, value: 42)]
-        #expect(cells.summary == "[cell_0_01=42]")
-    }
-
-    @Test("Multiple cells summary joined with comma")
-    func multipleCellsSummary() {
-        let cells = [
-            GridCell(row: 0, column: 0, value: 1),
-            GridCell(row: 1, column: 2, value: 3),
-        ]
-        #expect(cells.summary == "[cell_0_00=1, cell_1_02=3]")
-    }
 }
