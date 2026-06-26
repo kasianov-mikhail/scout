@@ -11,19 +11,11 @@ struct ReadyPage: View {
     @Environment(\.dismiss) var dismiss
 
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer()
-            Spacer()
-            Spacer()
-
+        OnboardingPage(title: "You're all set", spacing: 24) {
             Image(systemName: "checkmark.circle")
                 .font(.system(size: 64))
                 .foregroundStyle(.green)
-
-            Text(verbatim: "You're all set")
-                .font(.title)
-                .bold()
-
+        } content: {
             Text(verbatim: "Run your app and come back here to see your data.")
                 .font(.body)
                 .kerning(0.3)
@@ -38,12 +30,6 @@ struct ReadyPage: View {
             }
             .buttonStyle(.pill)
             .padding(.horizontal, 32)
-
-            Spacer()
-            Spacer()
-            Spacer()
-            Spacer()
-            Spacer()
         }
     }
 }
