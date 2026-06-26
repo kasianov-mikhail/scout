@@ -33,7 +33,7 @@ struct ParamView: View {
             if value.isContainer {
                 List(value.nodes) { node in
                     ZStack {
-                        ParamNodeRow(node: node)
+                        ParamValueRow(node: node)
 
                         NavigationLink {
                             ParamView(node: node)
@@ -82,30 +82,6 @@ private struct ParamScalarView: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
-        }
-    }
-}
-
-/// A row of the expandable value tree: a colored kind icon, the key or index,
-/// and the scalar value or a child count for containers.
-///
-struct ParamNodeRow: View {
-    let node: ParamValue.Node
-
-    var body: some View {
-        HStack(spacing: 13) {
-            ParamIcon(value: node.value)
-
-            Text(node.label)
-                .foregroundStyle(node.value.isContainer ? .primary : .secondary)
-
-            Spacer()
-
-            Text(node.value.summary)
-                .monospaced()
-                .font(.system(size: 16))
-                .foregroundStyle(node.value.isContainer ? .tertiary : .primary)
-                .lineLimit(1)
         }
     }
 }

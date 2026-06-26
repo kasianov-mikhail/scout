@@ -1,5 +1,5 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2026 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -7,35 +7,29 @@
 
 import SwiftUI
 
-struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
-    @Binding var extent: ChartExtent<T>
-
-    let periods: [T]
+struct PeriodPicker: View {
+    @Binding var selection: Period
 
     var body: some View {
-        Picker("", selection: $extent.period) {
-            ForEach(periods) { period in
-                if period == extent.period, extent.isAccented {
-                    Text(period.shortTitle + "*")
-                } else {
-                    Text(period.shortTitle)
-                }
+        Picker(selection: $selection) {
+            ForEach(Period.allCases) { period in
+                Text(period.shortTitle.uppercased())
             }
+        } label: {
+            Text(verbatim: "Period")
         }
         .padding(.horizontal)
         .pickerStyle(.segmented)
     }
 }
 
-extension ChartExtent {
-    fileprivate var isAccented: Bool {
-        isRightEnabled
-    }
-}
-
 #Preview {
-    PeriodPicker(
-        extent: .constant(ChartExtent(period: Period.today)),
-        periods: Period.allCases
-    )
+    struct Preview: View {
+        @State private var selection = Period.today
+
+        var body: some View {
+            PeriodPicker(selection: $selection)
+        }
+    }
+    return Preview()
 }
