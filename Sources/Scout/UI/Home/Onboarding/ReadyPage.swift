@@ -35,13 +35,8 @@ struct ReadyPage: View {
                 dismiss()
             } label: {
                 Text(verbatim: "Get Started")
-                    .bold()
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(.blue)
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 100, style: .continuous))
             }
+            .buttonStyle(.pill)
             .padding(.horizontal, 32)
 
             Spacer()
