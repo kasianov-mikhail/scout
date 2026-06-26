@@ -67,8 +67,6 @@ struct MetricReaderTests {
         #expect(latency.points.first?.value == .double(1.5))
     }
 
-    // MARK: - Helpers
-
     private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int = 0) -> Date {
         DateComponents(calendar: .utc, year: year, month: month, day: day, hour: hour).date!
     }

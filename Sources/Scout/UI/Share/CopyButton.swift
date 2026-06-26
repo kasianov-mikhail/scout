@@ -39,8 +39,6 @@ struct CopyButton: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     NavigationStack {
         Text(verbatim: "Content")

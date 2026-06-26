@@ -13,8 +13,6 @@ import Testing
 struct DateAddComponentTests {
     let base = Date(timeIntervalSinceReferenceDate: 0)  // 2001-01-01 00:00:00 UTC
 
-    // MARK: - Adding (non-mutating)
-
     @Test("addingDay adds one day by default")
     func addingDayDefault() {
         let result = base.addingDay()
@@ -76,8 +74,6 @@ struct DateAddComponentTests {
         let result = base.adding(.minute, value: 30)
         #expect(result.timeIntervalSince(base) == 1800)
     }
-
-    // MARK: - Mutating
 
     @Test("addDay mutates in place")
     func addDayMutating() {

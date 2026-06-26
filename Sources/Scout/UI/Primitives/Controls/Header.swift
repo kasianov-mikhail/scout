@@ -42,8 +42,6 @@ struct SeeAllButton: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     List {
         Header(title: "Section Title")

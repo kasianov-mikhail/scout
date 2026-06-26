@@ -30,8 +30,6 @@ struct Row<Content: View, Destination: View>: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         List {

@@ -84,8 +84,6 @@ struct FilterButton: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     FilterButton(levels: .constant([]))
 }

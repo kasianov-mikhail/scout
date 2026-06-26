@@ -61,8 +61,6 @@ extension MiniChartSeries {
     }
 }
 
-// MARK: - Placeholder
-
 extension MiniChartSeries {
     /// A gentle wave drawn under redaction while the real series loads.
     static let placeholder = MiniChartSeries(values: [3, 5, 4, 6, 5, 7, 6])

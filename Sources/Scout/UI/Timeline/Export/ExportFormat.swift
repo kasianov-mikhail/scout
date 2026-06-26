@@ -60,8 +60,6 @@ enum ExportFormat {
     }
 }
 
-// MARK: - Styles
-
 extension ExportFormat {
     private static let iso8601 = Date.ISO8601FormatStyle()
     private static let dayStyle = utcStyle("\(year: .padded(4))-\(month: .twoDigits)-\(day: .twoDigits)")

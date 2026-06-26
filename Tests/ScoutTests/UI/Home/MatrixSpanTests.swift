@@ -13,8 +13,6 @@ import Testing
 struct MatrixSpanTests {
     let range = Date(year: 2026, month: 6, day: 1)..<Date(year: 2026, month: 6, day: 8)
 
-    // MARK: - Events
-
     @Test("Count excludes crashes and metrics")
     func countExcludesCrashesAndMetrics() {
         let span = makeSpan([
@@ -38,8 +36,6 @@ struct MatrixSpanTests {
         #expect(span.total { $0 != CrashObject.recordType } == 3)
     }
 
-    // MARK: - Crashes
-
     @Test("Count sums the Crash matrices")
     func crashCount() {
         let span = makeSpan([
@@ -50,8 +46,6 @@ struct MatrixSpanTests {
 
         #expect(span.total { $0 == CrashObject.recordType } == 2)
     }
-
-    // MARK: - Metrics
 
     @Test("Metric count tallies distinct metrics across both matrix kinds")
     func metricCountIsDistinct() {
@@ -85,8 +79,6 @@ struct MatrixSpanTests {
 
         #expect(span.series == 0)
     }
-
-    // MARK: - Factories
 
     /// A span already narrowed to `range`, matching how the log section consumes it.
     private func makeSpan<T: ChartNumeric>(_ matrices: [GridMatrix<T>]) -> MatrixSpan<T> {

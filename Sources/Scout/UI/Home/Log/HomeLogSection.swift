@@ -62,8 +62,6 @@ struct HomeLogSection: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         List {

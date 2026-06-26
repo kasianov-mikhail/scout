@@ -42,8 +42,6 @@ protocol ChartTimeScale: Identifiable, Hashable {
     var horizonDate: Date { get }
 }
 
-// MARK: - Helpers
-
 extension ChartTimeScale {
     var today: Date {
         Date().startOfDay

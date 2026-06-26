@@ -10,8 +10,6 @@ import Testing
 @testable import Scout
 
 struct CellProtocolTests {
-    // MARK: - leadingZero
-
     @Test("Single digit gets leading zero")
     func singleDigitLeadingZero() {
         #expect(0.leadingZero == "00")

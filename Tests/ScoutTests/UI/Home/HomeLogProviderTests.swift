@@ -72,8 +72,6 @@ struct HomeLogProviderTests {
         #expect(MatrixSpan(matrices: result.0, range: allTime).total { $0 != CrashObject.recordType } == 7)
     }
 
-    // MARK: - Factories
-
     private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
         var record = Record(recordType: type, recordID: UUID().uuidString)
         record["name"] = name

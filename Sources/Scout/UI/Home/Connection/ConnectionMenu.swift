@@ -60,8 +60,6 @@ extension View {
     }
 }
 
-// MARK: - Previews
-
 @available(iOS 17.0, macOS 14.0, *)
 #Preview {
     @Previewable @State var activeID = Connection.samples[0].id

@@ -57,8 +57,6 @@ struct MiniChart: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         List {

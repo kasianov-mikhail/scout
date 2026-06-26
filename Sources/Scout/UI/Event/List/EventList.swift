@@ -73,8 +73,6 @@ struct EventList: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview("Empty State") {
     let provider = EventProvider()
     provider.events = []

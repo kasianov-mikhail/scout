@@ -44,7 +44,6 @@ struct LaunchObjectTests {
         let session2 = SessionObject.stub(date: week.addingHour(), in: context)
         session2.launchID = launchID
 
-        // Session with different launchID
         SessionObject.stub(date: week, in: context).launchID = UUID()
 
         try context.save()
@@ -63,7 +62,6 @@ struct LaunchObjectTests {
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
         version.launchID = launchID
 
-        // Version with different launchID
         VersionObject.stub(date: week, appVersion: "1.0", in: context).launchID = UUID()
 
         try context.save()
