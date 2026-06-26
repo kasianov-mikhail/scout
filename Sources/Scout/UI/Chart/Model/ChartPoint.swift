@@ -8,7 +8,7 @@
 import Charts
 import Foundation
 
-typealias ChartNumeric = MatrixValue & Plottable & MetricSeriesScalar
+typealias ChartNumeric = Plottable & SeriesScalar
 
 struct ChartPoint<T: ChartNumeric>: Identifiable, ChartSeries {
     let id = UUID()

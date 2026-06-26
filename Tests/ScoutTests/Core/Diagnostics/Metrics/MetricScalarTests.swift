@@ -9,7 +9,7 @@ import Testing
 
 @testable import Scout
 
-struct MatrixValueTests {
+struct MetricScalarTests {
     @Test("Int recordType is DateIntMatrix")
     func intRecordType() {
         #expect(Int.recordType == "DateIntMatrix")

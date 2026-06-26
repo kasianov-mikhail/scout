@@ -7,7 +7,9 @@
 
 import Foundation
 
-struct PeriodCell<T: MatrixValue> {
+typealias PeriodMatrix = Matrix<PeriodCell<Int>>
+
+struct PeriodCell<T: MetricScalar> {
     static var recordType: String { "PeriodMatrix" }
 
     let period: ActivityPeriod

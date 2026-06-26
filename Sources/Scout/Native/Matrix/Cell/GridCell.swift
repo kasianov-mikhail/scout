@@ -7,9 +7,9 @@
 
 import Foundation
 
-typealias GridMatrix<T: MatrixValue> = Matrix<GridCell<T>>
+typealias GridMatrix<T: MetricScalar> = Matrix<GridCell<T>>
 
-struct GridCell<T: MatrixValue>: Hashable, ChartComposing {
+struct GridCell<T: MetricScalar>: Hashable, ChartComposing {
     let row: Int
     let column: Int
     let value: T

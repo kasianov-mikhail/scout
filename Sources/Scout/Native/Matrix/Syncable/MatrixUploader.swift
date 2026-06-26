@@ -1,24 +1,16 @@
 //
-// Copyright 2024 Mikhail Kasianov
+// Copyright 2026 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
+import Foundation
 
 struct MatrixUploader<T: CellProtocol>: Sendable {
     let database: RecordWriter & RecordReader
     let maxRetry: Int
     let matrix: Matrix<T>
-}
-
-extension MatrixUploader {
-    init<V: MatrixBatch>(database: RecordWriter & RecordReader, maxRetry: Int, batch: [V]) throws where V.Cell == T {
-        self.database = database
-        self.maxRetry = maxRetry
-        self.matrix = try V.matrix(of: batch)
-    }
 }
 
 extension MatrixUploader {
@@ -42,13 +34,3 @@ extension MatrixUploader {
         }
     }
 }
-
-protocol ClientAggregating: RecordWriter, RecordReader {}
-
-extension ClientAggregating {
-    func aggregate<C: CellProtocol>(matrix: Matrix<C>) async throws {
-        try await MatrixUploader(database: self, maxRetry: 3, matrix: matrix).upload()
-    }
-}
-
-extension CKDatabase: ClientAggregating {}

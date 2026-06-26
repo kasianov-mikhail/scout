@@ -9,5 +9,5 @@ import Foundation
 
 typealias Database = DatabaseReader & DatabaseWriter
 
-typealias DatabaseReader = RecordLocator & MetricSeriesReader & ActivityReader & Sendable
+typealias DatabaseReader = RecordLocator & MetricReader & ActivityReader & Sendable
 typealias DatabaseWriter = RecordWriter & Sendable

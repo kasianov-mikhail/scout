@@ -8,7 +8,7 @@
 import CoreData
 
 extension CKTelemetryHandler {
-    func logMetrics<T: MatrixValue>(telemetry: Telemetry.Export, value: T) {
+    func logMetrics<T: MetricScalar>(telemetry: Telemetry.Export, value: T) {
         let label = self.label
         let sync = self.sync
         Task {
@@ -30,7 +30,7 @@ extension CKTelemetryHandler {
     }
 }
 
-func saveMetrics<T: MatrixValue>(
+func saveMetrics<T: MetricScalar>(
     _ name: String,
     date: Date,
     telemetry: Telemetry.Export,

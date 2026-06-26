@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CellProtocol: Combining, Sendable, Equatable {
-    associatedtype Scalar: MatrixValue
+    associatedtype Scalar: MetricScalar
 
     static var recordType: String { get }
 

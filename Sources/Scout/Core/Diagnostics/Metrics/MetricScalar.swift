@@ -7,17 +7,17 @@
 
 import CoreData
 
-protocol MatrixValue: AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
+protocol MetricScalar: AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
     associatedtype Object: MetricsValued where Object.Value == Self
     static var recordType: String { get }
 }
 
-extension Int: MatrixValue {
+extension Int: MetricScalar {
     typealias Object = IntMetricsObject
     static let recordType = "DateIntMatrix"
 }
 
-extension Double: MatrixValue {
+extension Double: MetricScalar {
     typealias Object = DoubleMetricsObject
     static let recordType = "DateDoubleMatrix"
 }
