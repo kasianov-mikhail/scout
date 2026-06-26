@@ -10,13 +10,6 @@ import SwiftUI
 struct RangeControl<T: ChartTimeScale>: View {
     @Binding var extent: ChartExtent<T>
 
-    let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.dateStyle = .medium
-        return formatter
-    }()
-
     var body: some View {
         HStack {
             MoveButton(image: "chevron.left") {
@@ -24,7 +17,7 @@ struct RangeControl<T: ChartTimeScale>: View {
             }
             .disabled(!extent.isLeftEnabled)
 
-            Text(extent.domain.label(using: formatter))
+            Text(extent.domain.label(using: rangeDateFormatter))
                 .font(.system(size: 16))
                 .monospaced()
                 .frame(height: 44)
