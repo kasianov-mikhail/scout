@@ -7,10 +7,6 @@
 
 import CoreData
 
-protocol MatrixAggregator: RecordWriter, RecordReader {
-    func aggregate<C: CellProtocol>(matrix: Matrix<C>) async throws
-}
-
 struct MatrixSender: @unchecked Sendable {
     let id: String
     let aggregator: any MatrixAggregator
