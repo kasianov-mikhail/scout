@@ -62,8 +62,6 @@ struct MetricsProviderTests {
         #expect(database.readCount(of: Int.recordType) == 1)
     }
 
-    // MARK: - Helpers
-
     private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Date {
         DateComponents(calendar: .utc, year: year, month: month, day: day, hour: hour).date!
     }

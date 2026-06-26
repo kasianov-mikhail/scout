@@ -87,8 +87,6 @@ struct ParamRow: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     NavigationStack {
         ParamList(items: ParamProvider.Item.sampleMetrics)

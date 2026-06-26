@@ -97,8 +97,6 @@ final class Gate: @unchecked Sendable {
     }
 }
 
-// MARK: - Record builders
-
 extension Record {
     static func deviceStub(deviceID: UUID, date: Date) -> Record {
         var record = Record(recordType: "Device", recordID: deviceID.uuidString)

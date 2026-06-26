@@ -21,8 +21,6 @@ struct ReferenceLevel {
     var isDrop: Bool { reference < count }
 }
 
-// MARK: - Projection
-
 extension ReferenceLevel {
     /// Geometry for one bucket; nil for buckets without comparison data,
     /// empty in both periods, or falling outside the plot.
@@ -51,8 +49,6 @@ extension ReferenceLevel {
         )
     }
 }
-
-// MARK: - Paths
 
 extension [ReferenceLevel] {
     /// Levels where the value grew or held its ground.

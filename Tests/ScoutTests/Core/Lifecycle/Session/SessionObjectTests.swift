@@ -41,7 +41,6 @@ struct SessionObjectTests {
         let launch = LaunchObject.stub(date: week, in: context)
         launch.launchID = launchID
 
-        // Launch with different launchID
         LaunchObject.stub(date: week, in: context).launchID = UUID()
 
         try context.save()

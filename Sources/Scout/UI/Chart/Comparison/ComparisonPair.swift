@@ -29,8 +29,6 @@ struct ComparisonPair<T: ChartNumeric>: Identifiable {
     var id: Date { date }
 }
 
-// MARK: - Bar Geometry
-
 extension ComparisonPair {
     /// Date of the bar's leading edge within the bucket slot.
     var barStart: Date { slotDate(at: barSlot.lowerBound) }
@@ -47,8 +45,6 @@ extension ComparisonPair {
         return bin.lowerBound.addingTimeInterval(length * fraction)
     }
 }
-
-// MARK: - Pairing
 
 extension Collection {
     /// Pairs each bucket of the current segment with the reference value

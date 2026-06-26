@@ -68,8 +68,6 @@ struct NamedObjectTests {
     }
 }
 
-// MARK: - Stub
-
 extension NamedObject {
     @discardableResult fileprivate static func stub(
         name: String?,

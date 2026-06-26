@@ -57,8 +57,6 @@ struct HomeSectionPicker: View {
     }
 }
 
-// MARK: - Previews
-
 private struct PickerPreview: View {
     @State private var selection = HomeSection.sessions
 

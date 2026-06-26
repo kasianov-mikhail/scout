@@ -25,15 +25,11 @@ extension PointSeries {
     }
 }
 
-// MARK: - By Name
-
 extension Collection where Element: PointSeries {
     func named(_ name: String) -> Element? {
         first { $0.name == name }
     }
 }
-
-// MARK: - By Period
 
 extension Collection where Element: PointSeries & Comparable {
     func ranked(on period: Period) -> [Element] {

@@ -22,7 +22,6 @@ struct PersistenceLoadTests {
         description.type = NSInMemoryStoreType
         container.persistentStoreDescriptions = [description]
 
-        // This should not throw
         try container.loadStore()
     }
 

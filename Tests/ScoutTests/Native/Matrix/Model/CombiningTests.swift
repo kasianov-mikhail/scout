@@ -10,8 +10,6 @@ import Testing
 @testable import Scout
 
 struct CombiningTests {
-    // MARK: - mergeDuplicates
-
     @Test("Merge duplicates combines matching cells")
     func mergeDuplicates() {
         let cells = [

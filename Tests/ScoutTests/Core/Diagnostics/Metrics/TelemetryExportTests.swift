@@ -11,8 +11,6 @@ import Testing
 @testable import Scout
 
 struct TelemetryExportTests {
-    // MARK: - Init from name and value
-
     @Test("Init with counter name creates counter")
     func initCounter() throws {
         let telemetry = try Telemetry(name: "counter", value: 5.0)
@@ -62,8 +60,6 @@ struct TelemetryExportTests {
         }
     }
 
-    // MARK: - Export property
-
     @Test("Export raw values match expected strings")
     func exportRawValues() {
         #expect(Telemetry.Export.counter.rawValue == "counter")
@@ -79,8 +75,6 @@ struct TelemetryExportTests {
     func exportAllCases() {
         #expect(Telemetry.Export.allCases.count == 7)
     }
-
-    // MARK: - ExportError
 
     @Test("ExportError description lists all valid names")
     func exportErrorDescription() {

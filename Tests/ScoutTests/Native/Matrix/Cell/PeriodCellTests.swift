@@ -11,8 +11,6 @@ import Testing
 @testable import Scout
 
 struct PeriodCellTests {
-    // MARK: - Key Generation
-
     @Test("Key encodes period and day")
     func keyGeneration() {
         let cell = PeriodCell<Int>(period: .daily, day: 0, value: 5)
@@ -30,8 +28,6 @@ struct PeriodCellTests {
         let cell = PeriodCell<Int>(period: .monthly, day: 11, value: 1)
         #expect(cell.key == "cell_m_12")
     }
-
-    // MARK: - Key Parsing
 
     @Test("Init from key parses correctly")
     func initFromKey() throws {
@@ -62,8 +58,6 @@ struct PeriodCellTests {
         }
     }
 
-    // MARK: - Round-trip
-
     @Test("Key round-trips through init")
     func keyRoundTrip() throws {
         let original = PeriodCell<Int>(period: .monthly, day: 6, value: 42)
@@ -73,8 +67,6 @@ struct PeriodCellTests {
         #expect(restored.day == original.day)
         #expect(restored.value == original.value)
     }
-
-    // MARK: - Combining
 
     @Test("Addition combines values")
     func addition() {

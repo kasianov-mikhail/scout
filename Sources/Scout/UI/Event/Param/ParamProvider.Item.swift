@@ -27,8 +27,6 @@ extension ParamProvider {
     }
 }
 
-// MARK: - Sample Data
-
 extension ParamProvider.Item {
     /// An in-app purchase where every value is a typed scalar.
     static var samplePurchase: [ParamProvider.Item] {

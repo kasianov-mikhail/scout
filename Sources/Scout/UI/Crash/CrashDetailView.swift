@@ -61,8 +61,6 @@ struct CrashDetailView: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         CrashDetailView(crash: .sample)

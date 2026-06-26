@@ -18,8 +18,6 @@ struct MiniChartSeriesTests {
         ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), count: count)
     }
 
-    // MARK: - Slicing
-
     @Test("Empty points produce sliceCount zeros")
     func emptyPoints() {
         let series = MiniChartSeries(points: [], range: range, aggregation: .total)
@@ -71,8 +69,6 @@ struct MiniChartSeriesTests {
 
         #expect(series.values == Array(repeating: 0, count: MiniChartSeries.sliceCount))
     }
-
-    // MARK: - Aggregation
 
     @Test("Total sums all points in a slice")
     func totalAggregation() {

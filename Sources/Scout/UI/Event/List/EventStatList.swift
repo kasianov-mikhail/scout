@@ -43,8 +43,6 @@ struct EventStatList: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview {
     NavigationStack {
         EventStatList(eventName: "Event", range: Period.week.initialRange)

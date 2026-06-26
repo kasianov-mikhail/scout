@@ -11,8 +11,6 @@ import Testing
 @testable import Scout
 
 struct MonitorErrorTests {
-    // MARK: - Equality
-
     @Test("notFound equals notFound")
     func notFoundEquality() {
         #expect(MonitorError.notFound == MonitorError.notFound)
@@ -30,8 +28,6 @@ struct MonitorErrorTests {
         let date = Date()
         #expect(MonitorError.notFound != MonitorError.alreadyCompleted(date))
     }
-
-    // MARK: - Error description
 
     @Test("notFound description contains 'not found'")
     func notFoundDescription() {
