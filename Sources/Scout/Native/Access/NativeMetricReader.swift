@@ -9,7 +9,7 @@ import CloudKit
 
 extension CKDatabase: MetricReader {}
 
-extension MetricReader {
+extension MetricReader where Self: RecordReader {
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
         let categoryFilter = RecordQuery.Filter(
             field: "category",

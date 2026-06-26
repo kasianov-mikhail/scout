@@ -15,7 +15,7 @@ class ActivityProvider: ObservableObject, Provider {
     }
 }
 
-protocol ActivityReader: RecordReader {
+protocol ActivityReader: Sendable {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint]
 }
 
