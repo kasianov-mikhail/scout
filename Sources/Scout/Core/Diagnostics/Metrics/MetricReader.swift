@@ -8,7 +8,7 @@
 import Foundation
 
 protocol MetricReader: RecordReader {
-    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]
+    func metricSeries<T: MatrixValue & MetricSeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries]
 }
 
 struct MetricSeries: Decodable {

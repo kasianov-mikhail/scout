@@ -18,8 +18,8 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
 
     func fetch(in database: DatabaseReader) async throws -> [MetricSeries] {
         try await database.metricSeries(
+            T.self,
             category: telemetry.rawValue,
-            values: T.seriesValues,
             in: Calendar.utc.defaultRange
         )
     }

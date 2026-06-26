@@ -24,7 +24,7 @@ struct DefaultDatabase: DatabaseReader {
         []
     }
 
-    func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries<T: MatrixValue & MetricSeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
         []
     }
 }
