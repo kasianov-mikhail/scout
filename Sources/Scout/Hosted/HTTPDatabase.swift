@@ -111,7 +111,7 @@ extension HTTPDatabase: ActivityReader {
     }
 }
 
-extension HTTPDatabase: MetricSeriesReader {
+extension HTTPDatabase: MetricReader {
     func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries] {
         let from = range.lowerBound.millisecondsSince1970
         let to = range.upperBound.millisecondsSince1970

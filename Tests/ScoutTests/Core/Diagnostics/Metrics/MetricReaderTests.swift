@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct MetricSeriesReaderTests {
+struct MetricReaderTests {
     @Test("Rebuilds an int metric series from grid matrices")
     func reconstructsIntSeries() async throws {
         let database = DatabaseStub()

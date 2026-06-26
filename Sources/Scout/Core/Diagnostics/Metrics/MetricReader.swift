@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol MetricSeriesReader: RecordReader {
+protocol MetricReader: RecordReader {
     func metricSeries(category: String, values: String, in range: Range<Date>) async throws -> [MetricSeries]
 }
 
