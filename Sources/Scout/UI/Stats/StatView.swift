@@ -63,9 +63,7 @@ struct StatView: View {
             }
             .opacity(0)
         }
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
-        }
+        .trailingRowSeparator()
     }
 }
 

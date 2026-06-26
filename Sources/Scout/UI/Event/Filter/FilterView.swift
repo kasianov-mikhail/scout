@@ -28,9 +28,7 @@ struct FilterView: View {
                     Spacer()
                 }
                 .contentShape(Rectangle())
-                .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                    dimension[.trailing]
-                }
+                .trailingRowSeparator()
                 .onTapGesture {
                     criteria.toggle(level)
                 }
