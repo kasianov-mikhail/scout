@@ -9,15 +9,9 @@ import SwiftUI
 
 struct WelcomePage: View {
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
-            Spacer()
-            Spacer()
-
-            Text(verbatim: "Welcome to Scout")
-                .font(.title)
-                .bold()
-
+        OnboardingPage(title: "Welcome to Scout", spacing: 32) {
+            EmptyView()
+        } content: {
             VStack(alignment: .leading, spacing: 20) {
                 featureRow(
                     icon: "list.bullet",
@@ -36,12 +30,6 @@ struct WelcomePage: View {
                 )
             }
             .padding(.horizontal, 32)
-
-            Spacer()
-            Spacer()
-            Spacer()
-            Spacer()
-            Spacer()
         }
     }
 

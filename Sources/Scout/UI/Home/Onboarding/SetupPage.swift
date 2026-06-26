@@ -9,15 +9,9 @@ import SwiftUI
 
 struct SetupPage: View {
     var body: some View {
-        VStack(spacing: 32) {
-            Spacer()
-            Spacer()
-            Spacer()
-
-            Text(verbatim: "Quick Setup")
-                .font(.title)
-                .bold()
-
+        OnboardingPage(title: "Quick Setup", spacing: 32) {
+            EmptyView()
+        } content: {
             VStack(alignment: .leading, spacing: 20) {
                 Step(
                     number: 1,
@@ -36,12 +30,6 @@ struct SetupPage: View {
                 )
             }
             .padding(.horizontal, 24)
-
-            Spacer()
-            Spacer()
-            Spacer()
-            Spacer()
-            Spacer()
         }
     }
 
