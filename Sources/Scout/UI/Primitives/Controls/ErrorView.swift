@@ -30,13 +30,8 @@ struct ErrorView: View {
             if let retry {
                 Button(action: retry) {
                     Text(verbatim: "Retry")
-                        .bold()
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 100, style: .continuous))
                 }
+                .buttonStyle(.pill)
                 .padding(8)
             }
 
