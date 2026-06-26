@@ -58,7 +58,11 @@ final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable 
     }
 }
 
-extension InMemoryDatabase: MatrixAggregator {}
+extension InMemoryDatabase: MatrixAggregator {
+    func aggregate(matrix: Matrix<some CellProtocol>) async throws {
+        try await MatrixUploader(database: self, maxRetry: 3, matrix: matrix).upload()
+    }
+}
 
 extension InMemoryDatabase {
     var events: [Record] {
