@@ -48,22 +48,14 @@ struct StatView: View {
     }
 
     func total(count: Int) -> some View {
-        ZStack {
-            HStack {
-                Text(verbatim: "Events")
-                Spacer()
-                Text(count == 0 ? "—" : "\(count)")
-            }
-            .foregroundColor(.blue)
-
-            NavigationLink {
-                EventStatList(eventName: stat.eventName, range: extent.domain)
-            } label: {
-                EmptyView()
-            }
-            .opacity(0)
+        Row {
+            Text(verbatim: "Events")
+            Spacer()
+            Text(count == 0 ? "—" : "\(count)")
+        } destination: {
+            EventStatList(eventName: stat.eventName, range: extent.domain)
         }
-        .trailingRowSeparator()
+        .foregroundColor(.blue)
     }
 }
 
