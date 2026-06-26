@@ -42,30 +42,27 @@ struct ParamRow: View {
     let item: ParamProvider.Item?
 
     var body: some View {
-        ZStack {
+        Group {
             if let item {
                 let value = ParamValue(parsing: item.value)
 
-                HStack(spacing: 13) {
-                    ParamIcon(value: value)
+                Row {
+                    HStack(spacing: 13) {
+                        ParamIcon(value: value)
 
-                    Text(item.key)
-                        .foregroundStyle(.secondary)
+                        Text(item.key)
+                            .foregroundStyle(.secondary)
 
-                    Spacer()
+                        Spacer()
 
-                    Text(value.summary)
-                        .monospaced()
-                        .font(.system(size: 16))
-                        .foregroundStyle(value.isContainer ? .secondary : .primary)
-                }
-
-                NavigationLink {
+                        Text(value.summary)
+                            .monospaced()
+                            .font(.system(size: 16))
+                            .foregroundStyle(value.isContainer ? .secondary : .primary)
+                    }
+                } destination: {
                     ParamView(item: item)
-                } label: {
-                    EmptyView()
                 }
-                .opacity(0)
             } else {
                 HStack(spacing: 13) {
                     Redacted(length: 2)
@@ -78,12 +75,12 @@ struct ParamRow: View {
 
                     Redacted(length: 8).opacity(0.5)
                 }
+                .alignmentGuide(.listRowSeparatorTrailing) { dimension in
+                    dimension[.trailing]
+                }
             }
         }
         .lineLimit(1)
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
-        }
     }
 }
 

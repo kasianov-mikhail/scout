@@ -41,7 +41,7 @@ struct EventList: View {
     }
 
     func row(for event: Event) -> some View {
-        ZStack {
+        Row {
             HStack(spacing: 12) {
                 Text(event.name)
                     .font(.system(size: 17))
@@ -58,18 +58,10 @@ struct EventList: View {
                     .foregroundStyle(Color.gray)
                 }
             }
-
-            NavigationLink {
-                EventView(event: event)
-            } label: {
-                EmptyView()
-            }
-            .opacity(0)
+        } destination: {
+            EventView(event: event)
         }
         .listRowBackground(event.level?.color?.opacity(0.12) ?? .clear)
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
-        }
     }
 }
 
