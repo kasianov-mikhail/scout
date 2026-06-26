@@ -55,7 +55,7 @@ extension IntMetricsObject: MatrixBatch {}
 
 extension DoubleMetricsObject: MatrixBatch {}
 
-extension MetricsValued where Value: MatrixValue {
+extension MetricsValued where Value: MetricScalar {
     static func matrix(of batch: [Self]) throws -> Matrix<GridCell<Value>> {
         let grouped = batch.grouped(by: \.hour).mapValues { items in
             items.reduce(.zero) { $0 + $1.value }

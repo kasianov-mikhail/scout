@@ -112,7 +112,7 @@ extension HTTPDatabase: ActivityReader {
 }
 
 extension HTTPDatabase: MetricReader {
-    func metricSeries<T: MatrixValue & MetricSeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
         let from = range.lowerBound.millisecondsSince1970
         let to = range.upperBound.millisecondsSince1970
         let category = category.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? category

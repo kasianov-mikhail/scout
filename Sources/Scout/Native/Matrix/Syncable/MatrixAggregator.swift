@@ -11,7 +11,9 @@ protocol MatrixAggregator: RecordWriter, RecordReader {
     func aggregate<C: CellProtocol>(matrix: Matrix<C>) async throws
 }
 
-extension CKDatabase: MatrixAggregator {
+extension CKDatabase: MatrixAggregator {}
+
+extension MatrixAggregator {
     func aggregate<C: CellProtocol>(matrix: Matrix<C>) async throws {
         try await MatrixUploader(database: self, maxRetry: 3, matrix: matrix).upload()
     }

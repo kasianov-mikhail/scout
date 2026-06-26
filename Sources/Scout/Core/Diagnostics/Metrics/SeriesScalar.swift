@@ -7,25 +7,18 @@
 
 import Foundation
 
-protocol MetricSeriesScalar {
+protocol SeriesScalar: MetricScalar {
     static var seriesValues: String { get }
-    init(_ value: Int)
     init(_ value: Double)
+    var metricValue: MetricValue { get }
 }
 
-extension MetricSeriesScalar {
-    static func chartValue(_ value: MetricValue) -> Self {
-        switch value {
-        case .int(let value): Self(value)
-        case .double(let value): Self(value)
-        }
-    }
-}
-
-extension Int: MetricSeriesScalar {
+extension Int: SeriesScalar {
     static var seriesValues: String { "int" }
+    var metricValue: MetricValue { .int(self) }
 }
 
-extension Double: MetricSeriesScalar {
+extension Double: SeriesScalar {
     static var seriesValues: String { "double" }
+    var metricValue: MetricValue { .double(self) }
 }

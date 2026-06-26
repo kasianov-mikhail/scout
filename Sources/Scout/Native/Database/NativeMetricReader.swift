@@ -7,8 +7,10 @@
 
 import CloudKit
 
-extension CKDatabase: MetricReader {
-    func metricSeries<T: MatrixValue & MetricSeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+extension CKDatabase: MetricReader {}
+
+extension MetricReader {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
         let categoryFilter = RecordQuery.Filter(
             field: "category",
             op: .equals,
@@ -27,7 +29,7 @@ extension CKDatabase: MetricReader {
 }
 
 extension MetricSeries {
-    fileprivate init(matrix: GridMatrix<some MatrixValue>) {
+    fileprivate init(matrix: GridMatrix<some SeriesScalar>) {
         self.name = matrix.name
         self.category = matrix.category
         self.points = MetricSeriesPoint.points(from: matrix)
@@ -35,7 +37,7 @@ extension MetricSeries {
 }
 
 extension MetricSeriesPoint {
-    fileprivate static func points(from matrix: GridMatrix<some MatrixValue>) -> [MetricSeriesPoint] {
+    fileprivate static func points(from matrix: GridMatrix<some SeriesScalar>) -> [MetricSeriesPoint] {
         matrix.cells.map { cell in
             let date = matrix.date.addingTimeInterval(TimeInterval(cell.secondsSinceBase))
             return MetricSeriesPoint(date: date.millisecondsSince1970, value: cell.value.metricValue)

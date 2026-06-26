@@ -28,8 +28,8 @@ struct MetricReaderTests {
         )
 
         let series = try await database.metricSeries(
+            Int.self,
             category: "counter",
-            values: Int.seriesValues,
             in: date(2026, 6, 1)..<date(2026, 7, 1)
         )
 
@@ -58,8 +58,8 @@ struct MetricReaderTests {
         )
 
         let series = try await database.metricSeries(
+            Double.self,
             category: "gauge",
-            values: Double.seriesValues,
             in: date(2026, 6, 1)..<date(2026, 7, 1)
         )
 

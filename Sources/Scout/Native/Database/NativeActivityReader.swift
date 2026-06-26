@@ -7,7 +7,9 @@
 
 import CloudKit
 
-extension CKDatabase: ActivityReader {
+extension CKDatabase: ActivityReader {}
+
+extension ActivityReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         let query = RecordQuery(
             recordType: PeriodMatrix.self,

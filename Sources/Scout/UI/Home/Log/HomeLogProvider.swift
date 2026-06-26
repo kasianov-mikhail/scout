@@ -26,7 +26,7 @@ private let lifecycleNames = [
     VersionObject.recordType,
 ]
 
-private func matrices<T: MatrixValue>(of type: T.Type, in database: DatabaseReader) async throws -> [GridMatrix<T>] {
+private func matrices<T: MetricScalar>(of type: T.Type, in database: DatabaseReader) async throws -> [GridMatrix<T>] {
     let query = RecordQuery(
         recordType: GridMatrix<T>.self,
         filters: Calendar.utc.defaultRange.dateFilters
