@@ -67,9 +67,7 @@ struct CrashListView: View {
             }
             .opacity(0)
         }
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
-        }
+        .trailingRowSeparator()
     }
 }
 

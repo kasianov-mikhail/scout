@@ -24,9 +24,7 @@ struct Row<Content: View, Destination: View>: View {
             }
             .opacity(0)
         }
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
-        }
+        .trailingRowSeparator()
     }
 }
 

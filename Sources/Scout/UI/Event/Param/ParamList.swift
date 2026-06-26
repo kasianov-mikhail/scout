@@ -47,19 +47,12 @@ struct ParamRow: View {
                 let value = ParamValue(parsing: item.value)
 
                 Row {
-                    HStack(spacing: 13) {
-                        ParamIcon(value: value)
-
-                        Text(item.key)
-                            .foregroundStyle(.secondary)
-
-                        Spacer()
-
-                        Text(value.summary)
-                            .monospaced()
-                            .font(.system(size: 16))
-                            .foregroundStyle(value.isContainer ? .secondary : .primary)
-                    }
+                    ParamValueRow(
+                        value: value,
+                        label: item.key,
+                        labelStyle: .secondary,
+                        summaryStyle: value.isContainer ? .secondary : .primary
+                    )
                 } destination: {
                     ParamView(item: item)
                 }
@@ -75,9 +68,7 @@ struct ParamRow: View {
 
                     Redacted(length: 8).opacity(0.5)
                 }
-                .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                    dimension[.trailing]
-                }
+                .trailingRowSeparator()
             }
         }
         .lineLimit(1)

@@ -29,16 +29,8 @@ struct MetricsList: View {
     @State private var scope: Scope = .int
 
     var body: some View {
-        Picker(selection: $period) {
-            ForEach(Period.allCases) { period in
-                Text(period.shortTitle.uppercased())
-            }
-        } label: {
-            Text(verbatim: "Period")
-        }
-        .padding(.horizontal)
-        .padding(.bottom)
-        .pickerStyle(.segmented)
+        PeriodPicker(selection: $period)
+            .padding(.bottom)
 
         Picker(selection: $scope) {
             ForEach(Scope.allCases) { scope in

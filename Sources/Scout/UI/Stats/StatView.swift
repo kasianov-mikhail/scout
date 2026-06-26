@@ -19,7 +19,7 @@ struct StatView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodPicker(extent: $extent, periods: stat.periods)
+            PeriodExtentPicker(extent: $extent, periods: stat.periods)
 
             ProviderView(provider: stat) { data in
                 RangeControl(extent: $extent)
@@ -63,9 +63,7 @@ struct StatView: View {
             }
             .opacity(0)
         }
-        .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-            dimension[.trailing]
-        }
+        .trailingRowSeparator()
     }
 }
 
