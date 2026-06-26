@@ -44,30 +44,22 @@ struct CrashListView: View {
     }
 
     private func row(for crash: Crash) -> some View {
-        ZStack {
-            HStack(spacing: 12) {
-                Text(crash.name)
-                    .font(.system(size: 17))
-                    .lineLimit(1)
-                    .monospaced()
+        Row {
+            Text(crash.name)
+                .font(.system(size: 17))
+                .lineLimit(1)
+                .monospaced()
 
-                Spacer()
+            Spacer()
 
-                if let date = crash.date {
-                    Text(verbatim: date.relativeString)
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color.gray)
-                }
+            if let date = crash.date {
+                Text(verbatim: date.relativeString)
+                    .font(.system(size: 15))
+                    .foregroundStyle(Color.gray)
             }
-
-            NavigationLink {
-                CrashDetailView(crash: crash)
-            } label: {
-                EmptyView()
-            }
-            .opacity(0)
+        } destination: {
+            CrashDetailView(crash: crash)
         }
-        .trailingRowSeparator()
     }
 }
 
