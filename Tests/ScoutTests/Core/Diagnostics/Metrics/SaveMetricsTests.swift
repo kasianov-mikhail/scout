@@ -13,7 +13,7 @@ import Testing
 
 @MainActor
 @Suite("saveMetrics")
-struct LogMetricsTests {
+struct SaveMetricsTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSinceReferenceDate: 0)
 

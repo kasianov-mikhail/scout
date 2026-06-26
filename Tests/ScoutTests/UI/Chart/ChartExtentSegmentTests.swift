@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct ChartModelTests {
+struct ChartExtentSegmentTests {
     let date: Date
     let range: Range<Date>
     let points: [ChartPoint<Int>]
