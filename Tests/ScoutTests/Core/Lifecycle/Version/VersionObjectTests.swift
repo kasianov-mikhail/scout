@@ -45,7 +45,6 @@ struct VersionObjectTests {
         let v2 = VersionObject.stub(date: week.addingHour(), appVersion: "2.0", in: context)
         v2.launchID = launchID2
 
-        // Different version
         let v3 = VersionObject.stub(date: week, appVersion: "1.0", in: context)
         v3.launchID = launchID3
 
@@ -73,7 +72,6 @@ struct VersionObjectTests {
         let install = InstallObject.stub(date: week, in: context)
         install.installID = installID
 
-        // Install with different installID
         InstallObject.stub(date: week, in: context).installID = UUID()
 
         try context.save()

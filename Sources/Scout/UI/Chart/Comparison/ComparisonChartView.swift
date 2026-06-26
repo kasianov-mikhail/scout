@@ -82,8 +82,6 @@ struct ComparisonChartView<T: ChartNumeric>: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview("ComparisonChartView – Week") {
     let extent = ChartExtent(period: Period.week)
     let today = Date().startOfDay

@@ -31,8 +31,6 @@ struct CloudKitContainmentTests {
         #expect(offenders.isEmpty, "import CloudKit found outside the CloudKit adapter: \(offenders)")
     }
 
-    // MARK: - Helpers
-
     /// Walks up from this test file to the package root and returns its
     /// `Sources/Scout` directory.
     ///

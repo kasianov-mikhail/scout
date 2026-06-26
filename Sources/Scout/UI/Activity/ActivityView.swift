@@ -49,8 +49,6 @@ struct ActivityView: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview("ActivityView") {
     let activity = ActivityProvider()
     activity.result = .success([])

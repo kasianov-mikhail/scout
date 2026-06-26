@@ -25,8 +25,8 @@ struct AnalyticsView: View {
             }
         }
         .searchable(text: $filter.text, placement: .pinned, prompt: Text(verbatim: "Search"))
-        .autocorrectionDisabled(true)  // stop keyboard suggestions
-        .alphabetKeyboard()  // stop keyboard suggestions
+        .autocorrectionDisabled(true)
+        .alphabetKeyboard()
         .searchSuggestions {
             if let events = provider.events, filter.text.isEmpty {
                 ForEach(events.unique(by: \.name, max: 7), id: \.self) {
@@ -84,8 +84,6 @@ struct AnalyticsView: View {
         await provider.fetch(for: filter, in: database)
     }
 }
-
-// MARK: - Previews
 
 #Preview {
     NavigationStack {

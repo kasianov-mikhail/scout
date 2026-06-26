@@ -31,8 +31,6 @@ struct HomeLogRow<Destination: View>: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     NavigationStack {
         List {

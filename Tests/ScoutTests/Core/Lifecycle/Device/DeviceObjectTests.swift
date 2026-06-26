@@ -27,7 +27,6 @@ struct DeviceObjectTests {
         let i2 = InstallObject.stub(date: week.addingHour(), in: context)
         i2.deviceID = deviceID
 
-        // Install with different deviceID
         InstallObject.stub(date: week, in: context).deviceID = UUID()
 
         try context.save()

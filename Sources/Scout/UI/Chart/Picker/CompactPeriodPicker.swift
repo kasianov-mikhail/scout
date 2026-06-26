@@ -37,8 +37,6 @@ struct CompactPeriodPicker: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     struct Preview: View {
         @State private var selection = Period.today

@@ -46,8 +46,6 @@ struct TimelineExport {
     }
 }
 
-// MARK: - Sections
-
 extension TimelineExport {
     private var title: String {
         if let deviceID = rail.device.deviceID {
@@ -107,8 +105,6 @@ extension TimelineExport {
         return parts.joined(separator: " ")
     }
 }
-
-// MARK: - Rows
 
 extension TimelineExport {
     private func rows(for session: SessionRoot) -> [String] {

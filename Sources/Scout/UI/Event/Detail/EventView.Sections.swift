@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// MARK: - Param Section
-
 extension EventView {
     struct ParamSection: View {
         let count: Int
@@ -48,8 +46,6 @@ extension EventView {
     }
 }
 
-// MARK: - Stat Section
-
 extension EventView {
     struct StatSection: View {
         @StateObject var stat: StatProvider
@@ -87,8 +83,6 @@ extension EventView {
         }
     }
 }
-
-// MARK: - History Section
 
 extension EventView {
     struct HistorySection: View {

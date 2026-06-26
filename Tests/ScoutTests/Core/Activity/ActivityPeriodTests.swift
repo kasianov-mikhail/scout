@@ -11,8 +11,6 @@ import Testing
 @testable import Scout
 
 struct ActivityPeriodTests {
-    // MARK: - Raw Values
-
     @Test("Raw values encode correctly")
     func rawValues() {
         #expect(ActivityPeriod.daily.rawValue == "d")
@@ -28,16 +26,12 @@ struct ActivityPeriodTests {
         #expect(ActivityPeriod(rawValue: "x") == nil)
     }
 
-    // MARK: - Titles
-
     @Test("Titles are human-readable")
     func titles() {
         #expect(ActivityPeriod.daily.title == "Daily")
         #expect(ActivityPeriod.weekly.title == "Weekly")
         #expect(ActivityPeriod.monthly.title == "Monthly")
     }
-
-    // MARK: - Spread Components
 
     @Test("Daily spread component is day")
     func dailySpread() {
@@ -53,8 +47,6 @@ struct ActivityPeriodTests {
     func monthlySpread() {
         #expect(ActivityPeriod.monthly.spreadComponent == .month)
     }
-
-    // MARK: - CaseIterable
 
     @Test("All cases are present")
     func allCases() {

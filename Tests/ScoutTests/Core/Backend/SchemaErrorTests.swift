@@ -12,8 +12,6 @@ import Testing
 
 @Suite("CKError.isSchemaError")
 struct SchemaErrorTests {
-    // MARK: - Matching codes with schema messages
-
     @Test("invalidArguments with 'record type' message")
     func invalidArgumentsRecordType() {
         let error = makeCKError(code: .invalidArguments, message: "Invalid record type 'Foo'")
@@ -32,8 +30,6 @@ struct SchemaErrorTests {
         #expect(error.isSchemaError)
     }
 
-    // MARK: - Matching codes without schema messages
-
     @Test("invalidArguments with unrelated message")
     func invalidArgumentsUnrelated() {
         let error = makeCKError(code: .invalidArguments, message: "Bad predicate format")
@@ -45,8 +41,6 @@ struct SchemaErrorTests {
         let error = makeCKError(code: .serverRejectedRequest, message: "Rate limit exceeded")
         #expect(!error.isSchemaError)
     }
-
-    // MARK: - Non-matching codes
 
     @Test("networkFailure is not a schema error")
     func networkFailure() {
@@ -60,15 +54,11 @@ struct SchemaErrorTests {
         #expect(!error.isSchemaError)
     }
 
-    // MARK: - Case insensitivity
-
     @Test("message matching is case-insensitive")
     func caseInsensitive() {
         let error = makeCKError(code: .invalidArguments, message: "Unknown RECORD TYPE 'Foo'")
         #expect(error.isSchemaError)
     }
-
-    // MARK: - Helper
 
     private func makeCKError(code: CKError.Code, message: String) -> CKError {
         let nsError = NSError(

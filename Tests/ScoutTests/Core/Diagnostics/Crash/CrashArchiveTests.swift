@@ -34,7 +34,6 @@ struct CrashArchiveTests {
         #expect(files.count == 1)
         #expect(files.first?.pathExtension == "crash")
 
-        // Cleanup
         try? FileManager.default.removeItem(at: tempDir)
     }
 
@@ -67,7 +66,6 @@ struct CrashArchiveTests {
         #expect(decoded.reason == "Unrecognized selector")
         #expect(decoded.stackTrace == ["0x1234", "0x5678", "0x9ABC"])
 
-        // Cleanup
         try? FileManager.default.removeItem(at: tempDir)
     }
 
@@ -100,7 +98,6 @@ struct CrashArchiveTests {
         #expect(decoded.reason == nil)
         #expect(decoded.stackTrace.isEmpty)
 
-        // Cleanup
         try? FileManager.default.removeItem(at: tempDir)
     }
 
@@ -126,7 +123,6 @@ struct CrashArchiveTests {
         #expect(files.count == 3)
         #expect(files.allSatisfy { $0.pathExtension == "crash" })
 
-        // Cleanup
         try? FileManager.default.removeItem(at: tempDir)
     }
 }

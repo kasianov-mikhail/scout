@@ -55,8 +55,6 @@ struct RecordEncodingTests {
     }
 }
 
-// MARK: - Stubs
-
 extension IntMetricsObject {
     @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext) -> IntMetricsObject {
         let entity = NSEntityDescription.entity(forEntityName: "IntMetricsObject", in: context)!

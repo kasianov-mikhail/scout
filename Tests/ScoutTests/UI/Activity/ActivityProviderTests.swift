@@ -49,8 +49,6 @@ struct ActivityProviderTests {
         #expect(database.readCount(of: PeriodCell<Int>.recordType) == 1)
     }
 
-    // MARK: - Helpers
-
     private func date(_ year: Int, _ month: Int, _ day: Int) -> Date {
         DateComponents(calendar: .utc, year: year, month: month, day: day).date!
     }

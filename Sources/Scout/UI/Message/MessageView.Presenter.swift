@@ -46,8 +46,6 @@ extension MessageView {
     }
 }
 
-// MARK: - Preview
-
 @available(iOS 17.0, macOS 14.0, *)
 #Preview("Above the navigation bar") {
     @Previewable @State var message: Message?

@@ -58,8 +58,6 @@ struct RangeControl<T: ChartTimeScale>: View {
     }
 }
 
-// MARK: - Previews
-
 #Preview {
     RangeControl(
         extent: .constant(ChartExtent(period: Period.today))

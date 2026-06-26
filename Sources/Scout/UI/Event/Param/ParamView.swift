@@ -110,8 +110,6 @@ struct ParamNodeRow: View {
     }
 }
 
-// MARK: - Preview
-
 #Preview("Dictionary") {
     NavigationStack {
         ParamView(item: ParamProvider.Item.sampleProfile.first { $0.key == "preferences" }!)
