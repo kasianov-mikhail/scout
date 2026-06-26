@@ -24,41 +24,35 @@ struct HomeLogSection: View {
             title: "Events",
             image: "list.bullet",
             color: .blue,
-            count: intSpan?.total { $0 != CrashObject.recordType },
+            count: spans?.int.total { $0 != CrashObject.recordType },
             destination: { AnalyticsView() }
         )
         HomeLogRow(
             title: "Metrics",
             image: "chart.bar",
             color: .blue,
-            count: metricsCount,
+            count: spans.map { $0.int.series + $0.double.series },
             destination: { MetricsList() }
         )
         HomeLogRow(
             title: "Crashes",
             image: "exclamationmark.triangle",
             color: .red,
-            count: intSpan?.total { $0 == CrashObject.recordType },
+            count: spans?.int.total { $0 == CrashObject.recordType },
             destination: { CrashListView() }
         )
     }
 
-    private var intSpan: MatrixSpan<Int>? {
-        guard let result = try? provider.result?.get() else {
-            return nil
-        }
-        return MatrixSpan(matrices: result.0, range: period.initialRange)
-    }
-
-    private var metricsCount: Int? {
+    private var spans: (int: MatrixSpan<Int>, double: MatrixSpan<Double>)? {
         guard let result = try? provider.result?.get() else {
             return nil
         }
 
-        let int = MatrixSpan(matrices: result.0, range: period.initialRange)
-        let double = MatrixSpan(matrices: result.1, range: period.initialRange)
-
-        return int.series + double.series
+        let range = period.initialRange
+        return (
+            MatrixSpan(matrices: result.0, range: range),
+            MatrixSpan(matrices: result.1, range: range)
+        )
     }
 }
 
