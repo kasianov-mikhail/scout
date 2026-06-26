@@ -20,9 +20,7 @@ extension AnalyticsView {
                     .foregroundStyle(.blue)
                 Spacer()
             }
-            .alignmentGuide(.listRowSeparatorTrailing) { dimension in
-                dimension[.trailing]
-            }
+            .trailingRowSeparator()
         }
     }
 }
