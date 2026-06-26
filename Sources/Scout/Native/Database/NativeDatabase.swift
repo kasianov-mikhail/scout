@@ -82,3 +82,9 @@ extension CKDatabase: RecordLocator {
         }
     }
 }
+
+extension CKDatabase: MatrixAggregator {
+    func aggregate<C: CellProtocol>(matrix: Matrix<C>) async throws {
+        try await MatrixUploader(database: self, maxRetry: 3, matrix: matrix).upload()
+    }
+}

@@ -14,14 +14,6 @@ struct MatrixUploader<T: CellProtocol>: Sendable {
 }
 
 extension MatrixUploader {
-    init<V: MatrixBatch>(database: RecordWriter & RecordReader, maxRetry: Int, batch: [V]) throws where V.Cell == T {
-        self.database = database
-        self.maxRetry = maxRetry
-        self.matrix = try V.matrix(of: batch)
-    }
-}
-
-extension MatrixUploader {
     func upload() async throws {
         if let existing = try await matrix.lookupExisting(in: database) {
             try await upload(snapshot: matrix + existing)
@@ -42,13 +34,3 @@ extension MatrixUploader {
         }
     }
 }
-
-protocol ClientAggregating: RecordWriter, RecordReader {}
-
-extension ClientAggregating {
-    func aggregate<C: CellProtocol>(matrix: Matrix<C>) async throws {
-        try await MatrixUploader(database: self, maxRetry: 3, matrix: matrix).upload()
-    }
-}
-
-extension CKDatabase: ClientAggregating {}
