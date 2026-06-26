@@ -23,7 +23,7 @@ jobs:
         run: |
           git diff --name-status --no-renames \
             "origin/${{ github.base_ref }}"...HEAD \
-            -- Sources/Scout/Scout.xcdatamodeld > /tmp/model-changes
+            -- Sources/Scout/Core/Persistence/Scout.xcdatamodeld > /tmp/model-changes
           cat /tmp/model-changes
 
           touched=$(awk -F'\t' '$1 != "A" && $2 !~ /\.xccurrentversion$/' /tmp/model-changes)
