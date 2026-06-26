@@ -14,7 +14,7 @@ struct CopyButton: View {
     let text: String
 
     @State private var isCopied = false
-    @State private var revertTask: Task<Void, Never>?
+    @State private var revert = DebouncedReset()
 
     var body: some View {
         Button {
@@ -26,10 +26,7 @@ struct CopyButton: View {
             #endif
             isCopied = true
 
-            revertTask?.cancel()
-            revertTask = Task {
-                try? await Task.sleep(for: .seconds(2))
-                guard !Task.isCancelled else { return }
+            revert.schedule(after: .seconds(2)) {
                 isCopied = false
             }
         } label: {
