@@ -17,7 +17,7 @@ struct ModelMigrationTests {
     /// Each `Scout-v*.sqlite` fixture is an empty store created by a shipped
     /// model version, so `loadStore()` must migrate it in place. When adding
     /// a model version, also add a fixture for it: compile the model with
-    /// `xcrun momc Sources/Scout/Scout.xcdatamodeld <out>.momd` and create a
+    /// `xcrun momc Sources/Scout/Core/Persistence/Scout.xcdatamodeld <out>.momd` and create a
     /// store from it with `NSPersistentStoreCoordinator.addPersistentStore`,
     /// passing `journal_mode=DELETE` so the fixture stays a single file.
     ///
