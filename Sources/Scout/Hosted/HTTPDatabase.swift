@@ -42,7 +42,7 @@ struct HTTPDatabaseError: LocalizedError {
 
 extension HTTPDatabase {
     @discardableResult
-    func send<Body: Encodable, Reply: Decodable>(_ body: Body, to path: String, into reply: Reply.Type) async throws -> Reply {
+    func send<Reply: Decodable>(_ body: some Encodable, to path: String, into reply: Reply.Type) async throws -> Reply {
         guard let endpoint = URL(string: path, relativeTo: url) else {
             throw HTTPDatabaseError(status: 0, reason: "Malformed endpoint URL")
         }

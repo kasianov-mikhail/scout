@@ -89,7 +89,7 @@ struct AnchoredScroll<ID: Hashable>: ViewModifier {
 }
 
 extension View {
-    func anchoredScroll<ID: Hashable>(id: ID?, revision: Int = 0) -> some View {
+    func anchoredScroll(id: (some Hashable)?, revision: Int = 0) -> some View {
         modifier(AnchoredScroll(id: id, revision: revision))
     }
 }

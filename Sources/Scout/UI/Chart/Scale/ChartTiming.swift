@@ -28,7 +28,7 @@ extension ChartTiming {
     /// when defined, otherwise bucket bin starts thinned to at most four —
     /// the dates the automatic axis picks for binned bar charts.
     ///
-    func tickDates<T: ChartNumeric>(for segment: [ChartPoint<T>]) -> [Date] {
+    func tickDates(for segment: [ChartPoint<some ChartNumeric>]) -> [Date] {
         if let values = tickValues {
             return values
         }

@@ -24,7 +24,7 @@ extension DoubleMetricsObject: RecordEncodable {
 }
 
 extension MetricsObject {
-    fileprivate func metricRecord<V: RecordValueConvertible>(type: String, value: V) -> Record {
+    fileprivate func metricRecord(type: String, value: some RecordValueConvertible) -> Record {
         var record = Record(recordType: type, recordID: objectID.uriRepresentation().absoluteString)
 
         record["name"] = name
