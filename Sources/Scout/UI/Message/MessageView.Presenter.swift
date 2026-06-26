@@ -10,7 +10,7 @@ import SwiftUI
 extension MessageView {
     struct Presenter: ViewModifier {
         @Binding var message: Message?
-        @State private var hideTask: Task<Void, Never>?
+        @State private var hide = DebouncedReset()
 
         func body(content: Content) -> some View {
             content.overlay(alignment: .top) {
@@ -28,20 +28,15 @@ extension MessageView {
                 }
             }
             .onChange(of: message) { message in
-                hideTask?.cancel()
-
                 if message != nil {
-                    hideTask = Task {
-                        try? await hideMessage(delay: 5)
+                    hide.schedule(after: .seconds(5)) {
+                        self.message = nil
                     }
+                } else {
+                    hide.cancel()
                 }
             }
             .animation(.easeInOut, value: message)
-        }
-
-        func hideMessage(delay: Int) async throws {
-            try await Task.sleep(for: .seconds(delay))
-            message = nil
         }
     }
 }
