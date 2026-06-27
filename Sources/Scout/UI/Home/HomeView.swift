@@ -17,39 +17,39 @@ public struct HomeView: View {
         self.backends = backends
     }
 
-    private var activeBackend: Backend {
-        backends.first { $0.id == activeID } ?? backends.first!
-    }
-
     public var body: some View {
         NavigationStack {
-            HomeContent()
-                .id(activeBackend.id)
-                .navigationTitle(en: "Home")
-                .backendWarnings(activeBackend)
-                .dismissable()
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        ConnectionMenu(
-                            connections: backends.map(Connection.init),
-                            activeID: Binding(get: { activeBackend.id }, set: { activeID = $0 })
-                        )
-                    }
+            Group {
+                if let backend = backends.first(where: { $0.id == activeID }) ?? backends.first {
+                    HomeContent()
+                        .id(backend.id)
+                        .accountWarning(backend)
+                        .schemaWarning(backend)
+                        .onboardingSheet()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                ConnectionMenu(
+                                    connections: backends.map(Connection.init),
+                                    activeID: Binding(get: { backend.id }, set: { activeID = $0 })
+                                )
+                            }
+                        }
+                        .environment(\.database, backend.database)
+                } else {
+                    ErrorView(
+                        description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
+                        retry: nil
+                    )
                 }
+            }
+            .navigationTitle(en: "Home")
+            .dismissable()
         }
-        .onboardingSheet()
         .tint(tint.value)
         .environmentObject(tint)
-        .environment(\.database, activeBackend.database)
     }
 }
 
-extension View {
-    @ViewBuilder fileprivate func backendWarnings(_ backend: Backend?) -> some View {
-        if let backend {
-            accountWarning(backend).schemaWarning(backend)
-        } else {
-            self
-        }
-    }
+#Preview("No Backends") {
+    HomeView(backends: [])
 }
