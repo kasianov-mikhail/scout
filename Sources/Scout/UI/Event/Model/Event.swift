@@ -23,29 +23,31 @@ extension Event: RecordDecodable {
     static let recordType = EventObject.recordType
     static let sampleRecords: [Record] = []
 
-    static let desiredKeys = [
-        "name",
-        "level",
-        "date",
-        "param_count",
-        "uuid",
-        "install_id",
-        "session_id",
-        "device_id",
-    ]
+    static let desiredKeys = Key.allCases.map(\.rawValue)
 }
 
 extension Event {
+    private enum Key: String, CaseIterable {
+        case name
+        case level
+        case date
+        case paramCount = "param_count"
+        case uuid
+        case installID = "install_id"
+        case sessionID = "session_id"
+        case deviceID = "device_id"
+    }
+
     init(record: Record) throws {
-        name = record["name"] ?? ""
-        level = record["level"].flatMap { Level(rawValue: $0) }
-        date = record["date"]
-        paramCount = record["param_count"]
-        uuid = record["uuid"].flatMap(UUID.init)
+        name = record[Key.name.rawValue] ?? ""
+        level = record[Key.level.rawValue].flatMap { Level(rawValue: $0) }
+        date = record[Key.date.rawValue]
+        paramCount = record[Key.paramCount.rawValue]
+        uuid = record[Key.uuid.rawValue].flatMap(UUID.init)
         id = record.recordID
-        installID = record["install_id"].flatMap(UUID.init)
-        sessionID = record["session_id"].flatMap(UUID.init)
-        deviceID = record["device_id"].flatMap(UUID.init)
+        installID = record[Key.installID.rawValue].flatMap(UUID.init)
+        sessionID = record[Key.sessionID.rawValue].flatMap(UUID.init)
+        deviceID = record[Key.deviceID.rawValue].flatMap(UUID.init)
     }
 }
 
