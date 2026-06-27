@@ -11,6 +11,11 @@ name: Server
 # cursor semantics), the contract tests, or this workflow — or when scout-server
 # pushes to main (repository_dispatch from its Notify workflow).
 #
+# A weekly schedule runs the contract unconditionally as a safety net: the path
+# filter duplicates the knowledge of where the wire code lives, so if it ever
+# drifts and a wire change slips through with `contract` skipped, the next
+# scheduled run surfaces the break instead of letting it sit green indefinitely.
+#
 # A required status check must report on every PR, but a path-filtered job never
 # reports on PRs outside its paths, which would wedge them forever. So the PR
 # trigger is unfiltered, a lightweight `changes` job decides whether `contract`
@@ -28,6 +33,9 @@ on:
   pull_request:
   repository_dispatch:
     types: [scout-server-updated]
+  schedule:
+    # Monday 06:00 UTC — unconditional safety-net run (see header).
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 permissions:
