@@ -28,6 +28,7 @@ struct HomeContent: View {
                 .fill(.background)
                 .ignoresSafeArea()
         }
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     private var statSection: some View {
