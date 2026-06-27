@@ -14,7 +14,7 @@ import Testing
 @Suite("EventObject")
 struct EventObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let date = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
+    let date = TestDate.reference.startOfWeek
 
     @Test("matrix(of:) produces correct GridCell<Int> counts by hour")
     func testMatrixOf() throws {

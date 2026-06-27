@@ -14,7 +14,7 @@ import Testing
 @Suite("InstallObject")
 struct InstallObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
+    let week = TestDate.reference.startOfWeek
 
     @Test("versions(in:) returns versions matching installID")
     func testVersions() throws {

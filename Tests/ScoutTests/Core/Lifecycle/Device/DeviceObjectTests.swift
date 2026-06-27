@@ -14,7 +14,7 @@ import Testing
 @Suite("DeviceObject")
 struct DeviceObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
+    let week = TestDate.reference.startOfWeek
 
     @Test("installs(in:) returns installs matching deviceID")
     func testInstalls() throws {

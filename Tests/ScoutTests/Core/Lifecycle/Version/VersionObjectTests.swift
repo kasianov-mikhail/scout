@@ -14,7 +14,7 @@ import Testing
 @Suite("VersionObject")
 struct VersionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let week = Date(timeIntervalSince1970: 1_724_457_600).startOfWeek
+    let week = TestDate.reference.startOfWeek
 
     @Test("matrix(of:) produces correct GridCell<Int> counts by date")
     func testMatrixOf() throws {
