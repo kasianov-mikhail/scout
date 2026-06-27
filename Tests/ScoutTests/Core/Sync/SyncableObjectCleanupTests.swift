@@ -23,8 +23,7 @@ struct SyncableObjectCleanupTests {
 
         try SyncableObject.cleanup(backends: [], in: context)
 
-        let request = NSFetchRequest<EventObject>(entityName: "EventObject")
-        #expect(try context.fetch(request).isEmpty)
+        #expect(try context.fetchAll(EventObject.self).isEmpty)
     }
 
     @Test("Deletes synced launches older than 7 days")
@@ -35,8 +34,7 @@ struct SyncableObjectCleanupTests {
 
         try SyncableObject.cleanup(backends: [], in: context)
 
-        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        #expect(try context.fetch(request).isEmpty)
+        #expect(try context.fetchAll(LaunchObject.self).isEmpty)
     }
 
     @Test("Keeps synced objects newer than 7 days")
@@ -47,8 +45,7 @@ struct SyncableObjectCleanupTests {
 
         try SyncableObject.cleanup(backends: [], in: context)
 
-        let request = NSFetchRequest<EventObject>(entityName: "EventObject")
-        #expect(try context.fetch(request).count == 1)
+        #expect(try context.fetchAll(EventObject.self).count == 1)
     }
 
     @Test("Keeps objects with outstanding work regardless of age")
@@ -62,7 +59,6 @@ struct SyncableObjectCleanupTests {
 
         try SyncableObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
 
-        let request = NSFetchRequest<EventObject>(entityName: "EventObject")
-        #expect(try context.fetch(request).count == 1)
+        #expect(try context.fetchAll(EventObject.self).count == 1)
     }
 }

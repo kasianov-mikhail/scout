@@ -19,7 +19,7 @@ struct VersionObjectMonitorTests {
     func firstTrigger() throws {
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
 
-        let versions = try context.fetch(NSFetchRequest<VersionObject>(entityName: "VersionObject"))
+        let versions = try context.fetchAll(VersionObject.self)
         #expect(versions.count == 1)
         #expect(versions.first?.appVersion == "1.0")
         #expect(versions.first?.buildNumber == "1")
@@ -31,7 +31,7 @@ struct VersionObjectMonitorTests {
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
 
-        let versions = try context.fetch(NSFetchRequest<VersionObject>(entityName: "VersionObject"))
+        let versions = try context.fetchAll(VersionObject.self)
         #expect(versions.count == 1)
     }
 
@@ -69,7 +69,7 @@ struct VersionObjectMonitorTests {
 
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
 
-        let versions = try context.fetch(NSFetchRequest<VersionObject>(entityName: "VersionObject"))
+        let versions = try context.fetchAll(VersionObject.self)
         #expect(versions.count == 2)
     }
 }

@@ -18,8 +18,7 @@ struct UserActivityObjectMonitorTests {
     @Test("Trigger") func trigger() async throws {
         try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
 
-        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
-        let activities = try context.fetch(request)
+        let activities = try context.fetchAll(UserActivityObject.self)
 
         let days = activities.days.map(\.dayCount)
         let weeks = activities.weeks.map(\.weekCount)
@@ -34,8 +33,7 @@ struct UserActivityObjectMonitorTests {
         try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
         try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 2), in: context)
 
-        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
-        let activities = try context.fetch(request)
+        let activities = try context.fetchAll(UserActivityObject.self)
 
         let days = activities.days.map(\.dayCount)
         let weeks = activities.weeks.map(\.weekCount)
@@ -50,8 +48,7 @@ struct UserActivityObjectMonitorTests {
         try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
         try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 3), in: context)
 
-        let request = NSFetchRequest<UserActivityObject>(entityName: "UserActivityObject")
-        let activities = try context.fetch(request)
+        let activities = try context.fetchAll(UserActivityObject.self)
 
         let days = activities.days.map(\.dayCount)
         let weeks = activities.weeks.map(\.weekCount)

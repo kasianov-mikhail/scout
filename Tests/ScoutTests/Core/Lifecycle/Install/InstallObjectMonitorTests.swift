@@ -19,7 +19,7 @@ struct InstallObjectMonitorTests {
     func createsFirst() throws {
         try InstallObject.trigger(in: context)
 
-        let installs = try context.fetch(NSFetchRequest<InstallObject>(entityName: "InstallObject"))
+        let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 1)
         #expect(installs.first?.installID == IDs.install)
     }
@@ -30,7 +30,7 @@ struct InstallObjectMonitorTests {
         try InstallObject.trigger(in: context)
         try InstallObject.trigger(in: context)
 
-        let installs = try context.fetch(NSFetchRequest<InstallObject>(entityName: "InstallObject"))
+        let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 1)
     }
 
@@ -42,7 +42,7 @@ struct InstallObjectMonitorTests {
 
         try InstallObject.trigger(in: context)
 
-        let installs = try context.fetch(NSFetchRequest<InstallObject>(entityName: "InstallObject"))
+        let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 2)
         #expect(installs.contains { $0.installID == IDs.install })
     }
