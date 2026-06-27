@@ -57,10 +57,10 @@ struct ComparisonPairTests {
         let pair = makeSegment(days: 1, count: 1).paired(with: [], unit: .day)[0]
         let length = pair.bin.upperBound.timeIntervalSince(pair.bin.lowerBound)
 
-        #expect(abs(pair.barStart.timeIntervalSince(pair.bin.lowerBound) - length * barSlot.lowerBound) < 0.001)
-        #expect(abs(pair.barEnd.timeIntervalSince(pair.bin.lowerBound) - length * barSlot.upperBound) < 0.001)
+        #expect(abs(pair.barStart.timeIntervalSince(pair.bin.lowerBound) - length * ChartGeometry.barStart) < 0.001)
+        #expect(abs(pair.barEnd.timeIntervalSince(pair.bin.lowerBound) - length * ChartGeometry.barEnd) < 0.001)
         #expect(abs(pair.binCenter.timeIntervalSince(pair.bin.lowerBound) - length / 2) < 0.001)
-        #expect(abs(pair.barEnd.timeIntervalSince(pair.barStart) - length * chartBarRatio) < 0.001)
+        #expect(abs(pair.barEnd.timeIntervalSince(pair.barStart) - length * ChartGeometry.barRatio) < 0.001)
     }
 
     func makeSegment(days: Int, count: Int) -> [ChartPoint<Int>] {
