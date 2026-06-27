@@ -17,7 +17,7 @@ struct GridCell<T: MetricScalar>: Hashable, ChartComposing {
 
 extension GridCell {
     var secondsSinceBase: Int {
-        (row - 1) * 86_400 + column * 3_600
+        (row - 1) * Int(TimeInterval.day) + column * Int(TimeInterval.hour)
     }
 }
 

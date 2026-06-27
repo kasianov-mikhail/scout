@@ -78,18 +78,18 @@ extension TimeInterval {
             String(format: "%.0f µs", self * 1_000_000)
         case ..<1:
             String(format: "%.0f ms", self * 1_000)
-        case ..<60:
+        case ..<(.minute):
             String(format: "%.1f s", self)
-        case ..<3600:
-            String(format: "%.0f min %.0f s", floor(self / 60), truncatingRemainder(dividingBy: 60))
-        case ..<86_400:
-            String(format: "%.0f h", self / 3600)
-        case ..<2_592_000:
-            String(format: "%.0f d", self / 86_400)
-        case ..<31_536_000:
-            String(format: "%.0f mo", self / 2_592_000)
+        case ..<(.hour):
+            String(format: "%.0f min %.0f s", floor(self / .minute), truncatingRemainder(dividingBy: .minute))
+        case ..<(.day):
+            String(format: "%.0f h", self / .hour)
+        case ..<(.month):
+            String(format: "%.0f d", self / .day)
+        case ..<(.year):
+            String(format: "%.0f mo", self / .month)
         default:
-            String(format: "%.1f y", self / 31_536_000)
+            String(format: "%.1f y", self / .year)
         }
     }
 }

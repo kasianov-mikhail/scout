@@ -114,7 +114,7 @@ struct TimelineExportTests {
     @Test("Session ranges spanning days repeat the date in the end bound")
     func testMultiDayRange() {
         let session = SessionRoot(
-            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(40 + 86_400)),
+            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(40 + .day)),
             events: [],
             crashes: []
         )
