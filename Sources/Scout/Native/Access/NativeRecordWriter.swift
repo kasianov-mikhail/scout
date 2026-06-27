@@ -7,8 +7,6 @@
 
 import CloudKit
 
-private let maxBatchSize = 400
-
 extension CKDatabase: RecordWriter {
     func write(record: Record) async throws {
         do {
@@ -24,7 +22,7 @@ extension CKDatabase: RecordWriter {
     }
 
     func write(records: [Record]) async throws {
-        for chunk in records.chunked(into: maxBatchSize) {
+        for chunk in records.chunked(into: Self.maxBatchSize) {
             try await runner { database in
                 try await database.modifyRecords(
                     saving: chunk.map(\.ckRecord),
