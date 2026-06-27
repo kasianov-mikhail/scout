@@ -16,7 +16,7 @@ final class LaunchObject: SyncableObject {
     func sessions(in context: NSManagedObjectContext) throws -> [SessionObject] {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
         return try context.fetch(request)
     }
 

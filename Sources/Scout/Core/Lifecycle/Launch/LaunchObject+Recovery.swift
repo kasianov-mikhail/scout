@@ -34,7 +34,7 @@ extension LaunchObject: RecoveryMonitor {
     private func inferredEndDate(in context: NSManagedObjectContext) throws -> Date? {
         let request = NSFetchRequest<IDObject>(entityName: "IDObject")
         request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: false)]
+        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
         request.fetchLimit = 1
 
         return try context.fetch(request).first?.date

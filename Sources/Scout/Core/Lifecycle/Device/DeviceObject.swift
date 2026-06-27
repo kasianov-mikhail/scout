@@ -14,7 +14,7 @@ final class DeviceObject: SyncableObject {
     func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
         request.predicate = NSPredicate(format: "deviceID == %@", deviceID as CVarArg)
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
         return try context.fetch(request)
     }
 }
