@@ -1,4 +1,4 @@
-// wrap both previews into a VStack to avoid truncation
+//
 // Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
