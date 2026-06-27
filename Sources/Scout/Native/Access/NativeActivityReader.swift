@@ -32,7 +32,7 @@ extension ActivityPoint {
 
         for matrix in matrices {
             for cell in matrix.cells {
-                let day = matrix.date.addingTimeInterval(TimeInterval(cell.day) * 86_400)
+                let day = matrix.date.addingTimeInterval(TimeInterval(cell.day) * .day)
                 let key = day.millisecondsSince1970
 
                 switch cell.period {

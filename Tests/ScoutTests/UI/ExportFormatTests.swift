@@ -41,7 +41,7 @@ struct ExportFormatTests {
 
     @Test("Multi-day ranges repeat the date in the end bound")
     func testMultiDayRange() {
-        #expect(ExportFormat.range(from: TimelineFixture.baseDate, to: TimelineFixture.at(86_400)) == "2023-11-14 22:13–2023-11-15 22:13")
+        #expect(ExportFormat.range(from: TimelineFixture.baseDate, to: TimelineFixture.at(.day)) == "2023-11-14 22:13–2023-11-15 22:13")
     }
 
     @Test("Open ranges render as their start")
