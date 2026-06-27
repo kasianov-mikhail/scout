@@ -14,7 +14,7 @@ import Testing
 struct MetricsProviderTests {
     @Test("Returns the native series from a Scout server unchanged")
     func fetchUsesServerSeries() async throws {
-        let database = MetricsServerStub(series: [
+        let database = ServerStub(metrics: [
             MetricSeries(
                 name: "api_calls",
                 category: "counter",
@@ -68,36 +68,5 @@ struct MetricsProviderTests {
 
     private func ms(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Int64 {
         Int64((date(year, month, day, hour).timeIntervalSince1970 * 1000).rounded())
-    }
-}
-
-/// A `DatabaseReader` that returns a native metric series, standing in for a
-/// Scout server backend.
-///
-private final class MetricsServerStub: DatabaseReader, @unchecked Sendable {
-    let series: [MetricSeries]
-
-    init(series: [MetricSeries]) {
-        self.series = series
-    }
-
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
-        series
-    }
-
-    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
-        []
-    }
-
-    func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        throw RecordNotFoundError()
-    }
-
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        RecordChunk(records: [], cursor: nil)
-    }
-
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
-        RecordChunk(records: [], cursor: nil)
     }
 }
