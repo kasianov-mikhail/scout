@@ -20,11 +20,7 @@ struct Record: Equatable, Sendable {
     }
 
     mutating func setValues(_ values: [String: Any]) {
-        for (key, value) in values {
-            if let value = RecordValue(any: value) {
-                fields[key] = value
-            }
-        }
+        fields.merge(values.compactMapValues(RecordValue.init(any:))) { _, new in new }
     }
 }
 

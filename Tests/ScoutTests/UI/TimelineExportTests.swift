@@ -12,8 +12,8 @@ import Testing
 @testable import Scout
 
 struct TimelineExportTests {
-    private func uuid(_ prefix: String) -> UUID {
-        UUID(uuidString: "\(prefix)-0000-0000-0000-000000000000")!
+    private func uuid(_ prefix: String) throws -> UUID {
+        try #require(UUID(uuidString: "\(prefix)-0000-0000-0000-000000000000"))
     }
 
     @Test("Returns nil when the rail has no installs")
@@ -23,9 +23,9 @@ struct TimelineExportTests {
     }
 
     @Test("Renders the rail as a hierarchical Markdown document")
-    func testDocument() {
+    func testDocument() throws {
         let session = SessionRoot(
-            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(400)),
+            session: .stub(sessionID: try uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(400)),
             events: [
                 .stub(name: "purchase_completed", date: TimelineFixture.at(160)),
                 .stub(name: "app_open", date: TimelineFixture.at(40)),
@@ -33,14 +33,14 @@ struct TimelineExportTests {
             crashes: [.stub(name: "EXC_BAD_ACCESS", date: TimelineFixture.at(100))]
         )
         let launch = LaunchRoot(
-            launch: .stub(launchID: uuid("CCCCCCCC"), startDate: TimelineFixture.baseDate),
+            launch: .stub(launchID: try uuid("CCCCCCCC"), startDate: TimelineFixture.baseDate),
             sessions: [session]
         )
         let install = InstallRoot(
-            install: .stub(installID: uuid("BBBBBBBB"), date: TimelineFixture.baseDate),
+            install: .stub(installID: try uuid("BBBBBBBB"), date: TimelineFixture.baseDate),
             launches: [launch]
         )
-        let rail = Rail(device: .stub(deviceID: uuid("AAAAAAAA")), installs: [install])
+        let rail = Rail(device: .stub(deviceID: try uuid("AAAAAAAA")), installs: [install])
 
         #expect(
             TimelineExport(rail: rail).text == """
@@ -112,9 +112,9 @@ struct TimelineExportTests {
     }
 
     @Test("Session ranges spanning days repeat the date in the end bound")
-    func testMultiDayRange() {
+    func testMultiDayRange() throws {
         let session = SessionRoot(
-            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(40 + .day)),
+            session: .stub(sessionID: try uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(40 + .day)),
             events: [],
             crashes: []
         )

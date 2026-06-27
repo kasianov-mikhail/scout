@@ -28,7 +28,7 @@ extension AnalyticsView {
 extension Array {
     func unique(by path: KeyPath<Element, String>, max: Int) -> [String] {
         let all = reduce(into: [:]) { dict, event in
-            dict[event[keyPath: path]] = (dict[event[keyPath: path]] ?? 0) + 1
+            dict[event[keyPath: path], default: 0] += 1
         }
         .sorted { lhs, rhs in
             lhs.value > rhs.value
