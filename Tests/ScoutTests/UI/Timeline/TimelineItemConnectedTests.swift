@@ -15,7 +15,7 @@ struct TimelineItemConnectedTests {
         TimelineItem(
             id: UUID().uuidString,
             name: "e",
-            date: Date(timeIntervalSince1970: 1_700_000_000),
+            date: TimelineFixture.baseDate,
             active: active,
             installID: UUID(),
             launchID: UUID(),

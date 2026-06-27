@@ -11,12 +11,9 @@ import Testing
 @testable import Scout
 
 struct RailMergeTests {
-    private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
-    private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
-
     @Test("Empty merge returns equivalent tree")
     func testEmptyMerge() {
-        let rail = Rail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: TimelineFixture.baseDate)
         let merged = rail.merged(sessions: [], events: [])
 
         #expect(merged.device.deviceID == rail.device.deviceID)
@@ -28,12 +25,12 @@ struct RailMergeTests {
 
     @Test("Adds new event to an existing session")
     func testAddsEvent() {
-        let rail = Rail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: TimelineFixture.baseDate)
         let sessionID = rail.installs[0].launches[0].sessions[0].session.sessionID!
 
         let merged = rail.merged(
             sessions: [],
-            events: [.stub(name: "new-event", sessionID: sessionID, date: at(150))]
+            events: [.stub(name: "new-event", sessionID: sessionID, date: TimelineFixture.at(150))]
         )
 
         let events = merged.installs[0].launches[0].sessions[0].events
@@ -43,10 +40,10 @@ struct RailMergeTests {
 
     @Test("Adds new session under an existing launch")
     func testAddsSession() {
-        let rail = Rail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: TimelineFixture.baseDate)
         let launchID = rail.installs[0].launches[0].launch.launchID!
 
-        let newSession = Session.stub(launchID: launchID, startDate: at(900))
+        let newSession = Session.stub(launchID: launchID, startDate: TimelineFixture.at(900))
         let merged = rail.merged(sessions: [newSession], events: [])
 
         let sessions = merged.installs[0].launches[0].sessions
@@ -56,7 +53,7 @@ struct RailMergeTests {
 
     @Test("Drops new items whose parent is not in the existing tree")
     func testDropsOrphans() {
-        let rail = Rail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: TimelineFixture.baseDate)
         let merged = rail.merged(
             sessions: [],
             events: [.stub(name: "orphan", sessionID: UUID())]
@@ -83,7 +80,7 @@ struct RailMergeTests {
             sessions: [.stub(sessionID: sessionID, launchID: launchID)],
             events: [
                 Event(
-                    name: "old-name", level: nil, date: at(10),
+                    name: "old-name", level: nil, date: TimelineFixture.at(10),
                     paramCount: nil, uuid: nil, id: eventID,
                     installID: nil, sessionID: sessionID, deviceID: nil
                 )
@@ -92,7 +89,7 @@ struct RailMergeTests {
         )
 
         let replacement = Event(
-            name: "new-name", level: nil, date: at(10),
+            name: "new-name", level: nil, date: TimelineFixture.at(10),
             paramCount: nil, uuid: nil, id: eventID,
             installID: nil, sessionID: sessionID, deviceID: nil
         )
@@ -105,7 +102,7 @@ struct RailMergeTests {
 
     @Test("Sort order maintained after merge")
     func testSortMaintained() {
-        let rail = Rail.stub(baseDate: baseDate)
+        let rail = Rail.stub(baseDate: TimelineFixture.baseDate)
         let sessionID = rail.installs[0].launches[0].sessions[0].session.sessionID!
         let originalDates = rail.installs[0].launches[0].sessions[0].events.compactMap(\.date)
 

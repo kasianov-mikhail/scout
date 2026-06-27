@@ -12,9 +12,6 @@ import Testing
 
 @MainActor
 struct TimelineProviderTests {
-    private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
-    private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
-
     private let deviceID = UUID()
     private let installID = UUID()
     private let launchID = UUID()
@@ -23,11 +20,11 @@ struct TimelineProviderTests {
     private func makeDatabase() -> DatabaseStub {
         let database = DatabaseStub()
         database.add(
-            .deviceStub(deviceID: deviceID, date: baseDate),
-            .installStub(installID: installID, deviceID: deviceID, date: baseDate),
-            .launchStub(launchID: launchID, installID: installID, deviceID: deviceID, startDate: at(10)),
-            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: at(20)),
-            .eventStub(name: "e", sessionID: sessionID, date: at(30))
+            .deviceStub(deviceID: deviceID, date: TimelineFixture.baseDate),
+            .installStub(installID: installID, deviceID: deviceID, date: TimelineFixture.baseDate),
+            .launchStub(launchID: launchID, installID: installID, deviceID: deviceID, startDate: TimelineFixture.at(10)),
+            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20)),
+            .eventStub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))
         )
         return database
     }
@@ -50,7 +47,7 @@ struct TimelineProviderTests {
     @Test("Publishes a result when the anchor's install is not in the rail")
     func testMissingAnchorInstallPublishes() async throws {
         let provider = TimelineProvider()
-        let anchor = Event.stub(name: "a", installID: UUID(), date: at(30))
+        let anchor = Event.stub(name: "a", installID: UUID(), date: TimelineFixture.at(30))
         await start(provider, database: makeDatabase(), anchorEvent: anchor)
 
         let rail = try #require(provider.result).get()
@@ -60,7 +57,7 @@ struct TimelineProviderTests {
     @Test("Anchored start seeds the timeline around the anchor")
     func testAnchoredStart() async throws {
         let provider = TimelineProvider()
-        let anchor = Event.stub(name: "e", sessionID: sessionID, installID: installID, date: at(30))
+        let anchor = Event.stub(name: "e", sessionID: sessionID, installID: installID, date: TimelineFixture.at(30))
         await start(provider, database: makeDatabase(), anchorEvent: anchor)
 
         let rail = try #require(provider.result).get()

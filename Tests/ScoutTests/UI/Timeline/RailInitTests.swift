@@ -11,9 +11,6 @@ import Testing
 @testable import Scout
 
 struct RailInitTests {
-    private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
-    private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
-
     @Test("Device with no children has empty installs")
     func testNoChildren() {
         let rail = Rail(
@@ -57,24 +54,24 @@ struct RailInitTests {
         let rail = Rail(
             device: .stub(deviceID: deviceID),
             installs: [
-                .stub(installID: iID2, deviceID: deviceID, date: at(200)),
-                .stub(installID: iID1, deviceID: deviceID, date: at(100)),
+                .stub(installID: iID2, deviceID: deviceID, date: TimelineFixture.at(200)),
+                .stub(installID: iID1, deviceID: deviceID, date: TimelineFixture.at(100)),
             ],
             launches: [
-                .stub(launchID: lID2, installID: iID1, startDate: at(2000)),
-                .stub(launchID: lID1, installID: iID1, startDate: at(1000)),
+                .stub(launchID: lID2, installID: iID1, startDate: TimelineFixture.at(2000)),
+                .stub(launchID: lID1, installID: iID1, startDate: TimelineFixture.at(1000)),
             ],
             sessions: [
-                .stub(sessionID: sID2, launchID: lID1, startDate: at(20_000)),
-                .stub(sessionID: sID1, launchID: lID1, startDate: at(10_000)),
+                .stub(sessionID: sID2, launchID: lID1, startDate: TimelineFixture.at(20_000)),
+                .stub(sessionID: sID1, launchID: lID1, startDate: TimelineFixture.at(10_000)),
             ],
             events: [
-                .stub(name: "late", sessionID: sID1, date: at(100_002)),
-                .stub(name: "early", sessionID: sID1, date: at(100_001)),
+                .stub(name: "late", sessionID: sID1, date: TimelineFixture.at(100_002)),
+                .stub(name: "early", sessionID: sID1, date: TimelineFixture.at(100_001)),
             ],
             crashes: [
-                .stub(name: "late", sessionID: sID1, date: at(200_002)),
-                .stub(name: "early", sessionID: sID1, date: at(200_001)),
+                .stub(name: "late", sessionID: sID1, date: TimelineFixture.at(200_002)),
+                .stub(name: "early", sessionID: sID1, date: TimelineFixture.at(200_001)),
             ]
         )
 
@@ -117,8 +114,8 @@ struct RailInitTests {
             installs: [.stub(installID: installID, deviceID: deviceID)],
             launches: [.stub(launchID: launchID, installID: installID)],
             sessions: [
-                .stub(sessionID: sessionA, launchID: launchID, startDate: at(0)),
-                .stub(sessionID: sessionB, launchID: launchID, startDate: at(100)),
+                .stub(sessionID: sessionA, launchID: launchID, startDate: TimelineFixture.at(0)),
+                .stub(sessionID: sessionB, launchID: launchID, startDate: TimelineFixture.at(100)),
             ],
             events: [],
             crashes: [.stub(name: "only-on-B", sessionID: sessionB)]

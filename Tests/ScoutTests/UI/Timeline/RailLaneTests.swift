@@ -12,8 +12,6 @@ import Testing
 
 @MainActor
 struct RailLaneTests {
-    private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
-
     private let installID = UUID()
     private let launchID = UUID()
     private let sessionID = UUID()
@@ -21,8 +19,8 @@ struct RailLaneTests {
     private func makeDatabase() -> DatabaseStub {
         let database = DatabaseStub()
         database.add(
-            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: baseDate),
-            .eventStub(name: "e", sessionID: sessionID, date: baseDate.addingTimeInterval(10))
+            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.baseDate),
+            .eventStub(name: "e", sessionID: sessionID, date: TimelineFixture.baseDate.addingTimeInterval(10))
         )
         return database
     }

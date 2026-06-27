@@ -11,9 +11,6 @@ import Testing
 @testable import Scout
 
 struct RailSplitTests {
-    private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)
-    private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
-
     private let deviceID = UUID()
     private let installIDs = [UUID(), UUID(), UUID()]
 
@@ -22,7 +19,7 @@ struct RailSplitTests {
         Rail(
             device: .stub(deviceID: deviceID),
             installs: installIDs.enumerated().map { index, id in
-                .stub(installID: id, deviceID: deviceID, date: at(TimeInterval(index * 100)))
+                .stub(installID: id, deviceID: deviceID, date: TimelineFixture.at(TimeInterval(index * 100)))
             },
             launches: []
         )
@@ -47,7 +44,7 @@ struct RailSplitTests {
 
     @Test("Dated anchor shares its install between both lanes")
     func testDatedAnchor() {
-        let anchor = Event.stub(name: "a", installID: installIDs[1], date: at(150))
+        let anchor = Event.stub(name: "a", installID: installIDs[1], date: TimelineFixture.at(150))
         let split = rail.split(at: anchor)
 
         #expect(split?.older == [installIDs[1], installIDs[0]])
@@ -65,7 +62,7 @@ struct RailSplitTests {
 
     @Test("Anchor in the newest install leaves only it in the newer lane")
     func testNewestAnchor() {
-        let anchor = Event.stub(name: "a", installID: installIDs[2], date: at(250))
+        let anchor = Event.stub(name: "a", installID: installIDs[2], date: TimelineFixture.at(250))
         let split = rail.split(at: anchor)
 
         #expect(split?.older == [installIDs[2], installIDs[1], installIDs[0]])
@@ -74,7 +71,7 @@ struct RailSplitTests {
 
     @Test("Anchor in the oldest install leaves only it in the older lane")
     func testOldestAnchor() {
-        let anchor = Event.stub(name: "a", installID: installIDs[0], date: at(50))
+        let anchor = Event.stub(name: "a", installID: installIDs[0], date: TimelineFixture.at(50))
         let split = rail.split(at: anchor)
 
         #expect(split?.older == [installIDs[0]])
