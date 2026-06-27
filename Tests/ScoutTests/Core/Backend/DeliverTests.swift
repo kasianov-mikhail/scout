@@ -68,10 +68,10 @@ struct DeliverTests {
             try await deliver(EventObject.self, to: backend)
         }
 
-        #expect(cloud.records.filter { $0.recordType == "Event" }.count == 1)
-        #expect(server.records.filter { $0.recordType == "Event" }.count == 1)
-        #expect(cloud.records.filter { $0.recordType == Int.recordType }.count == 1)
-        #expect(server.records.filter { $0.recordType == Int.recordType }.count == 0)
+        #expect(cloud.records.count(of: "Event") == 1)
+        #expect(server.records.count(of: "Event") == 1)
+        #expect(cloud.records.count(of: Int.recordType) == 1)
+        #expect(server.records.count(of: Int.recordType) == 0)
     }
 
     @Test("Metrics go raw to servers and as matrices to CloudKit")
@@ -84,10 +84,10 @@ struct DeliverTests {
             try await deliver(IntMetricsObject.self, to: backend)
         }
 
-        #expect(server.records.filter { $0.recordType == "IntMetric" }.count == 1)
-        #expect(cloud.records.filter { $0.recordType == "IntMetric" }.count == 0)
-        #expect(cloud.records.filter { $0.recordType == Int.recordType }.count == 1)
-        #expect(server.records.filter { $0.recordType == Int.recordType }.count == 0)
+        #expect(server.records.count(of: "IntMetric") == 1)
+        #expect(cloud.records.count(of: "IntMetric") == 0)
+        #expect(cloud.records.count(of: Int.recordType) == 1)
+        #expect(server.records.count(of: Int.recordType) == 0)
     }
 
     @Test("A server-only setup skips the matrix stage entirely")
@@ -99,8 +99,8 @@ struct DeliverTests {
         try await deliver(EventObject.self, to: serverBackend)
 
         #expect(event.delivery(for: "server")?.isDelivered == true)
-        #expect(server.records.filter { $0.recordType == "Event" }.count == 1)
-        #expect(server.records.filter { $0.recordType == Int.recordType }.isEmpty)
+        #expect(server.records.count(of: "Event") == 1)
+        #expect(server.records.count(of: Int.recordType) == 0)
     }
 
     @Test("A failing backend leaves its row outstanding without blocking the others")
@@ -120,8 +120,8 @@ struct DeliverTests {
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
         #expect(event.delivery(for: "server")?.progress == [.raw])
         #expect(event.delivery(for: "server")?.attempts == 1)
-        #expect(cloud.records.filter { $0.recordType == "Event" }.count == 1)
-        #expect(server.records.filter { $0.recordType == "Event" }.count == 0)
+        #expect(cloud.records.count(of: "Event") == 1)
+        #expect(server.records.count(of: "Event") == 0)
     }
 
     @Test("An unavailable backend is left untouched without blocking the others")
@@ -138,8 +138,8 @@ struct DeliverTests {
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
         #expect(event.delivery(for: "server")?.progress == [.raw])
         #expect(event.delivery(for: "server")?.attempts == 0)
-        #expect(cloud.records.filter { $0.recordType == "Event" }.count == 1)
-        #expect(server.records.filter { $0.recordType == "Event" }.count == 0)
+        #expect(cloud.records.count(of: "Event") == 1)
+        #expect(server.records.count(of: "Event") == 0)
     }
 
     @Test("A matrix is contributed per native backend, never twice")
@@ -157,9 +157,9 @@ struct DeliverTests {
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
         #expect(event.delivery(for: "cloud2")?.isDelivered == true)
         // The first backend's matrix isn't contributed a second time...
-        #expect(cloud.records.filter { $0.recordType == Int.recordType }.isEmpty)
+        #expect(cloud.records.count(of: Int.recordType) == 0)
         // ...while the second backend's matrix is contributed exactly once.
-        #expect(cloud2.records.filter { $0.recordType == Int.recordType }.count == 1)
+        #expect(cloud2.records.count(of: Int.recordType) == 1)
     }
 
     @Test("A backend abandoned after too many attempts is no longer retried")
@@ -176,7 +176,7 @@ struct DeliverTests {
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
         #expect(event.delivery(for: "server")?.isAbandoned == true)
         // The abandoned server is never written to.
-        #expect(server.records.filter { $0.recordType == "Event" }.isEmpty)
+        #expect(server.records.count(of: "Event") == 0)
     }
 
     @Test("The recovered backend is retried alone; healthy ones aren't rewritten")
@@ -196,10 +196,10 @@ struct DeliverTests {
         try await deliver(EventObject.self, to: serverBackend)
 
         #expect(event.delivery(for: "server")?.isDelivered == true)
-        #expect(server.records.filter { $0.recordType == "Event" }.count == 1)
+        #expect(server.records.count(of: "Event") == 1)
         // CloudKit's raw record and matrix were each written exactly once.
-        #expect(cloud.records.filter { $0.recordType == "Event" }.count == 1)
-        #expect(cloud.records.filter { $0.recordType == Int.recordType }.count == 1)
+        #expect(cloud.records.count(of: "Event") == 1)
+        #expect(cloud.records.count(of: Int.recordType) == 1)
     }
 
     @Test("Dropping a never-reached backend lets cleanup reclaim the record")
