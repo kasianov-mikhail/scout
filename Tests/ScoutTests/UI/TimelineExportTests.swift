@@ -12,9 +12,6 @@ import Testing
 @testable import Scout
 
 struct TimelineExportTests {
-    private let baseDate = Date(timeIntervalSince1970: 1_700_000_000)  // 2023-11-14 22:13:20 UTC
-    private func at(_ offset: TimeInterval) -> Date { baseDate.addingTimeInterval(offset) }
-
     private func uuid(_ prefix: String) -> UUID {
         UUID(uuidString: "\(prefix)-0000-0000-0000-000000000000")!
     }
@@ -28,19 +25,19 @@ struct TimelineExportTests {
     @Test("Renders the rail as a hierarchical Markdown document")
     func testDocument() {
         let session = SessionRoot(
-            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: at(40), endDate: at(400)),
+            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(400)),
             events: [
-                .stub(name: "purchase_completed", date: at(160)),
-                .stub(name: "app_open", date: at(40)),
+                .stub(name: "purchase_completed", date: TimelineFixture.at(160)),
+                .stub(name: "app_open", date: TimelineFixture.at(40)),
             ],
-            crashes: [.stub(name: "EXC_BAD_ACCESS", date: at(100))]
+            crashes: [.stub(name: "EXC_BAD_ACCESS", date: TimelineFixture.at(100))]
         )
         let launch = LaunchRoot(
-            launch: .stub(launchID: uuid("CCCCCCCC"), startDate: baseDate),
+            launch: .stub(launchID: uuid("CCCCCCCC"), startDate: TimelineFixture.baseDate),
             sessions: [session]
         )
         let install = InstallRoot(
-            install: .stub(installID: uuid("BBBBBBBB"), date: baseDate),
+            install: .stub(installID: uuid("BBBBBBBB"), date: TimelineFixture.baseDate),
             launches: [launch]
         )
         let rail = Rail(device: .stub(deviceID: uuid("AAAAAAAA")), installs: [install])
@@ -117,7 +114,7 @@ struct TimelineExportTests {
     @Test("Session ranges spanning days repeat the date in the end bound")
     func testMultiDayRange() {
         let session = SessionRoot(
-            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: at(40), endDate: at(40 + 86_400)),
+            session: .stub(sessionID: uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(40 + 86_400)),
             events: [],
             crashes: []
         )
@@ -133,13 +130,13 @@ struct TimelineExportTests {
             name: "SIGABRT",
             reason: "unexpectedly found nil",
             stackTrace: [],
-            date: at(10),
+            date: TimelineFixture.at(10),
             id: "crash",
             installID: nil,
             launchID: nil,
             sessionID: nil
         )
-        let session = SessionRoot(session: .stub(startDate: baseDate), events: [], crashes: [crash])
+        let session = SessionRoot(session: .stub(startDate: TimelineFixture.baseDate), events: [], crashes: [crash])
         let rail = rail(sessions: [session])
 
         let text = TimelineExport(rail: rail).text
@@ -149,9 +146,9 @@ struct TimelineExportTests {
     @Test("Events without a date are omitted")
     func testUndatedEventsOmitted() {
         let session = SessionRoot(
-            session: .stub(startDate: baseDate),
+            session: .stub(startDate: TimelineFixture.baseDate),
             events: [
-                .stub(name: "dated", date: at(40)),
+                .stub(name: "dated", date: TimelineFixture.at(40)),
                 .stub(name: "undated", date: nil),
             ],
             crashes: []
@@ -174,11 +171,11 @@ struct TimelineExportTests {
         // instead of re-sorting, so feed it unsorted input.
         let rail = Rail(
             device: .stub(deviceID: deviceID),
-            installs: [.stub(installID: installID, deviceID: deviceID, date: baseDate)],
-            launches: [.stub(launchID: launchID, installID: installID, startDate: baseDate)],
+            installs: [.stub(installID: installID, deviceID: deviceID, date: TimelineFixture.baseDate)],
+            launches: [.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.baseDate)],
             sessions: [
-                .stub(launchID: launchID, startDate: at(2800)),
-                .stub(launchID: launchID, startDate: at(40)),
+                .stub(launchID: launchID, startDate: TimelineFixture.at(2800)),
+                .stub(launchID: launchID, startDate: TimelineFixture.at(40)),
             ]
         )
 
@@ -191,8 +188,8 @@ struct TimelineExportTests {
 
     /// Wraps the given sessions in a single-install, single-launch rail.
     private func rail(sessions: [SessionRoot]) -> Rail {
-        let launch = LaunchRoot(launch: .stub(startDate: baseDate), sessions: sessions)
-        let install = InstallRoot(install: .stub(date: baseDate), launches: [launch])
+        let launch = LaunchRoot(launch: .stub(startDate: TimelineFixture.baseDate), sessions: sessions)
+        let install = InstallRoot(install: .stub(date: TimelineFixture.baseDate), launches: [launch])
         return Rail(device: .stub(), installs: [install])
     }
 }
