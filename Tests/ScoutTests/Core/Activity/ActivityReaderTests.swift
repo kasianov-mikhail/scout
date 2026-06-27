@@ -59,7 +59,7 @@ struct ActivityReaderTests {
     }
 
     private func date(_ year: Int, _ month: Int, _ day: Int) -> Date {
-        DateComponents(calendar: .utc, year: year, month: month, day: day).date!
+        Date(year: year, month: month, day: day)
     }
 
     private func ms(_ year: Int, _ month: Int, _ day: Int) -> Int64 {

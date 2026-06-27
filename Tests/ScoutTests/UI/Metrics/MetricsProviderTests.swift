@@ -63,7 +63,7 @@ struct MetricsProviderTests {
     }
 
     private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Date {
-        DateComponents(calendar: .utc, year: year, month: month, day: day, hour: hour).date!
+        Date(year: year, month: month, day: day, hour: hour)
     }
 
     private func ms(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Int64 {
