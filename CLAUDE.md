@@ -26,6 +26,10 @@
 - Extract logic and computations out of SwiftUI views into separate types covered by unit tests.
 - Keep views from bloating: when a view accumulates non-trivial logic, computations, or repeated layout, extract them into model types or subviews.
 
+# Building & testing
+
+- When a change touches a declaration the tests reference (renaming or re-typing a function/initializer/property, changing a signature, or moving a symbol), build the test target locally with `build-for-testing`, not just the app target — building the app alone misses test-only call sites and lets the breakage surface in CI instead.
+
 # Swift code style
 
 ## Doc comments
