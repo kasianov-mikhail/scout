@@ -7,12 +7,6 @@
 
 import Foundation
 
-/// Horizontal portion of each bucket slot occupied by a bar, derived from
-/// `chartBarRatio` and applied through `barStart`/`barEnd`, so the marks and
-/// the `ReferenceOverlay` place bar edges identically.
-///
-let barSlot: ClosedRange<Double> = (0.5 - chartBarRatio / 2)...(0.5 + chartBarRatio / 2)
-
 /// One bucket of the comparison: the current value and the previous-period
 /// value it is compared against, both on the current bucket's date.
 ///
@@ -31,10 +25,10 @@ struct ComparisonPair<T: ChartNumeric>: Identifiable {
 
 extension ComparisonPair {
     /// Date of the bar's leading edge within the bucket slot.
-    var barStart: Date { slotDate(at: barSlot.lowerBound) }
+    var barStart: Date { slotDate(at: ChartGeometry.barStart) }
 
     /// Date of the bar's trailing edge within the bucket slot.
-    var barEnd: Date { slotDate(at: barSlot.upperBound) }
+    var barEnd: Date { slotDate(at: ChartGeometry.barEnd) }
 
     /// Date at the center of the bucket slot.
     var binCenter: Date { slotDate(at: 0.5) }
