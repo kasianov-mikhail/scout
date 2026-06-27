@@ -22,6 +22,12 @@ struct HomeContent: View {
             HomeLogSection()
         }
         .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .background {
+            Rectangle()
+                .fill(.background)
+                .ignoresSafeArea()
+        }
         .toolbarBackground(.visible, for: .navigationBar)
     }
 
