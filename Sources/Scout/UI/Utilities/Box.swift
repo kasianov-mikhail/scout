@@ -7,17 +7,12 @@
 
 import SwiftUI
 
+@MainActor
 class Box<T>: ObservableObject {
     @Published var value: T
 
     init(_ value: T) {
         self.value = value
-    }
-}
-
-extension Box: Equatable where T: Equatable {
-    static func == (lhs: Box<T>, rhs: Box<T>) -> Bool {
-        lhs.value == rhs.value
     }
 }
 
