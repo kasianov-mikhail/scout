@@ -25,6 +25,12 @@ private struct DismissableModifier: ViewModifier {
                     Text(verbatim: "Close")
                 }
             }
+
+            #if compiler(>=6.3)
+                if #available(iOS 26.0, macOS 26.0, *) {
+                    ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                }
+            #endif
         }
     }
 }
