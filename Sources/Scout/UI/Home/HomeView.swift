@@ -28,14 +28,14 @@ public struct HomeView: View {
                 .navigationTitle(en: "Home")
                 .backendWarnings(activeBackend)
                 .dismissable()
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                ConnectionMenu(
-                    connections: backends.map(Connection.init),
-                    activeID: Binding(get: { activeBackend.id }, set: { activeID = $0 })
-                )
-            }
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        ConnectionMenu(
+                            connections: backends.map(Connection.init),
+                            activeID: Binding(get: { activeBackend.id }, set: { activeID = $0 })
+                        )
+                    }
+                }
         }
         .onboardingSheet()
         .tint(tint.value)
