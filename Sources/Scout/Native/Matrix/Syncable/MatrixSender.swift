@@ -7,14 +7,15 @@
 
 import CoreData
 
-struct MatrixSender: @unchecked Sendable {
+@MainActor
+struct MatrixSender {
     let id: String
     let aggregator: any MatrixAggregator
     let context: NSManagedObjectContext
 }
 
 extension MatrixSender {
-    init?(backend: Backend, context: NSManagedObjectContext) {
+    nonisolated init?(backend: Backend, context: NSManagedObjectContext) {
         guard let aggregator = backend.aggregator else {
             return nil
         }
@@ -24,7 +25,6 @@ extension MatrixSender {
     }
 }
 
-@MainActor
 extension MatrixSender {
     func deliver<T: Syncable & MatrixBatch>(type syncable: T.Type) async throws {
         while let batch = try syncable.group(in: context, for: id) {
