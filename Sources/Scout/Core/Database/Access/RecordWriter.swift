@@ -12,6 +12,12 @@ protocol RecordWriter: Sendable {
     func write(records: [Record]) async throws
 }
 
+extension RecordWriter {
+    // Records are written in batches no larger than this; the backends cap a single
+    // save/modify request at 400 records.
+    static var maxBatchSize: Int { 400 }
+}
+
 struct RecordConflictError: LocalizedError {
     let serverRecord: Record
     let errorDescription: String? = "The record was changed on the server"

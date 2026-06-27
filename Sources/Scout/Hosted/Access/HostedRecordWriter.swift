@@ -7,15 +7,13 @@
 
 import Foundation
 
-private let maxBatchSize = 400
-
 extension HTTPDatabase: RecordWriter {
     func write(record: Record) async throws {
         try await write(records: [record])
     }
 
     func write(records: [Record]) async throws {
-        for chunk in records.chunked(into: maxBatchSize) {
+        for chunk in records.chunked(into: Self.maxBatchSize) {
             let request = HTTPWriteRequest(records: chunk.map(HTTPRecord.init))
             try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
         }
