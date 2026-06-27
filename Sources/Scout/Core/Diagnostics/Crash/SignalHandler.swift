@@ -9,18 +9,18 @@ import Foundation
 
 private nonisolated(unsafe) var previousSignalHandlers: [Int32: sig_t] = [:]
 
-private let signals: [Int32] = [
-    SIGABRT,
-    SIGSEGV,
-    SIGBUS,
-    SIGFPE,
-    SIGILL,
-    SIGTRAP,
+private let fatalSignals: [(signal: Int32, name: String)] = [
+    (SIGABRT, "SIGABRT"),
+    (SIGSEGV, "SIGSEGV"),
+    (SIGBUS, "SIGBUS"),
+    (SIGFPE, "SIGFPE"),
+    (SIGILL, "SIGILL"),
+    (SIGTRAP, "SIGTRAP"),
 ]
 
 /// Installs handlers for fatal signals (SIGABRT, SIGSEGV, SIGBUS, SIGFPE, SIGILL, SIGTRAP).
 func installSignalHandler() {
-    for sig in signals {
+    for (sig, _) in fatalSignals {
         previousSignalHandlers[sig] = signal(sig) { sig in
             let crash = CrashInfo(
                 name: signalName(sig),
@@ -37,20 +37,5 @@ func installSignalHandler() {
 }
 
 private func signalName(_ sig: Int32) -> String {
-    switch sig {
-    case SIGABRT:
-        "SIGABRT"
-    case SIGSEGV:
-        "SIGSEGV"
-    case SIGBUS:
-        "SIGBUS"
-    case SIGFPE:
-        "SIGFPE"
-    case SIGILL:
-        "SIGILL"
-    case SIGTRAP:
-        "SIGTRAP"
-    default:
-        "SIGNAL_\(sig)"
-    }
+    fatalSignals.first { $0.signal == sig }?.name ?? "SIGNAL_\(sig)"
 }
