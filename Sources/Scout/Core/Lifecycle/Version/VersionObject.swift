@@ -29,7 +29,7 @@ final class VersionObject: SyncableObject {
 
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
         request.predicate = NSPredicate(format: "launchID IN %@", launchIDs)
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
         return try context.fetch(request)
     }
 }

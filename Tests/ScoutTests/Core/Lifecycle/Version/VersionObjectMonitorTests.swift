@@ -41,7 +41,7 @@ struct VersionObjectMonitorTests {
         try VersionObject.trigger(appVersion: "2.0", buildNumber: "1", in: context)
 
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
         let versions = try context.fetch(request)
 
         #expect(versions.count == 2)
@@ -54,7 +54,7 @@ struct VersionObjectMonitorTests {
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "2", in: context)
 
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.sortDescriptors = [NSSortDescriptor(key: "datePrimitive", ascending: true)]
+        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
         let versions = try context.fetch(request)
 
         #expect(versions.count == 2)
