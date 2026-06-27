@@ -19,7 +19,7 @@ struct LaunchObjectMonitorTests {
     func createsLaunch() throws {
         try LaunchObject.trigger(in: context)
 
-        let launches = try context.fetch(NSFetchRequest<LaunchObject>(entityName: "LaunchObject"))
+        let launches = try context.fetchAll(LaunchObject.self)
         #expect(launches.count == 1)
         #expect(launches.first?.launchID == IDs.launch)
         #expect(launches.first?.endDate == nil)
@@ -31,7 +31,7 @@ struct LaunchObjectMonitorTests {
         try SessionObject.trigger(in: context)
         try SessionObject.complete(in: context)
 
-        let launches = try context.fetch(NSFetchRequest<LaunchObject>(entityName: "LaunchObject"))
+        let launches = try context.fetchAll(LaunchObject.self)
         #expect(launches.first?.endDate == nil)
     }
 }

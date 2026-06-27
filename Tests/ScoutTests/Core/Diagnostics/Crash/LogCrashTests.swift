@@ -26,8 +26,7 @@ struct LogCrashTests {
 
         try logCrash(crash, context: context)
 
-        let request = NSFetchRequest<CrashObject>(entityName: "CrashObject")
-        let results = try context.fetch(request)
+        let results = try context.fetchAll(CrashObject.self)
 
         #expect(results.count == 1)
 
@@ -53,7 +52,7 @@ struct LogCrashTests {
 
         try logCrash(crash, context: context)
 
-        let object = try #require(try context.fetch(NSFetchRequest<CrashObject>(entityName: "CrashObject")).first)
+        let object = try #require(try context.fetchAll(CrashObject.self).first)
         #expect(object.sessionID == crashedSessionID)
     }
 
@@ -63,8 +62,7 @@ struct LogCrashTests {
 
         try logCrash(crash, context: context)
 
-        let request = NSFetchRequest<CrashObject>(entityName: "CrashObject")
-        let object = try #require(try context.fetch(request).first)
+        let object = try #require(try context.fetchAll(CrashObject.self).first)
 
         let data = try #require(object.stackTrace)
         let decoded = try JSONDecoder().decode([String].self, from: data)
@@ -77,8 +75,7 @@ struct LogCrashTests {
 
         try logCrash(crash, context: context)
 
-        let request = NSFetchRequest<CrashObject>(entityName: "CrashObject")
-        let object = try #require(try context.fetch(request).first)
+        let object = try #require(try context.fetchAll(CrashObject.self).first)
         #expect(object.reason == nil)
     }
 

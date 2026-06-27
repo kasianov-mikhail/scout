@@ -31,8 +31,7 @@ private func makeEvent(
         context: context
     )
 
-    let fetchRequest: NSFetchRequest<EventObject> = NSFetchRequest<EventObject>(entityName: "EventObject")
-    let events = try context.fetch(fetchRequest)
+    let events = try context.fetchAll(EventObject.self)
 
     #expect(events.count == 1)
 
@@ -60,7 +59,7 @@ private func makeEvent(
 
     try log(makeEvent("Array Event", metadata: metadata), date: Date(), context: context)
 
-    let events = try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject"))
+    let events = try context.fetchAll(EventObject.self)
     let paramData = try #require(events.first?.params)
     let params = try JSONDecoder().decode([String: String].self, from: paramData)
 
@@ -76,7 +75,7 @@ private func makeEvent(
 
     try log(makeEvent("Dict Event", metadata: metadata), date: Date(), context: context)
 
-    let events = try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject"))
+    let events = try context.fetchAll(EventObject.self)
     let paramData = try #require(events.first?.params)
     let params = try JSONDecoder().decode([String: String].self, from: paramData)
 
@@ -94,7 +93,7 @@ private func makeEvent(
 
     try log(makeEvent("Mixed Event", metadata: metadata), date: Date(), context: context)
 
-    let events = try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject"))
+    let events = try context.fetchAll(EventObject.self)
     let paramData = try #require(events.first?.params)
     let params = try JSONDecoder().decode([String: String].self, from: paramData)
 

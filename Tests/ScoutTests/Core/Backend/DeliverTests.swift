@@ -219,10 +219,10 @@ struct DeliverTests {
 
         // While the server is configured, the outstanding row keeps the record...
         try SyncableObject.cleanup(backends: backends, in: context)
-        #expect(try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject")).count == 1)
+        #expect(try context.fetchAll(EventObject.self).count == 1)
 
         // ...but once it is dropped from the config, cleanup reclaims it.
         try SyncableObject.cleanup(backends: [cloudBackend], in: context)
-        #expect(try context.fetch(NSFetchRequest<EventObject>(entityName: "EventObject")).isEmpty)
+        #expect(try context.fetchAll(EventObject.self).isEmpty)
     }
 }

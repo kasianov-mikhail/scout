@@ -21,8 +21,7 @@ struct SaveMetricsTests {
     func persistsIntMetrics() throws {
         try saveMetrics("api_calls", date: date, telemetry: .counter, value: 5, context)
 
-        let request = NSFetchRequest<IntMetricsObject>(entityName: "IntMetricsObject")
-        let results = try context.fetch(request)
+        let results = try context.fetchAll(IntMetricsObject.self)
 
         #expect(results.count == 1)
 
@@ -37,8 +36,7 @@ struct SaveMetricsTests {
     func persistsDoubleMetrics() throws {
         try saveMetrics("response_time", date: date, telemetry: .timer, value: 1.5, context)
 
-        let request = NSFetchRequest<DoubleMetricsObject>(entityName: "DoubleMetricsObject")
-        let results = try context.fetch(request)
+        let results = try context.fetchAll(DoubleMetricsObject.self)
 
         #expect(results.count == 1)
 
