@@ -14,9 +14,9 @@ enum MonitorError: LocalizedError, Equatable {
     var errorDescription: String? {
         switch self {
         case .notFound:
-            "\(type(of: self)) not found in the context"
+            "MonitorError not found in the context"
         case .alreadyCompleted(let date):
-            "\(type(of: self)) already completed on \(date)"
+            "MonitorError already completed on \(date)"
         }
     }
 
