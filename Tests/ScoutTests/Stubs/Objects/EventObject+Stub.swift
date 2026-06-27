@@ -17,8 +17,7 @@ extension EventObject {
         level: Event.Level = .info,
         in context: NSManagedObjectContext
     ) -> EventObject {
-        let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
-        let event = EventObject(entity: entity, insertInto: context)
+        let event = context.insert(EventObject.self)
 
         event.name = name
         event.date = date

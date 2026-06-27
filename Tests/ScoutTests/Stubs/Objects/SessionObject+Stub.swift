@@ -16,8 +16,7 @@ extension SessionObject {
         endDate: Date? = nil,
         in context: NSManagedObjectContext
     ) -> SessionObject {
-        let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
-        let session = SessionObject(entity: entity, insertInto: context)
+        let session = context.insert(SessionObject.self)
 
         session.date = date
         session.setSynced(synced, in: context)

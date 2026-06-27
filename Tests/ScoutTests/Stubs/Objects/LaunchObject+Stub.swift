@@ -16,8 +16,7 @@ extension LaunchObject {
         endDate: Date? = nil,
         in context: NSManagedObjectContext
     ) -> LaunchObject {
-        let entity = NSEntityDescription.entity(forEntityName: "LaunchObject", in: context)!
-        let launch = LaunchObject(entity: entity, insertInto: context)
+        let launch = context.insert(LaunchObject.self)
 
         launch.date = date
         launch.setSynced(synced, in: context)
