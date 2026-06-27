@@ -7,26 +7,24 @@
 
 import CoreData
 
-struct MatrixSender: @unchecked Sendable {
+struct MatrixSender: Sendable {
     let id: String
     let aggregator: any MatrixAggregator
-    let context: NSManagedObjectContext
 }
 
 extension MatrixSender {
-    init?(backend: Backend, context: NSManagedObjectContext) {
+    init?(backend: Backend) {
         guard let aggregator = backend.aggregator else {
             return nil
         }
         self.id = backend.id
         self.aggregator = aggregator
-        self.context = context
     }
 }
 
 @MainActor
 extension MatrixSender {
-    func deliver<T: Syncable & MatrixBatch>(type syncable: T.Type) async throws {
+    func deliver<T: Syncable & MatrixBatch>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
         while let batch = try syncable.group(in: context, for: id) {
             try Task.checkCancellation()
 
