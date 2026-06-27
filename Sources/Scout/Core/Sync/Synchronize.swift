@@ -19,16 +19,16 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
     try await dispatcher.performEnsuringBackground {
         await withTaskGroup(of: Void.self) { group in
             for backend in backends where await backend.checkAvailability() {
-                let recordSender = RecordSender(backend: backend, context: context)
-                let matrixSender = MatrixSender(backend: backend, context: context)
+                let recordSender = RecordSender(backend: backend)
+                let matrixSender = MatrixSender(backend: backend)
 
                 func deliver<T: Syncable & MatrixBatch & RecordEncodable>(_ type: T.Type) {
-                    group.addTask { try? await recordSender.deliver(type: type) }
-                    group.addTask { try? await matrixSender?.deliver(type: type) }
+                    group.addTask { try? await recordSender.deliver(type: type, in: context) }
+                    group.addTask { try? await matrixSender?.deliver(type: type, in: context) }
                 }
 
                 func deliver<T: Syncable & MatrixBatch>(_ type: T.Type) {
-                    group.addTask { try? await matrixSender?.deliver(type: type) }
+                    group.addTask { try? await matrixSender?.deliver(type: type, in: context) }
                 }
 
                 deliver(EventObject.self)

@@ -54,8 +54,8 @@ struct DeliverTests {
 
     /// Run both engines for a type the way `synchronize` does: raw records first, then matrices.
     func deliver<T: Syncable & MatrixBatch & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
-        try await RecordSender(backend: backend, context: context).deliver(type: type)
-        try await MatrixSender(backend: backend, context: context)?.deliver(type: type)
+        try await RecordSender(backend: backend).deliver(type: type, in: context)
+        try await MatrixSender(backend: backend)?.deliver(type: type, in: context)
     }
 
     @Test("Events go raw to every backend, matrices only to CloudKit")
