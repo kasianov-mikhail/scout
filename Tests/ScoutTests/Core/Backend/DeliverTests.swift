@@ -19,6 +19,8 @@ struct DeliverTests {
     let server = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 
+    private static let testError = NSError(domain: "TestError", code: 1)
+
     var cloudBackend: Backend {
         Backend(
             id: "cloud",
@@ -109,7 +111,7 @@ struct DeliverTests {
         try context.save()
         try SyncableObject.plan(backends: backends, in: context)
 
-        server.writeErrors.append(NSError(domain: "TestError", code: 1))
+        server.writeErrors.append(Self.testError)
 
         // The CloudKit engine succeeds independently of the failing server engine.
         try await deliver(EventObject.self, to: cloudBackend)
@@ -186,7 +188,7 @@ struct DeliverTests {
         try SyncableObject.plan(backends: backends, in: context)
 
         // First cycle: the server is down, CloudKit succeeds.
-        server.writeErrors.append(NSError(domain: "TestError", code: 1))
+        server.writeErrors.append(Self.testError)
         try await deliver(EventObject.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
             try await deliver(EventObject.self, to: serverBackend)
@@ -210,7 +212,7 @@ struct DeliverTests {
         try SyncableObject.plan(backends: backends, in: context)
 
         // CloudKit delivered; the server never accepts the record.
-        server.writeErrors.append(NSError(domain: "TestError", code: 1))
+        server.writeErrors.append(Self.testError)
         try await deliver(EventObject.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
             try await deliver(EventObject.self, to: serverBackend)
