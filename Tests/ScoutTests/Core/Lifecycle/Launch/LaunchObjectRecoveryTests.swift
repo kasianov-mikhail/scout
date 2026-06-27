@@ -14,7 +14,7 @@ import Testing
 @Suite("LaunchObject+Recovery")
 struct LaunchObjectRecoveryTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let date = Date(timeIntervalSince1970: 1_724_457_600)
+    let date = TestDate.reference
 
     @Test("Closes launches from previous launches")
     func closesStale() throws {

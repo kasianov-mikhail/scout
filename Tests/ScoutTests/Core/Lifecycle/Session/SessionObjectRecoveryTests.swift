@@ -14,7 +14,7 @@ import Testing
 @Suite("SessionObject+Recovery")
 struct SessionObjectRecoveryTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let date = Date(timeIntervalSince1970: 1_724_457_600)
+    let date = TestDate.reference
 
     @Test("Closes sessions from previous launches")
     func closesStale() throws {

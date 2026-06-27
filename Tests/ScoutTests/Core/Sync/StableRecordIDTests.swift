@@ -14,7 +14,7 @@ import Testing
 @Suite("Stable record IDs")
 struct StableRecordIDTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let date = Date(timeIntervalSince1970: 1_724_457_600)
+    let date = TestDate.reference
 
     @Test("DeviceObject.record is stable across calls")
     func deviceStable() {
