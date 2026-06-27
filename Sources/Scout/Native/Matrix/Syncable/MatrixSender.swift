@@ -11,7 +11,7 @@ import CoreData
 struct MatrixSender {
     let id: String
     let aggregator: any MatrixAggregator
-    let context: NSManagedObjectContext
+    nonisolated(unsafe) let context: NSManagedObjectContext
 }
 
 extension MatrixSender {

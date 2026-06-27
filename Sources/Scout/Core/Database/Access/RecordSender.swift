@@ -11,7 +11,7 @@ import CoreData
 struct RecordSender {
     let id: String
     let database: any Database
-    let context: NSManagedObjectContext
+    nonisolated(unsafe) let context: NSManagedObjectContext
 }
 
 extension RecordSender {
