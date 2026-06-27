@@ -7,23 +7,21 @@
 
 import CoreData
 
-@MainActor
-struct RecordSender {
+struct RecordSender: Sendable {
     let id: String
     let database: any Database
-    let context: NSManagedObjectContext
 }
 
 extension RecordSender {
-    nonisolated init(backend: Backend, context: NSManagedObjectContext) {
+    init(backend: Backend) {
         self.id = backend.id
         self.database = backend.database
-        self.context = context
     }
 }
 
+@MainActor
 extension RecordSender {
-    func deliver<T: Syncable & RecordEncodable>(type syncable: T.Type) async throws {
+    func deliver<T: Syncable & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
         var objects: [T] = []
         var deliveries: [SyncDelivery] = []
 
