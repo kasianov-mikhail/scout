@@ -15,8 +15,7 @@ extension DeviceObject {
         synced: Bool = false,
         in context: NSManagedObjectContext
     ) -> DeviceObject {
-        let entity = NSEntityDescription.entity(forEntityName: "DeviceObject", in: context)!
-        let device = DeviceObject(entity: entity, insertInto: context)
+        let device = context.insert(DeviceObject.self)
 
         device.date = date
         device.setSynced(synced, in: context)

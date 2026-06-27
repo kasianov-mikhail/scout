@@ -15,8 +15,7 @@ extension InstallObject {
         synced: Bool = false,
         in context: NSManagedObjectContext
     ) -> InstallObject {
-        let entity = NSEntityDescription.entity(forEntityName: "InstallObject", in: context)!
-        let install = InstallObject(entity: entity, insertInto: context)
+        let install = context.insert(InstallObject.self)
 
         install.date = date
         install.setSynced(synced, in: context)

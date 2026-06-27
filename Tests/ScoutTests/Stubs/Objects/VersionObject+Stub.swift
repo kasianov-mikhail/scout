@@ -17,8 +17,7 @@ extension VersionObject {
         buildNumber: String? = nil,
         in context: NSManagedObjectContext
     ) -> VersionObject {
-        let entity = NSEntityDescription.entity(forEntityName: "VersionObject", in: context)!
-        let version = VersionObject(entity: entity, insertInto: context)
+        let version = context.insert(VersionObject.self)
 
         version.date = date
         version.setSynced(synced, in: context)

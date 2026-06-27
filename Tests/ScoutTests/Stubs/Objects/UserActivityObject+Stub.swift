@@ -18,8 +18,7 @@ extension UserActivityObject {
         isSynced: Bool,
         in context: NSManagedObjectContext
     ) -> UserActivityObject {
-        let entity = NSEntityDescription.entity(forEntityName: "UserActivityObject", in: context)!
-        let activity = UserActivityObject(entity: entity, insertInto: context)
+        let activity = context.insert(UserActivityObject.self)
 
         activity.userActivityID = UUID()
         activity.month = month
