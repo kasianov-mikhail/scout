@@ -32,7 +32,7 @@ struct MatrixUploaderTests {
     func testUploadSuccess() async throws {
         try await uploader.upload()
 
-        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
+        #expect(database.records.count(of: Int.recordType) == 1)
     }
 
     @Test("Upload retries and merges on serverRecordChanged error")
@@ -41,7 +41,7 @@ struct MatrixUploaderTests {
 
         try await uploader.upload()
 
-        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
+        #expect(database.records.count(of: Int.recordType) == 1)
     }
 
     @Test("Upload falls back to newMatrix after max retries")
@@ -51,7 +51,7 @@ struct MatrixUploaderTests {
         }
         try await uploader.upload()
 
-        #expect(database.records.filter { $0.recordType == Int.recordType }.count == 1)
+        #expect(database.records.count(of: Int.recordType) == 1)
     }
 }
 
