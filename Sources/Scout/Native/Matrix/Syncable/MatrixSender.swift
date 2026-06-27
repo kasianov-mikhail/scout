@@ -11,11 +11,11 @@ import CoreData
 struct MatrixSender {
     let id: String
     let aggregator: any MatrixAggregator
-    nonisolated(unsafe) let context: NSManagedObjectContext
+    let context: NSManagedObjectContext
 }
 
 extension MatrixSender {
-    nonisolated init?(backend: Backend, context: NSManagedObjectContext) {
+    init?(backend: Backend, context: NSManagedObjectContext) {
         guard let aggregator = backend.aggregator else {
             return nil
         }
