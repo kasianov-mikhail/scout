@@ -11,7 +11,7 @@ import Foundation
 final class RailLane: ObservableObject {
     var eventName: String? {
         didSet {
-            generation += 1
+            generation = Epoch()
             pendingInstalls = []
             cursor = nil
             anchorDate = nil
@@ -35,10 +35,10 @@ final class RailLane: ObservableObject {
 
     private var cursor: RecordCursor?
 
-    /// Bumped by every reset; an in-flight load compares against it after each
-    /// suspension and bails out instead of mixing a stale chunk (or a wiped
-    /// cursor) into the fresh timeline.
-    private var generation = 0
+    // Renewed by every reset; an in-flight load compares against it after each
+    // suspension and bails out instead of mixing a stale chunk (or a wiped
+    // cursor) into the fresh timeline.
+    private var generation = Epoch()
 
     /// Whether a load currently holds the cursor; concurrent `loadMore` calls
     /// wait for it instead of racing the cursor and dropping a chunk.

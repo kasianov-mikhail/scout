@@ -29,12 +29,12 @@ final class TimelineProvider: ObservableObject {
     let older = RailLane(ascending: false)
     let newer = RailLane(ascending: true)
 
-    /// Identifies the latest `start` call; a superseded call that survives its
-    /// awaits must not publish a result over the newer one's.
-    private var startToken = UUID()
+    // Identifies the latest `start` call; a superseded call that survives its
+    // awaits must not publish a result over the newer one's.
+    private var startToken = Epoch()
 
     func start(feed: TimelineFeed, anchorEvent: Event?, eventName: String?) async {
-        let token = UUID()
+        let token = Epoch()
         startToken = token
 
         result = nil
