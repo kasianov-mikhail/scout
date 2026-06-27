@@ -22,6 +22,7 @@ struct HomeContent: View {
             HomeLogSection()
         }
         .listStyle(.plain)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 
     private var statSection: some View {
