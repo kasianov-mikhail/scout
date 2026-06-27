@@ -31,7 +31,7 @@ struct CrashListView: View {
                         }
                     }
                     .listStyle(.plain)
-                    .animation(nil, value: UUID())
+                    .animation(nil, value: crashes)
                 }
             } else {
                 ProgressView().frame(maxHeight: .infinity)
