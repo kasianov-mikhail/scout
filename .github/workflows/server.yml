@@ -6,10 +6,12 @@ name: Server
 # on top of PostgreSQL and runs ServerContractTests through HTTPDatabase.
 #
 # The expensive `contract` job runs only when the wire surface changes — the
-# Core/Backend and Core/Database/Record code that travels over it (HTTPDatabase
-# rides on the RecordReader/RecordWriter/RecordChunk/RecordCursor pagination and
-# cursor semantics), the contract tests, or this workflow — or when scout-server
-# pushes to main (repository_dispatch from its Notify workflow).
+# Hosted transport/access code that travels over it (HTTPDatabase, the
+# HTTPQueryCoding/HTTPRecordCoding wire coders, and the HostedRecord readers and
+# writers), the Core/Database record model and the RecordReader/RecordChunk/
+# RecordCursor pagination and cursor semantics they ride on, the contract tests,
+# or this workflow — or when scout-server pushes to main (repository_dispatch
+# from its Notify workflow).
 #
 # A required status check must report on every PR, but a path-filtered job never
 # reports on PRs outside its paths, which would wedge them forever. So the PR
@@ -21,8 +23,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "Sources/Scout/Core/Backend/**"
-      - "Sources/Scout/Core/Database/Record/**"
+      - "Sources/Scout/Hosted/**"
+      - "Sources/Scout/Core/Database/**"
       - "Tests/ScoutTests/Core/Backend/**"
       - ".github/workflows/server.yml"
   pull_request:
@@ -51,6 +53,29 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Tripwire against filter drift. The path filter below duplicates the
+      # knowledge of where the wire code lives, so a future move out of the
+      # watched directories would silently stop triggering `contract` while the
+      # gate stays green. Symbol names outlive folder layout, so assert the wire
+      # code still sits under a watched root and fail loudly (red PR) when it
+      # escapes — that is the signal to widen the filter. The HTTP* coders are
+      # wire-specific, so any mention pins them down; the Record pagination types
+      # are shared infra used all over the app, so only their definition sites
+      # matter (their use sites legitimately live outside the watched roots).
+      - name: Guard the filter covers the wire code
+        run: |
+          escaped="$(
+            {
+              grep -rlE 'HTTPDatabase|HTTPQueryCoding|HTTPRecordCoding' Sources
+              grep -rlE '(struct|enum|final class|class) +(RecordReader|RecordChunk|RecordCursor)\b' Sources
+            } | sort -u | grep -vE '^Sources/Scout/(Hosted/|Core/Database/)' || true
+          )"
+          if [ -n "$escaped" ]; then
+            echo "::error::Wire-contract code lives outside the Server filter's watched paths; update the paths in this workflow to cover:"
+            echo "$escaped"
+            exit 1
+          fi
+
       - name: Detect wire-surface changes
         id: filter
         run: |
@@ -60,7 +85,7 @@ jobs:
           fi
           base="${{ github.event.pull_request.base.sha }}"
           if git diff --name-only "$base"...HEAD \
-            | grep -qE '^(Sources/Scout/Core/Backend/|Sources/Scout/Core/Database/Record/|Tests/ScoutTests/Core/Backend/|\.github/workflows/server\.yml$)'; then
+            | grep -qE '^(Sources/Scout/Hosted/|Sources/Scout/Core/Database/|Tests/ScoutTests/Core/Backend/|\.github/workflows/server\.yml$)'; then
             echo "backend=true" >> "$GITHUB_OUTPUT"
           else
             echo "backend=false" >> "$GITHUB_OUTPUT"
