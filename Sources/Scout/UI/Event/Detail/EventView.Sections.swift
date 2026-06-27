@@ -9,6 +9,8 @@ import SwiftUI
 
 extension EventView {
     struct ParamSection: View {
+        static let previewLimit = 3
+
         let count: Int
 
         @ObservedObject var param: ParamProvider
@@ -26,18 +28,18 @@ extension EventView {
             }
 
             if let items = try? param.result?.get() {
-                ForEach(items.prefix(3)) { item in
+                ForEach(items.prefix(Self.previewLimit)) { item in
                     ParamRow(item: item)
                 }
             } else {
-                ForEach(0..<min(3, count), id: \.self) { _ in
+                ForEach(0..<min(Self.previewLimit, count), id: \.self) { _ in
                     ParamRow(item: nil)
                 }
             }
         }
 
         var seeAll: (() -> Void)? {
-            if (try? param.result?.get()) != nil, count > 3 {
+            if (try? param.result?.get()) != nil, count > Self.previewLimit {
                 { isParamPresented = true }
             } else {
                 nil
