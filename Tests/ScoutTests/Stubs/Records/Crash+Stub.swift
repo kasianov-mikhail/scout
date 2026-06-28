@@ -14,6 +14,7 @@ extension Crash {
         name: String = "crash",
         fingerprint: String? = nil,
         reason: String? = nil,
+        stackTrace: [String] = [],
         sessionID: UUID? = nil,
         launchID: UUID? = nil,
         installID: UUID? = nil,
@@ -21,9 +22,9 @@ extension Crash {
     ) -> Crash {
         Crash(
             name: name,
-            fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: reason, stackTrace: []).value,
+            fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value,
             reason: reason,
-            stackTrace: [],
+            stackTrace: stackTrace,
             date: date,
             id: UUID().uuidString,
             installID: installID,
