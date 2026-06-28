@@ -26,6 +26,14 @@ struct CrashGroupDetailView: View {
         .listStyle(.plain)
         .toolbarBackground(Color.red.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
+        .toolbar {
+            ToolbarItemGroup(placement: .bottomBar) {
+                let text = CrashGroupExport(group: group).text
+                ShareLink(item: text)
+                CopyButton(text: text)
+                Spacer()
+            }
+        }
         .navigationTitle(group.name)
     }
 
