@@ -32,6 +32,10 @@
 
 # Swift code style
 
+## Comments
+
+- Don't add comments. The only allowed comments are doc comments (`///`) on public API (see below) and rare inline `//` notes that explain something genuinely critical and non-obvious (a subtle "why", a non-obvious invariant, a workaround). Never add comments that restate what the code already says.
+
 ## Doc comments
 
 - Document only public API: write doc comments (`///`) for `public`/`open` declarations only, and leave `internal`, `private`, and `fileprivate` declarations undocumented (an inline `//` note for genuinely non-obvious logic is still fine).
