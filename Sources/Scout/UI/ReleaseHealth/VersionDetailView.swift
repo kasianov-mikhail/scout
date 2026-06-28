@@ -26,12 +26,9 @@ private struct CountBadge: View {
 struct VersionDetailView: View {
     let release: ReleaseHealth
 
-    private let topIssues: [(name: String, count: Int)] = [
-        ("NSRangeException", 6),
-        ("Fatal error", 4),
-        ("SIGSEGV", 2),
-        ("NSInvalidArgumentException", 1),
-    ]
+    private var issues: [CrashGroup] {
+        CrashGroup.groups(from: release.crashes)
+    }
 
     var body: some View {
         List {
@@ -53,7 +50,7 @@ struct VersionDetailView: View {
             }
 
             HStack(spacing: 24) {
-                metric(title: "Crashes", value: "\(release.crashes)")
+                metric(title: "Crashes", value: "\(release.crashes.count)")
                 metric(title: "Sessions", value: ReleaseHealth.compact(release.sessions))
                 metric(title: "Adoption", value: "\(Int((release.adoption * 100).rounded()))%")
             }
@@ -65,12 +62,18 @@ struct VersionDetailView: View {
     private var dailyCrashes: [(date: Date, count: Int)] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let base = [5, 7, 6, 9, 8, 11, 7, 6, 8, 5, 7, 10, 6, 4]
-        let factor = max(1, Int((Double(release.crashes) / 40).rounded()))
 
-        return base.indices.map { index in
-            let date = calendar.date(byAdding: .day, value: -(base.count - 1 - index), to: today) ?? today
-            return (date, base[index] * factor)
+        return (0..<14).reversed().compactMap { offset in
+            guard let day = calendar.date(byAdding: .day, value: -offset, to: today) else {
+                return nil
+            }
+            let next = calendar.date(byAdding: .day, value: 1, to: day) ?? day
+            let count = release.crashes.filter { crash in
+                guard let date = crash.date else { return false }
+                return date >= day && date < next
+            }
+            .count
+            return (day, count)
         }
     }
 
@@ -104,20 +107,22 @@ struct VersionDetailView: View {
 
     @ViewBuilder
     private var issuesSection: some View {
-        Header(title: "Top issues")
+        if issues.count > 0 {
+            Header(title: "Top issues")
 
-        ForEach(topIssues, id: \.name) { issue in
-            Row {
-                Text(verbatim: issue.name)
-                    .font(.system(size: 16))
-                    .monospaced()
-                    .lineLimit(1)
+            ForEach(issues) { group in
+                Row {
+                    Text(verbatim: group.name)
+                        .font(.system(size: 16))
+                        .monospaced()
+                        .lineLimit(1)
 
-                Spacer()
+                    Spacer()
 
-                CountBadge(count: issue.count)
-            } destination: {
-                Text(verbatim: issue.name)
+                    CountBadge(count: group.count)
+                } destination: {
+                    CrashGroupDetailView(group: group)
+                }
             }
         }
     }
@@ -139,4 +144,5 @@ struct VersionDetailView: View {
     NavigationStack {
         VersionDetailView(release: ReleaseHealth.samples[0])
     }
+    .environmentObject(Tint())
 }

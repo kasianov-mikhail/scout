@@ -60,7 +60,7 @@ extension ReleaseHealth {
                 build: key.build,
                 crashFreeSessions: crashFree(crashedSessions, of: sessions),
                 crashFreeUsers: crashFree(crashedInstalls, of: installs),
-                crashes: keyCrashes.count,
+                crashes: keyCrashes,
                 sessions: sessions,
                 adoption: totalSessions > 0 ? Double(sessions) / Double(totalSessions) : 0,
                 trend: trend(of: keyCrashes, in: range)

@@ -56,14 +56,14 @@ struct ReleaseHealthBuildTests {
 
         let latest = releases[0]
         #expect(latest.sessions == 2)
-        #expect(latest.crashes == 1)
+        #expect(latest.crashes.count == 1)
         #expect(latest.crashFreeSessions == 0.5)
         #expect(latest.crashFreeUsers == 0.5)
         #expect(abs(latest.adoption - 2.0 / 3.0) < 1e-9)
 
         let previous = releases[1]
         #expect(previous.sessions == 1)
-        #expect(previous.crashes == 0)
+        #expect(previous.crashes.count == 0)
         #expect(previous.crashFreeSessions == 1)
         #expect(abs(previous.adoption - 1.0 / 3.0) < 1e-9)
     }
@@ -82,7 +82,7 @@ struct ReleaseHealthBuildTests {
 
         #expect(releases.count == 1)
         #expect(releases[0].sessions == 1)
-        #expect(releases[0].crashes == 0)
+        #expect(releases[0].crashes.count == 0)
         #expect(releases[0].crashFreeSessions == 1)
     }
 
