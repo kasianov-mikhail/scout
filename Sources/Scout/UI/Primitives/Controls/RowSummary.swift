@@ -8,23 +8,15 @@
 
 import SwiftUI
 
-/// The trailing summary of a Home row: a mini-chart next to the period's
-/// count, both tinted with the row's color.
-///
-/// The chart's fixed size and the count's minimum width stack the
-/// summaries into aligned columns.
-///
 struct RowSummary: View {
-    /// Minimum count width: rows whose counts fit it get their charts and
-    /// counts stacked into aligned columns; wider counts push their chart left.
-    static let countWidth: CGFloat = 56
+    static let countWidth: CGFloat = 80
 
     let series: MiniChartSeries?
     let count: Int?
     let color: Color
 
     var body: some View {
-        HStack(spacing: 32) {
+        HStack(spacing: 8) {
             MiniChart(series: series, color: color)
             RedactedText(count: count)
                 .foregroundColor(color)
