@@ -45,10 +45,55 @@ extension ReleaseHealth {
 
 extension ReleaseHealth {
     static let sample: [ReleaseHealth] = [
-        ReleaseHealth(version: "3.2.0", build: "412", crashFreeSessions: 0.9982, crashFreeUsers: 0.9991, crashes: 14, sessions: 48210, adoption: 0.62, trend: [3, 5, 4, 6, 4, 7, 5]),
-        ReleaseHealth(version: "3.1.4", build: "405", crashFreeSessions: 0.9967, crashFreeUsers: 0.9975, crashes: 31, sessions: 26110, adoption: 0.21, trend: [6, 5, 7, 5, 8, 6, 9]),
-        ReleaseHealth(version: "3.1.0", build: "390", crashFreeSessions: 0.9921, crashFreeUsers: 0.9943, crashes: 58, sessions: 12050, adoption: 0.10, trend: [9, 11, 8, 10, 12, 9, 13]),
-        ReleaseHealth(version: "3.0.2", build: "360", crashFreeSessions: 0.9890, crashFreeUsers: 0.9905, crashes: 42, sessions: 4300, adoption: 0.05, trend: [12, 10, 14, 11, 9, 8, 7]),
-        ReleaseHealth(version: "2.9.9", build: "333", crashFreeSessions: 0.9710, crashFreeUsers: 0.9802, crashes: 73, sessions: 1820, adoption: 0.02, trend: [20, 18, 22, 19, 17, 15, 16]),
+        ReleaseHealth(
+            version: "3.2.0",
+            build: "412",
+            crashFreeSessions: 0.9982,
+            crashFreeUsers: 0.9991,
+            crashes: 14,
+            sessions: 48210,
+            adoption: 0.62,
+            trend: [3, 5, 4, 6, 4, 7, 5]
+        ),
+        ReleaseHealth(
+            version: "3.1.4",
+            build: "405",
+            crashFreeSessions: 0.9967,
+            crashFreeUsers: 0.9975,
+            crashes: 31,
+            sessions: 26110,
+            adoption: 0.21,
+            trend: [6, 5, 7, 5, 8, 6, 9]
+        ),
+        ReleaseHealth(
+            version: "3.1.0",
+            build: "390",
+            crashFreeSessions: 0.9921,
+            crashFreeUsers: 0.9943,
+            crashes: 58,
+            sessions: 12050,
+            adoption: 0.10,
+            trend: [9, 11, 8, 10, 12, 9, 13]
+        ),
+        ReleaseHealth(
+            version: "3.0.2",
+            build: "360",
+            crashFreeSessions: 0.9890,
+            crashFreeUsers: 0.9905,
+            crashes: 42,
+            sessions: 4300,
+            adoption: 0.05,
+            trend: [12, 10, 14, 11, 9, 8, 7]
+        ),
+        ReleaseHealth(
+            version: "2.9.9",
+            build: "333",
+            crashFreeSessions: 0.9710,
+            crashFreeUsers: 0.9802,
+            crashes: 73,
+            sessions: 1820,
+            adoption: 0.02,
+            trend: [20, 18, 22, 19, 17, 15, 16]
+        ),
     ]
 }
