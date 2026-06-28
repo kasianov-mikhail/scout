@@ -8,10 +8,13 @@
 import SwiftUI
 
 struct HomeReleaseSection: View {
+    @Environment(\.database) var database
+
+    @ObservedObject var provider: ReleaseHealthProvider
     @State private var showReleaseHealth = false
 
     var body: some View {
-        Header(title: "Release Health") {
+        Header(title: "Releases") {
             Button {
                 showReleaseHealth = true
             } label: {
@@ -24,9 +27,21 @@ struct HomeReleaseSection: View {
         .navigationDestination(isPresented: $showReleaseHealth) {
             ReleaseHealthView()
         }
+        .task {
+            await provider.fetchIfNeeded(in: database)
+        }
 
-        ForEach(ReleaseHealth.sample.prefix(3)) { release in
+        ForEach((provider.releases ?? []).prefix(3)) { release in
             ReleaseRow(release: release)
         }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        List {
+            HomeReleaseSection(provider: .fixture())
+        }
+        .listStyle(.plain)
     }
 }

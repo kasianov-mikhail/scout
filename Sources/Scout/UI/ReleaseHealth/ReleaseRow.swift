@@ -63,7 +63,7 @@ struct ReleaseRow: View {
 #Preview {
     NavigationStack {
         List {
-            ForEach(ReleaseHealth.sample) { release in
+            ForEach(ReleaseHealth.samples) { release in
                 ReleaseRow(release: release)
             }
         }

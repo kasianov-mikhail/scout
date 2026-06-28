@@ -8,11 +8,17 @@
 import SwiftUI
 
 struct HomeContent: View {
+    @StateObject private var releaseProvider: ReleaseHealthProvider
+
+    init(releaseProvider: ReleaseHealthProvider = ReleaseHealthProvider()) {
+        self._releaseProvider = StateObject(wrappedValue: releaseProvider)
+    }
+
     var body: some View {
         List {
             HomeStatSection()
             HomeLogSection()
-            HomeReleaseSection()
+            HomeReleaseSection(provider: releaseProvider)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
@@ -27,6 +33,6 @@ struct HomeContent: View {
 
 #Preview {
     NavigationStack {
-        HomeContent().navigationTitle("Home")
+        HomeContent(releaseProvider: .fixture()).navigationTitle("Home")
     }
 }

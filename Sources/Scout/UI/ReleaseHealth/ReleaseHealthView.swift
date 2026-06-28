@@ -8,23 +8,46 @@
 import SwiftUI
 
 struct ReleaseHealthView: View {
-    let releases = ReleaseHealth.sample
+    @Environment(\.database) var database
+
+    @StateObject private var provider: ReleaseHealthProvider
+
+    init(provider: ReleaseHealthProvider = ReleaseHealthProvider()) {
+        self._provider = StateObject(wrappedValue: provider)
+    }
 
     var body: some View {
-        List {
-            Header(title: "Releases")
+        Group {
+            if let releases = provider.releases {
+                if releases.isEmpty {
+                    Placeholder(
+                        text: "No releases",
+                        systemImage: "shippingbox",
+                        description: "Release health appears once your app reports versions"
+                    )
+                } else {
+                    List {
+                        Header(title: "Releases")
 
-            ForEach(releases) { release in
-                ReleaseRow(release: release)
+                        ForEach(releases) { release in
+                            ReleaseRow(release: release)
+                        }
+                    }
+                    .listStyle(.plain)
+                }
+            } else {
+                ProgressView().frame(maxHeight: .infinity)
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Release Health")
+        .task {
+            await provider.fetchIfNeeded(in: database)
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        ReleaseHealthView()
+        ReleaseHealthView(provider: .fixture())
     }
 }

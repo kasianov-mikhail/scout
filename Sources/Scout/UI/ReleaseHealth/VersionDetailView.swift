@@ -137,6 +137,6 @@ struct VersionDetailView: View {
 
 #Preview {
     NavigationStack {
-        VersionDetailView(release: ReleaseHealth.sample[0])
+        VersionDetailView(release: ReleaseHealth.samples[0])
     }
 }

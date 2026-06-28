@@ -11,6 +11,10 @@ import SwiftUI
 class ReleaseHealthProvider: ObservableObject {
     @Published var releases: [ReleaseHealth]?
 
+    init(releases: [ReleaseHealth]? = nil) {
+        self.releases = releases
+    }
+
     func fetchIfNeeded(in database: DatabaseReader) async {
         if releases == nil {
             await fetch(in: database)
@@ -43,6 +47,12 @@ class ReleaseHealthProvider: ObservableObject {
         } catch {
             releases = []
         }
+    }
+}
+
+extension ReleaseHealthProvider {
+    static func fixture() -> ReleaseHealthProvider {
+        ReleaseHealthProvider(releases: ReleaseHealth.samples)
     }
 }
 

@@ -44,7 +44,7 @@ extension ReleaseHealth {
 }
 
 extension ReleaseHealth {
-    static let sample: [ReleaseHealth] = [
+    static let samples: [ReleaseHealth] = [
         ReleaseHealth(
             version: "3.2.0",
             build: "412",
