@@ -19,23 +19,25 @@ struct CrashFingerprint {
     }
 }
 
-private extension CrashFingerprint {
-    static func signature(name: String, reason: String?, stackTrace: [String]) -> String {
-        let normalizedFrames = stackTrace
+extension CrashFingerprint {
+    fileprivate static func signature(name: String, reason: String?, stackTrace: [String]) -> String {
+        let normalizedFrames =
+            stackTrace
             .map(normalizeFrame)
             .filter { !$0.isEmpty }
             .prefix(maximumFrameCount)
 
-        return ([normalizeText(name), normalizeText(reason ?? "")] + normalizedFrames).joined(separator: "\n")
+        return ([normalizeText(name), normalizeText(reason ?? "")] + normalizedFrames)
+            .joined(separator: "\n")
     }
 
-    static func normalizeFrame(_ frame: String) -> String {
+    fileprivate static func normalizeFrame(_ frame: String) -> String {
         normalizeText(frame)
             .replacingOccurrences(of: #"0x[0-9a-f]+"#, with: "0x", options: .regularExpression)
             .replacingOccurrences(of: #"\b\d+\b"#, with: "#", options: .regularExpression)
     }
 
-    static func normalizeText(_ text: String) -> String {
+    fileprivate static func normalizeText(_ text: String) -> String {
         text
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)
