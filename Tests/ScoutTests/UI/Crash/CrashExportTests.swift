@@ -43,6 +43,7 @@ struct CrashExportTests {
 
     @Test("A group renders its summary, top frame, and occurrence rows")
     func testGroupExport() {
+        let device = UUID()
         let session = UUID()
         let crashes = [
             Crash.stub(
@@ -50,6 +51,7 @@ struct CrashExportTests {
                 fingerprint: "fp",
                 reason: "index beyond bounds",
                 stackTrace: ["2 Scout 0xabc objectAtIndex + 12"],
+                deviceID: device,
                 sessionID: session,
                 date: at(0)
             ),
@@ -58,6 +60,7 @@ struct CrashExportTests {
                 fingerprint: "fp",
                 reason: "index beyond bounds",
                 stackTrace: ["2 Scout 0xdef objectAtIndex + 99"],
+                deviceID: device,
                 sessionID: session,
                 date: at(3600)
             ),
@@ -66,14 +69,14 @@ struct CrashExportTests {
         let text = CrashGroupExport(group: group).text
 
         #expect(text.hasPrefix("# Scout Crash Issue — NSRangeException"))
-        #expect(text.contains("2 occurrences · 1 session"))
+        #expect(text.contains("2 occurrences · 1 device · 1 session"))
         #expect(text.contains("First seen") && text.contains("Last seen"))
         #expect(text.contains("Reason: index beyond bounds"))
         #expect(text.contains("Top frame: 2 Scout 0xdef objectAtIndex + 99"))
         #expect(text.contains("## Occurrences"))
         #expect(
             text.contains(
-                "- \(ExportFormat.timestamp(at(3600)))  (session \(ExportFormat.shortID(session)))"
+                "- \(ExportFormat.timestamp(at(3600)))  (device \(ExportFormat.shortID(device)), session \(ExportFormat.shortID(session)))"
             )
         )
     }

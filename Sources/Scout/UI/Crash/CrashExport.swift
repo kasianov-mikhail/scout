@@ -66,6 +66,9 @@ struct CrashGroupExport {
 
     private var summary: String {
         var parts = [ExportFormat.counted(group.count, "occurrence", "occurrences")]
+        if group.affectedDevices > 0 {
+            parts.append(ExportFormat.counted(group.affectedDevices, "device", "devices"))
+        }
         if group.affectedSessions > 0 {
             parts.append(ExportFormat.counted(group.affectedSessions, "session", "sessions"))
         }
@@ -87,10 +90,16 @@ struct CrashGroupExport {
         guard let date = crash.date else {
             return nil
         }
-        let row = "- \(ExportFormat.timestamp(date))"
-        guard let sessionID = crash.sessionID else {
-            return row
+
+        var ids: [String] = []
+        if let deviceID = crash.deviceID {
+            ids.append("device \(ExportFormat.shortID(deviceID))")
         }
-        return "\(row)  (session \(ExportFormat.shortID(sessionID)))"
+        if let sessionID = crash.sessionID {
+            ids.append("session \(ExportFormat.shortID(sessionID))")
+        }
+
+        let row = "- \(ExportFormat.timestamp(date))"
+        return ids.count > 0 ? "\(row)  (\(ids.joined(separator: ", ")))" : row
     }
 }
