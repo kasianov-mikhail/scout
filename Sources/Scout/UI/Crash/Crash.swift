@@ -9,6 +9,7 @@ import Foundation
 
 struct Crash: Identifiable, Hashable {
     let name: String
+    let fingerprint: String?
     let reason: String?
     let stackTrace: [String]
     let date: Date?
@@ -24,6 +25,7 @@ extension Crash: RecordDecodable {
 
     static let desiredKeys = [
         "name",
+        "fingerprint",
         "reason",
         "stack_trace",
         "date",
@@ -49,6 +51,7 @@ extension Crash {
         } else {
             stackTrace = []
         }
+        fingerprint = record["fingerprint"] ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
     }
 }
 
@@ -60,6 +63,7 @@ extension Crash {
     static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Crash {
         Crash(
             name: name,
+            fingerprint: nil,
             reason: nil,
             stackTrace: [],
             date: date,
