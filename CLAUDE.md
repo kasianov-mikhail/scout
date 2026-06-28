@@ -68,6 +68,7 @@
 ## Sample data
 
 - Sample data in app code is named `sample` (a `static var` for fixed instances, a `static func sample(...)` when parameters are needed), placed in an extension at the end of the type's main file (e.g. `Device.swift`), and built directly via the struct initializer.
+- A collection of sample instances is named `samples` (plural) — e.g. `static let samples: [Release]`.
 - Tests use a different naming convention — `make<Name>(...)` factory functions.
 
 ## Core Data migrations
