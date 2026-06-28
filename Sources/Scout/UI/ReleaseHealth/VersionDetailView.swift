@@ -45,8 +45,11 @@ struct VersionDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 24) {
-                metric(title: "Crash-free sessions", value: ReleaseHealth.percent(release.crashFreeSessions), color: ReleaseHealth.healthColor(release.crashFreeSessions))
-                metric(title: "Crash-free users", value: ReleaseHealth.percent(release.crashFreeUsers), color: ReleaseHealth.healthColor(release.crashFreeUsers))
+                metric(
+                    title: "Crash-free sessions", value: ReleaseHealth.percent(release.crashFreeSessions),
+                    color: ReleaseHealth.healthColor(release.crashFreeSessions))
+                metric(
+                    title: "Crash-free users", value: ReleaseHealth.percent(release.crashFreeUsers), color: ReleaseHealth.healthColor(release.crashFreeUsers))
             }
 
             HStack(spacing: 24) {

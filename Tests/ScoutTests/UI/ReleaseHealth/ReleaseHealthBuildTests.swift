@@ -42,7 +42,7 @@ struct ReleaseHealthBuildTests {
                 launchID: launchA1,
                 installID: installA1,
                 date: Date(timeIntervalSince1970: 500_000)
-            ),
+            )
         ]
 
         let releases = ReleaseHealth.build(

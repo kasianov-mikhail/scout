@@ -31,7 +31,7 @@ extension ReleaseHealth {
         var sessionsByKey: [Key: [Session]] = [:]
         for session in sessions {
             if let launchID = session.launchID, let key = keyByLaunch[launchID] {
-            sessionsByKey[key, default: []].append(session)
+                sessionsByKey[key, default: []].append(session)
             }
         }
 
