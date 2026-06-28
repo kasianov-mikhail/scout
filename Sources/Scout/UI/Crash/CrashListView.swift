@@ -13,8 +13,8 @@ struct CrashListView: View {
 
     var body: some View {
         Group {
-            if let crashes = provider.crashes {
-                if crashes.isEmpty {
+            if let groups = provider.groups {
+                if groups.isEmpty {
                     Placeholder(
                         text: "No crashes",
                         systemImage: "checkmark.shield",
@@ -22,7 +22,7 @@ struct CrashListView: View {
                     )
                 } else {
                     List {
-                        ForEach(crashes, content: row)
+                        ForEach(groups, content: row)
 
                         if let cursor = provider.cursor {
                             PaginationFooter {
@@ -31,7 +31,7 @@ struct CrashListView: View {
                         }
                     }
                     .listStyle(.plain)
-                    .animation(nil, value: crashes)
+                    .animation(nil, value: groups)
                 }
             } else {
                 ProgressView().frame(maxHeight: .infinity)
@@ -43,23 +43,41 @@ struct CrashListView: View {
         }
     }
 
-    private func row(for crash: Crash) -> some View {
+    private func row(for group: CrashGroup) -> some View {
         Row {
-            Text(crash.name)
+            Text(group.name)
                 .font(.system(size: 17))
                 .lineLimit(1)
                 .monospaced()
 
+            if group.count > 1 {
+                CrashCountBadge(count: group.count)
+            }
+
             Spacer()
 
-            if let date = crash.date {
+            if let date = group.lastDate {
                 Text(verbatim: date.relativeString)
                     .font(.system(size: 15))
                     .foregroundStyle(Color.gray)
             }
         } destination: {
-            CrashDetailView(crash: crash)
+            CrashGroupDetailView(group: group)
         }
+    }
+}
+
+private struct CrashCountBadge: View {
+    let count: Int
+
+    var body: some View {
+        Text(verbatim: "×\(count)")
+            .font(.caption.weight(.semibold))
+            .monospacedDigit()
+            .foregroundStyle(.red)
+            .padding(.horizontal, 7)
+            .padding(.vertical, 3)
+            .background(Color.red.opacity(0.13), in: Capsule())
     }
 }
 
