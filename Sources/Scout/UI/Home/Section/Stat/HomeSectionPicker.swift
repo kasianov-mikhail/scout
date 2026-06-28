@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// A Home screen stat section selectable in ``HomeSectionPicker``.
 enum HomeSection: String, CaseIterable, Identifiable {
     case users
     case sessions
@@ -41,7 +40,6 @@ enum HomeSection: String, CaseIterable, Identifiable {
     }
 }
 
-/// A segmented control switching between the Home screen stat sections.
 struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
 
