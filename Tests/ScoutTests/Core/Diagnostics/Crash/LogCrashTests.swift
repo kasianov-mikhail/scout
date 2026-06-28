@@ -31,7 +31,9 @@ struct LogCrashTests {
         #expect(results.count == 1)
 
         let object = try #require(results.first)
+        let expectedFingerprint = CrashFingerprint(name: crash.name, reason: crash.reason, stackTrace: crash.stackTrace).value
         #expect(object.name == "SIGABRT")
+        #expect(object.fingerprint == expectedFingerprint)
         #expect(object.reason == "Fatal error")
         #expect(object.date == crash.date)
         #expect(object.installID == crash.installID)

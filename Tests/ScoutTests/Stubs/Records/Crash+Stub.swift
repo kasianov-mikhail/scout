@@ -19,6 +19,7 @@ extension Crash {
     ) -> Crash {
         Crash(
             name: name,
+            fingerprint: nil,
             reason: nil,
             stackTrace: [],
             date: date,

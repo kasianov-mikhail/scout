@@ -13,6 +13,7 @@ final class CrashObject: TrackedObject {
 
     @NSManaged var name: String?
     @NSManaged var crashID: UUID
+    @NSManaged var fingerprint: String?
     @NSManaged var reason: String?
     @NSManaged var stackTrace: Data?
 }
@@ -22,6 +23,7 @@ extension CrashObject: RecordEncodable {
         var record = Record(recordType: Self.recordType, recordID: crashID.uuidString)
 
         record["name"] = name
+        record["fingerprint"] = fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
         record["reason"] = reason
         record["stack_trace"] = stackTrace
         record["date"] = date
@@ -30,5 +32,10 @@ extension CrashObject: RecordEncodable {
         record.setValues(metadata)
 
         return record
+    }
+
+    private var decodedStackTrace: [String] {
+        guard let stackTrace, let decoded = try? JSONDecoder().decode([String].self, from: stackTrace) else { return [] }
+        return decoded
     }
 }

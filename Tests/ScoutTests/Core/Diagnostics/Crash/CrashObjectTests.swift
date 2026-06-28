@@ -32,6 +32,23 @@ struct CrashObjectTests {
         #expect(matrix.cells.map(\.value).reduce(0, +) == 3)
     }
 
+    @Test("record includes the crash fingerprint")
+    func testRecordIncludesStoredFingerprint() {
+        let object = makeCrashObject(name: "SIGABRT", date: date)
+        object.fingerprint = "stored-fingerprint"
+
+        #expect(object.record["fingerprint"] == "stored-fingerprint")
+    }
+
+    @Test("record computes a fallback fingerprint for migrated crashes")
+    func testRecordComputesFallbackFingerprint() throws {
+        let object = makeCrashObject(name: "SIGABRT", date: date)
+        object.reason = "Fatal error"
+        object.stackTrace = try JSONEncoder().encode(["frame0"])
+
+        #expect(object.record["fingerprint"] == CrashFingerprint(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"]).value)
+    }
+
     private func makeCrashObject(name: String, date: Date) -> CrashObject {
         let entity = NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!
         let object = CrashObject(entity: entity, insertInto: context)
