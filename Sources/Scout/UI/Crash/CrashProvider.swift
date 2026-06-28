@@ -12,6 +12,10 @@ class CrashProvider: ObservableObject {
     @Published var crashes: [Crash]?
     @Published var cursor: RecordCursor?
 
+    var groups: [CrashGroup]? {
+        crashes.map(CrashGroup.groups(from:))
+    }
+
     func fetch(in database: DatabaseReader) async {
         do {
             let query = RecordQuery(

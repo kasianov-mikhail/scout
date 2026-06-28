@@ -128,7 +128,7 @@ struct TimelineExportTests {
     func testCrashReason() {
         let crash = Crash(
             name: "SIGABRT",
-            fingerprint: nil,
+            fingerprint: CrashFingerprint(name: "SIGABRT", reason: "unexpectedly found nil", stackTrace: []).value,
             reason: "unexpectedly found nil",
             stackTrace: [],
             date: TimelineFixture.at(10),

@@ -12,6 +12,8 @@ import Foundation
 extension Crash {
     @discardableResult static func stub(
         name: String = "crash",
+        fingerprint: String? = nil,
+        reason: String? = nil,
         sessionID: UUID? = nil,
         launchID: UUID? = nil,
         installID: UUID? = nil,
@@ -19,8 +21,8 @@ extension Crash {
     ) -> Crash {
         Crash(
             name: name,
-            fingerprint: nil,
-            reason: nil,
+            fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: reason, stackTrace: []).value,
+            reason: reason,
             stackTrace: [],
             date: date,
             id: UUID().uuidString,
