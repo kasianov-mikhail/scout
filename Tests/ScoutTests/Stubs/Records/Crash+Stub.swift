@@ -15,6 +15,7 @@ extension Crash {
         fingerprint: String? = nil,
         reason: String? = nil,
         stackTrace: [String] = [],
+        deviceID: UUID? = nil,
         sessionID: UUID? = nil,
         launchID: UUID? = nil,
         installID: UUID? = nil,
@@ -27,6 +28,7 @@ extension Crash {
             stackTrace: stackTrace,
             date: date,
             id: UUID().uuidString,
+            deviceID: deviceID,
             installID: installID,
             launchID: launchID,
             sessionID: sessionID
