@@ -28,6 +28,10 @@ extension CrashGroup {
         crashes.count
     }
 
+    var affectedDevices: Int {
+        Set(crashes.compactMap(\.deviceID)).count
+    }
+
     var affectedSessions: Int {
         Set(crashes.compactMap(\.sessionID)).count
     }

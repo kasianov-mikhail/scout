@@ -14,6 +14,7 @@ struct Crash: Identifiable, Hashable {
     let stackTrace: [String]
     let date: Date?
     let id: String
+    let deviceID: UUID?
     let installID: UUID?
     let launchID: UUID?
     let sessionID: UUID?
@@ -35,6 +36,7 @@ extension Crash: RecordDecodable {
         "stack_trace",
         "date",
         "uuid",
+        "device_id",
         "install_id",
         "launch_id",
         "session_id",
@@ -47,6 +49,7 @@ extension Crash {
         reason = record["reason"]
         date = record["date"]
         id = record.recordID
+        deviceID = record["device_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         sessionID = record["session_id"].flatMap(UUID.init)
@@ -73,6 +76,7 @@ extension Crash {
             stackTrace: [],
             date: date,
             id: UUID().uuidString,
+            deviceID: nil,
             installID: nil,
             launchID: nil,
             sessionID: sessionID
@@ -80,6 +84,9 @@ extension Crash {
     }
 
     static var sampleRecords: [Record] {
+        let deviceX = UUID()
+        let deviceY = UUID()
+
         let sessionA = UUID()
         let sessionB = UUID()
         let sessionC = UUID()
@@ -88,60 +95,60 @@ extension Crash {
             sampleRecord(
                 name: "NSRangeException",
                 reason: "-[__NSArrayM objectAtIndex:]: index 4 beyond bounds [0 .. 2]",
-                fingerprint: "range",
                 minutesAgo: 6,
+                deviceID: deviceX,
                 sessionID: sessionA,
                 stackTrace: rangeStackTrace
             ),
             sampleRecord(
                 name: "NSRangeException",
                 reason: "-[__NSArrayM objectAtIndex:]: index 4 beyond bounds [0 .. 2]",
-                fingerprint: "range",
                 minutesAgo: 95,
+                deviceID: deviceX,
                 sessionID: sessionB,
                 stackTrace: rangeStackTrace
             ),
             sampleRecord(
                 name: "NSRangeException",
                 reason: "-[__NSArrayM objectAtIndex:]: index 4 beyond bounds [0 .. 2]",
-                fingerprint: "range",
                 minutesAgo: 340,
+                deviceID: deviceX,
                 sessionID: sessionA,
                 stackTrace: rangeStackTrace
             ),
             sampleRecord(
                 name: "Fatal error",
                 reason: "Index out of range",
-                fingerprint: "fatal",
                 minutesAgo: 42,
+                deviceID: deviceX,
                 sessionID: sessionB,
                 stackTrace: fatalStackTrace
             ),
             sampleRecord(
                 name: "Fatal error",
                 reason: "Index out of range",
-                fingerprint: "fatal",
                 minutesAgo: 220,
+                deviceID: deviceY,
                 sessionID: sessionC,
                 stackTrace: fatalStackTrace
             ),
             sampleRecord(
                 name: "SIGSEGV",
                 reason: "Segmentation fault: 11",
-                fingerprint: "segv",
                 minutesAgo: 1500,
+                deviceID: deviceY,
                 sessionID: sessionC,
                 stackTrace: segvStackTrace
             ),
         ]
     }
 
-    private static func sampleRecord(name: String, reason: String, fingerprint: String, minutesAgo: Double, sessionID: UUID, stackTrace: [String]) -> Record {
+    private static func sampleRecord(name: String, reason: String, minutesAgo: Double, deviceID: UUID, sessionID: UUID, stackTrace: [String]) -> Record {
         var record = Record(recordType: recordType, recordID: UUID().uuidString)
         record["name"] = name
         record["reason"] = reason
-        record["fingerprint"] = fingerprint
         record["date"] = Date(timeIntervalSinceNow: -minutesAgo * 60)
+        record["device_id"] = deviceID.uuidString
         record["session_id"] = sessionID.uuidString
         record["install_id"] = UUID().uuidString
         record["launch_id"] = UUID().uuidString

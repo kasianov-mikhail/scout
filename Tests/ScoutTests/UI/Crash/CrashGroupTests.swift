@@ -72,4 +72,18 @@ struct CrashGroupTests {
 
         #expect(group.affectedSessions == 2)
     }
+
+    @Test("Affected devices count distinct devices") func testAffectedDevices() {
+        let device = UUID()
+        let crashes = [
+            Crash.stub(fingerprint: "fp", deviceID: device),
+            Crash.stub(fingerprint: "fp", deviceID: device),
+            Crash.stub(fingerprint: "fp", deviceID: UUID()),
+            Crash.stub(fingerprint: "fp", deviceID: nil),
+        ]
+
+        let group = CrashGroup.groups(from: crashes)[0]
+
+        #expect(group.affectedDevices == 2)
+    }
 }

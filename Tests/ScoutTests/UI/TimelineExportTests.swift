@@ -133,6 +133,7 @@ struct TimelineExportTests {
             stackTrace: [],
             date: TimelineFixture.at(10),
             id: "crash",
+            deviceID: nil,
             installID: nil,
             launchID: nil,
             sessionID: nil

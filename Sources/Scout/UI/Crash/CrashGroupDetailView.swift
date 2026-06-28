@@ -41,6 +41,7 @@ struct CrashGroupDetailView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 24) {
                 metric(title: "Occurrences", value: "\(group.count)")
+                metric(title: "Devices", value: "\(group.affectedDevices)")
                 metric(title: "Sessions", value: "\(group.affectedSessions)")
             }
 
