@@ -13,8 +13,8 @@ struct CrashListView: View {
 
     var body: some View {
         Group {
-            if let crashes = provider.crashes {
-                if crashes.isEmpty {
+            if let groups = provider.groups {
+                if groups.isEmpty {
                     Placeholder(
                         text: "No crashes",
                         systemImage: "checkmark.shield",
@@ -22,7 +22,7 @@ struct CrashListView: View {
                     )
                 } else {
                     List {
-                        ForEach(crashes, content: row)
+                        ForEach(groups, content: row)
 
                         if let cursor = provider.cursor {
                             PaginationFooter {
@@ -31,7 +31,7 @@ struct CrashListView: View {
                         }
                     }
                     .listStyle(.plain)
-                    .animation(nil, value: crashes)
+                    .animation(nil, value: groups)
                 }
             } else {
                 ProgressView().frame(maxHeight: .infinity)
@@ -43,22 +43,41 @@ struct CrashListView: View {
         }
     }
 
-    private func row(for crash: Crash) -> some View {
+    private func row(for group: CrashGroup) -> some View {
         Row {
-            Text(crash.name)
-                .font(.system(size: 17))
-                .lineLimit(1)
-                .monospaced()
+            VStack(alignment: .leading, spacing: 5) {
+                Text(group.name)
+                    .font(.system(size: 17, weight: .semibold))
+                    .lineLimit(1)
+                    .monospaced()
+
+                if let reason = group.reason {
+                    Text(reason)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.gray)
+                        .lineLimit(1)
+                }
+
+                Text(verbatim: "\(group.affectedSessions) sessions")
+                    .font(.system(size: 12))
+                    .foregroundStyle(Color.secondary)
+            }
 
             Spacer()
 
-            if let date = crash.date {
-                Text(verbatim: date.relativeString)
-                    .font(.system(size: 15))
-                    .foregroundStyle(Color.gray)
+            VStack(alignment: .trailing, spacing: 5) {
+                Text(verbatim: "\(group.count)")
+                    .font(.system(size: 17, weight: .semibold))
+                    .foregroundStyle(Color.red)
+
+                if let date = group.lastDate {
+                    Text(verbatim: date.relativeString)
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color.gray)
+                }
             }
         } destination: {
-            CrashDetailView(crash: crash)
+            CrashGroupDetailView(group: group)
         }
     }
 }

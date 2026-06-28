@@ -25,6 +25,9 @@ let package = Package(
             dependencies: [
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Metrics", package: "swift-metrics")
+            ],
+            resources: [
+                .process("Core/Persistence/Scout.xcdatamodeld")
             ]
         ),
         .testTarget(
