@@ -34,26 +34,36 @@ extension ReleaseHealth {
         let releaseVersions = Set(sessionIndex.keys).union(crashIndex.keys).map { ReleaseVersion($0) }
 
         return releaseVersions.sorted().reversed().map { version in
-            let versionSessions = sessionIndex[version.version] ?? []
-            let versionCrashes = crashIndex[version.version] ?? []
-            let sessions = sessionCount(versionSessions)
-            let crashedSessions = Set(versionCrashes.compactMap(\.sessionID)).count
-            let installs = Set(versionSessions.compactMap(\.installID)).count
-            let crashedInstalls = Set(versionCrashes.compactMap(\.installID)).count
-
-            return ReleaseHealth(
+            ReleaseHealth(
                 version: version,
-                crashFreeSessions: CrashFreeRate(affected: crashedSessions, total: sessions),
-                crashFreeUsers: CrashFreeRate(affected: crashedInstalls, total: installs),
-                crashes: versionCrashes,
-                sessions: sessions,
-                adoption: Adoption(totalSessions > 0 ? Double(sessions) / Double(totalSessions) : 0),
-                trend: crashTrend(of: versionCrashes, in: range)
+                sessions: sessionIndex[version.version] ?? [],
+                crashes: crashIndex[version.version] ?? [],
+                totalSessions: totalSessions,
+                range: range
             )
         }
     }
 
     private static func sessionCount(_ sessions: [Session]) -> Int {
         Set(sessions.compactMap(\.sessionID)).count
+    }
+}
+
+extension ReleaseHealth {
+    init(version: ReleaseVersion, sessions versionSessions: [Session], crashes versionCrashes: [Crash], totalSessions: Int, range: Range<Date>) {
+        let sessions = Self.sessionCount(versionSessions)
+        let crashedSessions = Set(versionCrashes.compactMap(\.sessionID)).count
+        let installs = Set(versionSessions.compactMap(\.installID)).count
+        let crashedInstalls = Set(versionCrashes.compactMap(\.installID)).count
+
+        self.init(
+            version: version,
+            crashFreeSessions: CrashFreeRate(affected: crashedSessions, total: sessions),
+            crashFreeUsers: CrashFreeRate(affected: crashedInstalls, total: installs),
+            crashes: versionCrashes,
+            sessions: sessions,
+            adoption: Adoption(totalSessions > 0 ? Double(sessions) / Double(totalSessions) : 0),
+            trend: crashTrend(of: versionCrashes, in: range)
+        )
     }
 }
