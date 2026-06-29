@@ -14,17 +14,13 @@ import Testing
 struct ReleaseHealthProviderTests {
     private let date = Date().addingTimeInterval(-3600)
 
-    @Test("Builds per-version session counts from matrices and attributes crashes")
+    @Test("Builds per-version sessions and crashes from matrices")
     func fetchAggregatesByVersion() async throws {
-        let launch = UUID()
-        let crashedSession = UUID()
-
         let database = DatabaseStub()
         database.add(
-            sessionMatrix(version: "2.0", value: 2),
-            sessionMatrix(version: "1.0", value: 1),
-            versionRecord(appVersion: "2.0", launchID: launch),
-            crashRecord(sessionID: crashedSession, launchID: launch)
+            sessionMatrix(version: "2.0", count: 2),
+            sessionMatrix(version: "1.0", count: 1),
+            crashMatrix(version: "2.0", count: 1)
         )
 
         let provider = ReleaseHealthProvider()
@@ -33,19 +29,19 @@ struct ReleaseHealthProviderTests {
 
         #expect(releases.map(\.id) == ["2.0", "1.0"])
         #expect(releases[0].sessions == 2)
-        #expect(releases[0].crashes.count == 1)
-        #expect(releases[0].crashFreeSessions.value == 0.5)
-        #expect(releases[0].crashFreeUsers == nil)
+        #expect(releases[0].crashes == 1)
+        #expect(releases[0].freeSessions.value == 0.5)
+        #expect(releases[0].freeUsers == nil)
         #expect(releases[1].sessions == 1)
-        #expect(releases[1].crashFreeSessions.value == 1)
+        #expect(releases[1].freeSessions.value == 1)
     }
 
     @Test("Skips session matrices that carry no version")
     func fetchSkipsVersionlessMatrices() async throws {
         let database = DatabaseStub()
         database.add(
-            sessionMatrix(version: "3.0", value: 4),
-            sessionMatrix(version: nil, value: 9)
+            sessionMatrix(version: "3.0", count: 4),
+            sessionMatrix(version: nil, count: 9)
         )
 
         let provider = ReleaseHealthProvider()
@@ -56,30 +52,20 @@ struct ReleaseHealthProviderTests {
         #expect(releases[0].sessions == 4)
     }
 
-    private func sessionMatrix(version: String?, value: Int) -> Record {
+    private func sessionMatrix(version: String?, count: Int) -> Record {
+        matrix(name: SessionObject.recordType, version: version, count: count)
+    }
+
+    private func crashMatrix(version: String?, count: Int) -> Record {
+        matrix(name: CrashObject.recordType, version: version, count: count)
+    }
+
+    private func matrix(name: String, version: String?, count: Int) -> Record {
         Matrix<GridCell<Int>>(
             date: date,
-            name: SessionObject.recordType,
+            name: name,
             version: version,
-            cells: [GridCell(row: 1, column: 0, value: value)]
+            cells: [GridCell(row: 1, column: 0, value: count)]
         ).record
-    }
-
-    private func versionRecord(appVersion: String, launchID: UUID) -> Record {
-        var record = Record(recordType: "Version", recordID: UUID().uuidString)
-        record["app_version"] = appVersion
-        record["launch_id"] = launchID.uuidString
-        record["date"] = date
-        return record
-    }
-
-    private func crashRecord(sessionID: UUID, launchID: UUID) -> Record {
-        var record = Record(recordType: "Crash", recordID: UUID().uuidString)
-        record["name"] = "SIGSEGV"
-        record["session_id"] = sessionID.uuidString
-        record["launch_id"] = launchID.uuidString
-        record["install_id"] = UUID().uuidString
-        record["date"] = date
-        return record
     }
 }

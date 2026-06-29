@@ -24,10 +24,22 @@ private struct CountBadge: View {
 }
 
 struct VersionDetailView: View {
+    @Environment(\.database) var database
+
     let release: ReleaseHealth
+    @StateObject private var crashProvider: VersionCrashProvider
+
+    init(release: ReleaseHealth, crashProvider: VersionCrashProvider? = nil) {
+        self.release = release
+        self._crashProvider = StateObject(wrappedValue: crashProvider ?? VersionCrashProvider(version: release.id))
+    }
+
+    private var crashes: [Crash] {
+        crashProvider.crashes ?? []
+    }
 
     private var issues: [CrashGroup] {
-        CrashGroup.groups(from: release.crashes)
+        CrashGroup.groups(from: crashes)
     }
 
     var body: some View {
@@ -37,24 +49,27 @@ struct VersionDetailView: View {
             issuesSection
         }
         .listStyle(.plain)
-        .toolbarBackground(release.crashFreeSessions.color.opacity(0.12), for: .navigationBar)
+        .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationTitle(en: release.id)
+        .task {
+            await crashProvider.fetchIfNeeded(in: database)
+        }
     }
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 24) {
                 metric(
-                    title: "Crash-free sessions", value: release.crashFreeSessions.formatted,
-                    color: release.crashFreeSessions.color)
-                if let crashFreeUsers = release.crashFreeUsers {
-                    metric(title: "Crash-free users", value: crashFreeUsers.formatted, color: crashFreeUsers.color)
+                    title: "Crash-free sessions", value: release.freeSessions.formatted,
+                    color: release.freeSessions.color)
+                if let freeUsers = release.freeUsers {
+                    metric(title: "Crash-free users", value: freeUsers.formatted, color: freeUsers.color)
                 }
             }
 
             HStack(spacing: 24) {
-                metric(title: "Crashes", value: "\(release.crashes.count)")
+                metric(title: "Crashes", value: "\(release.crashes)")
                 metric(title: "Sessions", value: ReleaseHealth.compact(release.sessions))
                 metric(title: "Adoption", value: release.adoption.formatted)
             }
@@ -72,7 +87,7 @@ struct VersionDetailView: View {
                 return nil
             }
             let next = calendar.date(byAdding: .day, value: 1, to: day) ?? day
-            let count = release.crashes.filter { crash in
+            let count = crashes.filter { crash in
                 guard let date = crash.date else { return false }
                 return date >= day && date < next
             }
@@ -91,7 +106,7 @@ struct VersionDetailView: View {
                 y: .value("Crashes", day.count),
                 width: .ratio(0.6)
             )
-            .foregroundStyle(release.crashFreeSessions.color.gradient)
+            .foregroundStyle(release.freeSessions.color.gradient)
             .cornerRadius(3)
         }
         .chartXAxis {
@@ -146,7 +161,7 @@ struct VersionDetailView: View {
 
 #Preview {
     NavigationStack {
-        VersionDetailView(release: ReleaseHealth.samples[0])
+        VersionDetailView(release: ReleaseHealth.samples[0], crashProvider: .fixture())
     }
     .environmentObject(Tint())
 }

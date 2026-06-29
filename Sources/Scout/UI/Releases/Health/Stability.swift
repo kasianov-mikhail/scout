@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct CrashFreeRate: Equatable {
+struct Stability: Equatable {
     let value: Double
 
     init(_ value: Double) {
@@ -32,14 +32,14 @@ struct CrashFreeRate: Equatable {
     }
 }
 
-extension CrashFreeRate: ExpressibleByFloatLiteral {
+extension Stability: ExpressibleByFloatLiteral {
     init(floatLiteral value: Double) {
         self.value = value
     }
 }
 
-extension CrashFreeRate {
-    init(affected: Int, total: Int) {
+extension Stability {
+    init(of affected: Int, in total: Int) {
         if total > 0 {
             value = max(0, 1 - Double(affected) / Double(total))
         } else {

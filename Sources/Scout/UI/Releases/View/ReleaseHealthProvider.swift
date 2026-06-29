@@ -26,38 +26,29 @@ class ReleaseHealthProvider: ObservableObject {
 
         do {
             async let sessions = database.readAll(
-                matching: sessionQuery,
+                matching: query(name: SessionObject.recordType, in: range),
                 fields: nil
             )
             async let crashes = database.readAll(
-                matching: RecordQuery(recordType: Crash.self, filters: range.dateFilters),
-                fields: Crash.desiredKeys
+                matching: query(name: CrashObject.recordType, in: range),
+                fields: nil
             )
-            async let versions = database.readAll(
-                matching: RecordQuery(recordType: Version.self, filters: range.dateFilters),
-                fields: Version.desiredKeys
-            )
-
-            releases = try await ReleaseReport(
-                sessionMatrices: sessions.map(GridMatrix<Int>.init),
-                crashes: crashes.map(Crash.init),
-                versions: versions.map(Version.init),
+            releases = try await releaseReport(
+                sessions: sessions.map(GridMatrix<Int>.init),
+                crashes: crashes.map(GridMatrix<Int>.init),
                 range: range
-            ).releases
+            )
         } catch {
             releases = []
         }
     }
 
-    private var sessionQuery: RecordQuery {
-        let filter = RecordQuery.Filter(
-            field: "name",
-            op: .equals,
-            value: .string(SessionObject.recordType)
-        )
-        return RecordQuery(
+    private func query(name: String, in range: Range<Date>) -> RecordQuery {
+        RecordQuery(
             recordType: GridMatrix<Int>.self,
-            filters: Calendar.utc.defaultRange.dateFilters + [filter]
+            filters: range.dateFilters + [
+                RecordQuery.Filter(field: "name", op: .equals, value: .string(name))
+            ]
         )
     }
 }
