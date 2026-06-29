@@ -30,14 +30,6 @@ public struct HomeView: View {
                         .accountWarning(backend)
                         .schemaWarning(backend)
                         .onboardingSheet()
-                        .toolbar {
-                            ToolbarItem(placement: .topBarTrailing) {
-                                ConnectionMenu(
-                                    connections: backends.map(Connection.init),
-                                    activeID: Binding(get: { backend.id }, set: { activeID = $0 })
-                                )
-                            }
-                        }
                 } else {
                     ErrorView(
                         description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
@@ -47,6 +39,16 @@ public struct HomeView: View {
             }
             .navigationTitle(en: "Home")
             .dismissable()
+            .toolbar {
+                if let backend {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        ConnectionMenu(
+                            connections: backends.map(Connection.init),
+                            activeID: Binding(get: { backend.id }, set: { activeID = $0 })
+                        )
+                    }
+                }
+            }
         }
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
