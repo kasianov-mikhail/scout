@@ -70,7 +70,7 @@ struct VersionDetailView: View {
 
             HStack(spacing: 24) {
                 metric(title: "Crashes", value: "\(release.crashes)")
-                metric(title: "Sessions", value: ReleaseHealth.compact(release.sessions))
+                metric(title: "Sessions", value: release.sessions.compact)
                 metric(title: "Adoption", value: release.adoption.formatted)
             }
         }
