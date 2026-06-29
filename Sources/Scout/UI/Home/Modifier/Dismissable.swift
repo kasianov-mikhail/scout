@@ -18,6 +18,12 @@ private struct DismissableModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content.toolbar {
+            #if compiler(>=6.3)
+                if #available(iOS 26.0, macOS 26.0, *) {
+                    ToolbarSpacer(.fixed, placement: .topBarTrailing)
+                }
+            #endif
+
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
                     dismiss()
@@ -25,12 +31,6 @@ private struct DismissableModifier: ViewModifier {
                     Text(verbatim: "Close")
                 }
             }
-
-            #if compiler(>=6.3)
-                if #available(iOS 26.0, macOS 26.0, *) {
-                    ToolbarSpacer(.fixed, placement: .topBarTrailing)
-                }
-            #endif
         }
     }
 }
