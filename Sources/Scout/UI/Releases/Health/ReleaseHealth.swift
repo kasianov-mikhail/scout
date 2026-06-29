@@ -18,16 +18,6 @@ struct ReleaseHealth: Identifiable {
 }
 
 extension ReleaseHealth {
-    static func compact(_ value: Int) -> String {
-        switch value {
-        case 1_000_000...: String(format: "%.1fM", Double(value) / 1_000_000)
-        case 1_000...: String(format: "%.1fK", Double(value) / 1_000)
-        default: "\(value)"
-        }
-    }
-}
-
-extension ReleaseHealth {
     static let samples: [ReleaseHealth] = [
         ReleaseHealth(
             id: "3.2.0",
