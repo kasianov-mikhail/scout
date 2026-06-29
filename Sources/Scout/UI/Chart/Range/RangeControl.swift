@@ -20,6 +20,8 @@ struct RangeControl<T: ChartTimeScale>: View {
             Text(extent.domain.label(using: rangeDateFormatter))
                 .font(.system(size: 16))
                 .monospaced()
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .frame(height: 44)
                 .frame(maxWidth: .infinity)
 
