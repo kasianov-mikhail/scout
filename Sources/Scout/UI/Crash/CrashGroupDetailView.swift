@@ -30,7 +30,9 @@ struct CrashGroupDetailView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 let text = CrashGroupExport(group: group).text
                 ShareLink(item: text)
+                    .tint(Color.primary)
                 CopyButton(text: text)
+                    .tint(Color.primary)
                 Spacer()
             }
         }
