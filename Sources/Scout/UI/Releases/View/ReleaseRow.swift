@@ -14,7 +14,7 @@ struct ReleaseRow: View {
         Row {
             CompactRing(rate: release.crashFreeSessions)
 
-            Text(verbatim: release.version.version)
+            Text(verbatim: release.id)
                 .font(.system(size: 17))
                 .monospacedDigit()
 
