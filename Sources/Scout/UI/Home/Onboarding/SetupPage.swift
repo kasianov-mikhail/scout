@@ -42,6 +42,10 @@ struct SetupPage: View {
         let label: String
         let code: String
 
+        private var lineCount: Int {
+            code.filter { $0 == "\n" }.count + 1
+        }
+
         var body: some View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
@@ -55,9 +59,7 @@ struct SetupPage: View {
                         .fontWeight(.medium)
                 }
                 Text(code.swiftSyntax)
-                    .lineLimit(code.reduce(into: 1) { count, character in
-                        if character == "\n" { count += 1 }
-                    })
+                    .lineLimit(lineCount)
                     .minimumScaleFactor(0.6)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .codeChipStyle()
