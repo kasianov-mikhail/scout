@@ -9,6 +9,7 @@ import SwiftUI
 
 struct HomeContent: View {
     @StateObject private var releaseProvider: ReleaseHealthProvider
+    @State private var showReleaseHealth = false
 
     init(releaseProvider: ReleaseHealthProvider = ReleaseHealthProvider()) {
         self._releaseProvider = StateObject(wrappedValue: releaseProvider)
@@ -18,7 +19,10 @@ struct HomeContent: View {
         List {
             HomeStatSection()
             HomeLogSection()
-            HomeReleaseSection(provider: releaseProvider)
+            HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
+        }
+        .navigationDestination(isPresented: $showReleaseHealth) {
+            ReleaseHealthView()
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)

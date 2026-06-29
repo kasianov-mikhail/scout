@@ -11,7 +11,7 @@ struct HomeReleaseSection: View {
     @Environment(\.database) var database
 
     @ObservedObject var provider: ReleaseHealthProvider
-    @State private var showReleaseHealth = false
+    @Binding var showReleaseHealth: Bool
 
     var body: some View {
         Header(title: "Releases") {
@@ -23,9 +23,6 @@ struct HomeReleaseSection: View {
                     .foregroundStyle(.blue)
             }
             .buttonStyle(.plain)
-        }
-        .navigationDestination(isPresented: $showReleaseHealth) {
-            ReleaseHealthView()
         }
         .task {
             await provider.fetchIfNeeded(in: database)
@@ -40,7 +37,7 @@ struct HomeReleaseSection: View {
 #Preview {
     NavigationStack {
         List {
-            HomeReleaseSection(provider: .fixture())
+            HomeReleaseSection(provider: .fixture(), showReleaseHealth: .constant(false))
         }
         .listStyle(.plain)
     }
