@@ -25,7 +25,7 @@ struct HomeReleaseSection: View {
             .buttonStyle(.plain)
         }
         .navigationDestination(isPresented: $showReleaseHealth) {
-            ReleaseHealthView()
+            ReleaseHealthView(provider: provider)
         }
         .task {
             await provider.fetchIfNeeded(in: database)
