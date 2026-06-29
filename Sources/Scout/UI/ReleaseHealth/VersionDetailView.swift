@@ -97,7 +97,7 @@ struct VersionDetailView: View {
             AxisMarks(values: .stride(by: .day, count: 3)) { _ in
                 AxisGridLine()
                 AxisTick()
-                AxisValueLabel(format: .dateTime.month(.abbreviated).day())
+                AxisValueLabel(format: Calendar.Component.day.chartFormat)
             }
         }
         .chartYAxis {
