@@ -12,9 +12,9 @@ struct ReleaseRow: View {
 
     var body: some View {
         Row {
-            CompactRing(value: release.crashFreeSessions)
+            CompactRing(rate: release.crashFreeSessions)
 
-            Text(verbatim: release.version)
+            Text(verbatim: release.version.version)
                 .font(.system(size: 17))
                 .monospacedDigit()
 
@@ -22,10 +22,10 @@ struct ReleaseRow: View {
 
             MiniChart(
                 series: MiniChartSeries(values: release.trend),
-                color: ReleaseHealth.healthColor(release.crashFreeSessions)
+                color: release.crashFreeSessions.color
             )
 
-            ReleasePercent(text: ReleaseHealth.percent(release.crashFreeSessions))
+            ReleasePercent(text: release.crashFreeSessions.formatted)
         } destination: {
             VersionDetailView(release: release)
         }
@@ -33,16 +33,14 @@ struct ReleaseRow: View {
 }
 
 private struct CompactRing: View {
-    let value: Double
+    let rate: CrashFreeRate
 
     var body: some View {
         ZStack {
-            let ringTrim = max(0, min(1, (value - 0.95) / 0.05))
-
             Circle()
                 .stroke(Color(.systemGray5), lineWidth: 2)
             Circle()
-                .trim(from: 0, to: ringTrim)
+                .trim(from: 0, to: rate.ringTrim)
                 .stroke(.blue, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .rotationEffect(.degrees(-90))
         }
@@ -54,7 +52,7 @@ private struct CompactRing: View {
 struct ReleaseRowPlaceholder: View {
     var body: some View {
         HStack {
-            CompactRing(value: 0.95)
+            CompactRing(rate: 0.95)
 
             Text(verbatim: "3.2.1")
                 .font(.system(size: 17))

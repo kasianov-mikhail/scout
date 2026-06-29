@@ -37,25 +37,25 @@ struct VersionDetailView: View {
             issuesSection
         }
         .listStyle(.plain)
-        .toolbarBackground(ReleaseHealth.healthColor(release.crashFreeSessions).opacity(0.12), for: .navigationBar)
+        .toolbarBackground(release.crashFreeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .navigationTitle(en: release.version)
+        .navigationTitle(en: release.version.version)
     }
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 24) {
                 metric(
-                    title: "Crash-free sessions", value: ReleaseHealth.percent(release.crashFreeSessions),
-                    color: ReleaseHealth.healthColor(release.crashFreeSessions))
+                    title: "Crash-free sessions", value: release.crashFreeSessions.formatted,
+                    color: release.crashFreeSessions.color)
                 metric(
-                    title: "Crash-free users", value: ReleaseHealth.percent(release.crashFreeUsers), color: ReleaseHealth.healthColor(release.crashFreeUsers))
+                    title: "Crash-free users", value: release.crashFreeUsers.formatted, color: release.crashFreeUsers.color)
             }
 
             HStack(spacing: 24) {
                 metric(title: "Crashes", value: "\(release.crashes.count)")
                 metric(title: "Sessions", value: ReleaseHealth.compact(release.sessions))
-                metric(title: "Adoption", value: "\(Int((release.adoption * 100).rounded()))%")
+                metric(title: "Adoption", value: release.adoption.formatted)
             }
         }
         .padding(.vertical, 4)
@@ -90,7 +90,7 @@ struct VersionDetailView: View {
                 y: .value("Crashes", day.count),
                 width: .ratio(0.6)
             )
-            .foregroundStyle(ReleaseHealth.healthColor(release.crashFreeSessions).gradient)
+            .foregroundStyle(release.crashFreeSessions.color.gradient)
             .cornerRadius(3)
         }
         .chartXAxis {

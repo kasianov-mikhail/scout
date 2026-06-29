@@ -5,34 +5,21 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import SwiftUI
+import Foundation
 
 struct ReleaseHealth: Identifiable {
-    let version: String
-    let crashFreeSessions: Double
-    let crashFreeUsers: Double
+    let version: ReleaseVersion
+    let crashFreeSessions: CrashFreeRate
+    let crashFreeUsers: CrashFreeRate
     let crashes: [Crash]
     let sessions: Int
-    let adoption: Double
+    let adoption: Adoption
     let trend: [Int]
 
-    var id: String { version }
+    var id: String { version.version }
 }
 
 extension ReleaseHealth {
-    static func healthColor(_ value: Double) -> Color {
-        switch value {
-        case 0.995...: .green
-        case 0.99..<0.995: .yellow
-        case 0.98..<0.99: .orange
-        default: .red
-        }
-    }
-
-    static func percent(_ value: Double, fraction: Int = 2) -> String {
-        String(format: "%.\(fraction)f%%", value * 100)
-    }
-
     static func compact(_ value: Int) -> String {
         switch value {
         case 1_000_000...: String(format: "%.1fM", Double(value) / 1_000_000)
