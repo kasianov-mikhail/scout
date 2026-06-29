@@ -7,6 +7,7 @@ DEFINE SCHEMA
         "___modTime"    TIMESTAMP,
         "___modifiedBy" REFERENCE,
         "___recordID"   REFERENCE QUERYABLE,
+        app_version     STRING QUERYABLE SEARCHABLE SORTABLE,
         category        STRING QUERYABLE SEARCHABLE SORTABLE,
         cell_1_00       INT64 QUERYABLE SORTABLE,
         cell_1_01       INT64 QUERYABLE SORTABLE,

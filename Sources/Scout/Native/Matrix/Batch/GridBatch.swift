@@ -23,7 +23,20 @@ extension MatrixBatch where Self: DateObject & GridBatch {
         try Matrix(
             date: batch.seed(\.week),
             name: Self.recordType,
-            cells: batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
+            cells: gridCells(of: batch)
         )
+    }
+
+    static func versionedMatrix(of batch: [Self], appVersion: KeyPath<Self, String?>) throws -> GridMatrix<Int> {
+        try Matrix(
+            date: batch.seed(\.week),
+            name: Self.recordType,
+            version: batch.first?[keyPath: appVersion],
+            cells: gridCells(of: batch)
+        )
+    }
+
+    static func gridCells(of batch: [Self]) throws -> [GridCell<Int>] {
+        try batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
     }
 }

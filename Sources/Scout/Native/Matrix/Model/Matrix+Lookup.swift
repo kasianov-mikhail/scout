@@ -23,6 +23,9 @@ extension Matrix {
         if let category {
             filters.append(RecordQuery.Filter(field: "category", op: .equals, value: .string(category)))
         }
+        if let version {
+            filters.append(RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version)))
+        }
         return filters
     }
 }

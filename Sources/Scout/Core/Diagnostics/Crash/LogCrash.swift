@@ -13,6 +13,7 @@ func logCrash(_ crash: CrashInfo, context: NSManagedObjectContext) throws {
 
     object.crashID = UUID()
     object.date = crash.date
+    object.appVersion = crash.appVersion
     object.name = crash.name
     object.fingerprint = CrashFingerprint(name: crash.name, reason: crash.reason, stackTrace: crash.stackTrace).value
     object.reason = crash.reason

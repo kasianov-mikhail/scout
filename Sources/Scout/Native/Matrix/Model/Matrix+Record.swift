@@ -16,6 +16,7 @@ extension Matrix {
         self.name = name
         self.baseRecord = record
         self.category = record["category"]
+        self.version = record["app_version"]
 
         let cells = try record.fields
             .filter { $0.key.hasPrefix("cell_") }
@@ -40,6 +41,7 @@ extension Matrix: RecordEncodable {
         record["date"] = date
         record["name"] = name
         record["category"] = category
+        record["app_version"] = version
         for cell in cells {
             record[cell.key] = cell.value
         }

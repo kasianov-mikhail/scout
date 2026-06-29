@@ -11,6 +11,7 @@ struct Matrix<T: CellProtocol> {
     let date: Date
     let name: String
     var category: String?
+    var version: String?
     var baseRecord: Record?
     let cells: [T]
 }
@@ -25,7 +26,7 @@ extension Matrix: RecordDecodable {
     }
 
     static var desiredKeys: [String] {
-        ["date", "name", "category"]
+        ["date", "name", "category", "app_version"]
     }
 }
 
@@ -34,6 +35,7 @@ extension Matrix: Combining {
         date == other.date
             && name == other.name
             && category == other.category
+            && version == other.version
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {
@@ -41,6 +43,7 @@ extension Matrix: Combining {
             date: lhs.date,
             name: lhs.name,
             category: lhs.category,
+            version: lhs.version,
             baseRecord: lhs.baseRecord ?? rhs.baseRecord,
             cells: (lhs.cells + rhs.cells).mergeDuplicates()
         )
@@ -52,6 +55,7 @@ extension Matrix: Equatable {
         lhs.date == rhs.date
             && lhs.name == rhs.name
             && lhs.category == rhs.category
+            && lhs.version == rhs.version
             && lhs.cells == rhs.cells
     }
 }
