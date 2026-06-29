@@ -16,26 +16,26 @@ extension ReleaseHealth {
             }
         }
 
-        var sessionsIndex: [String: [Session]] = [:]
+        var sessionIndex: [String: [Session]] = [:]
         for session in sessions {
             if let launchID = session.launchID, let version = versionIndex[launchID] {
-                sessionsIndex[version, default: []].append(session)
+                sessionIndex[version, default: []].append(session)
             }
         }
 
-        var crashesIndex: [String: [Crash]] = [:]
+        var crashIndex: [String: [Crash]] = [:]
         for crash in crashes {
             if let launchID = crash.launchID, let version = versionIndex[launchID] {
-                crashesIndex[version, default: []].append(crash)
+                crashIndex[version, default: []].append(crash)
             }
         }
 
-        let totalSessions = sessionsIndex.values.reduce(0) { $0 + sessionCount($1) }
-        let releaseVersions = Set(sessionsIndex.keys).union(crashesIndex.keys).map { ReleaseVersion($0) }
+        let totalSessions = sessionIndex.values.reduce(0) { $0 + sessionCount($1) }
+        let releaseVersions = Set(sessionIndex.keys).union(crashIndex.keys).map { ReleaseVersion($0) }
 
         return releaseVersions.sorted().reversed().map { version in
-            let versionSessions = sessionsIndex[version.version] ?? []
-            let versionCrashes = crashesIndex[version.version] ?? []
+            let versionSessions = sessionIndex[version.version] ?? []
+            let versionCrashes = crashIndex[version.version] ?? []
             let sessions = sessionCount(versionSessions)
             let crashedSessions = Set(versionCrashes.compactMap(\.sessionID)).count
             let installs = Set(versionSessions.compactMap(\.installID)).count
