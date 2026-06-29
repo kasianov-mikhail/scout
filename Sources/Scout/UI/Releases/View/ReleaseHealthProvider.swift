@@ -25,42 +25,45 @@ class ReleaseHealthProvider: ObservableObject {
         let range = Calendar.utc.defaultRange
 
         do {
-            async let versions = database.readAll(
-                matching: RecordQuery(recordType: Version.self, filters: range.dateFilters),
-                fields: Version.desiredKeys
+            async let sessions = database.readAll(
+                matching: sessionQuery,
+                fields: nil
             )
             async let crashes = database.readAll(
                 matching: RecordQuery(recordType: Crash.self, filters: range.dateFilters),
                 fields: Crash.desiredKeys
             )
-            async let sessions = database.readAll(
-                matching: RecordQuery(recordType: Session.self, filters: range.sessionFilters),
-                fields: Session.desiredKeys
+            async let versions = database.readAll(
+                matching: RecordQuery(recordType: Version.self, filters: range.dateFilters),
+                fields: Version.desiredKeys
             )
 
-            releases = try await ReleaseHealth.summaries(
-                versions: versions.map(Version.init),
+            releases = try await ReleaseReport(
+                sessionMatrices: sessions.map(GridMatrix<Int>.init),
                 crashes: crashes.map(Crash.init),
-                sessions: sessions.map(Session.init),
+                versions: versions.map(Version.init),
                 range: range
-            )
+            ).releases
         } catch {
             releases = []
         }
+    }
+
+    private var sessionQuery: RecordQuery {
+        let filter = RecordQuery.Filter(
+            field: "name",
+            op: .equals,
+            value: .string(SessionObject.recordType)
+        )
+        return RecordQuery(
+            recordType: GridMatrix<Int>.self,
+            filters: Calendar.utc.defaultRange.dateFilters + [filter]
+        )
     }
 }
 
 extension ReleaseHealthProvider {
     static func fixture() -> ReleaseHealthProvider {
         ReleaseHealthProvider(releases: ReleaseHealth.samples)
-    }
-}
-
-extension Range<Date> {
-    fileprivate var sessionFilters: [RecordQuery.Filter] {
-        [
-            RecordQuery.Filter(field: "start_date", op: .greaterThanOrEquals, value: .date(lowerBound)),
-            RecordQuery.Filter(field: "start_date", op: .lessThan, value: .date(upperBound)),
-        ]
     }
 }

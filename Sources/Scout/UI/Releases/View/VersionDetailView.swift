@@ -39,7 +39,7 @@ struct VersionDetailView: View {
         .listStyle(.plain)
         .toolbarBackground(release.crashFreeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .navigationTitle(en: release.version.version)
+        .navigationTitle(en: release.id)
     }
 
     private var headerSection: some View {
@@ -48,8 +48,9 @@ struct VersionDetailView: View {
                 metric(
                     title: "Crash-free sessions", value: release.crashFreeSessions.formatted,
                     color: release.crashFreeSessions.color)
-                metric(
-                    title: "Crash-free users", value: release.crashFreeUsers.formatted, color: release.crashFreeUsers.color)
+                if let crashFreeUsers = release.crashFreeUsers {
+                    metric(title: "Crash-free users", value: crashFreeUsers.formatted, color: crashFreeUsers.color)
+                }
             }
 
             HStack(spacing: 24) {

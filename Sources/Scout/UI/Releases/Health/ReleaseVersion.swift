@@ -7,16 +7,8 @@
 
 import Foundation
 
-struct ReleaseVersion: Comparable, ExpressibleByStringLiteral {
+struct ReleaseVersion: Comparable {
     let version: String
-
-    init(_ version: String) {
-        self.version = version
-    }
-
-    init(stringLiteral value: String) {
-        self.version = value
-    }
 
     static func < (lhs: ReleaseVersion, rhs: ReleaseVersion) -> Bool {
         let lhsParts = lhs.version.split(separator: ".").map { Int($0) ?? 0 }

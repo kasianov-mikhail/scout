@@ -11,13 +11,13 @@ import Testing
 
 struct ReleaseVersionTests {
     @Test("Versions compare their components numerically") func testOrdering() {
-        #expect(ReleaseVersion("3.9") < ReleaseVersion("3.10"))
-        #expect(ReleaseVersion("4.0") < ReleaseVersion("4.0.1"))
-        #expect(ReleaseVersion("9.9.9") < ReleaseVersion("10.0"))
+        #expect(ReleaseVersion(version: "3.9") < ReleaseVersion(version: "3.10"))
+        #expect(ReleaseVersion(version: "4.0") < ReleaseVersion(version: "4.0.1"))
+        #expect(ReleaseVersion(version: "9.9.9") < ReleaseVersion(version: "10.0"))
     }
 
     @Test("Equal numeric components fall back to lexicographic order") func testTiebreak() {
-        #expect(ReleaseVersion("4.0") < ReleaseVersion("4.0.0"))
-        #expect((ReleaseVersion("4.0.0") < ReleaseVersion("4.0")) == false)
+        #expect(ReleaseVersion(version: "4.0") < ReleaseVersion(version: "4.0.0"))
+        #expect((ReleaseVersion(version: "4.0.0") < ReleaseVersion(version: "4.0")) == false)
     }
 }
