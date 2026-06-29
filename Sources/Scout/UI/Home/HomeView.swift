@@ -17,10 +17,14 @@ public struct HomeView: View {
         self.backends = backends
     }
 
+    private var backend: Backend? {
+        backends.first(where: { $0.id == activeID }) ?? backends.first
+    }
+
     public var body: some View {
         NavigationStack {
             Group {
-                if let backend = backends.first(where: { $0.id == activeID }) ?? backends.first {
+                if let backend {
                     HomeContent()
                         .id(backend.id)
                         .accountWarning(backend)
@@ -34,7 +38,6 @@ public struct HomeView: View {
                                 )
                             }
                         }
-                        .environment(\.database, backend.database)
                 } else {
                     ErrorView(
                         description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
@@ -46,6 +49,7 @@ public struct HomeView: View {
             .dismissable()
         }
         .tint(tint.value)
+        .environment(\.database, backend?.database ?? DefaultDatabase())
         .environmentObject(tint)
     }
 }
