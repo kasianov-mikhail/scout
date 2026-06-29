@@ -33,6 +33,30 @@ struct SessionObjectTests {
             ])
     }
 
+    @Test("matrix(of:) carries the app version, leaving category untouched")
+    func testMatrixCarriesVersion() throws {
+        let batch: [SessionObject] = [
+            .stub(date: week, appVersion: "3.2.0", in: context),
+            .stub(date: week, appVersion: "3.2.0", in: context),
+        ]
+
+        let matrix = try SessionObject.matrix(of: batch)
+
+        #expect(matrix.version == "3.2.0")
+        #expect(matrix.category == nil)
+    }
+
+    @Test("matrix(of:) leaves the version nil for version-less sessions")
+    func testMatrixWithoutVersionHasNilVersion() throws {
+        let batch: [SessionObject] = [
+            .stub(date: week, appVersion: nil, in: context)
+        ]
+
+        let matrix = try SessionObject.matrix(of: batch)
+
+        #expect(matrix.version == nil)
+    }
+
     @Test("launch(in:) returns launch matching launchID")
     func testLaunch() throws {
         let session = SessionObject.stub(date: week, in: context)

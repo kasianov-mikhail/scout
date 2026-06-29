@@ -11,6 +11,7 @@ import CoreData
 final class CrashObject: TrackedObject {
     static let recordType = "Crash"
 
+    @NSManaged var appVersion: String?
     @NSManaged var name: String?
     @NSManaged var crashID: UUID
     @NSManaged var fingerprint: String?

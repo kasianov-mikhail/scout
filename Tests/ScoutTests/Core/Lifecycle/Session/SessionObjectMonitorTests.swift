@@ -26,6 +26,14 @@ struct SessionObjectMonitorTests {
         #expect(sessions.first?.endDate != nil)
     }
 
+    @Test("trigger stamps the session with the current app version")
+    func triggerStampsAppVersion() throws {
+        try SessionObject.trigger(in: context)
+
+        let session = try #require(try context.fetchAll(SessionObject.self).first)
+        #expect(session.appVersion == Bundle.main.marketingVersion)
+    }
+
     @Test("complete is a no-op when the session is already closed")
     func completeTwiceIsNoop() throws {
         try SessionObject.trigger(in: context)

@@ -14,6 +14,7 @@ extension SessionObject: Monitor {
         let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
         let session = SessionObject(entity: entity, insertInto: context)
         session.date = Date()
+        session.appVersion = Bundle.main.marketingVersion
         try context.save()
     }
 

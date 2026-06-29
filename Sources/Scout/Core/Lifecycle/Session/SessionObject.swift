@@ -11,6 +11,7 @@ import CoreData
 final class SessionObject: TrackedObject {
     static let recordType = "Session"
 
+    @NSManaged var appVersion: String?
     @NSManaged var endDate: Date?
 
     func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {

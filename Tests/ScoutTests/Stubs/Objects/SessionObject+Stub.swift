@@ -14,6 +14,7 @@ extension SessionObject {
         date: Date,
         synced: Bool = false,
         endDate: Date? = nil,
+        appVersion: String? = nil,
         in context: NSManagedObjectContext
     ) -> SessionObject {
         let session = context.insert(SessionObject.self)
@@ -21,6 +22,7 @@ extension SessionObject {
         session.date = date
         session.setSynced(synced, in: context)
         session.endDate = endDate
+        session.appVersion = appVersion
 
         return session
     }

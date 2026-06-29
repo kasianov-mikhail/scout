@@ -22,6 +22,18 @@ extension NamedObject: MatrixBatch {
     }
 }
 
+extension SessionObject {
+    static func matrix(of batch: [SessionObject]) throws -> GridMatrix<Int> {
+        try versionedMatrix(of: batch, appVersion: \.appVersion)
+    }
+}
+
+extension CrashObject {
+    static func matrix(of batch: [CrashObject]) throws -> GridMatrix<Int> {
+        try versionedMatrix(of: batch, appVersion: \.appVersion)
+    }
+}
+
 extension UserActivityObject: MatrixBatch {
     static func matrix(of batch: [UserActivityObject]) throws -> Matrix<PeriodCell<Int>> {
         try Matrix(

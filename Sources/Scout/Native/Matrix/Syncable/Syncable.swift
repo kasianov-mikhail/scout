@@ -22,11 +22,11 @@ extension UserActivityObject: Syncable {
 }
 
 extension CrashObject: Syncable {
-    static var batchKeys: [Key] { [\.week] }
+    static var batchKeys: [Key] { [\.week, \.appVersion] }
 }
 
 extension SessionObject: Syncable {
-    static var batchKeys: [Key] { [\.week] }
+    static var batchKeys: [Key] { [\.week, \.appVersion] }
 }
 
 extension DeviceObject: Syncable {

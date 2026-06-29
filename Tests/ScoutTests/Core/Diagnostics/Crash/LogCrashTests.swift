@@ -39,6 +39,7 @@ struct LogCrashTests {
         #expect(object.installID == crash.installID)
         #expect(object.launchID == crash.launchID)
         #expect(object.sessionID == crash.sessionID)
+        #expect(object.appVersion == crash.appVersion)
     }
 
     @Test("Preserves sessionID captured at crash time, not the recovery session")

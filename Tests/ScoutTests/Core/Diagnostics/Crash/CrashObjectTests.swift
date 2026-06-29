@@ -32,6 +32,28 @@ struct CrashObjectTests {
         #expect(matrix.cells.map(\.value).reduce(0, +) == 3)
     }
 
+    @Test("matrix(of:) carries the app version, leaving category untouched")
+    func testMatrixCarriesVersion() throws {
+        let batch: [CrashObject] = [
+            makeCrashObject(name: "SIGABRT", date: date, appVersion: "3.2.0"),
+            makeCrashObject(name: "SIGSEGV", date: date, appVersion: "3.2.0"),
+        ]
+
+        let matrix = try CrashObject.matrix(of: batch)
+
+        #expect(matrix.version == "3.2.0")
+        #expect(matrix.category == nil)
+    }
+
+    @Test("matrix(of:) leaves the version nil for version-less crashes")
+    func testMatrixWithoutVersionHasNilVersion() throws {
+        let batch = [makeCrashObject(name: "SIGABRT", date: date, appVersion: nil)]
+
+        let matrix = try CrashObject.matrix(of: batch)
+
+        #expect(matrix.version == nil)
+    }
+
     @Test("record includes the crash fingerprint")
     func testRecordIncludesStoredFingerprint() {
         let object = makeCrashObject(name: "SIGABRT", date: date)
@@ -49,12 +71,13 @@ struct CrashObjectTests {
         #expect(object.record["fingerprint"] == CrashFingerprint(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"]).value)
     }
 
-    private func makeCrashObject(name: String, date: Date) -> CrashObject {
+    private func makeCrashObject(name: String, date: Date, appVersion: String? = nil) -> CrashObject {
         let entity = NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!
         let object = CrashObject(entity: entity, insertInto: context)
         object.name = name
         object.date = date
         object.crashID = UUID()
+        object.appVersion = appVersion
         return object
     }
 }
