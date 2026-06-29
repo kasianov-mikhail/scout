@@ -16,7 +16,11 @@ struct SetupPage: View {
                 Step(
                     number: 1,
                     label: "Initialize Scout in your app",
-                    code: "try await setup(backends: [.cloudKit(container: .default())])"
+                    code: """
+                        try await setup(
+                            backends: [.cloudKit(container: .default())]
+                        )
+                        """
                 )
                 Step(
                     number: 2,
@@ -51,6 +55,10 @@ struct SetupPage: View {
                         .fontWeight(.medium)
                 }
                 Text(code.swiftSyntax)
+                    .lineLimit(code.reduce(into: 1) { count, character in
+                        if character == "\n" { count += 1 }
+                    })
+                    .minimumScaleFactor(0.6)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .codeChipStyle()
                     .padding(.leading, 32)
