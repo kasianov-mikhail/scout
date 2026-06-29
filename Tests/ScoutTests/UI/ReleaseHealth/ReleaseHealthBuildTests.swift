@@ -68,6 +68,27 @@ struct ReleaseHealthBuildTests {
         #expect(abs(previous.adoption - 1.0 / 3.0) < 1e-9)
     }
 
+    @Test("Different builds of the same version merge into one release") func testBuildsMergeByVersion() {
+        let launchEarly = UUID()
+        let launchLate = UUID()
+
+        let versions = [
+            Version.stub(appVersion: "4.0", buildNumber: "100", launchID: launchEarly, date: Date(timeIntervalSince1970: 100_000)),
+            Version.stub(appVersion: "4.0", buildNumber: "101", launchID: launchLate, date: Date(timeIntervalSince1970: 200_000)),
+        ]
+
+        let sessions = [
+            Session.stub(launchID: launchEarly, installID: UUID()),
+            Session.stub(launchID: launchLate, installID: UUID()),
+        ]
+
+        let releases = ReleaseHealth.build(versions: versions, crashes: [], sessions: sessions, range: range)
+
+        #expect(releases.count == 1)
+        #expect(releases[0].version == "4.0")
+        #expect(releases[0].sessions == 2)
+    }
+
     @Test("Crashes and sessions on unknown launches are ignored") func testUnknownLaunchIgnored() {
         let launch = UUID()
 

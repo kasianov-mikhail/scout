@@ -8,62 +8,55 @@
 import Foundation
 
 extension ReleaseHealth {
-    private struct Key: Hashable {
-        let version: String
-        let build: String
-    }
-
     static func build(versions: [Version], crashes: [Crash], sessions: [Session], range: Range<Date>) -> [ReleaseHealth] {
-        var keyByLaunch: [UUID: Key] = [:]
-        var latestDate: [Key: Date] = [:]
+        var versionByLaunch: [UUID: String] = [:]
+        var latestDate: [String: Date] = [:]
 
         for version in versions {
             if let launchID = version.launchID, let appVersion = version.appVersion {
-                let key = Key(version: appVersion, build: version.buildNumber ?? "")
-                keyByLaunch[launchID] = key
+                versionByLaunch[launchID] = appVersion
 
-                if let date = version.date, date > (latestDate[key] ?? .distantPast) {
-                    latestDate[key] = date
+                if let date = version.date, date > (latestDate[appVersion] ?? .distantPast) {
+                    latestDate[appVersion] = date
                 }
             }
         }
 
-        var sessionsByKey: [Key: [Session]] = [:]
+        var sessionsByVersion: [String: [Session]] = [:]
         for session in sessions {
-            if let launchID = session.launchID, let key = keyByLaunch[launchID] {
-                sessionsByKey[key, default: []].append(session)
+            if let launchID = session.launchID, let version = versionByLaunch[launchID] {
+                sessionsByVersion[version, default: []].append(session)
             }
         }
 
-        var crashesByKey: [Key: [Crash]] = [:]
+        var crashesByVersion: [String: [Crash]] = [:]
         for crash in crashes {
-            if let launchID = crash.launchID, let key = keyByLaunch[launchID] {
-                crashesByKey[key, default: []].append(crash)
+            if let launchID = crash.launchID, let version = versionByLaunch[launchID] {
+                crashesByVersion[version, default: []].append(crash)
             }
         }
 
-        let totalSessions = sessionsByKey.values.reduce(0) { $0 + sessionCount($1) }
-        let keys = Set(sessionsByKey.keys).union(crashesByKey.keys)
+        let totalSessions = sessionsByVersion.values.reduce(0) { $0 + sessionCount($1) }
+        let releaseVersions = Set(sessionsByVersion.keys).union(crashesByVersion.keys)
 
-        return keys.sorted {
+        return releaseVersions.sorted {
             (latestDate[$0] ?? .distantPast) > (latestDate[$1] ?? .distantPast)
-        }.map { key in
-            let keySessions = sessionsByKey[key] ?? []
-            let keyCrashes = crashesByKey[key] ?? []
-            let sessions = sessionCount(keySessions)
-            let crashedSessions = Set(keyCrashes.compactMap(\.sessionID)).count
-            let installs = Set(keySessions.compactMap(\.installID)).count
-            let crashedInstalls = Set(keyCrashes.compactMap(\.installID)).count
+        }.map { version in
+            let versionSessions = sessionsByVersion[version] ?? []
+            let versionCrashes = crashesByVersion[version] ?? []
+            let sessions = sessionCount(versionSessions)
+            let crashedSessions = Set(versionCrashes.compactMap(\.sessionID)).count
+            let installs = Set(versionSessions.compactMap(\.installID)).count
+            let crashedInstalls = Set(versionCrashes.compactMap(\.installID)).count
 
             return ReleaseHealth(
-                version: key.version,
-                build: key.build,
+                version: version,
                 crashFreeSessions: crashFree(crashedSessions, of: sessions),
                 crashFreeUsers: crashFree(crashedInstalls, of: installs),
-                crashes: keyCrashes,
+                crashes: versionCrashes,
                 sessions: sessions,
                 adoption: totalSessions > 0 ? Double(sessions) / Double(totalSessions) : 0,
-                trend: trend(of: keyCrashes, in: range)
+                trend: trend(of: versionCrashes, in: range)
             )
         }
     }
