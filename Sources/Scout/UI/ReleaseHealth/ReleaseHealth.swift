@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ReleaseHealth: Identifiable {
     let version: String
-    let build: String
     let crashFreeSessions: Double
     let crashFreeUsers: Double
     let crashes: [Crash]
@@ -47,7 +46,6 @@ extension ReleaseHealth {
     static let samples: [ReleaseHealth] = [
         ReleaseHealth(
             version: "3.2.0",
-            build: "412",
             crashFreeSessions: 0.9982,
             crashFreeUsers: 0.9991,
             crashes: sampleCrashes(["NSRangeException": 8, "Fatal error": 4, "SIGSEGV": 2]),
@@ -57,7 +55,6 @@ extension ReleaseHealth {
         ),
         ReleaseHealth(
             version: "3.1.4",
-            build: "405",
             crashFreeSessions: 0.9967,
             crashFreeUsers: 0.9975,
             crashes: sampleCrashes(["NSRangeException": 16, "Fatal error": 9, "SIGSEGV": 6]),
@@ -67,7 +64,6 @@ extension ReleaseHealth {
         ),
         ReleaseHealth(
             version: "3.1.0",
-            build: "390",
             crashFreeSessions: 0.9921,
             crashFreeUsers: 0.9943,
             crashes: sampleCrashes(["NSRangeException": 30, "Fatal error": 18, "SIGSEGV": 10]),
@@ -77,7 +73,6 @@ extension ReleaseHealth {
         ),
         ReleaseHealth(
             version: "3.0.2",
-            build: "360",
             crashFreeSessions: 0.9890,
             crashFreeUsers: 0.9905,
             crashes: sampleCrashes(["NSRangeException": 22, "Fatal error": 12, "SIGSEGV": 8]),
@@ -87,7 +82,6 @@ extension ReleaseHealth {
         ),
         ReleaseHealth(
             version: "2.9.9",
-            build: "333",
             crashFreeSessions: 0.9710,
             crashFreeUsers: 0.9802,
             crashes: sampleCrashes(["NSRangeException": 35, "Fatal error": 22, "SIGSEGV": 16]),
