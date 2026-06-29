@@ -22,7 +22,7 @@ struct HomeContent: View {
             HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
         }
         .navigationDestination(isPresented: $showReleaseHealth) {
-            ReleaseHealthView()
+            ReleaseHealthView(provider: releaseProvider)
         }
         .listStyle(.plain)
         .scrollContentBackground(.hidden)
