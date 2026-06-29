@@ -7,29 +7,6 @@
 
 import SwiftUI
 
-private func ringTrim(_ value: Double) -> Double {
-    max(0, min(1, (value - 0.95) / 0.05))
-}
-
-private struct CompactRing: View {
-    let value: Double
-    var size: CGFloat = 16
-    var lineWidth: CGFloat = 2
-
-    var body: some View {
-        ZStack {
-            Circle()
-                .stroke(Color(.systemGray5), lineWidth: lineWidth)
-            Circle()
-                .trim(from: 0, to: ringTrim(value))
-                .stroke(.blue, style: StrokeStyle(lineWidth: lineWidth, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-        }
-        .frame(width: size, height: size)
-        .padding(.horizontal, 4)
-    }
-}
-
 struct ReleaseRow: View {
     let release: ReleaseHealth
 
@@ -48,15 +25,62 @@ struct ReleaseRow: View {
                 color: ReleaseHealth.healthColor(release.crashFreeSessions)
             )
 
-            Text(verbatim: ReleaseHealth.percent(release.crashFreeSessions))
-                .font(.system(size: 15))
-                .monospacedDigit()
-                .foregroundStyle(.primary)
-                .frame(minWidth: 80, alignment: .trailing)
-                .padding(.leading, 8)
+            ReleasePercent(text: ReleaseHealth.percent(release.crashFreeSessions))
         } destination: {
             VersionDetailView(release: release)
         }
+    }
+}
+
+private struct CompactRing: View {
+    let value: Double
+
+    var body: some View {
+        ZStack {
+            let ringTrim = max(0, min(1, (value - 0.95) / 0.05))
+
+            Circle()
+                .stroke(Color(.systemGray5), lineWidth: 2)
+            Circle()
+                .trim(from: 0, to: ringTrim)
+                .stroke(.blue, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+        }
+        .frame(width: 16, height: 16)
+        .padding(.horizontal, 4)
+    }
+}
+
+struct ReleaseRowPlaceholder: View {
+    var body: some View {
+        HStack {
+            CompactRing(value: 0.95)
+
+            Text(verbatim: "3.2.1")
+                .font(.system(size: 17))
+                .monospacedDigit()
+
+            Spacer()
+
+            MiniChart(series: nil, color: .gray)
+
+            ReleasePercent(text: "100.00%")
+        }
+        .redacted(reason: .placeholder)
+        .trailingRowSeparator()
+    }
+}
+
+private struct ReleasePercent: View {
+    let text: String
+
+    var body: some View {
+        Text(verbatim: text)
+            .font(.system(size: 15))
+            .monospacedDigit()
+            .foregroundStyle(.primary)
+            .frame(minWidth: 80, alignment: .trailing)
+            .padding(.leading, 8)
     }
 }
 
@@ -66,7 +90,10 @@ struct ReleaseRow: View {
             ForEach(ReleaseHealth.samples) { release in
                 ReleaseRow(release: release)
             }
+            ReleaseRowPlaceholder()
+            ReleaseRowPlaceholder()
         }
         .listStyle(.plain)
+        .navigationTitle(en: "Releases")
     }
 }

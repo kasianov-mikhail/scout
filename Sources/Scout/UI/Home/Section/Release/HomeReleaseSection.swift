@@ -28,8 +28,14 @@ struct HomeReleaseSection: View {
             await provider.fetchIfNeeded(in: database)
         }
 
-        ForEach((provider.releases ?? []).prefix(3)) { release in
-            ReleaseRow(release: release)
+        if let releases = provider.releases {
+            ForEach(releases.prefix(3)) { release in
+                ReleaseRow(release: release)
+            }
+        } else {
+            ForEach(0..<3, id: \.self) { _ in
+                ReleaseRowPlaceholder()
+            }
         }
     }
 }
