@@ -10,7 +10,7 @@ import Testing
 
 @testable import Scout
 
-struct ReleaseHealthBuildTests {
+struct ReleaseHealthSummariesTests {
     private let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 700_000)
 
     @Test("Crashes and sessions join to versions through their launch IDs") func testCrashFreeByVersion() {
@@ -45,7 +45,7 @@ struct ReleaseHealthBuildTests {
             )
         ]
 
-        let releases = ReleaseHealth.build(
+        let releases = ReleaseHealth.summaries(
             versions: versions,
             crashes: crashes,
             sessions: sessions,
@@ -57,15 +57,15 @@ struct ReleaseHealthBuildTests {
         let latest = releases[0]
         #expect(latest.sessions == 2)
         #expect(latest.crashes.count == 1)
-        #expect(latest.crashFreeSessions == 0.5)
-        #expect(latest.crashFreeUsers == 0.5)
-        #expect(abs(latest.adoption - 2.0 / 3.0) < 1e-9)
+        #expect(latest.crashFreeSessions.value == 0.5)
+        #expect(latest.crashFreeUsers.value == 0.5)
+        #expect(abs(latest.adoption.value - 2.0 / 3.0) < 1e-9)
 
         let previous = releases[1]
         #expect(previous.sessions == 1)
         #expect(previous.crashes.count == 0)
-        #expect(previous.crashFreeSessions == 1)
-        #expect(abs(previous.adoption - 1.0 / 3.0) < 1e-9)
+        #expect(previous.crashFreeSessions.value == 1)
+        #expect(abs(previous.adoption.value - 1.0 / 3.0) < 1e-9)
     }
 
     @Test("Different builds of the same version merge into one release") func testBuildsMergeByVersion() {
@@ -82,7 +82,7 @@ struct ReleaseHealthBuildTests {
             Session.stub(launchID: launchLate, installID: UUID()),
         ]
 
-        let releases = ReleaseHealth.build(versions: versions, crashes: [], sessions: sessions, range: range)
+        let releases = ReleaseHealth.summaries(versions: versions, crashes: [], sessions: sessions, range: range)
 
         #expect(releases.count == 1)
         #expect(releases[0].version == "4.0")
@@ -99,16 +99,27 @@ struct ReleaseHealthBuildTests {
         ]
         let crashes = [Crash.stub(launchID: UUID())]
 
-        let releases = ReleaseHealth.build(versions: versions, crashes: crashes, sessions: sessions, range: range)
+        let releases = ReleaseHealth.summaries(versions: versions, crashes: crashes, sessions: sessions, range: range)
 
         #expect(releases.count == 1)
         #expect(releases[0].sessions == 1)
         #expect(releases[0].crashes.count == 0)
-        #expect(releases[0].crashFreeSessions == 1)
+        #expect(releases[0].crashFreeSessions.value == 1)
     }
 
     @Test("No data yields no releases") func testEmpty() {
-        let releases = ReleaseHealth.build(versions: [], crashes: [], sessions: [], range: range)
+        let releases = ReleaseHealth.summaries(versions: [], crashes: [], sessions: [], range: range)
         #expect(releases.isEmpty)
+    }
+
+    @Test("Releases are ordered newest version first, regardless of report order") func testSortedByVersion() {
+        let launches = ["2.5", "4.0", "2.6"].map { ($0, UUID()) }
+
+        let versions = launches.map { Version.stub(appVersion: $0.0, launchID: $0.1) }
+        let sessions = launches.map { Session.stub(launchID: $0.1, installID: UUID()) }
+
+        let releases = ReleaseHealth.summaries(versions: versions, crashes: [], sessions: sessions, range: range)
+
+        #expect(releases.map(\.version) == ["4.0", "2.6", "2.5"])
     }
 }

@@ -38,7 +38,7 @@ class ReleaseHealthProvider: ObservableObject {
                 fields: Session.desiredKeys
             )
 
-            releases = try await ReleaseHealth.build(
+            releases = try await ReleaseHealth.summaries(
                 versions: versions.map(Version.init),
                 crashes: crashes.map(Crash.init),
                 sessions: sessions.map(Session.init),

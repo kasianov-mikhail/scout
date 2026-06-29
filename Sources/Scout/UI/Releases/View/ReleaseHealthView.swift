@@ -27,8 +27,6 @@ struct ReleaseHealthView: View {
                     )
                 } else {
                     List {
-                        Header(title: "Releases")
-
                         ForEach(releases) { release in
                             ReleaseRow(release: release)
                         }
@@ -39,7 +37,7 @@ struct ReleaseHealthView: View {
                 ProgressView().frame(maxHeight: .infinity)
             }
         }
-        .navigationTitle(en: "Release Health")
+        .navigationTitle(en: "Releases")
         .task {
             await provider.fetchIfNeeded(in: database)
         }
