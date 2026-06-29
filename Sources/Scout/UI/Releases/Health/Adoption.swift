@@ -22,3 +22,9 @@ struct Adoption: Equatable, ExpressibleByFloatLiteral {
         "\(Int((value * 100).rounded()))%"
     }
 }
+
+extension Adoption {
+    init(of sessions: Int, in total: Int) {
+        self.init(total > 0 ? Double(sessions) / Double(total) : 0)
+    }
+}

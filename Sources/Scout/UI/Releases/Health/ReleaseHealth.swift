@@ -9,9 +9,9 @@ import Foundation
 
 struct ReleaseHealth: Identifiable {
     let id: String
-    let crashFreeSessions: CrashFreeRate
-    let crashFreeUsers: CrashFreeRate?
-    let crashes: [Crash]
+    let freeSessions: Stability
+    let freeUsers: Stability?
+    let crashes: Int
     let sessions: Int
     let adoption: Adoption
     let trend: [Int]
@@ -31,63 +31,48 @@ extension ReleaseHealth {
     static let samples: [ReleaseHealth] = [
         ReleaseHealth(
             id: "3.2.0",
-            crashFreeSessions: 0.9982,
-            crashFreeUsers: CrashFreeRate(0.9991),
-            crashes: sampleCrashes(["NSRangeException": 8, "Fatal error": 4, "SIGSEGV": 2]),
+            freeSessions: 0.9982,
+            freeUsers: Stability(0.9991),
+            crashes: 14,
             sessions: 48210,
             adoption: 0.62,
             trend: [3, 5, 4, 6, 4, 7, 5]
         ),
         ReleaseHealth(
             id: "3.1.4",
-            crashFreeSessions: 0.9967,
-            crashFreeUsers: CrashFreeRate(0.9975),
-            crashes: sampleCrashes(["NSRangeException": 16, "Fatal error": 9, "SIGSEGV": 6]),
+            freeSessions: 0.9967,
+            freeUsers: Stability(0.9975),
+            crashes: 31,
             sessions: 26110,
             adoption: 0.21,
             trend: [6, 5, 7, 5, 8, 6, 9]
         ),
         ReleaseHealth(
             id: "3.1.0",
-            crashFreeSessions: 0.9921,
-            crashFreeUsers: CrashFreeRate(0.9943),
-            crashes: sampleCrashes(["NSRangeException": 30, "Fatal error": 18, "SIGSEGV": 10]),
+            freeSessions: 0.9921,
+            freeUsers: Stability(0.9943),
+            crashes: 58,
             sessions: 12050,
             adoption: 0.10,
             trend: [9, 11, 8, 10, 12, 9, 13]
         ),
         ReleaseHealth(
             id: "3.0.2",
-            crashFreeSessions: 0.9890,
-            crashFreeUsers: CrashFreeRate(0.9905),
-            crashes: sampleCrashes(["NSRangeException": 22, "Fatal error": 12, "SIGSEGV": 8]),
+            freeSessions: 0.9890,
+            freeUsers: Stability(0.9905),
+            crashes: 42,
             sessions: 4300,
             adoption: 0.05,
             trend: [12, 10, 14, 11, 9, 8, 7]
         ),
         ReleaseHealth(
             id: "2.9.9",
-            crashFreeSessions: 0.9710,
-            crashFreeUsers: CrashFreeRate(0.9802),
-            crashes: sampleCrashes(["NSRangeException": 35, "Fatal error": 22, "SIGSEGV": 16]),
+            freeSessions: 0.9710,
+            freeUsers: Stability(0.9802),
+            crashes: 73,
             sessions: 1820,
             adoption: 0.02,
             trend: [20, 18, 22, 19, 17, 15, 16]
         ),
     ]
-
-    private static func sampleCrashes(_ counts: KeyValuePairs<String, Int>) -> [Crash] {
-        var crashes: [Crash] = []
-        var index = 0
-
-        for (name, count) in counts {
-            for _ in 0..<count {
-                let date = Date(timeIntervalSinceNow: -Double(index % 13) * 86_400 - Double(index) * 600)
-                crashes.append(.sample(name, at: date, sessionID: UUID()))
-                index += 1
-            }
-        }
-
-        return crashes
-    }
 }

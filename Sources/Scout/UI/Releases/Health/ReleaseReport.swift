@@ -7,76 +7,76 @@
 
 import Foundation
 
-struct ReleaseReport {
-    let sessionMatrices: [GridMatrix<Int>]
-    let crashes: [Crash]
-    let versions: [Version]
-    let range: Range<Date>
+func releaseReport(sessions: [GridMatrix<Int>], crashes: [GridMatrix<Int>], range: Range<Date>) -> [ReleaseHealth] {
+    let sessionCounts = sessions.points(in: range).mapValues(\.total)
+    let crashPoints = crashes.points(in: range)
+    let totalSessions = sessionCounts.values.reduce(0, +)
 
-    var releases: [ReleaseHealth] {
-        let sessionCounts = sessionCounts
-        let crashIndex = crashIndex
+    let versions = Set(sessionCounts.keys)
+        .union(crashPoints.keys)
+        .sorted(by: versionDescending)
 
-        let totalSessions = sessionCounts.values.reduce(0, +)
+    return versions.map { version in
+        let sessions = sessionCounts[version] ?? 0
+        let crashPoints = crashPoints[version] ?? []
+        let crashes = crashPoints.total
 
-        let releaseVersions = Set(sessionCounts.keys)
-            .union(crashIndex.keys)
-            .map(ReleaseVersion.init)
-            .sorted()
-            .reversed()
-            .map(\.version)
-
-        return releaseVersions.map { version in
-            ReleaseHealth(
-                version: version,
-                sessions: sessionCounts[version] ?? 0,
-                crashes: crashIndex[version] ?? [],
-                totalSessions: totalSessions,
-                range: range
-            )
-        }
-    }
-
-    private var sessionCounts: [String: Int] {
-        var counts: [String: Int] = [:]
-        for matrix in sessionMatrices {
-            if let version = matrix.version {
-                counts[version, default: 0] += matrix.points.filter { range.contains($0.date) }.total
-            }
-        }
-        return counts
-    }
-
-    private var crashIndex: [String: [Crash]] {
-        var versionIndex: [UUID: String] = [:]
-        for version in versions {
-            if let launchID = version.launchID, let appVersion = version.appVersion {
-                versionIndex[launchID] = appVersion
-            }
-        }
-
-        var index: [String: [Crash]] = [:]
-        for crash in crashes {
-            if let launchID = crash.launchID, let version = versionIndex[launchID] {
-                index[version, default: []].append(crash)
-            }
-        }
-        return index
+        return ReleaseHealth(
+            id: version,
+            freeSessions: Stability(of: crashes, in: sessions),
+            freeUsers: nil,
+            crashes: crashes,
+            sessions: sessions,
+            adoption: Adoption(of: sessions, in: totalSessions),
+            trend: crashPoints.trend(in: range)
+        )
     }
 }
 
-extension ReleaseHealth {
-    init(version: String, sessions: Int, crashes versionCrashes: [Crash], totalSessions: Int, range: Range<Date>) {
-        let crashedSessions = Set(versionCrashes.compactMap(\.sessionID)).count
-
-        self.init(
-            id: version,
-            crashFreeSessions: CrashFreeRate(affected: crashedSessions, total: sessions),
-            crashFreeUsers: nil,
-            crashes: versionCrashes,
-            sessions: sessions,
-            adoption: Adoption(totalSessions > 0 ? Double(sessions) / Double(totalSessions) : 0),
-            trend: crashTrend(of: versionCrashes, in: range)
-        )
+extension [GridMatrix<Int>] {
+    fileprivate func points(in range: Range<Date>) -> [String: [ChartPoint<Int>]] {
+        var result: [String: [ChartPoint<Int>]] = [:]
+        for matrix in self {
+            if let version = matrix.version {
+                result[version, default: []] += matrix.points.filter { range.contains($0.date) }
+            }
+        }
+        return result
     }
+}
+
+extension [ChartPoint<Int>] {
+    fileprivate func trend(in range: Range<Date>) -> [Int] {
+        let slices = MiniChartSeries.sliceCount
+        var values = [Int](repeating: 0, count: slices)
+        let span = range.upperBound.timeIntervalSince(range.lowerBound)
+
+        guard span > 0 else {
+            return values
+        }
+
+        let step = span / Double(slices)
+
+        for point in self where range.contains(point.date) {
+            let index = Swift.min(slices - 1, Int(point.date.timeIntervalSince(range.lowerBound) / step))
+            values[index] += point.count
+        }
+
+        return values
+    }
+}
+
+private func versionDescending(_ lhs: String, _ rhs: String) -> Bool {
+    let lhsParts = lhs.split(separator: ".").map { Int($0) ?? 0 }
+    let rhsParts = rhs.split(separator: ".").map { Int($0) ?? 0 }
+
+    for index in 0..<max(lhsParts.count, rhsParts.count) {
+        let left = index < lhsParts.count ? lhsParts[index] : 0
+        let right = index < rhsParts.count ? rhsParts[index] : 0
+        if left != right {
+            return left > right
+        }
+    }
+
+    return lhs > rhs
 }

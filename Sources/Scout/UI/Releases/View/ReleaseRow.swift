@@ -12,7 +12,7 @@ struct ReleaseRow: View {
 
     var body: some View {
         Row {
-            CompactRing(rate: release.crashFreeSessions)
+            CompactRing(rate: release.freeSessions)
 
             Text(verbatim: release.id)
                 .font(.system(size: 17))
@@ -22,10 +22,10 @@ struct ReleaseRow: View {
 
             MiniChart(
                 series: MiniChartSeries(values: release.trend),
-                color: release.crashFreeSessions.color
+                color: release.freeSessions.color
             )
 
-            ReleasePercent(text: release.crashFreeSessions.formatted)
+            ReleasePercent(text: release.freeSessions.formatted)
         } destination: {
             VersionDetailView(release: release)
         }
@@ -33,7 +33,7 @@ struct ReleaseRow: View {
 }
 
 private struct CompactRing: View {
-    let rate: CrashFreeRate
+    let rate: Stability
 
     var body: some View {
         ZStack {
