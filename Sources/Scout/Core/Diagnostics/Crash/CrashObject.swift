@@ -29,6 +29,7 @@ extension CrashObject: RecordEncodable {
         record["stack_trace"] = stackTrace
         record["date"] = date
         record["uuid"] = crashID.uuidString
+        record["app_version"] = appVersion
 
         record.setValues(metadata)
 
