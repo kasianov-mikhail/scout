@@ -21,9 +21,7 @@ class QueryProvider<T: Combining & RecordDecodable>: ObservableObject, Provider 
     }
 
     func fetch(in database: DatabaseReader) async throws -> [T] {
-        try await database
-            .readAll(matching: queryBuilder(), fields: nil)
-            .map { try T(record: $0) }
-            .mergeDuplicates()
+        let records: [T] = try await database.readAll(matching: queryBuilder())
+        return records.mergeDuplicates()
     }
 }

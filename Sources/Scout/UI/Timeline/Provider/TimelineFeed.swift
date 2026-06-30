@@ -31,10 +31,7 @@ struct TimelineFeed {
             recordType: Install.self,
             filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
-        return
-            try await database
-            .readAll(matching: query, fields: Install.desiredKeys)
-            .map(Install.init)
+        return try await database.readAll(matching: query, fields: Install.desiredKeys)
     }
 
     func launches() async throws -> [Launch] {
@@ -42,9 +39,6 @@ struct TimelineFeed {
             recordType: Launch.self,
             filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))]
         )
-        return
-            try await database
-            .readAll(matching: query, fields: Launch.desiredKeys)
-            .map(Launch.init)
+        return try await database.readAll(matching: query, fields: Launch.desiredKeys)
     }
 }

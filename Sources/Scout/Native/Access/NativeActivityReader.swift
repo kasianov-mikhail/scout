@@ -16,12 +16,7 @@ extension ActivityReader {
             filters: range.dateFilters
         )
 
-        let matrices = try await readAll(
-            matching: query,
-            fields: nil
-        )
-        .map(PeriodMatrix.init)
-
+        let matrices: [PeriodMatrix] = try await readAll(matching: query)
         return ActivityPoint.points(from: matrices)
     }
 }

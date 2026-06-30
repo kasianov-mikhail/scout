@@ -22,9 +22,8 @@ extension MetricReader {
             filters: range.dateFilters + [categoryFilter]
         )
 
-        return try await readAll(matching: query, fields: nil)
-            .map(GridMatrix<T>.init)
-            .map(MetricSeries.init)
+        let matrices: [GridMatrix<T>] = try await readAll(matching: query)
+        return matrices.map(MetricSeries.init)
     }
 }
 

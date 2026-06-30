@@ -25,19 +25,10 @@ class ReleaseHealthProvider: ObservableObject {
         let range = Calendar.utc.defaultRange
 
         do {
-            async let sessions = database.readAll(
-                matching: query(name: SessionObject.recordType, in: range),
-                fields: nil
-            )
-            async let crashes = database.readAll(
-                matching: query(name: CrashObject.recordType, in: range),
-                fields: nil
-            )
-            releases = try await releaseReport(
-                sessions: sessions.map(GridMatrix<Int>.init),
-                crashes: crashes.map(GridMatrix<Int>.init),
-                range: range
-            )
+            async let sessions: [GridMatrix<Int>] = database.readAll(matching: query(name: SessionObject.recordType, in: range))
+            async let crashes: [GridMatrix<Int>] = database.readAll(matching: query(name: CrashObject.recordType, in: range))
+
+            releases = try await releaseReport(sessions: sessions, crashes: crashes, range: range)
         } catch {
             releases = []
         }

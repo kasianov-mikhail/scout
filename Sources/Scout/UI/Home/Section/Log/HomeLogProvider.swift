@@ -31,9 +31,6 @@ private func matrices<T: MetricScalar>(of type: T.Type, in database: DatabaseRea
         recordType: GridMatrix<T>.self,
         filters: Calendar.utc.defaultRange.dateFilters
     )
-    return
-        try await database
-        .readAll(matching: query, fields: nil)
-        .map { try GridMatrix<T>(record: $0) }
-        .mergeDuplicates()
+    let matrices: [GridMatrix<T>] = try await database.readAll(matching: query)
+    return matrices.mergeDuplicates()
 }
