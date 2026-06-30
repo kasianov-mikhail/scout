@@ -18,9 +18,11 @@ struct HomeReleaseSection: View {
             Button {
                 showReleaseHealth = true
             } label: {
-                Text(verbatim: "All".uppercased())
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.blue)
+                if let releases = provider.releases, releases.count > 0 {
+                    Text(verbatim: "All".uppercased())
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.blue)
+                }
             }
             .buttonStyle(.plain)
         }
@@ -29,8 +31,16 @@ struct HomeReleaseSection: View {
         }
 
         if let releases = provider.releases {
-            ForEach(releases.prefix(3)) { release in
-                ReleaseRow(release: release)
+            if releases.count > 0 {
+                ForEach(releases.prefix(3)) { release in
+                    ReleaseRow(release: release)
+                }
+            } else {
+                Text(verbatim: "No results")
+                    .placeholderTextStyle()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 20)
+                    .listRowSeparator(.hidden)
             }
         } else {
             ForEach(0..<3, id: \.self) { _ in
@@ -44,6 +54,7 @@ struct HomeReleaseSection: View {
     NavigationStack {
         List {
             HomeReleaseSection(provider: .fixture(), showReleaseHealth: .constant(false))
+            HomeReleaseSection(provider: ReleaseHealthProvider(releases: []), showReleaseHealth: .constant(false))
         }
         .listStyle(.plain)
     }
