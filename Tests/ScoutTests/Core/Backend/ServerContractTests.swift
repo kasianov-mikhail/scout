@@ -111,6 +111,33 @@ struct ServerContractTests {
         #expect(point.mau >= 1)
     }
 
+    @Test("Sessions aggregate into a per-version matrix")
+    func versionedSessionMatrix() async throws {
+        let database = try makeDatabase()
+        // A unique version isolates this matrix from any shared server data.
+        let version = "contract-\(UUID().uuidString)"
+
+        var first = makeSession(installID: UUID().uuidString, startDate: eventDate)
+        first["app_version"] = version
+        var second = makeSession(installID: UUID().uuidString, startDate: eventDate)
+        second["app_version"] = version
+        try await database.write(records: [first, second])
+
+        let query = RecordQuery(
+            recordType: GridMatrix<Int>.self,
+            filters: [
+                RecordQuery.Filter(field: "name", op: .equals, value: .string("Session")),
+                RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version)),
+            ]
+        )
+        let matrices: [GridMatrix<Int>] = try await database.readAll(matching: query)
+
+        #expect(matrices.count == 1)
+        let matrix = try #require(matrices.first)
+        #expect(matrix.version == version)
+        #expect(matrix.cells.map(\.value).reduce(0, +) == 2)
+    }
+
     @Test("A reachability ping succeeds against a live server")
     func reachabilityPing() async throws {
         let database = try makeDatabase()
