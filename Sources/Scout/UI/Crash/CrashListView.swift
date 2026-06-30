@@ -51,7 +51,7 @@ struct CrashListView: View {
                 .monospaced()
 
             if group.count > 1 {
-                CrashCountBadge(count: group.count)
+                CountBadge(count: group.count, prefix: "×")
             }
 
             Spacer()
@@ -64,20 +64,6 @@ struct CrashListView: View {
         } destination: {
             CrashGroupDetailView(group: group)
         }
-    }
-}
-
-private struct CrashCountBadge: View {
-    let count: Int
-
-    var body: some View {
-        Text(verbatim: "×\(count)")
-            .font(.caption.weight(.semibold))
-            .monospacedDigit()
-            .foregroundStyle(.red)
-            .padding(.horizontal, 7)
-            .padding(.vertical, 3)
-            .background(Color.red.opacity(0.13), in: Capsule())
     }
 }
 

@@ -17,7 +17,7 @@ extension NamedObject: MatrixBatch {
         try Matrix(
             date: batch.seed(\.week),
             name: batch.seed(\.name),
-            cells: batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
+            cells: gridCells(of: batch)
         )
     }
 }
@@ -40,7 +40,7 @@ extension VersionMarker: MatrixBatch {
             date: batch.seed(\.week),
             name: batch.seed(\.name),
             version: batch.first?.appVersion,
-            cells: batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
+            cells: gridCells(of: batch)
         )
     }
 }

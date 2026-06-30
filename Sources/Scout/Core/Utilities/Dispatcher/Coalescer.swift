@@ -20,13 +20,7 @@ actor Coalescer: Dispatcher {
 
         while let next = pending {
             pending = nil
-
-            do {
-                try await next()
-            } catch {
-                pending = nil
-                throw error
-            }
+            try await next()
         }
     }
 }

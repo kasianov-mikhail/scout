@@ -10,22 +10,13 @@ import SwiftUI
 struct CrashGroupDetailView: View {
     let group: CrashGroup
 
-    @EnvironmentObject var tint: Tint
-
     var body: some View {
         List {
             headerSection
             occurrencesSection
         }
-        .onAppear {
-            tint.value = .red
-        }
-        .onDisappear {
-            tint.value = nil
-        }
         .listStyle(.plain)
-        .toolbarBackground(Color.red.opacity(0.12), for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationTint(.red)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 let text = CrashGroupExport(group: group).text
@@ -42,9 +33,9 @@ struct CrashGroupDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 24) {
-                metric(title: "Occurrences", value: "\(group.count)")
-                metric(title: "Devices", value: "\(group.affectedDevices)")
-                metric(title: "Sessions", value: "\(group.affectedSessions)")
+                Metric(title: "Occurrences", value: "\(group.count)")
+                Metric(title: "Devices", value: "\(group.affectedDevices)")
+                Metric(title: "Sessions", value: "\(group.affectedSessions)")
             }
 
             if let reason = group.representative.reason {
@@ -84,17 +75,6 @@ struct CrashGroupDetailView: View {
             } destination: {
                 CrashDetailView(crash: crash)
             }
-        }
-    }
-
-    private func metric(title: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(value)
-                .font(.system(size: 22, weight: .bold))
-                .monospacedDigit()
-            Text(title.uppercased())
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Color.gray)
         }
     }
 }

@@ -12,8 +12,6 @@ struct ParamView: View {
     private let value: ParamValue
     private let raw: String
 
-    @EnvironmentObject var tint: Tint
-
     /// Shows a fetched parameter, keeping its raw text for sharing.
     init(item: ParamProvider.Item) {
         key = item.key
@@ -56,9 +54,7 @@ struct ParamView: View {
                 Spacer()
             }
         }
-        .onAppear {
-            tint.value = nil
-        }
+        .resetsTint()
     }
 }
 

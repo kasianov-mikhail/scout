@@ -18,6 +18,12 @@ extension SessionObject: GridBatch {}
 extension VersionObject: GridBatch {}
 extension CrashObject: GridBatch {}
 
+extension MatrixBatch where Self: DateObject {
+    static func gridCells(of batch: [Self]) throws -> [GridCell<Int>] {
+        try batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
+    }
+}
+
 extension MatrixBatch where Self: DateObject & GridBatch {
     static func matrix(of batch: [Self]) throws -> GridMatrix<Int> {
         try Matrix(
@@ -34,9 +40,5 @@ extension MatrixBatch where Self: DateObject & GridBatch {
             version: batch.first?[keyPath: appVersion],
             cells: gridCells(of: batch)
         )
-    }
-
-    static func gridCells(of batch: [Self]) throws -> [GridCell<Int>] {
-        try batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
     }
 }

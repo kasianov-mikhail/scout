@@ -10,8 +10,6 @@ import SwiftUI
 struct CrashDetailView: View {
     let crash: Crash
 
-    @EnvironmentObject var tint: Tint
-
     var body: some View {
         List {
             headerSection
@@ -20,15 +18,8 @@ struct CrashDetailView: View {
                 stackTraceSection
             }
         }
-        .onAppear {
-            tint.value = .red
-        }
-        .onDisappear {
-            tint.value = nil
-        }
         .listStyle(.plain)
-        .toolbarBackground(Color.red.opacity(0.12), for: .navigationBar)
-        .toolbarBackground(.visible, for: .navigationBar)
+        .navigationTint(.red)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 let text = CrashExport(crash: crash).text

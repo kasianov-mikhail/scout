@@ -10,8 +10,7 @@ import Foundation
 
 typealias ChartNumeric = Plottable & SeriesScalar
 
-struct ChartPoint<T: ChartNumeric>: Identifiable, ChartSeries {
-    let id = UUID()
+struct ChartPoint<T: ChartNumeric>: ChartSeries {
     let date: Date
     let count: T
 }

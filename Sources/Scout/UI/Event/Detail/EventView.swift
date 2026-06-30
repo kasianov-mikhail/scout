@@ -10,7 +10,6 @@ import SwiftUI
 struct EventView: View {
     let event: Event
 
-    @EnvironmentObject var tint: Tint
     @StateObject private var param: ParamProvider
     @State private var isParamPresented = false
 
@@ -36,15 +35,8 @@ struct EventView: View {
             StatSection(eventName: event.name)
             HistorySection(event: event)
         }
-        .onAppear {
-            tint.value = color
-        }
-        .onDisappear {
-            tint.value = nil
-        }
         .listStyle(.plain)
-        .toolbarBackground(color?.opacity(0.12) ?? .clear, for: .navigationBar)
-        .toolbarBackground(color == nil ? .automatic : .visible, for: .navigationBar)
+        .navigationTint(color)
         .navigationTitle(event.name)
         .navigationDestination(isPresented: $isParamPresented) {
             if let items = try? param.result?.get() {

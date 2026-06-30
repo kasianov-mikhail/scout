@@ -18,16 +18,19 @@ extension EventView {
         @Environment(\.database) var database
 
         var body: some View {
+            let items = try? param.result?.get()
+            let canSeeAll = items != nil && count > Self.previewLimit
+
             Header(title: "Params") {
-                if let seeAll {
-                    SeeAllButton(action: seeAll)
+                if canSeeAll {
+                    SeeAllButton { isParamPresented = true }
                 }
             }
             .task {
                 await param.fetchIfNeeded(in: database)
             }
 
-            if let items = try? param.result?.get() {
+            if let items {
                 ForEach(items.prefix(Self.previewLimit)) { item in
                     ParamRow(item: item)
                 }
@@ -35,14 +38,6 @@ extension EventView {
                 ForEach(0..<min(Self.previewLimit, count), id: \.self) { _ in
                     ParamRow(item: nil)
                 }
-            }
-        }
-
-        var seeAll: (() -> Void)? {
-            if (try? param.result?.get()) != nil, count > Self.previewLimit {
-                { isParamPresented = true }
-            } else {
-                nil
             }
         }
     }
