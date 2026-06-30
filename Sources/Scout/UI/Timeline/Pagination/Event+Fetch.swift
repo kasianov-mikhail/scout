@@ -16,10 +16,7 @@ extension Event {
         let ids = sessionIDs.map(\.uuidString)
         let query = RecordQuery(recordType: Event.self, filters: filters(ids: ids, name: name))
 
-        return
-            try await database
-            .readAll(matching: query, fields: Event.desiredKeys)
-            .map(Event.init)
+        return try await database.readAll(matching: query, fields: Event.desiredKeys)
     }
 
     private static func filters(ids: [String], name: String?) -> [RecordQuery.Filter] {

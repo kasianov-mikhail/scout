@@ -28,17 +28,17 @@ class VersionCrashProvider: ObservableObject {
         let range = Calendar.utc.defaultRange
 
         do {
-            async let crashes = database.readAll(
+            async let crashes: [Crash] = database.readAll(
                 matching: RecordQuery(recordType: Crash.self, filters: range.dateFilters),
                 fields: Crash.desiredKeys
             )
-            async let versions = database.readAll(
+            async let versions: [Version] = database.readAll(
                 matching: RecordQuery(recordType: Version.self, filters: range.dateFilters),
                 fields: Version.desiredKeys
             )
 
-            let versionIndex = versionIndex(of: try await versions.map(Version.init))
-            self.crashes = try await crashes.map(Crash.init).filter { crash in
+            let versionIndex = versionIndex(of: try await versions)
+            self.crashes = try await crashes.filter { crash in
                 crash.launchID.flatMap { versionIndex[$0] } == version
             }
         } catch {

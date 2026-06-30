@@ -28,6 +28,10 @@ extension RecordReader {
         }
         return chunk.records
     }
+
+    func readAll<T: RecordDecodable>(matching query: RecordQuery, fields: [String]? = nil) async throws -> [T] {
+        try await readAll(matching: query, fields: fields).map(T.init)
+    }
 }
 
 struct RecordCursor: Sendable {

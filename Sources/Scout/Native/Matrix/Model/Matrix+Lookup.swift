@@ -10,9 +10,8 @@ import Foundation
 extension Matrix {
     func lookupExisting(in database: RecordReader) async throws -> Self? {
         let query = RecordQuery(recordType: Self.self, filters: filters)
-        return try await database.readAll(matching: query, fields: nil)
-            .randomElement()
-            .map(Matrix.init)
+        let matrices: [Self] = try await database.readAll(matching: query)
+        return matrices.randomElement()
     }
 
     private var filters: [RecordQuery.Filter] {
