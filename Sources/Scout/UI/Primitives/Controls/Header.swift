@@ -30,23 +30,15 @@ struct Header<Trailing: View>: View {
     }
 }
 
-/// The tappable "See all" link shown at the trailing edge of a `Header`.
-struct SeeAllButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(verbatim: "See all").foregroundStyle(.blue)
-        }
-        .buttonStyle(.plain)
-    }
-}
-
 #Preview {
     List {
         Header(title: "Section Title")
         Header(title: "Section Title") {
-            SeeAllButton {}
+            Button {
+            } label: {
+                Text(verbatim: "See all").foregroundStyle(.blue)
+            }
+            .buttonStyle(.plain)
         }
     }
 }

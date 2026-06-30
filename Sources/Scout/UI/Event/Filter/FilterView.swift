@@ -82,6 +82,18 @@ struct FilterButton: View {
     }
 }
 
+extension View {
+    // Gives a sheet a fixed height: a detent on iOS, an explicit golden-ratio
+    // frame on macOS, where sheets have no detents.
+    fileprivate func presentationHeight(_ height: CGFloat) -> some View {
+        #if os(iOS)
+            presentationDetents([.height(height)])
+        #else
+            frame(width: height / 1.618, height: height)
+        #endif
+    }
+}
+
 #Preview {
     FilterButton(levels: .constant([]))
 }
