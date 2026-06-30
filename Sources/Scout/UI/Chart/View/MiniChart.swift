@@ -60,9 +60,9 @@ struct MiniChart: View {
 #if os(macOS)
     import AppKit
 
-    private extension NSColor {
+    extension NSColor {
         // Stand-in for the iOS-only tiered system gray, matching its light and dark values.
-        static var systemGray3: NSColor {
+        fileprivate static var systemGray3: NSColor {
             NSColor(name: nil) { appearance in
                 appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
                     ? NSColor(red: 72 / 255, green: 72 / 255, blue: 74 / 255, alpha: 1)

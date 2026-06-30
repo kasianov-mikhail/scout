@@ -34,7 +34,8 @@ struct Header<Trailing: View>: View {
     List {
         Header(title: "Section Title")
         Header(title: "Section Title") {
-            Button {} label: {
+            Button {
+            } label: {
                 Text(verbatim: "See all").foregroundStyle(.blue)
             }
             .buttonStyle(.plain)

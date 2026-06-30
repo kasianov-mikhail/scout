@@ -85,9 +85,9 @@ private struct ReleasePercent: View {
 #if os(macOS)
     import AppKit
 
-    private extension NSColor {
+    extension NSColor {
         // Stand-in for the iOS-only tiered system gray, matching its light and dark values.
-        static var systemGray5: NSColor {
+        fileprivate static var systemGray5: NSColor {
             NSColor(name: nil) { appearance in
                 appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
                     ? NSColor(red: 44 / 255, green: 44 / 255, blue: 46 / 255, alpha: 1)
