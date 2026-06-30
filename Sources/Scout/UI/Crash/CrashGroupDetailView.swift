@@ -77,7 +77,6 @@ struct CrashGroupDetailView: View {
             }
         }
     }
-
 }
 
 #Preview {

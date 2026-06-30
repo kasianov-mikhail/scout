@@ -136,7 +136,6 @@ struct VersionDetailView: View {
             }
         }
     }
-
 }
 
 #Preview {
