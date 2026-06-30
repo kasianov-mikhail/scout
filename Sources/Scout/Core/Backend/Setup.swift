@@ -59,7 +59,8 @@ public func setup(backends: [Backend]) async throws {
         VersionObject.trigger,
         LaunchObject.trigger,
         SessionObject.trigger,
-        UserActivityObject.trigger
+        UserActivityObject.trigger,
+        VersionMarker.trigger
     )
 
     LoggingSystem.bootstrap { CKLogHandler(sync: sync, label: $0) }

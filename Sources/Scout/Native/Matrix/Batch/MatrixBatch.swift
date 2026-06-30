@@ -34,6 +34,17 @@ extension CrashObject {
     }
 }
 
+extension VersionMarker: MatrixBatch {
+    static func matrix(of batch: [VersionMarker]) throws -> GridMatrix<Int> {
+        try Matrix(
+            date: batch.seed(\.week),
+            name: batch.seed(\.name),
+            version: batch.first?.appVersion,
+            cells: batch.grouped(by: \.hour).mapValues(\.count).map(GridCell.init)
+        )
+    }
+}
+
 extension UserActivityObject: MatrixBatch {
     static func matrix(of batch: [UserActivityObject]) throws -> Matrix<PeriodCell<Int>> {
         try Matrix(

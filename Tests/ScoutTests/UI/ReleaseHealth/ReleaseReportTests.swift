@@ -18,6 +18,8 @@ struct ReleaseReportTests {
         let releases = releaseReport(
             sessions: [sessionMatrix("2.0", count: 2), sessionMatrix("1.0", count: 1)],
             crashes: [crashMatrix("2.0", count: 1)],
+            installs: [],
+            crashedInstalls: [],
             range: range
         )
 
@@ -37,6 +39,19 @@ struct ReleaseReportTests {
         #expect(abs(previous.adoption.value - 1.0 / 3.0) < 1e-9)
     }
 
+    @Test("Crash-free users come from distinct install markers")
+    func testFreeUsersFromInstallMarkers() {
+        let releases = releaseReport(
+            sessions: [sessionMatrix("2.0", count: 10)],
+            crashes: [],
+            installs: [installMatrix("2.0", count: 4)],
+            crashedInstalls: [crashedInstallMatrix("2.0", count: 1)],
+            range: range
+        )
+
+        #expect(releases[0].freeUsers?.value == 0.75)
+    }
+
     @Test("Crash trend is bucketed from the matrix cell dates")
     func testCrashTrendFromMatrix() {
         let start = Date(timeIntervalSince1970: 0)
@@ -54,6 +69,8 @@ struct ReleaseReportTests {
         let releases = releaseReport(
             sessions: [sessionMatrix("5.0", count: 10)],
             crashes: [crashes],
+            installs: [],
+            crashedInstalls: [],
             range: start..<start.addingTimeInterval(7 * 86_400)
         )
 
@@ -78,6 +95,8 @@ struct ReleaseReportTests {
         let releases = releaseReport(
             sessions: [matrix],
             crashes: [],
+            installs: [],
+            crashedInstalls: [],
             range: start..<start.addingTimeInterval(86_400)
         )
 
@@ -87,7 +106,7 @@ struct ReleaseReportTests {
 
     @Test("No data yields no releases")
     func testEmpty() {
-        let releases = releaseReport(sessions: [], crashes: [], range: range)
+        let releases = releaseReport(sessions: [], crashes: [], installs: [], crashedInstalls: [], range: range)
         #expect(releases.isEmpty)
     }
 
@@ -96,6 +115,8 @@ struct ReleaseReportTests {
         let releases = releaseReport(
             sessions: [sessionMatrix("3.9", count: 1), sessionMatrix("3.10", count: 1), sessionMatrix("4.0", count: 1)],
             crashes: [],
+            installs: [],
+            crashedInstalls: [],
             range: range
         )
 
@@ -108,6 +129,14 @@ struct ReleaseReportTests {
 
     private func crashMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
         matrix(name: CrashObject.recordType, version: version, count: count)
+    }
+
+    private func installMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
+        matrix(name: VersionMarker.installName, version: version, count: count)
+    }
+
+    private func crashedInstallMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
+        matrix(name: VersionMarker.crashName, version: version, count: count)
     }
 
     private func matrix(name: String, version: String, count: Int) -> GridMatrix<Int> {

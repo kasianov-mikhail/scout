@@ -21,6 +21,10 @@ extension UserActivityObject: Syncable {
     static var batchKeys: [Key] { [\.month] }
 }
 
+extension VersionMarker: Syncable {
+    static var batchKeys: [Key] { [\.week, \.name, \.appVersion] }
+}
+
 extension CrashObject: Syncable {
     static var batchKeys: [Key] { [\.week, \.appVersion] }
 }

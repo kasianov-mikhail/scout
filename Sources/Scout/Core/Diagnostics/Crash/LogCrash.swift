@@ -24,5 +24,12 @@ func logCrash(_ crash: CrashInfo, context: NSManagedObjectContext) throws {
     object.launchID = crash.launchID
     object.sessionID = crash.sessionID
 
+    try VersionMarker.mark(
+        name: VersionMarker.crashName,
+        installID: crash.installID,
+        appVersion: crash.appVersion,
+        in: context
+    )
+
     try context.save()
 }

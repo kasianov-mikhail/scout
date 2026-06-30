@@ -41,6 +41,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
                 deliver(IntMetricsObject.self)
                 deliver(DoubleMetricsObject.self)
                 deliver(UserActivityObject.self)
+                deliver(VersionMarker.self)
             }
         }
         try Task.checkCancellation()
