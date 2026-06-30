@@ -47,13 +47,15 @@ class VersionCrashProvider: ObservableObject {
     }
 
     private func versionIndex(of versions: [Version]) -> [UUID: String] {
-        var index: [UUID: String] = [:]
-        for version in versions {
-            if let launchID = version.launchID, let appVersion = version.appVersion {
-                index[launchID] = appVersion
-            }
-        }
-        return index
+        Dictionary(
+            versions.compactMap { version in
+                guard let launchID = version.launchID, let appVersion = version.appVersion else {
+                    return nil
+                }
+                return (launchID, appVersion)
+            },
+            uniquingKeysWith: { first, _ in first }
+        )
     }
 }
 
