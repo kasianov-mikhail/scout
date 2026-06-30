@@ -8,21 +8,6 @@
 import Charts
 import SwiftUI
 
-private struct CountBadge: View {
-    let count: Int
-    var color: Color = .red
-
-    var body: some View {
-        Text(verbatim: "\(count)")
-            .font(.caption.weight(.semibold))
-            .monospacedDigit()
-            .foregroundStyle(color)
-            .padding(.horizontal, 7)
-            .padding(.vertical, 3)
-            .background(color.opacity(0.13), in: Capsule())
-    }
-}
-
 struct VersionDetailView: View {
     @Environment(\.database) var database
 
@@ -60,18 +45,24 @@ struct VersionDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 24) {
-                metric(
-                    title: "Crash-free sessions", value: release.freeSessions.formatted,
-                    color: release.freeSessions.color)
+                Metric(
+                    title: "Crash-free sessions",
+                    value: release.freeSessions.formatted,
+                    color: release.freeSessions.color
+                )
                 if let freeUsers = release.freeUsers {
-                    metric(title: "Crash-free users", value: freeUsers.formatted, color: freeUsers.color)
+                    Metric(
+                        title: "Crash-free users",
+                        value: freeUsers.formatted,
+                        color: freeUsers.color
+                    )
                 }
             }
 
             HStack(spacing: 24) {
-                metric(title: "Crashes", value: "\(release.crashes)")
-                metric(title: "Sessions", value: release.sessions.compact)
-                metric(title: "Adoption", value: release.adoption.formatted)
+                Metric(title: "Crashes", value: "\(release.crashes)")
+                Metric(title: "Sessions", value: release.sessions.compact)
+                Metric(title: "Adoption", value: release.adoption.formatted)
             }
         }
         .padding(.vertical, 4)
@@ -146,17 +137,6 @@ struct VersionDetailView: View {
         }
     }
 
-    private func metric(title: String, value: String, color: Color = .primary) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: value)
-                .font(.system(size: 22, weight: .bold))
-                .monospacedDigit()
-                .foregroundStyle(color)
-            Text(verbatim: title.uppercased())
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundStyle(Color.gray)
-        }
-    }
 }
 
 #Preview {

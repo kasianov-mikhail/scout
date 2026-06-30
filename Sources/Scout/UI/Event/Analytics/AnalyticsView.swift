@@ -14,7 +14,6 @@ struct AnalyticsView: View {
     @StateObject private var search = EventProvider()
 
     @Environment(\.database) var database
-    @EnvironmentObject private var tint: Tint
 
     var body: some View {
         Group {
@@ -53,9 +52,7 @@ struct AnalyticsView: View {
             search.events?.removeAll()
         }
         .navigationTitle(en: "Events")
-        .onAppear {
-            tint.value = nil
-        }
+        .resetsTint()
         .message($provider.message)
     }
 

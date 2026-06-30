@@ -10,8 +10,6 @@ import SwiftUI
 struct ParamList: View {
     let items: [ParamProvider.Item]
 
-    @EnvironmentObject var tint: Tint
-
     /// All parameters as `key: value` lines, used for sharing and copying.
     private var text: String {
         items.map(\.description).joined(separator: "\n")
@@ -32,9 +30,7 @@ struct ParamList: View {
                 Spacer()
             }
         }
-        .onAppear {
-            tint.value = nil
-        }
+        .resetsTint()
     }
 }
 

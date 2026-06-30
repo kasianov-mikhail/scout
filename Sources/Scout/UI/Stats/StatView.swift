@@ -14,7 +14,6 @@ struct StatView: View {
     @State var extent: ChartExtent<Period>
     @State private var isComparing = false
     @ObservedObject var stat: StatProvider
-    @EnvironmentObject var tint: Tint
     @Environment(\.chartColor) var color
 
     var body: some View {
@@ -42,9 +41,7 @@ struct StatView: View {
                 .scrollDisabled(true)
             }
         }
-        .onAppear {
-            tint.value = nil
-        }
+        .resetsTint()
     }
 
     func total(count: Int) -> some View {
