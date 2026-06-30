@@ -7,10 +7,9 @@
 
 import SwiftUI
 
-/// "No results" placeholder shown over an empty chart's plot area.
-struct ChartPlaceholder: View {
-    var body: some View {
-        Text(verbatim: "No results")
-            .placeholderTextStyle()
+extension View {
+    func placeholderTextStyle() -> some View {
+        font(.system(size: 18, weight: .semibold))
+            .foregroundStyle(.gray.opacity(0.7))
     }
 }
