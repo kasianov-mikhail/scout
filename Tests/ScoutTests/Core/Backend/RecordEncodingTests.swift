@@ -55,6 +55,27 @@ struct RecordEncodingTests {
         #expect(record.recordID == metric.record.recordID)
     }
 
+    @Test("Session records carry the app version")
+    func sessionAppVersionRecord() throws {
+        let session = SessionObject.stub(date: Date(), appVersion: "3.2.0", in: context)
+        try context.save()
+
+        #expect(session.record.recordType == "Session")
+        #expect(session.record["app_version"] == "3.2.0")
+    }
+
+    @Test("Crash records carry the app version")
+    func crashAppVersionRecord() throws {
+        let crash = CrashObject(entity: NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!, insertInto: context)
+        crash.name = "SIGABRT"
+        crash.crashID = UUID()
+        crash.appVersion = "3.2.0"
+        crash.date = Date()
+        try context.save()
+
+        #expect(crash.record["app_version"] == "3.2.0")
+    }
+
     @Test("Crash fingerprint is written to CloudKit records")
     func crashFingerprintCloudKitRecord() throws {
         let crash = CrashObject(entity: NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!, insertInto: context)

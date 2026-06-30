@@ -30,6 +30,7 @@ extension SessionObject: RecordEncodable {
         record["end_date"] = endDate
         record["session_id"] = sessionID.uuidString
         record["launch_id"] = launchID.uuidString
+        record["app_version"] = appVersion
 
         record.setValues(metadata)
 
