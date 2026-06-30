@@ -26,6 +26,19 @@ struct OnboardingView: View {
     }
 }
 
+private extension View {
+    // Paged tabs with always-visible page dots on iOS; the default tab style on
+    // macOS, which has no page style.
+    func pagedTabs() -> some View {
+        #if os(iOS)
+            tabViewStyle(.page(indexDisplayMode: .always))
+                .indexViewStyle(.page(backgroundDisplayMode: .always))
+        #else
+            self
+        #endif
+    }
+}
+
 #Preview("Page 1 – Welcome") {
     OnboardingView()
 }

@@ -85,6 +85,28 @@ struct AnalyticsView: View {
     }
 }
 
+private extension SearchFieldPlacement {
+    // Always-visible search field: pinned under the navigation bar on iOS, automatic on macOS.
+    static var pinned: SearchFieldPlacement {
+        #if os(iOS)
+            .navigationBarDrawer(displayMode: .always)
+        #else
+            .automatic
+        #endif
+    }
+}
+
+private extension View {
+    // Plain alphabet keyboard on iOS to stop keyboard suggestions; no-op on macOS.
+    func alphabetKeyboard() -> some View {
+        #if os(iOS)
+            keyboardType(.alphabet)
+        #else
+            self
+        #endif
+    }
+}
+
 #Preview {
     NavigationStack {
         AnalyticsView()
