@@ -7,27 +7,32 @@
 
 import Foundation
 
-func releaseReport(sessions: [GridMatrix<Int>], crashes: [GridMatrix<Int>], range: Range<Date>) -> [ReleaseHealth] {
+typealias IntMatrices = [GridMatrix<Int>]
+
+func releaseReport(sessions: IntMatrices, crashes: IntMatrices, installs: IntMatrices, crashedInstalls: IntMatrices, range: Range<Date>) -> [ReleaseHealth] {
     let sessionCounts = sessions.points(in: range).mapValues(\.total)
     let crashPoints = crashes.points(in: range)
-    let totalSessions = sessionCounts.values.reduce(0, +)
+    let installCounts = installs.points(in: range).mapValues(\.total)
+    let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
 
     let versions = Set(sessionCounts.keys)
         .union(crashPoints.keys)
+        .union(installCounts.keys)
         .sorted(by: versionDescending)
 
     return versions.map { version in
         let sessions = sessionCounts[version] ?? 0
         let crashPoints = crashPoints[version] ?? []
         let crashes = crashPoints.total
+        let installs = installCounts[version] ?? 0
 
         return ReleaseHealth(
             id: version,
             freeSessions: Stability(of: crashes, in: sessions),
-            freeUsers: nil,
+            freeUsers: Stability.optional(of: crashedInstallCounts[version] ?? 0, in: installs),
             crashes: crashes,
             sessions: sessions,
-            adoption: Adoption(of: sessions, in: totalSessions),
+            adoption: Adoption(of: sessions, in: sessionCounts.values.reduce(0, +)),
             trend: crashPoints.trend(in: range)
         )
     }

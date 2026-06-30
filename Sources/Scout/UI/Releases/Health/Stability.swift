@@ -46,4 +46,8 @@ extension Stability {
             value = 1
         }
     }
+
+    static func optional(of affected: Int, in total: Int) -> Stability? {
+        total > 0 ? Stability(of: affected, in: total) : nil
+    }
 }

@@ -33,7 +33,8 @@ extension ActionTable {
         AppLifecycle.willEnterForeground: {
             try await persistentContainer.performBackgroundTasks(
                 SessionObject.trigger,
-                UserActivityObject.trigger
+                UserActivityObject.trigger,
+                VersionMarker.trigger
             )
         },
         AppLifecycle.didEnterBackground: {
