@@ -20,11 +20,19 @@ struct ActionTable {
         for (name, action) in actions {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
                 Task {
-                    try await action()
-                    try await completion()
+                    await run(action)
+                    await run(completion)
                 }
             }
         }
+    }
+}
+
+private func run(_ action: ActionTable.Action) async {
+    do {
+        try await action()
+    } catch {
+        print(error.localizedDescription)
     }
 }
 
