@@ -26,10 +26,6 @@ struct Stability: Equatable {
     var formatted: String {
         String(format: "%.2f%%", value * 100)
     }
-
-    var ringTrim: Double {
-        max(0, min(1, (value - 0.95) / 0.05))
-    }
 }
 
 extension Stability: ExpressibleByFloatLiteral {
