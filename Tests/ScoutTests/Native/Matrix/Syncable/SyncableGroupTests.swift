@@ -45,6 +45,21 @@ struct SyncableGroupTests {
         #expect(Set(batch.map(\.appVersion)).count == 1)
     }
 
+    @Test("Group isolates sessions with no app version from versioned ones")
+    func testGroupByNilAppVersion() throws {
+        let week = Date(timeIntervalSince1970: 1_000_000)
+
+        for version in [nil, nil, "3.2.0"] as [String?] {
+            SessionObject.stub(date: week, appVersion: version, in: context)
+                .seedDelivery([.matrix], for: "b", in: context)
+        }
+        try context.save()
+
+        let batch = try #require(try SessionObject.group(in: context, for: "b"))
+
+        #expect(Set(batch.map(\.appVersion)).count == 1)
+    }
+
     @Test("Returns nil when nothing is owed to the backend")
     func testGroupReturnsNilWhenNoUnsynced() throws {
         EventObject.stub(name: "EventA", synced: true, in: context)

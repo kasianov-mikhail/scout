@@ -29,8 +29,13 @@ extension Syncable {
         var predicates = [actionable]
 
         for keyPath in batchKeys {
-            if let key = keyPath._kvcKeyPathString, let value = seed.value(forKey: key) as? NSObject {
+            guard let key = keyPath._kvcKeyPathString else {
+                continue
+            }
+            if let value = seed.value(forKey: key) as? NSObject {
                 predicates.append(NSPredicate(format: "%K == %@", key, value))
+            } else {
+                predicates.append(NSPredicate(format: "%K == nil", key))
             }
         }
 
