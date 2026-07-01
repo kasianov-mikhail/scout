@@ -45,17 +45,9 @@ struct VersionDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 24) {
-                Metric(
-                    title: "Crash-free sessions",
-                    value: release.freeSessions.formatted,
-                    color: release.freeSessions.color
-                )
+                Metric(title: "Crash-free sessions", stability: release.freeSessions)
                 if let freeUsers = release.freeUsers {
-                    Metric(
-                        title: "Crash-free users",
-                        value: freeUsers.formatted,
-                        color: freeUsers.color
-                    )
+                    Metric(title: "Crash-free users", stability: freeUsers)
                 }
             }
 
