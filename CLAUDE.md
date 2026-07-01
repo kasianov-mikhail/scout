@@ -30,6 +30,10 @@
 
 - When a change touches a declaration the tests reference (renaming or re-typing a function/initializer/property, changing a signature, or moving a symbol), build the test target locally with `build-for-testing`, not just the app target — building the app alone misses test-only call sites and lets the breakage surface in CI instead.
 
+# Copyright headers
+
+- Every source file opens with the MIT license header carrying a year (`// Copyright <year> Mikhail Kasianov`). When your edits make git treat a file as new — a file you just created, or a move/rewrite git records as an add rather than a rename — set that header's year to the current year. Leave the year untouched on files git still sees as edits to an existing file.
+
 # Swift code style
 
 ## Comments
