@@ -49,7 +49,7 @@ struct AnalyticsView: View {
             }
         }
         .onChange(of: filter.text) { _ in
-            search.events?.removeAll()
+            search.events = nil
         }
         .navigationTitle(en: "Events")
         .resetsTint()
