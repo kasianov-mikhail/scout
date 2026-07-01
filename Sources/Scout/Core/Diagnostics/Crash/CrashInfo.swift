@@ -17,7 +17,7 @@ struct CrashInfo: Codable {
     let sessionID: UUID
     let appVersion: String?
 
-    init(name: String, reason: String?, stackTrace: [String], sessionID: UUID = IDs.session) {
+    init(name: String, reason: String?, stackTrace: [String], sessionID: UUID = IDs.rawSession) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
