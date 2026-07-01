@@ -37,6 +37,8 @@ final class SyncDelivery: NSManagedObject {
 
         static let raw = Progress(rawValue: 1 << 0)
         static let matrix = Progress(rawValue: 1 << 1)
+
+        static let all: Progress = [.raw, .matrix]
     }
 }
 

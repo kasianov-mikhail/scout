@@ -10,28 +10,25 @@ import CoreData
 extension Syncable {
     static func pending(in context: NSManagedObjectContext, for backendID: String) throws -> [Self] {
         let request = NSFetchRequest<Self>(entityName: String(describing: Self.self))
-        request.predicate = .actionable(for: backendID)
+        request.predicate = NSPredicate(.raw, to: backendID)
         return try context.fetch(request)
     }
 
     static func group(in context: NSManagedObjectContext, for backendID: String) throws -> [Self]? {
         let entityName = String(describing: Self.self)
-        let actionable = NSPredicate.actionable(for: backendID)
+        let seedPredicate = NSPredicate(.matrix, to: backendID)
 
         let seedRequest = NSFetchRequest<Self>(entityName: entityName)
-        seedRequest.predicate = actionable
+        seedRequest.predicate = seedPredicate
         seedRequest.fetchLimit = 1
 
         guard let seed = try context.fetch(seedRequest).first else {
             return nil
         }
 
-        var predicates = [actionable]
+        var predicates = [seedPredicate]
 
-        for keyPath in batchKeys {
-            guard let key = keyPath._kvcKeyPathString else {
-                continue
-            }
+        for key in batchKeys.compactMap(\._kvcKeyPathString) {
             if let value = seed.value(forKey: key) as? NSObject {
                 predicates.append(NSPredicate(format: "%K == %@", key, value))
             } else {
@@ -47,11 +44,20 @@ extension Syncable {
 }
 
 extension NSPredicate {
-    fileprivate static func actionable(for backendID: String) -> NSPredicate {
-        NSPredicate(
-            format: "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.progressPrimitive != 0 AND $d.attempts < %d).@count > 0",
+    fileprivate convenience init(_ progress: SyncDelivery.Progress, to backendID: String) {
+        self.init(
+            format: "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.progressPrimitive IN %@ AND $d.attempts < %d).@count > 0",
             backendID,
+            progress.owingStates,
             SyncDelivery.maxAttempts
         )
+    }
+}
+
+extension SyncDelivery.Progress {
+    fileprivate var owingStates: [Int16] {
+        (0...Self.all.rawValue)
+            .filter { Self(rawValue: $0).contains(self) }
+            .map { Int16($0) }
     }
 }

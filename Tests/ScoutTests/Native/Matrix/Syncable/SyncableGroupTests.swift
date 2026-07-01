@@ -21,7 +21,7 @@ struct SyncableGroupTests {
         let weekB = weekA.addingWeek()
 
         for (name, date) in [("EventA", weekA), ("EventA", weekA), ("EventB", weekB)] {
-            EventObject.stub(name: name, date: date, in: context).seedDelivery([.raw], for: "b", in: context)
+            EventObject.stub(name: name, date: date, in: context).seedDelivery([.matrix], for: "b", in: context)
         }
         try context.save()
 
@@ -75,12 +75,21 @@ struct SyncableGroupTests {
         let week = Date()
         EventObject.stub(name: "EventC", date: week, synced: true, in: context)
         let event = EventObject.stub(name: "EventC", date: week, in: context)
-        event.seedDelivery([.raw], for: "b", in: context)
+        event.seedDelivery([.matrix], for: "b", in: context)
         try context.save()
 
         let batch = try #require(try EventObject.group(in: context, for: "b"))
 
         #expect(batch.count == 1)
         #expect(batch.first === event)
+    }
+
+    @Test("Group skips rows that owe only their raw record")
+    func testGroupIgnoresRawOnlyRows() throws {
+        let event = EventObject.stub(name: "EventA", in: context)
+        event.seedDelivery([.raw], for: "b", in: context)
+        try context.save()
+
+        #expect(try EventObject.group(in: context, for: "b") == nil)
     }
 }

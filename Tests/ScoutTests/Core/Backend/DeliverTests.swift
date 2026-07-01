@@ -161,6 +161,34 @@ struct DeliverTests {
         #expect(event.delivery(for: "cloud")?.attempts == 1)
     }
 
+    @Test("A matrix delivery over a raw-only row is a no-op, not a failure")
+    func matrixOverRawOnlyRow() async throws {
+        let event = EventObject.stub(name: "login", in: context)
+        event.seedDelivery([.raw], for: "cloud", in: context)
+        try context.save()
+
+        try await MatrixSender(backend: cloudBackend)?.deliver(type: EventObject.self, in: context)
+
+        #expect(event.delivery(for: "cloud")?.progress == [.raw])
+        #expect(cloud.records.count(of: Int.recordType) == 0)
+    }
+
+    @Test("A raw-only row doesn't derail matrices owed by other batches")
+    func rawOnlyRowDoesNotBlockOtherMatrices() async throws {
+        let week = Date(timeIntervalSince1970: 1_000_000)
+        let settled = EventObject.stub(name: "login", date: week, in: context)
+        settled.seedDelivery([.raw], for: "cloud", in: context)
+        let owed = EventObject.stub(name: "login", date: week.addingWeek(), in: context)
+        owed.seedDelivery([.matrix], for: "cloud", in: context)
+        try context.save()
+
+        try await MatrixSender(backend: cloudBackend)?.deliver(type: EventObject.self, in: context)
+
+        #expect(settled.delivery(for: "cloud")?.progress == [.raw])
+        #expect(owed.delivery(for: "cloud")?.progress == [])
+        #expect(cloud.records.count(of: Int.recordType) == 1)
+    }
+
     @Test("A matrix is contributed per native backend, never twice")
     func matrixPerNativeBackend() async throws {
         let event = EventObject.stub(name: "login", synced: true, in: context)
