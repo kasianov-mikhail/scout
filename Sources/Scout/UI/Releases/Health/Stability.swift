@@ -38,6 +38,8 @@ extension Stability {
     init(of affected: Int, in total: Int) {
         if total > 0 {
             value = max(0, 1 - Double(affected) / Double(total))
+        } else if affected > 0 {
+            value = 0
         } else {
             value = 1
         }
