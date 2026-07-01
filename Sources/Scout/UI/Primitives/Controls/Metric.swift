@@ -24,3 +24,9 @@ struct Metric: View {
         }
     }
 }
+
+extension Metric {
+    init(title: String, stability: Stability) {
+        self.init(title: title, value: stability.formatted, color: stability.color)
+    }
+}
