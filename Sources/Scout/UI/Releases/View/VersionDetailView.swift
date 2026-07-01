@@ -110,6 +110,11 @@ struct VersionDetailView: View {
         .chartYAxis {
             AxisMarks(position: .leading)
         }
+        .chartBackground { _ in
+            if !dailyCrashes.contains(where: { $0.count > 0 }) {
+                ChartPlaceholder().offset(y: -12)
+            }
+        }
         .frame(height: 170)
         .padding(.vertical, 8)
         .listRowSeparator(.hidden)
@@ -141,6 +146,18 @@ struct VersionDetailView: View {
 #Preview {
     NavigationStack {
         VersionDetailView(release: ReleaseHealth.samples[0], crashProvider: .fixture())
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Empty graph") {
+    let release = ReleaseHealth.samples[0]
+
+    return NavigationStack {
+        VersionDetailView(
+            release: release,
+            crashProvider: VersionCrashProvider(version: release.id, crashes: [])
+        )
     }
     .environmentObject(Tint())
 }
