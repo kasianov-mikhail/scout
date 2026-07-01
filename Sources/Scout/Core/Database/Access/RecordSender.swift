@@ -27,13 +27,10 @@ extension RecordSender {
 
         for object in try syncable.pending(in: context, for: id) {
             if let delivery = object.delivery(for: id), delivery.progress.contains(.raw) {
-                delivery.attempts += 1
                 objects.append(object)
                 deliveries.append(delivery)
             }
         }
-
-        try context.save()
 
         if objects.count > 0 {
             try await database.write(records: objects.map(\.record))

@@ -56,6 +56,7 @@ struct DeliverTests {
 
     /// Run both engines for a type the way `synchronize` does: raw records first, then matrices.
     func deliver<T: Syncable & MatrixBatch & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
+        SyncDelivery.recordAttempt(for: backend.id, in: context)
         try await RecordSender(backend: backend).deliver(type: type, in: context)
         try await MatrixSender(backend: backend)?.deliver(type: type, in: context)
     }
@@ -142,6 +143,22 @@ struct DeliverTests {
         #expect(event.delivery(for: "server")?.attempts == 0)
         #expect(cloud.records.count(of: "Event") == 1)
         #expect(server.records.count(of: "Event") == 0)
+    }
+
+    @Test("A dual-channel delivery counts one attempt per cycle, not one per channel")
+    func dualChannelCountsOneAttemptPerCycle() async throws {
+        let event = EventObject.stub(name: "login", in: context)
+        try context.save()
+        try SyncableObject.plan(backends: [cloudBackend], in: context)
+
+        // The native backend owes both a raw record and a matrix for this event.
+        #expect(event.delivery(for: "cloud")?.progress == [.raw, .matrix])
+
+        try await deliver(EventObject.self, to: cloudBackend)
+
+        // Both channels ran this cycle, yet the shared budget advanced only once.
+        #expect(event.delivery(for: "cloud")?.isDelivered == true)
+        #expect(event.delivery(for: "cloud")?.attempts == 1)
     }
 
     @Test("A matrix is contributed per native backend, never twice")

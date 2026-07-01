@@ -33,13 +33,10 @@ extension MatrixSender {
 
             for object in batch {
                 if let delivery = object.delivery(for: id), delivery.progress.contains(.matrix) {
-                    delivery.attempts += 1
                     objects.append(object)
                     deliveries.append(delivery)
                 }
             }
-
-            try context.save()
 
             let matrix = try T.matrix(of: objects)
             try await aggregator.aggregate(matrix: matrix)
