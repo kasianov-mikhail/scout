@@ -12,7 +12,7 @@ struct ReleaseRow: View {
 
     var body: some View {
         Row {
-            CompactRing(rate: release.freeSessions)
+            CompactRing(release: release)
 
             Text(verbatim: release.id)
                 .font(.system(size: 17))
@@ -33,15 +33,16 @@ struct ReleaseRow: View {
 }
 
 private struct CompactRing: View {
-    let rate: Stability
+    let adoption: Adoption
+    let color: Color
 
     var body: some View {
         ZStack {
             Circle()
                 .stroke(Color(.systemGray5), lineWidth: 2)
             Circle()
-                .trim(from: 0, to: rate.ringTrim)
-                .stroke(.blue, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .trim(from: 0, to: adoption.value)
+                .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                 .rotationEffect(.degrees(-90))
         }
         .frame(width: 16, height: 16)
@@ -49,10 +50,16 @@ private struct CompactRing: View {
     }
 }
 
+extension CompactRing {
+    init(release: ReleaseHealth) {
+        self.init(adoption: release.adoption, color: release.freeSessions.color)
+    }
+}
+
 struct ReleaseRowPlaceholder: View {
     var body: some View {
         HStack {
-            CompactRing(rate: 0.95)
+            CompactRing(adoption: 1.0, color: .gray)
 
             Text(verbatim: "3.2.1")
                 .font(.system(size: 17))
