@@ -21,11 +21,22 @@ struct CompactTests {
         #expect(1_000.compact == "1.0K")
         #expect(1_500.compact == "1.5K")
         #expect(48_210.compact == "48.2K")
-        #expect(999_999.compact == "1000.0K")
+        #expect(999_949.compact == "999.9K")
     }
 
     @Test("Millions use the M suffix") func millions() {
         #expect(1_000_000.compact == "1.0M")
         #expect(2_500_000.compact == "2.5M")
+        #expect(999_949_999.compact == "999.9M")
+    }
+
+    @Test("Billions use the B suffix") func billions() {
+        #expect(1_000_000_000.compact == "1.0B")
+        #expect(2_500_000_000.compact == "2.5B")
+    }
+
+    @Test("Rounding rolls up to the next unit instead of overflowing") func rounding() {
+        #expect(999_999.compact == "1.0M")
+        #expect(999_999_999.compact == "1.0B")
     }
 }
