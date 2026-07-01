@@ -10,6 +10,8 @@ import CoreData
 extension SyncableObject {
     static func plan(backends: [Backend], in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
+        // deliveries.@count == 0: a newly added backend only receives objects
+        // created after it was added; existing history is intentionally not backfilled.
         request.predicate = NSPredicate(format: "deliveries.@count == 0")
 
         for object in try context.fetch(request) {
