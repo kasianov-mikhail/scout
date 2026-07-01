@@ -81,7 +81,7 @@ extension TimeInterval {
         case ..<(.minute):
             String(format: "%.1f s", self)
         case ..<(.hour):
-            String(format: "%.0f min %.0f s", floor(self / .minute), truncatingRemainder(dividingBy: .minute))
+            String(format: "%d min %d s", Int(rounded()) / Int(.minute), Int(rounded()) % Int(.minute))
         case ..<(.day):
             String(format: "%.0f h", self / .hour)
         case ..<(.month):
