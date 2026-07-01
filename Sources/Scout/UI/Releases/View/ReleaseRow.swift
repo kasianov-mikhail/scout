@@ -36,15 +36,6 @@ private struct CompactRing: View {
     let adoption: Adoption
     let color: Color
 
-    init(adoption: Adoption, color: Color) {
-        self.adoption = adoption
-        self.color = color
-    }
-
-    init(release: ReleaseHealth) {
-        self.init(adoption: release.adoption, color: release.freeSessions.color)
-    }
-
     var body: some View {
         ZStack {
             Circle()
@@ -56,6 +47,12 @@ private struct CompactRing: View {
         }
         .frame(width: 16, height: 16)
         .padding(.horizontal, 4)
+    }
+}
+
+extension CompactRing {
+    init(release: ReleaseHealth) {
+        self.init(adoption: release.adoption, color: release.freeSessions.color)
     }
 }
 
