@@ -55,6 +55,10 @@ extension CKContainer {
             } catch let error as CKError where error.isSchemaError {
                 print("[Scout] Schema error for '\(recordType)': \(error.localizedDescription)")
                 invalid.append(recordType)
+            } catch {
+                // Skip non-schema failures so one flaky query doesn't abort the rest.
+                print("[Scout] Skipping '\(recordType)': \(error.localizedDescription)")
+                continue
             }
         }
 
