@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Adoption: Equatable, ExpressibleByFloatLiteral {
+struct Adoption: ExpressibleByFloatLiteral {
     let value: Double
 
     init(_ value: Double) {

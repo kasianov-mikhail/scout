@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimelineItem: Identifiable {
+struct TimelineItem {
     let id: String
     let name: String
     let date: Date

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Launch: Identifiable, Hashable {
+struct Launch {
     let startDate: Date?
     let endDate: Date?
     let id: String

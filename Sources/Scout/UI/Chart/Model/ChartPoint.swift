@@ -21,12 +21,6 @@ extension ChartPoint: Comparable {
     }
 }
 
-extension ChartPoint: Equatable {
-    static func == (lhs: ChartPoint, rhs: ChartPoint) -> Bool {
-        lhs.date == rhs.date && lhs.count == rhs.count
-    }
-}
-
 extension ChartPoint {
     static func + (lhs: ChartPoint, rhs: ChartPoint) -> ChartPoint {
         ChartPoint(date: lhs.date, count: lhs.count + rhs.count)

@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(DateObject)
-class DateObject: NSManagedObject, Identifiable {
+class DateObject: NSManagedObject {
     static let datePrimitiveKey = "datePrimitive"
 
     @NSManaged var datePrimitive: Date?

@@ -11,7 +11,7 @@ import Foundation
 /// The points of a Home row's period compressed into a fixed number of
 /// equal time slices, ready to be drawn as an inline mini-chart.
 ///
-struct MiniChartSeries: Equatable {
+struct MiniChartSeries {
     /// Number of slices a mini-chart compresses its period into.
     static let sliceCount = 7
 

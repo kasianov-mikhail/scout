@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct CrashGroup: Identifiable, Hashable {
+struct CrashGroup: Identifiable {
     let crashes: [Crash]
 
     var id: String {

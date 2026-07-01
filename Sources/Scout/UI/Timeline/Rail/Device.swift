@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Device: Identifiable {
+struct Device {
     let date: Date?
     let id: String
     let deviceID: UUID?
