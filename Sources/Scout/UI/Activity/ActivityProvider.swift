@@ -19,7 +19,7 @@ protocol ActivityReader: RecordReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint]
 }
 
-struct ActivityPoint: Decodable, Equatable {
+struct ActivityPoint: Decodable {
     let date: Int64
     let dau: Int
     let wau: Int

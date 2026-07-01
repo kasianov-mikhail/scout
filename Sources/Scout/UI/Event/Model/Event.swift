@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Event: Identifiable, Hashable {
+struct Event: Identifiable {
     let name: String
     let level: Level?
     let date: Date?

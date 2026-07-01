@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Stability: Equatable {
+struct Stability {
     let value: Double
 
     init(_ value: Double) {

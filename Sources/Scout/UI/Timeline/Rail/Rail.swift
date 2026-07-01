@@ -5,28 +5,28 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-struct Rail: Identifiable {
+struct Rail {
     let device: Device
     var installs: [InstallRoot]
 
     var id: String { device.id }
 }
 
-struct InstallRoot: Identifiable {
+struct InstallRoot {
     let install: Install
     let launches: [LaunchRoot]
 
     var id: String { install.id }
 }
 
-struct LaunchRoot: Identifiable {
+struct LaunchRoot {
     let launch: Launch
     let sessions: [SessionRoot]
 
     var id: String { launch.id }
 }
 
-struct SessionRoot: Identifiable {
+struct SessionRoot {
     let session: Session
     let events: [Event]
     let crashes: [Crash]

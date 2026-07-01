@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Install: Identifiable, Hashable {
+struct Install {
     let date: Date?
     let id: String
     let installID: UUID?

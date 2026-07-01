@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Version: Identifiable, Hashable {
+struct Version {
     let appVersion: String?
     let buildNumber: String?
     let launchID: UUID?

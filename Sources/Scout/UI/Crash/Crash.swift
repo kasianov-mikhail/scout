@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Crash: Identifiable, Hashable {
+struct Crash: Identifiable {
     let name: String
     let fingerprint: String
     let reason: String?
