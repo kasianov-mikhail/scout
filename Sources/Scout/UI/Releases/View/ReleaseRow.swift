@@ -12,7 +12,7 @@ struct ReleaseRow: View {
 
     var body: some View {
         Row {
-            CompactRing(adoption: release.adoption, color: release.freeSessions.color)
+            CompactRing(release: release)
 
             Text(verbatim: release.id)
                 .font(.system(size: 17))
@@ -35,6 +35,15 @@ struct ReleaseRow: View {
 private struct CompactRing: View {
     let adoption: Adoption
     let color: Color
+
+    init(adoption: Adoption, color: Color) {
+        self.adoption = adoption
+        self.color = color
+    }
+
+    init(release: ReleaseHealth) {
+        self.init(adoption: release.adoption, color: release.freeSessions.color)
+    }
 
     var body: some View {
         ZStack {
