@@ -38,7 +38,8 @@ struct TimerDistribution: Equatable {
     }
 
     func summary(in range: Range<Date>) -> LatencyPercentiles? {
-        let combined = histograms
+        let combined =
+            histograms
             .filter { range.contains($0.key) }
             .values
             .reduce(LatencyHistogram(), +)
@@ -61,7 +62,8 @@ struct TimerDistribution: Equatable {
         while date > range.lowerBound {
             steps -= 1
             let newDate = range.upperBound.adding(component, value: steps)
-            let combined = histograms
+            let combined =
+                histograms
                 .filter { newDate..<date ~= $0.key }
                 .values
                 .reduce(LatencyHistogram(), +)
