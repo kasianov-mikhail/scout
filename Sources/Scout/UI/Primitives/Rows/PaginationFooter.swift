@@ -13,7 +13,7 @@ struct PaginationFooter: View {
     let action: () async -> Void
 
     var body: some View {
-        ProgressView()
+        RingIndicator(size: 22)
             .task {
                 await action()
             }

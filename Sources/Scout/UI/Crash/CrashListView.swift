@@ -34,7 +34,7 @@ struct CrashListView: View {
                     .animation(nil, value: groups)
                 }
             } else {
-                ProgressView().frame(maxHeight: .infinity)
+                RingIndicator().frame(maxHeight: .infinity)
             }
         }
         .navigationTitle(en: "Crashes")

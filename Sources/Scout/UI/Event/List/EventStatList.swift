@@ -23,11 +23,8 @@ struct EventStatList: View {
 
     var body: some View {
         VStack {
-            EventList(provider: provider)
+            EventList(provider: provider, refresh: fetch)
                 .task {
-                    await fetch()
-                }
-                .refreshable {
                     await fetch()
                 }
                 .navigationTitle(range.label(using: formatter))
