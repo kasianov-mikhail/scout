@@ -23,7 +23,7 @@ struct EventStatList: View {
 
     var body: some View {
         VStack {
-            EventList(provider: provider, refresh: fetch)
+            EventList(provider: provider)
                 .task {
                     await fetch()
                 }
