@@ -14,6 +14,11 @@ extension Backend {
             database: HTTPDatabase(url: url, apiKey: apiKey),
             checkAvailability: { true },
             displayName: url.host ?? url.absoluteString,
+            serverInfo: ServerInfo(
+                endpoint: url.hostWithPort ?? url.absoluteString,
+                hasAPIKey: apiKey != nil,
+                isSecure: url.scheme?.lowercased() == "https"
+            ),
             probeStatus: {
                 do {
                     try await HTTPDatabase(url: url, apiKey: apiKey).ping()
@@ -28,5 +33,12 @@ extension Backend {
                 }
             }
         )
+    }
+}
+
+extension URL {
+    fileprivate var hostWithPort: String? {
+        guard let host else { return nil }
+        return port.map { "\(host):\($0)" } ?? host
     }
 }

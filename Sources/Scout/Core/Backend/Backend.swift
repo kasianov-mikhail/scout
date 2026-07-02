@@ -13,10 +13,13 @@ public struct Backend: Sendable {
     let checkAvailability: @Sendable () async -> Bool
     let displayName: String
 
+    var serverInfo: ServerInfo? = nil
     var aggregator: (MatrixAggregator)? = nil
     var probeStatus: @Sendable () async -> Status = { .unknown }
     var accountWarning: @Sendable () async -> Bool = { false }
     var verifySchema: @Sendable () async throws -> Void = {}
+    var schemaChecks: @Sendable () async -> [SchemaCheck] = { [] }
+    var runBenchmark: (@Sendable () async -> Bool)? = nil
     var onSetup: @MainActor @Sendable () -> Void = {}
 
     enum Status: CaseIterable, Identifiable, Sendable {
@@ -26,4 +29,17 @@ public struct Backend: Sendable {
 
         var id: Self { self }
     }
+
+    struct ServerInfo: Sendable {
+        let endpoint: String
+        let hasAPIKey: Bool
+        let isSecure: Bool
+    }
+}
+
+struct SchemaCheck: Identifiable, Sendable {
+    let recordType: String
+    let isValid: Bool
+
+    var id: String { recordType }
 }

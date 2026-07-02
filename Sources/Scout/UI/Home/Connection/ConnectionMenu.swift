@@ -9,12 +9,14 @@ import SwiftUI
 
 struct ConnectionMenu: View {
     @Binding var activeID: Connection.ID
+    let onSettings: () -> Void
 
     @State private var connections: [Connection]
     @State private var isPresented = false
 
-    init(connections: [Connection], activeID: Binding<Connection.ID>) {
+    init(connections: [Connection], activeID: Binding<Connection.ID>, onSettings: @escaping () -> Void = {}) {
         _activeID = activeID
+        self.onSettings = onSettings
         _connections = State(initialValue: connections)
     }
 
@@ -34,11 +36,29 @@ struct ConnectionMenu: View {
                         ConnectionRow(
                             connection: connection,
                             isActive: connection.id == activeID,
-                            showsSeparator: connection.id != connections.last?.id
+                            showsSeparator: true
                         )
                     }
                     .buttonStyle(.plain)
                 }
+
+                Button {
+                    isPresented = false
+                    onSettings()
+                } label: {
+                    HStack {
+                        Image(systemName: "slider.horizontal.3")
+                            .imageScale(.medium)
+                            .foregroundStyle(.secondary)
+                        Text(verbatim: "Settings")
+                            .font(.system(size: 16))
+                        Spacer(minLength: 0)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
             }
             .frame(minWidth: 240)
             .task {

@@ -34,16 +34,12 @@ private let schemaRecordTypes = [
 ]
 
 extension CKContainer {
-    /// Queries each record type to verify the CloudKit schema is up to date.
-    ///
-    /// Throws a `SchemaError` if any record types have schema issues.
-    ///
-    func verifySchema() async throws {
-        guard let status = try? await accountStatus(), status == .available else {
-            return
-        }
+    // Queries each record type; flaky non-schema failures are skipped so one
+    // bad query doesn't abort the rest, and are absent from the result.
+    func schemaChecks() async -> [SchemaCheck] {
+        guard let status = try? await accountStatus(), status == .available else { return [] }
 
-        var invalid: [String] = []
+        var checks: [SchemaCheck] = []
 
         for recordType in schemaRecordTypes {
             let query = CKQuery(recordType: recordType, predicate: NSPredicate(value: true))
@@ -52,17 +48,27 @@ extension CKContainer {
                 try await publicCloudDatabase.runner { database in
                     _ = try await database.records(matching: query, desiredKeys: [], resultsLimit: 1)
                 }
+                checks.append(SchemaCheck(recordType: recordType, isValid: true))
             } catch let error as CKError where error.isSchemaError {
                 print("[Scout] Schema error for '\(recordType)': \(error.localizedDescription)")
-                invalid.append(recordType)
+                checks.append(SchemaCheck(recordType: recordType, isValid: false))
             } catch {
-                // Skip non-schema failures so one flaky query doesn't abort the rest.
                 print("[Scout] Skipping '\(recordType)': \(error.localizedDescription)")
                 continue
             }
         }
 
-        if !invalid.isEmpty {
+        return checks
+    }
+
+    /// Queries each record type to verify the CloudKit schema is up to date.
+    ///
+    /// Throws a `SchemaError` if any record types have schema issues.
+    ///
+    func verifySchema() async throws {
+        let invalid = await schemaChecks().filter { !$0.isValid }.map(\.recordType)
+
+        if invalid.count > 0 {
             let containerID = containerIdentifier ?? "<container-id>"
 
             print("[Scout] Upload the Schema file to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")

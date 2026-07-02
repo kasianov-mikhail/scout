@@ -25,6 +25,8 @@ extension Backend {
                 (try? await container.accountStatus()) != .available
             },
             verifySchema: container.verifySchema,
+            schemaChecks: container.schemaChecks,
+            runBenchmark: { await verifyParallelismBenchmark(container: container) },
             onSetup: container.verifyParallelismIfDue
         )
     }
