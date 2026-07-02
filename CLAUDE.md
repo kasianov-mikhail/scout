@@ -69,6 +69,10 @@
 
 - Scout UI strings must always render in source English: use `Text(verbatim: …)` for literals (or `.navigationTitle(en: …)` for titles) so they don't resolve through the host app's `LocalizedStringKey` catalog.
 
+## Lists
+
+- Use only `.listStyle(.plain)` for `List`s; section titles are `Header(title:)` rows (not `Section` headers/footers), with `.listRowSeparator(.hidden)` on non-row content.
+
 ## Sample data
 
 - Sample data in app code is named `sample` (a `static var` for fixed instances, a `static func sample(...)` when parameters are needed), placed in an extension at the end of the type's main file (e.g. `Device.swift`), and built directly via the struct initializer.

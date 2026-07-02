@@ -57,7 +57,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -106,9 +106,9 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           repository: kasianov-mikhail/scout-server
           path: scout-server

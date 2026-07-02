@@ -22,7 +22,7 @@ struct Timeline: View {
         Group {
             switch provider.result {
             case nil:
-                ProgressView().frame(maxHeight: .infinity)
+                RingIndicator().frame(maxHeight: .infinity)
             case .failure(let error):
                 errorView(Text(verbatim: error.localizedDescription))
             case .success where provider.items.count == 0:

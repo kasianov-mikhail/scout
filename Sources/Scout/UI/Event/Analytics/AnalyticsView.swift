@@ -57,7 +57,7 @@ struct AnalyticsView: View {
     }
 
     var eventList: some View {
-        EventList(provider: provider)
+        EventList(provider: provider, refresh: fetch)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     FilterButton(levels: $filter.levels)
@@ -65,9 +65,6 @@ struct AnalyticsView: View {
             }
             .task {
                 await provider.fetchIfNeeded(for: filter, in: database)
-            }
-            .refreshable {
-                await fetch()
             }
             .onChange(of: filter.levels) { _ in
                 Task {
