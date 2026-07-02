@@ -7,11 +7,19 @@
 
 import CoreData
 
-func logCrash(_ crash: CrashInfo, context: NSManagedObjectContext) throws {
+func logCrash(_ crash: CrashInfo, id: UUID = UUID(), context: NSManagedObjectContext) throws {
+    // The id doubles as the archive file's UUID, so a flush interrupted
+    // between the save and the file removal doesn't insert a duplicate
+    // on the next launch.
+    let request = NSFetchRequest<CrashObject>(entityName: "CrashObject")
+    request.predicate = NSPredicate(format: "crashID == %@", id as CVarArg)
+    request.fetchLimit = 1
+    guard try context.count(for: request) == 0 else { return }
+
     let entity = NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!
     let object = CrashObject(entity: entity, insertInto: context)
 
-    object.crashID = UUID()
+    object.crashID = id
     object.date = crash.date
     object.appVersion = crash.appVersion
     object.name = crash.name

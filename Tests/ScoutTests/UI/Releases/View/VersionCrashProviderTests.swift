@@ -14,18 +14,13 @@ import Testing
 struct VersionCrashProviderTests {
     private let date = Date().addingTimeInterval(-3600)
 
-    @Test("Fetches only crashes whose launch maps to the requested version")
+    @Test("Fetches only crashes recorded for the requested version")
     func fetchFiltersByVersion() async throws {
-        let launchLatest = UUID()
-        let launchOld = UUID()
-
         let database = DatabaseStub()
         database.add(
-            versionRecord(appVersion: "2.0", launchID: launchLatest),
-            versionRecord(appVersion: "1.0", launchID: launchOld),
-            crashRecord(launchID: launchLatest),
-            crashRecord(launchID: launchLatest),
-            crashRecord(launchID: launchOld)
+            crashRecord(appVersion: "2.0"),
+            crashRecord(appVersion: "2.0"),
+            crashRecord(appVersion: "1.0")
         )
 
         let provider = VersionCrashProvider(version: "2.0")
@@ -35,10 +30,10 @@ struct VersionCrashProviderTests {
         #expect(crashes.count == 2)
     }
 
-    @Test("Ignores crashes on unknown launches")
-    func fetchIgnoresUnknownLaunch() async throws {
+    @Test("Ignores crashes without a version")
+    func fetchIgnoresMissingVersion() async throws {
         let database = DatabaseStub()
-        database.add(crashRecord(launchID: UUID()))
+        database.add(crashRecord(appVersion: nil))
 
         let provider = VersionCrashProvider(version: "2.0")
         await provider.fetchIfNeeded(in: database)
@@ -46,18 +41,10 @@ struct VersionCrashProviderTests {
         #expect(provider.crashes?.isEmpty == true)
     }
 
-    private func versionRecord(appVersion: String, launchID: UUID) -> Record {
-        var record = Record(recordType: "Version", recordID: UUID().uuidString)
-        record["app_version"] = appVersion
-        record["launch_id"] = launchID.uuidString
-        record["date"] = date
-        return record
-    }
-
-    private func crashRecord(launchID: UUID) -> Record {
+    private func crashRecord(appVersion: String?) -> Record {
         var record = Record(recordType: "Crash", recordID: UUID().uuidString)
         record["name"] = "SIGSEGV"
-        record["launch_id"] = launchID.uuidString
+        record["app_version"] = appVersion
         record["session_id"] = UUID().uuidString
         record["date"] = date
         return record
