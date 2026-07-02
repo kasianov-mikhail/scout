@@ -37,6 +37,7 @@ struct VersionDetailView: View {
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationTitle(en: release.id)
+        .message($crashProvider.message)
         .task {
             await crashProvider.fetchIfNeeded(in: database)
         }

@@ -138,6 +138,28 @@ struct ServerContractTests {
         #expect(matrix.cells.map(\.value).reduce(0, +) == 2)
     }
 
+    @Test("Crashes filter by app version on the server")
+    func crashesByVersion() async throws {
+        let database = try makeDatabase()
+        // A unique version isolates these crashes from any shared server data.
+        let version = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeCrash(appVersion: version),
+            makeCrash(appVersion: version),
+            makeCrash(appVersion: "other-\(UUID().uuidString)"),
+        ])
+
+        let query = RecordQuery(
+            recordType: Crash.self,
+            filters: [RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))]
+        )
+        let crashes: [Crash] = try await database.readAll(matching: query, fields: Crash.desiredKeys)
+
+        #expect(crashes.count == 2)
+        #expect(crashes.allSatisfy { $0.name == "SIGSEGV" })
+    }
+
     @Test("A reachability ping succeeds against a live server")
     func reachabilityPing() async throws {
         let database = try makeDatabase()
@@ -171,6 +193,15 @@ struct ServerContractTests {
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
         record["start_date"] = startDate
+        return record
+    }
+
+    private func makeCrash(appVersion: String) -> Record {
+        var record = Record(recordType: "Crash", recordID: "contract-\(UUID().uuidString)")
+        record["name"] = "SIGSEGV"
+        record["app_version"] = appVersion
+        record["session_id"] = UUID().uuidString
+        record["date"] = eventDate
         return record
     }
 

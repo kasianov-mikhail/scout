@@ -38,6 +38,7 @@ struct CrashListView: View {
             }
         }
         .navigationTitle(en: "Crashes")
+        .message($provider.message)
         .task {
             await provider.fetch(in: database)
         }

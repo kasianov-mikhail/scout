@@ -87,9 +87,7 @@ struct CrashGroupExport {
     }
 
     private func row(for crash: Crash) -> String? {
-        guard let date = crash.date else {
-            return nil
-        }
+        guard let date = crash.date else { return nil }
 
         var ids: [String] = []
         if let deviceID = crash.deviceID {

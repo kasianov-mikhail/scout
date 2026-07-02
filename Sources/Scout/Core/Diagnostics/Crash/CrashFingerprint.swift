@@ -23,6 +23,7 @@ extension CrashFingerprint {
     fileprivate static func signature(name: String, reason: String?, stackTrace: [String]) -> String {
         let normalizedFrames =
             stackTrace
+            .lazy
             .map(normalizeFrame)
             .filter { !$0.isEmpty }
             .prefix(maximumFrameCount)

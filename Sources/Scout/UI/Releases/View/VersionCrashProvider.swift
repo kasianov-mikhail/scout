@@ -10,6 +10,7 @@ import SwiftUI
 @MainActor
 class VersionCrashProvider: ObservableObject {
     @Published var crashes: [Crash]?
+    @Published var message: Message?
 
     let version: String
 
@@ -25,37 +26,21 @@ class VersionCrashProvider: ObservableObject {
     }
 
     func fetch(in database: DatabaseReader) async {
-        let range = Calendar.utc.defaultRange
-
         do {
-            async let crashes: [Crash] = database.readAll(
-                matching: RecordQuery(recordType: Crash.self, filters: range.dateFilters),
+            let query = RecordQuery(
+                recordType: Crash.self,
+                filters: Calendar.utc.defaultRange.dateFilters + [
+                    RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))
+                ]
+            )
+
+            crashes = try await database.readAll(
+                matching: query,
                 fields: Crash.desiredKeys
             )
-            async let versions: [Version] = database.readAll(
-                matching: RecordQuery(recordType: Version.self, filters: range.dateFilters),
-                fields: Version.desiredKeys
-            )
-
-            let versionIndex = versionIndex(of: try await versions)
-            self.crashes = try await crashes.filter { crash in
-                crash.launchID.flatMap { versionIndex[$0] } == version
-            }
         } catch {
-            crashes = []
+            message = Message(error.localizedDescription, level: .error)
         }
-    }
-
-    private func versionIndex(of versions: [Version]) -> [UUID: String] {
-        Dictionary(
-            versions.compactMap { version in
-                guard let launchID = version.launchID, let appVersion = version.appVersion else {
-                    return nil
-                }
-                return (launchID, appVersion)
-            },
-            uniquingKeysWith: { first, _ in first }
-        )
     }
 }
 

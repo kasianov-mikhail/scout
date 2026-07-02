@@ -90,4 +90,15 @@ struct LogCrashTests {
 
         #expect(!context.hasChanges)
     }
+
+    @Test("Skips crashes already logged under the same id")
+    func skipsDuplicateID() throws {
+        let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [])
+        let id = UUID()
+
+        try logCrash(crash, id: id, context: context)
+        try logCrash(crash, id: id, context: context)
+
+        #expect(try context.fetchAll(CrashObject.self).count == 1)
+    }
 }

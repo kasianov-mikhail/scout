@@ -11,6 +11,7 @@ import SwiftUI
 class CrashProvider: ObservableObject {
     @Published var crashes: [Crash]?
     @Published var cursor: RecordCursor?
+    @Published var message: Message?
 
     var groups: [CrashGroup]? {
         crashes.map(CrashGroup.groups(from:))
@@ -32,7 +33,7 @@ class CrashProvider: ObservableObject {
             self.cursor = results.cursor
             self.crashes = try results.records.map(Crash.init)
         } catch {
-            self.crashes = []
+            self.message = Message(error.localizedDescription, level: .error)
         }
     }
 
@@ -46,6 +47,7 @@ class CrashProvider: ObservableObject {
             self.cursor = results.cursor
             self.crashes?.append(contentsOf: try results.records.map(Crash.init))
         } catch {
+            self.message = Message(error.localizedDescription, level: .error)
         }
     }
 }
