@@ -41,10 +41,6 @@ struct FunnelView: View {
             guard funnel.isRunnable else { return }
             await provider.fetchIfNeeded(names: funnel.stepNames, range: period.initialRange, in: database)
         }
-        .refreshable {
-            guard funnel.isRunnable else { return }
-            await provider.refresh(names: funnel.stepNames, range: period.initialRange, in: database)
-        }
     }
 
     @ViewBuilder private var results: some View {

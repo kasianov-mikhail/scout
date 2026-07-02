@@ -13,8 +13,6 @@ struct EventList: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
 
-    var refresh: (() async -> Void)?
-
     var body: some View {
         if let events = provider.events {
             if events.isEmpty {
@@ -24,11 +22,6 @@ struct EventList: View {
                     description: "Events will appear here once your app starts logging",
                     code: "logger.info(\"button_tapped\")"
                 )
-            } else if let refresh {
-                RefreshableList(action: refresh) {
-                    rows(for: events)
-                }
-                .animation(nil, value: UUID())
             } else {
                 List {
                     rows(for: events)

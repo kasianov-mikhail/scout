@@ -57,7 +57,7 @@ struct AnalyticsView: View {
     }
 
     var eventList: some View {
-        EventList(provider: provider, refresh: fetch)
+        EventList(provider: provider)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     FilterButton(levels: $filter.levels)
