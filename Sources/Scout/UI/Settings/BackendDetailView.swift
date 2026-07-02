@@ -1,0 +1,246 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+//
+
+import SwiftUI
+
+struct BackendDetailView: View {
+    @ObservedObject var provider: BackendHealthProvider
+    let id: String
+    @Binding var activeID: String
+
+    @State private var checks: [SchemaCheck]?
+    @State private var isChecking = false
+    @State private var isBenchmarking = false
+    @State private var message: Message?
+
+    private var backend: BackendHealth? {
+        provider.backends.first { $0.id == id }
+    }
+
+    var body: some View {
+        Group {
+            if let backend {
+                content(for: backend)
+            } else {
+                ErrorView(description: Text(verbatim: "This backend is no longer available."), retry: nil)
+            }
+        }
+        .navigationTitle(en: backend?.name ?? "Backend")
+        .inlineNavigationTitle()
+        .message($message)
+    }
+
+    private func content(for backend: BackendHealth) -> some View {
+        List {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 10) {
+                    Image(systemName: backend.status.healthIcon)
+                        .font(.title2)
+                        .foregroundStyle(backend.status.healthColor)
+
+                    VStack(alignment: .leading, spacing: 1) {
+                        Text(verbatim: backend.status.healthLabel)
+                            .font(.headline)
+                        Text(verbatim: backend.engine.label)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
+                Text(verbatim: backend.endpoint)
+                    .codeChipStyle()
+            }
+            .padding(.vertical, 6)
+            .listRowSeparator(.hidden)
+
+            Header(title: "Health")
+
+            DetailValueRow(title: "Latency", value: backend.latencyLabel)
+
+            if let spread = backend.pingSpreadLabel {
+                DetailValueRow(title: "Min / Avg / Max", value: spread)
+            }
+
+            DetailValueRow(title: "Last Checked", value: backend.lastCheckedLabel)
+
+            if backend.pings.count > 0 {
+                HStack {
+                    Text(verbatim: "Recent Pings")
+                    Spacer()
+                    PingSparkline(pings: backend.pings)
+                        .frame(width: 144, height: 28)
+                }
+            }
+
+            switch backend.engine {
+            case .cloudKit:
+                Header(title: "Schema")
+
+                if let checks {
+                    if checks.count > 0 {
+                        ForEach(checks) { check in
+                            HStack(spacing: 12) {
+                                Image(systemName: check.isValid ? "checkmark.circle.fill" : "xmark.circle.fill")
+                                    .foregroundStyle(check.isValid ? .green : .red)
+                                Text(verbatim: check.recordType)
+                                Spacer()
+                                Text(verbatim: check.isValid ? "Deployed" : "Missing")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } else {
+                        Text(verbatim: "Schema could not be checked. Sign in to iCloud and try again.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .listRowSeparator(.hidden)
+                    }
+                } else {
+                    HStack(spacing: 12) {
+                        ProgressView()
+                        Text(verbatim: "Checking record types…")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .listRowSeparator(.hidden)
+                }
+            case .server:
+                Header(title: "Connection")
+
+                DetailValueRow(title: "API Key", value: backend.hasAPIKey ? "Configured" : "Not set")
+                DetailValueRow(title: "Timeout", value: "10 s")
+                DetailValueRow(title: "Transport", value: backend.isSecure ? "HTTPS" : "HTTP")
+            }
+
+            Header(title: "Actions")
+
+            if backend.id != activeID {
+                Button {
+                    activeID = backend.id
+                } label: {
+                    Text(verbatim: "Use This Backend")
+                        .foregroundStyle(.tint)
+                }
+            }
+
+            Button {
+                isChecking = true
+                Task {
+                    await provider.refresh(id: backend.id)
+                    isChecking = false
+                }
+            } label: {
+                HStack {
+                    Text(verbatim: "Check Now")
+                        .foregroundStyle(.tint)
+                    if isChecking {
+                        Spacer()
+                        ProgressView()
+                    }
+                }
+            }
+            .disabled(isChecking)
+
+            if let benchmark = backend.runBenchmark {
+                Button {
+                    isBenchmarking = true
+                    Task {
+                        let passed = await benchmark()
+                        isBenchmarking = false
+                        message = Message(
+                            passed
+                                ? "Parallelism limit verified: \(RequestLimiter.requestLimit) in-flight requests hold up."
+                                : "Parallelism check failed — see the console log.",
+                            level: passed ? .success : .warning
+                        )
+                    }
+                } label: {
+                    HStack {
+                        Text(verbatim: "Run Parallelism Benchmark")
+                            .foregroundStyle(.tint)
+                        if isBenchmarking {
+                            Spacer()
+                            ProgressView()
+                        }
+                    }
+                }
+                .disabled(isBenchmarking)
+
+                Text(verbatim: "The benchmark issues test queries to verify the \(RequestLimiter.requestLimit)-request limit.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .listRowSeparator(.hidden)
+            }
+        }
+        .listStyle(.plain)
+        .task {
+            if backend.engine == .cloudKit, checks == nil {
+                checks = await backend.schemaChecks()
+            }
+        }
+    }
+}
+
+struct DetailValueRow: View {
+    let title: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(verbatim: title)
+            Spacer()
+            Text(verbatim: value)
+                .font(.body.monospacedDigit())
+                .foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct PingSparkline: View {
+    let pings: [Int]
+
+    var body: some View {
+        GeometryReader { proxy in
+            let peak = Double(pings.max() ?? 1)
+            let step = proxy.size.width / Double(pings.count)
+
+            HStack(alignment: .bottom, spacing: step * 0.382) {
+                ForEach(Array(pings.enumerated()), id: \.offset) { _, ping in
+                    Capsule()
+                        .fill(.tint.opacity(0.6))
+                        .frame(height: max(3, proxy.size.height * Double(ping) / peak))
+                }
+            }
+            .frame(maxHeight: .infinity, alignment: .bottom)
+        }
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("Server") {
+    @Previewable @State var activeID = BackendHealth.samples[0].id
+    NavigationStack {
+        BackendDetailView(provider: .fixture(), id: BackendHealth.samples[0].id, activeID: $activeID)
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("CloudKit") {
+    @Previewable @State var activeID = BackendHealth.samples[0].id
+    NavigationStack {
+        BackendDetailView(provider: .fixture(), id: BackendHealth.samples[1].id, activeID: $activeID)
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("Unreachable") {
+    @Previewable @State var activeID = BackendHealth.samples[0].id
+    NavigationStack {
+        BackendDetailView(provider: .fixture(), id: BackendHealth.samples[3].id, activeID: $activeID)
+    }
+}

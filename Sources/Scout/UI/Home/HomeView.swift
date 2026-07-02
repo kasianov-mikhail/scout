@@ -12,6 +12,7 @@ public struct HomeView: View {
 
     @AppStorage("scout_active_backend") private var activeID = ""
     @StateObject private var tint = Tint()
+    @State private var isSettingsPresented = false
 
     public init(backends: [Backend]) {
         self.backends = backends
@@ -19,6 +20,10 @@ public struct HomeView: View {
 
     private var backend: Backend? {
         backends.first(where: { $0.id == activeID }) ?? backends.first
+    }
+
+    private var activeIDBinding: Binding<String> {
+        Binding(get: { backend?.id ?? "" }, set: { activeID = $0 })
     }
 
     public var body: some View {
@@ -40,13 +45,20 @@ public struct HomeView: View {
             .navigationTitle(en: "Home")
             .dismissable()
             .toolbar {
-                if let backend {
+                if backend != nil {
                     ToolbarItem(placement: .topBarTrailing) {
                         ConnectionMenu(
                             connections: backends.map(Connection.init),
-                            activeID: Binding(get: { backend.id }, set: { activeID = $0 })
+                            activeID: activeIDBinding,
+                            onSettings: { isSettingsPresented = true }
                         )
                     }
+                }
+            }
+            .sheet(isPresented: $isSettingsPresented) {
+                NavigationStack {
+                    SettingsOverviewView(backends: backends, activeID: activeIDBinding)
+                        .dismissable()
                 }
             }
         }
