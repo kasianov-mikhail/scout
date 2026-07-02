@@ -39,6 +39,14 @@ struct StatView: View {
                 }
                 .listStyle(.plain)
                 .scrollDisabled(true)
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        ChartExportButton(title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)) {
+                            ChartView(segment: extent.segment(from: data.flatMap(\.points)), timing: extent)
+                                .foregroundStyle(color)
+                        }
+                    }
+                }
             }
         }
         .resetsTint()
