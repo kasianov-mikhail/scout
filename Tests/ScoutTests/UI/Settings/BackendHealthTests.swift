@@ -87,6 +87,8 @@ struct BackendHealthTests {
     }
 }
 
-func makeHealth(id: String = "backend", status: Backend.Status = .unknown, probe: @escaping @Sendable () async -> Backend.Status = { .unknown }) -> BackendHealth {
+typealias StatusProbe = @Sendable () async -> Backend.Status
+
+func makeHealth(id: String = "backend", status: Backend.Status = .unknown, probe: @escaping StatusProbe = { .unknown }) -> BackendHealth {
     BackendHealth(id: id, name: id, endpoint: id, engine: .server, status: status, probe: probe)
 }

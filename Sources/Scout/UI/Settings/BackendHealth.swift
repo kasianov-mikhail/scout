@@ -31,29 +31,17 @@ struct BackendHealth: Identifiable {
 
 extension BackendHealth {
     init(backend: Backend) {
-        if let database = backend.database as? HTTPDatabase {
-            self.init(
-                id: backend.id,
-                name: backend.displayName,
-                endpoint: database.url.hostWithPort ?? database.url.absoluteString,
-                engine: .server,
-                hasAPIKey: database.apiKey != nil,
-                isSecure: database.url.scheme?.lowercased() == "https",
-                probe: backend.probeStatus,
-                schemaChecks: backend.schemaChecks,
-                runBenchmark: backend.runBenchmark
-            )
-        } else {
-            self.init(
-                id: backend.id,
-                name: backend.displayName,
-                endpoint: backend.id,
-                engine: .cloudKit,
-                probe: backend.probeStatus,
-                schemaChecks: backend.schemaChecks,
-                runBenchmark: backend.runBenchmark
-            )
-        }
+        self.init(
+            id: backend.id,
+            name: backend.displayName,
+            endpoint: backend.serverInfo?.endpoint ?? backend.id,
+            engine: backend.serverInfo == nil ? .cloudKit : .server,
+            hasAPIKey: backend.serverInfo?.hasAPIKey ?? false,
+            isSecure: backend.serverInfo?.isSecure ?? true,
+            probe: backend.probeStatus,
+            schemaChecks: backend.schemaChecks,
+            runBenchmark: backend.runBenchmark
+        )
     }
 
     func recording(status: Backend.Status, latency: Int?, at date: Date) -> BackendHealth {
@@ -68,13 +56,6 @@ extension BackendHealth {
             }
         }
         return health
-    }
-}
-
-extension URL {
-    fileprivate var hostWithPort: String? {
-        guard let host else { return nil }
-        return port.map { "\(host):\($0)" } ?? host
     }
 }
 

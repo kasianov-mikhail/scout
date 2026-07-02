@@ -13,6 +13,7 @@ public struct Backend: Sendable {
     let checkAvailability: @Sendable () async -> Bool
     let displayName: String
 
+    var serverInfo: ServerInfo? = nil
     var aggregator: (MatrixAggregator)? = nil
     var probeStatus: @Sendable () async -> Status = { .unknown }
     var accountWarning: @Sendable () async -> Bool = { false }
@@ -27,6 +28,12 @@ public struct Backend: Sendable {
         case unknown
 
         var id: Self { self }
+    }
+
+    struct ServerInfo: Sendable {
+        let endpoint: String
+        let hasAPIKey: Bool
+        let isSecure: Bool
     }
 }
 
