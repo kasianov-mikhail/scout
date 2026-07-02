@@ -13,6 +13,7 @@ struct ConnectionMenu: View {
 
     @State private var connections: [Connection]
     @State private var isPresented = false
+    @State private var opensSettingsAfterDismiss = false
 
     init(connections: [Connection], activeID: Binding<Connection.ID>, onSettings: @escaping () -> Void = {}) {
         _activeID = activeID
@@ -43,8 +44,8 @@ struct ConnectionMenu: View {
                 }
 
                 Button {
+                    opensSettingsAfterDismiss = true
                     isPresented = false
-                    onSettings()
                 } label: {
                     HStack {
                         Image(systemName: "slider.horizontal.3")
@@ -63,6 +64,12 @@ struct ConnectionMenu: View {
             .frame(minWidth: 240)
             .task {
                 connections = await connections.refreshingStatuses()
+            }
+            .onChange(of: isPresented) { isPresented in
+                guard !isPresented, opensSettingsAfterDismiss else { return }
+
+                opensSettingsAfterDismiss = false
+                onSettings()
             }
             .popoverDropdown()
             .opaquePresentationBackground()
