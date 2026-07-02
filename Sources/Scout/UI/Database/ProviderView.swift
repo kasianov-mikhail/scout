@@ -16,7 +16,7 @@ struct ProviderView<P: Provider, Content: View>: View {
     var body: some View {
         switch provider.result {
         case nil:
-            ProgressView().frame(maxHeight: .infinity).tint(nil)
+            RingIndicator().frame(maxHeight: .infinity)
         case .success(let data):
             content(data)
         case .failure(let error):

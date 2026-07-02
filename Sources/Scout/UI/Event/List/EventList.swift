@@ -13,6 +13,8 @@ struct EventList: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
 
+    var refresh: (() async -> Void)?
+
     var body: some View {
         if let events = provider.events {
             if events.isEmpty {
@@ -22,21 +24,31 @@ struct EventList: View {
                     description: "Events will appear here once your app starts logging",
                     code: "logger.info(\"button_tapped\")"
                 )
+            } else if let refresh {
+                RefreshableList(action: refresh) {
+                    rows(for: events)
+                }
+                .animation(nil, value: UUID())
             } else {
                 List {
-                    ForEach(events, content: row)
-
-                    if let cursor = provider.cursor {
-                        PaginationFooter {
-                            await provider.fetchMore(cursor: cursor, in: database)
-                        }
-                    }
+                    rows(for: events)
                 }
                 .listStyle(.plain)
                 .animation(nil, value: UUID())
             }
         } else {
-            ProgressView().frame(maxHeight: .infinity)
+            RingIndicator().frame(maxHeight: .infinity)
+        }
+    }
+
+    @ViewBuilder
+    private func rows(for events: [Event]) -> some View {
+        ForEach(events, content: row)
+
+        if let cursor = provider.cursor {
+            PaginationFooter {
+                await provider.fetchMore(cursor: cursor, in: database)
+            }
         }
     }
 

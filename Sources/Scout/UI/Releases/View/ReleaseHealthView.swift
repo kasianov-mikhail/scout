@@ -34,7 +34,7 @@ struct ReleaseHealthView: View {
                     .listStyle(.plain)
                 }
             } else {
-                ProgressView().frame(maxHeight: .infinity)
+                RingIndicator().frame(maxHeight: .infinity)
             }
         }
         .navigationTitle(en: "Releases")
