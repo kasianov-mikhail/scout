@@ -160,6 +160,29 @@ struct ServerContractTests {
         #expect(crashes.allSatisfy { $0.name == "SIGSEGV" })
     }
 
+    @Test("Timer bucket increments surface in the metric series by bucket category")
+    func timerBucketSeries() async throws {
+        let database = try makeDatabase()
+        // A unique name isolates this series from any shared server data.
+        let marker = "contract-\(UUID().uuidString)"
+        let category = LatencyBuckets.category(for: 0.1)
+
+        try await database.write(records: [
+            makeMetric(name: marker, category: category),
+            makeMetric(name: marker, category: category),
+        ])
+
+        let series = try await database.metricSeries(
+            Int.self,
+            category: category,
+            in: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+        )
+        let bucketSeries = try #require(series.first { $0.name == marker })
+
+        #expect(bucketSeries.category == category)
+        #expect(bucketSeries.points.map(\.value.doubleValue).reduce(0, +) == 2)
+    }
+
     @Test("A reachability ping succeeds against a live server")
     func reachabilityPing() async throws {
         let database = try makeDatabase()
@@ -193,6 +216,16 @@ struct ServerContractTests {
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
         record["start_date"] = startDate
+        return record
+    }
+
+    private func makeMetric(name: String, category: String) -> Record {
+        var record = Record(recordType: "IntMetric", recordID: "contract-\(UUID().uuidString)")
+        record["name"] = name
+        record["category"] = category
+        record["value"] = 1
+        record["date"] = eventDate
+        record["session_id"] = UUID().uuidString
         return record
     }
 

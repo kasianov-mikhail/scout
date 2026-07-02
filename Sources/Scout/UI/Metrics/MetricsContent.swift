@@ -10,6 +10,7 @@ import SwiftUI
 struct MetricsContent<T: ChartNumeric>: View {
     let period: Period
     let formatter: KeyPath<T, String>
+    let telemetry: Telemetry.Export
 
     @StateObject var metrics: MetricsProvider<T>
     @Environment(\.database) var database
@@ -17,6 +18,7 @@ struct MetricsContent<T: ChartNumeric>: View {
     init(period: Period, formatter: KeyPath<T, String>, telemetry: Telemetry.Export) {
         self.period = period
         self.formatter = formatter
+        self.telemetry = telemetry
         self._metrics = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
     }
 
@@ -38,11 +40,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                         row(group: group)
                     } destination: {
                         if let named = groups.named(group.name) {
-                            MetricsView(
-                                group: named,
-                                formatter: formatter,
-                                period: period
-                            )
+                            destination(group: named)
                         }
                     }
                 }
@@ -51,6 +49,17 @@ struct MetricsContent<T: ChartNumeric>: View {
         }
         .task {
             await metrics.fetchIfNeeded(in: database)
+        }
+    }
+
+    @ViewBuilder
+    private func destination(group: PointGroup<T>) -> some View {
+        if telemetry == .timer {
+            MetricsView(group: group, formatter: formatter, period: period) { extent in
+                TimerDistributionSection(name: group.name, extent: extent)
+            }
+        } else {
+            MetricsView(group: group, formatter: formatter, period: period)
         }
     }
 

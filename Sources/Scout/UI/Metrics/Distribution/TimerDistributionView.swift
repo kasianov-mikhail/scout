@@ -1,0 +1,115 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+//
+
+import Charts
+import SwiftUI
+
+struct LatencyPercentiles: Equatable {
+    let p50: TimeInterval
+    let p90: TimeInterval
+    let p99: TimeInterval
+}
+
+struct PercentileTrendPoint: Identifiable, Equatable {
+    let date: Date
+    let p99: TimeInterval
+
+    var id: Date { date }
+}
+
+struct TimerDistributionView: View {
+    let percentiles: LatencyPercentiles
+    let trend: [PercentileTrendPoint]
+    let unit: Calendar.Component
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 21) {
+            summary
+
+            Text(verbatim: "P99 TREND")
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color.gray)
+
+            chart
+        }
+        .padding(.vertical)
+    }
+
+    private var summary: some View {
+        HStack(spacing: 34) {
+            Metric(title: "P50", value: percentiles.p50.duration, color: .blue)
+            Metric(title: "P90", value: percentiles.p90.duration, color: .teal)
+            Metric(title: "P99", value: percentiles.p99.duration, color: .orange)
+            Spacer()
+        }
+    }
+
+    private var chart: some View {
+        Chart(trend) { point in
+            AreaMark(
+                x: .value("Date", point.date, unit: unit),
+                y: .value("P99", point.p99)
+            )
+            .foregroundStyle(
+                .linearGradient(
+                    colors: [.orange.opacity(0.34), .orange.opacity(0.03)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+
+            LineMark(
+                x: .value("Date", point.date, unit: unit),
+                y: .value("P99", point.p99)
+            )
+            .foregroundStyle(.orange)
+            .lineStyle(StrokeStyle(lineWidth: 2))
+            .interpolationMethod(.monotone)
+        }
+        .chartYAxis {
+            AxisMarks { value in
+                if let seconds = value.as(TimeInterval.self) {
+                    AxisGridLine()
+                    AxisValueLabel(seconds.duration)
+                }
+            }
+        }
+        .aspectRatio(1.618, contentMode: .fit)
+    }
+}
+
+extension LatencyPercentiles {
+    static var sample: LatencyPercentiles {
+        LatencyPercentiles(p50: 0.081, p90: 0.42, p99: 3.8)
+    }
+}
+
+extension Array where Element == PercentileTrendPoint {
+    static var sample: [PercentileTrendPoint] {
+        let p99s = [
+            1.4, 1.2, 1.1, 1.0, 1.1, 1.3, 1.7, 2.4, 2.9, 2.6, 2.2, 2.5,
+            2.8, 2.5, 2.3, 2.7, 3.6, 4.1, 3.0, 2.4, 2.0, 1.8, 1.6, 1.5,
+        ]
+
+        let start = Calendar.current.startOfDay(for: .now)
+
+        return p99s.enumerated().map { hour, p99 in
+            PercentileTrendPoint(date: start.addingTimeInterval(TimeInterval(hour) * .hour), p99: p99)
+        }
+    }
+}
+
+#Preview("TimerDistributionView") {
+    NavigationStack {
+        ScrollView {
+            TimerDistributionView(percentiles: .sample, trend: .sample, unit: .hour)
+                .padding(.horizontal)
+        }
+        .navigationTitle(en: "http_request")
+    }
+}
