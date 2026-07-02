@@ -16,8 +16,8 @@ struct HomeLogSection: View {
         Header(title: "Log") {
             CompactPeriodPicker(selection: $period)
         }
-        .task {
-            await provider.fetchIfNeeded(in: database)
+        .task(id: period) {
+            await provider.fetchIfNeeded(for: period, in: database)
         }
 
         HomeLogRow(
@@ -44,7 +44,7 @@ struct HomeLogSection: View {
     }
 
     private var spans: (int: MatrixSpan<Int>, double: MatrixSpan<Double>)? {
-        guard let result = try? provider.result?.get() else {
+        guard let result = try? provider.result(for: period)?.get() else {
             return nil
         }
 

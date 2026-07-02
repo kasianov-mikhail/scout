@@ -25,8 +25,8 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
+        await provider.fetchIfNeeded(for: .today, in: database)
+        let result = try #require(try provider.result(for: .today)?.get())
 
         let ints = MatrixSpan(matrices: result.0, range: allTime)
         let doubles = MatrixSpan(matrices: result.1, range: allTime)
@@ -49,8 +49,8 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
+        await provider.fetchIfNeeded(for: .today, in: database)
+        let result = try #require(try provider.result(for: .today)?.get())
 
         #expect(Set(result.0.map(\.name)) == ["login", "Crash"])
     }
@@ -65,11 +65,45 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
+        await provider.fetchIfNeeded(for: .today, in: database)
+        let result = try #require(try provider.result(for: .today)?.get())
 
         #expect(result.0.count == 1)
         #expect(MatrixSpan(matrices: result.0, range: allTime).total { $0 != CrashObject.recordType } == 7)
+    }
+
+    @Test("Each period fetches only its own range")
+    func fetchesSelectedPeriodOnly() async throws {
+        let database = DatabaseStub()
+        database.add(
+            makeRecord(type: Int.recordType, name: "recent", date: Date().addingDay(-2).startOfWeek, value: 3),
+            makeRecord(type: Int.recordType, name: "old", date: Date().addingDay(-60).startOfWeek, value: 4)
+        )
+
+        let provider = HomeLogProvider()
+        await provider.fetchIfNeeded(for: .month, in: database)
+        await provider.fetchIfNeeded(for: .year, in: database)
+
+        let month = try #require(try provider.result(for: .month)?.get())
+        let year = try #require(try provider.result(for: .year)?.get())
+
+        #expect(Set(month.0.map(\.name)) == ["recent"])
+        #expect(Set(year.0.map(\.name)) == ["recent", "old"])
+    }
+
+    @Test("Switching periods keeps earlier results cached")
+    func cachesResultsPerPeriod() async throws {
+        let database = DatabaseStub()
+        database.add(makeRecord(type: Int.recordType, name: "login", value: 3))
+
+        let provider = HomeLogProvider()
+        await provider.fetchIfNeeded(for: .today, in: database)
+        await provider.fetchIfNeeded(for: .week, in: database)
+        await provider.fetchIfNeeded(for: .today, in: database)
+
+        #expect(database.readCount(of: Int.recordType) == 2)
+        #expect(provider.result(for: .today) != nil)
+        #expect(provider.result(for: .week) != nil)
     }
 
     private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
