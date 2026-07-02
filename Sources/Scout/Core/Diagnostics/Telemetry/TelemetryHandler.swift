@@ -36,6 +36,6 @@ extension CKTelemetryHandler: FloatingPointCounterHandler {
 
 extension CKTelemetryHandler: TimerHandler {
     func recordNanoseconds(_ duration: Int64) {
-        logMetrics(telemetry: .timer, value: Double(duration) / 1_000_000_000)
+        logTimer(seconds: Double(duration) / 1_000_000_000)
     }
 }
