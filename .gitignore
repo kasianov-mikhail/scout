@@ -4,4 +4,5 @@
 xcuserdata/
 .swiftpm/
 Package.resolved
-.claude/
+.claude/*
+!.claude/commands/

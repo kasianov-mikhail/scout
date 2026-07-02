@@ -30,6 +30,7 @@ extension CrashObject: RecordEncodable {
         record["date"] = date
         record["uuid"] = crashID.uuidString
         record["app_version"] = appVersion
+        record["session_id"] = sessionID.uuidString
 
         record.setValues(metadata)
 
@@ -37,7 +38,9 @@ extension CrashObject: RecordEncodable {
     }
 
     private var decodedStackTrace: [String] {
-        guard let stackTrace, let decoded = try? JSONDecoder().decode([String].self, from: stackTrace) else { return [] }
+        guard let stackTrace, let decoded = try? JSONDecoder().decode([String].self, from: stackTrace) else {
+            return []
+        }
         return decoded
     }
 }

@@ -62,6 +62,15 @@ struct CrashObjectTests {
         #expect(object.record["fingerprint"] == "stored-fingerprint")
     }
 
+    @Test("record includes the session ID")
+    func testRecordIncludesSessionID() {
+        let object = makeCrashObject(name: "SIGABRT", date: date)
+        let sessionID = UUID()
+        object.sessionID = sessionID
+
+        #expect(object.record["session_id"] == sessionID.uuidString)
+    }
+
     @Test("record computes a fallback fingerprint for migrated crashes")
     func testRecordComputesFallbackFingerprint() throws {
         let object = makeCrashObject(name: "SIGABRT", date: date)

@@ -67,7 +67,7 @@ struct CrashGroupDetailView: View {
                 Spacer()
 
                 if let sessionID = crash.sessionID {
-                    Text(sessionID.uuidString.prefix(8))
+                    Text(ExportFormat.shortID(sessionID))
                         .font(.system(size: 13))
                         .monospaced()
                         .foregroundStyle(Color.gray)

@@ -60,8 +60,9 @@ struct CrashArchive {
             }
 
             do {
+                let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
                 try await persistentContainer.performBackgroundTask { context in
-                    try logCrash(crash, context: context)
+                    try logCrash(crash, id: id, context: context)
                 }
                 try FileManager.default.removeItem(at: file)
             } catch {
