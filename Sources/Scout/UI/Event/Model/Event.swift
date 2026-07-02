@@ -52,7 +52,7 @@ extension Event {
 }
 
 extension Event {
-    static func sample(_ name: String, at date: Date) -> Event {
+    static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Event {
         Event(
             name: name,
             level: nil,
@@ -61,7 +61,7 @@ extension Event {
             uuid: nil,
             id: UUID().uuidString,
             installID: nil,
-            sessionID: nil,
+            sessionID: sessionID,
             deviceID: nil
         )
     }

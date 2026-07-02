@@ -34,6 +34,15 @@ struct HomeLogSection: View {
             count: spans.map { $0.int.series + $0.double.series },
             destination: { MetricsList() }
         )
+        Row {
+            Image(systemName: "line.3.horizontal.decrease")
+                .foregroundColor(.blue)
+                .frame(width: 24)
+            Text(verbatim: "Funnel")
+            Spacer()
+        } destination: {
+            FunnelView()
+        }
         HomeLogRow(
             title: "Crashes",
             image: "exclamationmark.triangle",
