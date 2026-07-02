@@ -50,6 +50,15 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
         .listStyle(.plain)
         .navigationTitle(group.name)
         .scrollDisabled(Extra.self == EmptyView.self)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ChartExportButton(title: group.name, rangeLabel: extent.domain.label(using: rangeDateFormatter)) {
+                    ChartView(segment: extent.segment(from: group.points), timing: extent)
+                        .chartYAxis(content: { formattedMarks })
+                        .foregroundStyle(.blue)
+                }
+            }
+        }
     }
 
     private var formattedMarks: some AxisContent {
