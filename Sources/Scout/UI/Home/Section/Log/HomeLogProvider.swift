@@ -7,12 +7,29 @@
 
 import Foundation
 
-class HomeLogProvider: ObservableObject, Provider {
-    @Published var result: ProviderResult<([GridMatrix<Int>], [GridMatrix<Double>])>?
+@MainActor
+class HomeLogProvider: ObservableObject {
+    typealias Output = ([GridMatrix<Int>], [GridMatrix<Double>])
 
-    func fetch(in database: DatabaseReader) async throws -> ([GridMatrix<Int>], [GridMatrix<Double>]) {
-        async let intMatrices = matrices(of: Int.self, in: database)
-        async let doubleMatrices = matrices(of: Double.self, in: database)
+    @Published private var results: [Period: ProviderResult<Output>] = [:]
+
+    func result(for period: Period) -> ProviderResult<Output>? {
+        results[period]
+    }
+
+    func fetchIfNeeded(for period: Period, in database: DatabaseReader) async {
+        guard results[period] == nil else { return }
+        do {
+            results[period] = .success(try await fetch(for: period, in: database))
+        } catch {
+            results[period] = .failure(error)
+        }
+    }
+
+    private func fetch(for period: Period, in database: DatabaseReader) async throws -> Output {
+        let range = period.initialRange
+        async let intMatrices = matrices(of: Int.self, in: range, from: database)
+        async let doubleMatrices = matrices(of: Double.self, in: range, from: database)
 
         return try await (intMatrices.filter { !lifecycleNames.contains($0.name) }, doubleMatrices)
     }
@@ -26,10 +43,12 @@ private let lifecycleNames = [
     VersionObject.recordType,
 ]
 
-private func matrices<T: MetricScalar>(of type: T.Type, in database: DatabaseReader) async throws -> [GridMatrix<T>] {
+private func matrices<T: MetricScalar>(of type: T.Type, in range: Range<Date>, from database: DatabaseReader) async throws -> [GridMatrix<T>] {
+    // Matrices are dated at the start of their week, so the query widens the
+    // lower bound to the week start to catch the matrix holding the range's first days.
     let query = RecordQuery(
         recordType: GridMatrix<T>.self,
-        filters: Calendar.utc.defaultRange.dateFilters
+        filters: (range.lowerBound.startOfWeek..<range.upperBound).dateFilters
     )
     let matrices: [GridMatrix<T>] = try await database.readAll(matching: query)
     return matrices.mergeDuplicates()
