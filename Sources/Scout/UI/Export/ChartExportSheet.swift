@@ -22,9 +22,16 @@ struct ChartExportSheet<ChartContent: View>: View {
 
     var body: some View {
         List {
-            ChartSnapshot(title: title, rangeLabel: rangeLabel, showsTitle: options.includesTitle, showsRange: options.includesRange, fadesHeader: true, chart: chart)
-                .listRowSeparator(.hidden)
-                .listRowInsets(EdgeInsets())
+            ChartSnapshot(
+                title: title,
+                rangeLabel: rangeLabel,
+                showsTitle: options.includesTitle,
+                showsRange: options.includesRange,
+                fadesHeader: true,
+                chart: chart
+            )
+            .listRowSeparator(.hidden)
+            .listRowInsets(EdgeInsets())
 
             Header(title: "Format")
                 .listRowSeparator(.hidden, edges: .top)
@@ -91,9 +98,19 @@ struct ChartExportSheet<ChartContent: View>: View {
     }
 
     @ViewBuilder private var shareButton: some View {
-        if #available(iOS 26, macOS 26, *) {
-            glassShareButton
-        } else if let fileURL {
+        #if compiler(>=6.2)
+            if #available(iOS 26.0, macOS 26.0, *) {
+                glassShareButton
+            } else {
+                pillShareButton
+            }
+        #else
+            pillShareButton
+        #endif
+    }
+
+    @ViewBuilder private var pillShareButton: some View {
+        if let fileURL {
             ShareLink(item: fileURL) {
                 Text(verbatim: "Share Image")
             }
@@ -101,19 +118,21 @@ struct ChartExportSheet<ChartContent: View>: View {
         }
     }
 
-    @available(iOS 26, macOS 26, *)
-    @ViewBuilder private var glassShareButton: some View {
-        if let fileURL {
-            ShareLink(item: fileURL) {
-                Text(verbatim: "Share Image")
-                    .bold()
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 8)
+    #if compiler(>=6.2)
+        @available(iOS 26.0, macOS 26.0, *)
+        @ViewBuilder private var glassShareButton: some View {
+            if let fileURL {
+                ShareLink(item: fileURL) {
+                    Text(verbatim: "Share Image")
+                        .bold()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                }
+                .buttonStyle(.glassProminent)
+                .tint(.blue)
             }
-            .buttonStyle(.glassProminent)
-            .tint(.blue)
         }
-    }
+    #endif
 
     private func exportURL() -> URL? {
         guard let data = ChartExportRenderer.data(for: exportView, format: options.format, scale: displayScale) else {
@@ -126,10 +145,16 @@ struct ChartExportSheet<ChartContent: View>: View {
     private var exportView: some View {
         let scheme = options.appearance.resolvedScheme(current: colorScheme)
 
-        return ChartSnapshot(title: title, rangeLabel: rangeLabel, showsTitle: options.includesTitle, showsRange: options.includesRange, chart: chart)
-            .frame(width: ChartExportRenderer.width)
-            .background(scheme == .dark ? Color.black : Color.white)
-            .environment(\.colorScheme, scheme)
+        return ChartSnapshot(
+            title: title,
+            rangeLabel: rangeLabel,
+            showsTitle: options.includesTitle,
+            showsRange: options.includesRange,
+            chart: chart
+        )
+        .frame(width: ChartExportRenderer.width)
+        .background(scheme == .dark ? Color.black : Color.white)
+        .environment(\.colorScheme, scheme)
     }
 }
 
