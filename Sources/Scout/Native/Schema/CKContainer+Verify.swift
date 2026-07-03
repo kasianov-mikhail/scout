@@ -54,8 +54,8 @@ extension CKContainer {
         if invalid.count > 0 {
             let containerID = containerIdentifier ?? "<container-id>"
 
-            print("[Scout] Upload the scout-db Schema file (https://github.com/kasianov-mikhail/scout-db/blob/main/Schema) to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")
-            print("[Scout] For details, see docs/INSTALLATION.md")
+            print("[Scout] Upload the scout-db Schema file to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")
+            print("[Scout] Schema: https://github.com/kasianov-mikhail/scout-db/blob/main/Schema — for details, see docs/INSTALLATION.md")
 
             throw SchemaError(recordTypes: invalid)
         }
