@@ -7,6 +7,15 @@
 
 import SwiftUI
 
+@MainActor
+class Box<T>: ObservableObject {
+    @Published var value: T
+
+    init(_ value: T) {
+        self.value = value
+    }
+}
+
 typealias Tint = Box<Color?>
 
 extension Tint {
