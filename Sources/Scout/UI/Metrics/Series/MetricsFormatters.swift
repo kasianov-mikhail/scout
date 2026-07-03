@@ -34,25 +34,17 @@ extension Double {
     /// - Important: The output is intentionally non-localized to ensure consistent decimal and grouping separators.
     ///
     var decimal: String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.decimalSeparator = "."
-        formatter.groupingSeparator = " "
-
+        let formatter: NumberFormatter
         switch self {
         case 0:
             return "0.0"
         case ..<0.01:
-            formatter.minimumFractionDigits = 3
-            formatter.maximumFractionDigits = 3
+            formatter = smallDecimalFormatter
         case ..<1_000:
-            formatter.minimumFractionDigits = 1
-            formatter.maximumFractionDigits = 2
+            formatter = midDecimalFormatter
         default:
-            formatter.minimumFractionDigits = 1
-            formatter.maximumFractionDigits = 1
+            formatter = largeDecimalFormatter
         }
-
         return formatter.string(from: NSNumber(value: self))!
     }
 }
@@ -93,3 +85,17 @@ extension TimeInterval {
         }
     }
 }
+
+private func decimalFormatter(minimumFractionDigits: Int, maximumFractionDigits: Int) -> NumberFormatter {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+    formatter.decimalSeparator = "."
+    formatter.groupingSeparator = " "
+    formatter.minimumFractionDigits = minimumFractionDigits
+    formatter.maximumFractionDigits = maximumFractionDigits
+    return formatter
+}
+
+nonisolated(unsafe) private let smallDecimalFormatter = decimalFormatter(minimumFractionDigits: 3, maximumFractionDigits: 3)
+nonisolated(unsafe) private let midDecimalFormatter = decimalFormatter(minimumFractionDigits: 1, maximumFractionDigits: 2)
+nonisolated(unsafe) private let largeDecimalFormatter = decimalFormatter(minimumFractionDigits: 1, maximumFractionDigits: 1)

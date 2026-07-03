@@ -61,10 +61,8 @@ extension EventView {
                 Spacer().frame(height: 10)
 
                 if let level = event.level {
-                    Group {
-                        Text(verbatim: "LEVEL:   ") + level.descriptionText
-                    }
-                    .fontWeight(.bold)
+                    (Text(verbatim: "LEVEL:   ") + level.descriptionText)
+                        .fontWeight(.bold)
                 }
             }
             .padding(.vertical, 4)

@@ -52,10 +52,6 @@ extension Matrix: Combining {
 
 extension Matrix: Equatable {
     static func == (lhs: Matrix<T>, rhs: Matrix<T>) -> Bool {
-        lhs.date == rhs.date
-            && lhs.name == rhs.name
-            && lhs.category == rhs.category
-            && lhs.version == rhs.version
-            && lhs.cells == rhs.cells
+        lhs.isDuplicate(of: rhs) && lhs.cells == rhs.cells
     }
 }
