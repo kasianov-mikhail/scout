@@ -34,14 +34,18 @@ private let schemaRecordTypes = [
 ]
 
 extension CKContainer {
+    func schemaChecks() async -> [SchemaCheck] {
+        await schemaChecks(for: schemaRecordTypes)
+    }
+
     // Queries each record type; flaky non-schema failures are skipped so one
     // bad query doesn't abort the rest, and are absent from the result.
-    func schemaChecks() async -> [SchemaCheck] {
+    func schemaChecks(for recordTypes: [String]) async -> [SchemaCheck] {
         guard let status = try? await accountStatus(), status == .available else { return [] }
 
         var checks: [SchemaCheck] = []
 
-        for recordType in schemaRecordTypes {
+        for recordType in recordTypes {
             let query = CKQuery(recordType: recordType, predicate: NSPredicate(value: true))
 
             do {
@@ -66,7 +70,11 @@ extension CKContainer {
     /// Throws a `SchemaError` if any record types have schema issues.
     ///
     func verifySchema() async throws {
-        let invalid = await schemaChecks().filter { !$0.isValid }.map(\.recordType)
+        try await verifySchema(for: schemaRecordTypes)
+    }
+
+    func verifySchema(for recordTypes: [String]) async throws {
+        let invalid = await schemaChecks(for: recordTypes).filter { !$0.isValid }.map(\.recordType)
 
         if invalid.count > 0 {
             let containerID = containerIdentifier ?? "<container-id>"
