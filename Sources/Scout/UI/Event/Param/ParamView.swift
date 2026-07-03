@@ -30,15 +30,10 @@ struct ParamView: View {
         Group {
             if value.isContainer {
                 List(value.nodes) { node in
-                    ZStack {
+                    Row {
                         ParamValueRow(node: node)
-
-                        NavigationLink {
-                            ParamView(node: node)
-                        } label: {
-                            EmptyView()
-                        }
-                        .opacity(0)
+                    } destination: {
+                        ParamView(node: node)
                     }
                 }
                 .listStyle(.plain)

@@ -15,6 +15,8 @@ struct ActivityRow: View {
     @ObservedObject var activity: ActivityProvider
 
     var body: some View {
+        let days = days
+
         Row {
             if let systemImage {
                 Image(systemName: systemImage)
@@ -25,7 +27,11 @@ struct ActivityRow: View {
                 .foregroundColor(.primary)
             Spacer()
 
-            RowSummary(series: series, count: count, color: color)
+            RowSummary(
+                series: days.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .latest) },
+                count: days?.max()?.count,
+                color: color
+            )
         } destination: {
             ActivityView(activity: activity, period: period)
         }
@@ -36,14 +42,6 @@ struct ActivityRow: View {
         try? activity.result?.get()
             .points(on: period)
             .bucket(on: period)
-    }
-
-    private var series: MiniChartSeries? {
-        days.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .latest) }
-    }
-
-    private var count: Int? {
-        days?.max()?.count
     }
 }
 

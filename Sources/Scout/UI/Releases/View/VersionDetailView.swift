@@ -82,9 +82,11 @@ struct VersionDetailView: View {
 
     @ViewBuilder
     private var trendSection: some View {
+        let days = dailyCrashes
+
         Header(title: "Crashes over time")
 
-        Chart(dailyCrashes, id: \.date) { day in
+        Chart(days, id: \.date) { day in
             BarMark(
                 x: .value("Day", day.date, unit: .day),
                 y: .value("Crashes", day.count),
@@ -104,7 +106,7 @@ struct VersionDetailView: View {
             AxisMarks(position: .leading)
         }
         .chartBackground { _ in
-            if !dailyCrashes.contains(where: { $0.count > 0 }) {
+            if !days.contains(where: { $0.count > 0 }) {
                 ChartPlaceholder().offset(y: -12)
             }
         }

@@ -107,22 +107,13 @@ extension BackendHealth {
     }
 
     var lastCheckedLabel: String {
-        lastChecked?.agoLabel ?? "Never"
+        lastChecked?.relativeString ?? "Never"
     }
 
     var pingSpreadLabel: String? {
-        guard let low = pings.min(), let high = pings.max(), pings.count > 0 else { return nil }
+        guard let low = pings.min(), let high = pings.max() else { return nil }
         let average = pings.reduce(0, +) / pings.count
         return "\(low) / \(average) / \(high) ms"
-    }
-}
-
-extension Date {
-    var agoLabel: String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: self, relativeTo: Date())
     }
 }
 

@@ -16,6 +16,8 @@ struct StatRow<Destination: View>: View {
     @ViewBuilder let destination: () -> Destination
 
     var body: some View {
+        let points = points
+
         Row {
             if let systemImage {
                 Image(systemName: systemImage)
@@ -26,7 +28,11 @@ struct StatRow<Destination: View>: View {
                 .foregroundColor(systemImage == nil ? color : .primary)
             Spacer()
 
-            RowSummary(series: series, count: count, color: color)
+            RowSummary(
+                series: points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) },
+                count: points?.bucket(on: period).total,
+                color: color
+            )
         } destination: {
             destination()
         }
@@ -35,14 +41,6 @@ struct StatRow<Destination: View>: View {
     /// All fetched points; `nil` while the provider is still loading.
     private var points: [ChartPoint<Int>]? {
         try? stat.result?.get().flatMap(\.points)
-    }
-
-    private var series: MiniChartSeries? {
-        points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) }
-    }
-
-    private var count: Int? {
-        points?.bucket(on: period).total
     }
 }
 
