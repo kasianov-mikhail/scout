@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+typealias Tint = Box<Color?>
+
+extension Tint {
+    convenience init() {
+        self.init(nil)
+    }
+}
+
 private struct NavigationTint: ViewModifier {
     let color: Color?
 

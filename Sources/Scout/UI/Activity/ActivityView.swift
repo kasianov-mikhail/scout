@@ -20,7 +20,7 @@ struct ActivityView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodExtentPicker(extent: $extent, periods: ActivityPeriod.allCases)
+            PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)
 
             ProviderView(provider: activity) { data in
                 RangeControl(extent: $extent)

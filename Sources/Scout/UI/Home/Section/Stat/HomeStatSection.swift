@@ -17,22 +17,21 @@ struct HomeStatSection: View {
     @StateObject private var crashStat = StatProvider(eventName: "Crash", periods: Period.summary)
 
     var body: some View {
-        Section {
-            sectionRows
-        } header: {
-            HomeSectionPicker(selection: $section)
-                .padding(.bottom, 4)
-                .task(id: section) {
-                    switch section {
-                    case .sessions:
-                        await sessionStat.fetchIfNeeded(in: database)
-                    case .crashes:
-                        await crashStat.fetchIfNeeded(in: database)
-                    case .users:
-                        await activity.fetchIfNeeded(in: database)
-                    }
+        HomeSectionPicker(selection: $section)
+            .padding(.bottom, 4)
+            .listRowSeparator(.hidden)
+            .task(id: section) {
+                switch section {
+                case .sessions:
+                    await sessionStat.fetchIfNeeded(in: database)
+                case .crashes:
+                    await crashStat.fetchIfNeeded(in: database)
+                case .users:
+                    await activity.fetchIfNeeded(in: database)
                 }
-        }
+            }
+
+        sectionRows
     }
 
     @ViewBuilder

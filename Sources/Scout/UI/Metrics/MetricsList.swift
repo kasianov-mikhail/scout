@@ -15,7 +15,6 @@ struct MetricsList: View {
 
         var id: Self { self }
 
-        /// The telemetry category this scope lists.
         var telemetry: Telemetry.Export {
             switch self {
             case .int: .counter
@@ -29,18 +28,15 @@ struct MetricsList: View {
     @State private var scope: Scope = .int
 
     var body: some View {
-        PeriodPicker(selection: $period)
-            .padding(.bottom)
+        JustifiedLayout {
+            SegmentStrip(selection: $period, title: \.shortTitle)
+        }
+        .padding()
 
-        Picker(selection: $scope) {
-            ForEach(Scope.allCases) { scope in
-                Text(scope.rawValue.uppercased())
-            }
-        } label: {
-            Text(verbatim: "Scope")
+        JustifiedLayout {
+            SegmentStrip(selection: $scope, title: \.rawValue)
         }
         .padding(.horizontal)
-        .pickerStyle(.segmented)
 
         switch scope {
         case .int:
@@ -67,7 +63,6 @@ struct MetricsList: View {
 
 #Preview("Metrics List") {
     NavigationStack {
-        MetricsList()
-            .navigationTitle(en: "Metrics")
+        MetricsList().navigationTitle(en: "Metrics")
     }
 }

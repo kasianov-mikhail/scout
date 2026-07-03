@@ -7,29 +7,36 @@
 
 import SwiftUI
 
-struct PeriodPicker: View {
-    @Binding var selection: Period
+struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
+    @Binding var extent: ChartExtent<T>
+
+    let periods: [T]
 
     var body: some View {
-        Picker(selection: $selection) {
-            ForEach(Period.allCases) { period in
-                Text(period.shortTitle.uppercased())
-            }
-        } label: {
-            Text(verbatim: "Period")
+        HStack(spacing: 20) {
+            SegmentStrip(
+                selection: $extent.period,
+                values: periods,
+                tint: nil,
+                title: title
+            )
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.horizontal)
-        .pickerStyle(.segmented)
+    }
+
+    private func title(period: T) -> String {
+        var title = period.shortTitle
+        if period == extent.period && extent.isRightEnabled {
+            title += "*"
+        }
+        return title
     }
 }
 
 #Preview {
-    struct Preview: View {
-        @State private var selection = Period.today
-
-        var body: some View {
-            PeriodPicker(selection: $selection)
-        }
-    }
-    return Preview()
+    PeriodPicker(
+        extent: .constant(ChartExtent(period: Period.today)),
+        periods: Period.allCases
+    )
 }

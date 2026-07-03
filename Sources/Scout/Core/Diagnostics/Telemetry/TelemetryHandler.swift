@@ -24,7 +24,11 @@ final class CKTelemetryHandler: NSObject {
 
 extension CKTelemetryHandler: CounterHandler {
     func increment(by value: Int64) {
-        logMetrics(telemetry: .counter, value: Int(value))
+        if let category = StatusBuckets.category(in: dimensions) {
+            logMetrics(category: category, value: Int(value))
+        } else {
+            logMetrics(telemetry: .counter, value: Int(value))
+        }
     }
 }
 

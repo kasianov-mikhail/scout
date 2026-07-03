@@ -44,14 +44,10 @@ struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
 
     var body: some View {
-        Picker(selection: $selection) {
-            ForEach(HomeSection.allCases) { section in
-                Text(verbatim: section.title)
-            }
-        } label: {
-            Text(verbatim: "Section")
+        HStack(spacing: 20) {
+            SegmentStrip(selection: $selection, tint: { $0.color }) { $0.title }
         }
-        .pickerStyle(.segmented)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
