@@ -18,7 +18,7 @@ struct StatView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            PeriodExtentPicker(extent: $extent, periods: stat.periods)
+            PeriodPicker(extent: $extent, periods: stat.periods)
 
             ProviderView(provider: stat) { data in
                 RangeControl(extent: $extent)
