@@ -35,14 +35,9 @@ struct FunnelBuilder: View {
 
         Header(title: "Correlate by")
 
-        Picker(selection: $key) {
-            ForEach(Funnel.CorrelationKey.allCases) { key in
-                Text(verbatim: key.title)
-            }
-        } label: {
-            Text(verbatim: "Correlate by")
+        JustifiedLayout {
+            SegmentStrip(selection: $key, title: \.title)
         }
-        .pickerStyle(.segmented)
         .listRowSeparator(.hidden)
     }
 
