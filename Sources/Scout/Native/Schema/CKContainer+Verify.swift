@@ -16,28 +16,11 @@ struct SchemaError: LocalizedError {
 
     var errorDescription: String? {
         let list = recordTypes.joined(separator: ", ")
-        return "CloudKit schema is outdated. Missing \(noun): \(list). Upload the Schema file via CloudKit Console."
+        return "CloudKit schema is outdated. Missing \(noun): \(list). Upload the scout-db Schema file via CloudKit Console."
     }
 }
 
-private let schemaRecordTypes = [
-    EventObject.recordType,
-    SessionObject.recordType,
-    LaunchObject.recordType,
-    VersionObject.recordType,
-    InstallObject.recordType,
-    DeviceObject.recordType,
-    CrashObject.recordType,
-    Int.recordType,
-    Double.recordType,
-    PeriodCell<Int>.recordType,
-]
-
 extension CKContainer {
-    func schemaChecks() async -> [SchemaCheck] {
-        await schemaChecks(for: schemaRecordTypes)
-    }
-
     // Queries each record type; flaky non-schema failures are skipped so one
     // bad query doesn't abort the rest, and are absent from the result.
     func schemaChecks(for recordTypes: [String]) async -> [SchemaCheck] {
@@ -65,21 +48,13 @@ extension CKContainer {
         return checks
     }
 
-    /// Queries each record type to verify the CloudKit schema is up to date.
-    ///
-    /// Throws a `SchemaError` if any record types have schema issues.
-    ///
-    func verifySchema() async throws {
-        try await verifySchema(for: schemaRecordTypes)
-    }
-
     func verifySchema(for recordTypes: [String]) async throws {
         let invalid = await schemaChecks(for: recordTypes).filter { !$0.isValid }.map(\.recordType)
 
         if invalid.count > 0 {
             let containerID = containerIdentifier ?? "<container-id>"
 
-            print("[Scout] Upload the Schema file to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")
+            print("[Scout] Upload the scout-db Schema file (https://github.com/kasianov-mikhail/scout-db/blob/main/Schema) to '\(containerID)' via CloudKit Console: https://icloud.developer.apple.com/dashboard/")
             print("[Scout] For details, see docs/INSTALLATION.md")
 
             throw SchemaError(recordTypes: invalid)

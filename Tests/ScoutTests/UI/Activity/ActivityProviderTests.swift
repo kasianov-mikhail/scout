@@ -38,17 +38,6 @@ struct ActivityProviderTests {
         #expect(monthly.last?.date == date(2026, 7, 1))
     }
 
-    @Test("Non-server backends still issue the PeriodMatrix query")
-    func fetchFallsBackToMatrixQuery() async throws {
-        let database = DatabaseStub()
-
-        let provider = ActivityProvider()
-        await provider.fetchIfNeeded(in: database)
-        _ = try #require(try provider.result?.get())
-
-        #expect(database.readCount(of: PeriodCell<Int>.recordType) == 1)
-    }
-
     private func date(_ year: Int, _ month: Int, _ day: Int) -> Date {
         Date(year: year, month: month, day: day)
     }

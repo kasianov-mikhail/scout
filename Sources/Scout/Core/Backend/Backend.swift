@@ -14,7 +14,6 @@ public struct Backend: Sendable {
     let displayName: String
 
     var serverInfo: ServerInfo? = nil
-    var aggregator: (MatrixAggregator)? = nil
     var probeStatus: @Sendable () async -> Status = { .unknown }
     var accountWarning: @Sendable () async -> Bool = { false }
     var verifySchema: @Sendable () async throws -> Void = {}

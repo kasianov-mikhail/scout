@@ -9,7 +9,7 @@ import CoreData
 
 @objc(VersionMarker)
 final class VersionMarker: SyncableObject {
-    override class var prefersRawDelivery: Bool? { false }
+    override class var isLocalOnly: Bool { true }
 
     static let installName = "VersionInstall"
     static let crashName = "VersionCrash"

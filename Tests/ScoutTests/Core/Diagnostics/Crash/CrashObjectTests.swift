@@ -16,44 +16,6 @@ struct CrashObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(year: 2025, month: 1, day: 6)
 
-    @Test("matrix(of:) aggregates every crash into a single \"Crash\" matrix")
-    func testMatrixAggregatesByRecordType() throws {
-        let batch: [CrashObject] = [
-            makeCrashObject(name: "SIGABRT", date: date),
-            makeCrashObject(name: "SIGSEGV", date: date),
-            makeCrashObject(name: "SIGSEGV", date: date.addingHour()),
-        ]
-
-        let matrix = try CrashObject.matrix(of: batch)
-
-        #expect(type(of: matrix).recordType == Int.recordType)
-        #expect(matrix.name == CrashObject.recordType)
-        #expect(matrix.date == date.startOfWeek)
-        #expect(matrix.cells.map(\.value).reduce(0, +) == 3)
-    }
-
-    @Test("matrix(of:) carries the app version, leaving category untouched")
-    func testMatrixCarriesVersion() throws {
-        let batch: [CrashObject] = [
-            makeCrashObject(name: "SIGABRT", date: date, appVersion: "3.2.0"),
-            makeCrashObject(name: "SIGSEGV", date: date, appVersion: "3.2.0"),
-        ]
-
-        let matrix = try CrashObject.matrix(of: batch)
-
-        #expect(matrix.version == "3.2.0")
-        #expect(matrix.category == nil)
-    }
-
-    @Test("matrix(of:) leaves the version nil for version-less crashes")
-    func testMatrixWithoutVersionHasNilVersion() throws {
-        let batch = [makeCrashObject(name: "SIGABRT", date: date, appVersion: nil)]
-
-        let matrix = try CrashObject.matrix(of: batch)
-
-        #expect(matrix.version == nil)
-    }
-
     @Test("record includes the crash fingerprint")
     func testRecordIncludesStoredFingerprint() {
         let object = makeCrashObject(name: "SIGABRT", date: date)

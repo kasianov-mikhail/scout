@@ -17,7 +17,7 @@ try await setup(backends: [
     .server(url: URL(string: "https://scout.example.com")!, apiKey: "YOUR_API_KEY"),
 ])
 ```
-A [Scout server](https://github.com/kasianov-mikhail/scout-server) aggregates analytics natively, so it needs no schema upload and receives raw metric values instead of client-maintained matrices.
+Every backend receives the same raw records and aggregates them on its own side — the CloudKit backend through [scout-db](https://github.com/kasianov-mikhail/scout-db) views, a [Scout server](https://github.com/kasianov-mikhail/scout-server) natively. Unlike CloudKit, a Scout server needs no schema upload.
 
 After setup, use the standard [swift-log](https://github.com/apple/swift-log) API to write logs:
 ```swift

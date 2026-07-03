@@ -16,23 +16,6 @@ struct VersionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("matrix(of:) produces correct GridCell<Int> counts by date")
-    func testMatrixOf() throws {
-        let batch: [VersionObject] = [
-            .stub(date: week, synced: false, in: context),
-            .stub(date: week, synced: false, in: context),
-            .stub(date: week.addingHour(), synced: false, in: context),
-        ]
-
-        let matrix = try VersionObject.matrix(of: batch)
-
-        #expect(
-            matrix.cells.sorted() == [
-                GridCell(row: 1, column: 0, value: 2),
-                GridCell(row: 1, column: 1, value: 1),
-            ])
-    }
-
     @Test("launches(in:) returns all launches with same appVersion")
     func testLaunches() throws {
         let launchID1 = UUID()

@@ -20,10 +20,6 @@ final class EventObject: NamedObject {
     @NSManaged var level: String?
     @NSManaged var paramCount: Int64
     @NSManaged var params: Data?
-
-    static func matrix(of batch: [EventObject]) throws -> GridMatrix<Int> {
-        try NamedObject.matrix(of: batch)
-    }
 }
 
 extension EventObject: RecordEncodable {

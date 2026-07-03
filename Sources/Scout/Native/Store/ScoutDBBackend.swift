@@ -10,22 +10,22 @@ import ScoutDB
 
 extension Backend {
     /// A CloudKit backend that stores records through scout-db's frozen Item/GridItem
-    /// schema instead of Scout's per-type record schema.
+    /// schema.
     ///
     /// Raw records are delivered to every entity; chart aggregates are maintained by
     /// scout-db views on write, so no client-side matrix upload happens.
     ///
-    public static func scoutDB(container: CKContainer) -> Backend {
+    public static func cloudKit(container: CKContainer) -> Backend {
         let registry = SchemaRegistry(database: container.publicCloudDatabase)
         let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
 
         return Backend(
-            id: (container.containerIdentifier ?? "cloudKit") + "/scout-db",
+            id: container.containerIdentifier ?? "cloudKit",
             database: ScoutDBDatabase(store: store),
             checkAvailability: {
                 (try? await container.accountStatus()) == .available
             },
-            displayName: "iCloud (scout-db)",
+            displayName: "iCloud",
             probeStatus: {
                 let status = try? await container.accountStatus()
                 return status == .available ? .reachable : .unreachable

@@ -21,11 +21,14 @@ extension RecordSender {
 
 @MainActor
 extension RecordSender {
-    func deliver<T: Syncable & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
+    func deliver<T: SyncableObject & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
+        let request = NSFetchRequest<T>(entityName: String(describing: T.self))
+        request.predicate = NSPredicate(.raw, to: id)
+
         var objects: [T] = []
         var deliveries: [SyncDelivery] = []
 
-        for object in try syncable.pending(in: context, for: id) {
+        for object in try context.fetch(request) {
             if let delivery = object.delivery(for: id), delivery.progress.contains(.raw) {
                 objects.append(object)
                 deliveries.append(delivery)
@@ -37,5 +40,26 @@ extension RecordSender {
             deliveries.complete(.raw)
             try context.save()
         }
+    }
+}
+
+extension NSPredicate {
+    fileprivate convenience init(_ progress: SyncDelivery.Progress, to backendID: String) {
+        self.init(
+            format: "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.progressPrimitive IN %@ AND $d.attempts < %d).@count > 0",
+            backendID,
+            progress.owingStates,
+            SyncDelivery.maxAttempts
+        )
+    }
+}
+
+extension SyncDelivery.Progress {
+    // Matches every persisted state still owing this progress, including rows the
+    // legacy matrix channel wrote as [.raw, .matrix] before that channel was removed.
+    fileprivate var owingStates: [Int16] {
+        (0...Self.all.rawValue)
+            .filter { Self(rawValue: $0).contains(self) }
+            .map { Int16($0) }
     }
 }

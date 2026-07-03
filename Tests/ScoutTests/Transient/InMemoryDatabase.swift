@@ -58,9 +58,13 @@ final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable 
     }
 }
 
-extension InMemoryDatabase: MatrixAggregator {
-    func aggregate(matrix: Matrix<some CellProtocol>) async throws {
-        try await MatrixUploader(database: self, maxRetry: 3, matrix: matrix).upload()
+extension InMemoryDatabase {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        []
+    }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        []
     }
 }
 

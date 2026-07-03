@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import CoreData
 import Foundation
 import Testing
@@ -74,21 +73,6 @@ struct RecordEncodingTests {
         try context.save()
 
         #expect(crash.record["app_version"] == "3.2.0")
-    }
-
-    @Test("Crash fingerprint is written to CloudKit records")
-    func crashFingerprintCloudKitRecord() throws {
-        let crash = CrashObject(entity: NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!, insertInto: context)
-        crash.name = "SIGABRT"
-        crash.crashID = UUID()
-        crash.fingerprint = "fingerprint"
-        crash.date = Date()
-        try context.save()
-
-        let ckRecord = crash.record.ckRecord
-
-        #expect(ckRecord.recordType == "Crash")
-        #expect(ckRecord["fingerprint"] as? String == "fingerprint")
     }
 }
 
