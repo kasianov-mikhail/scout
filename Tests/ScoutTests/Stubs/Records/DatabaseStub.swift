@@ -64,6 +64,14 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
+
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        []
+    }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        []
+    }
 }
 
 /// A reusable async latch: `wait()` suspends until `open()` is called; once

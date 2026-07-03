@@ -51,17 +51,6 @@ struct MetricsProviderTests {
         #expect(errors.points.map(\.count) == [4])
     }
 
-    @Test("Non-server backends still issue the matrix query")
-    func fetchFallsBackToMatrixQuery() async throws {
-        let database = DatabaseStub()
-
-        let provider = MetricsProvider<Int>(telemetry: .counter)
-        await provider.fetchIfNeeded(in: database)
-        _ = try #require(try provider.result?.get())
-
-        #expect(database.readCount(of: Int.recordType) == 1)
-    }
-
     private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Date {
         Date(year: year, month: month, day: day, hour: hour)
     }

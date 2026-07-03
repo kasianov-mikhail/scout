@@ -8,8 +8,8 @@
 import CoreData
 
 extension SyncDelivery {
-    // A single shared increment per cycle, so a record and its matrix don't each spend
-    // the budget and abandon the backend at half the allotted attempts.
+    // A single shared increment per cycle, so the per-type delivery passes don't
+    // each spend the budget and abandon the backend early.
     static func recordAttempt(for backendID: String, in context: NSManagedObjectContext) {
         let request = NSFetchRequest<SyncDelivery>(entityName: "SyncDelivery")
         request.predicate = NSPredicate(

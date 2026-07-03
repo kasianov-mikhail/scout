@@ -86,11 +86,6 @@
 - Every schema change ships as a new model version in `Scout.xcdatamodeld` (old versions are kept), relying on lightweight migration where the change is inferable; otherwise add a mapping model (`.xcmappingmodel`) and an `NSEntityMigrationPolicy` if needed.
 - Core Data cannot migrate a store down to an older model, so prefer additive, backward-compatible changes (new optional attributes, new entities) when feasible — that is the only practical form of a reverse migration.
 
-## CloudKit schema
-
-- Never remove or rename fields, record types, or index modifiers (`QUERYABLE`/`SEARCHABLE`/`SORTABLE`) in the CloudKit `Schema` file — Production schemas are append-only and `cktool import-schema` will reject removals with `cannot remove field … which exists in active production type …`.
-- To deprecate a field, stop writing it in code but keep its declaration in `Schema`.
-
 ## Server contract
 
 - scout and scout-server (`kasianov-mikhail/scout-server`) share an HTTP wire-format contract, so changes to the two repos are often interrelated: a change to request/response shapes, field names, the queryable-field set, or endpoints on the scout side (the `Core/Database/Backend` layer — `HTTPQueryCoding`, `HTTPRecordCoding`, `HTTPDatabase`) usually needs a matching change in scout-server, and vice versa.

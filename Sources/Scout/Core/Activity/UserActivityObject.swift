@@ -9,7 +9,7 @@ import CoreData
 
 @objc(UserActivityObject)
 final class UserActivityObject: TrackedObject {
-    override class var prefersRawDelivery: Bool? { false }
+    override class var isLocalOnly: Bool { true }
 
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32

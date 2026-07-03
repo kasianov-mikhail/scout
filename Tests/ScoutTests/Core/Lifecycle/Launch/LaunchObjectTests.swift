@@ -16,23 +16,6 @@ struct LaunchObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("matrix(of:) produces correct GridCell<Int> counts by date")
-    func testMatrixOf() throws {
-        let batch: [LaunchObject] = [
-            .stub(date: week, synced: false, in: context),
-            .stub(date: week, synced: false, in: context),
-            .stub(date: week.addingHour(), synced: false, in: context),
-        ]
-
-        let matrix = try LaunchObject.matrix(of: batch)
-
-        #expect(
-            matrix.cells.sorted() == [
-                GridCell(row: 1, column: 0, value: 2),
-                GridCell(row: 1, column: 1, value: 1),
-            ])
-    }
-
     @Test("sessions(in:) returns sessions matching launchID")
     func testSessions() throws {
         let launch = LaunchObject.stub(date: week, in: context)

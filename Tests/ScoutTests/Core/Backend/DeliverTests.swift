@@ -15,7 +15,6 @@ import Testing
 @Suite("Deliver across backends")
 struct DeliverTests {
     let cloud = InMemoryDatabase()
-    let cloud2 = InMemoryDatabase()
     let server = InMemoryDatabase()
     let context = NSManagedObjectContext.inMemoryContext()
 
@@ -26,18 +25,7 @@ struct DeliverTests {
             id: "cloud",
             database: cloud,
             checkAvailability: { true },
-            displayName: "cloud",
-            aggregator: cloud
-        )
-    }
-
-    var cloud2Backend: Backend {
-        Backend(
-            id: "cloud2",
-            database: cloud2,
-            checkAvailability: { true },
-            displayName: "cloud2",
-            aggregator: cloud2
+            displayName: "cloud"
         )
     }
 
@@ -54,14 +42,13 @@ struct DeliverTests {
         [cloudBackend, serverBackend]
     }
 
-    /// Run both engines for a type the way `synchronize` does: raw records first, then matrices.
-    func deliver<T: Syncable & MatrixBatch & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
+    /// Run the delivery engine for a type the way `synchronize` does: raw records to every backend.
+    func deliver<T: SyncableObject & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
         SyncDelivery.recordAttempt(for: backend.id, in: context)
         try await RecordSender(backend: backend).deliver(type: type, in: context)
-        try await MatrixSender(backend: backend)?.deliver(type: type, in: context)
     }
 
-    @Test("Events go raw to every backend, matrices only to CloudKit")
+    @Test("Events go raw to every backend")
     func eventsFanOut() async throws {
         EventObject.stub(name: "login", in: context)
         try context.save()
@@ -73,37 +60,6 @@ struct DeliverTests {
 
         #expect(cloud.records.count(of: "Event") == 1)
         #expect(server.records.count(of: "Event") == 1)
-        #expect(cloud.records.count(of: Int.recordType) == 1)
-        #expect(server.records.count(of: Int.recordType) == 0)
-    }
-
-    @Test("Metrics go raw to servers and as matrices to CloudKit")
-    func metricsSplit() async throws {
-        IntMetricsObject.stub(name: "requests", telemetry: "counter", value: 5, in: context)
-        try context.save()
-        try SyncableObject.plan(backends: backends, in: context)
-
-        for backend in backends {
-            try await deliver(IntMetricsObject.self, to: backend)
-        }
-
-        #expect(server.records.count(of: "IntMetric") == 1)
-        #expect(cloud.records.count(of: "IntMetric") == 0)
-        #expect(cloud.records.count(of: Int.recordType) == 1)
-        #expect(server.records.count(of: Int.recordType) == 0)
-    }
-
-    @Test("A server-only setup skips the matrix stage entirely")
-    func serverOnly() async throws {
-        let event = EventObject.stub(name: "login", in: context)
-        try context.save()
-        try SyncableObject.plan(backends: [serverBackend], in: context)
-
-        try await deliver(EventObject.self, to: serverBackend)
-
-        #expect(event.delivery(for: "server")?.isDelivered == true)
-        #expect(server.records.count(of: "Event") == 1)
-        #expect(server.records.count(of: Int.recordType) == 0)
     }
 
     @Test("A failing backend leaves its row outstanding without blocking the others")
@@ -114,7 +70,7 @@ struct DeliverTests {
 
         server.writeErrors.append(Self.testError)
 
-        // The CloudKit engine succeeds independently of the failing server engine.
+        // The cloud engine succeeds independently of the failing server engine.
         try await deliver(EventObject.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
             try await deliver(EventObject.self, to: serverBackend)
@@ -133,7 +89,7 @@ struct DeliverTests {
         try context.save()
         try SyncableObject.plan(backends: backends, in: context)
 
-        // The server is unavailable this cycle, so only its CloudKit engine runs.
+        // The server is unavailable this cycle, so only the cloud engine runs.
         try await deliver(EventObject.self, to: cloudBackend)
 
         // The server's row is seeded but untouched — not even an attempt is
@@ -145,74 +101,10 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 0)
     }
 
-    @Test("A dual-channel delivery counts one attempt per cycle, not one per channel")
-    func dualChannelCountsOneAttemptPerCycle() async throws {
-        let event = EventObject.stub(name: "login", in: context)
-        try context.save()
-        try SyncableObject.plan(backends: [cloudBackend], in: context)
-
-        // The native backend owes both a raw record and a matrix for this event.
-        #expect(event.delivery(for: "cloud")?.progress == [.raw, .matrix])
-
-        try await deliver(EventObject.self, to: cloudBackend)
-
-        // Both channels ran this cycle, yet the shared budget advanced only once.
-        #expect(event.delivery(for: "cloud")?.isDelivered == true)
-        #expect(event.delivery(for: "cloud")?.attempts == 1)
-    }
-
-    @Test("A matrix delivery over a raw-only row is a no-op, not a failure")
-    func matrixOverRawOnlyRow() async throws {
-        let event = EventObject.stub(name: "login", in: context)
-        event.seedDelivery([.raw], for: "cloud", in: context)
-        try context.save()
-
-        try await MatrixSender(backend: cloudBackend)?.deliver(type: EventObject.self, in: context)
-
-        #expect(event.delivery(for: "cloud")?.progress == [.raw])
-        #expect(cloud.records.count(of: Int.recordType) == 0)
-    }
-
-    @Test("A raw-only row doesn't derail matrices owed by other batches")
-    func rawOnlyRowDoesNotBlockOtherMatrices() async throws {
-        let week = Date(timeIntervalSince1970: 1_000_000)
-        let settled = EventObject.stub(name: "login", date: week, in: context)
-        settled.seedDelivery([.raw], for: "cloud", in: context)
-        let owed = EventObject.stub(name: "login", date: week.addingWeek(), in: context)
-        owed.seedDelivery([.matrix], for: "cloud", in: context)
-        try context.save()
-
-        try await MatrixSender(backend: cloudBackend)?.deliver(type: EventObject.self, in: context)
-
-        #expect(settled.delivery(for: "cloud")?.progress == [.raw])
-        #expect(owed.delivery(for: "cloud")?.progress == [])
-        #expect(cloud.records.count(of: Int.recordType) == 1)
-    }
-
-    @Test("A matrix is contributed per native backend, never twice")
-    func matrixPerNativeBackend() async throws {
-        let event = EventObject.stub(name: "login", synced: true, in: context)
-        // Prior cycle: the first native backend was fully delivered, the second
-        // still owes its matrix.
-        event.seedDelivery([], for: "cloud", in: context)
-        event.seedDelivery([.matrix], for: "cloud2", in: context)
-        try context.save()
-
-        try await deliver(EventObject.self, to: cloudBackend)
-        try await deliver(EventObject.self, to: cloud2Backend)
-
-        #expect(event.delivery(for: "cloud")?.isDelivered == true)
-        #expect(event.delivery(for: "cloud2")?.isDelivered == true)
-        // The first backend's matrix isn't contributed a second time...
-        #expect(cloud.records.count(of: Int.recordType) == 0)
-        // ...while the second backend's matrix is contributed exactly once.
-        #expect(cloud2.records.count(of: Int.recordType) == 1)
-    }
-
     @Test("A backend abandoned after too many attempts is no longer retried")
     func abandonedBackendSettles() async throws {
         let event = EventObject.stub(name: "login", synced: true, in: context)
-        event.seedDelivery([.raw, .matrix], for: "cloud", in: context)
+        event.seedDelivery([.raw], for: "cloud", in: context)
         // The server is already at the attempt ceiling and still owes its raw record.
         event.seedDelivery([.raw], attempts: Int16(SyncDelivery.maxAttempts), for: "server", in: context)
         try context.save()
@@ -232,7 +124,7 @@ struct DeliverTests {
         try context.save()
         try SyncableObject.plan(backends: backends, in: context)
 
-        // First cycle: the server is down, CloudKit succeeds.
+        // First cycle: the server is down, cloud succeeds.
         server.writeErrors.append(Self.testError)
         try await deliver(EventObject.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
@@ -244,9 +136,8 @@ struct DeliverTests {
 
         #expect(event.delivery(for: "server")?.isDelivered == true)
         #expect(server.records.count(of: "Event") == 1)
-        // CloudKit's raw record and matrix were each written exactly once.
+        // Cloud's raw record was written exactly once.
         #expect(cloud.records.count(of: "Event") == 1)
-        #expect(cloud.records.count(of: Int.recordType) == 1)
     }
 
     @Test("Dropping a never-reached backend lets cleanup reclaim the record")
@@ -256,7 +147,7 @@ struct DeliverTests {
         try context.save()
         try SyncableObject.plan(backends: backends, in: context)
 
-        // CloudKit delivered; the server never accepts the record.
+        // Cloud delivered; the server never accepts the record.
         server.writeErrors.append(Self.testError)
         try await deliver(EventObject.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {

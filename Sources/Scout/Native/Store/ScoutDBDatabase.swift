@@ -17,15 +17,20 @@ struct ScoutDBDatabase: Sendable {
 
 extension ScoutDBDatabase: RecordWriter {
     func write(record: Record) async throws {
-        var values = record.storeValues
-        values[EntityCatalog.metricSeriesKey] = EntityCatalog.seriesKey(for: record)
-        try await store.write(values, entity: record.recordType, uuid: record.recordID)
+        try await store.write(Self.values(for: record), entity: record.recordType, uuid: record.recordID)
     }
 
     func write(records: [Record]) async throws {
-        for record in records {
-            try await write(record: record)
+        for (entity, group) in Dictionary(grouping: records, by: \.recordType) {
+            let batch = group.map { EntityWrite(values: Self.values(for: $0), uuid: $0.recordID) }
+            try await store.write(batch, entity: entity)
         }
+    }
+
+    private static func values(for record: Record) -> [String: ScoutDB.RecordValue] {
+        var values = record.storeValues
+        values[EntityCatalog.metricSeriesKey] = EntityCatalog.seriesKey(for: record)
+        return values
     }
 }
 

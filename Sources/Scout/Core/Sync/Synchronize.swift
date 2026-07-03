@@ -22,15 +22,9 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
                 SyncDelivery.recordAttempt(for: backend.id, in: context)
 
                 let recordSender = RecordSender(backend: backend)
-                let matrixSender = MatrixSender(backend: backend)
 
-                func deliver<T: Syncable & MatrixBatch & RecordEncodable>(_ type: T.Type) {
+                func deliver<T: SyncableObject & RecordEncodable>(_ type: T.Type) {
                     group.addTask { try? await recordSender.deliver(type: type, in: context) }
-                    group.addTask { try? await matrixSender?.deliver(type: type, in: context) }
-                }
-
-                func deliver<T: Syncable & MatrixBatch>(_ type: T.Type) {
-                    group.addTask { try? await matrixSender?.deliver(type: type, in: context) }
                 }
 
                 deliver(EventObject.self)
@@ -42,8 +36,6 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
                 deliver(CrashObject.self)
                 deliver(IntMetricsObject.self)
                 deliver(DoubleMetricsObject.self)
-                deliver(UserActivityObject.self)
-                deliver(VersionMarker.self)
             }
         }
         try Task.checkCancellation()

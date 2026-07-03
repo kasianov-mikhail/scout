@@ -8,7 +8,7 @@ Ensure CloudKit is enabled in your Apple Developer account and configured for yo
 
 ## Upload Your Database Schema
 
-Upload the [schema file](https://github.com/kasianov-mikhail/scout/blob/main/Schema) to your CloudKit container:
+The CloudKit backend stores everything through [scout-db](https://github.com/kasianov-mikhail/scout-db)'s generic `Item`/`GridItem` schema. Upload its [schema file](https://github.com/kasianov-mikhail/scout-db/blob/main/Schema) to your CloudKit container:
 
 1. Open the [CloudKit Console](https://icloud.developer.apple.com/dashboard/) and sign in with your Apple Developer account.
 2. Select the CloudKit container associated with your project.

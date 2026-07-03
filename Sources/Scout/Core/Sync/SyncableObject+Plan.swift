@@ -26,21 +26,12 @@ extension SyncableObject {
 
 extension Backend {
     fileprivate func planDelivery(for object: SyncableObject, in context: NSManagedObjectContext) {
-        var progress: SyncDelivery.Progress = []
+        guard !type(of: object).isLocalOnly else { return }
 
-        if type(of: object).prefersRawDelivery ?? (aggregator == nil) {
-            progress.insert(.raw)
-        }
-        if aggregator != nil {
-            progress.insert(.matrix)
-        }
-
-        if !progress.isEmpty {
-            let entity = NSEntityDescription.entity(forEntityName: "SyncDelivery", in: context)!
-            let row = SyncDelivery(entity: entity, insertInto: context)
-            row.backendID = id
-            row.object = object
-            row.progress = progress
-        }
+        let entity = NSEntityDescription.entity(forEntityName: "SyncDelivery", in: context)!
+        let row = SyncDelivery(entity: entity, insertInto: context)
+        row.backendID = id
+        row.object = object
+        row.progress = .raw
     }
 }

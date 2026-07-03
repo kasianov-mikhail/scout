@@ -15,8 +15,6 @@ protocol MetricsValued: MetricsObject {
 
 @objc(MetricsObject)
 class MetricsObject: TrackedObject {
-    override class var prefersRawDelivery: Bool? { nil }
-
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 }
