@@ -8,6 +8,7 @@
 
 import CloudKit
 import Foundation
+import ScoutDB
 
 extension CKContainer {
     @MainActor func verifyParallelismIfDue() {
@@ -21,9 +22,17 @@ extension CKContainer {
             }
 
             Task {
-                await verifyParallelismBenchmark(container: self)
+                await verifyScoutParallelism(container: self)
                 UserDefaults.standard.set(Date(), forKey: key)
             }
         #endif
+    }
+}
+
+/// Runs ScoutDB's parallelism check with Scout's own traffic drained, so the
+/// measurement is not polluted by concurrent Scout requests.
+@discardableResult func verifyScoutParallelism(container: CKContainer) async -> Bool {
+    await requestLimiter.withAllSlots {
+        await verifyParallelismBenchmark(container: container, recordType: EventObject.recordType)
     }
 }

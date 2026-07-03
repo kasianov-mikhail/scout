@@ -26,7 +26,7 @@ extension Backend {
             },
             verifySchema: container.verifySchema,
             schemaChecks: container.schemaChecks,
-            runBenchmark: { await verifyParallelismBenchmark(container: container) },
+            runBenchmark: { await verifyScoutParallelism(container: container) },
             onSetup: container.verifyParallelismIfDue
         )
     }

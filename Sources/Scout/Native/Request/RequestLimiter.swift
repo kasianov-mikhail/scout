@@ -6,6 +6,8 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import ScoutDB
+
 /// The process-wide limiter that every `CKDatabase.runner` call goes through.
 let requestLimiter = RequestLimiter(limit: RequestLimiter.requestLimit)
 
@@ -19,7 +21,7 @@ let requestLimiter = RequestLimiter(limit: RequestLimiter.requestLimit)
 ///
 actor RequestLimiter {
     /// The measured CloudKit parallelism ceiling; `verifyParallelismBenchmark` re-checks it.
-    static let requestLimit = 8
+    static let requestLimit = cloudKitParallelismLimit
 
     private let limit: Int
     private var running = 0
