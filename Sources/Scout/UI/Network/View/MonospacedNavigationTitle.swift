@@ -10,56 +10,64 @@ import SwiftUI
 
 extension View {
     func monospacedNavigationTitle(en title: String) -> some View {
-        navigationTitle(en: title)
-            .navigationBarTitleDisplayMode(.large)
-            .background(MonospacedNavigationBar())
+        #if canImport(UIKit)
+            navigationTitle(en: title)
+                .navigationBarTitleDisplayMode(.large)
+                .background(MonospacedNavigationBar())
+        #else
+            navigationTitle(en: title)
+        #endif
     }
 }
 
-// SwiftUI cannot restyle the system navigation title, so this reaches into the
-// hosting UINavigationBar and swaps its title fonts while the screen is visible.
-private struct MonospacedNavigationBar: UIViewControllerRepresentable {
-    func makeUIViewController(context: Context) -> Controller {
-        Controller()
-    }
+#if canImport(UIKit)
 
-    func updateUIViewController(_ controller: Controller, context: Context) {}
+    // SwiftUI cannot restyle the system navigation title, so this reaches into the
+    // hosting UINavigationBar and swaps its title fonts while the screen is visible.
+    private struct MonospacedNavigationBar: UIViewControllerRepresentable {
+        func makeUIViewController(context: Context) -> Controller {
+            Controller()
+        }
 
-    final class Controller: UIViewController {
-        private var restore: ((UINavigationBar) -> Void)?
+        func updateUIViewController(_ controller: Controller, context: Context) {}
 
-        override func viewWillAppear(_ animated: Bool) {
-            super.viewWillAppear(animated)
+        final class Controller: UIViewController {
+            private var restore: ((UINavigationBar) -> Void)?
 
-            guard let bar = navigationController?.navigationBar else { return }
+            override func viewWillAppear(_ animated: Bool) {
+                super.viewWillAppear(animated)
 
-            let large = bar.standardAppearance.largeTitleTextAttributes
-            let inline = bar.standardAppearance.titleTextAttributes
-            restore = { bar in
+                guard let bar = navigationController?.navigationBar else { return }
+
+                let large = bar.standardAppearance.largeTitleTextAttributes
+                let inline = bar.standardAppearance.titleTextAttributes
+                restore = { bar in
+                    for appearance in bar.allAppearances {
+                        appearance.largeTitleTextAttributes = large
+                        appearance.titleTextAttributes = inline
+                    }
+                }
+
                 for appearance in bar.allAppearances {
-                    appearance.largeTitleTextAttributes = large
-                    appearance.titleTextAttributes = inline
+                    appearance.largeTitleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 34, weight: .bold)
+                    appearance.titleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 17, weight: .semibold)
                 }
             }
 
-            for appearance in bar.allAppearances {
-                appearance.largeTitleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 34, weight: .bold)
-                appearance.titleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 17, weight: .semibold)
-            }
-        }
+            override func viewWillDisappear(_ animated: Bool) {
+                super.viewWillDisappear(animated)
 
-        override func viewWillDisappear(_ animated: Bool) {
-            super.viewWillDisappear(animated)
-
-            if let bar = navigationController?.navigationBar {
-                restore?(bar)
+                if let bar = navigationController?.navigationBar {
+                    restore?(bar)
+                }
             }
         }
     }
-}
 
-extension UINavigationBar {
-    fileprivate var allAppearances: [UINavigationBarAppearance] {
-        [standardAppearance, compactAppearance, scrollEdgeAppearance, compactScrollEdgeAppearance].compactMap { $0 }
+    extension UINavigationBar {
+        fileprivate var allAppearances: [UINavigationBarAppearance] {
+            [standardAppearance, compactAppearance, scrollEdgeAppearance, compactScrollEdgeAppearance].compactMap { $0 }
+        }
     }
-}
+
+#endif
