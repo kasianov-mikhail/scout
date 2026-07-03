@@ -43,15 +43,6 @@ struct HomeLogSection: View {
         } destination: {
             NetworkView()
         }
-        Row {
-            Image(systemName: "line.3.horizontal.decrease")
-                .foregroundColor(.blue)
-                .frame(width: 24)
-            Text(verbatim: "Funnel")
-            Spacer()
-        } destination: {
-            FunnelView()
-        }
         HomeLogRow(
             title: "Crashes",
             image: "exclamationmark.triangle",
