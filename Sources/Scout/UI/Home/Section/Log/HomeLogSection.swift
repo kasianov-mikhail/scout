@@ -35,6 +35,15 @@ struct HomeLogSection: View {
             destination: { MetricsList() }
         )
         Row {
+            Image(systemName: "network")
+                .foregroundColor(.blue)
+                .frame(width: 24)
+            Text(verbatim: "Network")
+            Spacer()
+        } destination: {
+            NetworkView()
+        }
+        Row {
             Image(systemName: "line.3.horizontal.decrease")
                 .foregroundColor(.blue)
                 .frame(width: 24)
