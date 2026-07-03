@@ -6,24 +6,41 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import Foundation
 
-/// A marker protocol for types that can perform both incremental
-/// and full monitoring passes against a Core Data store.
-///
 protocol Monitor: PartialMonitor {
     static func complete(in context: NSManagedObjectContext) throws
 }
 
-/// A marker protocol for types that support an incremental monitoring pass.
-///
 protocol PartialMonitor {
     static func trigger(in context: NSManagedObjectContext) throws
 }
 
-/// Marker for types that need to finalise records left open by a prior
-/// process — crashes, OS kills, swipe-terminations — at the next process
-/// start.
-///
 protocol RecoveryMonitor {
     static func completeStale(in context: NSManagedObjectContext) throws
+}
+
+enum MonitorError: LocalizedError, Equatable {
+    case notFound
+    case alreadyCompleted(Date)
+
+    var errorDescription: String? {
+        switch self {
+        case .notFound:
+            "MonitorError not found in the context"
+        case .alreadyCompleted(let date):
+            "MonitorError already completed on \(date)"
+        }
+    }
+
+    static func == (lhs: MonitorError, rhs: MonitorError) -> Bool {
+        switch (lhs, rhs) {
+        case (.notFound, .notFound):
+            true
+        case (.alreadyCompleted, .alreadyCompleted):
+            true
+        default:
+            false
+        }
+    }
 }
