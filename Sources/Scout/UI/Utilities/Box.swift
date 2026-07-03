@@ -15,11 +15,3 @@ class Box<T>: ObservableObject {
         self.value = value
     }
 }
-
-typealias Tint = Box<Color?>
-
-extension Tint {
-    convenience init() {
-        self.init(nil)
-    }
-}
