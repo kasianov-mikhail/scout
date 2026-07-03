@@ -35,13 +35,13 @@ struct HomeLogSection: View {
             destination: { MetricsList() }
         )
         Row {
-            Image(systemName: "line.3.horizontal.decrease")
+            Image(systemName: "network")
                 .foregroundColor(.blue)
                 .frame(width: 24)
-            Text(verbatim: "Funnel")
+            Text(verbatim: "Network")
             Spacer()
         } destination: {
-            FunnelView()
+            NetworkView()
         }
         HomeLogRow(
             title: "Crashes",

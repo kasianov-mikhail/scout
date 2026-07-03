@@ -10,9 +10,13 @@ import CoreData
 
 extension CKTelemetryHandler {
     func logMetrics(telemetry: Telemetry.Export, value: some MetricScalar) {
+        logMetrics(category: telemetry.rawValue, value: value)
+    }
+
+    func logMetrics(category: String, value: some MetricScalar) {
         let label = self.label
         persistMetrics { context in
-            try saveMetrics(label, date: Date(), category: telemetry.rawValue, value: value, context)
+            try saveMetrics(label, date: Date(), category: category, value: value, context)
         }
     }
 
