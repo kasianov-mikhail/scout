@@ -28,6 +28,8 @@ class HomeLogProvider: ObservableObject {
         }
         do {
             results[period] = .success(try await fetch(for: period, in: database))
+        } catch is CancellationError {
+            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
         } catch {
             results[period] = .failure(error)
         }
