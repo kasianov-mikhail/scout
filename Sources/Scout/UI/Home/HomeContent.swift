@@ -31,31 +31,29 @@ struct HomeContent: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
+        List {
             HomeSectionPicker(selection: $section)
-                .padding(.horizontal)
                 .padding(.top, 8)
                 .padding(.bottom, 4)
+                .listRowSeparator(.hidden)
                 .onAppear { fetch(section) }
                 .onChange(of: section) { fetch($0) }
 
-            List {
-                HomeStatSection(
-                    section: section,
-                    activity: activity,
-                    sessionStat: sessionStat,
-                    crashStat: crashStat
-                )
-                HomeLogSection()
-                HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
-            }
-            .navigationDestination(isPresented: $showReleaseHealth) {
-                ReleaseHealthView(provider: releaseProvider)
-            }
-            .listStyle(.plain)
-            .imageScale(.medium)
-            .scrollContentBackground(.hidden)
+            HomeStatSection(
+                section: section,
+                activity: activity,
+                sessionStat: sessionStat,
+                crashStat: crashStat
+            )
+            HomeLogSection()
+            HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
         }
+        .navigationDestination(isPresented: $showReleaseHealth) {
+            ReleaseHealthView(provider: releaseProvider)
+        }
+        .listStyle(.plain)
+        .imageScale(.medium)
+        .scrollContentBackground(.hidden)
         .background {
             Rectangle()
                 .fill(.background)
