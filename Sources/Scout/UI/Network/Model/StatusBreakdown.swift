@@ -55,6 +55,12 @@ struct StatusBreakdown: Equatable {
     }
 }
 
+extension StatusBreakdown: MetricHistogram {
+    static func bucketIndex(of category: String) -> Int? {
+        StatusBuckets.index(of: category)
+    }
+}
+
 extension StatusBreakdown {
     static func sample(success: Int, redirect: Int = 0, clientError: Int = 0, serverError: Int = 0) -> StatusBreakdown {
         var breakdown = StatusBreakdown()

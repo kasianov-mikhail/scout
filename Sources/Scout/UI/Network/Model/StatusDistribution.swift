@@ -16,21 +16,7 @@ struct StatusDistribution: Equatable {
     }
 
     init(series: [MetricSeries]) {
-        var breakdowns: [Date: StatusBreakdown] = [:]
-
-        for singleSeries in series {
-            guard let category = singleSeries.category else { continue }
-            guard let index = StatusBuckets.index(of: category) else { continue }
-
-            for point in singleSeries.points {
-                let date = Date(millisecondsSince1970: point.date)
-                var breakdown = breakdowns[date, default: StatusBreakdown()]
-                breakdown.add(count: Int(point.value.doubleValue), at: index)
-                breakdowns[date] = breakdown
-            }
-        }
-
-        self.breakdowns = breakdowns
+        self.init(breakdowns: StatusBreakdown.buckets(from: series))
     }
 
     var isEmpty: Bool {
