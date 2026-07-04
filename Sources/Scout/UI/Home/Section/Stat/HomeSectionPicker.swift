@@ -44,7 +44,7 @@ struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
 
     var body: some View {
-        SegmentStrip(selection: $selection, tint: { $0.color }) { $0.title }
+        SegmentStrip(selection: $selection, tint: \.color, title: \.title)
     }
 }
 
