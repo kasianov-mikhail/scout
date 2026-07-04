@@ -43,8 +43,8 @@ public struct HomeView: View {
                             releaseProvider: ReleaseHealthProvider()
                         )
                         .id(backend.id)
-                            .accountWarning(backend)
-                            .onboardingSheet()
+                        .accountWarning(backend)
+                        .onboardingSheet()
                     }
                 } else {
                     ErrorView(
