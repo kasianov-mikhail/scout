@@ -65,14 +65,14 @@ struct ConnectionMenu: View {
             .task {
                 connections = await connections.refreshingStatuses()
             }
-            .onChange(of: isPresented) { isPresented in
-                guard !isPresented, opensSettingsAfterDismiss else { return }
-
-                opensSettingsAfterDismiss = false
-                onSettings()
-            }
             .popoverDropdown()
             .opaquePresentationBackground()
+        }
+        .onChange(of: isPresented) { isPresented in
+            guard !isPresented, opensSettingsAfterDismiss else { return }
+
+            opensSettingsAfterDismiss = false
+            onSettings()
         }
     }
 }
