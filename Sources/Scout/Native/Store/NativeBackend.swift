@@ -57,16 +57,8 @@ extension EntityCatalog {
             try? await registry.register(definition)
 
             if published != definition {
-                await publish(definition, in: registry)
+                try? await registry.publish(definition)
             }
-        }
-    }
-
-    private static func publish(_ definition: EntityDefinition, in registry: SchemaRegistry) async {
-        do {
-            try await registry.publish(definition)
-        } catch {
-            await MainActor.run { schemaBootstrapMessage.value = error.localizedDescription }
         }
     }
 }

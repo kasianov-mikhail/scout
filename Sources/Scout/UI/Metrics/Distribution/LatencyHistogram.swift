@@ -58,3 +58,9 @@ struct LatencyHistogram: Equatable {
         return lower + (upper - lower) * min(max(fraction, 0), 1)
     }
 }
+
+extension LatencyHistogram: MetricHistogram {
+    static func bucketIndex(of category: String) -> Int? {
+        LatencyBuckets.index(of: category)
+    }
+}

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Stability {
+struct Stability: Ratio {
     let value: Double
 
     init(_ value: Double) {
@@ -24,13 +24,7 @@ struct Stability {
     }
 
     var formatted: String {
-        String(format: "%.2f%%", value * 100)
-    }
-}
-
-extension Stability: ExpressibleByFloatLiteral {
-    init(floatLiteral value: Double) {
-        self.value = value
+        percentage(fractionDigits: 2)
     }
 }
 

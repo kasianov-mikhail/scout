@@ -27,7 +27,7 @@ struct GlanceSummary {
     }
 
     var detail: String {
-        let count = total == 1 ? "1 backend" : "\(total) backends"
+        let count = ExportFormat.counted(total, "backend", "backends")
         return averageLatency.map { "\(count) · \($0) ms average latency" } ?? count
     }
 
