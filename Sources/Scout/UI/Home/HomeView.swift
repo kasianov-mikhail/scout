@@ -16,6 +16,7 @@ extension View {
     /// - Parameters:
     ///   - isPresented: A binding that controls whether the home screen is shown.
     ///   - backends: The backends to inspect.
+    /// - Returns: A view that presents the dashboard over this view while `isPresented` is `true`.
     ///
     public func scoutHome(isPresented: Binding<Bool>, backends: [Backend]) -> some View {
         fullScreenCover(isPresented: isPresented) {
