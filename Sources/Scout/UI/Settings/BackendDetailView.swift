@@ -13,7 +13,6 @@ struct BackendDetailView: View {
     let id: String
     @Binding var activeID: String
 
-    @State private var checks: [SchemaCheck]?
     @State private var isChecking = false
     @State private var isBenchmarking = false
     @State private var message: Message?
@@ -77,39 +76,7 @@ struct BackendDetailView: View {
                 }
             }
 
-            switch backend.engine {
-            case .cloudKit:
-                Header(title: "Schema")
-
-                if let checks {
-                    if checks.count > 0 {
-                        ForEach(checks) { check in
-                            HStack(spacing: 12) {
-                                Image(systemName: check.isValid ? "checkmark.circle.fill" : "xmark.circle.fill")
-                                    .foregroundStyle(check.isValid ? .green : .red)
-                                Text(verbatim: check.recordType)
-                                Spacer()
-                                Text(verbatim: check.isValid ? "Deployed" : "Missing")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    } else {
-                        Text(verbatim: "Schema could not be checked. Sign in to iCloud and try again.")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .listRowSeparator(.hidden)
-                    }
-                } else {
-                    HStack(spacing: 12) {
-                        ProgressView()
-                        Text(verbatim: "Checking record types…")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
-                    .listRowSeparator(.hidden)
-                }
-            case .server:
+            if backend.engine == .server {
                 Header(title: "Connection")
 
                 DetailValueRow(title: "API Key", value: backend.hasAPIKey ? "Configured" : "Not set")
@@ -178,11 +145,6 @@ struct BackendDetailView: View {
             }
         }
         .listStyle(.plain)
-        .task {
-            if backend.engine == .cloudKit, checks == nil {
-                checks = await backend.schemaChecks()
-            }
-        }
     }
 }
 

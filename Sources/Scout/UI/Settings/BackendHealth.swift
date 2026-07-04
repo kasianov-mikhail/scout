@@ -20,7 +20,6 @@ struct BackendHealth: Identifiable {
     var lastChecked: Date? = nil
     var pings: [Int] = []
     var probe: @Sendable () async -> Backend.Status = { .unknown }
-    var schemaChecks: @Sendable () async -> [SchemaCheck] = { [] }
     var runBenchmark: (@Sendable () async -> Bool)? = nil
 
     enum Engine {
@@ -39,7 +38,6 @@ extension BackendHealth {
             hasAPIKey: backend.serverInfo?.hasAPIKey ?? false,
             isSecure: backend.serverInfo?.isSecure ?? true,
             probe: backend.probeStatus,
-            schemaChecks: backend.schemaChecks,
             runBenchmark: backend.runBenchmark
         )
     }
@@ -148,7 +146,6 @@ extension BackendHealth {
                     try? await Task.sleep(for: .milliseconds(264))
                     return .reachable
                 },
-                schemaChecks: { SchemaCheck.samples },
                 runBenchmark: { true }
             ),
             BackendHealth(
@@ -169,23 +166,6 @@ extension BackendHealth {
                 lastChecked: Date(timeIntervalSinceNow: -340),
                 probe: { .unreachable }
             ),
-        ]
-    }
-}
-
-extension SchemaCheck {
-    static var samples: [SchemaCheck] {
-        [
-            SchemaCheck(recordType: "Event", isValid: true),
-            SchemaCheck(recordType: "Session", isValid: true),
-            SchemaCheck(recordType: "Launch", isValid: true),
-            SchemaCheck(recordType: "Version", isValid: true),
-            SchemaCheck(recordType: "Install", isValid: true),
-            SchemaCheck(recordType: "Device", isValid: true),
-            SchemaCheck(recordType: "Crash", isValid: true),
-            SchemaCheck(recordType: "IntMetric", isValid: true),
-            SchemaCheck(recordType: "DoubleMetric", isValid: true),
-            SchemaCheck(recordType: "DateIntMatrix", isValid: false),
         ]
     }
 }

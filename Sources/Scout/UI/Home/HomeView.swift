@@ -7,11 +7,15 @@
 
 import SwiftUI
 
+// The latest scout-db schema bootstrap failure, shown on the home screen.
+@MainActor let schemaBootstrapMessage = Box<String?>(nil)
+
 public struct HomeView: View {
     let backends: [Backend]
 
     @AppStorage("scout_active_backend") private var activeID = ""
     @StateObject private var tint = Tint()
+    @ObservedObject private var schema = schemaBootstrapMessage
     @State private var isSettingsPresented = false
 
     public init(backends: [Backend]) {
@@ -30,11 +34,14 @@ public struct HomeView: View {
         NavigationStack {
             Group {
                 if let backend {
-                    HomeContent()
-                        .id(backend.id)
-                        .accountWarning(backend)
-                        .schemaWarning(backend)
-                        .onboardingSheet()
+                    if let message = schema.value {
+                        ErrorView(description: Text(verbatim: message), retry: nil)
+                    } else {
+                        HomeContent()
+                            .id(backend.id)
+                            .accountWarning(backend)
+                            .onboardingSheet()
+                    }
                 } else {
                     ErrorView(
                         description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
