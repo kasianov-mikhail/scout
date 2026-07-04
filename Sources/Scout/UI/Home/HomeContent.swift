@@ -18,18 +18,6 @@ struct HomeContent: View {
     @StateObject private var releaseProvider: ReleaseHealthProvider
     @State private var showReleaseHealth = false
 
-    init(
-        activity: ActivityProvider = ActivityProvider(),
-        sessionStat: StatProvider = StatProvider(eventName: "Session", periods: Period.summary),
-        crashStat: StatProvider = StatProvider(eventName: "Crash", periods: Period.summary),
-        releaseProvider: ReleaseHealthProvider = ReleaseHealthProvider()
-    ) {
-        self._activity = StateObject(wrappedValue: activity)
-        self._sessionStat = StateObject(wrappedValue: sessionStat)
-        self._crashStat = StateObject(wrappedValue: crashStat)
-        self._releaseProvider = StateObject(wrappedValue: releaseProvider)
-    }
-
     var body: some View {
         VStack(spacing: 0) {
             HomeSectionPicker(selection: $section)
@@ -78,8 +66,23 @@ struct HomeContent: View {
     }
 }
 
+extension HomeContent {
+    init(activity: ActivityProvider, sessionStat: StatProvider, crashStat: StatProvider, releaseProvider: ReleaseHealthProvider) {
+        self._activity = StateObject(wrappedValue: activity)
+        self._sessionStat = StateObject(wrappedValue: sessionStat)
+        self._crashStat = StateObject(wrappedValue: crashStat)
+        self._releaseProvider = StateObject(wrappedValue: releaseProvider)
+    }
+}
+
 #Preview {
     NavigationStack {
-        HomeContent(releaseProvider: .fixture()).navigationTitle("Home")
+        HomeContent(
+            activity: ActivityProvider(),
+            sessionStat: StatProvider(eventName: "Session", periods: Period.summary),
+            crashStat: StatProvider(eventName: "Crash", periods: Period.summary),
+            releaseProvider: .fixture()
+        )
+        .navigationTitle("Home")
     }
 }

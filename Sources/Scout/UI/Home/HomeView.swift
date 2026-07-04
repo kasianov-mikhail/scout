@@ -36,8 +36,13 @@ public struct HomeView: View {
                     if let message = schema.value {
                         ErrorView(description: Text(verbatim: message), retry: nil)
                     } else {
-                        HomeContent()
-                            .id(backend.id)
+                        HomeContent(
+                            activity: ActivityProvider(),
+                            sessionStat: StatProvider(eventName: "Session", periods: Period.summary),
+                            crashStat: StatProvider(eventName: "Crash", periods: Period.summary),
+                            releaseProvider: ReleaseHealthProvider()
+                        )
+                        .id(backend.id)
                             .accountWarning(backend)
                             .onboardingSheet()
                     }
