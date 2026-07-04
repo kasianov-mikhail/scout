@@ -19,7 +19,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
     try await dispatcher.performEnsuringBackground {
         await withTaskGroup(of: Void.self) { group in
             for backend in backends where await backend.checkAvailability() {
-                SyncDelivery.recordAttempt(for: backend.id, in: context)
+                await SyncDelivery.recordAttempt(for: backend.id, in: context)
 
                 let recordSender = RecordSender(backend: backend)
 
