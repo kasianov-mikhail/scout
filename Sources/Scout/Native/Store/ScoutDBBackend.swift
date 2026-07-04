@@ -33,8 +33,6 @@ extension Backend {
             accountWarning: {
                 (try? await container.accountStatus()) != .available
             },
-            verifySchema: { try await container.verifySchema(for: storeRecordTypes) },
-            schemaChecks: { await container.schemaChecks(for: storeRecordTypes) },
             onSetup: {
                 Task {
                     await EntityCatalog.bootstrap(registry: registry)
@@ -43,9 +41,6 @@ extension Backend {
         )
     }
 }
-
-// The record types of scout-db's frozen physical schema.
-private let storeRecordTypes = ["Item", "GridItem", "Meta"]
 
 extension EntityCatalog {
     // Seeds the registry with the app-embedded definitions and publishes them to
@@ -57,14 +52,22 @@ extension EntityCatalog {
         for definition in definitions {
             guard let published = remote.first(where: { $0.entity == definition.entity }) else {
                 try? await registry.register(definition)
-                try? await registry.publish(definition)
+                await publish(definition, in: registry)
                 continue
             }
             guard published.version <= definition.version else { continue }
             try? await registry.register(definition)
             if published != definition {
-                try? await registry.publish(definition)
+                await publish(definition, in: registry)
             }
+        }
+    }
+
+    private static func publish(_ definition: EntityDefinition, in registry: SchemaRegistry) async {
+        do {
+            try await registry.publish(definition)
+        } catch {
+            await MainActor.run { schemaBootstrapMessage.value = error.localizedDescription }
         }
     }
 }
