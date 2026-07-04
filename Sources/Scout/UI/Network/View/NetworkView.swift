@@ -17,31 +17,12 @@ struct NetworkView: View {
     }
 
     var body: some View {
-        Group {
-            switch provider.result {
-            case nil:
-                ProgressView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            case .failure(let error):
-                VStack(spacing: 16) {
-                    Text(verbatim: error.localizedDescription)
-                        .foregroundStyle(.gray)
-                        .multilineTextAlignment(.center)
-                    Button {
-                        Task {
-                            await provider.fetchAgain(in: database)
-                        }
-                    } label: {
-                        Text(verbatim: "Retry")
-                    }
-                }
-                .padding(.horizontal)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            case .success(let report) where report.isEmpty:
+        ProviderView(provider: provider) { report in
+            if report.isEmpty {
                 Text(verbatim: "No network requests in this period.")
                     .foregroundStyle(.gray)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-            case .success(let report):
+            } else {
                 content(report)
             }
         }
