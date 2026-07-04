@@ -43,7 +43,7 @@ class HomeLogProvider: ObservableObject {
     }
 }
 
-private let lifecycleNames = [
+private let lifecycleNames: Set = [
     DeviceObject.recordType,
     InstallObject.recordType,
     LaunchObject.recordType,
