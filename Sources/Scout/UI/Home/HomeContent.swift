@@ -77,9 +77,9 @@ extension HomeContent {
 #Preview {
     NavigationStack {
         HomeContent(
-            activity: ActivityProvider(),
-            sessionStat: StatProvider(eventName: "Session", periods: Period.summary),
-            crashStat: StatProvider(eventName: "Crash", periods: Period.summary),
+            activity: .fixture(),
+            sessionStat: .fixture(eventName: "Session"),
+            crashStat: .fixture(eventName: "Crash"),
             releaseProvider: .fixture()
         )
         .navigationTitle("Home")
