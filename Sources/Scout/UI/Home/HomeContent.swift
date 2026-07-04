@@ -62,6 +62,7 @@ struct HomeContent: View {
                 .ignoresSafeArea()
         }
         .toolbarBackground(.visible, for: .navigationBar)
+        .onboardingSheet()
     }
 
     private func fetch(_ section: HomeSection) {

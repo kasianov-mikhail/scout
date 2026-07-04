@@ -8,21 +8,21 @@
 import SwiftUI
 
 extension View {
-    func accountWarning(_ backend: Backend) -> some View {
-        modifier(AccountWarningModifier(backend: backend))
+    func iCloudWarning(_ warning: @escaping @Sendable () async -> Bool) -> some View {
+        modifier(ICloudWarningModifier(warning: warning))
     }
 }
 
-private struct AccountWarningModifier: ViewModifier {
-    let backend: Backend
+private struct ICloudWarningModifier: ViewModifier {
+    let warning: @Sendable () async -> Bool
 
-    @State private var warning = false
+    @State private var isWarning = false
     @State private var isAlertPresented = false
 
     func body(content: Content) -> some View {
         content
             .toolbar {
-                if warning {
+                if isWarning {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             isAlertPresented = true
@@ -50,6 +50,6 @@ private struct AccountWarningModifier: ViewModifier {
     }
 
     private func verify() async {
-        warning = await backend.accountWarning()
+        isWarning = await warning()
     }
 }

@@ -7,17 +7,31 @@
 
 import SwiftUI
 
-@MainActor let schemaBootstrapMessage = Box<String?>(nil)
+extension View {
+    /// Presents the Scout home screen modally over this view.
+    ///
+    /// The screen is always shown as a full-screen cover, never pushed onto a navigation stack, so
+    /// it keeps its own navigation and environment self-contained.
+    ///
+    /// - Parameters:
+    ///   - isPresented: A binding that controls whether the home screen is shown.
+    ///   - backends: The backends to inspect.
+    /// - Returns: A view that presents the dashboard over this view while `isPresented` is `true`.
+    ///
+    public func scoutHome(isPresented: Binding<Bool>, backends: [Backend]) -> some View {
+        fullScreenCover(isPresented: isPresented) {
+            HomeView(backends: backends)
+        }
+    }
+}
 
-public struct HomeView: View {
+struct HomeView: View {
     let backends: [Backend]
 
     @AppStorage("scout_active_backend") private var activeID = ""
     @StateObject private var tint = Tint()
-    @ObservedObject private var schema = schemaBootstrapMessage
-    @State private var isSettingsPresented = false
 
-    public init(backends: [Backend]) {
+    init(backends: [Backend]) {
         self.backends = backends
     }
 
@@ -29,18 +43,13 @@ public struct HomeView: View {
         Binding(get: { backend?.id ?? "" }, set: { activeID = $0 })
     }
 
-    public var body: some View {
+    var body: some View {
         NavigationStack {
             Group {
                 if let backend {
-                    if let message = schema.value {
-                        ErrorView(description: Text(verbatim: message), retry: nil)
-                    } else {
-                        HomeContent()
-                            .id(backend.id)
-                            .accountWarning(backend)
-                            .onboardingSheet()
-                    }
+                    HomeContent()
+                        .id(backend.id)
+                        .iCloudWarning(backend.accountWarning)
                 } else {
                     ErrorView(
                         description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
@@ -50,23 +59,7 @@ public struct HomeView: View {
             }
             .navigationTitle(en: "Home")
             .dismissable()
-            .toolbar {
-                if backend != nil {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        ConnectionMenu(
-                            connections: backends.map(Connection.init),
-                            activeID: activeIDBinding,
-                            onSettings: { isSettingsPresented = true }
-                        )
-                    }
-                }
-            }
-            .sheet(isPresented: $isSettingsPresented) {
-                NavigationStack {
-                    SettingsOverviewView(backends: backends, activeID: activeIDBinding)
-                        .dismissable()
-                }
-            }
+            .connectionToolbar(backends: backends, activeID: activeIDBinding)
         }
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
