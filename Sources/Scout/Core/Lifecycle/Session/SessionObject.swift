@@ -15,10 +15,7 @@ final class SessionObject: TrackedObject {
     @NSManaged var endDate: Date?
 
     func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
-        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
-        request.fetchLimit = 1
-        return try context.fetch(request).first
+        try context.objects(LaunchObject.self, where: "launchID == %@", launchID, limit: 1).first
     }
 }
 

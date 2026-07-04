@@ -15,22 +15,14 @@ final class VersionObject: SyncableObject {
     @NSManaged var buildNumber: String?
 
     func install(in context: NSManagedObjectContext) throws -> InstallObject? {
-        let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
-        request.predicate = NSPredicate(format: "installID == %@", installID as CVarArg)
-        request.fetchLimit = 1
-        return try context.fetch(request).first
+        try context.objects(InstallObject.self, where: "installID == %@", installID, limit: 1).first
     }
 
     func launches(in context: NSManagedObjectContext) throws -> [LaunchObject] {
-        let versionRequest = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        versionRequest.predicate = NSPredicate(format: "appVersion == %@", appVersion!)
-        let versions = try context.fetch(versionRequest)
+        let versions = try context.objects(VersionObject.self, where: "appVersion == %@", appVersion!)
         let launchIDs = versions.compactMap(\.launchID)
 
-        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "launchID IN %@", launchIDs)
-        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
-        return try context.fetch(request)
+        return try context.objects(LaunchObject.self, where: "launchID IN %@", launchIDs, dateAscending: true)
     }
 }
 
