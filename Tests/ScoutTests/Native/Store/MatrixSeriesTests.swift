@@ -14,7 +14,7 @@ import Testing
 
 @Suite("MatrixSeries")
 struct MatrixSeriesTests {
-    let database: ScoutDBDatabase
+    let database: NativeDatabase
     let range = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
 
     init() async throws {
@@ -23,7 +23,7 @@ struct MatrixSeriesTests {
         for definition in EntityCatalog.definitions {
             try await registry.register(definition)
         }
-        database = ScoutDBDatabase(store: EntityStore(database: cloud, registry: registry))
+        database = NativeDatabase(store: EntityStore(database: cloud, registry: registry))
     }
 
     @Test("Event counts come back as week matrices")

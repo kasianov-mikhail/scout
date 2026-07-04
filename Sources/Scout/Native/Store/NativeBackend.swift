@@ -21,7 +21,7 @@ extension Backend {
 
         return Backend(
             id: container.containerIdentifier ?? "cloudKit",
-            database: ScoutDBDatabase(store: store),
+            database: NativeDatabase(store: store),
             checkAvailability: {
                 (try? await container.accountStatus()) == .available
             },
