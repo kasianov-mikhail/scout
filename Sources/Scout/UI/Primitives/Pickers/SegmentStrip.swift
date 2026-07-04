@@ -83,8 +83,8 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     @Previewable @State var selection = Period.today
 
     VStack(spacing: 24) {
-        SegmentStrip(selection: $selection, distribution: .justified) { $0.shortTitle }
-        SegmentStrip(selection: $selection) { $0.shortTitle }
+        SegmentStrip(selection: $selection, distribution: .justified, title: \.shortTitle)
+        SegmentStrip(selection: $selection, title: \.shortTitle)
     }
     .padding()
 }
