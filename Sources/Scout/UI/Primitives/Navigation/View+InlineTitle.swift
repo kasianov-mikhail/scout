@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension View {
-    /// Inline navigation title on iOS; no-op on macOS, where titles have no display mode.
     func inlineNavigationTitle() -> some View {
         #if os(iOS)
             navigationBarTitleDisplayMode(.inline)
