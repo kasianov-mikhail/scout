@@ -14,7 +14,6 @@ struct BackendDetailView: View {
     @Binding var activeID: String
 
     @State private var isChecking = false
-    @State private var isBenchmarking = false
     @State private var message: Message?
 
     private var backend: BackendHealth? {
@@ -114,29 +113,7 @@ struct BackendDetailView: View {
             .disabled(isChecking)
 
             if let benchmark = backend.runBenchmark {
-                Button {
-                    isBenchmarking = true
-                    Task {
-                        let passed = await benchmark()
-                        isBenchmarking = false
-                        message = Message(
-                            passed
-                                ? "Parallelism limit verified: \(RequestLimiter.requestLimit) in-flight requests hold up."
-                                : "Parallelism check failed — see the console log.",
-                            level: passed ? .success : .warning
-                        )
-                    }
-                } label: {
-                    HStack {
-                        Text(verbatim: "Run Parallelism Benchmark")
-                            .foregroundStyle(.tint)
-                        if isBenchmarking {
-                            Spacer()
-                            ProgressView()
-                        }
-                    }
-                }
-                .disabled(isBenchmarking)
+                BenchmarkButton(benchmark: benchmark, message: $message)
 
                 Text(verbatim: "The benchmark issues test queries to verify the \(RequestLimiter.requestLimit)-request limit.")
                     .font(.caption)
