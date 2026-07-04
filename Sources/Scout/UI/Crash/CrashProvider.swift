@@ -9,13 +9,11 @@ import SwiftUI
 
 @MainActor
 class CrashProvider: ObservableObject {
-    @Published var crashes: [Crash]?
+    @Published private(set) var groups: [CrashGroup]?
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
-    var groups: [CrashGroup]? {
-        crashes.map(CrashGroup.groups(from:))
-    }
+    private var crashes: [Crash] = []
 
     func fetch(in database: DatabaseReader) async {
         do {
@@ -32,6 +30,7 @@ class CrashProvider: ObservableObject {
 
             self.cursor = results.cursor
             self.crashes = try results.records.map(Crash.init)
+            self.groups = CrashGroup.groups(from: crashes)
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }
@@ -45,7 +44,8 @@ class CrashProvider: ObservableObject {
             )
 
             self.cursor = results.cursor
-            self.crashes?.append(contentsOf: try results.records.map(Crash.init))
+            self.crashes.append(contentsOf: try results.records.map(Crash.init))
+            self.groups = CrashGroup.groups(from: crashes)
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }
