@@ -51,3 +51,11 @@ class CrashProvider: ObservableObject {
         }
     }
 }
+
+extension CrashProvider {
+    static func fixture() -> CrashProvider {
+        let provider = CrashProvider()
+        provider.groups = CrashGroup.groups(from: .samples)
+        return provider
+    }
+}

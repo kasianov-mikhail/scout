@@ -10,10 +10,14 @@ import SwiftUI
 struct AnalyticsView: View {
     @State private var filter = Event.Query()
 
-    @StateObject private var provider = EventProvider()
+    @StateObject private var provider: EventProvider
     @StateObject private var search = EventProvider()
 
     @Environment(\.database) var database
+
+    init(provider: EventProvider? = nil) {
+        self._provider = StateObject(wrappedValue: provider ?? EventProvider())
+    }
 
     var body: some View {
         Group {
@@ -103,7 +107,7 @@ extension View {
 
 #Preview {
     NavigationStack {
-        AnalyticsView()
+        AnalyticsView(provider: .fixture())
             .environmentObject(Tint())
     }
 }
