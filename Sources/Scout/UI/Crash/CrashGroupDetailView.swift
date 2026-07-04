@@ -59,9 +59,7 @@ struct CrashGroupDetailView: View {
         ForEach(group.crashes) { crash in
             Row {
                 if let date = crash.date {
-                    Text(utcDateFormatter.string(from: date) + " UTC")
-                        .font(.system(size: 14))
-                        .monospaced()
+                    UTCTimestampText(date: date, size: 14)
                 }
 
                 Spacer()
