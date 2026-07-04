@@ -23,24 +23,17 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     @Namespace private var namespace
 
     var body: some View {
-        strip
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(alignment: .bottom) {
-                Divider()
-            }
-    }
-
-    @ViewBuilder
-    private var strip: some View {
         switch distribution {
         case .compact(let spacing):
             HStack(spacing: spacing) {
                 segments
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
         case .justified:
             JustifiedLayout {
                 segments
             }
+            .frame(maxWidth: .infinity)
         }
     }
 
