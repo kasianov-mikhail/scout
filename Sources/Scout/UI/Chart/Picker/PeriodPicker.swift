@@ -13,7 +13,7 @@ struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
     let periods: [T]
 
     var body: some View {
-        HStack(spacing: 20) {
+        JustifiedLayout {
             SegmentStrip(
                 selection: $extent.period,
                 values: periods,
