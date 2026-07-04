@@ -20,6 +20,18 @@ struct HomeLogSection: View {
             await provider.fetchIfNeeded(for: period, in: database)
         }
 
+        if case .failure(let error) = provider.result(for: period) {
+            ErrorView(description: Text(verbatim: error.localizedDescription)) {
+                Task { await provider.fetchAgain(for: period, in: database) }
+            }
+            .listRowSeparator(.hidden)
+        } else {
+            logRows
+        }
+    }
+
+    @ViewBuilder
+    private var logRows: some View {
         HomeLogRow(
             title: "Events",
             image: "list.bullet",

@@ -17,8 +17,15 @@ class HomeLogProvider: ObservableObject {
         results[period]
     }
 
+    func fetchAgain(for period: Period, in database: DatabaseReader) async {
+        results[period] = nil
+        await fetchIfNeeded(for: period, in: database)
+    }
+
     func fetchIfNeeded(for period: Period, in database: DatabaseReader) async {
-        guard results[period] == nil else { return }
+        guard results[period] == nil else {
+            return
+        }
         do {
             results[period] = .success(try await fetch(for: period, in: database))
         } catch {
@@ -27,9 +34,8 @@ class HomeLogProvider: ObservableObject {
     }
 
     private func fetch(for period: Period, in database: DatabaseReader) async throws -> Output {
-        let range = period.initialRange
-        async let intMatrices = matrices(of: Int.self, in: range, from: database)
-        async let doubleMatrices = matrices(of: Double.self, in: range, from: database)
+        async let intMatrices = matrices(of: Int.self, in: period.initialRange, from: database)
+        async let doubleMatrices = matrices(of: Double.self, in: period.initialRange, from: database)
 
         return try await (intMatrices.filter { !lifecycleNames.contains($0.name) }, doubleMatrices)
     }

@@ -30,7 +30,12 @@ struct HomeReleaseSection: View {
             await provider.fetchIfNeeded(in: database)
         }
 
-        if let releases = provider.releases {
+        if case .failure(let error) = provider.result {
+            ErrorView(description: Text(verbatim: error.localizedDescription)) {
+                Task { await provider.fetchAgain(in: database) }
+            }
+            .listRowSeparator(.hidden)
+        } else if let releases = provider.releases {
             if releases.count > 0 {
                 ForEach(releases.prefix(3)) { release in
                     ReleaseRow(release: release)
