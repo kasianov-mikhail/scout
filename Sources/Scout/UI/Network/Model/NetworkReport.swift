@@ -44,7 +44,8 @@ struct NetworkReport {
         // Latency-only timers count as endpoints only when their name reads
         // like an HTTP request, so generic app timers stay off the screen.
         self.init(
-            distributions: latency
+            distributions:
+                latency
                 .filter { status.keys.contains($0.key) || NetworkEndpoint.isEndpointName($0.key) }
                 .mapValues(TimerDistribution.init),
             statuses: status.mapValues(StatusDistribution.init)
