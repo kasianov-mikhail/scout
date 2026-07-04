@@ -12,13 +12,21 @@ struct HomeContent: View {
 
     @AppStorage("scout_home_section") private var section = HomeSection.sessions
 
-    @StateObject private var activity = ActivityProvider()
-    @StateObject private var sessionStat = StatProvider(eventName: "Session", periods: Period.summary)
-    @StateObject private var crashStat = StatProvider(eventName: "Crash", periods: Period.summary)
+    @StateObject private var activity: ActivityProvider
+    @StateObject private var sessionStat: StatProvider
+    @StateObject private var crashStat: StatProvider
     @StateObject private var releaseProvider: ReleaseHealthProvider
     @State private var showReleaseHealth = false
 
-    init(releaseProvider: ReleaseHealthProvider = ReleaseHealthProvider()) {
+    init(
+        activity: ActivityProvider = ActivityProvider(),
+        sessionStat: StatProvider = StatProvider(eventName: "Session", periods: Period.summary),
+        crashStat: StatProvider = StatProvider(eventName: "Crash", periods: Period.summary),
+        releaseProvider: ReleaseHealthProvider = ReleaseHealthProvider()
+    ) {
+        self._activity = StateObject(wrappedValue: activity)
+        self._sessionStat = StateObject(wrappedValue: sessionStat)
+        self._crashStat = StateObject(wrappedValue: crashStat)
         self._releaseProvider = StateObject(wrappedValue: releaseProvider)
     }
 
