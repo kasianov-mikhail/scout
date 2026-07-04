@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-@MainActor
-class Box<T>: ObservableObject {
+typealias Tint = Box<Color?>
+
+@MainActor class Box<T>: ObservableObject {
     @Published var value: T
 
     init(_ value: T) {
@@ -16,11 +17,19 @@ class Box<T>: ObservableObject {
     }
 }
 
-typealias Tint = Box<Color?>
-
-extension Tint {
+extension Box where T: ExpressibleByNilLiteral {
     convenience init() {
         self.init(nil)
+    }
+}
+
+extension View {
+    func navigationTint(_ color: Color?) -> some View {
+        modifier(NavigationTint(color: color))
+    }
+
+    func resetsTint() -> some View {
+        modifier(TintReset())
     }
 }
 
@@ -43,15 +52,5 @@ private struct TintReset: ViewModifier {
 
     func body(content: Content) -> some View {
         content.onAppear { tint.value = nil }
-    }
-}
-
-extension View {
-    func navigationTint(_ color: Color?) -> some View {
-        modifier(NavigationTint(color: color))
-    }
-
-    func resetsTint() -> some View {
-        modifier(TintReset())
     }
 }

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-// The latest scout-db schema bootstrap failure, shown on the home screen.
 @MainActor let schemaBootstrapMessage = Box<String?>(nil)
 
 public struct HomeView: View {
