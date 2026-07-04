@@ -56,7 +56,7 @@ struct StatView: View {
         Row {
             Text(verbatim: "Events")
             Spacer()
-            Text(count == 0 ? "—" : "\(count)")
+            RedactedText(count: count)
         } destination: {
             EventStatList(eventName: stat.eventName, range: extent.domain)
         }
