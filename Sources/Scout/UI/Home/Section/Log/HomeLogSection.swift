@@ -32,6 +32,8 @@ struct HomeLogSection: View {
 
     @ViewBuilder
     private var logRows: some View {
+        let spans = logSpans
+
         HomeLogRow(
             title: "Events",
             image: "list.bullet",
@@ -64,7 +66,7 @@ struct HomeLogSection: View {
         )
     }
 
-    private var spans: (int: MatrixSpan<Int>, double: MatrixSpan<Double>)? {
+    private var logSpans: (int: MatrixSpan<Int>, double: MatrixSpan<Double>)? {
         guard let result = try? provider.result(for: period)?.get() else {
             return nil
         }
