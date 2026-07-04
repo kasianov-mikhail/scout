@@ -37,20 +37,16 @@ struct CompactPeriodPicker: View {
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    struct Preview: View {
-        @State private var selection = Period.today
+    @Previewable @State var selection = Period.today
 
-        var body: some View {
-            List {
-                HStack {
-                    Text(verbatim: "Period")
-                    Spacer()
-                    CompactPeriodPicker(selection: $selection)
-                }
-            }
-            .listStyle(.plain)
+    List {
+        HStack {
+            Text(verbatim: "Period")
+            Spacer()
+            CompactPeriodPicker(selection: $selection)
         }
     }
-    return Preview()
+    .listStyle(.plain)
 }

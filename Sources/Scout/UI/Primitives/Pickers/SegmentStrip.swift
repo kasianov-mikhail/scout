@@ -78,17 +78,13 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    struct Preview: View {
-        @State private var selection = Period.today
+    @Previewable @State var selection = Period.today
 
-        var body: some View {
-            VStack(spacing: 24) {
-                SegmentStrip(selection: $selection, distribution: .justified) { $0.shortTitle }
-                SegmentStrip(selection: $selection) { $0.shortTitle }
-            }
-            .padding()
-        }
+    VStack(spacing: 24) {
+        SegmentStrip(selection: $selection, distribution: .justified) { $0.shortTitle }
+        SegmentStrip(selection: $selection) { $0.shortTitle }
     }
-    return Preview()
+    .padding()
 }
