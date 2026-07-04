@@ -36,11 +36,12 @@ struct NetworkView: View {
         let range = Period.today.initialRange
         let endpoints = report.endpoints(in: range)
         let breakdown = report.summary(in: range)
+        let successRate = breakdown.total > 0 ? breakdown.successRate : nil
 
         return List {
             HStack(spacing: 28) {
                 Metric(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
-                Metric(title: "Success", value: breakdown.successRate.formatted, color: breakdown.successRate.color)
+                Metric(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
                 Metric(title: "Req/min", value: report.requestsPerMinute(in: range).plain, color: .primary)
                 Spacer()
             }
