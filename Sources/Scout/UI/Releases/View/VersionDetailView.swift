@@ -62,22 +62,8 @@ struct VersionDetailView: View {
         .listRowSeparator(.hidden)
     }
 
-    private var dailyCrashes: [(date: Date, count: Int)] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
-
-        return (0..<14).reversed().compactMap { offset in
-            guard let day = calendar.date(byAdding: .day, value: -offset, to: today) else {
-                return nil
-            }
-            let next = calendar.date(byAdding: .day, value: 1, to: day) ?? day
-            let count = crashes.filter { crash in
-                guard let date = crash.date else { return false }
-                return date >= day && date < next
-            }
-            .count
-            return (day, count)
-        }
+    private var dailyCrashes: [DailyCrashCount] {
+        DailyCrashCount.series(from: crashes)
     }
 
     @ViewBuilder
