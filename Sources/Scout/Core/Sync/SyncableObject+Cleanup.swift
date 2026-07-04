@@ -9,9 +9,7 @@ import CoreData
 
 extension SyncableObject {
     static func cleanup(backends: [Backend], in context: NSManagedObjectContext) throws {
-        guard let cutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) else {
-            return
-        }
+        let cutoff = Date().addingDay(-7)
 
         let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
         request.predicate = NSPredicate(
