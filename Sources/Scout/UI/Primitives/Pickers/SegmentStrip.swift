@@ -42,6 +42,7 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
         ForEach(values, id: \.self) { value in
             segment(value)
         }
+        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selection)
     }
 
     @ViewBuilder
@@ -64,9 +65,7 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
             }
             .contentShape(.rect)
             .onTapGesture {
-                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
-                    selection = value
-                }
+                selection = value
             }
     }
 }
