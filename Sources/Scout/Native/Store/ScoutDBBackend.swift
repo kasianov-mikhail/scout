@@ -43,20 +43,19 @@ extension Backend {
 }
 
 extension EntityCatalog {
-    // Seeds the registry with the app-embedded definitions and publishes them to
-    // Meta so external readers of the container can decode the records too.
     static func bootstrap(registry: SchemaRegistry) async {
         _ = try? await registry.preload()
         let remote = await registry.definitions()
 
         for definition in definitions {
-            guard let published = remote.first(where: { $0.entity == definition.entity }) else {
-                try? await registry.register(definition)
-                await publish(definition, in: registry)
+            let published = remote.first { $0.entity == definition.entity }
+
+            if let published, published.version > definition.version {
                 continue
             }
-            guard published.version <= definition.version else { continue }
+
             try? await registry.register(definition)
+
             if published != definition {
                 await publish(definition, in: registry)
             }
