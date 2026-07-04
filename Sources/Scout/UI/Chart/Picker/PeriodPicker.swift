@@ -13,15 +13,13 @@ struct PeriodPicker<T: PickerCompatible & ChartTimeScale>: View {
     let periods: [T]
 
     var body: some View {
-        JustifiedLayout {
-            SegmentStrip(
-                selection: $extent.period,
-                values: periods,
-                tint: nil,
-                title: title
-            )
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        SegmentStrip(
+            selection: $extent.period,
+            values: periods,
+            distribution: .justified,
+            tint: nil,
+            title: title
+        )
         .padding(.horizontal)
     }
 

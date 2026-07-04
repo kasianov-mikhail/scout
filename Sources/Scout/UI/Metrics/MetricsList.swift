@@ -28,14 +28,10 @@ struct MetricsList: View {
     @State private var scope: Scope = .int
 
     var body: some View {
-        JustifiedLayout {
-            SegmentStrip(selection: $period, title: \.shortTitle)
-        }
+        SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
         .padding()
 
-        JustifiedLayout {
-            SegmentStrip(selection: $scope, title: \.rawValue)
-        }
+        SegmentStrip(selection: $scope, distribution: .justified, title: \.rawValue)
         .padding(.horizontal)
 
         switch scope {
