@@ -28,7 +28,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 | 💥 | **Crash Reporting** | Captures uncaught exceptions and signals (SIGABRT, SIGSEGV, etc.) with stack traces. Reports are flushed on the next launch. |
 | ☁️ | **CloudKit Sync** | All data is stored locally with Core Data and synced to a public [CloudKit](https://developer.apple.com/icloud/cloudkit/) database. No custom backend required. |
 | 🌐 | **Multiple Backends** | Sync to CloudKit, to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server), or to any combination of them at once. |
-| 📱 | **SwiftUI Dashboard** | A built-in `HomeView` with charts, event lists, crash details, and activity tracking for debugging in development builds. |
+| 📱 | **SwiftUI Dashboard** | A built-in dashboard with charts, event lists, crash details, and activity tracking for debugging in development builds. |
 
 ## Requirements
 
@@ -53,13 +53,14 @@ For the full walkthrough — backends, logging, and metrics — see the [Usage G
 
 ## Dashboard
 
-Present `HomeView` to browse logs, metrics, crashes, and user activity. Hand it the same backend list you passed to `setup`:
+Attach `scoutHome(isPresented:backends:)` to a view to present the dashboard — logs, metrics, crashes, and user activity — over it. Drive it with a `Bool` binding and hand it the same backend list you passed to `setup`:
 ```swift
-HomeView(backends: [.cloudKit(container)])
+Button("Scout") { isPresented = true }
+    .scoutHome(isPresented: $isPresented, backends: [.cloudKit(container)])
 ```
 Or point it at a Scout server:
 ```swift
-HomeView(backends: [.server(url: serverURL, apiKey: "YOUR_API_KEY")])
+.scoutHome(isPresented: $isPresented, backends: [.server(url: serverURL, apiKey: "YOUR_API_KEY")])
 ```
 > Use this only in debug builds to avoid exposing log data in production.
 
