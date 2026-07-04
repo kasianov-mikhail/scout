@@ -17,7 +17,6 @@ struct PeriodPicker<T: PickerCompatible & ChartTimeScale & CaseIterable>: View {
             selection: $extent.period,
             values: periods,
             distribution: .justified,
-            tint: nil,
             title: title
         )
         .padding(.horizontal)

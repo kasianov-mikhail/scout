@@ -17,7 +17,7 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
 
     var values: [Value] = Array(Value.allCases)
     var distribution: Distribution = .compact(spacing: 20)
-    var tint: ((Value) -> Color)? = { _ in .primary }
+    var tint: (Value) -> Color = { _ in .blue }
     let title: (Value) -> String
 
     @Namespace private var namespace
@@ -40,30 +40,36 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     @ViewBuilder
     private var segments: some View {
         ForEach(values, id: \.self) { value in
-            segment(value)
+            if value == selection {
+                selected(value)
+            } else {
+                unselected(value)
+            }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selection)
     }
 
-    @ViewBuilder
-    private func segment(_ value: Value) -> some View {
-        let isSelected = value == selection
-        let tint = tint?(value) ?? .primary
-
+    private func selected(_ value: Value) -> some View {
         Text(title(value).uppercased())
-            .font(.system(size: 14, weight: isSelected ? .bold : .medium))
-            .foregroundStyle(isSelected ? AnyShapeStyle(tint) : AnyShapeStyle(.secondary))
+            .font(.system(size: 14, weight: .bold))
+            .foregroundStyle(.primary)
             .padding(.horizontal, 8)
             .padding(.bottom, 6)
             .overlay(alignment: .bottom) {
-                if isSelected {
-                    Capsule()
-                        .fill(tint)
-                        .frame(height: 2)
-                        .matchedGeometryEffect(id: "indicator", in: namespace)
-                }
+                Capsule()
+                    .fill(tint(value))
+                    .frame(height: 2)
+                    .matchedGeometryEffect(id: "indicator", in: namespace)
             }
             .contentShape(.rect)
+    }
+
+    private func unselected(_ value: Value) -> some View {
+        Text(title(value).uppercased())
+            .font(.system(size: 14, weight: .medium))
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.bottom, 6)
             .onTapGesture {
                 selection = value
             }
@@ -76,7 +82,7 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
 
     VStack(spacing: 24) {
         SegmentStrip(selection: $selection, distribution: .justified, title: \.shortTitle)
-        SegmentStrip(selection: $selection, title: \.shortTitle)
+        SegmentStrip(selection: $selection, distribution: .compact(spacing: 12), title: \.shortTitle)
     }
     .padding()
 }
