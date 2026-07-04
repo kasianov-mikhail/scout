@@ -28,16 +28,8 @@ struct HomeContent: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
                 .padding(.bottom, 4)
-                .task(id: section) {
-                    switch section {
-                    case .sessions:
-                        await sessionStat.fetchIfNeeded(in: database)
-                    case .crashes:
-                        await crashStat.fetchIfNeeded(in: database)
-                    case .users:
-                        await activity.fetchIfNeeded(in: database)
-                    }
-                }
+                .onAppear { fetch(section) }
+                .onChange(of: section) { fetch($0) }
 
             List {
                 HomeStatSection(
@@ -62,6 +54,19 @@ struct HomeContent: View {
                 .ignoresSafeArea()
         }
         .toolbarBackground(.visible, for: .navigationBar)
+    }
+
+    private func fetch(_ section: HomeSection) {
+        Task {
+            switch section {
+            case .sessions:
+                await sessionStat.fetchIfNeeded(in: database)
+            case .crashes:
+                await crashStat.fetchIfNeeded(in: database)
+            case .users:
+                await activity.fetchIfNeeded(in: database)
+            }
+        }
     }
 }
 
