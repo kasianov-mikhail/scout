@@ -27,13 +27,8 @@ struct NetworkEndpointDetailView: View {
 
             if let percentiles = distribution?.summary(in: range) {
                 Header(title: "Latency")
-                HStack(spacing: 34) {
-                    Metric(title: "P50", value: percentiles.p50.duration, color: .blue)
-                    Metric(title: "P90", value: percentiles.p90.duration, color: .teal)
-                    Metric(title: "P99", value: percentiles.p99.duration, color: .orange)
-                    Spacer()
-                }
-                .listRowSeparator(.hidden, edges: .bottom)
+                PercentileRow(percentiles: percentiles)
+                    .listRowSeparator(.hidden, edges: .bottom)
             }
 
             if let trend = distribution?.trend(in: range, component: unit), trend.count > 0 {

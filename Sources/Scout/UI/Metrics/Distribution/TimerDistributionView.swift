@@ -21,7 +21,7 @@ struct TimerDistributionView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 21) {
-            summary
+            PercentileRow(percentiles: percentiles)
 
             Text(verbatim: "P99 TREND")
                 .font(.system(size: 12, weight: .semibold))
@@ -30,15 +30,6 @@ struct TimerDistributionView: View {
             PercentileTrendChart(trend: trend, unit: unit)
         }
         .padding(.vertical)
-    }
-
-    private var summary: some View {
-        HStack(spacing: 34) {
-            Metric(title: "P50", value: percentiles.p50.duration, color: .blue)
-            Metric(title: "P90", value: percentiles.p90.duration, color: .teal)
-            Metric(title: "P99", value: percentiles.p99.duration, color: .orange)
-            Spacer()
-        }
     }
 }
 
