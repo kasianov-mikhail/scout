@@ -44,10 +44,7 @@ struct HomeSectionPicker: View {
     @Binding var selection: HomeSection
 
     var body: some View {
-        HStack(spacing: 20) {
-            SegmentStrip(selection: $selection, tint: { $0.color }) { $0.title }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        SegmentStrip(selection: $selection, tint: { $0.color }) { $0.title }
     }
 }
 

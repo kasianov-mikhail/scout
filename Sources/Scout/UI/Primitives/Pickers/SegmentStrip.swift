@@ -8,15 +8,58 @@
 import SwiftUI
 
 struct SegmentStrip<Value: Hashable>: View {
+    enum Distribution {
+        case compact(spacing: CGFloat)
+        case justified
+    }
+
     @Binding var selection: Value
 
     let values: [Value]
+    let distribution: Distribution
     let tint: ((Value) -> Color)?
     let title: (Value) -> String
 
     @Namespace private var namespace
 
+    init(
+        selection: Binding<Value>,
+        values: [Value],
+        distribution: Distribution = .compact(spacing: 20),
+        tint: ((Value) -> Color)? = { _ in .primary },
+        title: @escaping (Value) -> String
+    ) {
+        self._selection = selection
+        self.values = values
+        self.distribution = distribution
+        self.tint = tint
+        self.title = title
+    }
+
     var body: some View {
+        strip
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(alignment: .bottom) {
+                Divider()
+            }
+    }
+
+    @ViewBuilder
+    private var strip: some View {
+        switch distribution {
+        case .compact(let spacing):
+            HStack(spacing: spacing) {
+                segments
+            }
+        case .justified:
+            JustifiedLayout {
+                segments
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var segments: some View {
         ForEach(values, id: \.self) { value in
             segment(value)
         }
@@ -50,10 +93,16 @@ struct SegmentStrip<Value: Hashable>: View {
 }
 
 extension SegmentStrip where Value: CaseIterable {
-    init(selection: Binding<Value>, tint: @escaping (Value) -> Color = { _ in .primary }, title: @escaping (Value) -> String) {
+    init(
+        selection: Binding<Value>,
+        distribution: Distribution = .compact(spacing: 20),
+        tint: @escaping (Value) -> Color = { _ in .primary },
+        title: @escaping (Value) -> String
+    ) {
         self.init(
             selection: selection,
             values: Array(Value.allCases),
+            distribution: distribution,
             tint: tint,
             title: title
         )
@@ -66,12 +115,8 @@ extension SegmentStrip where Value: CaseIterable {
 
         var body: some View {
             VStack(spacing: 24) {
-                JustifiedLayout {
-                    SegmentStrip(selection: $selection) { $0.shortTitle }
-                }
-                HStack(spacing: 20) {
-                    SegmentStrip(selection: $selection) { $0.shortTitle }
-                }
+                SegmentStrip(selection: $selection, distribution: .justified) { $0.shortTitle }
+                SegmentStrip(selection: $selection) { $0.shortTitle }
             }
             .padding()
         }
