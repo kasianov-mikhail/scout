@@ -21,19 +21,21 @@ typealias ProviderResult<T> = Result<T, Error>
 extension Provider {
     func fetchAgain(in database: DatabaseReader) async {
         result = nil
-        result = await resolve(in: database)
+        await resolve(in: database)
     }
 
     func fetchIfNeeded(in database: DatabaseReader) async {
         guard result == nil else { return }
-        result = await resolve(in: database)
+        await resolve(in: database)
     }
 
-    private func resolve(in database: DatabaseReader) async -> ProviderResult<Output> {
+    private func resolve(in database: DatabaseReader) async {
         do {
-            return .success(try await fetch(in: database))
+            result = .success(try await fetch(in: database))
+        } catch is CancellationError {
+            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
         } catch {
-            return .failure(error)
+            result = .failure(error)
         }
     }
 }
