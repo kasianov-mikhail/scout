@@ -40,9 +40,12 @@ struct SegmentStrip<Value: Hashable>: View {
                         .matchedGeometryEffect(id: "indicator", in: namespace)
                 }
             }
-            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: selection)
             .contentShape(.rect)
-            .onTapGesture { selection = value }
+            .onTapGesture {
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
+                    selection = value
+                }
+            }
     }
 }
 
