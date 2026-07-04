@@ -17,22 +17,13 @@ struct ActivityRow: View {
     var body: some View {
         let days = days
 
-        Row {
-            if let systemImage {
-                Image(systemName: systemImage)
-                    .foregroundColor(color)
-                    .frame(width: 24)
-            }
-            Text(period.title)
-                .foregroundColor(.primary)
-            Spacer()
-
-            RowSummary(
-                series: days.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .latest) },
-                count: days?.max()?.count,
-                color: color
-            )
-        } destination: {
+        SummaryRow(
+            title: period.title,
+            color: color,
+            systemImage: systemImage,
+            series: days.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .latest) },
+            count: days?.max()?.count
+        ) {
             ActivityView(activity: activity, period: period)
         }
     }

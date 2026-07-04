@@ -18,24 +18,15 @@ struct StatRow<Destination: View>: View {
     var body: some View {
         let points = points
 
-        Row {
-            if let systemImage {
-                Image(systemName: systemImage)
-                    .foregroundColor(color)
-                    .frame(width: 24)
-            }
-            Text(period.title)
-                .foregroundColor(systemImage == nil ? color : .primary)
-            Spacer()
-
-            RowSummary(
-                series: points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) },
-                count: points?.bucket(on: period).total,
-                color: color
-            )
-        } destination: {
-            destination()
-        }
+        SummaryRow(
+            title: period.title,
+            color: color,
+            titleColor: systemImage == nil ? color : .primary,
+            systemImage: systemImage,
+            series: points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) },
+            count: points?.bucket(on: period).total,
+            destination: destination
+        )
     }
 
     /// All fetched points; `nil` while the provider is still loading.
