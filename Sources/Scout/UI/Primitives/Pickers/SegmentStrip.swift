@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SegmentStrip<Value: Hashable>: View {
+struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     enum Distribution {
         case compact(spacing: CGFloat)
         case justified
@@ -15,26 +15,12 @@ struct SegmentStrip<Value: Hashable>: View {
 
     @Binding var selection: Value
 
-    let values: [Value]
-    let distribution: Distribution
-    let tint: ((Value) -> Color)?
+    var values: [Value] = Array(Value.allCases)
+    var distribution: Distribution = .compact(spacing: 20)
+    var tint: ((Value) -> Color)? = { _ in .primary }
     let title: (Value) -> String
 
     @Namespace private var namespace
-
-    init(
-        selection: Binding<Value>,
-        values: [Value],
-        distribution: Distribution = .compact(spacing: 20),
-        tint: ((Value) -> Color)? = { _ in .primary },
-        title: @escaping (Value) -> String
-    ) {
-        self._selection = selection
-        self.values = values
-        self.distribution = distribution
-        self.tint = tint
-        self.title = title
-    }
 
     var body: some View {
         strip
@@ -89,23 +75,6 @@ struct SegmentStrip<Value: Hashable>: View {
                     selection = value
                 }
             }
-    }
-}
-
-extension SegmentStrip where Value: CaseIterable {
-    init(
-        selection: Binding<Value>,
-        distribution: Distribution = .compact(spacing: 20),
-        tint: @escaping (Value) -> Color = { _ in .primary },
-        title: @escaping (Value) -> String
-    ) {
-        self.init(
-            selection: selection,
-            values: Array(Value.allCases),
-            distribution: distribution,
-            tint: tint,
-            title: title
-        )
     }
 }
 
