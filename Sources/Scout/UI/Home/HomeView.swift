@@ -47,9 +47,14 @@ struct HomeView: View {
         NavigationStack {
             Group {
                 if let backend {
-                    HomeContent()
-                        .id(backend.id)
-                        .iCloudWarning(backend.accountWarning)
+                    HomeContent(
+                        activity: ActivityProvider(),
+                        sessionStat: StatProvider(eventName: "Session", periods: Period.summary),
+                        crashStat: StatProvider(eventName: "Crash", periods: Period.summary),
+                        releaseProvider: ReleaseHealthProvider()
+                    )
+                    .id(backend.id)
+                    .iCloudWarning(backend.accountWarning)
                 } else {
                     ErrorView(
                         description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
