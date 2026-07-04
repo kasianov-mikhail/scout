@@ -66,3 +66,16 @@ extension Event {
         )
     }
 }
+
+extension [Event] {
+    static var samples: [Event] {
+        let names = ["app_launch", "screen_view", "button_tap", "purchase", "login", "logout"]
+        return (0..<40).map { index in
+            Event.sample(
+                names[index % names.count],
+                at: Date(timeIntervalSinceNow: -Double(index) * 1800),
+                sessionID: UUID()
+            )
+        }
+    }
+}

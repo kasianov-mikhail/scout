@@ -11,8 +11,14 @@ struct EventStatList: View {
     let eventName: String
     let range: Range<Date>
 
-    @StateObject private var provider = EventProvider()
+    @StateObject private var provider: EventProvider
     @Environment(\.database) var database
+
+    init(eventName: String, range: Range<Date>, provider: EventProvider? = nil) {
+        self.eventName = eventName
+        self.range = range
+        self._provider = StateObject(wrappedValue: provider ?? EventProvider())
+    }
 
     let formatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -42,6 +48,6 @@ struct EventStatList: View {
 
 #Preview {
     NavigationStack {
-        EventStatList(eventName: "Event", range: Period.week.initialRange)
+        EventStatList(eventName: "Event", range: Period.week.initialRange, provider: .fixture())
     }
 }

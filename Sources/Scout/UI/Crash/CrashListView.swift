@@ -9,7 +9,11 @@ import SwiftUI
 
 struct CrashListView: View {
     @Environment(\.database) var database
-    @StateObject private var provider = CrashProvider()
+    @StateObject private var provider: CrashProvider
+
+    init(provider: CrashProvider? = nil) {
+        self._provider = StateObject(wrappedValue: provider ?? CrashProvider())
+    }
 
     var body: some View {
         Group {
@@ -70,7 +74,7 @@ struct CrashListView: View {
 
 #Preview {
     NavigationStack {
-        CrashListView()
+        CrashListView(provider: .fixture())
     }
 }
 

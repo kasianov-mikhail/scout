@@ -49,22 +49,3 @@ extension VersionCrashProvider {
         VersionCrashProvider(version: "3.2.0", crashes: .samples)
     }
 }
-
-extension [Crash] {
-    fileprivate static var samples: [Crash] {
-        let counts: KeyValuePairs<String, Int> = ["NSRangeException": 8, "Fatal error": 4, "SIGSEGV": 2]
-
-        var crashes: [Crash] = []
-        var index = 0
-
-        for (name, count) in counts {
-            for _ in 0..<count {
-                let date = Date(timeIntervalSinceNow: -Double(index % 13) * 86_400 - Double(index) * 600)
-                crashes.append(.sample(name, at: date, sessionID: UUID()))
-                index += 1
-            }
-        }
-
-        return crashes
-    }
-}
