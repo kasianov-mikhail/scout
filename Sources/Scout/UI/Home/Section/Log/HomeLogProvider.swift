@@ -43,6 +43,39 @@ class HomeLogProvider: ObservableObject {
     }
 }
 
+extension HomeLogProvider {
+    static func fixture(periods: [Period] = Period.allCases) -> HomeLogProvider {
+        let provider = HomeLogProvider()
+        for period in periods {
+            provider.results[period] = .success(sampleOutput(for: period))
+        }
+        return provider
+    }
+
+    private static func sampleOutput(for period: Period) -> Output {
+        let date = period.initialRange.lowerBound
+        let intMatrices = [
+            GridMatrix(date: date, name: EventObject.recordType, cells: [GridCell(row: 1, column: 0, value: 48)]),
+            GridMatrix(date: date, name: CrashObject.recordType, cells: [GridCell(row: 1, column: 1, value: 3)]),
+            GridMatrix(
+                date: date,
+                name: "api_calls",
+                category: Telemetry.Export.counter.rawValue,
+                cells: [GridCell(row: 1, column: 2, value: 140)]
+            )
+        ]
+        let doubleMatrices = [
+            GridMatrix(
+                date: date,
+                name: "cache_hit_rate",
+                category: Telemetry.Export.floatingCounter.rawValue,
+                cells: [GridCell(row: 1, column: 3, value: 91.5)]
+            )
+        ]
+        return (intMatrices, doubleMatrices)
+    }
+}
+
 private let lifecycleNames: Set = [
     DeviceObject.recordType,
     InstallObject.recordType,

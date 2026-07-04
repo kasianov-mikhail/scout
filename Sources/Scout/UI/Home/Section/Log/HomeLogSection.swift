@@ -10,7 +10,11 @@ import SwiftUI
 struct HomeLogSection: View {
     @Environment(\.database) var database
     @AppStorage("scout_home_log_period") private var period: Period = .today
-    @StateObject private var provider = HomeLogProvider()
+    @StateObject private var provider: HomeLogProvider
+
+    init(provider: HomeLogProvider = HomeLogProvider()) {
+        self._provider = StateObject(wrappedValue: provider)
+    }
 
     var body: some View {
         Header(title: "Log") {
@@ -82,7 +86,7 @@ struct HomeLogSection: View {
 #Preview {
     NavigationStack {
         List {
-            HomeLogSection()
+            HomeLogSection(provider: .fixture())
         }
         .listStyle(.plain)
     }

@@ -41,9 +41,9 @@ extension ActivityPoint {
             Calendar.utc.date(byAdding: .day, value: -day, to: end).map {
                 ActivityPoint(
                     date: $0.millisecondsSince1970,
-                    dau: .random(in: 50...200),
-                    wau: .random(in: 300...600),
-                    mau: .random(in: 800...1500)
+                    dau: 80 + day % 90 + (day / 7) % 20,
+                    wau: 360 + day % 120 + (day / 5) % 80,
+                    mau: 950 + day % 240 + (day / 11) % 160
                 )
             }
         }
