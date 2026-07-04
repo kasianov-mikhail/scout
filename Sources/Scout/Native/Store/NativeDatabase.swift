@@ -11,11 +11,11 @@ import ScoutDB
 // Scout's neutral record layer served by a scout-db EntityStore: raw records
 // live in Item slots, while matrix reads are synthesized from GridItem
 // aggregate views and from raw entities.
-struct ScoutDBDatabase: Sendable {
+struct NativeDatabase: Sendable {
     let store: EntityStore
 }
 
-extension ScoutDBDatabase: RecordWriter {
+extension NativeDatabase: RecordWriter {
     func write(record: Record) async throws {
         try await store.write(Self.values(for: record), entity: record.recordType, uuid: record.recordID)
     }
@@ -34,7 +34,7 @@ extension ScoutDBDatabase: RecordWriter {
     }
 }
 
-extension ScoutDBDatabase: RecordReader {
+extension NativeDatabase: RecordReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         try await read(matching: query, fields: fields, limit: Int.max)
     }
@@ -65,7 +65,7 @@ extension ScoutDBDatabase: RecordReader {
     }
 }
 
-extension ScoutDBDatabase: RecordLocator {
+extension NativeDatabase: RecordLocator {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         guard let entityRecord = try await store.fetch(uuid: recordName) else {
             throw RecordNotFoundError()
@@ -74,7 +74,7 @@ extension ScoutDBDatabase: RecordLocator {
     }
 }
 
-extension ScoutDBDatabase: MetricReader {
+extension NativeDatabase: MetricReader {
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
         let entity = T.seriesValues == Int.seriesValues ? IntMetricsObject.recordType : DoubleMetricsObject.recordType
         let prefix = category + "|"
@@ -97,7 +97,7 @@ extension ScoutDBDatabase: MetricReader {
     }
 }
 
-extension ScoutDBDatabase: ActivityReader {
+extension NativeDatabase: ActivityReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         // WAU/MAU windows reach back before the visible range.
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay

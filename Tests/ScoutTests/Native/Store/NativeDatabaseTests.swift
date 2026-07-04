@@ -12,9 +12,9 @@ import Testing
 
 @testable import Scout
 
-@Suite("ScoutDBDatabase")
-struct ScoutDBDatabaseTests {
-    let database: ScoutDBDatabase
+@Suite("NativeDatabase")
+struct NativeDatabaseTests {
+    let database: NativeDatabase
 
     init() async throws {
         let cloud = ScoutDBTesting.InMemoryDatabase()
@@ -22,7 +22,7 @@ struct ScoutDBDatabaseTests {
         for definition in EntityCatalog.definitions {
             try await registry.register(definition)
         }
-        database = ScoutDBDatabase(store: EntityStore(database: cloud, registry: registry))
+        database = NativeDatabase(store: EntityStore(database: cloud, registry: registry))
     }
 
     @Test("Event records round-trip through the store")
