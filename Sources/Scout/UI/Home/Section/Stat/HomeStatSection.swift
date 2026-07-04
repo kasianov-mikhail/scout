@@ -8,29 +8,15 @@
 import SwiftUI
 
 struct HomeStatSection: View {
+    let section: HomeSection
+
+    @ObservedObject var activity: ActivityProvider
+    @ObservedObject var sessionStat: StatProvider
+    @ObservedObject var crashStat: StatProvider
+
     @Environment(\.database) var database
 
-    @AppStorage("scout_home_section") private var section = HomeSection.sessions
-
-    @StateObject private var activity = ActivityProvider()
-    @StateObject private var sessionStat = StatProvider(eventName: "Session", periods: Period.summary)
-    @StateObject private var crashStat = StatProvider(eventName: "Crash", periods: Period.summary)
-
     var body: some View {
-        HomeSectionPicker(selection: $section)
-            .padding(.bottom, 4)
-            .listRowSeparator(.hidden)
-            .task(id: section) {
-                switch section {
-                case .sessions:
-                    await sessionStat.fetchIfNeeded(in: database)
-                case .crashes:
-                    await crashStat.fetchIfNeeded(in: database)
-                case .users:
-                    await activity.fetchIfNeeded(in: database)
-                }
-            }
-
         sectionRows
     }
 
@@ -53,13 +39,14 @@ struct HomeStatSection: View {
                 await activity.fetchAgain(in: database)
             }
         } else {
-            ForEach(ActivityPeriod.allCases) { period in
+            ForEach(Array(ActivityPeriod.allCases.enumerated()), id: \.element) { index, period in
                 ActivityRow(
                     period: period,
                     color: HomeSection.users.color,
                     systemImage: HomeSection.users.systemImage,
                     activity: activity
                 )
+                .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
             }
         }
     }
@@ -78,7 +65,7 @@ struct HomeStatSection: View {
                 await stat.fetchAgain(in: database)
             }
         } else {
-            ForEach(Period.summary) { period in
+            ForEach(Array(Period.summary.enumerated()), id: \.element) { index, period in
                 StatRow(
                     color: section.color,
                     period: period,
@@ -93,6 +80,7 @@ struct HomeStatSection: View {
                     .environment(\.chartColor, section.color)
                     .navigationTitle(en: section.title)
                 }
+                .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
             }
         }
     }

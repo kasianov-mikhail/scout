@@ -8,6 +8,13 @@
 import SwiftUI
 
 struct HomeContent: View {
+    @Environment(\.database) var database
+
+    @AppStorage("scout_home_section") private var section = HomeSection.sessions
+
+    @StateObject private var activity = ActivityProvider()
+    @StateObject private var sessionStat = StatProvider(eventName: "Session", periods: Period.summary)
+    @StateObject private var crashStat = StatProvider(eventName: "Crash", periods: Period.summary)
     @StateObject private var releaseProvider: ReleaseHealthProvider
     @State private var showReleaseHealth = false
 
@@ -16,17 +23,39 @@ struct HomeContent: View {
     }
 
     var body: some View {
-        List {
-            HomeStatSection()
-            HomeLogSection()
-            HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
+        VStack(spacing: 0) {
+            HomeSectionPicker(selection: $section)
+                .padding(.horizontal)
+                .padding(.top, 8)
+                .padding(.bottom, 4)
+                .task(id: section) {
+                    switch section {
+                    case .sessions:
+                        await sessionStat.fetchIfNeeded(in: database)
+                    case .crashes:
+                        await crashStat.fetchIfNeeded(in: database)
+                    case .users:
+                        await activity.fetchIfNeeded(in: database)
+                    }
+                }
+
+            List {
+                HomeStatSection(
+                    section: section,
+                    activity: activity,
+                    sessionStat: sessionStat,
+                    crashStat: crashStat
+                )
+                HomeLogSection()
+                HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
+            }
+            .navigationDestination(isPresented: $showReleaseHealth) {
+                ReleaseHealthView(provider: releaseProvider)
+            }
+            .listStyle(.plain)
+            .imageScale(.medium)
+            .scrollContentBackground(.hidden)
         }
-        .navigationDestination(isPresented: $showReleaseHealth) {
-            ReleaseHealthView(provider: releaseProvider)
-        }
-        .listStyle(.plain)
-        .imageScale(.medium)
-        .scrollContentBackground(.hidden)
         .background {
             Rectangle()
                 .fill(.background)
