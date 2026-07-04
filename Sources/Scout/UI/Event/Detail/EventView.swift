@@ -53,9 +53,7 @@ extension EventView {
         var body: some View {
             VStack(alignment: .leading) {
                 if let date = event.date {
-                    Text(utcDateFormatter.string(from: date) + " UTC")
-                        .font(.system(size: 16))
-                        .monospaced()
+                    UTCTimestampText(date: date)
                 }
 
                 Spacer().frame(height: 10)

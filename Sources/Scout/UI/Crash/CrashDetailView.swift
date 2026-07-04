@@ -34,9 +34,7 @@ struct CrashDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             if let date = crash.date {
-                Text(utcDateFormatter.string(from: date) + " UTC")
-                    .font(.system(size: 16))
-                    .monospaced()
+                UTCTimestampText(date: date)
             }
 
             if let reason = crash.reason {
