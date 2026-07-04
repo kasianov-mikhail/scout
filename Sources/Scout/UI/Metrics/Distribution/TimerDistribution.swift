@@ -16,21 +16,7 @@ struct TimerDistribution: Equatable {
     }
 
     init(series: [MetricSeries]) {
-        var histograms: [Date: LatencyHistogram] = [:]
-
-        for singleSeries in series {
-            guard let category = singleSeries.category else { continue }
-            guard let index = LatencyBuckets.index(of: category) else { continue }
-
-            for point in singleSeries.points {
-                let date = Date(millisecondsSince1970: point.date)
-                var histogram = histograms[date, default: LatencyHistogram()]
-                histogram.add(count: Int(point.value.doubleValue), at: index)
-                histograms[date] = histogram
-            }
-        }
-
-        self.histograms = histograms
+        self.init(histograms: LatencyHistogram.buckets(from: series))
     }
 
     var isEmpty: Bool {
