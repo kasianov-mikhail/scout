@@ -25,12 +25,9 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     var body: some View {
         switch distribution {
         case .compact(let spacing):
-            ScrollView(.horizontal) {
-                HStack(spacing: spacing) {
-                    segments
-                }
+            HStack(spacing: spacing) {
+                segments
             }
-            .scrollIndicators(.hidden)
             .frame(maxWidth: .infinity, alignment: .leading)
         case .justified:
             JustifiedLayout {
