@@ -7,14 +7,10 @@
 
 import Foundation
 
-struct Adoption: ExpressibleByFloatLiteral {
+struct Adoption: Ratio {
     let value: Double
 
     init(_ value: Double) {
-        self.value = value
-    }
-
-    init(floatLiteral value: Double) {
         self.value = value
     }
 
