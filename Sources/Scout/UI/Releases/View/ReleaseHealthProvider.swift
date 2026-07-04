@@ -8,46 +8,40 @@
 import SwiftUI
 
 @MainActor
-class ReleaseHealthProvider: ObservableObject {
-    @Published var releases: [ReleaseHealth]?
+class ReleaseHealthProvider: ObservableObject, Provider {
+    @Published var result: ProviderResult<[ReleaseHealth]>?
 
     init(releases: [ReleaseHealth]? = nil) {
-        self.releases = releases
+        self.result = releases.map { .success($0) }
     }
 
-    func fetchIfNeeded(in database: DatabaseReader) async {
-        if releases == nil {
-            await fetch(in: database)
-        }
+    var releases: [ReleaseHealth]? {
+        try? result?.get()
     }
 
-    func fetch(in database: DatabaseReader) async {
+    func fetch(in database: DatabaseReader) async throws -> [ReleaseHealth] {
         let range = Calendar.utc.defaultRange
 
-        do {
-            async let sessions: IntMatrices = database.readAll(
-                matching: query(name: SessionObject.recordType, in: range)
-            )
-            async let crashes: IntMatrices = database.readAll(
-                matching: query(name: CrashObject.recordType, in: range)
-            )
-            async let installs: IntMatrices = database.readAll(
-                matching: query(name: VersionMarker.installName, in: range)
-            )
-            async let crashedInstalls: IntMatrices = database.readAll(
-                matching: query(name: VersionMarker.crashName, in: range)
-            )
+        async let sessions: IntMatrices = database.readAll(
+            matching: query(name: SessionObject.recordType, in: range)
+        )
+        async let crashes: IntMatrices = database.readAll(
+            matching: query(name: CrashObject.recordType, in: range)
+        )
+        async let installs: IntMatrices = database.readAll(
+            matching: query(name: VersionMarker.installName, in: range)
+        )
+        async let crashedInstalls: IntMatrices = database.readAll(
+            matching: query(name: VersionMarker.crashName, in: range)
+        )
 
-            releases = try await releaseReport(
-                sessions: sessions,
-                crashes: crashes,
-                installs: installs,
-                crashedInstalls: crashedInstalls,
-                range: range
-            )
-        } catch {
-            releases = []
-        }
+        return try await releaseReport(
+            sessions: sessions,
+            crashes: crashes,
+            installs: installs,
+            crashedInstalls: crashedInstalls,
+            range: range
+        )
     }
 
     private func query(name: String, in range: Range<Date>) -> RecordQuery {

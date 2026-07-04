@@ -42,6 +42,17 @@ struct HomeStatSection: View {
         case .crashes:
             statRows(for: crashStat, section: .crashes)
         case .users:
+            activityRows
+        }
+    }
+
+    @ViewBuilder
+    private var activityRows: some View {
+        if case .failure(let error) = activity.result {
+            errorRow(error) {
+                await activity.fetchAgain(in: database)
+            }
+        } else {
             ForEach(ActivityPeriod.allCases) { period in
                 ActivityRow(
                     period: period,
@@ -53,21 +64,35 @@ struct HomeStatSection: View {
         }
     }
 
+    private func errorRow(_ error: Error, retry: @escaping () async -> Void) -> some View {
+        ErrorView(description: Text(verbatim: error.localizedDescription)) {
+            Task { await retry() }
+        }
+        .listRowSeparator(.hidden)
+    }
+
+    @ViewBuilder
     private func statRows(for stat: StatProvider, section: HomeSection) -> some View {
-        ForEach(Period.summary) { period in
-            StatRow(
-                color: section.color,
-                period: period,
-                systemImage: section.systemImage,
-                stat: stat
-            ) {
-                StatView(
-                    showList: false,
-                    extent: ChartExtent(period: period),
+        if case .failure(let error) = stat.result {
+            errorRow(error) {
+                await stat.fetchAgain(in: database)
+            }
+        } else {
+            ForEach(Period.summary) { period in
+                StatRow(
+                    color: section.color,
+                    period: period,
+                    systemImage: section.systemImage,
                     stat: stat
-                )
-                .environment(\.chartColor, section.color)
-                .navigationTitle(en: section.title)
+                ) {
+                    StatView(
+                        showList: false,
+                        extent: ChartExtent(period: period),
+                        stat: stat
+                    )
+                    .environment(\.chartColor, section.color)
+                    .navigationTitle(en: section.title)
+                }
             }
         }
     }

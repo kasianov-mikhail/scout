@@ -17,24 +17,20 @@ struct ReleaseHealthView: View {
     }
 
     var body: some View {
-        Group {
-            if let releases = provider.releases {
-                if releases.isEmpty {
-                    Placeholder(
-                        text: "No releases",
-                        systemImage: "shippingbox",
-                        description: "Release health appears once your app reports versions"
-                    )
-                } else {
-                    List {
-                        ForEach(releases) { release in
-                            ReleaseRow(release: release)
-                        }
-                    }
-                    .listStyle(.plain)
-                }
+        ProviderView(provider: provider) { releases in
+            if releases.isEmpty {
+                Placeholder(
+                    text: "No releases",
+                    systemImage: "shippingbox",
+                    description: "Release health appears once your app reports versions"
+                )
             } else {
-                RingIndicator().frame(maxHeight: .infinity)
+                List {
+                    ForEach(releases) { release in
+                        ReleaseRow(release: release)
+                    }
+                }
+                .listStyle(.plain)
             }
         }
         .navigationTitle(en: "Releases")
