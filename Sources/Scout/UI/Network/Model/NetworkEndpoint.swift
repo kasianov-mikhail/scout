@@ -18,9 +18,17 @@ struct NetworkEndpoint: Identifiable {
 
     private static let methods = ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]
 
-    var method: String? {
+    static func isEndpointName(_ name: String) -> Bool {
+        method(in: name) != nil
+    }
+
+    private static func method(in name: String) -> String? {
         guard let first = name.split(separator: " ").first.map(String.init) else { return nil }
-        return Self.methods.contains(first) ? first : nil
+        return methods.contains(first) ? first : nil
+    }
+
+    var method: String? {
+        Self.method(in: name)
     }
 
     var path: String {
