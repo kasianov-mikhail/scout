@@ -41,23 +41,30 @@ struct NetworkReport {
             }
         }
 
+        // Latency-only timers count as endpoints only when their name reads
+        // like an HTTP request, so generic app timers stay off the screen.
         self.init(
-            distributions: latency.filter { status.keys.contains($0.key) }.mapValues(TimerDistribution.init),
+            distributions:
+                latency
+                .filter { status.keys.contains($0.key) || NetworkEndpoint.isEndpointName($0.key) }
+                .mapValues(TimerDistribution.init),
             statuses: status.mapValues(StatusDistribution.init)
         )
     }
 
     var isEmpty: Bool {
-        statuses.values.allSatisfy(\.isEmpty)
+        statuses.values.allSatisfy(\.isEmpty) && distributions.values.allSatisfy(\.isEmpty)
     }
 
     func endpoints(in range: Range<Date>) -> [NetworkEndpoint] {
-        statuses
-            .map { name, distribution in
-                let breakdown = distribution.summary(in: range)
+        Set(statuses.keys)
+            .union(distributions.keys)
+            .map { name in
+                let breakdown = statuses[name]?.summary(in: range) ?? StatusBreakdown()
+                let requests = breakdown.total > 0 ? breakdown.total : distributions[name]?.total(in: range) ?? 0
                 return NetworkEndpoint(
                     name: name,
-                    requests: breakdown.total,
+                    requests: requests,
                     successRate: breakdown.total > 0 ? breakdown.successRate : nil,
                     p99: distributions[name]?.summary(in: range)?.p99
                 )
@@ -82,7 +89,8 @@ struct NetworkReport {
     func requestsPerMinute(in range: Range<Date>, until now: Date = .now) -> Int {
         let end = min(now, range.upperBound)
         let minutes = max(1.0, end.timeIntervalSince(range.lowerBound) / .minute)
-        return Int(Double(summary(in: range).total) / minutes)
+        let total = endpoints(in: range).reduce(0) { $0 + $1.requests }
+        return Int(Double(total) / minutes)
     }
 }
 

@@ -37,6 +37,13 @@ struct TimerDistribution: Equatable {
         histograms.values.allSatisfy { $0.total == 0 }
     }
 
+    func total(in range: Range<Date>) -> Int {
+        histograms
+            .filter { range.contains($0.key) }
+            .values
+            .reduce(0) { $0 + $1.total }
+    }
+
     func summary(in range: Range<Date>) -> LatencyPercentiles? {
         let combined =
             histograms

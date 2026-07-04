@@ -19,16 +19,31 @@ struct NetworkReportTests {
         base..<base.adding(.day)
     }
 
-    @Test("Only names with status series become endpoints")
-    func endpointRequiresStatuses() {
+    @Test("Names with status series or endpoint-like names become endpoints")
+    func endpointNames() {
         let report = NetworkReport(series: [
             makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 10)]),
             makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 10)]),
+            makeSeries(name: "GET /b", category: "timer_le_1", points: [(base, 5)]),
             makeSeries(name: "plain_timer", category: "timer_le_1", points: [(base, 10)]),
         ])
 
-        #expect(report.endpoints(in: range).map(\.name) == ["GET /a"])
+        #expect(report.endpoints(in: range).map(\.name) == ["GET /a", "GET /b"])
         #expect(report.distributions.keys.contains("plain_timer") == false)
+    }
+
+    @Test("Latency-only endpoints count requests from the histogram")
+    func latencyOnlyEndpoint() throws {
+        let report = NetworkReport(series: [
+            makeSeries(name: "GET /b", category: "timer_le_1", points: [(base, 5)])
+        ])
+
+        let endpoint = try #require(report.endpoints(in: range).first)
+
+        #expect(endpoint.requests == 5)
+        #expect(endpoint.successRate == nil)
+        #expect(endpoint.p99 != nil)
+        #expect(report.requestsPerMinute(in: range, until: base.adding(.hour)) == 0)
     }
 
     @Test("Endpoints carry requests, success rate, and p99 for the range")
@@ -128,6 +143,7 @@ struct NetworkReportTests {
         #expect(NetworkReport(series: []).isEmpty)
         #expect(NetworkReport(series: [makeSeries(name: "plain_timer", category: "timer_le_1", points: [(base, 1)])]).isEmpty)
         #expect(!NetworkReport(series: [makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 1)])]).isEmpty)
+        #expect(!NetworkReport(series: [makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 1)])]).isEmpty)
     }
 
     private func makeSeries(name: String, category: String, points: [(Date, Int)]) -> MetricSeries {
