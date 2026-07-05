@@ -31,18 +31,18 @@ struct EventStatList: View {
         VStack {
             EventList(provider: provider)
                 .task {
-                    await fetch()
+                    await provider.fetchIfNeeded(for: query, in: database)
                 }
                 .navigationTitle(range.label(using: formatter))
                 .font(.caption)
         }
     }
 
-    func fetch() async {
+    var query: Event.Query {
         var query = Event.Query()
         query.dates = range
         query.name = eventName
-        await provider.fetch(for: query, in: database)
+        return query
     }
 }
 
