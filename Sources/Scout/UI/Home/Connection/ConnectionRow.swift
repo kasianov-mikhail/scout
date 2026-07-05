@@ -22,7 +22,7 @@ struct ConnectionRow: View {
                     .accessibilityLabel(Text(verbatim: connection.status.label))
                 VStack(spacing: 0) {
                     HStack {
-                        Text(verbatim: connection.name).font(.system(size: 16))
+                        Text(verbatim: connection.name).font(.callout)
                         Spacer(minLength: 0)
                     }
                     .padding(.vertical, 12)

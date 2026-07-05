@@ -34,7 +34,7 @@ struct EventStatList: View {
                     await fetch()
                 }
                 .navigationTitle(range.label(using: formatter))
-                .font(.system(size: 12))
+                .font(.caption)
         }
     }
 

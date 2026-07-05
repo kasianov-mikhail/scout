@@ -24,7 +24,7 @@ struct FilterView: View {
                         .foregroundStyle(level.color ?? .blue)
                         .opacity(criteria.isSelected(level) ? 1 : 0)
                     Text(level.description)
-                        .font(.system(size: 16))
+                        .font(.callout)
                     Spacer()
                 }
                 .contentShape(Rectangle())

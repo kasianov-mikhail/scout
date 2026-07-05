@@ -17,7 +17,7 @@ struct ConnectionSettingsRow: View {
                     .imageScale(.medium)
                     .foregroundStyle(.secondary)
                 Text(verbatim: "Settings")
-                    .font(.system(size: 16))
+                    .font(.callout)
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 16)

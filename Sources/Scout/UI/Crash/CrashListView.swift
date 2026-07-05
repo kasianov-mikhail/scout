@@ -51,7 +51,7 @@ struct CrashListView: View {
     private func row(for group: CrashGroup) -> some View {
         Row {
             Text(group.name)
-                .font(.system(size: 17))
+                .font(.body)
                 .lineLimit(1)
                 .monospaced()
 
@@ -63,7 +63,7 @@ struct CrashListView: View {
 
             if let date = group.lastDate {
                 Text(verbatim: date.relativeString)
-                    .font(.system(size: 15))
+                    .font(.subheadline)
                     .foregroundStyle(Color.gray)
             }
         } destination: {
