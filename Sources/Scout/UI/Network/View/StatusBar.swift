@@ -31,7 +31,7 @@ struct StatusBar: View {
                     HStack(spacing: 5) {
                         Circle().fill(segment.color).frame(width: 7, height: 7)
                         Text(verbatim: segment.label + " " + segment.count.plain)
-                            .font(.system(size: 12))
+                            .font(.caption)
                             .foregroundStyle(.gray)
                     }
                 }
