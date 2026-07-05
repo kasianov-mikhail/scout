@@ -28,6 +28,7 @@ struct StatView: View {
                     let segment = extent.segment(from: points)
 
                     ComparableChart(segment: segment, points: points, extent: extent, color: color, isComparing: isComparing)
+                        .listRowSeparator(.hidden, edges: .top)
                         .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
                     ComparisonToggle(isOn: $isComparing)
