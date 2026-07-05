@@ -55,7 +55,7 @@ struct SetupPage: View {
                         .frame(width: 22, height: 22)
                         .background(Circle().fill(.blue))
                     Text(label)
-                        .font(.fixedSubheadline)
+                        .font(.subheadline)
                         .fontWeight(.medium)
                 }
                 Text(code.swiftSyntax)

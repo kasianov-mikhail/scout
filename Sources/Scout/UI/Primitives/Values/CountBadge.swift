@@ -14,7 +14,7 @@ struct CountBadge: View {
 
     var body: some View {
         Text(verbatim: "\(prefix)\(count)")
-            .font(.fixedCaption.weight(.semibold))
+            .font(.caption.weight(.semibold))
             .monospacedDigit()
             .foregroundStyle(color)
             .padding(.horizontal, 7)

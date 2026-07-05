@@ -38,14 +38,14 @@ struct BackendDetailView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
                     Image(systemName: backend.status.healthIcon)
-                        .font(.fixedTitle2)
+                        .font(.title2)
                         .foregroundStyle(backend.status.healthColor)
 
                     VStack(alignment: .leading, spacing: 1) {
                         Text(verbatim: backend.status.healthLabel)
-                            .font(.fixedHeadline)
+                            .font(.headline)
                         Text(verbatim: backend.engine.label)
-                            .font(.fixedCaption)
+                            .font(.caption)
                             .foregroundStyle(.secondary)
                     }
                 }
@@ -116,7 +116,7 @@ struct BackendDetailView: View {
                 BenchmarkButton(benchmark: benchmark, message: $message)
 
                 Text(verbatim: "The benchmark issues test queries to verify the \(RequestLimiter.requestLimit)-request limit.")
-                    .font(.fixedCaption)
+                    .font(.caption)
                     .foregroundStyle(.secondary)
                     .listRowSeparator(.hidden)
             }
@@ -134,7 +134,7 @@ struct DetailValueRow: View {
             Text(verbatim: title)
             Spacer()
             Text(verbatim: value)
-                .font(.fixedBody.monospacedDigit())
+                .font(.body.monospacedDigit())
                 .foregroundStyle(.secondary)
         }
     }

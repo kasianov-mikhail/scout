@@ -17,7 +17,7 @@ struct ReadyPage: View {
                 .foregroundStyle(.green)
         } content: {
             Text(verbatim: "Run your app and come back here to see your data.")
-                .font(.fixedBody)
+                .font(.body)
                 .kerning(0.3)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)

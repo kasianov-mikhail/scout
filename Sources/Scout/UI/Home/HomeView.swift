@@ -68,6 +68,7 @@ struct HomeView: View {
             .connectionToolbar(backends: backends, activeID: activeIDBinding)
         }
         .imageScale(.medium)
+        .dynamicTypeSize(.large)
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
         .environmentObject(tint)

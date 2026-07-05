@@ -20,11 +20,11 @@ struct ErrorView: View {
                 .foregroundColor(.yellow)
 
             Text(verbatim: "An error occurred")
-                .font(.fixedTitle2)
+                .font(.title2)
                 .bold()
 
             description
-                .font(.fixedBody)
+                .font(.body)
                 .multilineTextAlignment(.center)
 
             if let retry {

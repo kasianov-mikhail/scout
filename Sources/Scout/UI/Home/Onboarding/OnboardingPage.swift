@@ -20,7 +20,7 @@ struct OnboardingPage<Accessory: View, Content: View>: View {
             accessory
 
             Text(verbatim: title)
-                .font(.fixedTitle)
+                .font(.title)
                 .bold()
 
             content

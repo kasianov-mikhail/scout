@@ -15,7 +15,7 @@ struct ReleaseRow: View {
             CompactRing(release: release)
 
             Text(verbatim: release.id)
-                .font(.fixedBody)
+                .font(.body)
                 .monospacedDigit()
 
             Spacer()
@@ -62,7 +62,7 @@ struct ReleaseRowPlaceholder: View {
             CompactRing(adoption: 1.0, color: .gray)
 
             Text(verbatim: "3.2.1")
-                .font(.fixedBody)
+                .font(.body)
                 .monospacedDigit()
 
             Spacer()
@@ -81,7 +81,7 @@ private struct ReleasePercent: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.fixedSubheadline)
+            .font(.subheadline)
             .monospacedDigit()
             .foregroundStyle(.primary)
             .frame(minWidth: 80, alignment: .trailing)
