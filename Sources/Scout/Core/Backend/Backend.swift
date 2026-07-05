@@ -37,9 +37,27 @@ public struct Backend: Sendable {
 extension Backend {
     static var samples: [Backend] {
         [
-            Backend(id: "https://api.scout.app", database: DefaultDatabase(), checkAvailability: { true }, displayName: "Production", probeStatus: { .reachable }),
-            Backend(id: "https://staging.scout.app", database: DefaultDatabase(), checkAvailability: { true }, displayName: "Staging", probeStatus: { .unknown }),
-            Backend(id: "http://localhost:8080", database: DefaultDatabase(), checkAvailability: { false }, displayName: "Local", probeStatus: { .unreachable }),
+            Backend(
+                id: "https://api.scout.app",
+                database: DefaultDatabase(),
+                checkAvailability: { true },
+                displayName: "Production",
+                probeStatus: { .reachable }
+            ),
+            Backend(
+                id: "https://staging.scout.app",
+                database: DefaultDatabase(),
+                checkAvailability: { true },
+                displayName: "Staging",
+                probeStatus: { .unknown }
+            ),
+            Backend(
+                id: "http://localhost:8080",
+                database: DefaultDatabase(),
+                checkAvailability: { false },
+                displayName: "Local",
+                probeStatus: { .unreachable }
+            ),
         ]
     }
 }
