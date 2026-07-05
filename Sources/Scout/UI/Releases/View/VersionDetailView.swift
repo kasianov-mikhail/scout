@@ -109,7 +109,7 @@ struct VersionDetailView: View {
             ForEach(issues) { group in
                 Row {
                     Text(verbatim: group.name)
-                        .font(.callout)
+                        .font(.fixedCallout)
                         .monospaced()
                         .lineLimit(1)
 

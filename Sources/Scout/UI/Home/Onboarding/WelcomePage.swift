@@ -42,9 +42,9 @@ struct WelcomePage: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(.headline)
+                    .font(.fixedHeadline)
                 Text(description)
-                    .font(.subheadline)
+                    .font(.fixedSubheadline)
                     .kerning(0.3)
                     .foregroundStyle(.secondary)
             }

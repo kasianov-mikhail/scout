@@ -39,10 +39,10 @@ struct ChartView<T: ChartNumeric>: View {
 
 #Preview("ChartView – Month") {
     VStack(alignment: .leading, spacing: 24) {
-        Text(verbatim: "With Data").font(.headline)
+        Text(verbatim: "With Data").font(.fixedHeadline)
         ChartView(segment: .sample, timing: ChartExtent(period: Period.month))
 
-        Text(verbatim: "Empty State").font(.headline)
+        Text(verbatim: "Empty State").font(.fixedHeadline)
         ChartView(segment: .empty, timing: ChartExtent(period: Period.month))
     }
     .padding()

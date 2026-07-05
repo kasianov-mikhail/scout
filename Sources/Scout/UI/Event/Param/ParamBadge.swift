@@ -17,10 +17,10 @@ struct ParamIcon: View {
             switch value.icon {
             case .symbol(let name):
                 Image(systemName: name)
-                    .font(.body)
+                    .font(.fixedBody)
             case .text(let text):
                 Text(text)
-                    .font(.body.weight(.semibold))
+                    .font(.fixedBody.weight(.semibold))
                     .fixedSize()
             }
         }
@@ -35,7 +35,7 @@ struct ParamBadge: View {
 
     var body: some View {
         Label(convertible.label, systemImage: convertible.iconName)
-            .font(.caption.weight(.medium))
+            .font(.fixedCaption.weight(.medium))
             .foregroundStyle(convertible.color)
             .padding(.horizontal, 8)
             .padding(.vertical, 5)

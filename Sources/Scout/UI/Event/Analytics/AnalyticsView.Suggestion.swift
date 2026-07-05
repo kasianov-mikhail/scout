@@ -14,7 +14,7 @@ extension AnalyticsView {
         var body: some View {
             HStack {
                 Text(text)
-                    .font(.body)
+                    .font(.fixedBody)
                     .monospaced()
                     .searchCompletion(text)
                     .foregroundStyle(.blue)

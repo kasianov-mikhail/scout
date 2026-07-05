@@ -26,7 +26,7 @@ struct Placeholder: View {
 
             if let description {
                 Text(description)
-                    .font(.body)
+                    .font(.fixedBody)
                     .kerning(0.3)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

@@ -71,7 +71,7 @@ struct MetricsContent<T: ChartNumeric>: View {
         }
         .monospaced()
         .italic()
-        .font(.body)
+        .font(.fixedBody)
         .lineLimit(1)
     }
 }

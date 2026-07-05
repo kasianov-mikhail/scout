@@ -24,7 +24,7 @@ struct TimerDistributionView: View {
             PercentileRow(percentiles: percentiles)
 
             Text(verbatim: "P99 TREND")
-                .font(.caption.weight(.semibold))
+                .font(.fixedCaption.weight(.semibold))
                 .foregroundStyle(Color.gray)
 
             PercentileTrendChart(trend: trend, unit: unit)

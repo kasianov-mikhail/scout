@@ -120,7 +120,7 @@ extension EnvironmentValues {
                     Text("Row \(row)").monospaced()
                     Spacer()
                     if row == anchor {
-                        Text("anchor").foregroundStyle(.tint).font(.caption)
+                        Text("anchor").foregroundStyle(.tint).font(.fixedCaption)
                     }
                 }
                 .padding()
