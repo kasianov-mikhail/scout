@@ -13,9 +13,9 @@ struct EventView: View {
     @StateObject private var param: ParamProvider
     @State private var isParamPresented = false
 
-    init(event: Event) {
+    init(event: Event, param: ParamProvider? = nil) {
         self.event = event
-        _param = StateObject(wrappedValue: ParamProvider(recordID: event.id))
+        _param = StateObject(wrappedValue: param ?? ParamProvider(recordID: event.id))
     }
 
     var body: some View {
@@ -69,19 +69,41 @@ extension EventView {
 }
 
 #Preview {
+    let params = ParamProvider.Item.samplePurchase
+    let event = Event(
+        name: "event_name",
+        level: .info,
+        date: Date(),
+        paramCount: params.count,
+        uuid: UUID(),
+        id: UUID().uuidString,
+        installID: UUID(),
+        sessionID: UUID(),
+        deviceID: UUID()
+    )
+
     NavigationStack {
-        let event = Event(
-            name: "event_name",
-            level: .info,
-            date: Date(),
-            paramCount: 3,
-            uuid: UUID(),
-            id: UUID().uuidString,
-            installID: UUID(),
-            sessionID: UUID(),
-            deviceID: UUID()
-        )
-        EventView(event: event)
+        EventView(event: event, param: .fixture(items: params))
     }
+    .environment(\.database, SampleDatabase(eventName: event.name))
     .environmentObject(Tint())
+}
+
+private struct SampleDatabase: Database {
+    let eventName: String
+
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+        RecordChunk(records: [StatProvider.sampleMatrix(name: eventName).record], cursor: nil)
+    }
+
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
+        throw RecordNotFoundError()
+    }
+
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] { [] }
+
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] { [] }
+
+    func write(record: Record) async throws {}
+    func write(records: [Record]) async throws {}
 }
