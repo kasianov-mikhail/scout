@@ -11,11 +11,7 @@ extension Font {
     static let placeholderTitle = Font.system(size: 18, weight: .semibold)
     static let codeChip = Font.system(size: 14, design: .monospaced)
     static let stepBadge = Font.system(size: 13, weight: .semibold)
-}
 
-// A fixed-size mirror of the built-in Dynamic Type scale: each style matches its
-// semantic counterpart's size at the default content size but does not scale.
-extension Font {
     static let fixedTitle = Font.system(size: 28)
     static let fixedTitle2 = Font.system(size: 22)
     static let fixedTitle3 = Font.system(size: 20)
