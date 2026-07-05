@@ -23,7 +23,7 @@ struct TimelineRow: View {
                 }
 
                 Text(row.name)
-                    .font(.fixedBody)
+                    .font(.body)
                     .lineLimit(1)
                     .monospaced()
                     .padding(.leading, 8)
@@ -33,7 +33,7 @@ struct TimelineRow: View {
                 TimelineView(.periodic(from: timeline, by: 1)) { _ in
                     Text(row.date.relativeString)
                 }
-                .font(.fixedSubheadline)
+                .font(.subheadline)
                 .foregroundStyle(.gray)
             }
             .frame(height: 43)

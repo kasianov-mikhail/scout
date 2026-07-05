@@ -18,7 +18,7 @@ struct RangeControl<T: ChartTimeScale>: View {
             .disabled(!extent.isLeftEnabled)
 
             Text(extent.domain.label(using: rangeDateFormatter))
-                .font(.fixedCallout)
+                .font(.callout)
                 .monospaced()
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)

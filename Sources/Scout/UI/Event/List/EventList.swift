@@ -49,7 +49,7 @@ struct EventList: View {
         Row {
             HStack(spacing: 12) {
                 Text(event.name)
-                    .font(.fixedBody)
+                    .font(.body)
                     .lineLimit(1)
                     .monospaced()
 
@@ -59,7 +59,7 @@ struct EventList: View {
                     TimelineView(.periodic(from: timeline, by: 1)) { _ in
                         Text(verbatim: date.relativeString)
                     }
-                    .font(.fixedSubheadline)
+                    .font(.subheadline)
                     .foregroundStyle(Color.gray)
                 }
             }

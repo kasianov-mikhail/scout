@@ -52,12 +52,12 @@ struct ChartSnapshot<ChartContent: View>: View {
     }
 
     private var titleText: some View {
-        Text(verbatim: title).font(.fixedHeadline)
+        Text(verbatim: title).font(.headline)
     }
 
     private var rangeText: some View {
         Text(verbatim: rangeLabel)
-            .font(.fixedCaption)
+            .font(.caption)
             .foregroundStyle(.secondary)
     }
 }

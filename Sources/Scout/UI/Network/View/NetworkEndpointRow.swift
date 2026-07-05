@@ -39,9 +39,9 @@ struct NetworkEndpointRow: View {
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(verbatim: endpoint.name)
-                    .font(.fixedSubheadline.weight(.medium))
+                    .font(.subheadline.weight(.medium))
                 Text(verbatim: endpoint.requests.plain + " req · " + (endpoint.successRate?.formatted ?? "—"))
-                    .font(.fixedCaption)
+                    .font(.caption)
                     .foregroundStyle(.gray)
             }
 
@@ -49,10 +49,10 @@ struct NetworkEndpointRow: View {
 
             VStack(alignment: .trailing, spacing: 8) {
                 Text(verbatim: endpoint.p99?.duration ?? "—")
-                    .font(.fixedSubheadline.weight(.semibold))
+                    .font(.subheadline.weight(.semibold))
                     .monospacedDigit()
                 Text(verbatim: "P99")
-                    .font(.fixedCaption2.weight(.semibold))
+                    .font(.caption2.weight(.semibold))
                     .foregroundStyle(.gray)
             }
         }

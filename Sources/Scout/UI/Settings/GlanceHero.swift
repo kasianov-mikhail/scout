@@ -46,11 +46,11 @@ struct GlanceHero: View {
                 .foregroundStyle(summary.color)
 
             Text(verbatim: summary.title)
-                .font(.fixedTitle3.weight(.semibold))
+                .font(.title3.weight(.semibold))
                 .multilineTextAlignment(.center)
 
             Text(verbatim: summary.detail)
-                .font(.fixedFootnote)
+                .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .frame(maxWidth: .infinity)
