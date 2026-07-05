@@ -16,6 +16,7 @@ struct HomeContent: View {
     @StateObject private var sessionStat: StatProvider
     @StateObject private var crashStat: StatProvider
     @StateObject private var releaseProvider: ReleaseHealthProvider
+    @StateObject private var logProvider: HomeLogProvider
     @State private var showReleaseHealth = false
 
     var body: some View {
@@ -33,7 +34,7 @@ struct HomeContent: View {
                 sessionStat: sessionStat,
                 crashStat: crashStat
             )
-            HomeLogSection()
+            HomeLogSection(provider: logProvider)
             HomeReleaseSection(provider: releaseProvider, showReleaseHealth: $showReleaseHealth)
         }
         .navigationDestination(isPresented: $showReleaseHealth) {
@@ -66,11 +67,12 @@ struct HomeContent: View {
 }
 
 extension HomeContent {
-    init(activity: ActivityProvider, sessionStat: StatProvider, crashStat: StatProvider, releaseProvider: ReleaseHealthProvider) {
+    init(activity: ActivityProvider, sessionStat: StatProvider, crashStat: StatProvider, releaseProvider: ReleaseHealthProvider, logProvider: HomeLogProvider) {
         self._activity = StateObject(wrappedValue: activity)
         self._sessionStat = StateObject(wrappedValue: sessionStat)
         self._crashStat = StateObject(wrappedValue: crashStat)
         self._releaseProvider = StateObject(wrappedValue: releaseProvider)
+        self._logProvider = StateObject(wrappedValue: logProvider)
     }
 }
 
@@ -80,8 +82,10 @@ extension HomeContent {
             activity: .fixture(),
             sessionStat: .fixture(eventName: "Session"),
             crashStat: .fixture(eventName: "Crash"),
-            releaseProvider: .fixture()
+            releaseProvider: .fixture(),
+            logProvider: .fixture()
         )
         .navigationTitle("Home")
     }
+    .environmentObject(Tint())
 }

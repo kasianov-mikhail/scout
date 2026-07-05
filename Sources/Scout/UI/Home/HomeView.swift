@@ -51,7 +51,8 @@ struct HomeView: View {
                         activity: ActivityProvider(),
                         sessionStat: StatProvider(eventName: "Session", periods: Period.summary),
                         crashStat: StatProvider(eventName: "Crash", periods: Period.summary),
-                        releaseProvider: ReleaseHealthProvider()
+                        releaseProvider: ReleaseHealthProvider(),
+                        logProvider: HomeLogProvider()
                     )
                     .id(backend.id)
                     .iCloudWarning(backend.accountWarning)
