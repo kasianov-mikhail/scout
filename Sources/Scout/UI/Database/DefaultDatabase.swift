@@ -11,7 +11,7 @@ extension EnvironmentValues {
     @Entry var database: DatabaseReader = DefaultDatabase()
 }
 
-struct DefaultDatabase: DatabaseReader {
+struct DefaultDatabase: Database {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: query.recordType.sampleRecords, cursor: nil)
     }
@@ -27,4 +27,7 @@ struct DefaultDatabase: DatabaseReader {
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
         []
     }
+
+    func write(record: Record) async throws {}
+    func write(records: [Record]) async throws {}
 }

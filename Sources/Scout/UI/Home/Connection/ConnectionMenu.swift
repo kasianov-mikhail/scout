@@ -29,40 +29,27 @@ struct ConnectionMenu: View {
         .popover(isPresented: $isPresented) {
             VStack(spacing: 0) {
                 ForEach(connections) { connection in
-                    Button {
+                    ConnectionRow(
+                        connection: connection,
+                        isActive: connection.id == activeID,
+                        showsSeparator: connection.id != connections.last?.id
+                    ) {
                         activeID = connection.id
                         isPresented = false
-                    } label: {
-                        ConnectionRow(
-                            connection: connection,
-                            isActive: connection.id == activeID,
-                            showsSeparator: true
-                        )
                     }
-                    .buttonStyle(.plain)
                 }
 
-                Button {
+                Divider()
+
+                ConnectionSettingsRow {
                     isPresented = false
                     Task { @MainActor in
                         await Task.yield()
                         onSettings()
                     }
-                } label: {
-                    HStack {
-                        Image(systemName: "slider.horizontal.3")
-                            .imageScale(.medium)
-                            .foregroundStyle(.secondary)
-                        Text(verbatim: "Settings")
-                            .font(.callout)
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 12)
-                    .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
             }
+            .padding(.vertical, 8)
             .frame(minWidth: 240)
             .task {
                 connections = await connections.refreshingStatuses()
