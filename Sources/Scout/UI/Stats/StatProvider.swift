@@ -35,7 +35,7 @@ extension StatProvider {
 
     private static func sampleMatrix(name: String) -> GridMatrix<Int> {
         let cells = (1...372).map { day in
-            GridCell(row: day, column: 12, value: Int.random(in: 5...80))
+            GridCell(row: day, column: 12, value: 12 + day % 40 + (day / 9) % 18)
         }
         return Matrix(date: Calendar.utc.defaultRange.lowerBound, name: name, cells: cells)
     }

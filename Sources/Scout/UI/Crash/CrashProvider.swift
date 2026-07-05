@@ -15,6 +15,11 @@ class CrashProvider: ObservableObject {
 
     private var crashes: [Crash] = []
 
+    func fetchIfNeeded(in database: DatabaseReader) async {
+        guard groups == nil else { return }
+        await fetch(in: database)
+    }
+
     func fetch(in database: DatabaseReader) async {
         do {
             let query = RecordQuery(
@@ -55,7 +60,9 @@ class CrashProvider: ObservableObject {
 extension CrashProvider {
     static func fixture() -> CrashProvider {
         let provider = CrashProvider()
-        provider.groups = CrashGroup.groups(from: .samples)
+        let crashes = [Crash].samples
+        provider.crashes = crashes
+        provider.groups = CrashGroup.groups(from: crashes)
         return provider
     }
 }
