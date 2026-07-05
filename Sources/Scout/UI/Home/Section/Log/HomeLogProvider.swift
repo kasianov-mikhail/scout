@@ -62,7 +62,7 @@ extension HomeLogProvider {
                 name: "api_calls",
                 category: Telemetry.Export.counter.rawValue,
                 cells: [GridCell(row: 1, column: 2, value: 140)]
-            )
+            ),
         ]
         let doubleMatrices = [
             GridMatrix(
