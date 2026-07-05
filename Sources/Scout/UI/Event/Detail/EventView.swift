@@ -11,11 +11,13 @@ struct EventView: View {
     let event: Event
 
     @StateObject private var param: ParamProvider
+    @StateObject private var stat: StatProvider
     @State private var isParamPresented = false
 
-    init(event: Event, param: ParamProvider? = nil) {
+    init(event: Event, param: ParamProvider? = nil, stat: StatProvider? = nil) {
         self.event = event
         _param = StateObject(wrappedValue: param ?? ParamProvider(recordID: event.id))
+        _stat = StateObject(wrappedValue: stat ?? StatProvider(eventName: event.name, periods: Period.allCases))
     }
 
     var body: some View {
@@ -32,7 +34,7 @@ struct EventView: View {
                 )
             }
 
-            StatSection(eventName: event.name)
+            StatSection(stat: stat)
             HistorySection(event: event)
         }
         .listStyle(.plain)
@@ -83,27 +85,11 @@ extension EventView {
     )
 
     NavigationStack {
-        EventView(event: event, param: .fixture(items: params))
+        EventView(
+            event: event,
+            param: .fixture(items: params),
+            stat: .fixture(eventName: event.name)
+        )
     }
-    .environment(\.database, SampleDatabase(eventName: event.name))
     .environmentObject(Tint())
-}
-
-private struct SampleDatabase: Database {
-    let eventName: String
-
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        RecordChunk(records: [StatProvider.sampleMatrix(name: eventName).record], cursor: nil)
-    }
-
-    func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        throw RecordNotFoundError()
-    }
-
-    func activity(in range: Range<Date>) async throws -> [ActivityPoint] { [] }
-
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] { [] }
-
-    func write(record: Record) async throws {}
-    func write(records: [Record]) async throws {}
 }

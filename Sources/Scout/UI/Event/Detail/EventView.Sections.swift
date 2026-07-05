@@ -45,18 +45,9 @@ extension EventView {
 
 extension EventView {
     struct StatSection: View {
-        @StateObject var stat: StatProvider
+        @ObservedObject var stat: StatProvider
 
         @Environment(\.database) var database
-
-        init(eventName: String) {
-            _stat = StateObject(
-                wrappedValue: StatProvider(
-                    eventName: eventName,
-                    periods: Period.allCases
-                )
-            )
-        }
 
         var body: some View {
             Header(title: "Stats").task {
