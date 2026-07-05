@@ -28,8 +28,7 @@ extension Backend {
     fileprivate func planDelivery(for object: SyncableObject, in context: NSManagedObjectContext) {
         guard !type(of: object).isLocalOnly else { return }
 
-        let entity = NSEntityDescription.entity(forEntityName: "SyncDelivery", in: context)!
-        let row = SyncDelivery(entity: entity, insertInto: context)
+        let row = context.insert(SyncDelivery.self)
         row.backendID = id
         row.object = object
         row.progress = .raw

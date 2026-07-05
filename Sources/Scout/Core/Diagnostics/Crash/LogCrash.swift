@@ -16,8 +16,7 @@ func logCrash(_ crash: CrashInfo, id: UUID = UUID(), context: NSManagedObjectCon
     request.fetchLimit = 1
     guard try context.count(for: request) == 0 else { return }
 
-    let entity = NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!
-    let object = CrashObject(entity: entity, insertInto: context)
+    let object = context.insert(CrashObject.self)
 
     object.crashID = id
     object.date = crash.date

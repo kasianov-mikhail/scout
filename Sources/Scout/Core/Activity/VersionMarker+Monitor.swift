@@ -32,8 +32,7 @@ extension VersionMarker: PartialMonitor {
             return
         }
 
-        let entity = NSEntityDescription.entity(forEntityName: "VersionMarker", in: context)!
-        let marker = VersionMarker(entity: entity, insertInto: context)
+        let marker = context.insert(VersionMarker.self)
         marker.markerID = UUID()
         marker.name = name
         marker.appVersion = appVersion

@@ -10,8 +10,7 @@ import Logging
 
 /// Persists a log event to Core Data.
 func log(_ event: LogEvent, date: Date, context: NSManagedObjectContext) throws {
-    let entity = NSEntityDescription.entity(forEntityName: "EventObject", in: context)!
-    let object = EventObject(entity: entity, insertInto: context)
+    let object = context.insert(EventObject.self)
 
     object.eventID = UUID()
     object.date = date

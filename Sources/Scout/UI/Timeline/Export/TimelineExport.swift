@@ -72,37 +72,31 @@ extension TimelineExport {
         return parts.joined(separator: " · ")
     }
 
-    private func header(for install: Install) -> String {
-        var parts = ["## Install"]
-        if let date = install.date {
-            parts.append(ExportFormat.day(date))
+    private func header(prefix: String, date: String?, id: UUID?) -> String {
+        var parts = [prefix]
+        if let date {
+            parts.append(date)
         }
-        if let id = install.installID {
+        if let id {
             parts.append("(\(ExportFormat.shortID(id)))")
         }
         return parts.joined(separator: " ")
+    }
+
+    private func header(for install: Install) -> String {
+        header(prefix: "## Install", date: install.date.map(ExportFormat.day), id: install.installID)
     }
 
     private func header(for launch: Launch) -> String {
-        var parts = ["### Launch"]
-        if let date = launch.startDate {
-            parts.append(ExportFormat.minute(date))
-        }
-        if let id = launch.launchID {
-            parts.append("(\(ExportFormat.shortID(id)))")
-        }
-        return parts.joined(separator: " ")
+        header(prefix: "### Launch", date: launch.startDate.map(ExportFormat.minute), id: launch.launchID)
     }
 
     private func header(for session: Session) -> String {
-        var parts = ["#### Session"]
-        if let start = session.startDate {
-            parts.append(ExportFormat.range(from: start, to: session.endDate))
-        }
-        if let id = session.sessionID {
-            parts.append("(\(ExportFormat.shortID(id)))")
-        }
-        return parts.joined(separator: " ")
+        header(
+            prefix: "#### Session",
+            date: session.startDate.map { ExportFormat.range(from: $0, to: session.endDate) },
+            id: session.sessionID
+        )
     }
 }
 

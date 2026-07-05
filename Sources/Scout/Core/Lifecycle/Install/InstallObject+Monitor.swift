@@ -17,8 +17,7 @@ extension InstallObject: PartialMonitor {
             return
         }
 
-        let entity = NSEntityDescription.entity(forEntityName: "InstallObject", in: context)!
-        let install = InstallObject(entity: entity, insertInto: context)
+        let install = context.insert(InstallObject.self)
         install.date = Date()
         try context.save()
     }

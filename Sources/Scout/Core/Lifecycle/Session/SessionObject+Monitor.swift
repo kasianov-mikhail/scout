@@ -11,8 +11,7 @@ extension SessionObject: Monitor {
     static func trigger(in context: NSManagedObjectContext) throws {
         IDs.session = UUID()
 
-        let entity = NSEntityDescription.entity(forEntityName: "SessionObject", in: context)!
-        let session = SessionObject(entity: entity, insertInto: context)
+        let session = context.insert(SessionObject.self)
         session.date = Date()
         session.appVersion = Bundle.main.marketingVersion
         try context.save()

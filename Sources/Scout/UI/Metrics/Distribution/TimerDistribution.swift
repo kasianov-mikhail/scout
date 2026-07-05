@@ -23,19 +23,19 @@ struct TimerDistribution: Equatable {
         histograms.values.allSatisfy { $0.total == 0 }
     }
 
-    func total(in range: Range<Date>) -> Int {
+    func histogram(in range: Range<Date>) -> LatencyHistogram {
         histograms
             .filter { range.contains($0.key) }
             .values
-            .reduce(0) { $0 + $1.total }
+            .reduce(LatencyHistogram(), +)
+    }
+
+    func total(in range: Range<Date>) -> Int {
+        histogram(in: range).total
     }
 
     func summary(in range: Range<Date>) -> LatencyPercentiles? {
-        let combined =
-            histograms
-            .filter { range.contains($0.key) }
-            .values
-            .reduce(LatencyHistogram(), +)
+        let combined = histogram(in: range)
 
         guard let p50 = combined.percentile(0.5),
             let p90 = combined.percentile(0.9),
@@ -55,13 +55,8 @@ struct TimerDistribution: Equatable {
         while date > range.lowerBound {
             steps -= 1
             let newDate = range.upperBound.adding(component, value: steps)
-            let combined =
-                histograms
-                .filter { newDate..<date ~= $0.key }
-                .values
-                .reduce(LatencyHistogram(), +)
 
-            if let p99 = combined.percentile(0.99) {
+            if let p99 = histogram(in: newDate..<date).percentile(0.99) {
                 result.append(PercentileTrendPoint(date: newDate, p99: p99))
             }
 
