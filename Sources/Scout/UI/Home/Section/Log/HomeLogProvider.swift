@@ -11,7 +11,11 @@ import Foundation
 class HomeLogProvider: ObservableObject {
     typealias Output = ([GridMatrix<Int>], [GridMatrix<Double>])
 
-    @Published private var results: [Period: ProviderResult<Output>] = [:]
+    @Published private var results: [Period: ProviderResult<Output>]
+
+    init(results: [Period: ProviderResult<Output>] = [:]) {
+        self.results = results
+    }
 
     func result(for period: Period) -> ProviderResult<Output>? {
         results[period]
