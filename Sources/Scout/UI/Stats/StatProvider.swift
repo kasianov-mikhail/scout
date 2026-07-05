@@ -33,7 +33,7 @@ extension StatProvider {
         return provider
     }
 
-    private static func sampleMatrix(name: String) -> GridMatrix<Int> {
+    nonisolated static func sampleMatrix(name: String) -> GridMatrix<Int> {
         let cells = (1...372).map { day in
             GridCell(row: day, column: 12, value: 12 + day % 40 + (day / 9) % 18)
         }
