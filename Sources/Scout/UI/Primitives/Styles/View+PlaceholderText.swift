@@ -9,7 +9,7 @@ import SwiftUI
 
 extension View {
     func placeholderTextStyle() -> some View {
-        font(.system(size: 18, weight: .semibold))
+        font(.placeholderTitle)
             .foregroundStyle(.gray.opacity(0.7))
     }
 }

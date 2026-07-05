@@ -50,7 +50,7 @@ struct SetupPage: View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
                     Text("\(number)")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.stepBadge)
                         .foregroundStyle(.white)
                         .frame(width: 22, height: 22)
                         .background(Circle().fill(.blue))

@@ -9,7 +9,7 @@ import SwiftUI
 
 extension View {
     func codeChipStyle() -> some View {
-        font(.system(size: 14, design: .monospaced))
+        font(.codeChip)
             .foregroundStyle(.primary)
             .padding(.horizontal, 12)
             .padding(.vertical, 10)
