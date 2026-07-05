@@ -39,11 +39,11 @@ extension Double {
         case 0:
             return "0.0"
         case ..<0.01:
-            formatter = smallDecimalFormatter
+            formatter = .smallDecimal
         case ..<1_000:
-            formatter = midDecimalFormatter
+            formatter = .midDecimal
         default:
-            formatter = largeDecimalFormatter
+            formatter = .largeDecimal
         }
         return formatter.string(from: NSNumber(value: self))!
     }
@@ -86,16 +86,18 @@ extension TimeInterval {
     }
 }
 
-private func decimalFormatter(minimumFractionDigits: Int, maximumFractionDigits: Int) -> NumberFormatter {
-    let formatter = NumberFormatter()
-    formatter.numberStyle = .decimal
-    formatter.decimalSeparator = "."
-    formatter.groupingSeparator = " "
-    formatter.minimumFractionDigits = minimumFractionDigits
-    formatter.maximumFractionDigits = maximumFractionDigits
-    return formatter
-}
+private extension NumberFormatter {
+    static let smallDecimal = decimal(minimumFractionDigits: 3, maximumFractionDigits: 3)
+    static let midDecimal = decimal(minimumFractionDigits: 1, maximumFractionDigits: 2)
+    static let largeDecimal = decimal(minimumFractionDigits: 1, maximumFractionDigits: 1)
 
-nonisolated(unsafe) private let smallDecimalFormatter = decimalFormatter(minimumFractionDigits: 3, maximumFractionDigits: 3)
-nonisolated(unsafe) private let midDecimalFormatter = decimalFormatter(minimumFractionDigits: 1, maximumFractionDigits: 2)
-nonisolated(unsafe) private let largeDecimalFormatter = decimalFormatter(minimumFractionDigits: 1, maximumFractionDigits: 1)
+    static func decimal(minimumFractionDigits: Int, maximumFractionDigits: Int) -> NumberFormatter {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.decimalSeparator = "."
+        formatter.groupingSeparator = " "
+        formatter.minimumFractionDigits = minimumFractionDigits
+        formatter.maximumFractionDigits = maximumFractionDigits
+        return formatter
+    }
+}
