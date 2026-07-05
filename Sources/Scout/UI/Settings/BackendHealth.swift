@@ -49,9 +49,7 @@ extension BackendHealth {
         health.lastChecked = date
         if let latency {
             health.pings.append(latency)
-            if health.pings.count > 12 {
-                health.pings.removeFirst(health.pings.count - 12)
-            }
+            health.pings = Array(health.pings.suffix(12))
         }
         return health
     }

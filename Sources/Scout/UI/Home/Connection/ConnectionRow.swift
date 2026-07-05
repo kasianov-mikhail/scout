@@ -18,7 +18,7 @@ struct ConnectionRow: View {
             HStack {
                 Image(systemName: "circle.fill")
                     .imageScale(.medium)
-                    .foregroundStyle(connection.status.color)
+                    .foregroundStyle(connection.status.healthColor)
                     .accessibilityLabel(Text(verbatim: connection.status.label))
                 VStack(spacing: 0) {
                     HStack {
@@ -60,14 +60,6 @@ extension Backend.Status {
         case .reachable: "Reachable"
         case .unreachable: "Unreachable"
         case .unknown: "Unknown"
-        }
-    }
-
-    fileprivate var color: Color {
-        switch self {
-        case .reachable: .green
-        case .unreachable: .red
-        case .unknown: .gray
         }
     }
 }

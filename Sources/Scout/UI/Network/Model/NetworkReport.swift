@@ -61,12 +61,13 @@ struct NetworkReport {
             .union(distributions.keys)
             .map { name in
                 let breakdown = statuses[name]?.summary(in: range) ?? StatusBreakdown()
-                let requests = breakdown.total > 0 ? breakdown.total : distributions[name]?.total(in: range) ?? 0
+                let histogram = distributions[name]?.histogram(in: range)
+                let requests = breakdown.total > 0 ? breakdown.total : histogram?.total ?? 0
                 return NetworkEndpoint(
                     name: name,
                     requests: requests,
                     successRate: breakdown.total > 0 ? breakdown.successRate : nil,
-                    p99: distributions[name]?.summary(in: range)?.p99
+                    p99: histogram?.percentile(0.99)
                 )
             }
             .sorted { lhs, rhs in
@@ -87,9 +88,13 @@ struct NetworkReport {
     }
 
     func requestsPerMinute(in range: Range<Date>, until now: Date = .now) -> Int {
+        requestsPerMinute(endpoints(in: range), in: range, until: now)
+    }
+
+    func requestsPerMinute(_ endpoints: [NetworkEndpoint], in range: Range<Date>, until now: Date = .now) -> Int {
         let end = min(now, range.upperBound)
         let minutes = max(1.0, end.timeIntervalSince(range.lowerBound) / .minute)
-        let total = endpoints(in: range).reduce(0) { $0 + $1.requests }
+        let total = endpoints.reduce(0) { $0 + $1.requests }
         return Int(Double(total) / minutes)
     }
 }

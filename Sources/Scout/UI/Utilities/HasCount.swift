@@ -12,6 +12,6 @@ protocol HasCount {
 
 extension Collection where Element: HasCount {
     var total: Element.Count {
-        map(\.count).reduce(.zero, +)
+        reduce(.zero) { $0 + $1.count }
     }
 }

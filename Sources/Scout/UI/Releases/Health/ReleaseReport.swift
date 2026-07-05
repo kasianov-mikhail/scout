@@ -20,6 +20,8 @@ func releaseReport(sessions: IntMatrices, crashes: IntMatrices, installs: IntMat
         .union(installCounts.keys)
         .sorted(by: versionDescending)
 
+    let totalSessions = sessionCounts.values.reduce(0, +)
+
     return versions.map { version in
         let sessions = sessionCounts[version] ?? 0
         let crashPoints = crashPoints[version] ?? []
@@ -32,7 +34,7 @@ func releaseReport(sessions: IntMatrices, crashes: IntMatrices, installs: IntMat
             freeUsers: Stability.optional(of: crashedInstallCounts[version] ?? 0, in: installs),
             crashes: crashes,
             sessions: sessions,
-            adoption: Adoption(of: sessions, in: sessionCounts.values.reduce(0, +)),
+            adoption: Adoption(of: sessions, in: totalSessions),
             trend: crashPoints.trend(in: range)
         )
     }

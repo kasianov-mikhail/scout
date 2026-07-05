@@ -16,8 +16,7 @@ extension LaunchObject: PartialMonitor {
     /// reliable hook for "process about to die".
     ///
     static func trigger(in context: NSManagedObjectContext) throws {
-        let entity = NSEntityDescription.entity(forEntityName: "LaunchObject", in: context)!
-        let launch = LaunchObject(entity: entity, insertInto: context)
+        let launch = context.insert(LaunchObject.self)
         launch.date = Date()
         try context.save()
     }

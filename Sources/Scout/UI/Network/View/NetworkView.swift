@@ -19,9 +19,7 @@ struct NetworkView: View {
     var body: some View {
         ProviderView(provider: provider) { report in
             if report.isEmpty {
-                Text(verbatim: "No network requests in this period.")
-                    .foregroundStyle(.gray)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Placeholder(text: "No network requests in this period.")
             } else {
                 content(report)
             }
@@ -42,7 +40,7 @@ struct NetworkView: View {
             HStack(spacing: 28) {
                 Metric(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
                 Metric(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
-                Metric(title: "Req/min", value: report.requestsPerMinute(in: range).plain, color: .primary)
+                Metric(title: "Req/min", value: report.requestsPerMinute(endpoints, in: range).plain, color: .primary)
                 Spacer()
             }
             .listRowSeparator(.hidden)

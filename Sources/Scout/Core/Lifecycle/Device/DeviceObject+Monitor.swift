@@ -17,8 +17,7 @@ extension DeviceObject: PartialMonitor {
             return
         }
 
-        let entity = NSEntityDescription.entity(forEntityName: "DeviceObject", in: context)!
-        let device = DeviceObject(entity: entity, insertInto: context)
+        let device = context.insert(DeviceObject.self)
         device.date = Date()
         try context.save()
     }

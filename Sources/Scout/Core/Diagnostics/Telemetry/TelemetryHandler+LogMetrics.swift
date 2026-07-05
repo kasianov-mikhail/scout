@@ -45,9 +45,7 @@ extension CKTelemetryHandler {
 }
 
 func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, value: T, _ context: NSManagedObjectContext) throws {
-    let entityName = String(describing: T.Object.self)
-    let entity = NSEntityDescription.entity(forEntityName: entityName, in: context)!
-    let metrics = T.Object(entity: entity, insertInto: context)
+    let metrics = context.insert(T.Object.self)
 
     metrics.value = value
     metrics.telemetry = category

@@ -9,30 +9,24 @@ import Foundation
 
 extension TimelineItem {
     static func items(from rail: Rail) -> [TimelineItem] {
-        var result: [TimelineItem] = []
-
-        for install in rail.installs {
-            for launch in install.launches {
-                for session in launch.sessions {
-                    for event in session.events {
-                        if let date = event.date {
-                            result.append(
-                                TimelineItem(
-                                    id: event.id,
-                                    name: event.name,
-                                    date: date,
-                                    active: [.install, .launch, .session],
-                                    installID: install.install.installID,
-                                    launchID: launch.launch.launchID,
-                                    sessionID: session.session.sessionID
-                                )
+        rail.installs.flatMap { install in
+            install.launches.flatMap { launch in
+                launch.sessions.flatMap { session in
+                    session.events.compactMap { event in
+                        event.date.map { date in
+                            TimelineItem(
+                                id: event.id,
+                                name: event.name,
+                                date: date,
+                                active: [.install, .launch, .session],
+                                installID: install.install.installID,
+                                launchID: launch.launch.launchID,
+                                sessionID: session.session.sessionID
                             )
                         }
                     }
                 }
             }
         }
-
-        return result
     }
 }

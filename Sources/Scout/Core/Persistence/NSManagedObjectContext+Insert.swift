@@ -8,10 +8,10 @@
 import CoreData
 
 extension NSManagedObjectContext {
-    // Inserts a new managed object of the given type, resolving its entity by
-    // the class's simple name (which matches the Core Data entity name here).
+    // Resolves the entity by the class's simple name, which matches the
+    // Core Data entity name for every managed object in the model.
     func insert<T: NSManagedObject>(_ type: T.Type) -> T {
         let entity = NSEntityDescription.entity(forEntityName: String(describing: type), in: self)!
-        return NSManagedObject(entity: entity, insertInto: self) as! T
+        return T(entity: entity, insertInto: self)
     }
 }
