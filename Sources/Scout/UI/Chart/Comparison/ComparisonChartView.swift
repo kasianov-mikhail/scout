@@ -92,7 +92,7 @@ struct ComparisonChartView<T: ChartNumeric>: View {
     let segment = extent.segment(from: points)
 
     return VStack(alignment: .leading, spacing: 24) {
-        Text(verbatim: "With Data").font(.headline)
+        Text(verbatim: "With Data").font(.fixedHeadline)
         ComparisonChartView(
             segment: segment,
             reference: extent.referenceSegment(from: points, alignedTo: segment),
@@ -100,7 +100,7 @@ struct ComparisonChartView<T: ChartNumeric>: View {
             color: .blue
         )
 
-        Text(verbatim: "Empty State").font(.headline)
+        Text(verbatim: "Empty State").font(.fixedHeadline)
         ComparisonChartView(segment: .empty, reference: .empty, timing: extent, color: .blue)
     }
     .padding()

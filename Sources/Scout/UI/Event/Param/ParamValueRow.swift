@@ -25,7 +25,7 @@ struct ParamValueRow: View {
 
             Text(value.summary)
                 .monospaced()
-                .font(.callout)
+                .font(.fixedCallout)
                 .foregroundStyle(summaryStyle)
                 .lineLimit(1)
         }

@@ -15,11 +15,11 @@ struct Metric: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: value)
-                .font(.title2.weight(.bold))
+                .font(.fixedTitle2.weight(.bold))
                 .monospacedDigit()
                 .foregroundStyle(color)
             Text(verbatim: title.uppercased())
-                .font(.caption.weight(.semibold))
+                .font(.fixedCaption.weight(.semibold))
                 .foregroundStyle(Color.gray)
         }
     }

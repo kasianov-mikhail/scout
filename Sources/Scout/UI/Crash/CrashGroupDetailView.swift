@@ -66,7 +66,7 @@ struct CrashGroupDetailView: View {
 
                 if let sessionID = crash.sessionID {
                     Text(ExportFormat.shortID(sessionID))
-                        .font(.footnote)
+                        .font(.fixedFootnote)
                         .monospaced()
                         .foregroundStyle(Color.gray)
                 }

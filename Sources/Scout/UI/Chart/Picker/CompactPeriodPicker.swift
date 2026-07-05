@@ -29,7 +29,7 @@ struct CompactPeriodPicker: View {
                 Image(systemName: "chevron.up.chevron.down")
                     .font(.system(size: 12, weight: .medium))
                 Text(selection.shortTitle.uppercased())
-                    .font(.callout.weight(.medium))
+                    .font(.fixedCallout.weight(.medium))
             }
             .foregroundStyle(.secondary)
         }

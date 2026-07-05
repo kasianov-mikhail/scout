@@ -26,7 +26,7 @@ struct Legend: View {
                                     .fill(kind.color)
                                     .frame(width: 8, height: 8)
                                 Text(kind.label)
-                                    .font(.footnote)
+                                    .font(.fixedFootnote)
                                     .foregroundStyle(.primary)
                             }
                             .padding(.horizontal, 10)
@@ -44,7 +44,7 @@ struct Legend: View {
 
             if let expanded {
                 Text(expanded.legendDescription)
-                    .font(.footnote)
+                    .font(.fixedFootnote)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal)

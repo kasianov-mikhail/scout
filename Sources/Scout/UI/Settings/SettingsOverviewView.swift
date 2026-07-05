@@ -74,7 +74,7 @@ private struct BackendRow: View {
 
         if isActive {
             Text(verbatim: "Active")
-                .font(.caption2.weight(.semibold))
+                .font(.fixedCaption2.weight(.semibold))
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(Capsule().fill(.tint.opacity(0.15)))
@@ -84,7 +84,7 @@ private struct BackendRow: View {
         Spacer()
 
         Text(verbatim: backend.latencyLabel)
-            .font(.body.monospacedDigit())
+            .font(.fixedBody.monospacedDigit())
             .foregroundStyle(.secondary)
     }
 }

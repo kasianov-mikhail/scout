@@ -20,7 +20,7 @@ struct HomeReleaseSection: View {
             } label: {
                 if let releases = provider.releases, releases.count > 0 {
                     Text(verbatim: "All".uppercased())
-                        .font(.callout.weight(.medium))
+                        .font(.fixedCallout.weight(.medium))
                         .foregroundStyle(.blue)
                 }
             }
