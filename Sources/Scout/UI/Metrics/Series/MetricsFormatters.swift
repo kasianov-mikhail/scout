@@ -86,12 +86,12 @@ extension TimeInterval {
     }
 }
 
-private extension NumberFormatter {
-    static let smallDecimal = decimal(minimumFractionDigits: 3, maximumFractionDigits: 3)
-    static let midDecimal = decimal(minimumFractionDigits: 1, maximumFractionDigits: 2)
-    static let largeDecimal = decimal(minimumFractionDigits: 1, maximumFractionDigits: 1)
+extension NumberFormatter {
+    fileprivate static let smallDecimal = decimal(minimumFractionDigits: 3, maximumFractionDigits: 3)
+    fileprivate static let midDecimal = decimal(minimumFractionDigits: 1, maximumFractionDigits: 2)
+    fileprivate static let largeDecimal = decimal(minimumFractionDigits: 1, maximumFractionDigits: 1)
 
-    static func decimal(minimumFractionDigits: Int, maximumFractionDigits: Int) -> NumberFormatter {
+    fileprivate static func decimal(minimumFractionDigits: Int, maximumFractionDigits: Int) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.decimalSeparator = "."
