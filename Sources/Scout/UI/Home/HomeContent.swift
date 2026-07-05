@@ -41,7 +41,6 @@ struct HomeContent: View {
             ReleaseHealthView(provider: releaseProvider)
         }
         .listStyle(.plain)
-        .imageScale(.medium)
         .scrollContentBackground(.hidden)
         .background {
             Rectangle()
