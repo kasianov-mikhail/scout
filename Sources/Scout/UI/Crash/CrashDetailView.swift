@@ -51,7 +51,7 @@ struct CrashDetailView: View {
 
         ForEach(Array(crash.stackTrace.enumerated()), id: \.offset) { _, frame in
             Text(frame)
-                .font(.system(size: 12))
+                .font(.caption)
                 .monospaced()
                 .lineLimit(2)
         }
