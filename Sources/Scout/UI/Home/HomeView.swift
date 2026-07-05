@@ -67,6 +67,7 @@ struct HomeView: View {
             .dismissable()
             .connectionToolbar(backends: backends, activeID: activeIDBinding)
         }
+        .imageScale(.medium)
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
         .environmentObject(tint)
