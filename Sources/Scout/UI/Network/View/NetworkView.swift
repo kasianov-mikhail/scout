@@ -10,6 +10,7 @@ import SwiftUI
 
 struct NetworkView: View {
     @Environment(\.database) var database
+    @State private var showAllEndpoints = false
     @StateObject private var provider: NetworkProvider
 
     init(provider: NetworkProvider = NetworkProvider()) {
@@ -54,18 +55,16 @@ struct NetworkView: View {
                 .listRowSeparator(.hidden)
 
             Header(title: "Top endpoints") {
-                NavigationLink {
-                    NetworkEndpointsView(report: report, range: range)
-                } label: {
-                    Text(verbatim: "See all").foregroundStyle(.blue)
-                }
-                .buttonStyle(.plain)
+                AllButton { showAllEndpoints = true }
             }
             ForEach(endpoints.prefix(3)) { endpoint in
                 NetworkEndpointLink(endpoint: endpoint, report: report, range: range)
             }
         }
         .listStyle(.plain)
+        .navigationDestination(isPresented: $showAllEndpoints) {
+            NetworkEndpointsView(report: report, range: range)
+        }
     }
 }
 
