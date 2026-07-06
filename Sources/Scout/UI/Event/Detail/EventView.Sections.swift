@@ -23,7 +23,7 @@ extension EventView {
 
             Header(title: "Params") {
                 if canSeeAll {
-                    SeeAllButton { isParamPresented = true }
+                    AllButton { isParamPresented = true }
                 }
             }
             .task {
@@ -94,16 +94,5 @@ extension EventView {
                 Timeline(deviceID: deviceID, event: event)
             }
         }
-    }
-}
-
-private struct SeeAllButton: View {
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            Text(verbatim: "See all").foregroundStyle(.blue)
-        }
-        .buttonStyle(.plain)
     }
 }

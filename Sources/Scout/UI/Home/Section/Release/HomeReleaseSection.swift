@@ -15,16 +15,9 @@ struct HomeReleaseSection: View {
 
     var body: some View {
         Header(title: "Releases") {
-            Button {
-                showReleaseHealth = true
-            } label: {
-                if let releases = provider.releases, releases.count > 0 {
-                    Text(verbatim: "All".uppercased())
-                        .font(.callout.weight(.medium))
-                        .foregroundStyle(.blue)
-                }
+            if let releases = provider.releases, releases.count > 0 {
+                AllButton { showReleaseHealth = true }
             }
-            .buttonStyle(.plain)
         }
         .task {
             await provider.fetchIfNeeded(in: database)
