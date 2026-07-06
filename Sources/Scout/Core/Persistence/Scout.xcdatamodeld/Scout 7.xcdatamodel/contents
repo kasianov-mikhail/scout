@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A362" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="crashID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="fingerprint" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="stackTrace" optional="YES" attributeType="Binary"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="crashID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="DateObject" representedClassName="DateObject" isAbstract="YES" syncable="YES" codeGenerationType="none">
+        <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="SyncDelivery" representedClassName="SyncDelivery" syncable="YES" codeGenerationType="none">
+        <attribute name="attempts" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="backendID" attributeType="String"/>
+        <attribute name="progressPrimitive" attributeType="Integer 16" defaultValueString="0" renamingIdentifier="remainingPrimitive" usesScalarValueType="YES"/>
+        <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableObject" inverseName="deliveries" inverseEntity="SyncableObject"/>
+        <fetchIndex name="byBackend">
+            <fetchIndexElement property="backendID" type="Binary" order="ascending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="none">
+        <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="EventObject" representedClassName="EventObject" parentEntity="NamedObject" syncable="YES" codeGenerationType="none">
+        <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="level" attributeType="String"/>
+        <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="params" optional="YES" attributeType="Binary"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="eventID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="DeviceObject" representedClassName="DeviceObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none"/>
+    <entity name="IDObject" representedClassName="IDObject" isAbstract="YES" parentEntity="DateObject" syncable="YES" codeGenerationType="none">
+        <attribute name="deviceID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="installID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="InstallObject" representedClassName="InstallObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none"/>
+
+    <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="none">
+        <attribute name="value" attributeType="Integer 64" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="LaunchObject" representedClassName="LaunchObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
+        <attribute name="name" attributeType="String"/>
+        <attribute name="telemetry" attributeType="String"/>
+    </entity>
+    <entity name="NamedObject" representedClassName="NamedObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
+        <attribute name="name" attributeType="String"/>
+    </entity>
+    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES" codeGenerationType="none">
+        <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SyncDelivery" inverseName="object" inverseEntity="SyncDelivery"/>
+    </entity>
+    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+        <attribute name="sessionID" attributeType="UUID" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="VersionObject" representedClassName="VersionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="buildNumber" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="UserActivityObject" representedClassName="UserActivityObject" parentEntity="TrackedObject" syncable="YES" codeGenerationType="none">
+        <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="period" attributeType="String"/>
+        <attribute name="userActivityID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="weekCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="userActivityID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="VersionMarker" representedClassName="VersionMarker" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="markerID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="markerID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+</model>
