@@ -17,10 +17,12 @@ class TrackedObject: SyncableObject {
     }
 
     func inferredEndDate(in context: NSManagedObjectContext) throws -> Date? {
-        let request = NSFetchRequest<TrackedObject>(entityName: "TrackedObject")
+        let request = NSFetchRequest<NSDictionary>(entityName: "TrackedObject")
         request.predicate = NSPredicate(format: "sessionID == %@", sessionID as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
+        request.resultType = .dictionaryResultType
+        request.propertiesToFetch = [DateObject.datePrimitiveKey]
         request.fetchLimit = 1
-        return try context.fetch(request).first?.date
+        return try context.fetch(request).first?[DateObject.datePrimitiveKey] as? Date
     }
 }
