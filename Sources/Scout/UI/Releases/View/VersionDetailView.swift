@@ -12,15 +12,15 @@ struct VersionDetailView: View {
     @Environment(\.database) var database
 
     let release: ReleaseHealth
-    @StateObject var crashProvider: VersionCrashProvider
+    @StateObject var provider: VersionCrashProvider
 
-    init(release: ReleaseHealth, crashProvider: VersionCrashProvider? = nil) {
+    init(release: ReleaseHealth, provider: VersionCrashProvider? = nil) {
         self.release = release
-        self._crashProvider = StateObject(wrappedValue: crashProvider ?? VersionCrashProvider(version: release.id))
+        self._provider = StateObject(wrappedValue: provider ?? VersionCrashProvider(version: release.id))
     }
 
     private var crashes: [Crash] {
-        crashProvider.crashes ?? []
+        provider.crashes ?? []
     }
 
     private var issues: [CrashGroup] {
@@ -37,9 +37,9 @@ struct VersionDetailView: View {
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationTitle(en: release.id)
-        .message($crashProvider.message)
+        .message($provider.message)
         .task {
-            await crashProvider.fetchIfNeeded(in: database)
+            await provider.fetchIfNeeded(in: database)
         }
     }
 
@@ -128,7 +128,7 @@ struct VersionDetailView: View {
 
 #Preview {
     NavigationStack {
-        VersionDetailView(release: ReleaseHealth.samples[0], crashProvider: .fixture())
+        VersionDetailView(release: ReleaseHealth.samples[0], provider: .fixture())
     }
     .environmentObject(Tint())
 }
@@ -139,7 +139,7 @@ struct VersionDetailView: View {
     return NavigationStack {
         VersionDetailView(
             release: release,
-            crashProvider: VersionCrashProvider(version: release.id, crashes: [])
+            provider: VersionCrashProvider(version: release.id, crashes: [])
         )
     }
     .environmentObject(Tint())
