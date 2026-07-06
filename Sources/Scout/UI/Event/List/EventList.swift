@@ -56,11 +56,7 @@ struct EventList: View {
                 Spacer()
 
                 if let date = event.date {
-                    TimelineView(.periodic(from: timeline, by: 1)) { _ in
-                        Text(verbatim: date.relativeString)
-                    }
-                    .font(.subheadline)
-                    .foregroundStyle(Color.gray)
+                    RelativeTimeText(date: date, timeline: timeline)
                 }
             }
         } destination: {
