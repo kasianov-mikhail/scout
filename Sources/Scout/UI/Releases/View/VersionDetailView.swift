@@ -12,7 +12,7 @@ struct VersionDetailView: View {
     @Environment(\.database) var database
 
     let release: ReleaseHealth
-    @StateObject private var crashProvider: VersionCrashProvider
+    @StateObject var crashProvider: VersionCrashProvider
 
     init(release: ReleaseHealth, crashProvider: VersionCrashProvider? = nil) {
         self.release = release

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SettingsOverviewView: View {
     @Binding var activeID: String
-    @StateObject private var provider: BackendHealthProvider
+    @StateObject var provider: BackendHealthProvider
 
     @State private var message: Message?
 
