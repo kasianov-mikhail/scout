@@ -8,16 +8,11 @@
 import SwiftUI
 
 struct HomeLogSection: View {
-    @AppStorage("scout_home_log_period") private var period: Period = .today
-    @StateObject private var provider: HomeLogProvider
-
-    init(provider: HomeLogProvider = HomeLogProvider()) {
-        self._provider = StateObject(wrappedValue: provider)
-    }
+    @StateObject var provider = HomeLogProvider()
 
     var body: some View {
         Header(title: "Log") {
-            CompactPeriodPicker(selection: $period)
+            CompactPeriodPicker(selection: $provider.period)
         }
 
         let logSpans = logSpans
@@ -58,12 +53,13 @@ struct HomeLogSection: View {
     }
 
     private var logSpans: (int: MatrixSpan<Int>, double: MatrixSpan<Double>)? {
-        guard let result = try? provider.result(for: period)?.get() else {
+        guard let result = try? provider.result?.get() else {
             return nil
         }
+
         return (
-            MatrixSpan(matrices: result.0, range: period.initialRange),
-            MatrixSpan(matrices: result.1, range: period.initialRange)
+            MatrixSpan(matrices: result.0, range: provider.period.initialRange),
+            MatrixSpan(matrices: result.1, range: provider.period.initialRange)
         )
     }
 }
