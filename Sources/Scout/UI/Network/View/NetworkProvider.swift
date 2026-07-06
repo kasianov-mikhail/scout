@@ -33,11 +33,3 @@ class NetworkProvider: ObservableObject, Provider {
         return NetworkReport(series: series)
     }
 }
-
-extension NetworkProvider {
-    static func fixture() -> NetworkProvider {
-        let provider = NetworkProvider()
-        provider.result = .success(.sample)
-        return provider
-    }
-}

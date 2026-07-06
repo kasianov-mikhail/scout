@@ -69,8 +69,11 @@ struct CrashListView: View {
 }
 
 #Preview {
-    NavigationStack {
-        CrashListView(provider: .fixture())
+    let provider = CrashProvider()
+    provider.groups = CrashGroup.groups(from: .samples)
+
+    return NavigationStack {
+        CrashListView(provider: provider)
     }
 }
 

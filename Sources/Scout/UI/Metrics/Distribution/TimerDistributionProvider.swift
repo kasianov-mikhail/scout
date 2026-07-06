@@ -37,11 +37,3 @@ class TimerDistributionProvider: ObservableObject, Provider {
         return TimerDistribution(series: series.filter { $0.name == name })
     }
 }
-
-extension TimerDistributionProvider {
-    static func fixture() -> TimerDistributionProvider {
-        let provider = TimerDistributionProvider(name: "http_request")
-        provider.result = .success(.sample)
-        return provider
-    }
-}

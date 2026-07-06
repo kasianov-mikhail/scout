@@ -41,7 +41,10 @@ struct EventStatList: View {
 }
 
 #Preview {
-    NavigationStack {
-        EventStatList(eventName: "Event", range: Period.week.initialRange, provider: .fixture())
+    let provider = EventProvider()
+    provider.events = .samples
+
+    return NavigationStack {
+        EventStatList(eventName: "Event", range: Period.week.initialRange, provider: provider)
     }
 }

@@ -127,8 +127,11 @@ struct VersionDetailView: View {
 }
 
 #Preview {
-    NavigationStack {
-        VersionDetailView(release: ReleaseHealth.samples[0], provider: .fixture())
+    let provider = VersionCrashProvider(version: "3.2.0")
+    provider.crashes = .samples
+
+    return NavigationStack {
+        VersionDetailView(release: ReleaseHealth.samples[0], provider: provider)
     }
     .environmentObject(Tint())
 }

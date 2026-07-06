@@ -25,18 +25,3 @@ class StatProvider: QueryProvider<GridMatrix<Int>> {
         }
     }
 }
-
-extension StatProvider {
-    static func fixture(eventName: String) -> StatProvider {
-        let provider = StatProvider(eventName: eventName, periods: Period.summary)
-        provider.result = .success([sampleMatrix(name: eventName)])
-        return provider
-    }
-
-    private static func sampleMatrix(name: String) -> GridMatrix<Int> {
-        let cells = (1...372).map { day in
-            GridCell(row: day, column: 12, value: 12 + day % 40 + (day / 9) % 18)
-        }
-        return Matrix(date: Calendar.utc.defaultRange.lowerBound, name: name, cells: cells)
-    }
-}

@@ -65,9 +65,3 @@ extension Duration {
         Int(components.seconds) * 1_000 + Int(components.attoseconds / 1_000_000_000_000_000)
     }
 }
-
-extension BackendHealthProvider {
-    static func fixture() -> BackendHealthProvider {
-        BackendHealthProvider(healths: BackendHealth.samples)
-    }
-}

@@ -23,11 +23,3 @@ class ParamProvider: ObservableObject, Provider {
             .sorted() ?? []
     }
 }
-
-extension ParamProvider {
-    static func fixture(items: [Item]) -> ParamProvider {
-        let provider = ParamProvider(recordID: UUID().uuidString)
-        provider.result = .success(items.sorted())
-        return provider
-    }
-}

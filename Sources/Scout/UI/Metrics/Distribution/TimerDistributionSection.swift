@@ -42,12 +42,15 @@ struct TimerDistributionSection: View {
 }
 
 #Preview("TimerDistributionSection") {
-    NavigationStack {
+    let provider = TimerDistributionProvider(name: "http_request")
+    provider.result = .success(.sample)
+
+    return NavigationStack {
         List {
             TimerDistributionSection(
                 name: "http_request",
                 extent: ChartExtent(period: .today),
-                provider: .fixture()
+                provider: provider
             )
         }
         .listStyle(.plain)
