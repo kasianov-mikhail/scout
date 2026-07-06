@@ -10,11 +10,7 @@ import SwiftUI
 struct ReleaseHealthView: View {
     @Environment(\.database) var database
 
-    @StateObject private var provider: ReleaseHealthProvider
-
-    init(provider: ReleaseHealthProvider = ReleaseHealthProvider()) {
-        self._provider = StateObject(wrappedValue: provider)
-    }
+    @StateObject var provider = ReleaseHealthProvider()
 
     var body: some View {
         ProviderView(provider: provider) { releases in

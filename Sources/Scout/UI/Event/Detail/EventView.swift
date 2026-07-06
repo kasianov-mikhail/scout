@@ -10,8 +10,8 @@ import SwiftUI
 struct EventView: View {
     let event: Event
 
-    @StateObject private var param: ParamProvider
-    @StateObject private var stat: StatProvider
+    @StateObject var param: ParamProvider
+    @StateObject var stat: StatProvider
     @State private var isParamPresented = false
 
     init(event: Event, param: ParamProvider? = nil, stat: StatProvider? = nil) {

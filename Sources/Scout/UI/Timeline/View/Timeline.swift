@@ -12,7 +12,7 @@ struct Timeline: View {
     var event: Event? = nil
 
     @Environment(\.database) var database
-    @StateObject private var provider = TimelineProvider()
+    @StateObject var provider = TimelineProvider()
 
     @State private var scope: TimelineScope = .all
     @State private var showLegend = false

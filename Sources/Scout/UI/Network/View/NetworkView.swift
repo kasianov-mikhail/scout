@@ -11,11 +11,7 @@ import SwiftUI
 struct NetworkView: View {
     @Environment(\.database) var database
     @State private var showAllEndpoints = false
-    @StateObject private var provider: NetworkProvider
-
-    init(provider: NetworkProvider = NetworkProvider()) {
-        self._provider = StateObject(wrappedValue: provider)
-    }
+    @StateObject var provider = NetworkProvider()
 
     var body: some View {
         ProviderView(provider: provider) { report in
