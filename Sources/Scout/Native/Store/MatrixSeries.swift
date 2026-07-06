@@ -75,18 +75,20 @@ struct MatrixSeries {
 
     private func eventRecords(from: Date?, to: Date?, name: String?, store: EntityStore) async throws -> [Record] {
         let points = try await store.series(entity: EventObject.recordType, view: EntityCatalog.eventCountView, from: from?.startOfDay, to: to)
-        var buckets: [SeriesBucket: [String: Double]] = [:]
+        var buckets: [SeriesBucket: [CellIndex: Double]] = [:]
 
         for point in points where name == nil || point.group == name {
-            let bucket = SeriesBucket(name: point.group, category: nil, version: nil, week: point.date.startOfWeek)
-            buckets[bucket, default: [:]][Self.cellKey(for: point.date), default: 0] += Double(point.count)
+            let week = point.date.startOfWeek
+            let bucket = SeriesBucket(name: point.group, category: nil, version: nil, week: week)
+            let index = Self.cellIndex(for: point.date, startOfDay: point.date.startOfDay, startOfWeek: week)
+            buckets[bucket, default: [:]][index, default: 0] += Double(point.count)
         }
         return assemble(buckets)
     }
 
     private func metricRecords(entity: String, from: Date?, to: Date?, name: String?, store: EntityStore) async throws -> [Record] {
         let points = try await store.series(entity: entity, view: EntityCatalog.metricSeriesView, from: from?.startOfDay, to: to)
-        var buckets: [SeriesBucket: [String: Double]] = [:]
+        var buckets: [SeriesBucket: [CellIndex: Double]] = [:]
 
         for point in points {
             guard let separator = point.group.firstIndex(of: "|") else { continue }
@@ -94,8 +96,10 @@ struct MatrixSeries {
             let metric = String(point.group[point.group.index(after: separator)...])
             guard name == nil || metric == name else { continue }
 
-            let bucket = SeriesBucket(name: metric, category: category, version: nil, week: point.date.startOfWeek)
-            buckets[bucket, default: [:]][Self.cellKey(for: point.date), default: 0] += point.value ?? Double(point.count)
+            let week = point.date.startOfWeek
+            let bucket = SeriesBucket(name: metric, category: category, version: nil, week: week)
+            let index = Self.cellIndex(for: point.date, startOfDay: point.date.startOfDay, startOfWeek: week)
+            buckets[bucket, default: [:]][index, default: 0] += point.value ?? Double(point.count)
         }
         return assemble(buckets)
     }
@@ -132,10 +136,12 @@ struct MatrixSeries {
             visits = Array(first.values)
         }
 
-        var buckets: [SeriesBucket: [String: Double]] = [:]
+        var buckets: [SeriesBucket: [CellIndex: Double]] = [:]
         for visit in visits {
-            let bucket = SeriesBucket(name: matrixName, category: nil, version: visit.version, week: visit.date.startOfWeek)
-            buckets[bucket, default: [:]][Self.cellKey(for: visit.date), default: 0] += 1
+            let week = visit.date.startOfWeek
+            let bucket = SeriesBucket(name: matrixName, category: nil, version: visit.version, week: week)
+            let index = Self.cellIndex(for: visit.date, startOfDay: visit.date.startOfDay, startOfWeek: week)
+            buckets[bucket, default: [:]][index, default: 0] += 1
         }
         return assemble(buckets)
     }
@@ -156,13 +162,24 @@ struct MatrixSeries {
         let week: Date
     }
 
-    private static func cellKey(for date: Date) -> String {
-        let row = Int(date.startOfDay.timeIntervalSince(date.startOfWeek) / .day) + 1
-        let column = Int(date.timeIntervalSince(date.startOfDay) / .hour)
-        return "cell_\(row)_\(column.leadingZero)"
+    private struct CellIndex: Hashable {
+        let row: Int
+        let column: Int
     }
 
-    private func assemble(_ buckets: [SeriesBucket: [String: Double]]) -> [Record] {
+    // Takes the already-derived startOfDay/startOfWeek so the per-point loops
+    // reuse the week they compute for the bucket instead of recomputing it here.
+    private static func cellIndex(for date: Date, startOfDay: Date, startOfWeek: Date) -> CellIndex {
+        let row = Int(startOfDay.timeIntervalSince(startOfWeek) / .day) + 1
+        let column = Int(date.timeIntervalSince(startOfDay) / .hour)
+        return CellIndex(row: row, column: column)
+    }
+
+    private static func cellKey(_ index: CellIndex) -> String {
+        "cell_\(index.row)_\(index.column.leadingZero)"
+    }
+
+    private func assemble(_ buckets: [SeriesBucket: [CellIndex: Double]]) -> [Record] {
         buckets.map { bucket, cells in
             var record = Record(
                 recordType: scalar == .int ? Int.recordType : Double.recordType,
@@ -172,8 +189,8 @@ struct MatrixSeries {
             record["name"] = bucket.name
             record["category"] = bucket.category
             record["app_version"] = bucket.version
-            for (key, value) in cells {
-                record.fields[key] = scalar == .int ? .int(Int64(value)) : .double(value)
+            for (index, value) in cells {
+                record.fields[Self.cellKey(index)] = scalar == .int ? .int(Int64(value)) : .double(value)
             }
             return record
         }
