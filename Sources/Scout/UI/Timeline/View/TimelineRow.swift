@@ -30,11 +30,7 @@ struct TimelineRow: View {
 
                 Spacer()
 
-                TimelineView(.periodic(from: timeline, by: 1)) { _ in
-                    Text(row.date.relativeString)
-                }
-                .font(.subheadline)
-                .foregroundStyle(.gray)
+                RelativeTimeText(date: row.date, timeline: timeline)
             }
             .frame(height: 43)
             .padding(.horizontal, 16)
