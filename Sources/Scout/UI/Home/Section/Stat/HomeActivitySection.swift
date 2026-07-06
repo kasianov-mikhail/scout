@@ -28,9 +28,12 @@ struct HomeActivitySection: View {
 }
 
 #Preview {
-    NavigationStack {
+    let activity = ActivityProvider()
+    activity.result = .success(ActivityPoint.samples)
+
+    return NavigationStack {
         List {
-            HomeActivitySection(activity: .fixture())
+            HomeActivitySection(activity: activity)
         }
         .listStyle(.plain)
     }

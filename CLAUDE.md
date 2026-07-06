@@ -77,8 +77,7 @@
 
 - Sample data in app code is named `sample` (a `static var` for fixed instances, a `static func sample(...)` when parameters are needed), placed in an extension at the end of the type's main file (e.g. `Device.swift`), and built directly via the struct initializer.
 - A collection of sample instances is named `samples` (plural) — e.g. `static let samples: [Release]`.
-- An `ObservableObject` provider or view model exposes a `static func fixture()` returning an instance preloaded with sample data for previews — e.g. `static func fixture() -> ReleaseHealthProvider`, injected via the view's initializer.
-- A `fixture()` builds sample data by calling the model type's own `sample`/`samples`, not a private helper living in the provider's file — keep the sample-building logic next to the type it constructs.
+- Providers and view models don't expose a `static func fixture()`. A `#Preview` constructs the provider directly and assigns its published state from the model type's own `sample`/`samples` inline, e.g. `let provider = ReleaseHealthProvider(); provider.result = .success(ReleaseHealth.samples)`. When priming needs a loop or other control flow, a `#Preview` body is a `@ViewBuilder` closure that rejects a bare control-flow statement or discarded call before the final `return`, so wrap that priming in a local `@MainActor func` (a nested `func` doesn't inherit the closure's actor isolation) and call it in a `let`.
 - Tests use a different naming convention — `make<Name>(...)` factory functions.
 
 ## Core Data migrations

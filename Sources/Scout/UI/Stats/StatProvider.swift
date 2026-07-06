@@ -25,11 +25,3 @@ class StatProvider: QueryProvider<GridMatrix<Int>> {
         }
     }
 }
-
-extension StatProvider {
-    static func fixture(eventName: String) -> StatProvider {
-        let provider = StatProvider(eventName: eventName, periods: Period.summary)
-        provider.result = .success([.sample(name: eventName)])
-        return provider
-    }
-}

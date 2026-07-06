@@ -40,9 +40,12 @@ struct HomeStatSection: View {
 }
 
 #Preview {
-    NavigationStack {
+    let stat = StatProvider(eventName: "Session", periods: Period.summary)
+    stat.result = .success([.sample(name: "Session")])
+
+    return NavigationStack {
         List {
-            HomeStatSection(section: .sessions, stat: .fixture(eventName: "Session"))
+            HomeStatSection(section: .sessions, stat: stat)
         }
         .listStyle(.plain)
     }

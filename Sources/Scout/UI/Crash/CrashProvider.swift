@@ -9,7 +9,7 @@ import SwiftUI
 
 @MainActor
 class CrashProvider: ObservableObject {
-    @Published private(set) var groups: [CrashGroup]?
+    @Published var groups: [CrashGroup]?
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
@@ -54,15 +54,5 @@ class CrashProvider: ObservableObject {
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }
-    }
-}
-
-extension CrashProvider {
-    static func fixture() -> CrashProvider {
-        let provider = CrashProvider()
-        let crashes = [Crash].samples
-        provider.crashes = crashes
-        provider.groups = CrashGroup.groups(from: crashes)
-        return provider
     }
 }

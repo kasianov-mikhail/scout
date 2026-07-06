@@ -45,9 +45,12 @@ struct HomeReleaseSection: View {
 }
 
 #Preview {
-    NavigationStack {
+    let provider = ReleaseHealthProvider()
+    provider.result = .success(ReleaseHealth.samples)
+
+    return NavigationStack {
         List {
-            HomeReleaseSection(provider: .fixture(), showReleaseHealth: .constant(false))
+            HomeReleaseSection(provider: provider, showReleaseHealth: .constant(false))
             HomeReleaseSection(provider: ReleaseHealthProvider(releases: []), showReleaseHealth: .constant(false))
         }
         .listStyle(.plain)

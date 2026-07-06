@@ -64,3 +64,36 @@ private func matrices<T: MetricScalar>(of type: T.Type, in range: Range<Date>, f
     let matrices: [GridMatrix<T>] = try await database.readAll(matching: query)
     return matrices.mergeDuplicates()
 }
+
+extension HomeLogProvider {
+    static func sample(for period: Period) -> Output {
+        let date = period.initialRange.lowerBound
+        let intMatrices = [
+            GridMatrix(
+                date: date,
+                name: EventObject.recordType,
+                cells: [GridCell(row: 1, column: 0, value: 48)]
+            ),
+            GridMatrix(
+                date: date,
+                name: CrashObject.recordType,
+                cells: [GridCell(row: 1, column: 1, value: 3)]
+            ),
+            GridMatrix(
+                date: date,
+                name: "api_calls",
+                category: Telemetry.Export.counter.rawValue,
+                cells: [GridCell(row: 1, column: 2, value: 140)]
+            ),
+        ]
+        let doubleMatrices = [
+            GridMatrix(
+                date: date,
+                name: "cache_hit_rate",
+                category: Telemetry.Export.floatingCounter.rawValue,
+                cells: [GridCell(row: 1, column: 3, value: 91.5)]
+            )
+        ]
+        return (intMatrices, doubleMatrices)
+    }
+}

@@ -93,7 +93,11 @@ private struct BackendRow: View {
 #Preview("Settings") {
     @Previewable @State var activeID = BackendHealth.samples[0].id
     NavigationStack {
-        SettingsOverviewView(backends: [], activeID: $activeID, provider: .fixture())
+        SettingsOverviewView(
+            backends: [],
+            activeID: $activeID,
+            provider: BackendHealthProvider(healths: BackendHealth.samples)
+        )
     }
 }
 

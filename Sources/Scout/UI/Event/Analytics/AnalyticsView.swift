@@ -102,8 +102,11 @@ extension View {
 }
 
 #Preview {
-    NavigationStack {
-        AnalyticsView(provider: .fixture())
+    let provider = EventProvider()
+    provider.events = .samples
+
+    return NavigationStack {
+        AnalyticsView(provider: provider)
             .environmentObject(Tint())
     }
 }

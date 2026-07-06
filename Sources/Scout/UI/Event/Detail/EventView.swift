@@ -84,12 +84,14 @@ extension EventView {
         deviceID: UUID()
     )
 
-    NavigationStack {
-        EventView(
-            event: event,
-            param: .fixture(items: params),
-            stat: .fixture(eventName: event.name)
-        )
+    let param = ParamProvider(recordID: event.id)
+    param.result = .success(params.sorted())
+
+    let stat = StatProvider(eventName: event.name, periods: Period.allCases)
+    stat.result = .success([.sample(name: event.name)])
+
+    return NavigationStack {
+        EventView(event: event, param: param, stat: stat)
     }
     .environmentObject(Tint())
 }

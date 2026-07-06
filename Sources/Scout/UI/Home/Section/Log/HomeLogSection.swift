@@ -67,9 +67,22 @@ struct HomeLogSection: View {
 }
 
 #Preview {
-    NavigationStack {
+    @MainActor func makeProvider() -> HomeLogProvider {
+        let provider = HomeLogProvider()
+        let initialPeriod = provider.period
+
+        for period in Period.allCases {
+            provider.period = period
+            provider.result = .success(HomeLogProvider.sample(for: period))
+        }
+
+        provider.period = initialPeriod
+        return provider
+    }
+
+    return NavigationStack {
         List {
-            HomeLogSection(provider: .fixture())
+            HomeLogSection(provider: makeProvider())
         }
         .listStyle(.plain)
     }

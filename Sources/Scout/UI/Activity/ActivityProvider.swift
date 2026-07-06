@@ -26,14 +26,6 @@ struct ActivityPoint: Decodable {
     let mau: Int
 }
 
-extension ActivityProvider {
-    static func fixture() -> ActivityProvider {
-        let provider = ActivityProvider()
-        provider.result = .success(ActivityPoint.samples)
-        return provider
-    }
-}
-
 extension ActivityPoint {
     static var samples: [ActivityPoint] {
         let end = Date().startOfDay

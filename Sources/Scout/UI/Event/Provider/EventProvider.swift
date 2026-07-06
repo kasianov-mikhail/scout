@@ -53,11 +53,3 @@ class EventProvider: ObservableObject {
         }
     }
 }
-
-extension EventProvider {
-    static func fixture() -> EventProvider {
-        let provider = EventProvider()
-        provider.events = .samples
-        return provider
-    }
-}

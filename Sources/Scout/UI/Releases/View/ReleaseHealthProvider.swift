@@ -49,11 +49,3 @@ class ReleaseHealthProvider: ObservableObject, Provider {
         )
     }
 }
-
-extension ReleaseHealthProvider {
-    static func fixture() -> ReleaseHealthProvider {
-        let provider = ReleaseHealthProvider()
-        provider.result = .success(ReleaseHealth.samples)
-        return provider
-    }
-}

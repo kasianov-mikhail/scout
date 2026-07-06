@@ -164,7 +164,11 @@ struct PingSparkline: View {
 #Preview("Server") {
     @Previewable @State var activeID = BackendHealth.samples[0].id
     NavigationStack {
-        BackendDetailView(provider: .fixture(), id: BackendHealth.samples[0].id, activeID: $activeID)
+        BackendDetailView(
+            provider: BackendHealthProvider(healths: BackendHealth.samples),
+            id: BackendHealth.samples[0].id,
+            activeID: $activeID
+        )
     }
 }
 
@@ -172,7 +176,11 @@ struct PingSparkline: View {
 #Preview("CloudKit") {
     @Previewable @State var activeID = BackendHealth.samples[0].id
     NavigationStack {
-        BackendDetailView(provider: .fixture(), id: BackendHealth.samples[1].id, activeID: $activeID)
+        BackendDetailView(
+            provider: BackendHealthProvider(healths: BackendHealth.samples),
+            id: BackendHealth.samples[1].id,
+            activeID: $activeID
+        )
     }
 }
 
@@ -180,6 +188,10 @@ struct PingSparkline: View {
 #Preview("Unreachable") {
     @Previewable @State var activeID = BackendHealth.samples[0].id
     NavigationStack {
-        BackendDetailView(provider: .fixture(), id: BackendHealth.samples[3].id, activeID: $activeID)
+        BackendDetailView(
+            provider: BackendHealthProvider(healths: BackendHealth.samples),
+            id: BackendHealth.samples[3].id,
+            activeID: $activeID
+        )
     }
 }

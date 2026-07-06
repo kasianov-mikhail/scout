@@ -50,13 +50,40 @@ struct HomeList: View {
 }
 
 #Preview {
-    NavigationStack {
+    let activities = ActivityProvider()
+    activities.result = .success(ActivityPoint.samples)
+
+    let sessions = StatProvider(eventName: "Session", periods: Period.summary)
+    sessions.result = .success([.sample(name: "Session")])
+
+    let crashes = StatProvider(eventName: "Crash", periods: Period.summary)
+    crashes.result = .success([.sample(name: "Crash")])
+
+    let releases = ReleaseHealthProvider()
+    releases.result = .success(ReleaseHealth.samples)
+
+    @MainActor func makeLogs() -> HomeLogProvider {
+        let provider = HomeLogProvider()
+        let initialPeriod = provider.period
+
+        for period in Period.allCases {
+            provider.period = period
+            provider.result = .success(HomeLogProvider.sample(for: period))
+        }
+
+        provider.period = initialPeriod
+        return provider
+    }
+
+    let logs = makeLogs()
+
+    return NavigationStack {
         HomeList(
-            activities: .fixture(),
-            sessions: .fixture(eventName: "Session"),
-            crashes: .fixture(eventName: "Crash"),
-            releases: .fixture(),
-            logs: .fixture()
+            activities: activities,
+            sessions: sessions,
+            crashes: crashes,
+            releases: releases,
+            logs: logs
         )
         .navigationTitle(en: "Home")
     }
