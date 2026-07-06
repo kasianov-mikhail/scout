@@ -47,6 +47,17 @@ struct VersionObjectTests {
         #expect(launches.allSatisfy { $0.launchID == launchID1 || $0.launchID == launchID2 })
     }
 
+    @Test("launches(in:) returns an empty array when appVersion is nil")
+    func testLaunchesNilAppVersion() throws {
+        let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
+        version.appVersion = nil
+
+        try context.save()
+
+        let launches = try version.launches(in: context)
+        #expect(launches.isEmpty)
+    }
+
     @Test("install(in:) returns install matching installID")
     func testInstall() throws {
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)

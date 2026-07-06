@@ -22,10 +22,14 @@ final class VersionObject: SyncableObject {
     }
 
     func launches(in context: NSManagedObjectContext) throws -> [LaunchObject] {
-        let versionRequest = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        versionRequest.predicate = NSPredicate(format: "appVersion == %@", appVersion!)
-        let versions = try context.fetch(versionRequest)
-        let launchIDs = versions.compactMap(\.launchID)
+        guard let appVersion else { return [] }
+
+        let versionRequest = NSFetchRequest<NSDictionary>(entityName: "VersionObject")
+        versionRequest.predicate = NSPredicate(format: "appVersion == %@", appVersion)
+        versionRequest.resultType = .dictionaryResultType
+        versionRequest.propertiesToFetch = ["launchID"]
+        versionRequest.returnsDistinctResults = true
+        let launchIDs = try context.fetch(versionRequest).compactMap { $0["launchID"] as? UUID }
 
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
         request.predicate = NSPredicate(format: "launchID IN %@", launchIDs)
