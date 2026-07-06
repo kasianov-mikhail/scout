@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct HomeLogSection: View {
+    @Environment(\.database) var database
     @StateObject var provider = HomeLogProvider()
 
     var body: some View {
         Header(title: "Log") {
             CompactPeriodPicker(selection: $provider.period)
+        }
+        .task(id: provider.period) {
+            await provider.fetchIfNeeded(in: database)
         }
 
         let logSpans = logSpans
@@ -34,9 +38,7 @@ struct HomeLogSection: View {
         )
 
         Row {
-            Image(systemName: "network")
-                .foregroundColor(.blue)
-                .frame(width: 24)
+            Image(systemName: "network").foregroundColor(.blue).frame(width: 24)
             Text(verbatim: "Network")
             Spacer()
         } destination: {

@@ -10,39 +10,10 @@ import SwiftUI
 struct HomeStatSection: View {
     let section: HomeSection
 
-    @ObservedObject var activity: ActivityProvider
-    @ObservedObject var sessionStat: StatProvider
-    @ObservedObject var crashStat: StatProvider
+    @Environment(\.database) var database
+    @ObservedObject var stat: StatProvider
 
     var body: some View {
-        sectionRows
-    }
-
-    @ViewBuilder
-    private var sectionRows: some View {
-        switch section {
-        case .sessions:
-            statRows(for: sessionStat, section: .sessions)
-        case .crashes:
-            statRows(for: crashStat, section: .crashes)
-        case .users:
-            activityRows
-        }
-    }
-
-    private var activityRows: some View {
-        ForEach(Array(ActivityPeriod.allCases.enumerated()), id: \.element) { index, period in
-            ActivityRow(
-                period: period,
-                color: HomeSection.users.color,
-                systemImage: HomeSection.users.systemImage,
-                activity: activity
-            )
-            .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
-        }
-    }
-
-    private func statRows(for stat: StatProvider, section: HomeSection) -> some View {
         ForEach(Array(Period.summary.enumerated()), id: \.element) { index, period in
             StatRow(
                 color: section.color,
@@ -60,5 +31,19 @@ struct HomeStatSection: View {
             }
             .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
         }
+        .onAppear {
+            Task {
+                await stat.fetchIfNeeded(in: database)
+            }
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        List {
+            HomeStatSection(section: .sessions, stat: .fixture(eventName: "Session"))
+        }
+        .listStyle(.plain)
     }
 }

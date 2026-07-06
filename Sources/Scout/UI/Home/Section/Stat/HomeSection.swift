@@ -1,0 +1,49 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import SwiftUI
+
+enum HomeSection: String, CaseIterable, Identifiable {
+    case users
+    case sessions
+    case crashes
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .users:
+            "Users"
+        case .sessions:
+            "Sessions"
+        case .crashes:
+            "Crashes"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .users:
+            .green
+        case .sessions:
+            .purple
+        case .crashes:
+            .red
+        }
+    }
+
+    var systemImage: String {
+        switch self {
+        case .users:
+            "person.2"
+        case .sessions:
+            "clock"
+        case .crashes:
+            "exclamationmark.triangle"
+        }
+    }
+}

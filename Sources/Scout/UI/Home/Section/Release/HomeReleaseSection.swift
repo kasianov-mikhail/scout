@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct HomeReleaseSection: View {
+    @Environment(\.database) var database
+
     @ObservedObject var provider: ReleaseHealthProvider
     @Binding var showReleaseHealth: Bool
 
@@ -16,6 +18,9 @@ struct HomeReleaseSection: View {
             if let releases = try? provider.result?.get(), releases.count > 0 {
                 AllButton { showReleaseHealth = true }
             }
+        }
+        .task {
+            await provider.fetchIfNeeded(in: database)
         }
 
         switch provider.result {
