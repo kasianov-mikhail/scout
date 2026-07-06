@@ -15,23 +15,6 @@ struct ChartView<T: ChartNumeric>: View {
     var body: some View {
         let isEmpty = segment.total == .zero
 
-        bars
-            .placeholderAxis(active: isEmpty)
-            .chartXAxis {
-                AxisMarks(format: timing.unit.chartFormat, values: timing.tickDates(for: segment))
-            }
-            .chartBackground { _ in
-                if isEmpty {
-                    ChartPlaceholder()
-                }
-            }
-            .aspectRatio(4 / 3, contentMode: .fit)
-            .padding()
-            .padding(.bottom)
-            .listRowInsets(EdgeInsets())
-    }
-
-    private var bars: some View {
         Chart(segment, id: \.date) { point in
             BarMark(
                 x: .value("X", point.date, unit: timing.unit),
@@ -39,6 +22,19 @@ struct ChartView<T: ChartNumeric>: View {
                 width: .ratio(ChartGeometry.barRatio)
             )
         }
+        .placeholderAxis(active: isEmpty)
+        .chartXAxis {
+            AxisMarks(format: timing.unit.chartFormat, values: timing.tickDates(for: segment))
+        }
+        .chartBackground { _ in
+            if isEmpty {
+                ChartPlaceholder()
+            }
+        }
+        .aspectRatio(4 / 3, contentMode: .fit)
+        .padding()
+        .padding(.bottom)
+        .listRowInsets(EdgeInsets())
     }
 }
 
