@@ -43,9 +43,8 @@ extension GridCell: CellProtocol {
 }
 
 extension GridCell: Combining {
-    func isDuplicate(of other: GridCell<T>) -> Bool {
-        row == other.row && column == other.column
-    }
+    // The cell key already encodes (row, column), which is exactly the merge identity.
+    var mergeKey: String { key }
 
     static func + (lhs: Self, rhs: Self) -> Self {
         GridCell(
