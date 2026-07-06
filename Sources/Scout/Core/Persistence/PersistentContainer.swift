@@ -47,5 +47,13 @@ extension NSPersistentContainer {
         if let captured {
             throw captured
         }
+
+        // With the default NSErrorMergePolicy a uniqueness-constraint collision
+        // fails the whole save() and leaves the offending insert pending, so on
+        // the long-lived viewContext every later save() throws too. Merging by
+        // property dedupes the colliding row instead — the reason the
+        // constraints exist — and keeps a batched save (e.g. plan inserting many
+        // SyncDelivery rows at once) from being rejected over a single duplicate.
+        viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     }
 }
