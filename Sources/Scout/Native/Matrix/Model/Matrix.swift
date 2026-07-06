@@ -31,11 +31,15 @@ extension Matrix: RecordDecodable {
 }
 
 extension Matrix: Combining {
-    func isDuplicate(of other: Matrix<T>) -> Bool {
-        date == other.date
-            && name == other.name
-            && category == other.category
-            && version == other.version
+    struct MergeKey: Hashable {
+        let date: Date
+        let name: String
+        let category: String?
+        let version: String?
+    }
+
+    var mergeKey: MergeKey {
+        MergeKey(date: date, name: name, category: category, version: version)
     }
 
     static func + (lhs: Self, rhs: Self) -> Self {

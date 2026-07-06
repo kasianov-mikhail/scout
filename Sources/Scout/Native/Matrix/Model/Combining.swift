@@ -8,11 +8,18 @@
 import Foundation
 
 protocol Combining {
-    func isDuplicate(of other: Self) -> Bool
+    associatedtype MergeKey: Hashable
+
+    /// Identifies values that combine: two values are duplicates iff their keys are equal.
+    var mergeKey: MergeKey { get }
     static func + (lhs: Self, rhs: Self) -> Self
 }
 
 extension Combining {
+    func isDuplicate(of other: Self) -> Bool {
+        mergeKey == other.mergeKey
+    }
+
     static func += (lhs: inout Self, rhs: Self) {
         assert(lhs.isDuplicate(of: rhs), "Cannot combine non-duplicate instances of \(Self.self)")
         lhs = lhs + rhs
@@ -20,15 +27,22 @@ extension Combining {
 }
 
 extension Array where Element: Combining {
+    // Groups by mergeKey in one pass (O(n)) instead of scanning the accumulated
+    // result per element, while preserving each key's first-occurrence order.
     func mergeDuplicates() -> Self {
-        reduce(into: []) { result, value in
-            if let index = result.firstIndex(where: {
-                $0.isDuplicate(of: value)
-            }) {
-                result[index] += value
+        var order: [Element.MergeKey] = []
+        var merged: [Element.MergeKey: Element] = [:]
+
+        for value in self {
+            let key = value.mergeKey
+            if let existing = merged[key] {
+                merged[key] = existing + value
             } else {
-                result.append(value)
+                merged[key] = value
+                order.append(key)
             }
         }
+
+        return order.map { merged[$0]! }
     }
 }
