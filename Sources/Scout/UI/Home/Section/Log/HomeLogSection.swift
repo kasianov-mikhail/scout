@@ -34,7 +34,7 @@ struct HomeLogSection: View {
             image: "chart.bar",
             color: .blue,
             count: logSpans.map { $0.int.series + $0.double.series },
-            destination: { MetricsList() }
+            destination: { MetricsList().navigationTitle(en: "Metrics") }
         )
 
         Row {
