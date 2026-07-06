@@ -7,6 +7,55 @@
 
 import SwiftUI
 
+struct HomeView: View {
+    let backends: [Backend]
+
+    @AppStorage("scout_active_backend") private var activeID = ""
+    @StateObject private var tint = Tint()
+
+    init(backends: [Backend]) {
+        self.backends = backends
+    }
+
+    private var backend: Backend? {
+        backends.first { $0.id == activeID } ?? backends.first
+    }
+
+    private var active: Binding<String> {
+        Binding {
+            backend?.id ?? ""
+        } set: {
+            activeID = $0
+        }
+    }
+
+    var body: some View {
+        NavigationStack {
+            Group {
+                if let backend {
+                    HomeList().iCloudWarning(backend.accountWarning)
+                } else {
+                    ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
+                }
+            }
+            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationTitle(en: "Home")
+            .dismissable()
+            .id(backend?.id)
+            .connectionToolbar(backends: backends, activeID: active)
+        }
+        .background {
+            Rectangle().fill(.background).ignoresSafeArea()
+        }
+        .onboardingSheet()
+        .imageScale(.medium)
+        .dynamicTypeSize(.large)
+        .tint(tint.value)
+        .environment(\.database, backend?.database ?? DefaultDatabase())
+        .environmentObject(tint)
+    }
+}
+
 extension View {
     /// Presents the Scout home screen modally over this view.
     ///
@@ -22,56 +71,6 @@ extension View {
         fullScreenCover(isPresented: isPresented) {
             HomeView(backends: backends)
         }
-    }
-}
-
-struct HomeView: View {
-    let backends: [Backend]
-
-    @AppStorage("scout_active_backend") private var activeID = ""
-    @StateObject private var tint = Tint()
-
-    init(backends: [Backend]) {
-        self.backends = backends
-    }
-
-    private var backend: Backend? {
-        backends.first(where: { $0.id == activeID }) ?? backends.first
-    }
-
-    private var activeIDBinding: Binding<String> {
-        Binding(get: { backend?.id ?? "" }, set: { activeID = $0 })
-    }
-
-    var body: some View {
-        NavigationStack {
-            Group {
-                if let backend {
-                    HomeContent(
-                        activity: ActivityProvider(),
-                        sessionStat: StatProvider(eventName: "Session", periods: Period.summary),
-                        crashStat: StatProvider(eventName: "Crash", periods: Period.summary),
-                        releaseProvider: ReleaseHealthProvider(),
-                        logProvider: HomeLogProvider()
-                    )
-                    .id(backend.id)
-                    .iCloudWarning(backend.accountWarning)
-                } else {
-                    ErrorView(
-                        description: Text(verbatim: "Pass at least one backend to inspect Scout data."),
-                        retry: nil
-                    )
-                }
-            }
-            .navigationTitle(en: "Home")
-            .dismissable()
-            .connectionToolbar(backends: backends, activeID: activeIDBinding)
-        }
-        .imageScale(.medium)
-        .dynamicTypeSize(.large)
-        .tint(tint.value)
-        .environment(\.database, backend?.database ?? DefaultDatabase())
-        .environmentObject(tint)
     }
 }
 

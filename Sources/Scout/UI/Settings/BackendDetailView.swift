@@ -25,7 +25,7 @@ struct BackendDetailView: View {
             if let backend {
                 content(for: backend)
             } else {
-                ErrorView(description: Text(verbatim: "This backend is no longer available."), retry: nil)
+                ErrorView(description: "This backend is no longer available.", retry: nil)
             }
         }
         .navigationTitle(en: backend?.name ?? "Backend")

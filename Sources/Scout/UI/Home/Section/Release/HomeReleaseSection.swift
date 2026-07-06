@@ -15,7 +15,7 @@ struct HomeReleaseSection: View {
 
     var body: some View {
         Header(title: "Releases") {
-            if let releases = provider.releases, releases.count > 0 {
+            if let releases = try? provider.result?.get(), releases.count > 0 {
                 AllButton { showReleaseHealth = true }
             }
         }
@@ -23,24 +23,20 @@ struct HomeReleaseSection: View {
             await provider.fetchIfNeeded(in: database)
         }
 
-        if case .failure(let error) = provider.result {
-            ErrorView(description: Text(verbatim: error.localizedDescription)) {
-                Task { await provider.fetchAgain(in: database) }
+        switch provider.result {
+        case .success(let releases) where releases.count > 0:
+            ForEach(releases.prefix(3)) { release in
+                ReleaseRow(release: release)
             }
-            .listRowSeparator(.hidden)
-        } else if let releases = provider.releases {
-            if releases.count > 0 {
-                ForEach(releases.prefix(3)) { release in
-                    ReleaseRow(release: release)
-                }
-            } else {
-                Text(verbatim: "No results")
-                    .placeholderTextStyle()
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
-                    .listRowSeparator(.hidden)
-            }
-        } else {
+
+        case .success:
+            Text(verbatim: "No results")
+                .placeholderTextStyle()
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 20)
+                .listRowSeparator(.hidden)
+
+        default:
             ForEach(0..<3, id: \.self) { _ in
                 ReleaseRowPlaceholder()
             }

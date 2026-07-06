@@ -15,10 +15,6 @@ class ReleaseHealthProvider: ObservableObject, Provider {
         self.result = releases.map { .success($0) }
     }
 
-    var releases: [ReleaseHealth]? {
-        try? result?.get()
-    }
-
     func fetch(in database: DatabaseReader) async throws -> [ReleaseHealth] {
         let range = Calendar.utc.defaultRange
 

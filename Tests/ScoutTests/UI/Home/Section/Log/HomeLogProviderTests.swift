@@ -25,8 +25,9 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(for: .today, in: database)
-        let result = try #require(try provider.result(for: .today)?.get())
+        provider.period = .today
+        await provider.fetchIfNeeded(in: database)
+        let result = try #require(try provider.result?.get())
 
         let ints = MatrixSpan(matrices: result.0, range: allTime)
         let doubles = MatrixSpan(matrices: result.1, range: allTime)
@@ -49,8 +50,9 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(for: .today, in: database)
-        let result = try #require(try provider.result(for: .today)?.get())
+        provider.period = .today
+        await provider.fetchIfNeeded(in: database)
+        let result = try #require(try provider.result?.get())
 
         #expect(Set(result.0.map(\.name)) == ["login", "Crash"])
     }
@@ -65,8 +67,9 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(for: .today, in: database)
-        let result = try #require(try provider.result(for: .today)?.get())
+        provider.period = .today
+        await provider.fetchIfNeeded(in: database)
+        let result = try #require(try provider.result?.get())
 
         #expect(result.0.count == 1)
         #expect(MatrixSpan(matrices: result.0, range: allTime).total { $0 != CrashObject.recordType } == 7)
@@ -81,11 +84,13 @@ struct HomeLogProviderTests {
         )
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(for: .month, in: database)
-        await provider.fetchIfNeeded(for: .year, in: database)
+        provider.period = .month
+        await provider.fetchIfNeeded(in: database)
+        let month = try #require(try provider.result?.get())
 
-        let month = try #require(try provider.result(for: .month)?.get())
-        let year = try #require(try provider.result(for: .year)?.get())
+        provider.period = .year
+        await provider.fetchIfNeeded(in: database)
+        let year = try #require(try provider.result?.get())
 
         #expect(Set(month.0.map(\.name)) == ["recent"])
         #expect(Set(year.0.map(\.name)) == ["recent", "old"])
@@ -97,13 +102,17 @@ struct HomeLogProviderTests {
         database.add(makeRecord(type: Int.recordType, name: "login", value: 3))
 
         let provider = HomeLogProvider()
-        await provider.fetchIfNeeded(for: .today, in: database)
-        await provider.fetchIfNeeded(for: .week, in: database)
-        await provider.fetchIfNeeded(for: .today, in: database)
+        provider.period = .today
+        await provider.fetchIfNeeded(in: database)
+        provider.period = .week
+        await provider.fetchIfNeeded(in: database)
+        provider.period = .today
+        await provider.fetchIfNeeded(in: database)
 
         #expect(database.readCount(of: Int.recordType) == 2)
-        #expect(provider.result(for: .today) != nil)
-        #expect(provider.result(for: .week) != nil)
+        #expect(provider.result != nil)
+        provider.period = .week
+        #expect(provider.result != nil)
     }
 
     private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
