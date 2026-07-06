@@ -52,6 +52,8 @@ class ReleaseHealthProvider: ObservableObject, Provider {
 
 extension ReleaseHealthProvider {
     static func fixture() -> ReleaseHealthProvider {
-        ReleaseHealthProvider(releases: ReleaseHealth.samples)
+        let provider = ReleaseHealthProvider()
+        provider.result = .success(ReleaseHealth.samples)
+        return provider
     }
 }

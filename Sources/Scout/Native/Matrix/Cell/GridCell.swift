@@ -64,3 +64,12 @@ extension GridCell: Comparable {
         return lhs.column < rhs.column
     }
 }
+
+extension Matrix where T == GridCell<Int> {
+    static func sample(name: String) -> Matrix<GridCell<Int>> {
+        let cells = (1...372).map { day in
+            GridCell(row: day, column: 12, value: 12 + day % 40 + (day / 9) % 18)
+        }
+        return Matrix(date: Calendar.utc.defaultRange.lowerBound, name: name, cells: cells)
+    }
+}

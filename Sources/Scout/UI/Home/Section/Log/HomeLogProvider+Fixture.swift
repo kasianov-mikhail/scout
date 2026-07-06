@@ -9,11 +9,16 @@ import Foundation
 
 extension HomeLogProvider {
     static func fixture(periods: [Period] = Period.allCases) -> HomeLogProvider {
-        var results: [Period: ProviderResult<Output>] = [:]
+        let provider = HomeLogProvider()
+        let initialPeriod = provider.period
+
         for period in periods {
-            results[period] = .success(output(for: period))
+            provider.period = period
+            provider.result = .success(output(for: period))
         }
-        return HomeLogProvider(results: results)
+
+        provider.period = initialPeriod
+        return provider
     }
 
     private static func output(for period: Period) -> Output {

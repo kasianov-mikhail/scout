@@ -17,11 +17,10 @@ class HomeLogProvider: ObservableObject, Provider {
         }
     }
 
-    @Published private var results: [Period: ProviderResult<Output>]
+    @Published private var results: [Period: ProviderResult<Output>] = [:]
 
-    init(results: [Period: ProviderResult<Output>] = [:]) {
+    init() {
         self.period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
-        self.results = results
     }
 
     var result: ProviderResult<Output>? {

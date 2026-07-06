@@ -78,6 +78,7 @@
 - Sample data in app code is named `sample` (a `static var` for fixed instances, a `static func sample(...)` when parameters are needed), placed in an extension at the end of the type's main file (e.g. `Device.swift`), and built directly via the struct initializer.
 - A collection of sample instances is named `samples` (plural) — e.g. `static let samples: [Release]`.
 - An `ObservableObject` provider or view model exposes a `static func fixture()` returning an instance preloaded with sample data for previews — e.g. `static func fixture() -> ReleaseHealthProvider`, injected via the view's initializer.
+- A `fixture()` builds sample data by calling the model type's own `sample`/`samples`, not a private helper living in the provider's file — keep the sample-building logic next to the type it constructs.
 - Tests use a different naming convention — `make<Name>(...)` factory functions.
 
 ## Core Data migrations

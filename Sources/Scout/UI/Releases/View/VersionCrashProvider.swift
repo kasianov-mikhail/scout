@@ -46,6 +46,8 @@ class VersionCrashProvider: ObservableObject {
 
 extension VersionCrashProvider {
     static func fixture() -> VersionCrashProvider {
-        VersionCrashProvider(version: "3.2.0", crashes: .samples)
+        let provider = VersionCrashProvider(version: "3.2.0")
+        provider.crashes = .samples
+        return provider
     }
 }
