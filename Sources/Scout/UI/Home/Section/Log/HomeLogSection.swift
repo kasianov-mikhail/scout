@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct HomeLogSection: View {
-    @Environment(\.database) var database
     @AppStorage("scout_home_log_period") private var period: Period = .today
     @StateObject private var provider: HomeLogProvider
 
@@ -20,38 +19,25 @@ struct HomeLogSection: View {
         Header(title: "Log") {
             CompactPeriodPicker(selection: $period)
         }
-        .task(id: period) {
-            await provider.fetchIfNeeded(for: period, in: database)
-        }
 
-        if case .failure(let error) = provider.result(for: period) {
-            ErrorView(description: Text(verbatim: error.localizedDescription)) {
-                Task { await provider.fetchAgain(for: period, in: database) }
-            }
-            .listRowSeparator(.hidden)
-        } else {
-            logRows
-        }
-    }
-
-    @ViewBuilder
-    private var logRows: some View {
-        let spans = logSpans
+        let logSpans = logSpans
 
         HomeLogRow(
             title: "Events",
             image: "list.bullet",
             color: .blue,
-            count: spans?.int.total { $0 != CrashObject.recordType },
+            count: logSpans?.int.total { $0 != CrashObject.recordType },
             destination: { AnalyticsView() }
         )
+
         HomeLogRow(
             title: "Metrics",
             image: "chart.bar",
             color: .blue,
-            count: spans.map { $0.int.series + $0.double.series },
+            count: logSpans.map { $0.int.series + $0.double.series },
             destination: { MetricsList() }
         )
+
         Row {
             Image(systemName: "network")
                 .foregroundColor(.blue)
@@ -61,11 +47,12 @@ struct HomeLogSection: View {
         } destination: {
             NetworkView()
         }
+
         HomeLogRow(
             title: "Crashes",
             image: "exclamationmark.triangle",
             color: .red,
-            count: spans?.int.total { $0 == CrashObject.recordType },
+            count: logSpans?.int.total { $0 == CrashObject.recordType },
             destination: { CrashListView() }
         )
     }
@@ -74,11 +61,9 @@ struct HomeLogSection: View {
         guard let result = try? provider.result(for: period)?.get() else {
             return nil
         }
-
-        let range = period.initialRange
         return (
-            MatrixSpan(matrices: result.0, range: range),
-            MatrixSpan(matrices: result.1, range: range)
+            MatrixSpan(matrices: result.0, range: period.initialRange),
+            MatrixSpan(matrices: result.1, range: period.initialRange)
         )
     }
 }

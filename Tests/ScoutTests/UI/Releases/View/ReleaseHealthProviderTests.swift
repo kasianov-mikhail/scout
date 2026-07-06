@@ -25,7 +25,7 @@ struct ReleaseHealthProviderTests {
 
         let provider = ReleaseHealthProvider()
         await provider.fetchIfNeeded(in: database)
-        let releases = try #require(provider.releases)
+        let releases = try #require(provider.result).get()
 
         #expect(releases.map(\.id) == ["2.0", "1.0"])
         #expect(releases[0].sessions == 2)
@@ -46,7 +46,7 @@ struct ReleaseHealthProviderTests {
 
         let provider = ReleaseHealthProvider()
         await provider.fetchIfNeeded(in: database)
-        let releases = try #require(provider.releases)
+        let releases = try #require(provider.result).get()
 
         #expect(releases.map(\.id) == ["3.0"])
         #expect(releases[0].sessions == 4)
