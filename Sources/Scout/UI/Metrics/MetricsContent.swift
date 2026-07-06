@@ -12,18 +12,18 @@ struct MetricsContent<T: ChartNumeric>: View {
     let formatter: KeyPath<T, String>
     let telemetry: Telemetry.Export
 
-    @StateObject var metrics: MetricsProvider<T>
+    @StateObject var provider: MetricsProvider<T>
     @Environment(\.database) var database
 
     init(period: Period, formatter: KeyPath<T, String>, telemetry: Telemetry.Export) {
         self.period = period
         self.formatter = formatter
         self.telemetry = telemetry
-        self._metrics = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
+        self._provider = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
     }
 
     var body: some View {
-        ProviderView(provider: metrics) { data in
+        ProviderView(provider: provider) { data in
             let groups: [PointGroup<T>] = data.pointGroups()
             let ranked = groups.ranked(on: period)
 
@@ -48,7 +48,7 @@ struct MetricsContent<T: ChartNumeric>: View {
             }
         }
         .task {
-            await metrics.fetchIfNeeded(in: database)
+            await provider.fetchIfNeeded(in: database)
         }
     }
 
