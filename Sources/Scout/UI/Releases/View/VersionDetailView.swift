@@ -69,6 +69,7 @@ struct VersionDetailView: View {
     @ViewBuilder
     private var trendSection: some View {
         let days = dailyCrashes
+        let isEmpty = !days.contains(where: { $0.count > 0 })
 
         Header(title: "Crashes over time")
 
@@ -91,8 +92,9 @@ struct VersionDetailView: View {
         .chartYAxis {
             AxisMarks(position: .leading)
         }
+        .placeholderAxis(active: isEmpty)
         .chartBackground { _ in
-            if !days.contains(where: { $0.count > 0 }) {
+            if isEmpty {
                 ChartPlaceholder().offset(y: -12)
             }
         }
