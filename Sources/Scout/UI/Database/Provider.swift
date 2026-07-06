@@ -18,6 +18,15 @@ protocol Provider: ObservableObject {
 
 typealias ProviderResult<T> = Result<T, Error>
 
+extension Result {
+    var error: Failure? {
+        guard case .failure(let error) = self else {
+            return nil
+        }
+        return error
+    }
+}
+
 extension Provider {
     func fetchAgain(in database: DatabaseReader) async {
         result = nil
@@ -25,7 +34,9 @@ extension Provider {
     }
 
     func fetchIfNeeded(in database: DatabaseReader) async {
-        guard result == nil else { return }
+        guard result == nil else {
+            return
+        }
         await resolve(in: database)
     }
 
