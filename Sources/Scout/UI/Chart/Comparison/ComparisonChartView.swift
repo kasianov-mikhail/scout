@@ -32,10 +32,12 @@ struct ComparisonChartView<T: ChartNumeric>: View {
 
     var body: some View {
         let pairs = segment.paired(with: reference, unit: timing.unit)
+        let isEmpty = segment.total == .zero && reference.total == .zero
 
         Chart(pairs) { pair in
             marks(for: pair)
         }
+        .placeholderAxis(active: isEmpty)
         .chartXScale(domain: pairs.xDomain())
         .chartXAxis {
             AxisMarks(format: timing.unit.chartFormat, values: timing.tickDates(for: segment))
@@ -51,7 +53,7 @@ struct ComparisonChartView<T: ChartNumeric>: View {
             }
         }
         .chartBackground { _ in
-            if segment.total == .zero && reference.total == .zero {
+            if isEmpty {
                 ChartPlaceholder()
             }
         }
