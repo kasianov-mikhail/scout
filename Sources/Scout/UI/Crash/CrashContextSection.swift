@@ -49,7 +49,6 @@ struct CrashContextSection: View {
     }
 }
 
-
 #Preview {
     NavigationStack {
         List {
