@@ -7,6 +7,17 @@
 
 import Foundation
 
+protocol HasCount {
+    associatedtype Count: AdditiveArithmetic
+    var count: Count { get }
+}
+
+extension Collection where Element: HasCount {
+    var total: Element.Count {
+        reduce(.zero) { $0 + $1.count }
+    }
+}
+
 protocol ChartSeries: HasCount {
     var date: Date { get }
 
