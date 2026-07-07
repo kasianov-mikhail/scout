@@ -8,6 +8,13 @@
 
 import SwiftUI
 
+private let utcDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.timeZone = TimeZone(secondsFromGMT: 0)
+    formatter.dateFormat = "dd.MM.y, HH:mm"
+    return formatter
+}()
+
 struct UTCTimestampText: View {
     let date: Date
     var size: CGFloat = 16
