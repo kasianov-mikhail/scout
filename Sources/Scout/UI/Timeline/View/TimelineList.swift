@@ -10,6 +10,7 @@ import SwiftUI
 struct TimelineList<Pagination: View>: View {
     let items: [TimelineItem]
     let highlightedID: String?
+    let highlightColor: Color
 
     @ViewBuilder let older: () -> Pagination
     @ViewBuilder let newer: () -> Pagination
@@ -25,7 +26,8 @@ struct TimelineList<Pagination: View>: View {
                     items: items,
                     index: index,
                     timeline: timeline,
-                    highlighted: row.id == highlightedID
+                    highlighted: row.id == highlightedID,
+                    highlightColor: highlightColor
                 )
             }
 
@@ -42,6 +44,7 @@ struct TimelineList<Pagination: View>: View {
             TimelineList(
                 items: items,
                 highlightedID: items.randomElement()?.id,
+                highlightColor: .accentColor,
                 older: { EmptyView() },
                 newer: { EmptyView() }
             )

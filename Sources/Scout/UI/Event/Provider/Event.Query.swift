@@ -14,6 +14,8 @@ extension Event {
         var levels = Query.allLevels
         var text = ""
         var name = ""
+        var sessionID: UUID?
+        var deviceID: UUID?
         var dates: Range<Date>?
 
         func buildFilters() -> [RecordQuery.Filter] {
@@ -27,6 +29,12 @@ extension Event {
             }
             if !name.isEmpty {
                 filters.append(RecordQuery.Filter(field: "name", op: .equals, value: .string(name)))
+            }
+            if let sessionID {
+                filters.append(RecordQuery.Filter(field: "session_id", op: .equals, value: .string(sessionID.uuidString)))
+            }
+            if let deviceID {
+                filters.append(RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString)))
             }
             if let dates {
                 filters.append(contentsOf: dates.dateFilters)

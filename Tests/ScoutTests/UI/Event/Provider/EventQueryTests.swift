@@ -46,6 +46,30 @@ struct EventQueryTests {
         #expect(filters.contains(RecordQuery.Filter(field: "name", op: .equals, value: .string("Login"))))
     }
 
+    @Test("Filter by session") func session() {
+        let sessionID = UUID()
+
+        var query = Event.Query()
+        query.sessionID = sessionID
+        let filters = query.buildFilters()
+
+        #expect(filters.contains(RecordQuery.Filter(field: "session_id", op: .equals, value: .string(sessionID.uuidString))))
+    }
+
+    @Test("No session produces no session filter") func noSession() {
+        #expect(Event.Query().buildFilters().contains { $0.field == "session_id" } == false)
+    }
+
+    @Test("Filter by device") func device() {
+        let deviceID = UUID()
+
+        var query = Event.Query()
+        query.deviceID = deviceID
+        let filters = query.buildFilters()
+
+        #expect(filters.contains(RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))))
+    }
+
     @Test("Filter by date range") func dates() {
         let start = Date(timeIntervalSinceReferenceDate: 0)
         let end = Date(timeIntervalSinceReferenceDate: 86400)

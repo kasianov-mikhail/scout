@@ -10,6 +10,7 @@ import SwiftUI
 struct Timeline: View {
     let deviceID: UUID
     var event: Event? = nil
+    var highlight: Color = .accentColor
 
     @Environment(\.database) var database
     @StateObject var provider = TimelineProvider()
@@ -98,6 +99,7 @@ struct Timeline: View {
         return TimelineList(
             items: items,
             highlightedID: event?.id,
+            highlightColor: highlight,
             older: { RailPagination(lane: provider.older, result: $provider.result) },
             newer: { RailPagination(lane: provider.newer, result: $provider.result) }
         )

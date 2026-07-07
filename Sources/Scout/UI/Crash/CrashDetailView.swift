@@ -12,10 +12,30 @@ struct CrashDetailView: View {
 
     var body: some View {
         List {
-            headerSection
+            VStack(alignment: .leading, spacing: 10) {
+                if let date = crash.date {
+                    UTCTimestampText(date: date)
+                }
+
+                if let reason = crash.reason {
+                    (Text(verbatim: "REASON:   ") + Text(reason).foregroundColor(.red))
+                        .lineSpacing(4)
+                        .fontWeight(.bold)
+                }
+            }
+            .padding(.vertical, 4)
+
+            CrashContextSection(crash: crash)
 
             if !crash.stackTrace.isEmpty {
-                stackTraceSection
+                Header(title: "Stack Trace")
+
+                ForEach(Array(crash.stackTrace.enumerated()), id: \.offset) { _, frame in
+                    Text(frame)
+                        .font(.caption)
+                        .monospaced()
+                        .lineLimit(2)
+                }
             }
         }
         .listStyle(.plain)
@@ -29,32 +49,6 @@ struct CrashDetailView: View {
             }
         }
         .navigationTitle(crash.name)
-    }
-
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            if let date = crash.date {
-                UTCTimestampText(date: date)
-            }
-
-            if let reason = crash.reason {
-                Text(verbatim: "REASON:   ").fontWeight(.bold)
-                    + Text(reason).fontWeight(.bold).foregroundColor(.red)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    @ViewBuilder
-    private var stackTraceSection: some View {
-        Header(title: "Stack Trace")
-
-        ForEach(Array(crash.stackTrace.enumerated()), id: \.offset) { _, frame in
-            Text(frame)
-                .font(.caption)
-                .monospaced()
-                .lineLimit(2)
-        }
     }
 }
 
