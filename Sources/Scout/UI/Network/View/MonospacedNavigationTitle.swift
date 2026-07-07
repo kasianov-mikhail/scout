@@ -21,9 +21,6 @@ extension View {
 }
 
 #if canImport(UIKit)
-
-    // SwiftUI cannot restyle the system navigation title, so this reaches into the
-    // hosting UINavigationBar and swaps its title fonts while the screen is visible.
     private struct MonospacedNavigationBar: UIViewControllerRepresentable {
         func makeUIViewController(context: Context) -> Controller {
             Controller()
@@ -37,20 +34,18 @@ extension View {
             override func viewWillAppear(_ animated: Bool) {
                 super.viewWillAppear(animated)
 
-                guard let bar = navigationController?.navigationBar else { return }
-
-                let large = bar.standardAppearance.largeTitleTextAttributes
-                let inline = bar.standardAppearance.titleTextAttributes
-                restore = { bar in
-                    for appearance in bar.allAppearances {
-                        appearance.largeTitleTextAttributes = large
-                        appearance.titleTextAttributes = inline
+                if let bar = navigationController?.navigationBar {
+                    restore = { bar in
+                        for appearance in bar.allAppearances {
+                            appearance.largeTitleTextAttributes = bar.standardAppearance.largeTitleTextAttributes
+                            appearance.titleTextAttributes = bar.standardAppearance.titleTextAttributes
+                        }
                     }
-                }
 
-                for appearance in bar.allAppearances {
-                    appearance.largeTitleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 34, weight: .bold)
-                    appearance.titleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 17, weight: .semibold)
+                    for appearance in bar.allAppearances {
+                        appearance.largeTitleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 34, weight: .bold)
+                        appearance.titleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 17, weight: .semibold)
+                    }
                 }
             }
 
@@ -66,7 +61,7 @@ extension View {
 
     extension UINavigationBar {
         fileprivate var allAppearances: [UINavigationBarAppearance] {
-            [standardAppearance, compactAppearance, scrollEdgeAppearance, compactScrollEdgeAppearance].compactMap { $0 }
+            [standardAppearance, compactAppearance, scrollEdgeAppearance, compactScrollEdgeAppearance].compactMap(\.self)
         }
     }
 
