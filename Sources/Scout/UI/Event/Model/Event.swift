@@ -21,12 +21,20 @@ struct Event: Identifiable {
 
 extension Event: RecordDecodable {
     static let recordType = EventObject.recordType
-    static let sampleRecords: [Record] = []
 
     static let desiredKeys = Key.allCases.map(\.rawValue)
-}
 
-extension Event {
+    static var samples: [Event] {
+        let names = ["app_launch", "screen_view", "button_tap", "purchase", "login", "logout"]
+        return (0..<40).map { index in
+            Event.sample(
+                names[index % names.count],
+                at: Date(timeIntervalSinceNow: -Double(index) * 1800),
+                sessionID: UUID()
+            )
+        }
+    }
+
     private enum Key: String, CaseIterable {
         case name
         case level
@@ -51,6 +59,21 @@ extension Event {
     }
 }
 
+extension Event: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: id)
+        record[Key.name.rawValue] = name
+        record[Key.level.rawValue] = level?.rawValue
+        record[Key.date.rawValue] = date
+        record[Key.paramCount.rawValue] = paramCount
+        record[Key.uuid.rawValue] = uuid?.uuidString
+        record[Key.installID.rawValue] = installID?.uuidString
+        record[Key.sessionID.rawValue] = sessionID?.uuidString
+        record[Key.deviceID.rawValue] = deviceID?.uuidString
+        return record
+    }
+}
+
 extension Event {
     static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Event {
         Event(
@@ -64,18 +87,5 @@ extension Event {
             sessionID: sessionID,
             deviceID: nil
         )
-    }
-}
-
-extension [Event] {
-    static var samples: [Event] {
-        let names = ["app_launch", "screen_view", "button_tap", "purchase", "login", "logout"]
-        return (0..<40).map { index in
-            Event.sample(
-                names[index % names.count],
-                at: Date(timeIntervalSinceNow: -Double(index) * 1800),
-                sessionID: UUID()
-            )
-        }
     }
 }

@@ -17,7 +17,6 @@ struct Version {
 
 extension Version: RecordDecodable {
     static let recordType = VersionObject.recordType
-    static let sampleRecords: [Record] = []
 
     static let desiredKeys = [
         "app_version",
@@ -25,14 +24,42 @@ extension Version: RecordDecodable {
         "launch_id",
         "date",
     ]
-}
 
-extension Version {
+    static var samples: [Version] {
+        [
+            .sample(appVersion: "2.4.1", buildNumber: "214", minutesAgo: 0),
+            .sample(appVersion: "2.4.0", buildNumber: "210", minutesAgo: 4320),
+        ]
+    }
+
     init(record: Record) throws {
         appVersion = record["app_version"]
         buildNumber = record["build_number"]
         launchID = record["launch_id"].flatMap(UUID.init)
         date = record["date"]
         id = record.recordID
+    }
+}
+
+extension Version: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: id)
+        record["app_version"] = appVersion
+        record["build_number"] = buildNumber
+        record["launch_id"] = launchID?.uuidString
+        record["date"] = date
+        return record
+    }
+}
+
+extension Version {
+    static func sample(appVersion: String = "2.4.1", buildNumber: String = "214", minutesAgo: Double = 0, launchID: UUID = UUID()) -> Version {
+        Version(
+            appVersion: appVersion,
+            buildNumber: buildNumber,
+            launchID: launchID,
+            date: Date(timeIntervalSinceNow: -minutesAgo * 60),
+            id: UUID().uuidString
+        )
     }
 }

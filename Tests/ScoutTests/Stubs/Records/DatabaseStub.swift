@@ -107,43 +107,46 @@ final class Gate: @unchecked Sendable {
 
 extension Record {
     static func deviceStub(deviceID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Device", recordID: deviceID.uuidString)
-        record["device_id"] = deviceID.uuidString
-        record["date"] = date
-        return record
+        Device(
+            date: date,
+            id: deviceID.uuidString,
+            deviceID: deviceID
+        ).record
     }
 
     static func installStub(installID: UUID, deviceID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Install", recordID: installID.uuidString)
-        record["install_id"] = installID.uuidString
-        record["device_id"] = deviceID.uuidString
-        record["date"] = date
-        return record
+        Install(
+            date: date,
+            id: installID.uuidString,
+            installID: installID,
+            deviceID: deviceID
+        ).record
     }
 
     static func launchStub(launchID: UUID, installID: UUID, deviceID: UUID, startDate: Date) -> Record {
-        var record = Record(recordType: "Launch", recordID: launchID.uuidString)
-        record["launch_id"] = launchID.uuidString
-        record["install_id"] = installID.uuidString
+        var record = Launch(
+            startDate: startDate,
+            endDate: nil,
+            id: launchID.uuidString,
+            launchID: launchID,
+            installID: installID
+        ).record
         record["device_id"] = deviceID.uuidString
-        record["start_date"] = startDate
         return record
     }
 
     static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date) -> Record {
-        var record = Record(recordType: "Session", recordID: sessionID.uuidString)
-        record["session_id"] = sessionID.uuidString
-        record["launch_id"] = launchID.uuidString
-        record["install_id"] = installID.uuidString
-        record["start_date"] = startDate
-        return record
+        Session(
+            startDate: startDate,
+            endDate: nil,
+            id: sessionID.uuidString,
+            sessionID: sessionID,
+            launchID: launchID,
+            installID: installID
+        ).record
     }
 
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {
-        var record = Record(recordType: "Event", recordID: UUID().uuidString)
-        record["name"] = name
-        record["session_id"] = sessionID.uuidString
-        record["date"] = date
-        return record
+        Event.stub(name: name, sessionID: sessionID, date: date).record
     }
 }

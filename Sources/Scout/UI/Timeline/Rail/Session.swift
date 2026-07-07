@@ -18,7 +18,6 @@ struct Session: Identifiable {
 
 extension Session: RecordDecodable {
     static let recordType = SessionObject.recordType
-    static let sampleRecords: [Record] = []
 
     static let desiredKeys = [
         "start_date",
@@ -27,9 +26,16 @@ extension Session: RecordDecodable {
         "launch_id",
         "install_id",
     ]
-}
 
-extension Session {
+    static var samples: [Session] {
+        let launchID = UUID()
+        let installID = UUID()
+        return [
+            .sample(minutesAgo: 0, launchID: launchID, installID: installID, ongoing: true),
+            .sample(minutesAgo: 45, launchID: launchID, installID: installID),
+        ]
+    }
+
     init(record: Record) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
@@ -37,5 +43,31 @@ extension Session {
         sessionID = record["session_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
+    }
+}
+
+extension Session: RecordEncodable {
+    var record: Record {
+        var record = Record(recordType: Self.recordType, recordID: id)
+        record["start_date"] = startDate
+        record["end_date"] = endDate
+        record["session_id"] = sessionID?.uuidString
+        record["launch_id"] = launchID?.uuidString
+        record["install_id"] = installID?.uuidString
+        return record
+    }
+}
+
+extension Session {
+    static func sample(minutesAgo: Double = 0, sessionID: UUID = UUID(), launchID: UUID = UUID(), installID: UUID = UUID(), ongoing: Bool = false) -> Session {
+        let startDate = Date(timeIntervalSinceNow: -minutesAgo * 60)
+        return Session(
+            startDate: startDate,
+            endDate: ongoing ? nil : startDate.addingTimeInterval(120),
+            id: sessionID.uuidString,
+            sessionID: sessionID,
+            launchID: launchID,
+            installID: installID
+        )
     }
 }

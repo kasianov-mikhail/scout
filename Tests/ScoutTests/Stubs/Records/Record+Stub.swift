@@ -14,11 +14,13 @@ extension Record {
         name: String = "matrix",
         date: Date = Date()
     ) -> Record {
-        var matrix = Record(recordType: Int.recordType, recordID: UUID().uuidString)
-        matrix["name"] = name
-        matrix["date"] = date
-        matrix["cell_1_01"] = 3
-        matrix["cell_2_02"] = 11
-        return matrix
+        Matrix(
+            date: date,
+            name: name,
+            cells: [
+                GridCell(row: 1, column: 1, value: 3),
+                GridCell(row: 2, column: 2, value: 11),
+            ]
+        ).record
     }
 }

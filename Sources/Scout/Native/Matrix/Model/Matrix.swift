@@ -21,7 +21,7 @@ extension Matrix: RecordDecodable {
         T.recordType
     }
 
-    static var sampleRecords: [Record] {
+    static var samples: [Matrix<T>] {
         []
     }
 
