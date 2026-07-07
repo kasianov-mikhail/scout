@@ -37,10 +37,18 @@ jobs:
             -quiet \
             build
           ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
+          # swift-api-digester loads the module through the Clang importer, which
+          # doesn't discover a Swift package's C-target module maps on its own —
+          # point it at the ones xcodebuild already generated for this build.
+          digester_flags=()
+          for modulemap in /tmp/dd-current/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/*.modulemap; do
+            [ -f "$modulemap" ] && digester_flags+=(-Xcc -fmodule-map-file="$modulemap")
+          done
           xcrun swift-api-digester -dump-sdk -module Scout -o /tmp/current.json \
             -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
             -target "arm64-apple-ios${ios}-simulator" \
-            -I /tmp/dd-current/Build/Products/Debug-iphonesimulator
+            -I /tmp/dd-current/Build/Products/Debug-iphonesimulator \
+            "${digester_flags[@]}"
 
       - name: Dump baseline API
         run: |
@@ -61,10 +69,15 @@ jobs:
             -quiet \
             build
           ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
+          digester_flags=()
+          for modulemap in /tmp/dd-baseline/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/*.modulemap; do
+            [ -f "$modulemap" ] && digester_flags+=(-Xcc -fmodule-map-file="$modulemap")
+          done
           xcrun swift-api-digester -dump-sdk -module Scout -o /tmp/baseline.json \
             -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
             -target "arm64-apple-ios${ios}-simulator" \
-            -I /tmp/dd-baseline/Build/Products/Debug-iphonesimulator
+            -I /tmp/dd-baseline/Build/Products/Debug-iphonesimulator \
+            "${digester_flags[@]}"
 
       - name: Compare
         run: |
