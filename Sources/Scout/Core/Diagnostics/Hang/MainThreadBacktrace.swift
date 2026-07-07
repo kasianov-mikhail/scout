@@ -100,35 +100,35 @@ enum MainThreadBacktrace {
 }
 
 #if arch(arm64)
-private func registerState(of thread: thread_t) -> (pc: UInt64, fp: UInt64)? {
-    var state = arm_thread_state64_t()
-    var count = mach_msg_type_number_t(MemoryLayout<arm_thread_state64_t>.size / MemoryLayout<natural_t>.size)
+    private func registerState(of thread: thread_t) -> (pc: UInt64, fp: UInt64)? {
+        var state = arm_thread_state64_t()
+        var count = mach_msg_type_number_t(MemoryLayout<arm_thread_state64_t>.size / MemoryLayout<natural_t>.size)
 
-    let result = withUnsafeMutablePointer(to: &state) { pointer in
-        pointer.withMemoryRebound(to: natural_t.self, capacity: Int(count)) { rebound in
-            thread_get_state(thread, thread_state_flavor_t(ARM_THREAD_STATE64), rebound, &count)
+        let result = withUnsafeMutablePointer(to: &state) { pointer in
+            pointer.withMemoryRebound(to: natural_t.self, capacity: Int(count)) { rebound in
+                thread_get_state(thread, thread_state_flavor_t(ARM_THREAD_STATE64), rebound, &count)
+            }
         }
-    }
 
-    guard result == KERN_SUCCESS else { return nil }
-    return (scout_arm_thread_state64_pc(state), scout_arm_thread_state64_fp(state))
-}
+        guard result == KERN_SUCCESS else { return nil }
+        return (scout_arm_thread_state64_pc(state), scout_arm_thread_state64_fp(state))
+    }
 #elseif arch(x86_64)
-private func registerState(of thread: thread_t) -> (pc: UInt64, fp: UInt64)? {
-    var state = x86_thread_state64_t()
-    var count = mach_msg_type_number_t(MemoryLayout<x86_thread_state64_t>.size / MemoryLayout<natural_t>.size)
+    private func registerState(of thread: thread_t) -> (pc: UInt64, fp: UInt64)? {
+        var state = x86_thread_state64_t()
+        var count = mach_msg_type_number_t(MemoryLayout<x86_thread_state64_t>.size / MemoryLayout<natural_t>.size)
 
-    let result = withUnsafeMutablePointer(to: &state) { pointer in
-        pointer.withMemoryRebound(to: natural_t.self, capacity: Int(count)) { rebound in
-            thread_get_state(thread, thread_state_flavor_t(x86_THREAD_STATE64), rebound, &count)
+        let result = withUnsafeMutablePointer(to: &state) { pointer in
+            pointer.withMemoryRebound(to: natural_t.self, capacity: Int(count)) { rebound in
+                thread_get_state(thread, thread_state_flavor_t(x86_THREAD_STATE64), rebound, &count)
+            }
         }
-    }
 
-    guard result == KERN_SUCCESS else { return nil }
-    return (state.__rip, state.__rbp)
-}
+        guard result == KERN_SUCCESS else { return nil }
+        return (state.__rip, state.__rbp)
+    }
 #else
-private func registerState(of thread: thread_t) -> (pc: UInt64, fp: UInt64)? {
-    nil
-}
+    private func registerState(of thread: thread_t) -> (pc: UInt64, fp: UInt64)? {
+        nil
+    }
 #endif
