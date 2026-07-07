@@ -19,6 +19,7 @@ extension DeviceObject: PartialMonitor {
 
         let device = context.insert(DeviceObject.self)
         device.date = Date()
+        device.model = SystemInfo.deviceModel
         try context.save()
     }
 }

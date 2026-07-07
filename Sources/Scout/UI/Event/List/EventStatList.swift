@@ -33,10 +33,7 @@ struct EventStatList: View {
     }
 
     var query: Event.Query {
-        var query = Event.Query()
-        query.dates = range
-        query.name = eventName
-        return query
+        Event.Query(name: eventName, dates: range)
     }
 }
 

@@ -11,6 +11,8 @@ import CoreData
 final class DeviceObject: SyncableObject {
     static let recordType = "Device"
 
+    @NSManaged var model: String?
+
     func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
         request.predicate = NSPredicate(format: "deviceID == %@", deviceID as CVarArg)
@@ -25,6 +27,7 @@ extension DeviceObject: RecordEncodable {
 
         record["date"] = date
         record["device_id"] = deviceID.uuidString
+        record["model"] = model
 
         record.setValues(metadata)
 

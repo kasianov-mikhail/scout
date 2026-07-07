@@ -12,7 +12,11 @@ final class SessionObject: TrackedObject {
     static let recordType = "Session"
 
     @NSManaged var appVersion: String?
+    @NSManaged var buildNumber: String?
     @NSManaged var endDate: Date?
+    @NSManaged var osVersion: String?
+    @NSManaged var locale: String?
+    @NSManaged var channel: String?
 
     func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
@@ -31,6 +35,10 @@ extension SessionObject: RecordEncodable {
         record["session_id"] = sessionID.uuidString
         record["launch_id"] = launchID.uuidString
         record["app_version"] = appVersion
+        record["build_number"] = buildNumber
+        record["os_version"] = osVersion
+        record["locale"] = locale
+        record["channel"] = channel
 
         record.setValues(metadata)
 

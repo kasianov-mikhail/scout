@@ -32,6 +32,17 @@ struct SessionObjectMonitorTests {
 
         let session = try #require(try context.fetchAll(SessionObject.self).first)
         #expect(session.appVersion == Bundle.main.marketingVersion)
+        #expect(session.buildNumber == Bundle.main.buildNumber)
+    }
+
+    @Test("trigger stamps the session with the runtime environment")
+    func triggerStampsEnvironment() throws {
+        try SessionObject.trigger(in: context)
+
+        let session = try #require(try context.fetchAll(SessionObject.self).first)
+        #expect(session.osVersion == SystemInfo.osVersion)
+        #expect(session.locale == SystemInfo.locale)
+        #expect(session.channel == SystemInfo.channel)
     }
 
     @Test("complete is a no-op when the session is already closed")
