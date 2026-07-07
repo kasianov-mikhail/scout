@@ -14,6 +14,7 @@ struct TimelineRow: View {
     let prev: TimelineItem?
     let next: TimelineItem?
     let showsSeparator: Bool
+    let highlightColor: Color
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,7 +37,7 @@ struct TimelineRow: View {
             .padding(.horizontal, 16)
             .background {
                 if highlighted {
-                    Color.accentColor.opacity(0.12)
+                    highlightColor.opacity(0.12)
                     GeometryReader { geo in
                         Color.clear.preference(key: AnchorFrameKey.self, value: geo.frame(in: .global))
                     }
@@ -53,13 +54,14 @@ struct TimelineRow: View {
 }
 
 extension TimelineRow {
-    init(items: [TimelineItem], index: Int, timeline: Date, highlighted: Bool) {
+    init(items: [TimelineItem], index: Int, timeline: Date, highlighted: Bool, highlightColor: Color = .accentColor) {
         self.timeline = timeline
         self.highlighted = highlighted
         self.row = items[index]
         self.prev = items[safe: index - 1]
         self.next = items[safe: index + 1]
         self.showsSeparator = index < items.count - 1
+        self.highlightColor = highlightColor
     }
 }
 
