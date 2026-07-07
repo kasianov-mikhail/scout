@@ -5,10 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import Foundation
 
-typealias AccountWarning = @Sendable () async throws -> CKAccountStatus?
+typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
 
 public struct Backend: Sendable {
     let id: String
@@ -28,6 +27,13 @@ public struct Backend: Sendable {
         case unknown
 
         var id: Self { self }
+    }
+
+    enum AccountStatus: Sendable {
+        case noAccount
+        case restricted
+        case couldNotDetermine
+        case temporarilyUnavailable
     }
 
     struct ServerInfo: Sendable {

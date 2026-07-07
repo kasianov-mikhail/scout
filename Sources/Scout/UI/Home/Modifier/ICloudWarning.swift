@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CloudKit
 import SwiftUI
 
 extension View {
@@ -53,8 +52,9 @@ private struct ICloudWarningModifier: ViewModifier {
 
     private func verify() async {
         do {
-            title = try await warning()?.title
-            description = try await warning()?.description
+            let status = try await warning()
+            title = status?.title
+            description = status?.description
         } catch {
             title = "iCloud Error"
             description = error.localizedDescription
@@ -62,8 +62,8 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 }
 
-extension CKAccountStatus {
-    fileprivate var title: String? {
+extension Backend.AccountStatus {
+    fileprivate var title: String {
         switch self {
         case .noAccount:
             "iCloud Unavailable"
@@ -73,14 +73,10 @@ extension CKAccountStatus {
             "iCloud Temporarily Unavailable"
         case .couldNotDetermine:
             "iCloud Status Unknown"
-        case .available:
-            nil
-        @unknown default:
-            "iCloud Status Unknown"
         }
     }
 
-    fileprivate var description: String? {
+    fileprivate var description: String {
         switch self {
         case .noAccount:
             "Sign in to iCloud to sync data."
@@ -89,10 +85,6 @@ extension CKAccountStatus {
         case .temporarilyUnavailable:
             "Your iCloud account is temporarily unavailable. Try again later."
         case .couldNotDetermine:
-            "Couldn't determine your iCloud account status. Check your connection and try again."
-        case .available:
-            nil
-        @unknown default:
             "Couldn't determine your iCloud account status. Check your connection and try again."
         }
     }
