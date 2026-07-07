@@ -17,7 +17,7 @@ enum EntityCatalog {
     static let metricSeriesKey = "series_key"
 
     static let definitions: [EntityDefinition] = [
-        event, session, launch, install, device, version, crash,
+        event, session, launch, install, device, version, crash, hang,
         metric(entity: IntMetricsObject.recordType, valueType: .int),
         metric(entity: DoubleMetricsObject.recordType, valueType: .double),
     ]
@@ -96,6 +96,20 @@ enum EntityCatalog {
             ("fingerprint", .string),
             ("reason", .string),
             ("stack_trace", .bytes),
+            ("session_id", .string),
+            ("app_version", .string),
+            ("date", .timestamp),
+        ]
+    )
+
+    private static let hang = definition(
+        entity: HangObject.recordType,
+        fields: [
+            ("name", .text),
+            ("fingerprint", .string),
+            ("reason", .string),
+            ("stack_trace", .bytes),
+            ("duration", .double),
             ("session_id", .string),
             ("app_version", .string),
             ("date", .timestamp),

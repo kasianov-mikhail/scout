@@ -22,11 +22,15 @@ let package = Package(
     ],
     targets: [
         .target(
+            name: "CScoutHang"
+        ),
+        .target(
             name: "Scout",
             dependencies: [
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Metrics", package: "swift-metrics"),
-                .product(name: "ScoutDB", package: "scout-db")
+                .product(name: "ScoutDB", package: "scout-db"),
+                "CScoutHang",
             ]
         ),
         .testTarget(

@@ -7,15 +7,21 @@
 
 import SwiftUI
 
-struct CrashContextSection: View {
-    let crash: Crash
+protocol SessionContext {
+    var sessionID: UUID? { get }
+    var deviceID: UUID? { get }
+}
+
+struct ContextSection<Context: SessionContext>: View {
+    let context: Context
+    var timelineHighlight: Color = .accentColor
 
     var body: some View {
-        if crash.sessionID != nil || crash.deviceID != nil {
+        if context.sessionID != nil || context.deviceID != nil {
             Header(title: "Context")
         }
 
-        if let sessionID = crash.sessionID {
+        if let sessionID = context.sessionID {
             Row {
                 Image(systemName: "list.bullet.rectangle.portrait")
                     .frame(width: 24)
@@ -27,11 +33,11 @@ struct CrashContextSection: View {
                     .monospaced()
                     .foregroundStyle(Color.gray)
             } destination: {
-                SessionInspector(sessionID: sessionID, deviceID: crash.deviceID)
+                SessionInspector(sessionID: sessionID, deviceID: context.deviceID)
             }
         }
 
-        if let deviceID = crash.deviceID {
+        if let deviceID = context.deviceID {
             Row {
                 Image(systemName: "calendar.day.timeline.left")
                     .frame(width: 24)
@@ -43,16 +49,21 @@ struct CrashContextSection: View {
                     .monospaced()
                     .foregroundStyle(Color.gray)
             } destination: {
-                Timeline(deviceID: deviceID, highlight: .red)
+                Timeline(deviceID: deviceID, highlight: timelineHighlight)
             }
         }
     }
 }
 
 #Preview {
-    NavigationStack {
+    struct Sample: SessionContext {
+        let sessionID: UUID?
+        let deviceID: UUID?
+    }
+
+    return NavigationStack {
         List {
-            CrashContextSection(crash: .sample)
+            ContextSection(context: Sample(sessionID: UUID(), deviceID: UUID()), timelineHighlight: .red)
         }
         .listStyle(.plain)
     }

@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct CrashGroupDetailView: View {
-    let group: CrashGroup
+struct HangGroupDetailView: View {
+    let group: ReliabilityGroup<Hang>
 
     var body: some View {
         List {
@@ -16,10 +16,10 @@ struct CrashGroupDetailView: View {
             occurrencesSection
         }
         .listStyle(.plain)
-        .navigationTint(.red)
+        .navigationTint(group.severity.color)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
-                let text = CrashGroupExport(group: group).text
+                let text = HangGroupExport(group: group).text
                 ShareLink(item: text)
                     .tint(Color.primary)
                 CopyButton(text: text)
@@ -32,15 +32,11 @@ struct CrashGroupDetailView: View {
 
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 24) {
+            HStack(spacing: 16) {
+                Metric(title: "Duration", value: group.durationText, color: group.severity.color)
                 Metric(title: "Occurrences", value: "\(group.count)")
                 Metric(title: "Devices", value: "\(group.affectedDevices)")
                 Metric(title: "Sessions", value: "\(group.affectedSessions)")
-            }
-
-            if let reason = group.representative.reason {
-                Text(verbatim: "REASON:   ").fontWeight(.bold)
-                    + Text(reason).fontWeight(.bold).foregroundColor(.red)
             }
 
             if let first = group.firstDate, let last = group.lastDate {
@@ -56,22 +52,20 @@ struct CrashGroupDetailView: View {
     private var occurrencesSection: some View {
         Header(title: "Occurrences")
 
-        ForEach(group.crashes) { crash in
+        ForEach(group.records) { hang in
             Row {
-                if let date = crash.date {
+                if let date = hang.date {
                     UTCTimestampText(date: date, size: 14)
                 }
 
                 Spacer()
 
-                if let sessionID = crash.sessionID {
-                    Text(ExportFormat.shortID(sessionID))
-                        .font(.footnote)
-                        .monospaced()
-                        .foregroundStyle(Color.gray)
-                }
+                Text(verbatim: hang.durationText)
+                    .font(.footnote)
+                    .monospacedDigit()
+                    .foregroundStyle(hang.severity.color)
             } destination: {
-                CrashDetailView(crash: crash)
+                HangDetailView(hang: hang)
             }
         }
     }
@@ -79,10 +73,10 @@ struct CrashGroupDetailView: View {
 
 #Preview {
     NavigationStack {
-        CrashGroupDetailView(
-            group: CrashGroup(crashes: [
-                .sample("NSRangeException", at: Date()),
-                .sample("NSRangeException", at: Date().addingTimeInterval(-3600)),
+        HangGroupDetailView(
+            group: ReliabilityGroup(records: [
+                .sample("Image Layout Pass", duration: 9.8, at: Date()),
+                .sample("Image Layout Pass", duration: 4.6, at: Date().addingTimeInterval(-3600)),
             ])
         )
     }

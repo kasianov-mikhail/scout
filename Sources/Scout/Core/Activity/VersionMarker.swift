@@ -13,6 +13,7 @@ final class VersionMarker: SyncableObject {
 
     static let installName = "VersionInstall"
     static let crashName = "VersionCrash"
+    static let hangName = "VersionHang"
 
     @NSManaged var appVersion: String?
     @NSManaged var markerID: UUID

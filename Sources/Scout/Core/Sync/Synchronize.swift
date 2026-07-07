@@ -34,6 +34,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
                 deliver(InstallObject.self)
                 deliver(DeviceObject.self)
                 deliver(CrashObject.self)
+                deliver(HangObject.self)
                 deliver(IntMetricsObject.self)
                 deliver(DoubleMetricsObject.self)
             }
