@@ -7,11 +7,12 @@
 
 import SwiftUI
 
-struct EventList: View {
+struct EventList<Header: View>: View {
     let timeline = Date()
 
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
+    @ViewBuilder let header: () -> Header
 
     var body: some View {
         if let events = provider.events {
@@ -24,6 +25,7 @@ struct EventList: View {
                 )
             } else {
                 List {
+                    header()
                     rows(for: events)
                 }
                 .listStyle(.plain)
@@ -63,6 +65,12 @@ struct EventList: View {
             EventView(event: event)
         }
         .listRowBackground(event.level?.color?.opacity(0.12) ?? .clear)
+    }
+}
+
+extension EventList where Header == EmptyView {
+    init(provider: EventProvider) {
+        self.init(provider: provider) { EmptyView() }
     }
 }
 

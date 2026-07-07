@@ -27,7 +27,7 @@ struct CrashContextSection: View {
                     .monospaced()
                     .foregroundStyle(Color.gray)
             } destination: {
-                SessionEventList(sessionID: sessionID)
+                SessionInspector(sessionID: sessionID, deviceID: crash.deviceID)
             }
         }
 

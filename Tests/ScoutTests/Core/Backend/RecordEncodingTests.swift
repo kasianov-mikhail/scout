@@ -63,6 +63,31 @@ struct RecordEncodingTests {
         #expect(session.record["app_version"] == "3.2.0")
     }
 
+    @Test("Session records carry the runtime environment")
+    func sessionEnvironmentRecord() throws {
+        let session = SessionObject.stub(date: Date(), in: context)
+        session.buildNumber = "412"
+        session.osVersion = "iOS 17.4"
+        session.locale = "en_US"
+        session.channel = "TestFlight"
+        try context.save()
+
+        #expect(session.record["build_number"] == "412")
+        #expect(session.record["os_version"] == "iOS 17.4")
+        #expect(session.record["locale"] == "en_US")
+        #expect(session.record["channel"] == "TestFlight")
+    }
+
+    @Test("Device records carry the hardware model")
+    func deviceModelRecord() throws {
+        let device = DeviceObject.stub(date: Date(), in: context)
+        device.model = "iPhone16,1"
+        try context.save()
+
+        #expect(device.record.recordType == "Device")
+        #expect(device.record["model"] == "iPhone16,1")
+    }
+
     @Test("Crash records carry the app version")
     func crashAppVersionRecord() throws {
         let crash = CrashObject(entity: NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!, insertInto: context)

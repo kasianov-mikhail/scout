@@ -14,6 +14,10 @@ extension SessionObject: Monitor {
         let session = context.insert(SessionObject.self)
         session.date = Date()
         session.appVersion = Bundle.main.marketingVersion
+        session.buildNumber = Bundle.main.buildNumber
+        session.osVersion = SystemInfo.osVersion
+        session.locale = SystemInfo.locale
+        session.channel = SystemInfo.channel
         try context.save()
     }
 
