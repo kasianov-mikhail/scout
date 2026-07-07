@@ -42,11 +42,8 @@ struct VersionCrashProviderTests {
     }
 
     private func crashRecord(appVersion: String?) -> Record {
-        var record = Record(recordType: "Crash", recordID: UUID().uuidString)
-        record["name"] = "SIGSEGV"
+        var record = Crash.stub(name: "SIGSEGV", sessionID: UUID(), date: date).record
         record["app_version"] = appVersion
-        record["session_id"] = UUID().uuidString
-        record["date"] = date
         return record
     }
 }

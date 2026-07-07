@@ -18,10 +18,10 @@ struct HomeLogProviderTests {
     func fetchBuildsMatrices() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(type: Int.recordType, name: "login", value: 3),
-            makeRecord(type: Int.recordType, name: "Crash", value: 2),
-            makeRecord(type: Int.recordType, name: "api_calls", category: "counter", value: 7),
-            makeRecord(type: Double.recordType, name: "load_time", category: "timer", value: 0.25)
+            makeRecord(name: "login", value: 3),
+            makeRecord(name: "Crash", value: 2),
+            makeRecord(name: "api_calls", category: "counter", value: 7),
+            makeRecord(name: "load_time", category: "timer", value: 0.25)
         )
 
         let provider = HomeLogProvider()
@@ -43,10 +43,10 @@ struct HomeLogProviderTests {
     func fetchDropsLifecycle() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(type: Int.recordType, name: "login", value: 3),
-            makeRecord(type: Int.recordType, name: "Crash", value: 2),
-            makeRecord(type: Int.recordType, name: "Session", value: 5),
-            makeRecord(type: Int.recordType, name: "Launch", value: 1)
+            makeRecord(name: "login", value: 3),
+            makeRecord(name: "Crash", value: 2),
+            makeRecord(name: "Session", value: 5),
+            makeRecord(name: "Launch", value: 1)
         )
 
         let provider = HomeLogProvider()
@@ -62,8 +62,8 @@ struct HomeLogProviderTests {
         let date = Date()
         let database = DatabaseStub()
         database.add(
-            makeRecord(type: Int.recordType, name: "login", date: date, value: 3),
-            makeRecord(type: Int.recordType, name: "login", date: date, value: 4)
+            makeRecord(name: "login", date: date, value: 3),
+            makeRecord(name: "login", date: date, value: 4)
         )
 
         let provider = HomeLogProvider()
@@ -79,8 +79,8 @@ struct HomeLogProviderTests {
     func fetchesSelectedPeriodOnly() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(type: Int.recordType, name: "recent", date: Date().addingDay(-2).startOfWeek, value: 3),
-            makeRecord(type: Int.recordType, name: "old", date: Date().addingDay(-60).startOfWeek, value: 4)
+            makeRecord(name: "recent", date: Date().addingDay(-2).startOfWeek, value: 3),
+            makeRecord(name: "old", date: Date().addingDay(-60).startOfWeek, value: 4)
         )
 
         let provider = HomeLogProvider()
@@ -99,7 +99,7 @@ struct HomeLogProviderTests {
     @Test("Switching periods keeps earlier results cached")
     func cachesResultsPerPeriod() async throws {
         let database = DatabaseStub()
-        database.add(makeRecord(type: Int.recordType, name: "login", value: 3))
+        database.add(makeRecord(name: "login", value: 3))
 
         let provider = HomeLogProvider()
         provider.period = .today
@@ -115,12 +115,12 @@ struct HomeLogProviderTests {
         #expect(provider.result != nil)
     }
 
-    private func makeRecord(type: String, name: String, category: String? = nil, date: Date = Date(), value: any RecordValueConvertible) -> Record {
-        var record = Record(recordType: type, recordID: UUID().uuidString)
-        record["name"] = name
-        record["category"] = category
-        record["date"] = date
-        record.fields["cell_1_00"] = value.recordValue
-        return record
+    private func makeRecord<T: MetricScalar>(name: String, category: String? = nil, date: Date = Date(), value: T) -> Record {
+        Matrix(
+            date: date,
+            name: name,
+            category: category,
+            cells: [GridCell(row: 1, column: 0, value: value)]
+        ).record
     }
 }
