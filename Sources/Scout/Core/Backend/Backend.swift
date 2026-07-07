@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
+
 public struct Backend: Sendable {
     let id: String
     let database: any Database
@@ -15,7 +17,7 @@ public struct Backend: Sendable {
 
     var serverInfo: ServerInfo? = nil
     var probeStatus: @Sendable () async -> Status = { .unknown }
-    var accountWarning: @Sendable () async -> Bool = { false }
+    var accountWarning: AccountWarning = { nil }
     var runBenchmark: (@Sendable () async -> Bool)? = nil
     var onSetup: @MainActor @Sendable () -> Void = {}
 
@@ -25,6 +27,13 @@ public struct Backend: Sendable {
         case unknown
 
         var id: Self { self }
+    }
+
+    enum AccountStatus: Sendable {
+        case noAccount
+        case restricted
+        case couldNotDetermine
+        case temporarilyUnavailable
     }
 
     struct ServerInfo: Sendable {

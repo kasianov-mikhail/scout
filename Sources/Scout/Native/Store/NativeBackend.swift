@@ -31,7 +31,20 @@ extension Backend {
                 return status == .available ? .reachable : .unreachable
             },
             accountWarning: {
-                (try? await container.accountStatus()) != .available
+                switch try await container.accountStatus() {
+                case .available:
+                    return nil
+                case .noAccount:
+                    return .noAccount
+                case .restricted:
+                    return .restricted
+                case .temporarilyUnavailable:
+                    return .temporarilyUnavailable
+                case .couldNotDetermine:
+                    return .couldNotDetermine
+                @unknown default:
+                    return .couldNotDetermine
+                }
             },
             onSetup: {
                 Task {

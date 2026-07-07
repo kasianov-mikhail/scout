@@ -8,36 +8,37 @@
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ warning: @escaping @Sendable () async -> Bool) -> some View {
+    func iCloudWarning(_ warning: @escaping AccountWarning) -> some View {
         modifier(ICloudWarningModifier(warning: warning))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
-    let warning: @Sendable () async -> Bool
+    let warning: AccountWarning
 
-    @State private var isWarning = false
     @State private var isAlertPresented = false
+    @State private var title: String?
+    @State private var description: String?
 
     func body(content: Content) -> some View {
         content
             .toolbar {
-                if isWarning {
+                if let title, let description {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             isAlertPresented = true
                         } label: {
                             Image(systemName: "icloud.slash").foregroundStyle(.orange)
                         }
+                        .alert(Text(verbatim: title), isPresented: $isAlertPresented) {
+                            Button(role: .cancel, action: {}) {
+                                Text(verbatim: "OK")
+                            }
+                        } message: {
+                            Text(verbatim: description)
+                        }
                     }
                 }
-            }
-            .alert(Text(verbatim: "iCloud Unavailable"), isPresented: $isAlertPresented) {
-                Button(role: .cancel, action: {}) {
-                    Text(verbatim: "OK")
-                }
-            } message: {
-                Text(verbatim: "Sign in to iCloud to sync data.")
             }
             .task {
                 await verify()
@@ -50,6 +51,41 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 
     private func verify() async {
-        isWarning = await warning()
+        do {
+            let status = try await warning()
+            title = status?.title
+            description = status?.description
+        } catch {
+            title = "iCloud Error"
+            description = error.localizedDescription
+        }
+    }
+}
+
+extension Backend.AccountStatus {
+    fileprivate var title: String {
+        switch self {
+        case .noAccount:
+            "iCloud Unavailable"
+        case .restricted:
+            "iCloud Restricted"
+        case .temporarilyUnavailable:
+            "iCloud Temporarily Unavailable"
+        case .couldNotDetermine:
+            "iCloud Status Unknown"
+        }
+    }
+
+    fileprivate var description: String {
+        switch self {
+        case .noAccount:
+            "Sign in to iCloud to sync data."
+        case .restricted:
+            "iCloud access is restricted by parental controls or a device policy."
+        case .temporarilyUnavailable:
+            "Your iCloud account is temporarily unavailable. Try again later."
+        case .couldNotDetermine:
+            "Couldn't determine your iCloud account status. Check your connection and try again."
+        }
     }
 }
