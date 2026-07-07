@@ -30,9 +30,7 @@ extension Backend {
                 let status = try? await container.accountStatus()
                 return status == .available ? .reachable : .unreachable
             },
-            accountWarning: {
-                (try? await container.accountStatus()) != .available
-            },
+            accountWarning: container.accountStatus,
             onSetup: {
                 Task {
                     await EntityCatalog.bootstrap(registry: registry)
