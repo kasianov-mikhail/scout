@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Crash {
+extension Crash: Fixture {
     static var sample: Crash {
         let name = "NSRangeException"
         let reason = "-[__NSArrayM objectAtIndex:]: index 4 beyond bounds [0 .. 2]"
@@ -45,5 +45,22 @@ extension Crash {
             launchID: nil,
             sessionID: sessionID
         )
+    }
+
+    static var samples: [Crash] {
+        let counts: KeyValuePairs<String, Int> = ["NSRangeException": 8, "Fatal error": 4, "SIGSEGV": 2]
+
+        var crashes: [Crash] = []
+        var index = 0
+
+        for (name, count) in counts {
+            for _ in 0..<count {
+                let date = Date(timeIntervalSinceNow: -Double(index % 13) * 86_400 - Double(index) * 600)
+                crashes.append(.sample(name, at: date, sessionID: UUID()))
+                index += 1
+            }
+        }
+
+        return crashes
     }
 }

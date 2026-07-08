@@ -151,13 +151,13 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     hangs.records = .samples
 
     return NavigationStack {
-        VersionDetailView(release: ReleaseHealth.samples[0], crashes: crashes, hangs: hangs)
+        VersionDetailView(release: [ReleaseHealth].samples[0], crashes: crashes, hangs: hangs)
     }
     .environmentObject(Tint())
 }
 
 #Preview("Empty graph") {
-    let release = ReleaseHealth.samples[0]
+    let release = [ReleaseHealth].samples[0]
 
     return NavigationStack {
         VersionDetailView(

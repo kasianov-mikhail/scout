@@ -21,14 +21,6 @@ extension Device: RecordDecodable {
         "device_id",
     ]
 
-    static var samples: [Device] {
-        [
-            .sample(minutesAgo: 0),
-            .sample(minutesAgo: 4320),
-            .sample(minutesAgo: 20160),
-        ]
-    }
-
     init(record: Record) throws {
         date = record["date"]
         id = record.recordID
@@ -42,15 +34,5 @@ extension Device: RecordEncodable {
         record["date"] = date
         record["device_id"] = deviceID?.uuidString
         return record
-    }
-}
-
-extension Device {
-    static func sample(minutesAgo: Double = 0, deviceID: UUID = UUID()) -> Device {
-        Device(
-            date: Date(timeIntervalSinceNow: -minutesAgo * 60),
-            id: deviceID.uuidString,
-            deviceID: deviceID
-        )
     }
 }

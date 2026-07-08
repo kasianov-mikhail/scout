@@ -107,7 +107,7 @@ private struct ReleasePercent: View {
 #Preview {
     NavigationStack {
         List {
-            ForEach(ReleaseHealth.samples) { release in
+            ForEach([ReleaseHealth].samples) { release in
                 ReleaseRow(release: release)
             }
             ReleaseRowPlaceholder()

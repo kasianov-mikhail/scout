@@ -42,23 +42,6 @@ extension Crash: RecordDecodable {
         "session_id",
     ]
 
-    static var samples: [Crash] {
-        let counts: KeyValuePairs<String, Int> = ["NSRangeException": 8, "Fatal error": 4, "SIGSEGV": 2]
-
-        var crashes: [Crash] = []
-        var index = 0
-
-        for (name, count) in counts {
-            for _ in 0..<count {
-                let date = Date(timeIntervalSinceNow: -Double(index % 13) * 86_400 - Double(index) * 600)
-                crashes.append(.sample(name, at: date, sessionID: UUID()))
-                index += 1
-            }
-        }
-
-        return crashes
-    }
-
     init(record: Record) throws {
         name = record["name"] ?? ""
         reason = record["reason"]

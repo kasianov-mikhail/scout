@@ -23,14 +23,6 @@ extension Install: RecordDecodable {
         "device_id",
     ]
 
-    static var samples: [Install] {
-        let deviceID = UUID()
-        return [
-            .sample(minutesAgo: 0, deviceID: deviceID),
-            .sample(minutesAgo: 4320, deviceID: deviceID),
-        ]
-    }
-
     init(record: Record) throws {
         date = record["date"]
         id = record.recordID
@@ -46,16 +38,5 @@ extension Install: RecordEncodable {
         record["install_id"] = installID?.uuidString
         record["device_id"] = deviceID?.uuidString
         return record
-    }
-}
-
-extension Install {
-    static func sample(minutesAgo: Double = 0, installID: UUID = UUID(), deviceID: UUID = UUID()) -> Install {
-        Install(
-            date: Date(timeIntervalSinceNow: -minutesAgo * 60),
-            id: installID.uuidString,
-            installID: installID,
-            deviceID: deviceID
-        )
     }
 }

@@ -69,11 +69,11 @@ struct GlanceHero: View {
 }
 
 #Preview("Operational") {
-    GlanceHero(summary: GlanceSummary(backends: Array(BackendHealth.samples.prefix(2))))
+    GlanceHero(summary: GlanceSummary(backends: Array([BackendHealth].samples.prefix(2))))
         .padding()
 }
 
 #Preview("Degraded") {
-    GlanceHero(summary: GlanceSummary(backends: BackendHealth.samples))
+    GlanceHero(summary: GlanceSummary(backends: .samples))
         .padding()
 }

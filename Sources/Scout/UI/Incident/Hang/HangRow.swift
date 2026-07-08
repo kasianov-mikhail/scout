@@ -41,7 +41,7 @@ struct HangRow: View {
 #Preview {
     NavigationStack {
         List {
-            ForEach(IncidentGroup.groups(from: Hang.samples)) { group in
+            ForEach(IncidentGroup.groups(from: [Hang].samples)) { group in
                 HangRow(group: group)
             }
         }

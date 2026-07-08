@@ -47,7 +47,7 @@ struct NetworkEndpoint: Identifiable {
     }
 }
 
-extension NetworkEndpoint {
+extension NetworkEndpoint: Fixture {
     static let samples = [
         NetworkEndpoint(name: "GET /v1/events", requests: 8_420, successRate: 0.998, p99: 0.21),
         NetworkEndpoint(name: "POST /v1/metrics", requests: 5_210, successRate: 0.991, p99: 0.62),

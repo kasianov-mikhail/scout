@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension Hang {
+extension Hang: Fixture {
     static var sample: Hang {
         let name = "Main Thread Blocked"
         let reason = "-[NSJSONSerialization dataWithJSONObject:options:error:] on main thread"

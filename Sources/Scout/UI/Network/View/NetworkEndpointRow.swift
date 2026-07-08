@@ -61,7 +61,7 @@ struct NetworkEndpointRow: View {
 }
 
 #Preview("NetworkEndpointRow") {
-    List(NetworkEndpoint.samples) { endpoint in
+    List([NetworkEndpoint].samples) { endpoint in
         NetworkEndpointRow(endpoint: endpoint)
     }
     .listStyle(.plain)

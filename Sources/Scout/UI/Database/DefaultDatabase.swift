@@ -13,7 +13,7 @@ extension EnvironmentValues {
 
 struct DefaultDatabase: Database {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        RecordChunk(records: query.recordType.samples.map(\.record), cursor: nil)
+        RecordChunk(records: [], cursor: nil)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {

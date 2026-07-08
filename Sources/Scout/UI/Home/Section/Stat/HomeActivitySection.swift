@@ -29,7 +29,7 @@ struct HomeActivitySection: View {
 
 #Preview {
     let activity = ActivityProvider()
-    activity.result = .success(ActivityPoint.samples)
+    activity.result = .success(.samples)
 
     return NavigationStack {
         List {

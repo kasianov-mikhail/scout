@@ -37,12 +37,7 @@ struct RecordQuery: Sendable {
 }
 
 protocol RecordDecodable: Sendable, Equatable, RecordEncodable {
-    static var samples: [Self] { get }
     static var desiredKeys: [String] { get }
 
     init(record: Record) throws
-}
-
-extension Array where Element: RecordDecodable {
-    static var samples: [Element] { Element.samples }
 }

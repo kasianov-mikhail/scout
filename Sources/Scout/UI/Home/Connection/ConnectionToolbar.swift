@@ -42,10 +42,10 @@ private struct ConnectionToolbar: ViewModifier {
 
 @available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    @Previewable @State var activeID = Backend.samples[0].id
+    @Previewable @State var activeID = [Backend].samples[0].id
     NavigationStack {
         Text(verbatim: "Content")
             .navigationTitle(en: "Home")
-            .connectionToolbar(backends: Backend.samples, activeID: $activeID)
+            .connectionToolbar(backends: .samples, activeID: $activeID)
     }
 }
