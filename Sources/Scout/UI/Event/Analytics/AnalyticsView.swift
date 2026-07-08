@@ -62,6 +62,13 @@ struct AnalyticsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     FilterButton(levels: $filter.levels)
                 }
+                if let text = EventListExport(events: provider.events ?? []).text {
+                    ToolbarItemGroup(placement: .bottomBar) {
+                        ShareLink(item: text)
+                        CopyButton(text: text)
+                        Spacer()
+                    }
+                }
             }
             .task {
                 await provider.fetchIfNeeded(for: filter, in: database)

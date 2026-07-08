@@ -65,6 +65,15 @@ struct NetworkView: View {
         .navigationDestination(isPresented: $showAllEndpoints) {
             NetworkEndpointsView(report: report, range: range)
         }
+        .toolbar {
+            if let text = NetworkReportExport(report: report, range: range).text {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    ShareLink(item: text)
+                    CopyButton(text: text)
+                    Spacer()
+                }
+            }
+        }
     }
 }
 
