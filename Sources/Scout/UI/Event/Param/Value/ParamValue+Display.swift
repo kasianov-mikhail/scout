@@ -23,9 +23,9 @@ extension ParamValue {
         case .stringConvertible(let convertible):
             convertible.text
         case .dictionary(let entries):
-            ExportFormat.counted(entries.count, "pair", "pairs")
+            ExportFormat.counted(entries.count, .pair)
         case .array(let values):
-            ExportFormat.counted(values.count, "item", "items")
+            ExportFormat.counted(values.count, .item)
         }
     }
 

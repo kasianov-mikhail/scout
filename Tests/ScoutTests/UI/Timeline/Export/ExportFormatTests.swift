@@ -57,8 +57,8 @@ struct ExportFormatTests {
 
     @Test("Counts pluralize their noun")
     func testCounted() {
-        #expect(ExportFormat.counted(1, "crash", "crashes") == "1 crash")
-        #expect(ExportFormat.counted(0, "crash", "crashes") == "0 crashes")
-        #expect(ExportFormat.counted(3, "event", "events") == "3 events")
+        #expect(ExportFormat.counted(1, .crash) == "1 crash")
+        #expect(ExportFormat.counted(0, .crash) == "0 crashes")
+        #expect(ExportFormat.counted(3, .event) == "3 events")
     }
 }

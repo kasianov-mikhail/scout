@@ -8,12 +8,6 @@
 
 import Foundation
 
-/// Formats the dates, identifiers, and counts that appear in exported
-/// timeline documents.
-///
-/// All dates are rendered in UTC — headers in a human-readable form, rows as
-/// ISO 8601 timestamps — so the text reads well and stays machine-parseable.
-///
 enum ExportFormat {
     /// An ISO 8601 timestamp, e.g. `2023-11-14T22:14:00Z`.
     static func timestamp(_ date: Date) -> String {
@@ -35,11 +29,6 @@ enum ExportFormat {
         "\(day(date)) \(time(date))"
     }
 
-    /// Formats a date range, repeating the date in the end bound only when
-    /// the range spans more than one day.
-    ///
-    /// An open range renders as its start.
-    ///
     static func range(from start: Date, to end: Date?) -> String {
         guard let end else {
             return minute(start)
@@ -55,9 +44,31 @@ enum ExportFormat {
     }
 
     /// A count with its pluralized noun, e.g. `1 install` or `3 installs`.
-    static func counted(_ count: Int, _ singular: String, _ plural: String) -> String {
-        "\(count) \(count == 1 ? singular : plural)"
+    static func counted(_ count: Int, _ noun: Noun) -> String {
+        "\(count) \(count == 1 ? noun.singular : noun.plural)"
     }
+}
+
+extension ExportFormat {
+    /// A noun with its singular and plural forms, used by ``counted(_:_:)``.
+    struct Noun {
+        let singular: String
+        let plural: String
+    }
+}
+
+extension ExportFormat.Noun {
+    static let backend = Self(singular: "backend", plural: "backends")
+    static let crash = Self(singular: "crash", plural: "crashes")
+    static let device = Self(singular: "device", plural: "devices")
+    static let event = Self(singular: "event", plural: "events")
+    static let install = Self(singular: "install", plural: "installs")
+    static let item = Self(singular: "item", plural: "items")
+    static let launch = Self(singular: "launch", plural: "launches")
+    static let occurrence = Self(singular: "occurrence", plural: "occurrences")
+    static let pair = Self(singular: "pair", plural: "pairs")
+    static let request = Self(singular: "request", plural: "requests")
+    static let session = Self(singular: "session", plural: "sessions")
 }
 
 extension ExportFormat {

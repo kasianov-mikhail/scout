@@ -16,23 +16,20 @@ struct NetworkReportExport {
         let endpoints = report.endpoints(in: range)
         guard endpoints.count > 0 else { return nil }
 
-        var lines = [title, summary]
-
-        lines.append("")
-        lines.append("## Status codes")
+        var lines: [ExportLine] = [.heading(level: 1, title), .text(summary), .blank, .heading(level: 2, "Status codes")]
         lines.append(contentsOf: statusLines)
 
-        lines.append("")
-        lines.append("## Endpoints")
+        lines.append(.blank)
+        lines.append(.heading(level: 2, "Endpoints"))
         lines.append(contentsOf: endpoints.map(row))
 
-        return lines.joined(separator: "\n")
+        return lines.text
     }
 }
 
 extension NetworkReportExport {
     private var title: String {
-        "# Scout Network Report"
+        "Scout Network Report"
     }
 
     private var summary: String {
@@ -40,7 +37,7 @@ extension NetworkReportExport {
 
         var parts = [
             ExportFormat.range(from: range.lowerBound, to: range.upperBound),
-            ExportFormat.counted(breakdown.total, "request", "requests"),
+            ExportFormat.counted(breakdown.total, .request),
         ]
         if breakdown.total > 0 {
             parts.append("success \(breakdown.successRate.formatted)")
@@ -51,20 +48,20 @@ extension NetworkReportExport {
         return parts.joined(separator: " · ")
     }
 
-    private var statusLines: [String] {
+    private var statusLines: [ExportLine] {
         report.summary(in: range).segments.map { segment in
-            "- \(segment.label): \(ExportFormat.counted(segment.count, "request", "requests"))"
+            .bullet("\(segment.label): \(ExportFormat.counted(segment.count, .request))")
         }
     }
 
-    private func row(for endpoint: NetworkEndpoint) -> String {
-        var parts = [ExportFormat.counted(endpoint.requests, "request", "requests")]
+    private func row(for endpoint: NetworkEndpoint) -> ExportLine {
+        var parts = [ExportFormat.counted(endpoint.requests, .request)]
         if let successRate = endpoint.successRate {
             parts.append("success \(successRate.formatted)")
         }
         if let p99 = endpoint.p99 {
             parts.append("p99 \(p99.duration)")
         }
-        return "- \(endpoint.name)  (\(parts.joined(separator: ", ")))"
+        return .bullet("\(endpoint.name)  (\(parts.joined(separator: ", ")))")
     }
 }

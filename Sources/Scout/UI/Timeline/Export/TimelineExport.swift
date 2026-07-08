@@ -24,34 +24,34 @@ struct TimelineExport {
             return nil
         }
 
-        var lines = [title, summary]
+        var lines: [ExportLine] = [.heading(level: 1, title), .text(summary)]
 
         for install in rail.installs {
-            lines.append("")
+            lines.append(.blank)
             lines.append(header(for: install.install))
 
             for launch in install.launches {
-                lines.append("")
+                lines.append(.blank)
                 lines.append(header(for: launch.launch))
 
                 for session in launch.sessions {
-                    lines.append("")
+                    lines.append(.blank)
                     lines.append(header(for: session.session))
                     lines.append(contentsOf: rows(for: session))
                 }
             }
         }
 
-        return lines.joined(separator: "\n")
+        return lines.text
     }
 }
 
 extension TimelineExport {
     private var title: String {
         if let deviceID = rail.device.deviceID {
-            return "# Scout Timeline — Device \(ExportFormat.shortID(deviceID))"
+            return "Scout Timeline — Device \(ExportFormat.shortID(deviceID))"
         }
-        return "# Scout Timeline"
+        return "Scout Timeline"
     }
 
     private var summary: String {
@@ -61,39 +61,40 @@ extension TimelineExport {
         let crashes = sessions.flatMap(\.crashes).filter { $0.date != nil }
 
         var parts = [
-            ExportFormat.counted(rail.installs.count, "install", "installs"),
-            ExportFormat.counted(launches.count, "launch", "launches"),
-            ExportFormat.counted(sessions.count, "session", "sessions"),
-            ExportFormat.counted(events.count, "event", "events"),
+            ExportFormat.counted(rail.installs.count, .install),
+            ExportFormat.counted(launches.count, .launch),
+            ExportFormat.counted(sessions.count, .session),
+            ExportFormat.counted(events.count, .event),
         ]
         if crashes.count > 0 {
-            parts.append(ExportFormat.counted(crashes.count, "crash", "crashes"))
+            parts.append(ExportFormat.counted(crashes.count, .crash))
         }
         return parts.joined(separator: " · ")
     }
 
-    private func header(prefix: String, date: String?, id: UUID?) -> String {
-        var parts = [prefix]
+    private func header(level: Int, word: String, date: String?, id: UUID?) -> ExportLine {
+        var parts = [word]
         if let date {
             parts.append(date)
         }
         if let id {
             parts.append("(\(ExportFormat.shortID(id)))")
         }
-        return parts.joined(separator: " ")
+        return .heading(level: level, parts.joined(separator: " "))
     }
 
-    private func header(for install: Install) -> String {
-        header(prefix: "## Install", date: install.date.map(ExportFormat.day), id: install.installID)
+    private func header(for install: Install) -> ExportLine {
+        header(level: 2, word: "Install", date: install.date.map(ExportFormat.day), id: install.installID)
     }
 
-    private func header(for launch: Launch) -> String {
-        header(prefix: "### Launch", date: launch.startDate.map(ExportFormat.minute), id: launch.launchID)
+    private func header(for launch: Launch) -> ExportLine {
+        header(level: 3, word: "Launch", date: launch.startDate.map(ExportFormat.minute), id: launch.launchID)
     }
 
-    private func header(for session: Session) -> String {
+    private func header(for session: Session) -> ExportLine {
         header(
-            prefix: "#### Session",
+            level: 4,
+            word: "Session",
             date: session.startDate.map { ExportFormat.range(from: $0, to: session.endDate) },
             id: session.sessionID
         )
@@ -101,7 +102,7 @@ extension TimelineExport {
 }
 
 extension TimelineExport {
-    private func rows(for session: SessionRoot) -> [String] {
+    private func rows(for session: SessionRoot) -> [ExportLine] {
         let events = session.events.compactMap { event in
             event.date.map { (date: $0, label: event.name) }
         }
@@ -110,7 +111,7 @@ extension TimelineExport {
         }
         return (events + crashes)
             .sorted { $0.date < $1.date }
-            .map { "- \(ExportFormat.timestamp($0.date))  \($0.label)" }
+            .map { .bullet("\(ExportFormat.timestamp($0.date))  \($0.label)") }
     }
 
     private func label(for crash: Crash) -> String {
