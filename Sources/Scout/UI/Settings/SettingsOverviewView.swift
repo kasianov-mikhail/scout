@@ -55,6 +55,8 @@ struct SettingsOverviewView: View {
         .listStyle(.plain)
         .navigationTitle(en: "Settings")
         .message($message)
+        .dismissable()
+        .opaquePresentationBackground()
         .task {
             await provider.refreshAll()
         }
