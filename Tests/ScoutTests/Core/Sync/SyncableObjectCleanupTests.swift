@@ -48,6 +48,18 @@ struct SyncableObjectCleanupTests {
         #expect(try context.fetchAll(EventObject.self).count == 1)
     }
 
+    @Test("Keeps a synced old launch still referenced by another record")
+    func keepsReferencedLaunch() throws {
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        LaunchObject.stub(date: old, synced: true, in: context)
+        EventObject.stub(name: "child", in: context)
+        try context.save()
+
+        try SyncableObject.cleanup(backends: [], in: context)
+
+        #expect(try context.fetchAll(LaunchObject.self).count == 1)
+    }
+
     @Test("Keeps objects with outstanding work regardless of age")
     func keepsUnsynced() throws {
         // Done-ness is derived from delivery rows: cleanup only purges objects

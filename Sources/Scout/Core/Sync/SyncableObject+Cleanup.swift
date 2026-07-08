@@ -20,6 +20,9 @@ extension SyncableObject {
         )
 
         for object in try context.fetch(request) {
+            if let hub = object as? HubObject, hub.isReferenced {
+                continue
+            }
             context.delete(object)
         }
 
