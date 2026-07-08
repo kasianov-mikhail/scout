@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct BackendHealth: Identifiable {
+    static let maxPingHistory = 12
+
     let id: String
     let name: String
     let endpoint: String
@@ -49,7 +51,7 @@ extension BackendHealth {
         health.lastChecked = date
         if let latency {
             health.pings.append(latency)
-            health.pings = Array(health.pings.suffix(12))
+            health.pings = Array(health.pings.suffix(Self.maxPingHistory))
         }
         return health
     }

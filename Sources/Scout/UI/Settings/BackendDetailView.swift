@@ -143,16 +143,21 @@ struct DetailValueRow: View {
 struct PingSparkline: View {
     let pings: [Int]
 
+    private static let spacing: CGFloat = 3
+
     var body: some View {
         GeometryReader { proxy in
             let peak = Double(pings.max() ?? 1)
-            let step = proxy.size.width / Double(pings.count)
+            let slots = CGFloat(BackendHealth.maxPingHistory)
+            let barWidth = (proxy.size.width - Self.spacing * (slots - 1)) / slots
 
-            HStack(alignment: .bottom, spacing: step * 0.382) {
+            HStack(alignment: .bottom, spacing: Self.spacing) {
+                Spacer(minLength: 0)
+
                 ForEach(Array(pings.enumerated()), id: \.offset) { _, ping in
                     Capsule()
                         .fill(.tint.opacity(0.6))
-                        .frame(height: max(3, proxy.size.height * Double(ping) / peak))
+                        .frame(width: barWidth, height: max(3, proxy.size.height * Double(ping) / peak))
                 }
             }
             .frame(maxHeight: .infinity, alignment: .bottom)
