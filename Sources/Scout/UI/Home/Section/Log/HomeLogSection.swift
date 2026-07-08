@@ -105,7 +105,7 @@ struct HomeLogSection: View {
     }
 
     let devices = DevicesProvider()
-    devices.result = .success(DeviceSummary.samples)
+    devices.result = .success(.samples)
 
     return NavigationStack {
         List {

@@ -79,7 +79,7 @@ struct HomeList: View {
     let logs = makeLogs()
 
     let devices = DevicesProvider()
-    devices.result = .success(DeviceSummary.samples)
+    devices.result = .success(.samples)
 
     return NavigationStack {
         HomeList(

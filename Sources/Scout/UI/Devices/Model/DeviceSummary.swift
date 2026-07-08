@@ -57,7 +57,7 @@ extension DeviceSummary {
     }
 }
 
-extension DeviceSummary {
+extension DeviceSummary: Fixture {
     static let samples: [DeviceSummary] = [
         DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -15 * 60), sessions: 812, crashes: 3),
         DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.3", lastSeen: Date(timeIntervalSinceNow: -3 * 3600), sessions: 540, crashes: 0),
