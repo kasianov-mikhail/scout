@@ -14,7 +14,14 @@ import Testing
 struct DevicesExportTests {
     @Test("Devices render their model, OS, and counts")
     func testDevicesExport() throws {
-        let device = DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSince1970: 1_700_000_000), sessions: 10, crashes: 2)
+        let device = DeviceSummary(
+            id: UUID(),
+            model: "iPhone15,3",
+            osVersion: "iOS 17.4",
+            lastSeen: Date(timeIntervalSince1970: 1_700_000_000),
+            sessions: 10,
+            crashes: 2
+        )
         let text = try #require(DevicesExport(devices: [device]).text)
 
         #expect(text.hasPrefix("# Scout Devices"))
