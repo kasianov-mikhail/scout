@@ -12,34 +12,40 @@ struct VersionDetailView: View {
     @Environment(\.database) var database
 
     let release: ReleaseHealth
-    @StateObject var provider: VersionCrashProvider
+    @StateObject var crashes: VersionIncidentProvider<Crash>
+    @StateObject var hangs: VersionIncidentProvider<Hang>
 
-    init(release: ReleaseHealth, provider: VersionCrashProvider? = nil) {
+    init(release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil, hangs: VersionIncidentProvider<Hang>? = nil) {
         self.release = release
-        self._provider = StateObject(wrappedValue: provider ?? VersionCrashProvider(version: release.id))
-    }
-
-    private var crashes: [Crash] {
-        provider.crashes ?? []
-    }
-
-    private var issues: [ReliabilityGroup<Crash>] {
-        ReliabilityGroup.groups(from: crashes)
+        self._crashes = StateObject(wrappedValue: crashes ?? VersionIncidentProvider(version: release.id))
+        self._hangs = StateObject(wrappedValue: hangs ?? VersionIncidentProvider(version: release.id))
     }
 
     var body: some View {
         List {
             headerSection
-            trendSection
-            issuesSection
+
+            IncidentTrendSection(title: "Crashes over time", records: crashes.records ?? [], color: release.freeSessions.color)
+            IncidentIssuesSection(title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? [])) { group in
+                CrashGroupDetailView(group: group)
+            }
+
+            IncidentTrendSection(title: "Hangs over time", records: hangs.records ?? [], color: release.freeSessions.color)
+            IncidentIssuesSection(title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? [])) { group in
+                HangGroupDetailView(group: group)
+            }
         }
         .listStyle(.plain)
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationTitle(en: release.id)
-        .message($provider.message)
+        .message($crashes.message)
+        .message($hangs.message)
         .task {
-            await provider.fetchIfNeeded(in: database)
+            await crashes.fetchIfNeeded(in: database)
+        }
+        .task {
+            await hangs.fetchIfNeeded(in: database)
         }
     }
 
@@ -54,6 +60,7 @@ struct VersionDetailView: View {
 
             HStack(spacing: 24) {
                 Metric(title: "Crashes", value: "\(release.crashes)")
+                Metric(title: "Hangs", value: "\(release.hangs)")
                 Metric(title: "Sessions", value: release.sessions.compact)
                 Metric(title: "Adoption", value: release.adoption.formatted)
             }
@@ -61,25 +68,29 @@ struct VersionDetailView: View {
         .padding(.vertical, 4)
         .listRowSeparator(.hidden)
     }
+}
 
-    private var dailyCrashes: [DailyCrashCount] {
-        DailyCrashCount.series(from: crashes)
+private struct IncidentTrendSection<Element: Incident>: View {
+    let title: String
+    let records: [Element]
+    let color: Color
+
+    private var days: [DailyCount] {
+        DailyCount.series(from: records)
     }
 
-    @ViewBuilder
-    private var trendSection: some View {
-        let days = dailyCrashes
+    var body: some View {
         let isEmpty = !days.contains(where: { $0.count > 0 })
 
-        Header(title: "Crashes over time")
+        Header(title: title)
 
         Chart(days, id: \.date) { day in
             BarMark(
                 x: .value("Day", day.date, unit: .day),
-                y: .value("Crashes", day.count),
+                y: .value("Count", day.count),
                 width: .ratio(0.6)
             )
-            .foregroundStyle(release.freeSessions.color.gradient)
+            .foregroundStyle(color.gradient)
             .cornerRadius(3)
         }
         .chartXAxis {
@@ -102,13 +113,19 @@ struct VersionDetailView: View {
         .padding(.vertical, 8)
         .listRowSeparator(.hidden)
     }
+}
+
+private struct IncidentIssuesSection<Element: Incident, Destination: View>: View {
+    let title: String
+    let groups: [IncidentGroup<Element>]
+    @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     @ViewBuilder
-    private var issuesSection: some View {
-        if issues.count > 0 {
-            Header(title: "Top issues")
+    var body: some View {
+        if groups.count > 0 {
+            Header(title: title)
 
-            ForEach(issues) { group in
+            ForEach(groups) { group in
                 Row {
                     Text(verbatim: group.name)
                         .font(.callout)
@@ -119,7 +136,7 @@ struct VersionDetailView: View {
 
                     CountBadge(count: group.count)
                 } destination: {
-                    CrashGroupDetailView(group: group)
+                    destination(group)
                 }
             }
         }
@@ -127,11 +144,14 @@ struct VersionDetailView: View {
 }
 
 #Preview {
-    let provider = VersionCrashProvider(version: "3.2.0")
-    provider.crashes = .samples
+    let crashes = VersionIncidentProvider<Crash>(version: "3.2.0")
+    crashes.records = .samples
+
+    let hangs = VersionIncidentProvider<Hang>(version: "3.2.0")
+    hangs.records = .samples
 
     return NavigationStack {
-        VersionDetailView(release: ReleaseHealth.samples[0], provider: provider)
+        VersionDetailView(release: ReleaseHealth.samples[0], crashes: crashes, hangs: hangs)
     }
     .environmentObject(Tint())
 }
@@ -142,7 +162,8 @@ struct VersionDetailView: View {
     return NavigationStack {
         VersionDetailView(
             release: release,
-            provider: VersionCrashProvider(version: release.id, crashes: [])
+            crashes: VersionIncidentProvider(version: release.id, records: []),
+            hangs: VersionIncidentProvider(version: release.id, records: [])
         )
     }
     .environmentObject(Tint())

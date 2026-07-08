@@ -7,24 +7,26 @@
 
 import Foundation
 
-struct CrashExport {
-    let crash: Crash
+struct HangExport {
+    let hang: Hang
 
     var text: String {
-        var lines = ["# Scout Crash — \(crash.name)"]
+        var lines = ["# Scout Hang — \(hang.name)"]
 
-        if let date = crash.date {
+        if let date = hang.date {
             lines.append(ExportFormat.timestamp(date))
         }
-        if let reason = crash.reason {
+        lines.append("")
+        lines.append("Duration: \(hang.durationText)")
+        if let reason = hang.reason {
             lines.append("")
             lines.append("Reason: \(reason)")
         }
-        if crash.stackTrace.count > 0 {
+        if hang.stackTrace.count > 0 {
             lines.append("")
             lines.append("## Stack Trace")
             lines.append("```")
-            lines.append(contentsOf: crash.stackTrace)
+            lines.append(contentsOf: hang.stackTrace)
             lines.append("```")
         }
 
@@ -32,8 +34,8 @@ struct CrashExport {
     }
 }
 
-struct CrashGroupExport {
-    let group: ReliabilityGroup<Crash>
+struct HangGroupExport {
+    let group: IncidentGroup<Hang>
 
     var text: String {
         var lines = [title, group.exportSummary]
@@ -41,10 +43,8 @@ struct CrashGroupExport {
         if let seen = group.exportSeenLine {
             lines.append(seen)
         }
-        if let reason = group.representative.reason {
-            lines.append("")
-            lines.append("Reason: \(reason)")
-        }
+        lines.append("")
+        lines.append("Max duration: \(group.durationText)")
         if let frame = group.exportTopFrame {
             lines.append("")
             lines.append("Top frame: \(frame)")
@@ -61,21 +61,21 @@ struct CrashGroupExport {
     }
 
     private var title: String {
-        "# Scout Crash Issue — \(group.name)"
+        "# Scout Hang Issue — \(group.name)"
     }
 
-    private func row(for crash: Crash) -> String? {
-        guard let date = crash.date else { return nil }
+    private func row(for hang: Hang) -> String? {
+        guard let date = hang.date else { return nil }
 
         var ids: [String] = []
-        if let deviceID = crash.deviceID {
+        if let deviceID = hang.deviceID {
             ids.append("device \(ExportFormat.shortID(deviceID))")
         }
-        if let sessionID = crash.sessionID {
+        if let sessionID = hang.sessionID {
             ids.append("session \(ExportFormat.shortID(sessionID))")
         }
 
-        let row = "- \(ExportFormat.timestamp(date))"
+        let row = "- \(ExportFormat.timestamp(date))  \(hang.durationText)"
         return ids.count > 0 ? "\(row)  (\(ids.joined(separator: ", ")))" : row
     }
 }

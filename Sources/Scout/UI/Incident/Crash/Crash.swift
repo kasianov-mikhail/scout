@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Crash: ReliabilityRecord {
+struct Crash: Incident {
     let name: String
     let fingerprint: String
     let reason: String?

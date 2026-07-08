@@ -24,6 +24,9 @@ class ReleaseHealthProvider: ObservableObject, Provider {
         async let crashes: IntMatrices = database.readAll(
             matching: query(name: CrashObject.recordType, in: range)
         )
+        async let hangs: IntMatrices = database.readAll(
+            matching: query(name: HangObject.recordType, in: range)
+        )
         async let installs: IntMatrices = database.readAll(
             matching: query(name: VersionMarker.installName, in: range)
         )
@@ -31,13 +34,14 @@ class ReleaseHealthProvider: ObservableObject, Provider {
             matching: query(name: VersionMarker.crashName, in: range)
         )
 
-        return try await releaseReport(
+        return try await ReleaseMatrices(
             sessions: sessions,
             crashes: crashes,
+            hangs: hangs,
             installs: installs,
-            crashedInstalls: crashedInstalls,
-            range: range
+            crashedInstalls: crashedInstalls
         )
+        .report(in: range)
     }
 
     private func query(name: String, in range: Range<Date>) -> RecordQuery {

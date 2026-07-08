@@ -9,34 +9,44 @@ import Foundation
 
 typealias IntMatrices = [GridMatrix<Int>]
 
-func releaseReport(sessions: IntMatrices, crashes: IntMatrices, installs: IntMatrices, crashedInstalls: IntMatrices, range: Range<Date>) -> [ReleaseHealth] {
-    let sessionCounts = sessions.points(in: range).mapValues(\.total)
-    let crashPoints = crashes.points(in: range)
-    let installCounts = installs.points(in: range).mapValues(\.total)
-    let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
+struct ReleaseMatrices {
+    let sessions: IntMatrices
+    let crashes: IntMatrices
+    let hangs: IntMatrices
+    let installs: IntMatrices
+    let crashedInstalls: IntMatrices
 
-    let versions = Set(sessionCounts.keys)
-        .union(crashPoints.keys)
-        .union(installCounts.keys)
-        .sorted(by: versionDescending)
+    func report(in range: Range<Date>) -> [ReleaseHealth] {
+        let sessionCounts = sessions.points(in: range).mapValues(\.total)
+        let crashPoints = crashes.points(in: range)
+        let hangCounts = hangs.points(in: range).mapValues(\.total)
+        let installCounts = installs.points(in: range).mapValues(\.total)
+        let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
 
-    let totalSessions = sessionCounts.values.reduce(0, +)
+        let versions = Set(sessionCounts.keys)
+            .union(crashPoints.keys)
+            .union(installCounts.keys)
+            .sorted(by: versionDescending)
 
-    return versions.map { version in
-        let sessions = sessionCounts[version] ?? 0
-        let crashPoints = crashPoints[version] ?? []
-        let crashes = crashPoints.total
-        let installs = installCounts[version] ?? 0
+        let totalSessions = sessionCounts.values.reduce(0, +)
 
-        return ReleaseHealth(
-            id: version,
-            freeSessions: Stability(of: crashes, in: sessions),
-            freeUsers: Stability.optional(of: crashedInstallCounts[version] ?? 0, in: installs),
-            crashes: crashes,
-            sessions: sessions,
-            adoption: Adoption(of: sessions, in: totalSessions),
-            trend: crashPoints.trend(in: range)
-        )
+        return versions.map { version in
+            let sessions = sessionCounts[version] ?? 0
+            let crashPoints = crashPoints[version] ?? []
+            let crashes = crashPoints.total
+            let installs = installCounts[version] ?? 0
+
+            return ReleaseHealth(
+                id: version,
+                freeSessions: Stability(of: crashes, in: sessions),
+                freeUsers: Stability.optional(of: crashedInstallCounts[version] ?? 0, in: installs),
+                crashes: crashes,
+                hangs: hangCounts[version] ?? 0,
+                sessions: sessions,
+                adoption: Adoption(of: sessions, in: totalSessions),
+                trend: crashPoints.trend(in: range)
+            )
+        }
     }
 }
 

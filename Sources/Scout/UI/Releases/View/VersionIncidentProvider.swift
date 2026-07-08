@@ -8,19 +8,19 @@
 import SwiftUI
 
 @MainActor
-class VersionCrashProvider: ObservableObject {
-    @Published var crashes: [Crash]?
+class VersionIncidentProvider<Element: RecordDecodable & Incident>: ObservableObject {
+    @Published var records: [Element]?
     @Published var message: Message?
 
     let version: String
 
-    init(version: String, crashes: [Crash]? = nil) {
+    init(version: String, records: [Element]? = nil) {
         self.version = version
-        self.crashes = crashes
+        self.records = records
     }
 
     func fetchIfNeeded(in database: DatabaseReader) async {
-        if crashes == nil {
+        if records == nil {
             await fetch(in: database)
         }
     }
@@ -28,15 +28,15 @@ class VersionCrashProvider: ObservableObject {
     func fetch(in database: DatabaseReader) async {
         do {
             let query = RecordQuery(
-                recordType: Crash.self,
+                recordType: Element.self,
                 filters: Calendar.utc.defaultRange.dateFilters + [
                     RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))
                 ]
             )
 
-            crashes = try await database.readAll(
+            records = try await database.readAll(
                 matching: query,
-                fields: Crash.desiredKeys
+                fields: Element.desiredKeys
             )
         } catch {
             message = Message(error.localizedDescription, level: .error)
