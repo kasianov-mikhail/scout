@@ -137,7 +137,7 @@ extension Record {
         return record
     }
 
-    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil) -> Record {
+    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil, deviceID: UUID? = nil) -> Record {
         var record = Session(
             startDate: startDate,
             endDate: nil,
@@ -147,7 +147,23 @@ extension Record {
             installID: installID
         ).record
         record["os_version"] = osVersion
+        record["device_id"] = deviceID?.uuidString
         return record
+    }
+
+    static func crashStub(crashID: UUID = UUID(), deviceID: UUID, date: Date) -> Record {
+        Crash(
+            name: "Stub",
+            fingerprint: "stub",
+            reason: nil,
+            stackTrace: [],
+            date: date,
+            id: crashID.uuidString,
+            deviceID: deviceID,
+            installID: nil,
+            launchID: nil,
+            sessionID: nil
+        ).record
     }
 
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {

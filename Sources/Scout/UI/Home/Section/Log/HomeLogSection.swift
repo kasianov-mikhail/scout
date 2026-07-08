@@ -45,6 +45,14 @@ struct HomeLogSection: View {
             NetworkView()
         }
 
+        Row {
+            Image(systemName: "iphone").foregroundColor(.blue).frame(width: 24)
+            Text(verbatim: "Devices")
+            Spacer()
+        } destination: {
+            DevicesView()
+        }
+
         HomeLogRow(
             title: "Crashes",
             image: "exclamationmark.triangle",
