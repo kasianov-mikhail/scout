@@ -166,6 +166,22 @@ extension Record {
         ).record
     }
 
+    static func hangStub(hangID: UUID = UUID(), deviceID: UUID, date: Date, duration: TimeInterval = 1) -> Record {
+        Hang(
+            name: "Stub",
+            fingerprint: "stub",
+            reason: nil,
+            stackTrace: [],
+            duration: duration,
+            date: date,
+            id: hangID.uuidString,
+            deviceID: deviceID,
+            installID: nil,
+            launchID: nil,
+            sessionID: nil
+        ).record
+    }
+
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {
         Event.stub(name: name, sessionID: sessionID, date: date).record
     }

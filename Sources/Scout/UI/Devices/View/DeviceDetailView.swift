@@ -10,6 +10,14 @@ import SwiftUI
 struct DeviceDetailView: View {
     let device: DeviceSummary
 
+    @StateObject private var incidents: DeviceIncidentsProvider
+    @Environment(\.database) var database
+
+    init(device: DeviceSummary, incidents: DeviceIncidentsProvider? = nil) {
+        self.device = device
+        self._incidents = StateObject(wrappedValue: incidents ?? DeviceIncidentsProvider(deviceID: device.id))
+    }
+
     var body: some View {
         List {
             FlowLayout(spacing: 6) {
@@ -25,14 +33,62 @@ struct DeviceDetailView: View {
                 Spacer()
             }
             .listRowSeparator(.hidden)
+
+            if crashes.count > 0 {
+                Header(title: "Recent Crashes")
+                ForEach(crashes) { crash in
+                    Row {
+                        if let date = crash.date {
+                            UTCTimestampText(date: date, size: 14)
+                        }
+                        Spacer()
+                        Text(verbatim: crash.name)
+                            .font(.footnote)
+                            .foregroundStyle(Color.gray)
+                    } destination: {
+                        CrashDetailView(crash: crash)
+                    }
+                }
+            }
+
+            if hangs.count > 0 {
+                Header(title: "Recent Hangs")
+                ForEach(hangs) { hang in
+                    Row {
+                        if let date = hang.date {
+                            UTCTimestampText(date: date, size: 14)
+                        }
+                        Spacer()
+                        Text(verbatim: hang.durationText)
+                            .font(.footnote)
+                            .foregroundStyle(Color.gray)
+                    } destination: {
+                        HangDetailView(hang: hang)
+                    }
+                }
+            }
         }
         .listStyle(.plain)
         .navigationTitle(en: device.model)
+        .task {
+            await incidents.fetchIfNeeded(in: database)
+        }
+    }
+
+    private var crashes: [Crash] {
+        (try? incidents.result?.get().crashes) ?? []
+    }
+
+    private var hangs: [Hang] {
+        (try? incidents.result?.get().hangs) ?? []
     }
 }
 
 #Preview {
-    NavigationStack {
-        DeviceDetailView(device: DeviceSummary.samples[0])
+    let incidents = DeviceIncidentsProvider(deviceID: DeviceSummary.samples[0].id)
+    incidents.result = .success(DeviceIncidents(crashes: Crash.samples, hangs: Hang.samples))
+
+    return NavigationStack {
+        DeviceDetailView(device: DeviceSummary.samples[0], incidents: incidents)
     }
 }
