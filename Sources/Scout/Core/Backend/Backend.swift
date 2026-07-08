@@ -43,7 +43,7 @@ public struct Backend: Sendable {
     }
 }
 
-extension Backend {
+extension Backend: Fixture {
     static var samples: [Backend] {
         [
             Backend(

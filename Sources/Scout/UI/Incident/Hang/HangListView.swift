@@ -49,7 +49,7 @@ struct HangListView: View {
 
 #Preview {
     let provider = IncidentProvider<Hang>()
-    provider.groups = IncidentGroup.groups(from: Hang.samples)
+    provider.groups = IncidentGroup.groups(from: [Hang].samples)
 
     return NavigationStack {
         HangListView(provider: provider)

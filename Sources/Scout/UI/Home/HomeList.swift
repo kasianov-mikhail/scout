@@ -51,7 +51,7 @@ struct HomeList: View {
 
 #Preview {
     let activities = ActivityProvider()
-    activities.result = .success(ActivityPoint.samples)
+    activities.result = .success(.samples)
 
     let sessions = StatProvider(eventName: "Session", periods: Period.summary)
     sessions.result = .success([.sample(name: "Session")])
@@ -60,7 +60,7 @@ struct HomeList: View {
     crashes.result = .success([.sample(name: "Crash")])
 
     let releases = ReleaseHealthProvider()
-    releases.result = .success(ReleaseHealth.samples)
+    releases.result = .success(.samples)
 
     @MainActor func makeLogs() -> HomeLogProvider {
         let provider = HomeLogProvider()

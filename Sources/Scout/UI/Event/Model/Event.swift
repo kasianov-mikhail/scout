@@ -24,17 +24,6 @@ extension Event: RecordDecodable {
 
     static let desiredKeys = Key.allCases.map(\.rawValue)
 
-    static var samples: [Event] {
-        let names = ["app_launch", "screen_view", "button_tap", "purchase", "login", "logout"]
-        return (0..<40).map { index in
-            Event.sample(
-                names[index % names.count],
-                at: Date(timeIntervalSinceNow: -Double(index) * 1800),
-                sessionID: UUID()
-            )
-        }
-    }
-
     private enum Key: String, CaseIterable {
         case name
         case level
@@ -71,21 +60,5 @@ extension Event: RecordEncodable {
         record[Key.sessionID.rawValue] = sessionID?.uuidString
         record[Key.deviceID.rawValue] = deviceID?.uuidString
         return record
-    }
-}
-
-extension Event {
-    static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Event {
-        Event(
-            name: name,
-            level: nil,
-            date: date,
-            paramCount: nil,
-            uuid: nil,
-            id: UUID().uuidString,
-            installID: nil,
-            sessionID: sessionID,
-            deviceID: nil
-        )
     }
 }

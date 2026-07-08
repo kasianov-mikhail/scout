@@ -72,6 +72,6 @@ extension View {
 
 @available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    @Previewable @State var activeID = Connection.samples[0].id
-    ConnectionMenu(connections: Connection.samples, activeID: $activeID)
+    @Previewable @State var activeID = [Connection].samples[0].id
+    ConnectionMenu(connections: .samples, activeID: $activeID)
 }

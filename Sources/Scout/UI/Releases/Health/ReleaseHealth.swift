@@ -18,7 +18,7 @@ struct ReleaseHealth: Identifiable {
     let trend: [Int]
 }
 
-extension ReleaseHealth {
+extension ReleaseHealth: Fixture {
     static let samples: [ReleaseHealth] = [
         ReleaseHealth(
             id: "3.2.0",

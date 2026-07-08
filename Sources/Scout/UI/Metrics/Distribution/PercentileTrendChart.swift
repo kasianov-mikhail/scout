@@ -54,7 +54,7 @@ struct PercentileTrendChart: View {
     }
 }
 
-extension Array where Element == PercentileTrendPoint {
+extension [PercentileTrendPoint] {
     static var sample: [PercentileTrendPoint] {
         let p99s = [
             1.4, 1.2, 1.1, 1.0, 1.1, 1.3, 1.7, 2.4, 2.9, 2.6, 2.2, 2.5,

@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension TimelineItem {
+extension TimelineItem: Fixture {
     static let samples: [TimelineItem] = {
         let start = Date().addingTimeInterval(-300)
         let installID = UUID()

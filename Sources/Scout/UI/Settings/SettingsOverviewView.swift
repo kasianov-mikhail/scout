@@ -93,12 +93,12 @@ private struct BackendRow: View {
 
 @available(iOS 17.0, macOS 14.0, *)
 #Preview("Settings") {
-    @Previewable @State var activeID = BackendHealth.samples[0].id
+    @Previewable @State var activeID = [BackendHealth].samples[0].id
     NavigationStack {
         SettingsOverviewView(
             backends: [],
             activeID: $activeID,
-            provider: BackendHealthProvider(healths: BackendHealth.samples)
+            provider: BackendHealthProvider(healths: .samples)
         )
     }
 }
@@ -110,7 +110,7 @@ private struct BackendRow: View {
         SettingsOverviewView(
             backends: [],
             activeID: $activeID,
-            provider: BackendHealthProvider(healths: Array(BackendHealth.samples.suffix(2)))
+            provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2)))
         )
     }
 }

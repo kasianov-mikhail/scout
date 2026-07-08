@@ -21,10 +21,6 @@ extension Matrix: RecordDecodable {
         T.recordType
     }
 
-    static var samples: [Matrix<T>] {
-        []
-    }
-
     static var desiredKeys: [String] {
         ["date", "name", "category", "app_version"]
     }

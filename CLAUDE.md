@@ -59,6 +59,10 @@
 - Function/method **signatures** (declarations) should be written on a single line, even with many parameters or default values — do not wrap parameters onto separate lines.
 - This applies to declarations only, not to call sites: a function or initializer **call** with several arguments wraps each argument onto its own line.
 
+## Array extensions
+
+- Prefer `extension [Type] { ... }` over `extension Array where Element == Type { ... }` when extending a concrete element type — matches existing usage across the codebase (e.g. `Connection.swift`, `PointGroup.swift`, `ReferenceLevel.swift`).
+
 # Design
 
 - When planning visual design (layout proportions, spacing, sizing of UI elements), prefer the golden ratio (≈1.618) for proportions where a ratio choice is otherwise arbitrary.
@@ -80,11 +84,11 @@
 
 ## Sample data
 
-- Sample data in app code is named `sample` (a `static var` for fixed instances, a `static func sample(...)` when parameters are needed), placed in an extension at the end of the type's main file (e.g. `Device.swift`), and built directly via the struct initializer.
-- A collection of sample instances is named `samples` (plural) — e.g. `static let samples: [Release]`.
-- `RecordDecodable` (which inherits `RecordEncodable`) requires `samples: [Self]`, not `sampleRecords: [Record]` — mapping a type's `samples` to `[Record]` (`.map(\.record)`) happens once, in `DefaultDatabase`, not per conforming type. `samples` itself is implemented directly on the type (e.g. `Device.samples`), not via a per-type array-extension forward; `extension Array where Element: RecordDecodable { static var samples: [Element] { Element.samples } }` (in `RecordQuery.swift`) is the single place that makes `[Device].samples` — and bare `.samples` via type inference — resolve for every conforming type, so no type repeats that plumbing.
-- Providers and view models don't expose a `static func fixture()`. A `#Preview` constructs the provider directly and assigns its published state from the model type's own `sample`/`samples` inline, e.g. `let provider = ReleaseHealthProvider(); provider.result = .success(ReleaseHealth.samples)`. When priming needs a loop or other control flow, a `#Preview` body is a `@ViewBuilder` closure that rejects a bare control-flow statement or discarded call before the final `return`, so wrap that priming in a local `@MainActor func` (a nested `func` doesn't inherit the closure's actor isolation) and call it in a `let`.
-- Tests use a different naming convention — `make<Name>(...)` factory functions.
+- A single instance is `sample` (`static var`, or `static func sample(...)` when parameterized); a collection is `samples` (`static var`/`let [Type]`) — both built directly via the initializer.
+- Types with `samples` conform to `Fixture` (`Sources/Scout/UI/Database/Fixture.swift`), whose single generic bridge supplies `[Type].samples` and bare `.samples` for every conformer — independent of `RecordDecodable`.
+- A type with more than one sample helper groups them in one `extension Type: Fixture { ... }` in `Type+Fixture.swift` next to the type's main file (e.g. `Device+Fixture.swift`); a type with only `samples` keeps it in the main file.
+- Providers/view models don't expose `fixture()`. A `#Preview` builds the provider directly and sets its published state inline, e.g. `provider.result = .success([ReleaseHealth].samples)`; if priming needs control flow, wrap it in a local `@MainActor func` (`#Preview`'s `@ViewBuilder` body rejects a bare loop) and call that in a `let`.
+- Tests use `make<Name>(...)` instead.
 
 ## Core Data migrations
 

@@ -48,8 +48,8 @@ struct ConnectionRow: View {
 
 #Preview {
     VStack(spacing: 0) {
-        ConnectionRow(connection: Connection.samples[0], isActive: true, showsSeparator: true, action: {})
-        ConnectionRow(connection: Connection.samples[1], isActive: false, showsSeparator: false, action: {})
+        ConnectionRow(connection: [Connection].samples[0], isActive: true, showsSeparator: true, action: {})
+        ConnectionRow(connection: [Connection].samples[1], isActive: false, showsSeparator: false, action: {})
     }
     .frame(minWidth: 240)
 }

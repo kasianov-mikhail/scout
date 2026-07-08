@@ -26,7 +26,7 @@ struct ActivityPoint: Decodable {
     let mau: Int
 }
 
-extension ActivityPoint {
+extension ActivityPoint: Fixture {
     static var samples: [ActivityPoint] {
         let end = Date().startOfDay
         return (0..<365).compactMap { day in

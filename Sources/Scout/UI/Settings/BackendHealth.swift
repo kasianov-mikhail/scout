@@ -115,7 +115,7 @@ extension BackendHealth {
     }
 }
 
-extension BackendHealth {
+extension BackendHealth: Fixture {
     static var samples: [BackendHealth] {
         [
             BackendHealth(

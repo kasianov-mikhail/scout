@@ -45,7 +45,7 @@ extension [Connection] {
     }
 }
 
-extension Connection {
+extension Connection: Fixture {
     static var samples: [Connection] {
         [
             Connection(id: "https://api.scout.app", name: "Production", status: .reachable, probe: { .reachable }),

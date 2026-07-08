@@ -38,7 +38,7 @@ struct ReleaseHealthView: View {
 
 #Preview {
     let provider = ReleaseHealthProvider()
-    provider.result = .success(ReleaseHealth.samples)
+    provider.result = .success(.samples)
 
     return NavigationStack {
         ReleaseHealthView(provider: provider)
