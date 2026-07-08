@@ -10,9 +10,18 @@ import SwiftUI
 struct CrashGroupDetailView: View {
     let group: IncidentGroup<Crash>
 
+    @StateObject private var breakdown: IncidentBreakdownProvider
+    @Environment(\.database) var database
+
+    init(group: IncidentGroup<Crash>, breakdown: IncidentBreakdownProvider? = nil) {
+        self.group = group
+        self._breakdown = StateObject(wrappedValue: breakdown ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+    }
+
     var body: some View {
         List {
             headerSection
+            breakdownSection
             occurrencesSection
         }
         .listStyle(.plain)
@@ -28,6 +37,9 @@ struct CrashGroupDetailView: View {
             }
         }
         .navigationTitle(group.name)
+        .task {
+            await breakdown.fetchIfNeeded(in: database)
+        }
     }
 
     private var headerSection: some View {
@@ -50,6 +62,23 @@ struct CrashGroupDetailView: View {
             }
         }
         .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
+    private var breakdownSection: some View {
+        if let value = try? breakdown.result?.get() {
+            if value.devices.count > 0 {
+                Header(title: "Top Devices")
+                SegmentBar(segments: value.devices)
+                    .listRowSeparator(.hidden, edges: .bottom)
+            }
+
+            if value.osVersions.count > 0 {
+                Header(title: "OS Versions")
+                SegmentBar(segments: value.osVersions)
+                    .listRowSeparator(.hidden, edges: .bottom)
+            }
+        }
     }
 
     @ViewBuilder
@@ -78,12 +107,16 @@ struct CrashGroupDetailView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let breakdown = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
+    breakdown.result = .success(.sample)
+
+    return NavigationStack {
         CrashGroupDetailView(
             group: IncidentGroup(records: [
                 .sample("NSRangeException", at: Date()),
                 .sample("NSRangeException", at: Date().addingTimeInterval(-3600)),
-            ])
+            ]),
+            breakdown: breakdown
         )
     }
     .environmentObject(Tint())

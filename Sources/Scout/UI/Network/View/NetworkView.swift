@@ -51,7 +51,7 @@ struct NetworkView: View {
                 .listRowSeparator(.hidden)
 
             Header(title: "Status codes")
-            StatusBar(status: breakdown)
+            SegmentBar(segments: breakdown.segments)
                 .listRowSeparator(.hidden)
 
             Header(title: "Top endpoints") {
