@@ -8,9 +8,6 @@
 import Foundation
 import ScoutDB
 
-// Serves the matrix record types the UI charts from — synthesized on the fly:
-// high-volume series (events, metrics) come from GridItem aggregate views,
-// bounded ones (sessions, crashes, versions) are counted from raw entities.
 struct MatrixSeries {
     enum Scalar {
         case int, double
@@ -32,19 +29,24 @@ struct MatrixSeries {
         switch scalar {
         case .double:
             return try await metricRecords(entity: DoubleMetricsObject.recordType, from: from, to: to, name: name, store: store)
+
         case .int where name == nil:
             async let events = eventRecords(from: from, to: to, name: nil, store: store)
             async let metrics = metricRecords(entity: IntMetricsObject.recordType, from: from, to: to, name: nil, store: store)
             async let crashes = entityRecords(.crashes, from: from, to: to, store: store)
+            async let hangs = entityRecords(.hangs, from: from, to: to, store: store)
             async let installs = entityRecords(.versionInstalls, from: from, to: to, store: store)
             async let crashedInstalls = entityRecords(.versionCrashes, from: from, to: to, store: store)
-            return try await events + metrics + crashes + installs + crashedInstalls
+            return try await events + metrics + crashes + hangs + installs + crashedInstalls
+
         case .int:
             switch name {
             case SessionObject.recordType:
                 return try await entityRecords(.sessions, from: from, to: to, store: store)
             case CrashObject.recordType:
                 return try await entityRecords(.crashes, from: from, to: to, store: store)
+            case HangObject.recordType:
+                return try await entityRecords(.hangs, from: from, to: to, store: store)
             case VersionMarker.installName:
                 return try await entityRecords(.versionInstalls, from: from, to: to, store: store)
             case VersionMarker.crashName:
@@ -105,7 +107,7 @@ struct MatrixSeries {
     }
 
     private enum Source {
-        case sessions, crashes, versionInstalls, versionCrashes
+        case sessions, crashes, hangs, versionInstalls, versionCrashes
     }
 
     private func entityRecords(_ source: Source, from: Date?, to: Date?, store: EntityStore) async throws -> [Record] {
@@ -150,6 +152,7 @@ struct MatrixSeries {
         switch source {
         case .sessions: (SessionObject.recordType, "start_date", SessionObject.recordType)
         case .crashes: (CrashObject.recordType, "date", CrashObject.recordType)
+        case .hangs: (HangObject.recordType, "date", HangObject.recordType)
         case .versionInstalls: (VersionObject.recordType, "date", VersionMarker.installName)
         case .versionCrashes: (CrashObject.recordType, "date", VersionMarker.crashName)
         }

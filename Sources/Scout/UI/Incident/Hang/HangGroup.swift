@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension ReliabilityGroup where Element == Hang {
+extension IncidentGroup where Element == Hang {
     var maxDuration: TimeInterval {
         records.map(\.duration).max() ?? 0
     }

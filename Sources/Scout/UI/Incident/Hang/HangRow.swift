@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct HangRow: View {
-    let group: ReliabilityGroup<Hang>
+    let group: IncidentGroup<Hang>
 
     var body: some View {
         Row {
@@ -41,7 +41,7 @@ struct HangRow: View {
 #Preview {
     NavigationStack {
         List {
-            ForEach(ReliabilityGroup.groups(from: Hang.samples)) { group in
+            ForEach(IncidentGroup.groups(from: Hang.samples)) { group in
                 HangRow(group: group)
             }
         }

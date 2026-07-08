@@ -77,6 +77,29 @@ struct MatrixSeriesTests {
         #expect(matrix.cells.map(\.value).reduce(0, +) == 2)
     }
 
+    @Test("Hangs aggregate into a per-version matrix")
+    func hangMatrices() async throws {
+        var hang = Record(recordType: HangObject.recordType, recordID: "h-1")
+        hang["name"] = "Main Thread Blocked"
+        hang["date"] = TestDate.reference.addingTimeInterval(2 * .hour)
+        hang["app_version"] = "1.2.0"
+        hang["session_id"] = "session-1"
+        try await database.write(record: hang)
+
+        let query = RecordQuery(
+            recordType: GridMatrix<Int>.self,
+            filters: range.dateFilters + [
+                RecordQuery.Filter(field: "name", op: .equals, value: .string(HangObject.recordType))
+            ]
+        )
+        let matrices: [GridMatrix<Int>] = try await database.readAll(matching: query)
+        let matrix = try #require(matrices.first)
+
+        #expect(matrix.name == HangObject.recordType)
+        #expect(matrix.version == "1.2.0")
+        #expect(matrix.cells.map(\.value).reduce(0, +) == 1)
+    }
+
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
         var version = Record(recordType: VersionObject.recordType, recordID: "v-1")

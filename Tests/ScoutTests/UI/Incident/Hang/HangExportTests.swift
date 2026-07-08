@@ -69,7 +69,7 @@ struct HangExportTests {
                 date: at(3600)
             ),
         ]
-        let group = ReliabilityGroup.groups(from: hangs)[0]
+        let group = IncidentGroup.groups(from: hangs)[0]
         let text = HangGroupExport(group: group).text
 
         #expect(text.hasPrefix("# Scout Hang Issue — Image Layout Pass"))
@@ -91,7 +91,7 @@ struct HangExportTests {
             Hang.stub(name: "E", fingerprint: "fp", stackTrace: ["1 A 0x1 f + 1"], duration: 3.1, date: at(0)),
             Hang.stub(name: "E", fingerprint: "fp", stackTrace: ["1 A 0x2 f + 2"], duration: 3.2, date: at(7200)),
         ]
-        let text = HangGroupExport(group: ReliabilityGroup.groups(from: hangs)[0]).text
+        let text = HangGroupExport(group: IncidentGroup.groups(from: hangs)[0]).text
 
         let newer = try #require(text.range(of: ExportFormat.timestamp(at(7200))))
         let older = try #require(text.range(of: ExportFormat.timestamp(at(0))))

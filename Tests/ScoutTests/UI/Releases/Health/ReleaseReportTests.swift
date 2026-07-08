@@ -15,13 +15,14 @@ struct ReleaseReportTests {
 
     @Test("Sessions and crashes are counted per version from matrices")
     func testCrashFreeByVersion() {
-        let releases = releaseReport(
+        let releases = ReleaseMatrices(
             sessions: [sessionMatrix("2.0", count: 2), sessionMatrix("1.0", count: 1)],
             crashes: [crashMatrix("2.0", count: 1)],
+            hangs: [],
             installs: [],
-            crashedInstalls: [],
-            range: range
+            crashedInstalls: []
         )
+        .report(in: range)
 
         #expect(releases.map(\.id) == ["2.0", "1.0"])
 
@@ -39,15 +40,30 @@ struct ReleaseReportTests {
         #expect(abs(previous.adoption.value - 1.0 / 3.0) < 1e-9)
     }
 
+    @Test("Hangs are counted per version from matrices")
+    func testHangsByVersion() {
+        let releases = ReleaseMatrices(
+            sessions: [sessionMatrix("2.0", count: 2)],
+            crashes: [],
+            hangs: [hangMatrix("2.0", count: 3)],
+            installs: [],
+            crashedInstalls: []
+        )
+        .report(in: range)
+
+        #expect(releases[0].hangs == 3)
+    }
+
     @Test("Crash-free users come from distinct install markers")
     func testFreeUsersFromInstallMarkers() {
-        let releases = releaseReport(
+        let releases = ReleaseMatrices(
             sessions: [sessionMatrix("2.0", count: 10)],
             crashes: [],
+            hangs: [],
             installs: [installMatrix("2.0", count: 4)],
-            crashedInstalls: [crashedInstallMatrix("2.0", count: 1)],
-            range: range
+            crashedInstalls: [crashedInstallMatrix("2.0", count: 1)]
         )
+        .report(in: range)
 
         #expect(releases[0].freeUsers?.value == 0.75)
     }
@@ -66,13 +82,14 @@ struct ReleaseReportTests {
             ]
         )
 
-        let releases = releaseReport(
+        let releases = ReleaseMatrices(
             sessions: [sessionMatrix("5.0", count: 10)],
             crashes: [crashes],
+            hangs: [],
             installs: [],
-            crashedInstalls: [],
-            range: start..<start.addingTimeInterval(7 * 86_400)
+            crashedInstalls: []
         )
+        .report(in: start..<start.addingTimeInterval(7 * 86_400))
 
         #expect(releases[0].crashes == 5)
         #expect(releases[0].trend == [2, 0, 3, 0, 0, 0, 0])
@@ -92,13 +109,8 @@ struct ReleaseReportTests {
             ]
         )
 
-        let releases = releaseReport(
-            sessions: [matrix],
-            crashes: [],
-            installs: [],
-            crashedInstalls: [],
-            range: start..<start.addingTimeInterval(86_400)
-        )
+        let releases = ReleaseMatrices(sessions: [matrix], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+            .report(in: start..<start.addingTimeInterval(86_400))
 
         #expect(releases.map(\.id) == ["5.0"])
         #expect(releases[0].sessions == 5)
@@ -106,19 +118,21 @@ struct ReleaseReportTests {
 
     @Test("No data yields no releases")
     func testEmpty() {
-        let releases = releaseReport(sessions: [], crashes: [], installs: [], crashedInstalls: [], range: range)
+        let releases = ReleaseMatrices(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+            .report(in: range)
         #expect(releases.isEmpty)
     }
 
     @Test("Releases are ordered newest version first, regardless of report order")
     func testSortedByVersion() {
-        let releases = releaseReport(
+        let releases = ReleaseMatrices(
             sessions: [sessionMatrix("3.9", count: 1), sessionMatrix("3.10", count: 1), sessionMatrix("4.0", count: 1)],
             crashes: [],
+            hangs: [],
             installs: [],
-            crashedInstalls: [],
-            range: range
+            crashedInstalls: []
         )
+        .report(in: range)
 
         #expect(releases.map(\.id) == ["4.0", "3.10", "3.9"])
     }
@@ -129,6 +143,10 @@ struct ReleaseReportTests {
 
     private func crashMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
         matrix(name: CrashObject.recordType, version: version, count: count)
+    }
+
+    private func hangMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
+        matrix(name: HangObject.recordType, version: version, count: count)
     }
 
     private func installMatrix(_ version: String, count: Int) -> GridMatrix<Int> {

@@ -7,24 +7,22 @@
 
 import SwiftUI
 
-struct HangListView: View {
+struct CrashListView: View {
     @Environment(\.database) var database
-    @StateObject var provider = ReliabilityProvider<Hang>()
+    @StateObject var provider = IncidentProvider<Crash>()
 
     var body: some View {
         Group {
             if let groups = provider.groups {
                 if groups.isEmpty {
                     Placeholder(
-                        text: "No hangs",
+                        text: "No crashes",
                         systemImage: "checkmark.shield",
-                        description: "No unresponsive main thread has been recorded"
+                        description: "No crash reports have been recorded"
                     )
                 } else {
                     List {
-                        ForEach(groups) { group in
-                            HangRow(group: group)
-                        }
+                        ForEach(groups, content: row)
 
                         if let cursor = provider.cursor {
                             PaginationFooter {
@@ -39,31 +37,53 @@ struct HangListView: View {
                 RingIndicator().frame(maxHeight: .infinity)
             }
         }
-        .navigationTitle(en: "Hangs")
+        .navigationTitle(en: "Crashes")
         .message($provider.message)
         .task {
             await provider.fetchIfNeeded(in: database)
         }
     }
+
+    private func row(for group: IncidentGroup<Crash>) -> some View {
+        Row {
+            Text(group.name)
+                .font(.body)
+                .lineLimit(1)
+                .monospaced()
+
+            if group.count > 1 {
+                CountBadge(count: group.count, prefix: "×")
+            }
+
+            Spacer()
+
+            if let date = group.lastDate {
+                Text(verbatim: date.relativeString)
+                    .font(.subheadline)
+                    .foregroundStyle(Color.gray)
+            }
+        } destination: {
+            CrashGroupDetailView(group: group)
+        }
+    }
 }
 
 #Preview {
-    let provider = ReliabilityProvider<Hang>()
-    provider.groups = ReliabilityGroup.groups(from: Hang.samples)
+    let provider = IncidentProvider<Crash>()
+    provider.groups = IncidentGroup.groups(from: .samples)
 
     return NavigationStack {
-        HangListView(provider: provider)
+        CrashListView(provider: provider)
     }
-    .environmentObject(Tint())
 }
 
 #Preview("Empty State") {
     NavigationStack {
         Placeholder(
-            text: "No hangs",
+            text: "No crashes",
             systemImage: "checkmark.shield",
-            description: "No unresponsive main thread has been recorded"
+            description: "No crash reports have been recorded"
         )
-        .navigationTitle(en: "Hangs")
+        .navigationTitle(en: "Crashes")
     }
 }

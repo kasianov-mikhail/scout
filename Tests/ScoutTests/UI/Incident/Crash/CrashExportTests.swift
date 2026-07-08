@@ -65,7 +65,7 @@ struct CrashExportTests {
                 date: at(3600)
             ),
         ]
-        let group = ReliabilityGroup.groups(from: crashes)[0]
+        let group = IncidentGroup.groups(from: crashes)[0]
         let text = CrashGroupExport(group: group).text
 
         #expect(text.hasPrefix("# Scout Crash Issue — NSRangeException"))
@@ -87,7 +87,7 @@ struct CrashExportTests {
             Crash.stub(name: "E", fingerprint: "fp", stackTrace: ["1 A 0x1 f + 1"], date: at(0)),
             Crash.stub(name: "E", fingerprint: "fp", stackTrace: ["1 A 0x2 f + 2"], date: at(7200)),
         ]
-        let text = CrashGroupExport(group: ReliabilityGroup.groups(from: crashes)[0]).text
+        let text = CrashGroupExport(group: IncidentGroup.groups(from: crashes)[0]).text
 
         let newer = try #require(text.range(of: ExportFormat.timestamp(at(7200))))
         let older = try #require(text.range(of: ExportFormat.timestamp(at(0))))

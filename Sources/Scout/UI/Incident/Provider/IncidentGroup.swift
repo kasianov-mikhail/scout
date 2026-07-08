@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol ReliabilityRecord: Identifiable, Comparable, SessionContext {
+protocol Incident: Identifiable, Comparable, SessionContext {
     var fingerprint: String { get }
     var name: String { get }
     var reason: String? { get }
@@ -15,7 +15,7 @@ protocol ReliabilityRecord: Identifiable, Comparable, SessionContext {
     var date: Date? { get }
 }
 
-struct ReliabilityGroup<Element: ReliabilityRecord>: Identifiable {
+struct IncidentGroup<Element: Incident>: Identifiable {
     let records: [Element]
 
     var id: String {
@@ -27,7 +27,7 @@ struct ReliabilityGroup<Element: ReliabilityRecord>: Identifiable {
     }
 }
 
-extension ReliabilityGroup {
+extension IncidentGroup {
     var representative: Element {
         records[0]
     }
@@ -53,8 +53,8 @@ extension ReliabilityGroup {
     }
 }
 
-extension ReliabilityGroup: Comparable {
-    static func < (lhs: ReliabilityGroup, rhs: ReliabilityGroup) -> Bool {
+extension IncidentGroup: Comparable {
+    static func < (lhs: IncidentGroup, rhs: IncidentGroup) -> Bool {
         if lhs.lastDate != rhs.lastDate {
             return (lhs.lastDate ?? .distantPast) > (rhs.lastDate ?? .distantPast)
         }
@@ -65,16 +65,16 @@ extension ReliabilityGroup: Comparable {
     }
 }
 
-extension ReliabilityGroup {
-    static func groups(from records: [Element]) -> [ReliabilityGroup] {
+extension IncidentGroup {
+    static func groups(from records: [Element]) -> [IncidentGroup] {
         Dictionary(grouping: records, by: \.fingerprint)
             .values
-            .map { ReliabilityGroup(records: $0.sorted()) }
+            .map { IncidentGroup(records: $0.sorted()) }
             .sorted()
     }
 }
 
-extension ReliabilityGroup {
+extension IncidentGroup {
     var exportSummary: String {
         var parts = [ExportFormat.counted(count, "occurrence", "occurrences")]
         if affectedDevices > 0 {

@@ -10,10 +10,10 @@ import Testing
 
 @testable import Scout
 
-struct DailyCrashCountTests {
+struct DailyCountTests {
     private let calendar = Calendar.current
 
-    @Test("Crashes bucket into per-day counts across the window") func testDailyBuckets() {
+    @Test("Records bucket into per-day counts across the window") func testDailyBuckets() {
         let today = calendar.startOfDay(for: Date())
         let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
 
@@ -23,7 +23,7 @@ struct DailyCrashCountTests {
             Crash.stub(date: yesterday.addingTimeInterval(60)),
         ]
 
-        let series = DailyCrashCount.series(from: crashes, days: 14, calendar: calendar, endingOn: today)
+        let series = DailyCount.series(from: crashes, days: 14, calendar: calendar, endingOn: today)
 
         #expect(series.count == 14)
         #expect(series.last?.date == today)
@@ -32,11 +32,11 @@ struct DailyCrashCountTests {
         #expect(series.dropLast(2).allSatisfy { $0.count == 0 })
     }
 
-    @Test("Crashes outside the window and nil dates are ignored") func testOutOfWindow() {
+    @Test("Records outside the window and nil dates are ignored") func testOutOfWindow() {
         let today = calendar.startOfDay(for: Date())
         let old = calendar.date(byAdding: .day, value: -30, to: today)!
 
-        let series = DailyCrashCount.series(
+        let series = DailyCount.series(
             from: [Crash.stub(date: old), Crash.stub(date: nil)],
             days: 14,
             calendar: calendar,

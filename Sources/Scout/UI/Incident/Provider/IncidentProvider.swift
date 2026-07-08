@@ -8,8 +8,8 @@
 import SwiftUI
 
 @MainActor
-class ReliabilityProvider<Element: RecordDecodable & ReliabilityRecord>: ObservableObject {
-    @Published var groups: [ReliabilityGroup<Element>]?
+class IncidentProvider<Element: RecordDecodable & Incident>: ObservableObject {
+    @Published var groups: [IncidentGroup<Element>]?
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
@@ -35,7 +35,7 @@ class ReliabilityProvider<Element: RecordDecodable & ReliabilityRecord>: Observa
 
             self.cursor = results.cursor
             self.records = try results.records.map(Element.init)
-            self.groups = ReliabilityGroup.groups(from: records)
+            self.groups = IncidentGroup.groups(from: records)
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }
@@ -50,7 +50,7 @@ class ReliabilityProvider<Element: RecordDecodable & ReliabilityRecord>: Observa
 
             self.cursor = results.cursor
             self.records.append(contentsOf: try results.records.map(Element.init))
-            self.groups = ReliabilityGroup.groups(from: records)
+            self.groups = IncidentGroup.groups(from: records)
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }
