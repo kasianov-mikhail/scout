@@ -9,6 +9,14 @@
 import Charts
 import SwiftUI
 
+struct Segment: Identifiable, Equatable {
+    let label: String
+    let count: Int
+    let color: Color
+
+    var id: String { label }
+}
+
 struct SegmentBar: View {
     let segments: [Segment]
 
