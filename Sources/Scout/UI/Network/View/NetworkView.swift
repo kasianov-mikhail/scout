@@ -16,7 +16,11 @@ struct NetworkView: View {
     var body: some View {
         ProviderView(provider: provider) { report in
             if report.isEmpty {
-                Placeholder(text: "No network requests in this period.")
+                Placeholder(
+                    text: "No requests",
+                    systemImage: "network",
+                    description: "No network requests have been recorded in this period"
+                )
             } else {
                 content(report)
             }
@@ -70,5 +74,16 @@ struct NetworkView: View {
 
     return NavigationStack {
         NetworkView(provider: provider)
+    }
+}
+
+#Preview("Empty State") {
+    NavigationStack {
+        Placeholder(
+            text: "No requests",
+            systemImage: "network",
+            description: "No network requests have been recorded in this period"
+        )
+        .navigationTitle(en: "Network")
     }
 }
