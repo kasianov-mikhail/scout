@@ -37,8 +37,10 @@ public func setup(backends: [Backend]) async throws {
 
     installExceptionHandler()
     installSignalHandler()
+    installHangHandler()
 
     await CrashArchive.system.flush()
+    await HangArchive.system.flush()
 
     try await persistentContainer.performBackgroundTasks(
         SessionObject.completeStale,

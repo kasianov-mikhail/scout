@@ -33,24 +33,24 @@ struct CrashExport {
 }
 
 struct CrashGroupExport {
-    let group: CrashGroup
+    let group: ReliabilityGroup<Crash>
 
     var text: String {
-        var lines = [title, summary]
+        var lines = [title, group.exportSummary]
 
-        if let seen = seenLine {
+        if let seen = group.exportSeenLine {
             lines.append(seen)
         }
         if let reason = group.representative.reason {
             lines.append("")
             lines.append("Reason: \(reason)")
         }
-        if let frame = topFrame {
+        if let frame = group.exportTopFrame {
             lines.append("")
             lines.append("Top frame: \(frame)")
         }
 
-        let rows = group.crashes.compactMap(row)
+        let rows = group.records.compactMap(row)
         if rows.count > 0 {
             lines.append("")
             lines.append("## Occurrences")
@@ -62,28 +62,6 @@ struct CrashGroupExport {
 
     private var title: String {
         "# Scout Crash Issue — \(group.name)"
-    }
-
-    private var summary: String {
-        var parts = [ExportFormat.counted(group.count, "occurrence", "occurrences")]
-        if group.affectedDevices > 0 {
-            parts.append(ExportFormat.counted(group.affectedDevices, "device", "devices"))
-        }
-        if group.affectedSessions > 0 {
-            parts.append(ExportFormat.counted(group.affectedSessions, "session", "sessions"))
-        }
-        return parts.joined(separator: " · ")
-    }
-
-    private var seenLine: String? {
-        guard let first = group.firstDate, let last = group.lastDate else {
-            return nil
-        }
-        return "First seen \(ExportFormat.minute(first)) · Last seen \(ExportFormat.minute(last))"
-    }
-
-    private var topFrame: String? {
-        group.representative.stackTrace.first { !$0.isEmpty }
     }
 
     private func row(for crash: Crash) -> String? {

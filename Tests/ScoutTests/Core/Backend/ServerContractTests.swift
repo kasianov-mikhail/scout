@@ -160,6 +160,28 @@ struct ServerContractTests {
         #expect(crashes.allSatisfy { $0.name == "SIGSEGV" })
     }
 
+    @Test("Hangs filter by app version on the server")
+    func hangsByVersion() async throws {
+        let database = try makeDatabase()
+        // A unique version isolates these hangs from any shared server data.
+        let version = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeHang(appVersion: version),
+            makeHang(appVersion: version),
+            makeHang(appVersion: "other-\(UUID().uuidString)"),
+        ])
+
+        let query = RecordQuery(
+            recordType: Hang.self,
+            filters: [RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))]
+        )
+        let hangs: [Hang] = try await database.readAll(matching: query, fields: Hang.desiredKeys)
+
+        #expect(hangs.count == 2)
+        #expect(hangs.allSatisfy { $0.name == "Main Thread Blocked" })
+    }
+
     @Test("Timer bucket increments surface in the metric series by bucket category")
     func timerBucketSeries() async throws {
         let database = try makeDatabase()
@@ -232,6 +254,16 @@ struct ServerContractTests {
     private func makeCrash(appVersion: String) -> Record {
         var record = Record(recordType: "Crash", recordID: "contract-\(UUID().uuidString)")
         record["name"] = "SIGSEGV"
+        record["app_version"] = appVersion
+        record["session_id"] = UUID().uuidString
+        record["date"] = eventDate
+        return record
+    }
+
+    private func makeHang(appVersion: String) -> Record {
+        var record = Record(recordType: "Hang", recordID: "contract-\(UUID().uuidString)")
+        record["name"] = "Main Thread Blocked"
+        record["duration"] = 4.2
         record["app_version"] = appVersion
         record["session_id"] = UUID().uuidString
         record["date"] = eventDate

@@ -10,7 +10,8 @@ import Testing
 
 @testable import Scout
 
-struct CrashGroupTests {
+@Suite("ReliabilityGroup")
+struct ReliabilityGroupTests {
     @Test("Crashes sharing a fingerprint collapse into one group") func testGroupingByFingerprint() {
         let crashes = [
             Crash.stub(name: "A", fingerprint: "fp1"),
@@ -18,7 +19,7 @@ struct CrashGroupTests {
             Crash.stub(name: "B", fingerprint: "fp2"),
         ]
 
-        let groups = CrashGroup.groups(from: crashes)
+        let groups = ReliabilityGroup.groups(from: crashes)
 
         #expect(groups.count == 2)
         #expect(groups.map(\.count).sorted() == [1, 2])
@@ -28,7 +29,7 @@ struct CrashGroupTests {
         let old = Crash.stub(fingerprint: "fp", date: Date(timeIntervalSince1970: 1000))
         let new = Crash.stub(fingerprint: "fp", date: Date(timeIntervalSince1970: 2000))
 
-        let group = CrashGroup.groups(from: [old, new])[0]
+        let group = ReliabilityGroup.groups(from: [old, new])[0]
 
         #expect(group.representative.id == new.id)
         #expect(group.firstDate == old.date)
@@ -41,7 +42,7 @@ struct CrashGroupTests {
             Crash.stub(fingerprint: "new", date: Date(timeIntervalSince1970: 2000)),
         ]
 
-        let groups = CrashGroup.groups(from: crashes)
+        let groups = ReliabilityGroup.groups(from: crashes)
 
         #expect(groups.map(\.representative.fingerprint) == ["new", "old"])
     }
@@ -54,7 +55,7 @@ struct CrashGroupTests {
             Crash.stub(fingerprint: "double", date: date),
         ]
 
-        let groups = CrashGroup.groups(from: crashes)
+        let groups = ReliabilityGroup.groups(from: crashes)
 
         #expect(groups.map(\.representative.fingerprint) == ["double", "single"])
     }
@@ -68,7 +69,7 @@ struct CrashGroupTests {
             Crash.stub(fingerprint: "fp", sessionID: nil),
         ]
 
-        let group = CrashGroup.groups(from: crashes)[0]
+        let group = ReliabilityGroup.groups(from: crashes)[0]
 
         #expect(group.affectedSessions == 2)
     }
@@ -82,7 +83,7 @@ struct CrashGroupTests {
             Crash.stub(fingerprint: "fp", deviceID: nil),
         ]
 
-        let group = CrashGroup.groups(from: crashes)[0]
+        let group = ReliabilityGroup.groups(from: crashes)[0]
 
         #expect(group.affectedDevices == 2)
     }

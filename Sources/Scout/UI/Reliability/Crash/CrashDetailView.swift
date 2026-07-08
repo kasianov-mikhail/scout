@@ -25,18 +25,9 @@ struct CrashDetailView: View {
             }
             .padding(.vertical, 4)
 
-            CrashContextSection(crash: crash)
+            ContextSection(context: crash, timelineHighlight: .red)
 
-            if !crash.stackTrace.isEmpty {
-                Header(title: "Stack Trace")
-
-                ForEach(Array(crash.stackTrace.enumerated()), id: \.offset) { _, frame in
-                    Text(frame)
-                        .font(.caption)
-                        .monospaced()
-                        .lineLimit(2)
-                }
-            }
+            StackTraceSection(frames: crash.stackTrace)
         }
         .listStyle(.plain)
         .navigationTint(.red)

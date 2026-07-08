@@ -8,12 +8,12 @@
 import SwiftUI
 
 @MainActor
-class CrashProvider: ObservableObject {
-    @Published var groups: [CrashGroup]?
+class ReliabilityProvider<Element: RecordDecodable & ReliabilityRecord>: ObservableObject {
+    @Published var groups: [ReliabilityGroup<Element>]?
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
-    private var crashes: [Crash] = []
+    private var records: [Element] = []
 
     func fetchIfNeeded(in database: DatabaseReader) async {
         guard groups == nil else { return }
@@ -23,19 +23,19 @@ class CrashProvider: ObservableObject {
     func fetch(in database: DatabaseReader) async {
         do {
             let query = RecordQuery(
-                recordType: Crash.self,
+                recordType: Element.self,
                 filters: Calendar.utc.defaultRange.dateFilters,
                 sort: [RecordQuery.Sort(field: "date", ascending: false)]
             )
 
             let results = try await database.read(
                 matching: query,
-                fields: Crash.desiredKeys
+                fields: Element.desiredKeys
             )
 
             self.cursor = results.cursor
-            self.crashes = try results.records.map(Crash.init)
-            self.groups = CrashGroup.groups(from: crashes)
+            self.records = try results.records.map(Element.init)
+            self.groups = ReliabilityGroup.groups(from: records)
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }
@@ -49,8 +49,8 @@ class CrashProvider: ObservableObject {
             )
 
             self.cursor = results.cursor
-            self.crashes.append(contentsOf: try results.records.map(Crash.init))
-            self.groups = CrashGroup.groups(from: crashes)
+            self.records.append(contentsOf: try results.records.map(Element.init))
+            self.groups = ReliabilityGroup.groups(from: records)
         } catch {
             self.message = Message(error.localizedDescription, level: .error)
         }

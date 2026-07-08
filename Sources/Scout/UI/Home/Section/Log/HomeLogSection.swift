@@ -25,7 +25,7 @@ struct HomeLogSection: View {
             title: "Events",
             image: "list.bullet",
             color: .blue,
-            count: logSpans?.int.total { $0 != CrashObject.recordType },
+            count: logSpans?.int.total { $0 != CrashObject.recordType && $0 != HangObject.recordType },
             destination: { AnalyticsView() }
         )
 
@@ -51,6 +51,14 @@ struct HomeLogSection: View {
             color: .red,
             count: logSpans?.int.total { $0 == CrashObject.recordType },
             destination: { CrashListView() }
+        )
+
+        HomeLogRow(
+            title: "Hangs",
+            image: "hourglass",
+            color: .orange,
+            count: logSpans?.int.total { $0 == HangObject.recordType },
+            destination: { HangListView() }
         )
     }
 

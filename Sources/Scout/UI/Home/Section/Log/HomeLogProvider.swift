@@ -81,6 +81,11 @@ extension HomeLogProvider {
             ),
             GridMatrix(
                 date: date,
+                name: HangObject.recordType,
+                cells: [GridCell(row: 1, column: 4, value: 6)]
+            ),
+            GridMatrix(
+                date: date,
                 name: "api_calls",
                 category: Telemetry.Export.counter.rawValue,
                 cells: [GridCell(row: 1, column: 2, value: 140)]

@@ -23,8 +23,8 @@ struct VersionDetailView: View {
         provider.crashes ?? []
     }
 
-    private var issues: [CrashGroup] {
-        CrashGroup.groups(from: crashes)
+    private var issues: [ReliabilityGroup<Crash>] {
+        ReliabilityGroup.groups(from: crashes)
     }
 
     var body: some View {
