@@ -15,11 +15,12 @@ struct HomeList: View {
     @StateObject var crashes = StatProvider(eventName: "Crash", periods: Period.summary)
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
+    @StateObject var devices = DevicesProvider()
 
     @State var showReleaseHealth = false
 
     var body: some View {
-        if let error = HomeErrorView(providers: [sessions, crashes, activities, logs, releases]) {
+        if let error = HomeErrorView(providers: [sessions, crashes, activities, logs, releases, devices]) {
             error
         } else {
             List {
@@ -37,7 +38,7 @@ struct HomeList: View {
                     HomeActivitySection(activity: activities)
                 }
 
-                HomeLogSection(provider: logs)
+                HomeLogSection(log: logs, devices: devices)
                 HomeReleaseSection(provider: releases, showReleaseHealth: $showReleaseHealth)
             }
             .navigationDestination(isPresented: $showReleaseHealth) {
@@ -77,13 +78,17 @@ struct HomeList: View {
 
     let logs = makeLogs()
 
+    let devices = DevicesProvider()
+    devices.result = .success(DeviceSummary.samples)
+
     return NavigationStack {
         HomeList(
             activities: activities,
             sessions: sessions,
             crashes: crashes,
             releases: releases,
-            logs: logs
+            logs: logs,
+            devices: devices
         )
         .navigationTitle(en: "Home")
     }

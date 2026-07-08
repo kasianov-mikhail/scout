@@ -9,14 +9,15 @@ import SwiftUI
 
 struct HomeLogSection: View {
     @Environment(\.database) var database
-    @StateObject var provider = HomeLogProvider()
+    @StateObject var log = HomeLogProvider()
+    @StateObject var devices = DevicesProvider()
 
     var body: some View {
         Header(title: "Log") {
-            CompactPeriodPicker(selection: $provider.period)
+            CompactPeriodPicker(selection: $log.period)
         }
-        .task(id: provider.period) {
-            await provider.fetchIfNeeded(in: database)
+        .task(id: log.period) {
+            await log.fetchIfNeeded(in: database)
         }
 
         let logSpans = logSpans
@@ -45,12 +46,15 @@ struct HomeLogSection: View {
             NetworkView()
         }
 
-        Row {
-            Image(systemName: "iphone").foregroundColor(.blue).frame(width: 24)
-            Text(verbatim: "Devices")
-            Spacer()
-        } destination: {
-            DevicesView()
+        HomeLogRow(
+            title: "Devices",
+            image: "iphone",
+            color: .blue,
+            count: deviceCount,
+            destination: { DevicesView() }
+        )
+        .task {
+            await devices.fetchIfNeeded(in: database)
         }
 
         HomeLogRow(
@@ -71,14 +75,18 @@ struct HomeLogSection: View {
     }
 
     private var logSpans: (int: MatrixSpan<Int>, double: MatrixSpan<Double>)? {
-        guard let result = try? provider.result?.get() else {
+        guard let result = try? log.result?.get() else {
             return nil
         }
 
         return (
-            MatrixSpan(matrices: result.0, range: provider.period.initialRange),
-            MatrixSpan(matrices: result.1, range: provider.period.initialRange)
+            MatrixSpan(matrices: result.0, range: log.period.initialRange),
+            MatrixSpan(matrices: result.1, range: log.period.initialRange)
         )
+    }
+
+    private var deviceCount: Int? {
+        try? devices.result?.get().count
     }
 }
 
@@ -96,9 +104,12 @@ struct HomeLogSection: View {
         return provider
     }
 
+    let devices = DevicesProvider()
+    devices.result = .success(DeviceSummary.samples)
+
     return NavigationStack {
         List {
-            HomeLogSection(provider: makeProvider())
+            HomeLogSection(log: makeProvider(), devices: devices)
         }
         .listStyle(.plain)
     }
