@@ -84,12 +84,12 @@ extension IncidentGroup {
 
 extension IncidentGroup {
     var exportSummary: String {
-        var parts = [ExportFormat.counted(count, "occurrence", "occurrences")]
+        var parts = [ExportFormat.counted(count, .occurrence)]
         if affectedDevices > 0 {
-            parts.append(ExportFormat.counted(affectedDevices, "device", "devices"))
+            parts.append(ExportFormat.counted(affectedDevices, .device))
         }
         if affectedSessions > 0 {
-            parts.append(ExportFormat.counted(affectedSessions, "session", "sessions"))
+            parts.append(ExportFormat.counted(affectedSessions, .session))
         }
         return parts.joined(separator: " · ")
     }

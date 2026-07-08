@@ -11,24 +11,22 @@ struct CrashExport {
     let crash: Crash
 
     var text: String {
-        var lines = ["# Scout Crash — \(crash.name)"]
+        var lines: [ExportLine] = [.heading(level: 1, "Scout Crash — \(crash.name)")]
 
         if let date = crash.date {
-            lines.append(ExportFormat.timestamp(date))
+            lines.append(.text(ExportFormat.timestamp(date)))
         }
         if let reason = crash.reason {
-            lines.append("")
-            lines.append("Reason: \(reason)")
+            lines.append(.blank)
+            lines.append(.text("Reason: \(reason)"))
         }
         if crash.stackTrace.count > 0 {
-            lines.append("")
-            lines.append("## Stack Trace")
-            lines.append("```")
-            lines.append(contentsOf: crash.stackTrace)
-            lines.append("```")
+            lines.append(.blank)
+            lines.append(.heading(level: 2, "Stack Trace"))
+            lines.append(.code(crash.stackTrace))
         }
 
-        return lines.joined(separator: "\n")
+        return lines.text
     }
 }
 
@@ -36,35 +34,35 @@ struct CrashGroupExport {
     let group: IncidentGroup<Crash>
 
     var text: String {
-        var lines = [title, group.exportSummary]
+        var lines: [ExportLine] = [.heading(level: 1, title), .text(group.exportSummary)]
 
         if let seen = group.exportSeenLine {
-            lines.append(seen)
+            lines.append(.text(seen))
         }
         if let reason = group.representative.reason {
-            lines.append("")
-            lines.append("Reason: \(reason)")
+            lines.append(.blank)
+            lines.append(.text("Reason: \(reason)"))
         }
         if let frame = group.exportTopFrame {
-            lines.append("")
-            lines.append("Top frame: \(frame)")
+            lines.append(.blank)
+            lines.append(.text("Top frame: \(frame)"))
         }
 
         let rows = group.records.compactMap(row)
         if rows.count > 0 {
-            lines.append("")
-            lines.append("## Occurrences")
+            lines.append(.blank)
+            lines.append(.heading(level: 2, "Occurrences"))
             lines.append(contentsOf: rows)
         }
 
-        return lines.joined(separator: "\n")
+        return lines.text
     }
 
     private var title: String {
-        "# Scout Crash Issue — \(group.name)"
+        "Scout Crash Issue — \(group.name)"
     }
 
-    private func row(for crash: Crash) -> String? {
+    private func row(for crash: Crash) -> ExportLine? {
         guard let date = crash.date else { return nil }
 
         var ids: [String] = []
@@ -75,7 +73,7 @@ struct CrashGroupExport {
             ids.append("session \(ExportFormat.shortID(sessionID))")
         }
 
-        let row = "- \(ExportFormat.timestamp(date))"
-        return ids.count > 0 ? "\(row)  (\(ids.joined(separator: ", ")))" : row
+        let row = ExportFormat.timestamp(date)
+        return .bullet(ids.count > 0 ? "\(row)  (\(ids.joined(separator: ", ")))" : row)
     }
 }
