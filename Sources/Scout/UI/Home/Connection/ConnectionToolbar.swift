@@ -35,7 +35,6 @@ private struct ConnectionToolbar: ViewModifier {
             .sheet(isPresented: $isSettingsPresented) {
                 NavigationStack {
                     SettingsOverviewView(backends: backends, activeID: $activeID)
-                        .dismissable()
                 }
             }
     }
