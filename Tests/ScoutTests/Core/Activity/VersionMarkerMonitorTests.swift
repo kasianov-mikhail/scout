@@ -17,25 +17,28 @@ struct VersionMarkerMonitorTests {
 
     @Test("mark records one marker per install, name and version")
     func markIsIdempotent() throws {
-        let install = UUID()
+        let install = InstallObject.stub(date: Date(), in: context)
+        try context.save()
 
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "2.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, installID: install.installID, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, installID: install.installID, appVersion: "2.0", in: context)
 
         let markers = try context.fetchAll(VersionMarker.self)
         #expect(markers.count == 1)
-        #expect(markers.first?.installID == install)
+        #expect(markers.first?.install === install)
         #expect(markers.first?.appVersion == "2.0")
     }
 
     @Test("Different versions, names or installs get their own markers")
     func markDistinguishes() throws {
-        let install = UUID()
+        let install1 = InstallObject.stub(date: Date(), in: context)
+        let install2 = InstallObject.stub(date: Date(), in: context)
+        try context.save()
 
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "2.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "3.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.crashName, installID: install, appVersion: "2.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.installName, installID: UUID(), appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, installID: install1.installID, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, installID: install1.installID, appVersion: "3.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.crashName, installID: install1.installID, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, installID: install2.installID, appVersion: "2.0", in: context)
 
         #expect(try context.fetchAll(VersionMarker.self).count == 4)
     }

@@ -32,7 +32,7 @@ extension HangObject: RecordEncodable {
         record["date"] = date
         record["uuid"] = hangID.uuidString
         record["app_version"] = appVersion
-        record["session_id"] = sessionID.uuidString
+        record["session_id"] = sessionID
 
         record.setValues(metadata)
 

@@ -36,6 +36,11 @@ extension NSPersistentContainer {
 extension NSPersistentContainer {
     func loadStore() throws {
         for description in persistentStoreDescriptions {
+            if description.type == NSSQLiteStoreType, let url = description.url {
+                let migrator = StoreMigrator(url: url, type: description.type, bundle: .module)
+                try migrator.migrateIfNeeded(currentModel: managedObjectModel)
+            }
+
             description.shouldMigrateStoreAutomatically = true
             description.shouldInferMappingModelAutomatically = true
         }

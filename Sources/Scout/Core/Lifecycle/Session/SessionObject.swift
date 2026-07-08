@@ -17,10 +17,11 @@ final class SessionObject: TrackedObject {
     @NSManaged var osVersion: String?
     @NSManaged var locale: String?
     @NSManaged var channel: String?
+    @NSManaged var id: UUID
 
-    func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
-        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
+    static func first(sessionID: UUID, in context: NSManagedObjectContext) throws -> SessionObject? {
+        let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
+        request.predicate = NSPredicate(format: "id == %@", sessionID as CVarArg)
         request.fetchLimit = 1
         return try context.fetch(request).first
     }
@@ -28,12 +29,12 @@ final class SessionObject: TrackedObject {
 
 extension SessionObject: RecordEncodable {
     var record: Record {
-        var record = Record(recordType: Self.recordType, recordID: sessionID.uuidString)
+        var record = Record(recordType: Self.recordType, recordID: id.uuidString)
 
         record["start_date"] = date
         record["end_date"] = endDate
-        record["session_id"] = sessionID.uuidString
-        record["launch_id"] = launchID.uuidString
+        record["session_id"] = id.uuidString
+        record["launch_id"] = launchIDString
         record["app_version"] = appVersion
         record["build_number"] = buildNumber
         record["os_version"] = osVersion

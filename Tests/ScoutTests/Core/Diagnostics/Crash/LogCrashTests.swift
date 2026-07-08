@@ -24,6 +24,13 @@ struct LogCrashTests {
     func createsCrashObject() throws {
         let crash = makeCrashInfo(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"])
 
+        let install = InstallObject.stub(date: Date(), in: context)
+        install.installID = crash.installID
+        let launch = LaunchObject.stub(date: Date(), in: context)
+        launch.launchID = crash.launchID
+        let session = SessionObject.stub(date: Date(), in: context)
+        session.id = crash.sessionID
+
         try logCrash(crash, context: context)
 
         let results = try context.fetchAll(CrashObject.self)
@@ -36,27 +43,27 @@ struct LogCrashTests {
         #expect(object.fingerprint == expectedFingerprint)
         #expect(object.reason == "Fatal error")
         #expect(object.date == crash.date)
-        #expect(object.installID == crash.installID)
-        #expect(object.launchID == crash.launchID)
-        #expect(object.sessionID == crash.sessionID)
+        #expect(object.install === install)
+        #expect(object.launch === launch)
+        #expect(object.session === session)
         #expect(object.appVersion == crash.appVersion)
     }
 
-    @Test("Preserves sessionID captured at crash time, not the recovery session")
+    @Test("Preserves the session captured at crash time, not the recovery session")
     func preservesCapturedSessionID() throws {
         // The "crashed" process snapshot carries its own sessionID. A fresh
         // UUID can never match the recovery session that `awakeFromInsert`
         // assigns, so the test doesn't need to touch the `IDs.session`
         // global — other suites mutate it concurrently.
-        let crashedSessionID = UUID()
-        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], sessionID: crashedSessionID)
+        let crashedSession = SessionObject.stub(date: Date(), in: context)
+        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], sessionID: crashedSession.id)
 
-        #expect(IDs.session != crashedSessionID)
+        #expect(IDs.session != crashedSession.id)
 
         try logCrash(crash, context: context)
 
         let object = try #require(try context.fetchAll(CrashObject.self).first)
-        #expect(object.sessionID == crashedSessionID)
+        #expect(object.session === crashedSession)
     }
 
     @Test("Encodes stack trace as JSON data")

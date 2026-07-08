@@ -12,12 +12,14 @@ extension LaunchObject: PartialMonitor {
     ///
     /// Created once during `setup()` and finalised only on the next
     /// process start via `completeStale`, which sets `endDate` from the
-    /// latest signal recorded under this `launchID` — the OS provides no
+    /// latest signal recorded against this launch — the OS provides no
     /// reliable hook for "process about to die".
     ///
     static func trigger(in context: NSManagedObjectContext) throws {
         let launch = context.insert(LaunchObject.self)
         launch.date = Date()
+        launch.launchID = IDs.launch
         try context.save()
+        context.persistentStoreCoordinator?.hubObjectIDs.launch = launch.objectID
     }
 }

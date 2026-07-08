@@ -26,10 +26,11 @@ func logCrash(_ crash: CrashInfo, id: UUID = UUID(), context: NSManagedObjectCon
     object.reason = crash.reason
     object.stackTrace = try? JSONEncoder().encode(crash.stackTrace)
 
-    // Override IDs set by awakeFromInsert with values captured at crash time
-    object.installID = crash.installID
-    object.launchID = crash.launchID
-    object.sessionID = crash.sessionID
+    // Override the relationships set by awakeFromInsert from the current process's
+    // IDs with the ones captured at crash time — nil if that row is already gone.
+    object.install = try InstallObject.first(installID: crash.installID, in: context)
+    object.launch = try LaunchObject.first(launchID: crash.launchID, in: context)
+    object.session = try SessionObject.first(sessionID: crash.sessionID, in: context)
 
     try VersionMarker.mark(
         name: VersionMarker.crashName,

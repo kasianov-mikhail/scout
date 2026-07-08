@@ -19,13 +19,14 @@ extension VersionMarker: PartialMonitor {
     static func mark(name: String, installID: UUID, appVersion: String?, in context: NSManagedObjectContext) throws {
         guard let appVersion else { return }
 
+        let install = try InstallObject.first(installID: installID, in: context)
+
         let request = NSFetchRequest<VersionMarker>(entityName: "VersionMarker")
-        request.predicate = NSPredicate(
-            format: "installID == %@ AND name == %@ AND appVersion == %@",
-            installID as CVarArg,
-            name,
-            appVersion
-        )
+        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            install.map { NSPredicate(format: "install == %@", $0) } ?? NSPredicate(format: "install == nil"),
+            NSPredicate(format: "name == %@", name),
+            NSPredicate(format: "appVersion == %@", appVersion),
+        ])
         request.fetchLimit = 1
 
         guard try context.fetch(request).first == nil else {
@@ -37,6 +38,6 @@ extension VersionMarker: PartialMonitor {
         marker.name = name
         marker.appVersion = appVersion
         marker.date = Date()
-        marker.installID = installID
+        marker.install = install
     }
 }

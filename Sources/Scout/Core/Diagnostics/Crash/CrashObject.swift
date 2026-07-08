@@ -30,7 +30,7 @@ extension CrashObject: RecordEncodable {
         record["date"] = date
         record["uuid"] = crashID.uuidString
         record["app_version"] = appVersion
-        record["session_id"] = sessionID.uuidString
+        record["session_id"] = sessionID
 
         record.setValues(metadata)
 

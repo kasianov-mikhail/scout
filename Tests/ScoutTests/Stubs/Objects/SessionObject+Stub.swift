@@ -20,6 +20,7 @@ extension SessionObject {
         let session = context.insert(SessionObject.self)
 
         session.date = date
+        session.id = UUID()
         session.setSynced(synced, in: context)
         session.endDate = endDate
         session.appVersion = appVersion

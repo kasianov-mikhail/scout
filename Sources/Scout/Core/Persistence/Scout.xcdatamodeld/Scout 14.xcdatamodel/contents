@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24902" systemVersion="25F80" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="TrackedObject" syncable="YES">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="crashID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="fingerprint" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="stackTrace" optional="YES" attributeType="Binary"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="crashID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="DateObject" representedClassName="DateObject" isAbstract="YES" syncable="YES">
+        <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="month" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="week" attributeType="Date" usesScalarValueType="NO"/>
+        <fetchIndex name="byDatePrimitive">
+            <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="DeviceObject" representedClassName="DeviceObject" parentEntity="SyncableObject" syncable="YES">
+        <attribute name="deviceID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="model" optional="YES" attributeType="String"/>
+        <relationship name="records" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IDObject" inverseName="device" inverseEntity="IDObject"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="deviceID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES">
+        <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="EventObject" representedClassName="EventObject" parentEntity="NamedObject" syncable="YES">
+        <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="level" attributeType="String"/>
+        <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="params" optional="YES" attributeType="Binary"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="eventID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="HangObject" representedClassName="HangObject" parentEntity="TrackedObject" syncable="YES">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="duration" attributeType="Double" usesScalarValueType="YES"/>
+        <attribute name="fingerprint" optional="YES" attributeType="String"/>
+        <attribute name="hangID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="stackTrace" optional="YES" attributeType="Binary"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="hangID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="IDObject" representedClassName="IDObject" isAbstract="YES" parentEntity="DateObject" syncable="YES">
+        <relationship name="device" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeviceObject" inverseName="records" inverseEntity="DeviceObject"/>
+        <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallObject" inverseName="records" inverseEntity="InstallObject"/>
+        <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchObject" inverseName="records" inverseEntity="LaunchObject"/>
+        <fetchIndex name="byDevice">
+            <fetchIndexElement property="device" type="Binary" order="ascending"/>
+            <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="byInstall">
+            <fetchIndexElement property="install" type="Binary" order="ascending"/>
+            <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <fetchIndex name="byLaunch">
+            <fetchIndexElement property="launch" type="Binary" order="ascending"/>
+            <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="InstallObject" representedClassName="InstallObject" parentEntity="SyncableObject" syncable="YES">
+        <attribute name="installID" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="records" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IDObject" inverseName="install" inverseEntity="IDObject"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="installID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES">
+        <attribute name="value" attributeType="Integer 64" usesScalarValueType="YES"/>
+    </entity>
+    <entity name="LaunchObject" representedClassName="LaunchObject" parentEntity="SyncableObject" syncable="YES">
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="records" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IDObject" inverseName="launch" inverseEntity="IDObject"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="launchID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES">
+        <attribute name="name" attributeType="String"/>
+        <attribute name="telemetry" attributeType="String"/>
+    </entity>
+    <entity name="NamedObject" representedClassName="NamedObject" isAbstract="YES" parentEntity="TrackedObject" syncable="YES">
+        <attribute name="name" attributeType="String"/>
+    </entity>
+    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="TrackedObject" syncable="YES">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="buildNumber" optional="YES" attributeType="String"/>
+        <attribute name="channel" optional="YES" attributeType="String"/>
+        <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="locale" optional="YES" attributeType="String"/>
+        <attribute name="osVersion" optional="YES" attributeType="String"/>
+        <attribute name="id" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="records" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="TrackedObject" inverseName="session" inverseEntity="TrackedObject"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="id"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="IDObject" syncable="YES">
+        <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SyncDelivery" inverseName="object" inverseEntity="SyncDelivery"/>
+    </entity>
+    <entity name="SyncDelivery" representedClassName="SyncDelivery" syncable="YES">
+        <attribute name="attempts" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="backendID" attributeType="String"/>
+        <attribute name="progressPrimitive" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableObject" inverseName="deliveries" inverseEntity="SyncableObject"/>
+        <fetchIndex name="byBackend">
+            <fetchIndexElement property="backendID" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="object"/>
+                <constraint value="backendID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="TrackedObject" representedClassName="TrackedObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES">
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="records" inverseEntity="SessionObject"/>
+        <fetchIndex name="bySession">
+            <fetchIndexElement property="session" type="Binary" order="ascending"/>
+            <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="UserActivityObject" representedClassName="UserActivityObject" parentEntity="TrackedObject" syncable="YES">
+        <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="period" attributeType="String"/>
+        <attribute name="userActivityID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="weekCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="userActivityID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="VersionMarker" representedClassName="VersionMarker" parentEntity="SyncableObject" syncable="YES">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="markerID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="markerID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
+    </entity>
+    <entity name="VersionObject" representedClassName="VersionObject" parentEntity="SyncableObject" syncable="YES">
+        <attribute name="appVersion" optional="YES" attributeType="String"/>
+        <attribute name="buildNumber" optional="YES" attributeType="String"/>
+    </entity>
+</model>

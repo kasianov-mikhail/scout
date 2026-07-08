@@ -19,6 +19,7 @@ extension LaunchObject {
         let launch = context.insert(LaunchObject.self)
 
         launch.date = date
+        launch.launchID = UUID()
         launch.setSynced(synced, in: context)
         launch.endDate = endDate
 

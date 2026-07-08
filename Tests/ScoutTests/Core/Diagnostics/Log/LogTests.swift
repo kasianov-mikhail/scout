@@ -24,6 +24,10 @@ private func makeEvent(
 @Test("Logging an event") func testLogEvent() throws {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date()
+    let install = InstallObject.stub(date: date, in: context)
+    install.installID = IDs.install
+    try context.save()
+    context.persistentStoreCoordinator?.hubObjectIDs.install = install.objectID
 
     try log(
         makeEvent("Test Event", metadata: ["key": .string("value")]),
@@ -41,7 +45,7 @@ private func makeEvent(
     #expect(event.date == date)
     #expect(event.hour == date.startOfHour)
     #expect(event.week == date.startOfWeek)
-    #expect(event.installID == IDs.install)
+    #expect(event.install === install)
     #expect(event.paramCount == 1)
 
     let paramData = try #require(event.params)

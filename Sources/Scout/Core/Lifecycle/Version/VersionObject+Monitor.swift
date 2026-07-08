@@ -17,8 +17,12 @@ extension VersionObject: PartialMonitor {
     }
 
     static func trigger(appVersion: String?, buildNumber: String?, in context: NSManagedObjectContext) throws {
+        let install = context.persistentStoreCoordinator.flatMap {
+            IDs.resolve($0.hubObjectIDs.install, as: InstallObject.self, in: context)
+        }
+
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "installID == %@", IDs.install as CVarArg)
+        request.predicate = install.map { NSPredicate(format: "install == %@", $0) } ?? NSPredicate(format: "install == nil")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
         request.fetchLimit = 1
         let latest = try context.fetch(request).first

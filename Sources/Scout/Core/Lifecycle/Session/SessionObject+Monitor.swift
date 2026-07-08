@@ -13,18 +13,30 @@ extension SessionObject: Monitor {
 
         let session = context.insert(SessionObject.self)
         session.date = Date()
+        session.id = IDs.session
         session.appVersion = Bundle.main.marketingVersion
         session.buildNumber = Bundle.main.buildNumber
         session.osVersion = SystemInfo.osVersion
         session.locale = SystemInfo.locale
         session.channel = SystemInfo.channel
         try context.save()
+        context.persistentStoreCoordinator?.hubObjectIDs.session = session.objectID
     }
 
     static func complete(in context: NSManagedObjectContext) throws {
+        guard let coordinator = context.persistentStoreCoordinator,
+            let launch = IDs.resolve(
+                coordinator.hubObjectIDs.launch,
+                as: LaunchObject.self,
+                in: context
+            )
+        else {
+            throw MonitorError.notFound
+        }
+
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
-        request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "launch == %@", launch)
         request.fetchLimit = 1
 
         guard let session = try context.fetch(request).first else {

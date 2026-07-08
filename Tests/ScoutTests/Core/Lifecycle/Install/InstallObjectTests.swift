@@ -16,18 +16,17 @@ struct InstallObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("versions(in:) returns versions matching installID")
+    @Test("versions(in:) returns versions whose install relationship matches")
     func testVersions() throws {
         let install = InstallObject.stub(date: week, in: context)
-        let installID = install.installID
 
         let v1 = VersionObject.stub(date: week, appVersion: "1.0", in: context)
-        v1.installID = installID
+        v1.install = install
 
         let v2 = VersionObject.stub(date: week.addingHour(), appVersion: "2.0", in: context)
-        v2.installID = installID
+        v2.install = install
 
-        VersionObject.stub(date: week, appVersion: "3.0", in: context).installID = UUID()
+        VersionObject.stub(date: week, appVersion: "3.0", in: context).install = InstallObject.stub(date: week, in: context)
 
         try context.save()
 

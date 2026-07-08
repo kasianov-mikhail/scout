@@ -18,6 +18,7 @@ extension DeviceObject {
         let device = context.insert(DeviceObject.self)
 
         device.date = date
+        device.deviceID = UUID()
         device.setSynced(synced, in: context)
 
         return device

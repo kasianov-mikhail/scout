@@ -41,9 +41,9 @@ struct StableRecordIDTests {
     @Test("SessionObject.record is stable across calls")
     func sessionStable() {
         let session = SessionObject.stub(date: date, in: context)
-        session.sessionID = UUID()
+        session.id = UUID()
         #expect(session.record.recordID == session.record.recordID)
-        #expect(session.record.recordID == session.sessionID.uuidString)
+        #expect(session.record.recordID == session.id.uuidString)
     }
 
     @Test("EventObject.record is stable across calls")
@@ -58,7 +58,8 @@ struct StableRecordIDTests {
     func versionStable() {
         let version = VersionObject.stub(date: date, appVersion: "1.2.3", in: context)
         version.buildNumber = "42"
-        let expected = "\(version.installID.uuidString)-1.2.3-42"
+        version.install = InstallObject.stub(date: date, in: context)
+        let expected = "\(version.install!.installID.uuidString)-1.2.3-42"
         #expect(version.record.recordID == version.record.recordID)
         #expect(version.record.recordID == expected)
     }

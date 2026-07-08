@@ -19,7 +19,7 @@ extension DeviceObject: HubObject {
     var isReferenced: Bool {
         guard let context = managedObjectContext else { return false }
         let request = NSFetchRequest<NSManagedObject>(entityName: "IDObject")
-        request.predicate = NSPredicate(format: "deviceID == %@ AND SELF != %@", deviceID as CVarArg, self)
+        request.predicate = NSPredicate(format: "device == %@", self)
         request.fetchLimit = 1
         return ((try? context.count(for: request)) ?? 0) > 0
     }
@@ -29,7 +29,7 @@ extension InstallObject: HubObject {
     var isReferenced: Bool {
         guard let context = managedObjectContext else { return false }
         let request = NSFetchRequest<NSManagedObject>(entityName: "IDObject")
-        request.predicate = NSPredicate(format: "installID == %@ AND SELF != %@", installID as CVarArg, self)
+        request.predicate = NSPredicate(format: "install == %@", self)
         request.fetchLimit = 1
         return ((try? context.count(for: request)) ?? 0) > 0
     }
@@ -39,7 +39,7 @@ extension LaunchObject: HubObject {
     var isReferenced: Bool {
         guard let context = managedObjectContext else { return false }
         let request = NSFetchRequest<NSManagedObject>(entityName: "IDObject")
-        request.predicate = NSPredicate(format: "launchID == %@ AND SELF != %@", launchID as CVarArg, self)
+        request.predicate = NSPredicate(format: "launch == %@", self)
         request.fetchLimit = 1
         return ((try? context.count(for: request)) ?? 0) > 0
     }
@@ -49,7 +49,7 @@ extension SessionObject: HubObject {
     var isReferenced: Bool {
         guard let context = managedObjectContext else { return false }
         let request = NSFetchRequest<NSManagedObject>(entityName: "TrackedObject")
-        request.predicate = NSPredicate(format: "sessionID == %@ AND SELF != %@", sessionID as CVarArg, self)
+        request.predicate = NSPredicate(format: "session == %@", self)
         request.fetchLimit = 1
         return ((try? context.count(for: request)) ?? 0) > 0
     }

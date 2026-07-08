@@ -18,6 +18,7 @@ extension InstallObject {
         let install = context.insert(InstallObject.self)
 
         install.date = date
+        install.installID = UUID()
         install.setSynced(synced, in: context)
 
         return install

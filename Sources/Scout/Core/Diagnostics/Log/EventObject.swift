@@ -32,7 +32,7 @@ extension EventObject: RecordEncodable {
         record["param_count"] = paramCount
         record["date"] = date
         record["uuid"] = eventID.uuidString
-        record["session_id"] = sessionID.uuidString
+        record["session_id"] = sessionID
 
         record.setValues(metadata)
 

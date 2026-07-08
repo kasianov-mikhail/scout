@@ -16,41 +16,39 @@ struct LaunchObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("sessions(in:) returns sessions matching launchID")
+    @Test("sessions(in:) returns sessions whose launch relationship matches")
     func testSessions() throws {
         let launch = LaunchObject.stub(date: week, in: context)
-        let launchID = launch.launchID
 
         let session1 = SessionObject.stub(date: week, in: context)
-        session1.launchID = launchID
+        session1.launch = launch
 
         let session2 = SessionObject.stub(date: week.addingHour(), in: context)
-        session2.launchID = launchID
+        session2.launch = launch
 
-        SessionObject.stub(date: week, in: context).launchID = UUID()
+        SessionObject.stub(date: week, in: context).launch = LaunchObject.stub(date: week, in: context)
 
         try context.save()
 
         let sessions = try launch.sessions(in: context)
         #expect(sessions.count == 2)
-        #expect(sessions[0].launchID == launchID)
-        #expect(sessions[1].launchID == launchID)
+        #expect(sessions[0].launch === launch)
+        #expect(sessions[1].launch === launch)
     }
 
-    @Test("version(in:) returns version matching launchID")
+    @Test("version(in:) returns version whose launch relationship matches")
     func testVersion() throws {
         let launch = LaunchObject.stub(date: week, in: context)
-        let launchID = launch.launchID
 
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        version.launchID = launchID
+        version.launch = launch
 
-        VersionObject.stub(date: week, appVersion: "1.0", in: context).launchID = UUID()
+        VersionObject.stub(date: week, appVersion: "1.0", in: context).launch = LaunchObject.stub(date: week, in: context)
 
         try context.save()
 
         let result = try launch.version(in: context)
         #expect(result?.appVersion == "2.0")
-        #expect(result?.launchID == launchID)
+        #expect(result?.launch === launch)
     }
 }

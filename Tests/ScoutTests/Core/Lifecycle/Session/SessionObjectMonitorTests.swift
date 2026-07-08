@@ -17,6 +17,7 @@ struct SessionObjectMonitorTests {
 
     @Test("complete sets endDate on an open session")
     func completeOpenSession() throws {
+        try LaunchObject.trigger(in: context)
         try SessionObject.trigger(in: context)
 
         try SessionObject.complete(in: context)
@@ -47,6 +48,7 @@ struct SessionObjectMonitorTests {
 
     @Test("complete is a no-op when the session is already closed")
     func completeTwiceIsNoop() throws {
+        try LaunchObject.trigger(in: context)
         try SessionObject.trigger(in: context)
         try SessionObject.complete(in: context)
 
@@ -60,6 +62,8 @@ struct SessionObjectMonitorTests {
 
     @Test("complete throws notFound when no session exists for the current launch")
     func completeWithoutSessionThrows() throws {
+        try LaunchObject.trigger(in: context)
+
         #expect(throws: MonitorError.notFound) {
             try SessionObject.complete(in: context)
         }

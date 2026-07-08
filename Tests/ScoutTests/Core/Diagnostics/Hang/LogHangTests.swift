@@ -24,6 +24,13 @@ struct LogHangTests {
     func createsHangObject() throws {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"], duration: 4.2)
 
+        let install = InstallObject.stub(date: Date(), in: context)
+        install.installID = hang.installID
+        let launch = LaunchObject.stub(date: Date(), in: context)
+        launch.launchID = hang.launchID
+        let session = SessionObject.stub(date: Date(), in: context)
+        session.id = hang.sessionID
+
         try logHang(hang, context: context)
 
         let results = try context.fetchAll(HangObject.self)
@@ -37,23 +44,23 @@ struct LogHangTests {
         #expect(object.reason == "Main thread unresponsive for 4.2s")
         #expect(object.duration == 4.2)
         #expect(object.date == hang.date)
-        #expect(object.installID == hang.installID)
-        #expect(object.launchID == hang.launchID)
-        #expect(object.sessionID == hang.sessionID)
+        #expect(object.install === install)
+        #expect(object.launch === launch)
+        #expect(object.session === session)
         #expect(object.appVersion == hang.appVersion)
     }
 
-    @Test("Preserves sessionID captured at hang time, not the recovery session")
+    @Test("Preserves the session captured at hang time, not the recovery session")
     func preservesCapturedSessionID() throws {
-        let hangSessionID = UUID()
-        let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5, sessionID: hangSessionID)
+        let hangSession = SessionObject.stub(date: Date(), in: context)
+        let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5, sessionID: hangSession.id)
 
-        #expect(IDs.session != hangSessionID)
+        #expect(IDs.session != hangSession.id)
 
         try logHang(hang, context: context)
 
         let object = try #require(try context.fetchAll(HangObject.self).first)
-        #expect(object.sessionID == hangSessionID)
+        #expect(object.session === hangSession)
     }
 
     @Test("Encodes stack trace as JSON data")

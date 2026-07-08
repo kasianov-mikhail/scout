@@ -27,10 +27,10 @@ struct CrashObjectTests {
     @Test("record includes the session ID")
     func testRecordIncludesSessionID() {
         let object = makeCrashObject(name: "SIGABRT", date: date)
-        let sessionID = UUID()
-        object.sessionID = sessionID
+        let session = SessionObject.stub(date: date, in: context)
+        object.session = session
 
-        #expect(object.record["session_id"] == sessionID.uuidString)
+        #expect(object.record["session_id"] == session.id.uuidString)
     }
 
     @Test("record computes a fallback fingerprint for migrated crashes")

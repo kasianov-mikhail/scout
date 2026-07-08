@@ -18,33 +18,24 @@ struct VersionObjectTests {
 
     @Test("launches(in:) returns all launches with same appVersion")
     func testLaunches() throws {
-        let launchID1 = UUID()
-        let launchID2 = UUID()
-        let launchID3 = UUID()
+        let l1 = LaunchObject.stub(date: week, in: context)
+        let l2 = LaunchObject.stub(date: week.addingHour(), in: context)
+        let l3 = LaunchObject.stub(date: week, in: context)
 
         let v1 = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        v1.launchID = launchID1
+        v1.launch = l1
 
         let v2 = VersionObject.stub(date: week.addingHour(), appVersion: "2.0", in: context)
-        v2.launchID = launchID2
+        v2.launch = l2
 
         let v3 = VersionObject.stub(date: week, appVersion: "1.0", in: context)
-        v3.launchID = launchID3
-
-        let l1 = LaunchObject.stub(date: week, in: context)
-        l1.launchID = launchID1
-
-        let l2 = LaunchObject.stub(date: week.addingHour(), in: context)
-        l2.launchID = launchID2
-
-        let l3 = LaunchObject.stub(date: week, in: context)
-        l3.launchID = launchID3
+        v3.launch = l3
 
         try context.save()
 
         let launches = try v1.launches(in: context)
         #expect(launches.count == 2)
-        #expect(launches.allSatisfy { $0.launchID == launchID1 || $0.launchID == launchID2 })
+        #expect(launches.allSatisfy { $0 === l1 || $0 === l2 })
     }
 
     @Test("launches(in:) returns an empty array when appVersion is nil")
@@ -58,19 +49,14 @@ struct VersionObjectTests {
         #expect(launches.isEmpty)
     }
 
-    @Test("install(in:) returns install matching installID")
+    @Test("install returns the install it belongs to")
     func testInstall() throws {
         let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        let installID = version.installID
-
         let install = InstallObject.stub(date: week, in: context)
-        install.installID = installID
-
-        InstallObject.stub(date: week, in: context).installID = UUID()
+        version.install = install
 
         try context.save()
 
-        let result = try version.install(in: context)
-        #expect(result?.installID == installID)
+        #expect(version.install === install)
     }
 }

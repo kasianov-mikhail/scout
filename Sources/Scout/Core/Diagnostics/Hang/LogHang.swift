@@ -27,10 +27,11 @@ func logHang(_ hang: HangInfo, id: UUID = UUID(), context: NSManagedObjectContex
     object.stackTrace = try? JSONEncoder().encode(hang.stackTrace)
     object.duration = hang.duration
 
-    // Override IDs set by awakeFromInsert with values captured at hang time
-    object.installID = hang.installID
-    object.launchID = hang.launchID
-    object.sessionID = hang.sessionID
+    // Override the relationships set by awakeFromInsert from the current process's
+    // IDs with the ones captured at hang time — nil if that row is already gone.
+    object.install = try InstallObject.first(installID: hang.installID, in: context)
+    object.launch = try LaunchObject.first(launchID: hang.launchID, in: context)
+    object.session = try SessionObject.first(sessionID: hang.sessionID, in: context)
 
     try VersionMarker.mark(
         name: VersionMarker.hangName,

@@ -64,7 +64,7 @@ struct VersionObjectMonitorTests {
     @Test("trigger ignores VersionObjects from other installs")
     func ignoresOtherInstalls() throws {
         let other = VersionObject.stub(date: Date(), appVersion: "1.0", buildNumber: "1", in: context)
-        other.installID = UUID()
+        other.install = InstallObject.stub(date: Date(), in: context)
         try context.save()
 
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)

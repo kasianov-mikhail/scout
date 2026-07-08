@@ -30,6 +30,7 @@ struct LaunchObjectRecoveryTests {
     @Test("Does not close launches from current launch")
     func skipsCurrent() throws {
         let launch = LaunchObject.stub(date: date, in: context)
+        launch.launchID = IDs.launch
 
         try context.save()
         try LaunchObject.completeStale(in: context)
@@ -51,16 +52,15 @@ struct LaunchObjectRecoveryTests {
 
     @Test("Uses latest child timestamp as endDate")
     func endDateFromChild() throws {
-        let staleLaunchID = UUID()
         let launch = LaunchObject.stub(date: date, in: context)
-        launch.launchID = staleLaunchID
+        launch.launchID = UUID()
 
         let session = SessionObject.stub(date: date.addingTimeInterval(10), in: context)
-        session.launchID = staleLaunchID
+        session.launch = launch
 
         let latest = date.addingTimeInterval(300)
         let event = EventObject.stub(name: "x", date: latest, in: context)
-        event.launchID = staleLaunchID
+        event.launch = launch
 
         try context.save()
         try LaunchObject.completeStale(in: context)
