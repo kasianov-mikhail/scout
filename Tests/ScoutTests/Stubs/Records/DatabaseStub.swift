@@ -106,12 +106,14 @@ final class Gate: @unchecked Sendable {
 }
 
 extension Record {
-    static func deviceStub(deviceID: UUID, date: Date) -> Record {
-        Device(
+    static func deviceStub(deviceID: UUID, date: Date, model: String? = nil) -> Record {
+        var record = Device(
             date: date,
             id: deviceID.uuidString,
             deviceID: deviceID
         ).record
+        record["model"] = model
+        return record
     }
 
     static func installStub(installID: UUID, deviceID: UUID, date: Date) -> Record {
@@ -135,8 +137,8 @@ extension Record {
         return record
     }
 
-    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date) -> Record {
-        Session(
+    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil) -> Record {
+        var record = Session(
             startDate: startDate,
             endDate: nil,
             id: sessionID.uuidString,
@@ -144,6 +146,8 @@ extension Record {
             launchID: launchID,
             installID: installID
         ).record
+        record["os_version"] = osVersion
+        return record
     }
 
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {

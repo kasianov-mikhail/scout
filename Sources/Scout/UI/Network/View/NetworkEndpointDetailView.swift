@@ -39,7 +39,7 @@ struct NetworkEndpointDetailView: View {
 
             if let breakdown = statuses?.summary(in: range), breakdown.total > 0 {
                 Header(title: "Status codes")
-                StatusBar(status: breakdown)
+                SegmentBar(segments: breakdown.segments)
                     .listRowSeparator(.hidden, edges: .bottom)
             }
         }

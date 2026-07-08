@@ -36,12 +36,20 @@ extension IncidentGroup {
         records.count
     }
 
+    var deviceIDs: [UUID] {
+        Array(Set(records.compactMap(\.deviceID)))
+    }
+
+    var sessionIDs: [UUID] {
+        Array(Set(records.compactMap(\.sessionID)))
+    }
+
     var affectedDevices: Int {
-        Set(records.compactMap(\.deviceID)).count
+        deviceIDs.count
     }
 
     var affectedSessions: Int {
-        Set(records.compactMap(\.sessionID)).count
+        sessionIDs.count
     }
 
     var firstDate: Date? {

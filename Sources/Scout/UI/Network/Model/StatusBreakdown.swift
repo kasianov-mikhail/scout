@@ -8,14 +8,6 @@
 
 import SwiftUI
 
-struct StatusSegment: Identifiable {
-    let label: String
-    let count: Int
-    let color: Color
-
-    var id: String { label }
-}
-
 struct StatusBreakdown: Equatable {
     private(set) var counts: [Int]
 
@@ -48,9 +40,9 @@ struct StatusBreakdown: Equatable {
 
     private static let colors: [Color] = [.green, .blue, .orange, .red]
 
-    var segments: [StatusSegment] {
+    var segments: [Segment] {
         zip(StatusBuckets.classes, zip(counts, Self.colors)).map { label, pair in
-            StatusSegment(label: label, count: pair.0, color: pair.1)
+            Segment(label: label, count: pair.0, color: pair.1)
         }
     }
 }
