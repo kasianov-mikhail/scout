@@ -28,6 +28,15 @@ struct DevicesListView: View {
             }
         }
         .navigationTitle(en: "Devices")
+        .toolbar {
+            if let text = DevicesExport(devices: devices).text {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    ShareLink(item: text)
+                    CopyButton(text: text)
+                    Spacer()
+                }
+            }
+        }
     }
 }
 
