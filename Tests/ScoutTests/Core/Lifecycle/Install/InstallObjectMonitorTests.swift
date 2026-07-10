@@ -18,7 +18,7 @@ struct InstallObjectMonitorTests {
 
     @Test("trigger creates an InstallObject on empty store")
     func createsFirst() throws {
-        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
+        try InstallObject.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
 
         let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 1)
@@ -27,9 +27,9 @@ struct InstallObjectMonitorTests {
 
     @Test("trigger is a no-op when an InstallObject for the current install already exists")
     func skipsWhenExists() throws {
-        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
-        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
-        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
+        try InstallObject.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
+        try InstallObject.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
+        try InstallObject.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
 
         let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 1)
@@ -41,7 +41,7 @@ struct InstallObjectMonitorTests {
         prior.installID = UUID()
         try context.save()
 
-        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
+        try InstallObject.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
 
         let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 2)

@@ -10,41 +10,41 @@ import Testing
 
 @testable import Scout
 
-struct MonitorErrorTests {
+struct LifecycleErrorTests {
     @Test("notFound equals notFound")
     func notFoundEquality() {
-        #expect(MonitorError.notFound == MonitorError.notFound)
+        #expect(LifecycleError.notFound == LifecycleError.notFound)
     }
 
     @Test("alreadyCompleted equals alreadyCompleted regardless of date")
     func alreadyCompletedEquality() {
         let date1 = Date(timeIntervalSinceReferenceDate: 0)
         let date2 = Date(timeIntervalSinceReferenceDate: 1000)
-        #expect(MonitorError.alreadyCompleted(date1) == MonitorError.alreadyCompleted(date2))
+        #expect(LifecycleError.alreadyCompleted(date1) == LifecycleError.alreadyCompleted(date2))
     }
 
     @Test("notFound does not equal alreadyCompleted")
     func differentCasesNotEqual() {
         let date = Date()
-        #expect(MonitorError.notFound != MonitorError.alreadyCompleted(date))
+        #expect(LifecycleError.notFound != LifecycleError.alreadyCompleted(date))
     }
 
     @Test("notFound description contains 'not found'")
     func notFoundDescription() {
-        let description = MonitorError.notFound.errorDescription
+        let description = LifecycleError.notFound.errorDescription
         #expect(description?.contains("not found") == true)
     }
 
     @Test("alreadyCompleted description contains 'already completed'")
     func alreadyCompletedDescription() {
         let date = Date(timeIntervalSinceReferenceDate: 0)
-        let description = MonitorError.alreadyCompleted(date).errorDescription
+        let description = LifecycleError.alreadyCompleted(date).errorDescription
         #expect(description?.contains("already completed") == true)
     }
 
-    @Test("MonitorError conforms to LocalizedError")
+    @Test("LifecycleError conforms to LocalizedError")
     func conformsToLocalizedError() {
-        let error: any LocalizedError = MonitorError.notFound
+        let error: any LocalizedError = LifecycleError.notFound
         #expect(error.errorDescription != nil)
     }
 }
