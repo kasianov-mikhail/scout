@@ -7,14 +7,19 @@
 
 import CoreData
 
-extension SyncDelivery {
-    // A single shared increment per cycle, so the per-type delivery passes don't
-    // each spend the budget and abandon the backend early. Runs on the main actor
-    // because it mutates the main-queue view context.
+@objc(SyncDelivery)
+final class SyncDelivery: NSManagedObject {
+    static let maxAttempts = 10
+
+    @NSManaged var backendID: String
+    @NSManaged var isPending: Bool
+    @NSManaged var attempts: Int16
+    @NSManaged var object: SyncableObject
+
     @MainActor static func recordAttempt(for backendID: String, in context: NSManagedObjectContext) {
         let request = NSFetchRequest<SyncDelivery>(entityName: "SyncDelivery")
         request.predicate = NSPredicate(
-            format: "backendID == %@ AND progressPrimitive != 0 AND attempts < %d",
+            format: "backendID == %@ AND isPending == YES AND attempts < %d",
             backendID,
             SyncDelivery.maxAttempts
         )
