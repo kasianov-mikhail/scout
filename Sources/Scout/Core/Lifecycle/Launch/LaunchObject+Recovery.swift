@@ -20,5 +20,4 @@ extension LaunchObject: RecoveryMonitor {
             try context.save()
         }
     }
-
 }
