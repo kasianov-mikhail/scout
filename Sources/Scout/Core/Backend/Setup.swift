@@ -47,33 +47,13 @@ public func setup(backends: [Backend]) async throws {
         session: session
     )
 
-    installExceptionHandler(identity: identity)
-    installSignalHandler(identity: identity)
-    installHangHandler(identity: identity)
-
-    await CrashArchive.system.flush(deviceID: device)
-    await HangArchive.system.flush(deviceID: device)
-
-    try await persistentContainer.performBackgroundTasks(
-        { try SessionObject.completeStale(launchID: launch, in: $0) },
-        { try LaunchObject.completeStale(launchID: launch, in: $0) },
-    )
+    try await identity.bootstrapLifecycle()
 
     @Sendable func sync() async throws {
         try await synchronize(backends: backends, dispatcher: Coalescer())
     }
 
-    ActionTable.appState(identity: identity).startListening(completion: sync)
-
-    try await persistentContainer.performBackgroundTasks(
-        { try DeviceObject.trigger(deviceID: device, in: $0) },
-        { try InstallObject.trigger(installID: install, deviceID: device, in: $0) },
-        { try VersionObject.trigger(installID: install, launchID: launch, in: $0) },
-        { try LaunchObject.trigger(launchID: launch, installID: install, in: $0) },
-        { try SessionObject.trigger(session: session, launchID: launch, in: $0) },
-        { try UserActivityObject.trigger(sessionID: session.current, in: $0) },
-        { try VersionMarker.trigger(installID: install, in: $0) }
-    )
+    identity.table.startListening(completion: sync)
 
     LoggingSystem.bootstrap {
         CKLogHandler(sync: sync, session: session, label: $0)
