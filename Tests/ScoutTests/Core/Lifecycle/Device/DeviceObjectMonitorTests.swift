@@ -18,7 +18,7 @@ struct DeviceObjectMonitorTests {
 
     @Test("trigger stamps the device with its hardware model")
     func triggerStampsModel() throws {
-        try DeviceObject.trigger(deviceID: identity.device, in: context)
+        try DeviceObject.Trigger(deviceID: identity.device).execute(in: context)
 
         let device = try #require(try context.fetchAll(DeviceObject.self).first)
         #expect(device.model == SystemInfo.deviceModel)
@@ -27,8 +27,8 @@ struct DeviceObjectMonitorTests {
 
     @Test("trigger inserts a single device for the current deviceID")
     func triggerIsIdempotent() throws {
-        try DeviceObject.trigger(deviceID: identity.device, in: context)
-        try DeviceObject.trigger(deviceID: identity.device, in: context)
+        try DeviceObject.Trigger(deviceID: identity.device).execute(in: context)
+        try DeviceObject.Trigger(deviceID: identity.device).execute(in: context)
 
         #expect(try context.fetchAll(DeviceObject.self).count == 1)
     }

@@ -8,12 +8,16 @@
 import CoreData
 
 extension VersionMarker {
-    static func trigger(installID: UUID, in context: NSManagedObjectContext) throws {
-        let install = try context.existing(InstallObject.self, key: "installID", id: installID)
-        try mark(name: installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
+    struct Trigger: Command {
+        let installID: UUID
 
-        if context.hasChanges {
-            try context.save()
+        func execute(in context: NSManagedObjectContext) throws {
+            let install = try context.existing(InstallObject.self, key: "installID", id: installID)
+            try VersionMarker.mark(name: VersionMarker.installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
+
+            if context.hasChanges {
+                try context.save()
+            }
         }
     }
 

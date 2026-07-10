@@ -23,7 +23,7 @@ struct LaunchObjectRecoveryTests {
         launch.launchID = UUID()
 
         try context.save()
-        try LaunchObject.completeStale(launchID: identity.launch, in: context)
+        try LaunchObject.Recovery(launchID: identity.launch).execute(in: context)
 
         #expect(launch.endDate == date)
     }
@@ -33,7 +33,7 @@ struct LaunchObjectRecoveryTests {
         let launch = LaunchObject.stub(date: date, in: context)
 
         try context.save()
-        try LaunchObject.completeStale(launchID: identity.launch, in: context)
+        try LaunchObject.Recovery(launchID: identity.launch).execute(in: context)
 
         #expect(launch.endDate == nil)
     }
@@ -45,7 +45,7 @@ struct LaunchObjectRecoveryTests {
         launch.launchID = UUID()
 
         try context.save()
-        try LaunchObject.completeStale(launchID: identity.launch, in: context)
+        try LaunchObject.Recovery(launchID: identity.launch).execute(in: context)
 
         #expect(launch.endDate == endDate)
     }
@@ -61,7 +61,7 @@ struct LaunchObjectRecoveryTests {
         SessionObject.stub(date: latest, launch: launch, in: context)
 
         try context.save()
-        try LaunchObject.completeStale(launchID: identity.launch, in: context)
+        try LaunchObject.Recovery(launchID: identity.launch).execute(in: context)
 
         #expect(launch.endDate == latest)
     }

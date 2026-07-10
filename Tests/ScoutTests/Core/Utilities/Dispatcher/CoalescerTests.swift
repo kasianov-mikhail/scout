@@ -27,9 +27,9 @@ struct CoalescerTests {
     func testErrorPropagates() async {
         let dispatcher = Coalescer()
 
-        await #expect(throws: MonitorError.notFound) {
+        await #expect(throws: LifecycleError.notFound) {
             try await dispatcher.perform {
-                throw MonitorError.notFound
+                throw LifecycleError.notFound
             }
         }
     }
@@ -40,7 +40,7 @@ struct CoalescerTests {
         let box = Box(false)
 
         _ = try? await dispatcher.perform {
-            throw MonitorError.notFound
+            throw LifecycleError.notFound
         }
 
         try await dispatcher.perform {

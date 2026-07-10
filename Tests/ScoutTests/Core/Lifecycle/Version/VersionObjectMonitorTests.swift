@@ -26,7 +26,11 @@ struct VersionObjectMonitorTests {
     @Test("trigger creates a VersionObject on first call")
     func firstTrigger() throws {
         seedCurrentLaunch()
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
 
         let versions = try context.fetchAll(VersionObject.self)
         #expect(versions.count == 1)
@@ -37,9 +41,21 @@ struct VersionObjectMonitorTests {
     @Test("trigger is a no-op when version and build are unchanged")
     func noopOnUnchanged() throws {
         seedCurrentLaunch()
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
 
         let versions = try context.fetchAll(VersionObject.self)
         #expect(versions.count == 1)
@@ -48,8 +64,16 @@ struct VersionObjectMonitorTests {
     @Test("trigger creates a new VersionObject when appVersion changes")
     func appVersionChange() throws {
         seedCurrentLaunch()
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "2.0", buildNumber: "1", in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "2.0", buildNumber: "1")
+        ).execute(in: context)
 
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
@@ -62,8 +86,16 @@ struct VersionObjectMonitorTests {
     @Test("trigger creates a new VersionObject when buildNumber changes")
     func buildNumberChange() throws {
         seedCurrentLaunch()
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "2", in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "2")
+        ).execute(in: context)
 
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
@@ -84,7 +116,11 @@ struct VersionObjectMonitorTests {
         VersionObject.stub(date: Date(), appVersion: "1.0", buildNumber: "1", launch: otherLaunch, in: context)
         try context.save()
 
-        try VersionObject.trigger(installID: identity.install, launchID: identity.launch, appVersion: "1.0", buildNumber: "1", in: context)
+        try VersionObject.Trigger(
+            installID: identity.install,
+            launchID: identity.launch,
+            bundle: .stub(appVersion: "1.0", buildNumber: "1")
+        ).execute(in: context)
 
         let versions = try context.fetchAll(VersionObject.self)
         #expect(versions.count == 2)

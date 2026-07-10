@@ -7,20 +7,20 @@
 
 import Foundation
 
-enum MonitorError: LocalizedError, Equatable {
+enum LifecycleError: LocalizedError, Equatable {
     case notFound
     case alreadyCompleted(Date)
 
     var errorDescription: String? {
         switch self {
         case .notFound:
-            "MonitorError not found in the context"
+            "LifecycleError not found in the context"
         case .alreadyCompleted(let date):
-            "MonitorError already completed on \(date)"
+            "LifecycleError already completed on \(date)"
         }
     }
 
-    static func == (lhs: MonitorError, rhs: MonitorError) -> Bool {
+    static func == (lhs: LifecycleError, rhs: LifecycleError) -> Bool {
         switch (lhs, rhs) {
         case (.notFound, .notFound):
             true

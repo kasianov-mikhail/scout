@@ -44,7 +44,7 @@ public func setup(backends: [Backend]) async throws {
         session: session
     )
 
-    try await identity.bootstrapLifecycle()
+    try await identity.bootstrap()
 
     let dispatcher = Coalescer()
 

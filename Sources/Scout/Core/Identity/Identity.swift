@@ -7,6 +7,13 @@
 
 import Foundation
 
+struct Identity: Sendable {
+    let install: UUID
+    let launch: UUID
+    let device: UUID
+    let session: Protected<UUID>
+}
+
 final class Protected<Value: Sendable>: @unchecked Sendable {
     private let queue = DispatchQueue(label: "scout.protected")
 
