@@ -33,6 +33,7 @@ struct PercentileTrendChart: View {
                     endPoint: .bottom
                 )
             )
+            .interpolationMethod(.monotone)
 
             LineMark(
                 x: .value("Date", point.date, unit: unit),
