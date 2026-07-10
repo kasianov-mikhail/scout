@@ -51,8 +51,9 @@ struct SyncableObjectCleanupTests {
     @Test("Keeps a synced old launch still referenced by another record")
     func keepsReferencedLaunch() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        LaunchObject.stub(date: old, synced: true, in: context)
-        EventObject.stub(name: "child", in: context)
+        let launch = LaunchObject.stub(date: old, synced: true, in: context)
+        let session = SessionObject.stub(date: old, launch: launch, in: context)
+        EventObject.stub(name: "child", session: session, in: context)
         try context.save()
 
         try SyncableObject.cleanup(backends: [], in: context)

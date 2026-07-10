@@ -55,8 +55,7 @@ extension NSPredicate {
 }
 
 extension SyncDelivery.Progress {
-    // Matches every persisted state still owing this progress, including rows the
-    // legacy matrix channel wrote as [.raw, .matrix] before that channel was removed.
+    // Matches every persisted state still owing this progress.
     fileprivate var owingStates: [Int16] {
         (0...Self.all.rawValue)
             .filter { Self(rawValue: $0).contains(self) }

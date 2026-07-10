@@ -15,34 +15,41 @@ import Testing
 struct VersionMarkerMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
+    private func makeInstall() -> InstallObject {
+        let install = InstallObject.stub(date: Date(), in: context)
+        install.installID = UUID()
+        return install
+    }
+
     @Test("mark records one marker per install, name and version")
     func markIsIdempotent() throws {
-        let install = UUID()
+        let install = makeInstall()
 
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "2.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, install: install, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, install: install, appVersion: "2.0", in: context)
 
         let markers = try context.fetchAll(VersionMarker.self)
         #expect(markers.count == 1)
-        #expect(markers.first?.installID == install)
+        #expect(markers.first?.install == install)
         #expect(markers.first?.appVersion == "2.0")
     }
 
     @Test("Different versions, names or installs get their own markers")
     func markDistinguishes() throws {
-        let install = UUID()
+        let install = makeInstall()
+        let other = makeInstall()
 
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "2.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.installName, installID: install, appVersion: "3.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.crashName, installID: install, appVersion: "2.0", in: context)
-        try VersionMarker.mark(name: VersionMarker.installName, installID: UUID(), appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, install: install, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, install: install, appVersion: "3.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.crashName, install: install, appVersion: "2.0", in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, install: other, appVersion: "2.0", in: context)
 
         #expect(try context.fetchAll(VersionMarker.self).count == 4)
     }
 
     @Test("mark ignores a missing version")
     func markSkipsNilVersion() throws {
-        try VersionMarker.mark(name: VersionMarker.installName, installID: UUID(), appVersion: nil, in: context)
+        try VersionMarker.mark(name: VersionMarker.installName, install: makeInstall(), appVersion: nil, in: context)
         #expect(try context.fetchAll(VersionMarker.self).isEmpty)
     }
 }

@@ -8,9 +8,10 @@
 import CoreData
 
 @objc(UserActivityObject)
-final class UserActivityObject: TrackedObject {
+final class UserActivityObject: SyncableObject, HasSession {
     override class var isLocalOnly: Bool { true }
 
+    @NSManaged var session: SessionObject?
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32
     @NSManaged var period: String?

@@ -13,6 +13,7 @@ extension SessionObject: Monitor {
 
         let session = context.insert(SessionObject.self)
         session.date = Date()
+        session.launch = try context.existing(LaunchObject.self, key: "launchID", id: IDs.launch)
         session.appVersion = Bundle.main.marketingVersion
         session.buildNumber = Bundle.main.buildNumber
         session.osVersion = SystemInfo.osVersion
@@ -24,7 +25,7 @@ extension SessionObject: Monitor {
     static func complete(in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
-        request.predicate = NSPredicate(format: "launchID == %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "launch.launchID == %@", IDs.launch as CVarArg)
         request.fetchLimit = 1
 
         guard let session = try context.fetch(request).first else {

@@ -8,23 +8,22 @@
 import CoreData
 
 @objc(LaunchObject)
-final class LaunchObject: SyncableObject {
+final class LaunchObject: SyncableObject, HasInstall {
     static let recordType = "Launch"
 
     @NSManaged var endDate: Date?
+    @NSManaged var launchID: UUID
+    @NSManaged var install: InstallObject?
+    @NSManaged var sessions: Set<SessionObject>
+    @NSManaged var versions: Set<VersionObject>
 
-    func sessions(in context: NSManagedObjectContext) throws -> [SessionObject] {
-        let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
-        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
-        return try context.fetch(request)
+    override var references: Set<DateObject> {
+        Set(Array(sessions) + Array(versions))
     }
 
-    func version(in context: NSManagedObjectContext) throws -> VersionObject? {
-        let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
-        request.fetchLimit = 1
-        return try context.fetch(request).first
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        launchID = IDs.launch
     }
 }
 
@@ -35,6 +34,8 @@ extension LaunchObject: RecordEncodable {
         record["start_date"] = date
         record["end_date"] = endDate
         record["launch_id"] = launchID.uuidString
+        record["install_id"] = installID?.uuidString
+        record["device_id"] = deviceID?.uuidString
 
         record.setValues(metadata)
 

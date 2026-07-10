@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(SessionObject)
-final class SessionObject: TrackedObject {
+final class SessionObject: SyncableObject, HasLaunch {
     static let recordType = "Session"
 
     @NSManaged var appVersion: String?
@@ -17,12 +17,22 @@ final class SessionObject: TrackedObject {
     @NSManaged var osVersion: String?
     @NSManaged var locale: String?
     @NSManaged var channel: String?
+    @NSManaged var sessionID: UUID
+    @NSManaged var launch: LaunchObject?
 
-    func launch(in context: NSManagedObjectContext) throws -> LaunchObject? {
-        let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "launchID == %@", launchID as CVarArg)
-        request.fetchLimit = 1
-        return try context.fetch(request).first
+    @NSManaged var crashes: Set<CrashObject>
+    @NSManaged var hangs: Set<HangObject>
+    @NSManaged var events: Set<EventObject>
+    @NSManaged var metrics: Set<MetricsObject>
+    @NSManaged var activities: Set<UserActivityObject>
+
+    override var references: Set<DateObject> {
+        Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics) + Array(activities))
+    }
+
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        sessionID = IDs.session
     }
 }
 
@@ -33,7 +43,9 @@ extension SessionObject: RecordEncodable {
         record["start_date"] = date
         record["end_date"] = endDate
         record["session_id"] = sessionID.uuidString
-        record["launch_id"] = launchID.uuidString
+        record["launch_id"] = launchID?.uuidString
+        record["install_id"] = installID?.uuidString
+        record["device_id"] = deviceID?.uuidString
         record["app_version"] = appVersion
         record["build_number"] = buildNumber
         record["os_version"] = osVersion

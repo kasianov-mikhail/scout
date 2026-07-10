@@ -23,9 +23,9 @@ struct MergePolicyTests {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
 
-        let container = NSPersistentContainer(named: "Scout")
+        let container = NSPersistentContainer(named: "ScoutModel")
         container.persistentStoreDescriptions = [
-            NSPersistentStoreDescription(url: directory.appendingPathComponent("Scout.sqlite"))
+            NSPersistentStoreDescription(url: directory.appendingPathComponent("ScoutModel.sqlite"))
         ]
         try container.loadStore()
 

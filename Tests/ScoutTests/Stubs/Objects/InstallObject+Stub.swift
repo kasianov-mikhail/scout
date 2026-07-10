@@ -13,12 +13,14 @@ extension InstallObject {
     @discardableResult static func stub(
         date: Date,
         synced: Bool = false,
+        device: DeviceObject? = nil,
         in context: NSManagedObjectContext
     ) -> InstallObject {
         let install = context.insert(InstallObject.self)
 
         install.date = date
         install.setSynced(synced, in: context)
+        install.device = device
 
         return install
     }

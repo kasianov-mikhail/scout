@@ -8,16 +8,10 @@
 import CoreData
 
 extension LaunchObject: PartialMonitor {
-    /// A launch represents the lifetime of the current process.
-    ///
-    /// Created once during `setup()` and finalised only on the next
-    /// process start via `completeStale`, which sets `endDate` from the
-    /// latest signal recorded under this `launchID` — the OS provides no
-    /// reliable hook for "process about to die".
-    ///
     static func trigger(in context: NSManagedObjectContext) throws {
         let launch = context.insert(LaunchObject.self)
         launch.date = Date()
+        launch.install = try context.existing(InstallObject.self, key: "installID", id: IDs.install)
         try context.save()
     }
 }

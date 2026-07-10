@@ -15,6 +15,7 @@ extension VersionObject {
         synced: Bool = false,
         appVersion: String = "1.0",
         buildNumber: String? = nil,
+        launch: LaunchObject? = nil,
         in context: NSManagedObjectContext
     ) -> VersionObject {
         let version = context.insert(VersionObject.self)
@@ -23,6 +24,7 @@ extension VersionObject {
         version.setSynced(synced, in: context)
         version.appVersion = appVersion
         version.buildNumber = buildNumber
+        version.launch = launch
 
         return version
     }

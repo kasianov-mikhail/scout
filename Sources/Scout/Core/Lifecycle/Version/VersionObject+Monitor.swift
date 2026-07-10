@@ -18,7 +18,7 @@ extension VersionObject: PartialMonitor {
 
     static func trigger(appVersion: String?, buildNumber: String?, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "installID == %@", IDs.install as CVarArg)
+        request.predicate = NSPredicate(format: "launch.install.installID == %@", IDs.install as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
         request.fetchLimit = 1
         let latest = try context.fetch(request).first
@@ -31,6 +31,7 @@ extension VersionObject: PartialMonitor {
         version.date = Date()
         version.appVersion = appVersion
         version.buildNumber = buildNumber
+        version.launch = try context.existing(LaunchObject.self, key: "launchID", id: IDs.launch)
         try context.save()
     }
 }

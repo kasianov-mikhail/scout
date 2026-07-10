@@ -27,14 +27,19 @@ func logHang(_ hang: HangInfo, id: UUID = UUID(), context: NSManagedObjectContex
     object.stackTrace = try? JSONEncoder().encode(hang.stackTrace)
     object.duration = hang.duration
 
-    // Override IDs set by awakeFromInsert with values captured at hang time
-    object.installID = hang.installID
-    object.launchID = hang.launchID
-    object.sessionID = hang.sessionID
+    // Reattach to the session/launch/install chain captured at hang time,
+    // materializing any hub the faulted run didn't persist.
+    let session = try context.linkedSession(
+        installID: hang.installID,
+        launchID: hang.launchID,
+        sessionID: hang.sessionID,
+        date: hang.date
+    )
+    object.session = session
 
     try VersionMarker.mark(
         name: VersionMarker.hangName,
-        installID: hang.installID,
+        install: session.launch?.install,
         appVersion: hang.appVersion,
         in: context
     )

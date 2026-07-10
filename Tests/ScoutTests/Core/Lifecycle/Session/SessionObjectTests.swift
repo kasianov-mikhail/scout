@@ -16,19 +16,15 @@ struct SessionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("launch(in:) returns launch matching launchID")
+    @Test("launch relationship points at the owning launch")
     func testLaunch() throws {
-        let session = SessionObject.stub(date: week, in: context)
-        let launchID = session.launchID
-
         let launch = LaunchObject.stub(date: week, in: context)
-        launch.launchID = launchID
+        let session = SessionObject.stub(date: week, launch: launch, in: context)
 
-        LaunchObject.stub(date: week, in: context).launchID = UUID()
+        LaunchObject.stub(date: week, in: context)
 
         try context.save()
 
-        let result = try session.launch(in: context)
-        #expect(result?.launchID == launchID)
+        #expect(session.launch == launch)
     }
 }

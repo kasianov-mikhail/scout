@@ -7,15 +7,12 @@
 
 import CoreData
 
-@objc(NamedObject)
-class NamedObject: TrackedObject {
-    @NSManaged var name: String?
-}
-
 @objc(EventObject)
-final class EventObject: NamedObject {
+final class EventObject: SyncableObject, HasSession {
     static let recordType = "Event"
 
+    @NSManaged var session: SessionObject?
+    @NSManaged var name: String?
     @NSManaged var eventID: UUID
     @NSManaged var level: String?
     @NSManaged var paramCount: Int64
@@ -32,7 +29,10 @@ extension EventObject: RecordEncodable {
         record["param_count"] = paramCount
         record["date"] = date
         record["uuid"] = eventID.uuidString
-        record["session_id"] = sessionID.uuidString
+        record["session_id"] = sessionID?.uuidString
+        record["launch_id"] = launchID?.uuidString
+        record["install_id"] = installID?.uuidString
+        record["device_id"] = deviceID?.uuidString
 
         record.setValues(metadata)
 

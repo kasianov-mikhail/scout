@@ -51,16 +51,13 @@ struct LaunchObjectRecoveryTests {
 
     @Test("Uses latest child timestamp as endDate")
     func endDateFromChild() throws {
-        let staleLaunchID = UUID()
         let launch = LaunchObject.stub(date: date, in: context)
-        launch.launchID = staleLaunchID
+        launch.launchID = UUID()
 
-        let session = SessionObject.stub(date: date.addingTimeInterval(10), in: context)
-        session.launchID = staleLaunchID
+        SessionObject.stub(date: date.addingTimeInterval(10), launch: launch, in: context)
 
         let latest = date.addingTimeInterval(300)
-        let event = EventObject.stub(name: "x", date: latest, in: context)
-        event.launchID = staleLaunchID
+        SessionObject.stub(date: latest, launch: launch, in: context)
 
         try context.save()
         try LaunchObject.completeStale(in: context)

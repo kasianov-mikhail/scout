@@ -9,20 +9,21 @@ import CoreData
 
 extension VersionMarker: PartialMonitor {
     static func trigger(in context: NSManagedObjectContext) throws {
-        try mark(name: installName, installID: IDs.install, appVersion: Bundle.main.marketingVersion, in: context)
+        let install = try context.existing(InstallObject.self, key: "installID", id: IDs.install)
+        try mark(name: installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
 
         if context.hasChanges {
             try context.save()
         }
     }
 
-    static func mark(name: String, installID: UUID, appVersion: String?, in context: NSManagedObjectContext) throws {
-        guard let appVersion else { return }
+    static func mark(name: String, install: InstallObject?, appVersion: String?, in context: NSManagedObjectContext) throws {
+        guard let appVersion, let install else { return }
 
         let request = NSFetchRequest<VersionMarker>(entityName: "VersionMarker")
         request.predicate = NSPredicate(
-            format: "installID == %@ AND name == %@ AND appVersion == %@",
-            installID as CVarArg,
+            format: "install == %@ AND name == %@ AND appVersion == %@",
+            install,
             name,
             appVersion
         )
@@ -37,6 +38,6 @@ extension VersionMarker: PartialMonitor {
         marker.name = name
         marker.appVersion = appVersion
         marker.date = Date()
-        marker.installID = installID
+        marker.install = install
     }
 }

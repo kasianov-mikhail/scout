@@ -16,41 +16,30 @@ struct LaunchObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("sessions(in:) returns sessions matching launchID")
+    @Test("sessions relationship holds the sessions linked to the launch")
     func testSessions() throws {
         let launch = LaunchObject.stub(date: week, in: context)
-        let launchID = launch.launchID
 
-        let session1 = SessionObject.stub(date: week, in: context)
-        session1.launchID = launchID
-
-        let session2 = SessionObject.stub(date: week.addingHour(), in: context)
-        session2.launchID = launchID
-
-        SessionObject.stub(date: week, in: context).launchID = UUID()
+        SessionObject.stub(date: week, launch: launch, in: context)
+        SessionObject.stub(date: week.addingHour(), launch: launch, in: context)
+        SessionObject.stub(date: week, in: context)
 
         try context.save()
 
-        let sessions = try launch.sessions(in: context)
-        #expect(sessions.count == 2)
-        #expect(sessions[0].launchID == launchID)
-        #expect(sessions[1].launchID == launchID)
+        #expect(launch.sessions.count == 2)
+        #expect(launch.sessions.allSatisfy { $0.launch == launch })
     }
 
-    @Test("version(in:) returns version matching launchID")
-    func testVersion() throws {
+    @Test("versions relationship holds the versions linked to the launch")
+    func testVersions() throws {
         let launch = LaunchObject.stub(date: week, in: context)
-        let launchID = launch.launchID
 
-        let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        version.launchID = launchID
-
-        VersionObject.stub(date: week, appVersion: "1.0", in: context).launchID = UUID()
+        VersionObject.stub(date: week, appVersion: "2.0", launch: launch, in: context)
+        VersionObject.stub(date: week, appVersion: "1.0", in: context)
 
         try context.save()
 
-        let result = try launch.version(in: context)
-        #expect(result?.appVersion == "2.0")
-        #expect(result?.launchID == launchID)
+        #expect(launch.versions.count == 1)
+        #expect(launch.versions.first?.appVersion == "2.0")
     }
 }

@@ -16,23 +16,17 @@ struct DeviceObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("installs(in:) returns installs matching deviceID")
+    @Test("installs relationship holds the installs linked to the device")
     func testInstalls() throws {
         let device = DeviceObject.stub(date: week, in: context)
-        let deviceID = device.deviceID
 
-        let i1 = InstallObject.stub(date: week, in: context)
-        i1.deviceID = deviceID
-
-        let i2 = InstallObject.stub(date: week.addingHour(), in: context)
-        i2.deviceID = deviceID
-
-        InstallObject.stub(date: week, in: context).deviceID = UUID()
+        InstallObject.stub(date: week, device: device, in: context)
+        InstallObject.stub(date: week.addingHour(), device: device, in: context)
+        InstallObject.stub(date: week, in: context)
 
         try context.save()
 
-        let installs = try device.installs(in: context)
-        #expect(installs.count == 2)
-        #expect(installs.allSatisfy { $0.deviceID == deviceID })
+        #expect(device.installs.count == 2)
+        #expect(device.installs.allSatisfy { $0.device == device })
     }
 }

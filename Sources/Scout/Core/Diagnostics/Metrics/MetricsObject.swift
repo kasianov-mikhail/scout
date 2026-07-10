@@ -14,7 +14,8 @@ protocol MetricsValued: MetricsObject {
 }
 
 @objc(MetricsObject)
-class MetricsObject: TrackedObject {
+class MetricsObject: SyncableObject, HasSession {
+    @NSManaged var session: SessionObject?
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 }

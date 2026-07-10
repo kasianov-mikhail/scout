@@ -29,7 +29,13 @@ struct RecordEncodingTests {
 
     @Test("Int metrics serialize as raw IntMetric records")
     func intMetricRecord() throws {
+        let device = DeviceObject.stub(date: Date(), in: context)
+        let install = InstallObject.stub(date: Date(), device: device, in: context)
+        let launch = LaunchObject.stub(date: Date(), install: install, in: context)
+        let session = SessionObject.stub(date: Date(), launch: launch, in: context)
+
         let metric = IntMetricsObject.stub(name: "requests", telemetry: "counter", value: 5, in: context)
+        metric.session = session
         try context.save()
 
         let record = metric.record

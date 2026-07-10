@@ -15,6 +15,7 @@ extension EventObject {
         date: Date = Date(),
         synced: Bool = false,
         level: Event.Level = .info,
+        session: SessionObject? = nil,
         in context: NSManagedObjectContext
     ) -> EventObject {
         let event = context.insert(EventObject.self)
@@ -24,6 +25,7 @@ extension EventObject {
         event.eventID = UUID()
         event.setSynced(synced, in: context)
         event.level = level.rawValue
+        event.session = session
 
         return event
     }

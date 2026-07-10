@@ -38,9 +38,6 @@ let package = Package(
             dependencies: [
                 "Scout",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
-            ],
-            resources: [
-                .copy("Fixtures")
             ]
         ),
     ]

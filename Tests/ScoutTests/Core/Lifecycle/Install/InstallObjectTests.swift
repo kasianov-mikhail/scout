@@ -16,24 +16,21 @@ struct InstallObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("versions(in:) returns versions matching installID")
+    @Test("versions are reachable through the install's launches")
     func testVersions() throws {
         let install = InstallObject.stub(date: week, in: context)
-        let installID = install.installID
+        let launch = LaunchObject.stub(date: week, install: install, in: context)
 
-        let v1 = VersionObject.stub(date: week, appVersion: "1.0", in: context)
-        v1.installID = installID
+        VersionObject.stub(date: week, appVersion: "1.0", launch: launch, in: context)
+        VersionObject.stub(date: week.addingHour(), appVersion: "2.0", launch: launch, in: context)
 
-        let v2 = VersionObject.stub(date: week.addingHour(), appVersion: "2.0", in: context)
-        v2.installID = installID
-
-        VersionObject.stub(date: week, appVersion: "3.0", in: context).installID = UUID()
+        let otherLaunch = LaunchObject.stub(date: week, in: context)
+        VersionObject.stub(date: week, appVersion: "3.0", launch: otherLaunch, in: context)
 
         try context.save()
 
-        let versions = try install.versions(in: context)
+        let versions = install.launches.flatMap(\.versions)
         #expect(versions.count == 2)
-        #expect(versions[0].appVersion == "1.0")
-        #expect(versions[1].appVersion == "2.0")
+        #expect(Set(versions.compactMap(\.appVersion)) == ["1.0", "2.0"])
     }
 }

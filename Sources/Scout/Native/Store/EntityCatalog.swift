@@ -138,7 +138,7 @@ enum EntityCatalog {
     }
 
     // The date components and app-context IDs every record carries — see
-    // `DateObject.metadata` and `IDObject.metadata`.
+    // `DateObject.metadata`.
     private static let metadata: [(String, FieldType)] = [
         ("hour", .timestamp),
         ("day", .timestamp),

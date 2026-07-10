@@ -16,61 +16,24 @@ struct VersionObjectTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("launches(in:) returns all launches with same appVersion")
-    func testLaunches() throws {
-        let launchID1 = UUID()
-        let launchID2 = UUID()
-        let launchID3 = UUID()
-
-        let v1 = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        v1.launchID = launchID1
-
-        let v2 = VersionObject.stub(date: week.addingHour(), appVersion: "2.0", in: context)
-        v2.launchID = launchID2
-
-        let v3 = VersionObject.stub(date: week, appVersion: "1.0", in: context)
-        v3.launchID = launchID3
-
-        let l1 = LaunchObject.stub(date: week, in: context)
-        l1.launchID = launchID1
-
-        let l2 = LaunchObject.stub(date: week.addingHour(), in: context)
-        l2.launchID = launchID2
-
-        let l3 = LaunchObject.stub(date: week, in: context)
-        l3.launchID = launchID3
+    @Test("launch relationship points at the owning launch")
+    func testLaunch() throws {
+        let launch = LaunchObject.stub(date: week, in: context)
+        let version = VersionObject.stub(date: week, appVersion: "2.0", launch: launch, in: context)
 
         try context.save()
 
-        let launches = try v1.launches(in: context)
-        #expect(launches.count == 2)
-        #expect(launches.allSatisfy { $0.launchID == launchID1 || $0.launchID == launchID2 })
+        #expect(version.launch == launch)
     }
 
-    @Test("launches(in:) returns an empty array when appVersion is nil")
-    func testLaunchesNilAppVersion() throws {
-        let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        version.appVersion = nil
-
-        try context.save()
-
-        let launches = try version.launches(in: context)
-        #expect(launches.isEmpty)
-    }
-
-    @Test("install(in:) returns install matching installID")
+    @Test("install is reachable through the launch")
     func testInstall() throws {
-        let version = VersionObject.stub(date: week, appVersion: "2.0", in: context)
-        let installID = version.installID
-
         let install = InstallObject.stub(date: week, in: context)
-        install.installID = installID
-
-        InstallObject.stub(date: week, in: context).installID = UUID()
+        let launch = LaunchObject.stub(date: week, install: install, in: context)
+        let version = VersionObject.stub(date: week, appVersion: "2.0", launch: launch, in: context)
 
         try context.save()
 
-        let result = try version.install(in: context)
-        #expect(result?.installID == installID)
+        #expect(version.launch?.install == install)
     }
 }
