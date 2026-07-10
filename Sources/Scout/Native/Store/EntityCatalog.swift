@@ -137,8 +137,6 @@ enum EntityCatalog {
         EntityDefinition(entity: entity, version: 1, fields: slotted(fields + metadata), envelopeDate: envelopeDate, views: views)
     }
 
-    // The date components and app-context IDs every record carries — see
-    // `DateObject.metadata`.
     private static let metadata: [(String, FieldType)] = [
         ("hour", .timestamp),
         ("day", .timestamp),
