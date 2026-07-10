@@ -37,6 +37,8 @@
         <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableObject" inverseName="deliveries" inverseEntity="SyncableObject"/>
         <fetchIndex name="byBackend">
             <fetchIndexElement property="backendID" type="Binary" order="ascending"/>
+            <fetchIndexElement property="isPending" type="Binary" order="ascending"/>
+            <fetchIndexElement property="attempts" type="Binary" order="ascending"/>
         </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
@@ -119,6 +121,9 @@
             <fetchIndexElement property="install" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
+        <fetchIndex name="byEndDate">
+            <fetchIndexElement property="endDate" type="Binary" order="ascending"/>
+        </fetchIndex>
     </entity>
     <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
         <attribute name="name" attributeType="String"/>
@@ -151,6 +156,9 @@
             <fetchIndexElement property="launch" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
+        <fetchIndex name="byEndDate">
+            <fetchIndexElement property="endDate" type="Binary" order="ascending"/>
+        </fetchIndex>
     </entity>
     <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="DateObject" syncable="YES" codeGenerationType="none">
         <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SyncDelivery" inverseName="object" inverseEntity="SyncDelivery"/>
@@ -175,6 +183,10 @@
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
+        <fetchIndex name="byPeriodDay">
+            <fetchIndexElement property="period" type="Binary" order="ascending"/>
+            <fetchIndexElement property="day" type="Binary" order="ascending"/>
+        </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
                 <constraint value="userActivityID"/>
@@ -186,8 +198,10 @@
         <attribute name="markerID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
         <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallObject" inverseName="markers" inverseEntity="InstallObject"/>
-        <fetchIndex name="byInstall">
+        <fetchIndex name="byInstallNameVersion">
             <fetchIndexElement property="install" type="Binary" order="ascending"/>
+            <fetchIndexElement property="name" type="Binary" order="ascending"/>
+            <fetchIndexElement property="appVersion" type="Binary" order="ascending"/>
         </fetchIndex>
         <uniquenessConstraints>
             <uniquenessConstraint>
