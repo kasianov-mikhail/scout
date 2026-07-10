@@ -78,6 +78,9 @@ struct ChartExportSheet<ChartContent: View>: View {
             }
         }
         .listStyle(.plain)
+        .disabledScrollBounce()
+        .scrollContentBackground(.hidden)
+        .background(.background)
         .safeAreaInset(edge: .bottom) {
             shareButton.padding()
         }
