@@ -18,14 +18,14 @@ struct HangInfo: Codable {
     let sessionID: UUID
     let appVersion: String?
 
-    init(name: String, reason: String?, stackTrace: [String], duration: TimeInterval, sessionID: UUID = IDs.rawSession) {
+    init(name: String, reason: String?, stackTrace: [String], duration: TimeInterval, sessionID: UUID = GlobalIdentity.live.session.raw) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
         self.duration = duration
         self.date = Date()
-        self.installID = IDs.install
-        self.launchID = IDs.launch
+        self.installID = GlobalIdentity.live.install
+        self.launchID = GlobalIdentity.live.launch
         self.sessionID = sessionID
         self.appVersion = Bundle.main.marketingVersion
     }

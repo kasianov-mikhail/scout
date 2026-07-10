@@ -8,9 +8,9 @@
 import CoreData
 
 extension LaunchObject: RecoveryMonitor {
-    static func completeStale(in context: NSManagedObjectContext) throws {
+    static func completeStale(identity: Identity, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", identity.launch as CVarArg)
 
         for launch in try context.fetch(request) {
             launch.endDate = launch.inferred

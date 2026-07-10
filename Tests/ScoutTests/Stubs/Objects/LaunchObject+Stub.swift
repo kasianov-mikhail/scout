@@ -19,6 +19,7 @@ extension LaunchObject {
     ) -> LaunchObject {
         let launch = context.insert(LaunchObject.self)
 
+        launch.launchID = GlobalIdentity.live.launch
         launch.date = date
         launch.setSynced(synced, in: context)
         launch.endDate = endDate

@@ -39,16 +39,18 @@ private func run(_ action: ActionTable.Action) async {
 extension ActionTable {
     static let appState = ActionTable(actions: [
         AppLifecycle.willEnterForeground: {
+            let identity = GlobalIdentity.live
             try await persistentContainer.performBackgroundTasks(
-                SessionObject.trigger,
-                UserActivityObject.trigger,
-                VersionMarker.trigger
+                { try SessionObject.trigger(identity: identity, in: $0) },
+                { try UserActivityObject.trigger(identity: identity, in: $0) },
+                { try VersionMarker.trigger(identity: identity, in: $0) }
             )
         },
         AppLifecycle.didEnterBackground: {
+            let identity = GlobalIdentity.live
             try await persistentContainer.performBackgroundTasks(
-                SessionObject.complete,
-                UserActivityObject.trigger
+                { try SessionObject.complete(identity: identity, in: $0) },
+                { try UserActivityObject.trigger(identity: identity, in: $0) }
             )
         },
     ])

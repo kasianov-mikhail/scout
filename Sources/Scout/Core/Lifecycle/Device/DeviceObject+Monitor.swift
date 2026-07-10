@@ -8,9 +8,9 @@
 import CoreData
 
 extension DeviceObject: PartialMonitor {
-    static func trigger(in context: NSManagedObjectContext) throws {
+    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<DeviceObject>(entityName: "DeviceObject")
-        request.predicate = NSPredicate(format: "deviceID == %@", IDs.device as CVarArg)
+        request.predicate = NSPredicate(format: "deviceID == %@", identity.device as CVarArg)
         request.fetchLimit = 1
 
         guard try context.fetch(request).isEmpty else {
@@ -18,6 +18,7 @@ extension DeviceObject: PartialMonitor {
         }
 
         let device = context.insert(DeviceObject.self)
+        device.deviceID = identity.device
         device.date = Date()
         device.model = SystemInfo.deviceModel
         try context.save()

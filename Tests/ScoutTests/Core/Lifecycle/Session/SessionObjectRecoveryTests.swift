@@ -14,6 +14,7 @@ import Testing
 @Suite("SessionObject+Recovery")
 struct SessionObjectRecoveryTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let identity = GlobalIdentity.live
     let date = TestDate.reference
 
     private func staleLaunch() -> LaunchObject {
@@ -27,7 +28,7 @@ struct SessionObjectRecoveryTests {
         let session = SessionObject.stub(date: date, launch: staleLaunch(), in: context)
 
         try context.save()
-        try SessionObject.completeStale(in: context)
+        try SessionObject.completeStale(identity: identity, in: context)
 
         #expect(session.endDate == date)
     }
@@ -38,7 +39,7 @@ struct SessionObjectRecoveryTests {
         let session = SessionObject.stub(date: date, launch: launch, in: context)
 
         try context.save()
-        try SessionObject.completeStale(in: context)
+        try SessionObject.completeStale(identity: identity, in: context)
 
         #expect(session.endDate == nil)
     }
@@ -49,7 +50,7 @@ struct SessionObjectRecoveryTests {
         let session = SessionObject.stub(date: date, endDate: endDate, launch: staleLaunch(), in: context)
 
         try context.save()
-        try SessionObject.completeStale(in: context)
+        try SessionObject.completeStale(identity: identity, in: context)
 
         #expect(session.endDate == endDate)
     }
@@ -62,7 +63,7 @@ struct SessionObjectRecoveryTests {
         EventObject.stub(name: "x", date: latest, session: session, in: context)
 
         try context.save()
-        try SessionObject.completeStale(in: context)
+        try SessionObject.completeStale(identity: identity, in: context)
 
         #expect(session.endDate == latest)
     }

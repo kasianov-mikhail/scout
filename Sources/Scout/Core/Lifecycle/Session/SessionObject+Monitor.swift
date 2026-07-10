@@ -8,12 +8,14 @@
 import CoreData
 
 extension SessionObject: Monitor {
-    static func trigger(in context: NSManagedObjectContext) throws {
-        IDs.session = UUID()
+    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
+        let sessionID = UUID()
+        identity.session.current = sessionID
 
         let session = context.insert(SessionObject.self)
+        session.sessionID = sessionID
         session.date = Date()
-        session.launch = try context.existing(LaunchObject.self, key: "launchID", id: IDs.launch)
+        session.launch = try context.existing(LaunchObject.self, key: "launchID", id: identity.launch)
         session.appVersion = Bundle.main.marketingVersion
         session.buildNumber = Bundle.main.buildNumber
         session.osVersion = SystemInfo.osVersion
@@ -22,10 +24,10 @@ extension SessionObject: Monitor {
         try context.save()
     }
 
-    static func complete(in context: NSManagedObjectContext) throws {
+    static func complete(identity: Identity, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
-        request.predicate = NSPredicate(format: "launch.launchID == %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "launch.launchID == %@", identity.launch as CVarArg)
         request.fetchLimit = 1
 
         guard let session = try context.fetch(request).first else {

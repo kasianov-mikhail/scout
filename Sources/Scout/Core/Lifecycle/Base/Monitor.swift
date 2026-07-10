@@ -9,15 +9,15 @@ import CoreData
 import Foundation
 
 protocol Monitor: PartialMonitor {
-    static func complete(in context: NSManagedObjectContext) throws
+    static func complete(identity: Identity, in context: NSManagedObjectContext) throws
 }
 
 protocol PartialMonitor {
-    static func trigger(in context: NSManagedObjectContext) throws
+    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws
 }
 
 protocol RecoveryMonitor {
-    static func completeStale(in context: NSManagedObjectContext) throws
+    static func completeStale(identity: Identity, in context: NSManagedObjectContext) throws
 }
 
 enum MonitorError: LocalizedError, Equatable {

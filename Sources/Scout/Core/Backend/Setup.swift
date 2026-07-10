@@ -42,9 +42,11 @@ public func setup(backends: [Backend]) async throws {
     await CrashArchive.system.flush()
     await HangArchive.system.flush()
 
+    let identity = GlobalIdentity.live
+
     try await persistentContainer.performBackgroundTasks(
-        SessionObject.completeStale,
-        LaunchObject.completeStale,
+        { try SessionObject.completeStale(identity: identity, in: $0) },
+        { try LaunchObject.completeStale(identity: identity, in: $0) },
     )
 
     let dispatcher = Coalescer()
@@ -56,13 +58,13 @@ public func setup(backends: [Backend]) async throws {
     ActionTable.appState.startListening(completion: sync)
 
     try await persistentContainer.performBackgroundTasks(
-        DeviceObject.trigger,
-        InstallObject.trigger,
-        VersionObject.trigger,
-        LaunchObject.trigger,
-        SessionObject.trigger,
-        UserActivityObject.trigger,
-        VersionMarker.trigger
+        { try DeviceObject.trigger(identity: identity, in: $0) },
+        { try InstallObject.trigger(identity: identity, in: $0) },
+        { try VersionObject.trigger(identity: identity, in: $0) },
+        { try LaunchObject.trigger(identity: identity, in: $0) },
+        { try SessionObject.trigger(identity: identity, in: $0) },
+        { try UserActivityObject.trigger(identity: identity, in: $0) },
+        { try VersionMarker.trigger(identity: identity, in: $0) }
     )
 
     LoggingSystem.bootstrap { CKLogHandler(sync: sync, label: $0) }

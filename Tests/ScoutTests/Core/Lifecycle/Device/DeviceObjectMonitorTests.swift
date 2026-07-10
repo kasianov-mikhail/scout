@@ -14,10 +14,11 @@ import Testing
 @Suite("DeviceObject+Monitor")
 struct DeviceObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let identity = GlobalIdentity.live
 
     @Test("trigger stamps the device with its hardware model")
     func triggerStampsModel() throws {
-        try DeviceObject.trigger(in: context)
+        try DeviceObject.trigger(identity: identity, in: context)
 
         let device = try #require(try context.fetchAll(DeviceObject.self).first)
         #expect(device.model == SystemInfo.deviceModel)
@@ -26,8 +27,8 @@ struct DeviceObjectMonitorTests {
 
     @Test("trigger inserts a single device for the current deviceID")
     func triggerIsIdempotent() throws {
-        try DeviceObject.trigger(in: context)
-        try DeviceObject.trigger(in: context)
+        try DeviceObject.trigger(identity: identity, in: context)
+        try DeviceObject.trigger(identity: identity, in: context)
 
         #expect(try context.fetchAll(DeviceObject.self).count == 1)
     }

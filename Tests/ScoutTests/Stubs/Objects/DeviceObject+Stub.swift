@@ -17,6 +17,7 @@ extension DeviceObject {
     ) -> DeviceObject {
         let device = context.insert(DeviceObject.self)
 
+        device.deviceID = GlobalIdentity.live.device
         device.date = date
         device.setSynced(synced, in: context)
 

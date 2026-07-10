@@ -14,22 +14,23 @@ import Testing
 @Suite("LaunchObject+Monitor")
 struct LaunchObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let identity = GlobalIdentity.live
 
     @Test("trigger creates a LaunchObject")
     func createsLaunch() throws {
-        try LaunchObject.trigger(in: context)
+        try LaunchObject.trigger(identity: identity, in: context)
 
         let launches = try context.fetchAll(LaunchObject.self)
         #expect(launches.count == 1)
-        #expect(launches.first?.launchID == IDs.launch)
+        #expect(launches.first?.launchID == identity.launch)
         #expect(launches.first?.endDate == nil)
     }
 
     @Test("Launch stays open when a session inside it is completed")
     func launchRemainsOpenAfterSessionComplete() throws {
-        try LaunchObject.trigger(in: context)
-        try SessionObject.trigger(in: context)
-        try SessionObject.complete(in: context)
+        try LaunchObject.trigger(identity: identity, in: context)
+        try SessionObject.trigger(identity: identity, in: context)
+        try SessionObject.complete(identity: identity, in: context)
 
         let launches = try context.fetchAll(LaunchObject.self)
         #expect(launches.first?.endDate == nil)

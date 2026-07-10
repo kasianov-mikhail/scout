@@ -20,6 +20,7 @@ extension SessionObject {
     ) -> SessionObject {
         let session = context.insert(SessionObject.self)
 
+        session.sessionID = GlobalIdentity.live.session.current
         session.date = date
         session.setSynced(synced, in: context)
         session.endDate = endDate

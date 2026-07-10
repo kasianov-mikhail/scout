@@ -8,14 +8,14 @@
 import CoreData
 
 extension UserActivityObject: PartialMonitor {
-    static func trigger(in context: NSManagedObjectContext) throws {
-        try trigger(date: Date().startOfDay, in: context)
+    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
+        try trigger(identity: identity, date: Date().startOfDay, in: context)
     }
 
-    static func trigger(date: Date, in context: NSManagedObjectContext) throws {
+    static func trigger(identity: Identity = GlobalIdentity.live, date: Date, in context: NSManagedObjectContext) throws {
         for period in ActivityPeriod.allCases {
             let provider = Provider(date: date, period: period)
-            let activities = try provider.fetch(in: context)
+            let activities = try provider.fetch(identity: identity, in: context)
 
             let limit = date.adding(period.spreadComponent)
 

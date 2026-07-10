@@ -48,7 +48,7 @@ struct LogHangTests {
         let hangSessionID = UUID()
         let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5, sessionID: hangSessionID)
 
-        #expect(IDs.session != hangSessionID)
+        #expect(GlobalIdentity.live.session.current != hangSessionID)
 
         try logHang(hang, context: context)
 

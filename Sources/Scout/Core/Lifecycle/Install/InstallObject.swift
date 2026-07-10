@@ -19,11 +19,6 @@ final class InstallObject: SyncableObject, HasDevice {
     override var references: Set<DateObject> {
         Set(Array(launches) + Array(markers))
     }
-
-    override func awakeFromInsert() {
-        super.awakeFromInsert()
-        installID = IDs.install
-    }
 }
 
 extension InstallObject: RecordEncodable {

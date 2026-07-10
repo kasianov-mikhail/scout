@@ -8,10 +8,11 @@
 import CoreData
 
 extension LaunchObject: PartialMonitor {
-    static func trigger(in context: NSManagedObjectContext) throws {
+    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
         let launch = context.insert(LaunchObject.self)
+        launch.launchID = identity.launch
         launch.date = Date()
-        launch.install = try context.existing(InstallObject.self, key: "installID", id: IDs.install)
+        launch.install = try context.existing(InstallObject.self, key: "installID", id: identity.install)
         try context.save()
     }
 }
