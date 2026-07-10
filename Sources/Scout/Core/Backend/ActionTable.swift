@@ -36,24 +36,6 @@ private func run(_ action: ActionTable.Action) async {
     }
 }
 
-extension ActionTable {
-    static let appState = ActionTable(actions: [
-        AppLifecycle.willEnterForeground: {
-            try await persistentContainer.performBackgroundTasks(
-                SessionObject.trigger,
-                UserActivityObject.trigger,
-                VersionMarker.trigger
-            )
-        },
-        AppLifecycle.didEnterBackground: {
-            try await persistentContainer.performBackgroundTasks(
-                SessionObject.complete,
-                UserActivityObject.trigger
-            )
-        },
-    ])
-}
-
 enum AppLifecycle {
     static var willEnterForeground: Notification.Name {
         #if canImport(UIKit)

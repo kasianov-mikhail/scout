@@ -16,8 +16,9 @@ extension NSManagedObjectContext {
         return try fetch(request).first
     }
 
-    func linkedSession(installID: UUID, launchID: UUID, sessionID: UUID, date: Date) throws -> SessionObject {
-        let device = try fetchOrCreate(DeviceObject.self, key: "deviceID", id: IDs.device) {
+    func linkedSession(deviceID: UUID, installID: UUID, launchID: UUID, sessionID: UUID, date: Date) throws -> SessionObject {
+        let device = try fetchOrCreate(DeviceObject.self, key: "deviceID", id: deviceID) {
+            $0.deviceID = deviceID
             $0.date = date
         }
         let install = try fetchOrCreate(InstallObject.self, key: "installID", id: installID) {

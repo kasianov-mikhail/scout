@@ -14,6 +14,7 @@ import Testing
 @Suite("LaunchObject+Recovery")
 struct LaunchObjectRecoveryTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let identity = Identity.stub
     let date = TestDate.reference
 
     @Test("Closes launches from previous launches")
@@ -22,7 +23,7 @@ struct LaunchObjectRecoveryTests {
         launch.launchID = UUID()
 
         try context.save()
-        try LaunchObject.completeStale(in: context)
+        try LaunchObject.completeStale(launchID: identity.launch, in: context)
 
         #expect(launch.endDate == date)
     }
@@ -32,7 +33,7 @@ struct LaunchObjectRecoveryTests {
         let launch = LaunchObject.stub(date: date, in: context)
 
         try context.save()
-        try LaunchObject.completeStale(in: context)
+        try LaunchObject.completeStale(launchID: identity.launch, in: context)
 
         #expect(launch.endDate == nil)
     }
@@ -44,7 +45,7 @@ struct LaunchObjectRecoveryTests {
         launch.launchID = UUID()
 
         try context.save()
-        try LaunchObject.completeStale(in: context)
+        try LaunchObject.completeStale(launchID: identity.launch, in: context)
 
         #expect(launch.endDate == endDate)
     }
@@ -60,7 +61,7 @@ struct LaunchObjectRecoveryTests {
         SessionObject.stub(date: latest, launch: launch, in: context)
 
         try context.save()
-        try LaunchObject.completeStale(in: context)
+        try LaunchObject.completeStale(launchID: identity.launch, in: context)
 
         #expect(launch.endDate == latest)
     }

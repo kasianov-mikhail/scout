@@ -5,20 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
 import Foundation
-
-protocol Monitor: PartialMonitor {
-    static func complete(in context: NSManagedObjectContext) throws
-}
-
-protocol PartialMonitor {
-    static func trigger(in context: NSManagedObjectContext) throws
-}
-
-protocol RecoveryMonitor {
-    static func completeStale(in context: NSManagedObjectContext) throws
-}
 
 enum MonitorError: LocalizedError, Equatable {
     case notFound

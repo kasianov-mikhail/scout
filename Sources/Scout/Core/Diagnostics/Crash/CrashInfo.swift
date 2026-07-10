@@ -17,14 +17,14 @@ struct CrashInfo: Codable {
     let sessionID: UUID
     let appVersion: String?
 
-    init(name: String, reason: String?, stackTrace: [String], sessionID: UUID = IDs.rawSession) {
+    init(name: String, reason: String?, stackTrace: [String], identity: Identity) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
         self.date = Date()
-        self.installID = IDs.install
-        self.launchID = IDs.launch
-        self.sessionID = sessionID
+        self.installID = identity.install
+        self.launchID = identity.launch
+        self.sessionID = identity.session.raw
         self.appVersion = Bundle.main.marketingVersion
     }
 }

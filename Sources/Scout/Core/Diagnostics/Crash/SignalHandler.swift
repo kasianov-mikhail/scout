@@ -9,6 +9,7 @@ import Foundation
 
 private nonisolated(unsafe) var previousSignalHandlers: [Int32: sig_t] = [:]
 private nonisolated(unsafe) var isInstalled = false
+private nonisolated(unsafe) var identity: Identity?
 
 private let fatalSignals: [(signal: Int32, name: String)] = [
     (SIGABRT, "SIGABRT"),
@@ -19,22 +20,23 @@ private let fatalSignals: [(signal: Int32, name: String)] = [
     (SIGTRAP, "SIGTRAP"),
 ]
 
-/// Installs handlers for fatal signals (SIGABRT, SIGSEGV, SIGBUS, SIGFPE, SIGILL, SIGTRAP).
-func installSignalHandler() {
-    // Guard against re-installation (e.g. a retried setup): a second install
-    // would save Scout's own handler as the "previous" one and loop forever
-    // on a real signal.
+func installSignalHandler(identity: Identity) {
     guard !isInstalled else { return }
     isInstalled = true
 
+    Scout.identity = identity
+
     for (sig, _) in fatalSignals {
         previousSignalHandlers[sig] = signal(sig) { sig in
-            let crash = CrashInfo(
-                name: signalName(sig),
-                reason: "Signal \(sig) received",
-                stackTrace: Thread.callStackSymbols
-            )
-            CrashArchive.system.write(crash)
+            if let identity = Scout.identity {
+                let crash = CrashInfo(
+                    name: signalName(sig),
+                    reason: "Signal \(sig) received",
+                    stackTrace: Thread.callStackSymbols,
+                    identity: identity
+                )
+                CrashArchive.system.write(crash)
+            }
 
             restorePreviousSignalHandler(sig)
             raise(sig)

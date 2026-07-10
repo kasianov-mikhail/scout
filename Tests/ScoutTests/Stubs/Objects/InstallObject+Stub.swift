@@ -18,6 +18,7 @@ extension InstallObject {
     ) -> InstallObject {
         let install = context.insert(InstallObject.self)
 
+        install.installID = Identity.stub.install
         install.date = date
         install.setSynced(synced, in: context)
         install.device = device

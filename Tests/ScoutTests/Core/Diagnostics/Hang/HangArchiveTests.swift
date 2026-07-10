@@ -22,7 +22,8 @@ struct HangArchiveTests {
             name: "Main Thread Blocked",
             reason: "Main thread unresponsive for 4.2s",
             stackTrace: ["frame1", "frame2"],
-            duration: 4.2
+            duration: 4.2,
+            identity: .stub
         )
 
         archive.write(hang)
@@ -48,7 +49,8 @@ struct HangArchiveTests {
             name: "Watchdog Termination Imminent",
             reason: "Main thread unresponsive for 9.8s",
             stackTrace: ["0x1234", "0x5678"],
-            duration: 9.8
+            duration: 9.8,
+            identity: .stub
         )
 
         archive.write(hang)
@@ -78,9 +80,9 @@ struct HangArchiveTests {
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         let archive = HangArchive(directory: tempDir)
 
-        let hang1 = HangInfo(name: "Hang1", reason: nil, stackTrace: [], duration: 3.1)
-        let hang2 = HangInfo(name: "Hang2", reason: nil, stackTrace: [], duration: 3.2)
-        let hang3 = HangInfo(name: "Hang3", reason: nil, stackTrace: [], duration: 3.3)
+        let hang1 = HangInfo(name: "Hang1", reason: nil, stackTrace: [], duration: 3.1, identity: .stub)
+        let hang2 = HangInfo(name: "Hang2", reason: nil, stackTrace: [], duration: 3.2, identity: .stub)
+        let hang3 = HangInfo(name: "Hang3", reason: nil, stackTrace: [], duration: 3.3, identity: .stub)
 
         archive.write(hang1)
         archive.write(hang2)

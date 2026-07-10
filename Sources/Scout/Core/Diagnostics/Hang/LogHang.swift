@@ -7,7 +7,7 @@
 
 import CoreData
 
-func logHang(_ hang: HangInfo, id: UUID = UUID(), context: NSManagedObjectContext) throws {
+func logHang(_ hang: HangInfo, id: UUID = UUID(), deviceID: UUID, context: NSManagedObjectContext) throws {
     // The id doubles as the archive file's UUID, so a flush interrupted
     // between the save and the file removal doesn't insert a duplicate
     // on the next launch.
@@ -30,6 +30,7 @@ func logHang(_ hang: HangInfo, id: UUID = UUID(), context: NSManagedObjectContex
     // Reattach to the session/launch/install chain captured at hang time,
     // materializing any hub the faulted run didn't persist.
     let session = try context.linkedSession(
+        deviceID: deviceID,
         installID: hang.installID,
         launchID: hang.launchID,
         sessionID: hang.sessionID,

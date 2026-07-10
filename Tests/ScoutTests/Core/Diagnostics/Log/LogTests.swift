@@ -28,6 +28,7 @@ private func makeEvent(
     try log(
         makeEvent("Test Event", metadata: ["key": .string("value")]),
         date: date,
+        sessionID: UUID(),
         context: context
     )
 
@@ -56,7 +57,7 @@ private func makeEvent(
         "tags": .array([.string("a"), .string("b"), .string("c")])
     ]
 
-    try log(makeEvent("Array Event", metadata: metadata), date: Date(), context: context)
+    try log(makeEvent("Array Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
 
     let events = try context.fetchAll(EventObject.self)
     let paramData = try #require(events.first?.params)
@@ -72,7 +73,7 @@ private func makeEvent(
         "user": .dictionary(["name": .string("Alice"), "role": .string("admin")])
     ]
 
-    try log(makeEvent("Dict Event", metadata: metadata), date: Date(), context: context)
+    try log(makeEvent("Dict Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
 
     let events = try context.fetchAll(EventObject.self)
     let paramData = try #require(events.first?.params)
@@ -90,7 +91,7 @@ private func makeEvent(
         "map": .dictionary(["key": .string("val")]),
     ]
 
-    try log(makeEvent("Mixed Event", metadata: metadata), date: Date(), context: context)
+    try log(makeEvent("Mixed Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
 
     let events = try context.fetchAll(EventObject.self)
     let paramData = try #require(events.first?.params)

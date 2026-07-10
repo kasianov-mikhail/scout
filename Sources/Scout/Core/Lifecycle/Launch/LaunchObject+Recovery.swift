@@ -7,10 +7,10 @@
 
 import CoreData
 
-extension LaunchObject: RecoveryMonitor {
-    static func completeStale(in context: NSManagedObjectContext) throws {
+extension LaunchObject {
+    static func completeStale(launchID: UUID, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<LaunchObject>(entityName: "LaunchObject")
-        request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", launchID as CVarArg)
 
         for launch in try context.fetch(request) {
             launch.endDate = launch.inferred

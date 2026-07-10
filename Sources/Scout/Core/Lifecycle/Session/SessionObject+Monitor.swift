@@ -7,25 +7,27 @@
 
 import CoreData
 
-extension SessionObject: Monitor {
-    static func trigger(in context: NSManagedObjectContext) throws {
-        IDs.session = UUID()
+extension SessionObject {
+    static func trigger(session: Protected<UUID>, launchID: UUID, in context: NSManagedObjectContext) throws {
+        let sessionID = UUID()
+        session.current = sessionID
 
-        let session = context.insert(SessionObject.self)
-        session.date = Date()
-        session.launch = try context.existing(LaunchObject.self, key: "launchID", id: IDs.launch)
-        session.appVersion = Bundle.main.marketingVersion
-        session.buildNumber = Bundle.main.buildNumber
-        session.osVersion = SystemInfo.osVersion
-        session.locale = SystemInfo.locale
-        session.channel = SystemInfo.channel
+        let object = context.insert(SessionObject.self)
+        object.sessionID = sessionID
+        object.date = Date()
+        object.launch = try context.existing(LaunchObject.self, key: "launchID", id: launchID)
+        object.appVersion = Bundle.main.marketingVersion
+        object.buildNumber = Bundle.main.buildNumber
+        object.osVersion = SystemInfo.osVersion
+        object.locale = SystemInfo.locale
+        object.channel = SystemInfo.channel
         try context.save()
     }
 
-    static func complete(in context: NSManagedObjectContext) throws {
+    static func complete(launchID: UUID, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
-        request.predicate = NSPredicate(format: "launch.launchID == %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "launch.launchID == %@", launchID as CVarArg)
         request.fetchLimit = 1
 
         guard let session = try context.fetch(request).first else {

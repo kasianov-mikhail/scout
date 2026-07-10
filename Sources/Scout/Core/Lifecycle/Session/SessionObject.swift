@@ -29,11 +29,6 @@ final class SessionObject: SyncableObject, HasLaunch {
     override var references: Set<DateObject> {
         Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics) + Array(activities))
     }
-
-    override func awakeFromInsert() {
-        super.awakeFromInsert()
-        sessionID = IDs.session
-    }
 }
 
 extension SessionObject: RecordEncodable {

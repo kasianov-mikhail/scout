@@ -20,11 +20,6 @@ final class LaunchObject: SyncableObject, HasInstall {
     override var references: Set<DateObject> {
         Set(Array(sessions) + Array(versions))
     }
-
-    override func awakeFromInsert() {
-        super.awakeFromInsert()
-        launchID = IDs.launch
-    }
 }
 
 extension LaunchObject: RecordEncodable {

@@ -21,7 +21,8 @@ struct CrashArchiveTests {
         let crash = CrashInfo(
             name: "TestException",
             reason: "Test reason",
-            stackTrace: ["frame1", "frame2"]
+            stackTrace: ["frame1", "frame2"],
+            identity: .stub
         )
 
         archive.write(crash)
@@ -46,7 +47,8 @@ struct CrashArchiveTests {
         let crash = CrashInfo(
             name: "NSInvalidArgumentException",
             reason: "Unrecognized selector",
-            stackTrace: ["0x1234", "0x5678", "0x9ABC"]
+            stackTrace: ["0x1234", "0x5678", "0x9ABC"],
+            identity: .stub
         )
 
         archive.write(crash)
@@ -78,7 +80,8 @@ struct CrashArchiveTests {
         let crash = CrashInfo(
             name: "SIGABRT",
             reason: nil,
-            stackTrace: []
+            stackTrace: [],
+            identity: .stub
         )
 
         archive.write(crash)
@@ -107,9 +110,9 @@ struct CrashArchiveTests {
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         let archive = CrashArchive(directory: tempDir)
 
-        let crash1 = CrashInfo(name: "Crash1", reason: nil, stackTrace: [])
-        let crash2 = CrashInfo(name: "Crash2", reason: nil, stackTrace: [])
-        let crash3 = CrashInfo(name: "Crash3", reason: nil, stackTrace: [])
+        let crash1 = CrashInfo(name: "Crash1", reason: nil, stackTrace: [], identity: .stub)
+        let crash2 = CrashInfo(name: "Crash2", reason: nil, stackTrace: [], identity: .stub)
+        let crash3 = CrashInfo(name: "Crash3", reason: nil, stackTrace: [], identity: .stub)
 
         archive.write(crash1)
         archive.write(crash2)

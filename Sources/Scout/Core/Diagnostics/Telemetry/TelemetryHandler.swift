@@ -12,11 +12,13 @@ final class CKTelemetryHandler: NSObject {
     let label: String
     let dimensions: [(String, String)]
     let sync: Synchronize
+    let session: Protected<UUID>
 
-    init(label: String, dimensions: [(String, String)], sync: @escaping Synchronize) {
+    init(label: String, dimensions: [(String, String)], sync: @escaping Synchronize, session: Protected<UUID>) {
         self.label = label
         self.dimensions = dimensions
         self.sync = sync
+        self.session = session
     }
 
     func reset() {}

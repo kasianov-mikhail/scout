@@ -18,11 +18,6 @@ final class DeviceObject: SyncableObject {
     override var references: Set<DateObject> {
         Set(Array(installs))
     }
-
-    override func awakeFromInsert() {
-        super.awakeFromInsert()
-        deviceID = IDs.device
-    }
 }
 
 extension DeviceObject: RecordEncodable {

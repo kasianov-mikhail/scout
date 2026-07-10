@@ -35,17 +35,16 @@ public func setup(backends: [Backend]) async throws {
         backend.onSetup()
     }
 
-    installExceptionHandler()
-    installSignalHandler()
-    installHangHandler()
+    let session = Protected(UUID())
 
-    await CrashArchive.system.flush()
-    await HangArchive.system.flush()
-
-    try await persistentContainer.performBackgroundTasks(
-        SessionObject.completeStale,
-        LaunchObject.completeStale,
+    let identity = Identity(
+        install: UserDefaults.standard.ensure("scout_install_id"),
+        launch: UUID(),
+        device: KeychainStorage.standard.ensure("scout_device_id"),
+        session: session
     )
+
+    try await identity.bootstrapLifecycle()
 
     let dispatcher = Coalescer()
 
@@ -53,20 +52,14 @@ public func setup(backends: [Backend]) async throws {
         try await synchronize(backends: backends, dispatcher: dispatcher)
     }
 
-    ActionTable.appState.startListening(completion: sync)
+    identity.table.startListening(completion: sync)
 
-    try await persistentContainer.performBackgroundTasks(
-        DeviceObject.trigger,
-        InstallObject.trigger,
-        VersionObject.trigger,
-        LaunchObject.trigger,
-        SessionObject.trigger,
-        UserActivityObject.trigger,
-        VersionMarker.trigger
+    LoggingSystem.bootstrap {
+        CKLogHandler(sync: sync, session: session, label: $0)
+    }
+    MetricsSystem.bootstrap(
+        TelemetryFactory(sync: sync, session: session)
     )
-
-    LoggingSystem.bootstrap { CKLogHandler(sync: sync, label: $0) }
-    MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
 
     isSetup = true
 }

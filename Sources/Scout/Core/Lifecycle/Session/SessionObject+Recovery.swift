@@ -7,10 +7,10 @@
 
 import CoreData
 
-extension SessionObject: RecoveryMonitor {
-    static func completeStale(in context: NSManagedObjectContext) throws {
+extension SessionObject {
+    static func completeStale(launchID: UUID, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<SessionObject>(entityName: "SessionObject")
-        request.predicate = NSPredicate(format: "endDate == nil AND launch.launchID != %@", IDs.launch as CVarArg)
+        request.predicate = NSPredicate(format: "endDate == nil AND launch.launchID != %@", launchID as CVarArg)
 
         for session in try context.fetch(request) {
             session.endDate = session.inferred
