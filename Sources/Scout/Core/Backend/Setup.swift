@@ -35,22 +35,21 @@ public func setup(backends: [Backend]) async throws {
         backend.onSetup()
     }
 
-    let install = UserDefaults.standard.ensure("scout_install_id")
-    let launch = UUID()
-    let device = KeychainStorage.standard.ensure("scout_device_id")
     let session = Protected(UUID())
 
     let identity = Identity(
-        install: install,
-        launch: launch,
-        device: device,
+        install: UserDefaults.standard.ensure("scout_install_id"),
+        launch: UUID(),
+        device: KeychainStorage.standard.ensure("scout_device_id"),
         session: session
     )
 
     try await identity.bootstrapLifecycle()
 
+    let dispatcher = Coalescer()
+
     @Sendable func sync() async throws {
-        try await synchronize(backends: backends, dispatcher: Coalescer())
+        try await synchronize(backends: backends, dispatcher: dispatcher)
     }
 
     identity.table.startListening(completion: sync)
