@@ -37,23 +37,23 @@ private func run(_ action: ActionTable.Action) async {
 }
 
 extension ActionTable {
-    static let appState = ActionTable(actions: [
-        AppLifecycle.willEnterForeground: {
-            let identity = GlobalIdentity.live
-            try await persistentContainer.performBackgroundTasks(
-                { try SessionObject.trigger(identity: identity, in: $0) },
-                { try UserActivityObject.trigger(identity: identity, in: $0) },
-                { try VersionMarker.trigger(identity: identity, in: $0) }
-            )
-        },
-        AppLifecycle.didEnterBackground: {
-            let identity = GlobalIdentity.live
-            try await persistentContainer.performBackgroundTasks(
-                { try SessionObject.complete(identity: identity, in: $0) },
-                { try UserActivityObject.trigger(identity: identity, in: $0) }
-            )
-        },
-    ])
+    static func appState(identity: Identity) -> ActionTable {
+        ActionTable(actions: [
+            AppLifecycle.willEnterForeground: {
+                try await persistentContainer.performBackgroundTasks(
+                    { try SessionObject.trigger(session: identity.session, launchID: identity.launch, in: $0) },
+                    { try UserActivityObject.trigger(sessionID: identity.session.current, in: $0) },
+                    { try VersionMarker.trigger(installID: identity.install, in: $0) }
+                )
+            },
+            AppLifecycle.didEnterBackground: {
+                try await persistentContainer.performBackgroundTasks(
+                    { try SessionObject.complete(launchID: identity.launch, in: $0) },
+                    { try UserActivityObject.trigger(sessionID: identity.session.current, in: $0) }
+                )
+            },
+        ])
+    }
 }
 
 enum AppLifecycle {

@@ -15,16 +15,17 @@ import Testing
 @Suite("logCrash")
 struct LogCrashTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let deviceID = UUID()
 
     private func makeCrashInfo(name: String, reason: String?, stackTrace: [String]) -> CrashInfo {
-        CrashInfo(name: name, reason: reason, stackTrace: stackTrace)
+        CrashInfo(name: name, reason: reason, stackTrace: stackTrace, identity: .stub)
     }
 
     @Test("Creates a CrashObject with correct fields")
     func createsCrashObject() throws {
         let crash = makeCrashInfo(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"])
 
-        try logCrash(crash, context: context)
+        try logCrash(crash, deviceID: deviceID, context: context)
 
         let results = try context.fetchAll(CrashObject.self)
 
@@ -48,11 +49,12 @@ struct LogCrashTests {
         // UUID can never match the current session, so the recovery session
         // logCrash materializes keeps the captured ID intact.
         let crashedSessionID = UUID()
-        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], sessionID: crashedSessionID)
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(crashedSessionID))
+        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], identity: identity)
 
-        #expect(GlobalIdentity.live.session.current != crashedSessionID)
+        #expect(Identity.stub.session.current != crashedSessionID)
 
-        try logCrash(crash, context: context)
+        try logCrash(crash, deviceID: deviceID, context: context)
 
         let object = try #require(try context.fetchAll(CrashObject.self).first)
         #expect(object.sessionID == crashedSessionID)
@@ -62,7 +64,7 @@ struct LogCrashTests {
     func encodesStackTrace() throws {
         let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: ["main", "start"])
 
-        try logCrash(crash, context: context)
+        try logCrash(crash, deviceID: deviceID, context: context)
 
         let object = try #require(try context.fetchAll(CrashObject.self).first)
 
@@ -75,7 +77,7 @@ struct LogCrashTests {
     func handlesNilReason() throws {
         let crash = makeCrashInfo(name: "EXC_BAD_ACCESS", reason: nil, stackTrace: [])
 
-        try logCrash(crash, context: context)
+        try logCrash(crash, deviceID: deviceID, context: context)
 
         let object = try #require(try context.fetchAll(CrashObject.self).first)
         #expect(object.reason == nil)
@@ -85,7 +87,7 @@ struct LogCrashTests {
     func savesToContext() throws {
         let crash = makeCrashInfo(name: "SIGBUS", reason: nil, stackTrace: [])
 
-        try logCrash(crash, context: context)
+        try logCrash(crash, deviceID: deviceID, context: context)
 
         #expect(!context.hasChanges)
     }
@@ -95,8 +97,8 @@ struct LogCrashTests {
         let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [])
         let id = UUID()
 
-        try logCrash(crash, id: id, context: context)
-        try logCrash(crash, id: id, context: context)
+        try logCrash(crash, id: id, deviceID: deviceID, context: context)
+        try logCrash(crash, id: id, deviceID: deviceID, context: context)
 
         #expect(try context.fetchAll(CrashObject.self).count == 1)
     }

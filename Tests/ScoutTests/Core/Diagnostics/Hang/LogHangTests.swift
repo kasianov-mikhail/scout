@@ -15,16 +15,17 @@ import Testing
 @Suite("logHang")
 struct LogHangTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let deviceID = UUID()
 
     private func makeHangInfo(name: String, reason: String?, stackTrace: [String], duration: TimeInterval) -> HangInfo {
-        HangInfo(name: name, reason: reason, stackTrace: stackTrace, duration: duration)
+        HangInfo(name: name, reason: reason, stackTrace: stackTrace, duration: duration, identity: .stub)
     }
 
     @Test("Creates a HangObject with correct fields")
     func createsHangObject() throws {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"], duration: 4.2)
 
-        try logHang(hang, context: context)
+        try logHang(hang, deviceID: deviceID, context: context)
 
         let results = try context.fetchAll(HangObject.self)
 
@@ -46,11 +47,12 @@ struct LogHangTests {
     @Test("Preserves sessionID captured at hang time, not the recovery session")
     func preservesCapturedSessionID() throws {
         let hangSessionID = UUID()
-        let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5, sessionID: hangSessionID)
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(hangSessionID))
+        let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5, identity: identity)
 
-        #expect(GlobalIdentity.live.session.current != hangSessionID)
+        #expect(Identity.stub.session.current != hangSessionID)
 
-        try logHang(hang, context: context)
+        try logHang(hang, deviceID: deviceID, context: context)
 
         let object = try #require(try context.fetchAll(HangObject.self).first)
         #expect(object.sessionID == hangSessionID)
@@ -60,7 +62,7 @@ struct LogHangTests {
     func encodesStackTrace() throws {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: ["main", "start"], duration: 3.5)
 
-        try logHang(hang, context: context)
+        try logHang(hang, deviceID: deviceID, context: context)
 
         let object = try #require(try context.fetchAll(HangObject.self).first)
 
@@ -73,7 +75,7 @@ struct LogHangTests {
     func handlesNilReason() throws {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5)
 
-        try logHang(hang, context: context)
+        try logHang(hang, deviceID: deviceID, context: context)
 
         let object = try #require(try context.fetchAll(HangObject.self).first)
         #expect(object.reason == nil)
@@ -83,7 +85,7 @@ struct LogHangTests {
     func savesToContext() throws {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5)
 
-        try logHang(hang, context: context)
+        try logHang(hang, deviceID: deviceID, context: context)
 
         #expect(!context.hasChanges)
     }
@@ -93,8 +95,8 @@ struct LogHangTests {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5)
         let id = UUID()
 
-        try logHang(hang, id: id, context: context)
-        try logHang(hang, id: id, context: context)
+        try logHang(hang, id: id, deviceID: deviceID, context: context)
+        try logHang(hang, id: id, deviceID: deviceID, context: context)
 
         #expect(try context.fetchAll(HangObject.self).count == 1)
     }

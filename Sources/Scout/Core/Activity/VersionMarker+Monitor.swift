@@ -7,9 +7,9 @@
 
 import CoreData
 
-extension VersionMarker: PartialMonitor {
-    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
-        let install = try context.existing(InstallObject.self, key: "installID", id: identity.install)
+extension VersionMarker {
+    static func trigger(installID: UUID, in context: NSManagedObjectContext) throws {
+        let install = try context.existing(InstallObject.self, key: "installID", id: installID)
         try mark(name: installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
 
         if context.hasChanges {

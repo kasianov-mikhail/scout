@@ -15,7 +15,6 @@ import Foundation
 struct CrashArchive {
     let directory: URL
 
-    /// The default crash archive using the Application Support directory.
     static let system = CrashArchive(
         directory: FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)
@@ -23,7 +22,6 @@ struct CrashArchive {
             .appendingPathComponent("Scout/Crashes", isDirectory: true)
     )
 
-    /// Writes a crash report to disk synchronously.
     func write(_ crash: CrashInfo) {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
@@ -40,12 +38,7 @@ struct CrashArchive {
         try? data.write(to: fileURL, options: .atomic)
     }
 
-    /// Flushes any pending crash reports from previous sessions.
-    ///
-    /// Call this method after CoreData is initialized to migrate crash files
-    /// into the database for syncing.
-    ///
-    func flush() async {
+    func flush(deviceID: UUID) async {
         guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
             return
         }
@@ -62,7 +55,7 @@ struct CrashArchive {
             do {
                 let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
                 try await persistentContainer.performBackgroundTask { context in
-                    try logCrash(crash, id: id, context: context)
+                    try logCrash(crash, id: id, deviceID: deviceID, context: context)
                 }
                 try FileManager.default.removeItem(at: file)
             } catch {

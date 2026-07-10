@@ -45,7 +45,7 @@ struct HangArchive {
     /// Call this method after CoreData is initialized to migrate hang files
     /// into the database for syncing.
     ///
-    func flush() async {
+    func flush(deviceID: UUID) async {
         guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
             return
         }
@@ -62,7 +62,7 @@ struct HangArchive {
             do {
                 let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
                 try await persistentContainer.performBackgroundTask { context in
-                    try logHang(hang, id: id, context: context)
+                    try logHang(hang, id: id, deviceID: deviceID, context: context)
                 }
                 try FileManager.default.removeItem(at: file)
             } catch {

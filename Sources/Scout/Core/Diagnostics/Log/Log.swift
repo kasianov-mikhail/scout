@@ -8,13 +8,12 @@
 import CoreData
 import Logging
 
-/// Persists a log event to Core Data.
-func log(_ event: LogEvent, date: Date, context: NSManagedObjectContext) throws {
+func log(_ event: LogEvent, date: Date, sessionID: UUID, context: NSManagedObjectContext) throws {
     let object = context.insert(EventObject.self)
 
     object.eventID = UUID()
     object.date = date
-    object.session = try context.existing(SessionObject.self, key: "sessionID", id: GlobalIdentity.live.session.current)
+    object.session = try context.existing(SessionObject.self, key: "sessionID", id: sessionID)
     object.level = event.level.rawValue
     object.name = event.message.description
 
@@ -27,8 +26,6 @@ func log(_ event: LogEvent, date: Date, context: NSManagedObjectContext) throws 
 }
 
 extension Logger.MetadataValue {
-    /// Extracts a plain string representation from a metadata value.
-    ///
     fileprivate var stringValue: String? {
         switch self {
         case .string(let string):

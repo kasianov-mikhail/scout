@@ -14,9 +14,10 @@ import Testing
 @Suite("UserActivityObject+Monitor")
 struct UserActivityObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
+    let sessionID = UUID()
 
     @Test("Trigger") func trigger() async throws {
-        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivityObject.trigger(sessionID: sessionID, date: Date(year: 2025, month: 1, day: 1), in: context)
 
         let activities = try context.fetchAll(UserActivityObject.self)
 
@@ -30,8 +31,8 @@ struct UserActivityObjectMonitorTests {
     }
 
     @Test("Trigger at next day") func triggerNextDay() async throws {
-        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
-        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 2), in: context)
+        try UserActivityObject.trigger(sessionID: sessionID, date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivityObject.trigger(sessionID: sessionID, date: Date(year: 2025, month: 1, day: 2), in: context)
 
         let activities = try context.fetchAll(UserActivityObject.self)
 
@@ -45,8 +46,8 @@ struct UserActivityObjectMonitorTests {
     }
 
     @Test("Trigger skip one day") func triggerSkipDay() async throws {
-        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 1), in: context)
-        try UserActivityObject.trigger(date: Date(year: 2025, month: 1, day: 3), in: context)
+        try UserActivityObject.trigger(sessionID: sessionID, date: Date(year: 2025, month: 1, day: 1), in: context)
+        try UserActivityObject.trigger(sessionID: sessionID, date: Date(year: 2025, month: 1, day: 3), in: context)
 
         let activities = try context.fetchAll(UserActivityObject.self)
 

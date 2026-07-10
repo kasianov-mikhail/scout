@@ -14,11 +14,11 @@ import Testing
 @Suite("InstallObject+Monitor")
 struct InstallObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let identity = GlobalIdentity.live
+    let identity = Identity.stub
 
     @Test("trigger creates an InstallObject on empty store")
     func createsFirst() throws {
-        try InstallObject.trigger(identity: identity, in: context)
+        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
 
         let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 1)
@@ -27,9 +27,9 @@ struct InstallObjectMonitorTests {
 
     @Test("trigger is a no-op when an InstallObject for the current install already exists")
     func skipsWhenExists() throws {
-        try InstallObject.trigger(identity: identity, in: context)
-        try InstallObject.trigger(identity: identity, in: context)
-        try InstallObject.trigger(identity: identity, in: context)
+        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
+        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
+        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
 
         let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 1)
@@ -41,7 +41,7 @@ struct InstallObjectMonitorTests {
         prior.installID = UUID()
         try context.save()
 
-        try InstallObject.trigger(identity: identity, in: context)
+        try InstallObject.trigger(installID: identity.install, deviceID: identity.device, in: context)
 
         let installs = try context.fetchAll(InstallObject.self)
         #expect(installs.count == 2)

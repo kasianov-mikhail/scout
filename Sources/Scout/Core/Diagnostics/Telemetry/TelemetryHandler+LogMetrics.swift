@@ -15,17 +15,19 @@ extension CKTelemetryHandler {
 
     func logMetrics(category: String, value: some MetricScalar) {
         let label = self.label
+        let sessionID = session.current
         persistMetrics { context in
-            try saveMetrics(label, date: Date(), category: category, value: value, context)
+            try saveMetrics(label, date: Date(), category: category, value: value, sessionID: sessionID, context)
         }
     }
 
     func logTimer(seconds: TimeInterval) {
         let label = self.label
+        let sessionID = session.current
         persistMetrics { context in
             let date = Date()
-            try saveMetrics(label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, context)
-            try saveMetrics(label, date: date, category: LatencyBuckets.category(for: seconds), value: 1, context)
+            try saveMetrics(label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, sessionID: sessionID, context)
+            try saveMetrics(label, date: date, category: LatencyBuckets.category(for: seconds), value: 1, sessionID: sessionID, context)
         }
     }
 
@@ -44,14 +46,14 @@ extension CKTelemetryHandler {
     }
 }
 
-func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, value: T, _ context: NSManagedObjectContext) throws {
+func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, value: T, sessionID: UUID, _ context: NSManagedObjectContext) throws {
     let metrics = context.insert(T.Object.self)
 
     metrics.value = value
     metrics.telemetry = category
     metrics.date = date
     metrics.name = name
-    metrics.session = try context.existing(SessionObject.self, key: "sessionID", id: GlobalIdentity.live.session.current)
+    metrics.session = try context.existing(SessionObject.self, key: "sessionID", id: sessionID)
 
     try context.save()
 }

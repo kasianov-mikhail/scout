@@ -8,9 +8,9 @@
 import Foundation
 import Logging
 
-/// A log handler that persists log events to CloudKit via Core Data.
 struct CKLogHandler: LogHandler {
     let sync: Synchronize
+    let session: Protected<UUID>
     let label: String
 
     var metadata: Logger.Metadata = [:]
@@ -23,10 +23,11 @@ struct CKLogHandler: LogHandler {
     }
 
     func log(event: LogEvent) {
+        let sessionID = session.current
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
-                    try Scout.log(event, date: Date(), context: context)
+                    try Scout.log(event, date: Date(), sessionID: sessionID, context: context)
                 }
                 try await self.sync()
             } catch {

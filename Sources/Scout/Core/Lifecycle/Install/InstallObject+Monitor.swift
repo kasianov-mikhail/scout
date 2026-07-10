@@ -7,10 +7,10 @@
 
 import CoreData
 
-extension InstallObject: PartialMonitor {
-    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
+extension InstallObject {
+    static func trigger(installID: UUID, deviceID: UUID, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
-        request.predicate = NSPredicate(format: "installID == %@", identity.install as CVarArg)
+        request.predicate = NSPredicate(format: "installID == %@", installID as CVarArg)
         request.fetchLimit = 1
 
         guard try context.fetch(request).isEmpty else {
@@ -18,9 +18,9 @@ extension InstallObject: PartialMonitor {
         }
 
         let install = context.insert(InstallObject.self)
-        install.installID = identity.install
+        install.installID = installID
         install.date = Date()
-        install.device = try context.existing(DeviceObject.self, key: "deviceID", id: identity.device)
+        install.device = try context.existing(DeviceObject.self, key: "deviceID", id: deviceID)
         try context.save()
     }
 }

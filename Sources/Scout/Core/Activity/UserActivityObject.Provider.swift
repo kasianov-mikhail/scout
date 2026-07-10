@@ -20,12 +20,12 @@ extension UserActivityObject {
 }
 
 extension UserActivityObject.Provider {
-    func fetch(identity: Identity, in context: NSManagedObjectContext) throws -> [UserActivityObject] {
+    func fetch(sessionID: UUID, in context: NSManagedObjectContext) throws -> [UserActivityObject] {
         var activities = try existing(in: context)
         var recent = activities.last?.day?.addingDay() ?? range.lowerBound
 
         while recent < range.upperBound {
-            let activity = try newActivity(identity: identity, for: recent, in: context)
+            let activity = try newActivity(sessionID: sessionID, for: recent, in: context)
             activities.append(activity)
             recent.addDay()
         }
@@ -50,13 +50,13 @@ extension UserActivityObject.Provider {
         return try context.fetch(request)
     }
 
-    func newActivity(identity: Identity, for date: Date, in context: NSManagedObjectContext) throws -> UserActivityObject {
+    func newActivity(sessionID: UUID, for date: Date, in context: NSManagedObjectContext) throws -> UserActivityObject {
         let activity = context.insert(UserActivityObject.self)
 
         activity.userActivityID = UUID()
         activity.date = date
         activity.period = period.rawValue
-        activity.session = try context.existing(SessionObject.self, key: "sessionID", id: identity.session.current)
+        activity.session = try context.existing(SessionObject.self, key: "sessionID", id: sessionID)
 
         return activity
     }

@@ -35,40 +35,52 @@ public func setup(backends: [Backend]) async throws {
         backend.onSetup()
     }
 
-    installExceptionHandler()
-    installSignalHandler()
-    installHangHandler()
+    let install = UserDefaults.standard.ensure("scout_install_id")
+    let launch = UUID()
+    let device = KeychainStorage.standard.ensure("scout_device_id")
+    let session = Protected(UUID())
 
-    await CrashArchive.system.flush()
-    await HangArchive.system.flush()
-
-    let identity = GlobalIdentity.live
-
-    try await persistentContainer.performBackgroundTasks(
-        { try SessionObject.completeStale(identity: identity, in: $0) },
-        { try LaunchObject.completeStale(identity: identity, in: $0) },
+    let identity = Identity(
+        install: install,
+        launch: launch,
+        device: device,
+        session: session
     )
 
-    let dispatcher = Coalescer()
+    installExceptionHandler(identity: identity)
+    installSignalHandler(identity: identity)
+    installHangHandler(identity: identity)
+
+    await CrashArchive.system.flush(deviceID: device)
+    await HangArchive.system.flush(deviceID: device)
+
+    try await persistentContainer.performBackgroundTasks(
+        { try SessionObject.completeStale(launchID: launch, in: $0) },
+        { try LaunchObject.completeStale(launchID: launch, in: $0) },
+    )
 
     @Sendable func sync() async throws {
-        try await synchronize(backends: backends, dispatcher: dispatcher)
+        try await synchronize(backends: backends, dispatcher: Coalescer())
     }
 
-    ActionTable.appState.startListening(completion: sync)
+    ActionTable.appState(identity: identity).startListening(completion: sync)
 
     try await persistentContainer.performBackgroundTasks(
-        { try DeviceObject.trigger(identity: identity, in: $0) },
-        { try InstallObject.trigger(identity: identity, in: $0) },
-        { try VersionObject.trigger(identity: identity, in: $0) },
-        { try LaunchObject.trigger(identity: identity, in: $0) },
-        { try SessionObject.trigger(identity: identity, in: $0) },
-        { try UserActivityObject.trigger(identity: identity, in: $0) },
-        { try VersionMarker.trigger(identity: identity, in: $0) }
+        { try DeviceObject.trigger(deviceID: device, in: $0) },
+        { try InstallObject.trigger(installID: install, deviceID: device, in: $0) },
+        { try VersionObject.trigger(installID: install, launchID: launch, in: $0) },
+        { try LaunchObject.trigger(launchID: launch, installID: install, in: $0) },
+        { try SessionObject.trigger(session: session, launchID: launch, in: $0) },
+        { try UserActivityObject.trigger(sessionID: session.current, in: $0) },
+        { try VersionMarker.trigger(installID: install, in: $0) }
     )
 
-    LoggingSystem.bootstrap { CKLogHandler(sync: sync, label: $0) }
-    MetricsSystem.bootstrap(TelemetryFactory(sync: sync))
+    LoggingSystem.bootstrap {
+        CKLogHandler(sync: sync, session: session, label: $0)
+    }
+    MetricsSystem.bootstrap(
+        TelemetryFactory(sync: sync, session: session)
+    )
 
     isSetup = true
 }

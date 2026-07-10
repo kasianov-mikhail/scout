@@ -5,13 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Foundation
 import Metrics
 import Testing
 
 @testable import Scout
 
 struct TelemetryFactoryTests {
-    let factory = TelemetryFactory(sync: {})
+    let factory = TelemetryFactory(sync: {}, session: Protected(UUID()))
 
     @Test("makeCounter returns CKTelemetryHandler")
     func makeCounter() {

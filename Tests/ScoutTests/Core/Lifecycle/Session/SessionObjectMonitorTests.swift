@@ -14,14 +14,14 @@ import Testing
 @Suite("SessionObject+Monitor")
 struct SessionObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
-    let identity = GlobalIdentity.live
+    let identity = Identity.stub
 
     @Test("complete sets endDate on an open session")
     func completeOpenSession() throws {
         LaunchObject.stub(date: Date(), in: context)
-        try SessionObject.trigger(identity: identity, in: context)
+        try SessionObject.trigger(session: identity.session, launchID: identity.launch, in: context)
 
-        try SessionObject.complete(identity: identity, in: context)
+        try SessionObject.complete(launchID: identity.launch, in: context)
 
         let sessions = try context.fetchAll(SessionObject.self)
         #expect(sessions.count == 1)
@@ -30,7 +30,7 @@ struct SessionObjectMonitorTests {
 
     @Test("trigger stamps the session with the current app version")
     func triggerStampsAppVersion() throws {
-        try SessionObject.trigger(identity: identity, in: context)
+        try SessionObject.trigger(session: identity.session, launchID: identity.launch, in: context)
 
         let session = try #require(try context.fetchAll(SessionObject.self).first)
         #expect(session.appVersion == Bundle.main.marketingVersion)
@@ -39,7 +39,7 @@ struct SessionObjectMonitorTests {
 
     @Test("trigger stamps the session with the runtime environment")
     func triggerStampsEnvironment() throws {
-        try SessionObject.trigger(identity: identity, in: context)
+        try SessionObject.trigger(session: identity.session, launchID: identity.launch, in: context)
 
         let session = try #require(try context.fetchAll(SessionObject.self).first)
         #expect(session.osVersion == SystemInfo.osVersion)
@@ -50,12 +50,12 @@ struct SessionObjectMonitorTests {
     @Test("complete is a no-op when the session is already closed")
     func completeTwiceIsNoop() throws {
         LaunchObject.stub(date: Date(), in: context)
-        try SessionObject.trigger(identity: identity, in: context)
-        try SessionObject.complete(identity: identity, in: context)
+        try SessionObject.trigger(session: identity.session, launchID: identity.launch, in: context)
+        try SessionObject.complete(launchID: identity.launch, in: context)
 
         let firstEndDate = try #require(try context.fetchAll(SessionObject.self).first?.endDate)
 
-        try SessionObject.complete(identity: identity, in: context)
+        try SessionObject.complete(launchID: identity.launch, in: context)
 
         let session = try #require(try context.fetchAll(SessionObject.self).first)
         #expect(session.endDate == firstEndDate)
@@ -64,7 +64,7 @@ struct SessionObjectMonitorTests {
     @Test("complete throws notFound when no session exists for the current launch")
     func completeWithoutSessionThrows() throws {
         #expect(throws: MonitorError.notFound) {
-            try SessionObject.complete(identity: identity, in: context)
+            try SessionObject.complete(launchID: identity.launch, in: context)
         }
     }
 }

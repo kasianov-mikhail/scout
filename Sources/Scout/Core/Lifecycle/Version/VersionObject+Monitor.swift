@@ -7,19 +7,20 @@
 
 import CoreData
 
-extension VersionObject: PartialMonitor {
-    static func trigger(identity: Identity, in context: NSManagedObjectContext) throws {
+extension VersionObject {
+    static func trigger(installID: UUID, launchID: UUID, in context: NSManagedObjectContext) throws {
         try trigger(
-            identity: identity,
+            installID: installID,
+            launchID: launchID,
             appVersion: Bundle.main.marketingVersion,
             buildNumber: Bundle.main.buildNumber,
             in: context
         )
     }
 
-    static func trigger(identity: Identity, appVersion: String?, buildNumber: String?, in context: NSManagedObjectContext) throws {
+    static func trigger(installID: UUID, launchID: UUID, appVersion: String?, buildNumber: String?, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "launch.install.installID == %@", identity.install as CVarArg)
+        request.predicate = NSPredicate(format: "launch.install.installID == %@", installID as CVarArg)
         request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: false)]
         request.fetchLimit = 1
         let latest = try context.fetch(request).first
@@ -32,7 +33,7 @@ extension VersionObject: PartialMonitor {
         version.date = Date()
         version.appVersion = appVersion
         version.buildNumber = buildNumber
-        version.launch = try context.existing(LaunchObject.self, key: "launchID", id: identity.launch)
+        version.launch = try context.existing(LaunchObject.self, key: "launchID", id: launchID)
         try context.save()
     }
 }

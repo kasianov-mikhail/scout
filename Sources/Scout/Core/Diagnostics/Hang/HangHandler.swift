@@ -27,12 +27,12 @@ private let criticalThreshold: TimeInterval = 8
 
 /// Installs a watchdog that detects an unresponsive main thread and
 /// captures its stack trace before the system watchdog can kill the app.
-func installHangHandler() {
+func installHangHandler(identity: Identity) {
     guard !isInstalled else { return }
     isInstalled = true
 
     schedulePing()
-    scheduleCheck()
+    scheduleCheck(identity: identity)
 }
 
 private func schedulePing() {
@@ -48,31 +48,32 @@ private func schedulePing() {
     }
 }
 
-private func scheduleCheck() {
+private func scheduleCheck(identity: Identity) {
     watchdogQueue.asyncAfter(deadline: .now() + pingInterval) {
-        checkForHang()
-        scheduleCheck()
+        checkForHang(identity: identity)
+        scheduleCheck(identity: identity)
     }
 }
 
-private func checkForHang() {
+private func checkForHang(identity: Identity) {
     let elapsed = Date().timeIntervalSince(pingDate)
 
     if elapsed >= criticalThreshold, !reportedCritical {
         reportedCritical = true
-        reportHang(duration: elapsed)
+        reportHang(duration: elapsed, identity: identity)
     } else if elapsed >= warningThreshold, !reportedWarning {
         reportedWarning = true
-        reportHang(duration: elapsed)
+        reportHang(duration: elapsed, identity: identity)
     }
 }
 
-private func reportHang(duration: TimeInterval) {
+private func reportHang(duration: TimeInterval, identity: Identity) {
     let hang = HangInfo(
         name: duration >= criticalThreshold ? "Watchdog Termination Imminent" : "Main Thread Blocked",
         reason: "Main thread unresponsive for \(String(format: "%.1f", duration))s",
         stackTrace: MainThreadBacktrace.capture(),
-        duration: duration
+        duration: duration,
+        identity: identity
     )
     HangArchive.system.write(hang)
 }
