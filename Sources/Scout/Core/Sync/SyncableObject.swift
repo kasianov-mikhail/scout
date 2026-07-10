@@ -17,32 +17,3 @@ class SyncableObject: DateObject {
         deliveries.first { $0.backendID == backendID }
     }
 }
-
-@objc(SyncDelivery)
-final class SyncDelivery: NSManagedObject {
-    static let maxAttempts = 10
-
-    @NSManaged var backendID: String
-    @NSManaged var progressPrimitive: Int16
-    @NSManaged var attempts: Int16
-    @NSManaged var object: SyncableObject
-
-    var progress: Progress {
-        get { Progress(rawValue: Int(progressPrimitive)) }
-        set { progressPrimitive = Int16(newValue.rawValue) }
-    }
-
-    struct Progress: OptionSet, Sendable {
-        let rawValue: Int
-
-        static let raw = Progress(rawValue: 1 << 0)
-
-        static let all: Progress = [.raw]
-    }
-}
-
-extension [SyncDelivery] {
-    func complete(_ progress: SyncDelivery.Progress) {
-        forEach { $0.progress.remove(progress) }
-    }
-}

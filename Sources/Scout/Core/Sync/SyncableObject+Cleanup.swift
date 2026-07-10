@@ -13,7 +13,7 @@ extension SyncableObject {
 
         let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
         request.predicate = NSPredicate(
-            format: "SUBQUERY(deliveries, $d, $d.backendID IN %@ AND $d.progressPrimitive != 0 AND $d.attempts < %d).@count == 0 AND datePrimitive < %@",
+            format: "SUBQUERY(deliveries, $d, $d.backendID IN %@ AND $d.isPending == YES AND $d.attempts < %d).@count == 0 AND datePrimitive < %@",
             backends.map(\.id),
             SyncDelivery.maxAttempts,
             cutoff as NSDate

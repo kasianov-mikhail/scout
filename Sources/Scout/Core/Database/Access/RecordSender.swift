@@ -23,13 +23,17 @@ extension RecordSender {
 extension RecordSender {
     func deliver<T: SyncableObject & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
-        request.predicate = NSPredicate(.raw, to: id)
+        request.predicate = NSPredicate(
+            format: "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.isPending == YES AND $d.attempts < %d).@count > 0",
+            id,
+            SyncDelivery.maxAttempts
+        )
 
         var objects: [T] = []
         var deliveries: [SyncDelivery] = []
 
         for object in try context.fetch(request) {
-            if let delivery = object.delivery(for: id), delivery.progress.contains(.raw) {
+            if let delivery = object.delivery(for: id), delivery.isPending {
                 objects.append(object)
                 deliveries.append(delivery)
             }
@@ -37,28 +41,8 @@ extension RecordSender {
 
         if objects.count > 0 {
             try await database.write(records: objects.map(\.record))
-            deliveries.complete(.raw)
+            deliveries.forEach { $0.isPending = false }
             try context.save()
         }
-    }
-}
-
-extension NSPredicate {
-    fileprivate convenience init(_ progress: SyncDelivery.Progress, to backendID: String) {
-        self.init(
-            format: "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.progressPrimitive IN %@ AND $d.attempts < %d).@count > 0",
-            backendID,
-            progress.owingStates,
-            SyncDelivery.maxAttempts
-        )
-    }
-}
-
-extension SyncDelivery.Progress {
-    // Matches every persisted state still owing this progress.
-    fileprivate var owingStates: [Int16] {
-        (0...Self.all.rawValue)
-            .filter { Self(rawValue: $0).contains(self) }
-            .map { Int16($0) }
     }
 }

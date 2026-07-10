@@ -77,7 +77,7 @@ struct DeliverTests {
         }
 
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
-        #expect(event.delivery(for: "server")?.progress == [.raw])
+        #expect(event.delivery(for: "server")?.isPending == true)
         #expect(event.delivery(for: "server")?.attempts == 1)
         #expect(cloud.records.count(of: "Event") == 1)
         #expect(server.records.count(of: "Event") == 0)
@@ -95,7 +95,7 @@ struct DeliverTests {
         // The server's row is seeded but untouched — not even an attempt is
         // counted — so it is delivered once its engine runs again.
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
-        #expect(event.delivery(for: "server")?.progress == [.raw])
+        #expect(event.delivery(for: "server")?.isPending == true)
         #expect(event.delivery(for: "server")?.attempts == 0)
         #expect(cloud.records.count(of: "Event") == 1)
         #expect(server.records.count(of: "Event") == 0)
@@ -104,9 +104,9 @@ struct DeliverTests {
     @Test("A backend abandoned after too many attempts is no longer retried")
     func abandonedBackendSettles() async throws {
         let event = EventObject.stub(name: "login", synced: true, in: context)
-        event.seedDelivery([.raw], for: "cloud", in: context)
+        event.seedDelivery(for: "cloud", in: context)
         // The server is already at the attempt ceiling and still owes its raw record.
-        event.seedDelivery([.raw], attempts: Int16(SyncDelivery.maxAttempts), for: "server", in: context)
+        event.seedDelivery(attempts: Int16(SyncDelivery.maxAttempts), for: "server", in: context)
         try context.save()
 
         try await deliver(EventObject.self, to: cloudBackend)

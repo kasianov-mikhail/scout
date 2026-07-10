@@ -67,7 +67,7 @@ struct SyncableObjectCleanupTests {
         // whose configured backends are all settled, never ones still owing work.
         let old = Date(timeIntervalSinceNow: -8 * 86400)
         let event = EventObject.stub(name: "pending", date: old, in: context)
-        event.seedDelivery([.raw], for: "cloud", in: context)
+        event.seedDelivery(for: "cloud", in: context)
         try context.save()
 
         try SyncableObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
