@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(UserActivityObject)
-final class UserActivityObject: SyncableObject, HasSession {
+final class UserActivityObject: SyncableObject {
     override class var isLocalOnly: Bool { true }
 
     @NSManaged var session: SessionObject?
