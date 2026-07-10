@@ -16,10 +16,15 @@ struct SessionObjectRecoveryTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = TestDate.reference
 
+    private func staleLaunch() -> LaunchObject {
+        let launch = LaunchObject.stub(date: date, in: context)
+        launch.launchID = UUID()
+        return launch
+    }
+
     @Test("Closes sessions from previous launches")
     func closesStale() throws {
-        let session = SessionObject.stub(date: date, in: context)
-        session.launchID = UUID()
+        let session = SessionObject.stub(date: date, launch: staleLaunch(), in: context)
 
         try context.save()
         try SessionObject.completeStale(in: context)
@@ -29,7 +34,8 @@ struct SessionObjectRecoveryTests {
 
     @Test("Does not close sessions from current launch")
     func skipsCurrent() throws {
-        let session = SessionObject.stub(date: date, in: context)
+        let launch = LaunchObject.stub(date: date, in: context)
+        let session = SessionObject.stub(date: date, launch: launch, in: context)
 
         try context.save()
         try SessionObject.completeStale(in: context)
@@ -40,8 +46,7 @@ struct SessionObjectRecoveryTests {
     @Test("Does not modify already completed sessions")
     func skipsCompleted() throws {
         let endDate = date.addingTimeInterval(60)
-        let session = SessionObject.stub(date: date, endDate: endDate, in: context)
-        session.launchID = UUID()
+        let session = SessionObject.stub(date: date, endDate: endDate, launch: staleLaunch(), in: context)
 
         try context.save()
         try SessionObject.completeStale(in: context)
@@ -51,14 +56,10 @@ struct SessionObjectRecoveryTests {
 
     @Test("Uses latest child event date as endDate")
     func endDateFromChildEvent() throws {
-        let staleSessionID = UUID()
-        let session = SessionObject.stub(date: date, in: context)
-        session.launchID = UUID()
-        session.sessionID = staleSessionID
+        let session = SessionObject.stub(date: date, launch: staleLaunch(), in: context)
 
         let latest = date.addingTimeInterval(120)
-        let event = EventObject.stub(name: "x", date: latest, in: context)
-        event.sessionID = staleSessionID
+        EventObject.stub(name: "x", date: latest, session: session, in: context)
 
         try context.save()
         try SessionObject.completeStale(in: context)

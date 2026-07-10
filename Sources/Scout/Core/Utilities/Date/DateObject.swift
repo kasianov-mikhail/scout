@@ -17,6 +17,14 @@ class DateObject: NSManagedObject {
     @NSManaged var month: Date?
     @NSManaged var week: Date?
 
+    var references: Set<DateObject> {
+        []
+    }
+
+    var inferred: Date? {
+        (references.map(\.datePrimitive) + [datePrimitive]).compactMap(\.self).max()
+    }
+
     var date: Date? {
         get {
             datePrimitive
@@ -36,6 +44,7 @@ class DateObject: NSManagedObject {
         fields["day"] = day
         fields["week"] = week
         fields["month"] = month
+        fields["version"] = 1
         return fields
     }
 }

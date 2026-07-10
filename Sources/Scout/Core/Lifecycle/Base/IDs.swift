@@ -16,7 +16,7 @@ enum IDs {
     // itself. Writes stay private so rotation still runs through `session`.
     nonisolated(unsafe) private(set) static var rawSession = UUID()
 
-    /// Rotates on every `SessionObject.trigger`. `TrackedObject.awakeFromInsert`
+    /// Rotates on every `SessionObject.trigger`. `SessionObject.awakeFromInsert`
     /// reads it from arbitrary Core Data background contexts, so access is
     /// serialised through a dispatch queue to avoid torn reads when rotation
     /// races with concurrent inserts.

@@ -19,6 +19,7 @@ extension InstallObject: PartialMonitor {
 
         let install = context.insert(InstallObject.self)
         install.date = Date()
+        install.device = try context.existing(DeviceObject.self, key: "deviceID", id: IDs.device)
         try context.save()
     }
 }

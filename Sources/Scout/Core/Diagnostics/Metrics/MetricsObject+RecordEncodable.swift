@@ -31,7 +31,10 @@ extension MetricsObject {
         record["category"] = telemetry
         record["value"] = value
         record["date"] = date
-        record["session_id"] = sessionID.uuidString
+        record["session_id"] = sessionID?.uuidString
+        record["launch_id"] = launchID?.uuidString
+        record["install_id"] = installID?.uuidString
+        record["device_id"] = deviceID?.uuidString
 
         record.setValues(metadata)
 

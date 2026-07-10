@@ -41,7 +41,6 @@ private func makeEvent(
     #expect(event.date == date)
     #expect(event.hour == date.startOfHour)
     #expect(event.week == date.startOfWeek)
-    #expect(event.installID == IDs.install)
     #expect(event.paramCount == 1)
 
     let paramData = try #require(event.params)

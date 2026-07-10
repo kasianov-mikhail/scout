@@ -11,13 +11,17 @@ import CoreData
 final class DeviceObject: SyncableObject {
     static let recordType = "Device"
 
+    @NSManaged var deviceID: UUID
     @NSManaged var model: String?
+    @NSManaged var installs: Set<InstallObject>
 
-    func installs(in context: NSManagedObjectContext) throws -> [InstallObject] {
-        let request = NSFetchRequest<InstallObject>(entityName: "InstallObject")
-        request.predicate = NSPredicate(format: "deviceID == %@", deviceID as CVarArg)
-        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
-        return try context.fetch(request)
+    override var references: Set<DateObject> {
+        Set(Array(installs))
+    }
+
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        deviceID = IDs.device
     }
 }
 

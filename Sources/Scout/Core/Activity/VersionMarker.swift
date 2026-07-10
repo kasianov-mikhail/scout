@@ -18,4 +18,5 @@ final class VersionMarker: SyncableObject {
     @NSManaged var appVersion: String?
     @NSManaged var markerID: UUID
     @NSManaged var name: String?
+    @NSManaged var install: InstallObject?
 }

@@ -56,9 +56,11 @@ struct StableRecordIDTests {
 
     @Test("VersionObject.record is stable across calls")
     func versionStable() {
-        let version = VersionObject.stub(date: date, appVersion: "1.2.3", in: context)
+        let install = InstallObject.stub(date: date, in: context)
+        let launch = LaunchObject.stub(date: date, install: install, in: context)
+        let version = VersionObject.stub(date: date, appVersion: "1.2.3", launch: launch, in: context)
         version.buildNumber = "42"
-        let expected = "\(version.installID.uuidString)-1.2.3-42"
+        let expected = "\(install.installID.uuidString)-1.2.3-42"
         #expect(version.record.recordID == version.record.recordID)
         #expect(version.record.recordID == expected)
     }

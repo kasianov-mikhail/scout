@@ -14,6 +14,7 @@ extension LaunchObject {
         date: Date,
         synced: Bool = false,
         endDate: Date? = nil,
+        install: InstallObject? = nil,
         in context: NSManagedObjectContext
     ) -> LaunchObject {
         let launch = context.insert(LaunchObject.self)
@@ -21,6 +22,7 @@ extension LaunchObject {
         launch.date = date
         launch.setSynced(synced, in: context)
         launch.endDate = endDate
+        launch.install = install
 
         return launch
     }

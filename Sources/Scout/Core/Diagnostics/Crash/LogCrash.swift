@@ -26,14 +26,19 @@ func logCrash(_ crash: CrashInfo, id: UUID = UUID(), context: NSManagedObjectCon
     object.reason = crash.reason
     object.stackTrace = try? JSONEncoder().encode(crash.stackTrace)
 
-    // Override IDs set by awakeFromInsert with values captured at crash time
-    object.installID = crash.installID
-    object.launchID = crash.launchID
-    object.sessionID = crash.sessionID
+    // Reattach to the session/launch/install chain captured at crash time,
+    // materializing any hub the faulted run didn't persist.
+    let session = try context.linkedSession(
+        installID: crash.installID,
+        launchID: crash.launchID,
+        sessionID: crash.sessionID,
+        date: crash.date
+    )
+    object.session = session
 
     try VersionMarker.mark(
         name: VersionMarker.crashName,
-        installID: crash.installID,
+        install: session.launch?.install,
         appVersion: crash.appVersion,
         in: context
     )

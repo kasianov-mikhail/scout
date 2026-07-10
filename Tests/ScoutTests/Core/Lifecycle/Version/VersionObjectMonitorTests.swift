@@ -15,8 +15,16 @@ import Testing
 struct VersionObjectMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
+    // Seeds the current install/launch chain so triggered versions link to it
+    // and dedup by `launch.install.installID` can find prior versions.
+    private func seedCurrentLaunch() {
+        let install = InstallObject.stub(date: Date(), in: context)
+        LaunchObject.stub(date: Date(), install: install, in: context)
+    }
+
     @Test("trigger creates a VersionObject on first call")
     func firstTrigger() throws {
+        seedCurrentLaunch()
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
 
         let versions = try context.fetchAll(VersionObject.self)
@@ -27,6 +35,7 @@ struct VersionObjectMonitorTests {
 
     @Test("trigger is a no-op when version and build are unchanged")
     func noopOnUnchanged() throws {
+        seedCurrentLaunch()
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
@@ -37,6 +46,7 @@ struct VersionObjectMonitorTests {
 
     @Test("trigger creates a new VersionObject when appVersion changes")
     func appVersionChange() throws {
+        seedCurrentLaunch()
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
         try VersionObject.trigger(appVersion: "2.0", buildNumber: "1", in: context)
 
@@ -50,6 +60,7 @@ struct VersionObjectMonitorTests {
 
     @Test("trigger creates a new VersionObject when buildNumber changes")
     func buildNumberChange() throws {
+        seedCurrentLaunch()
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "2", in: context)
 
@@ -63,8 +74,13 @@ struct VersionObjectMonitorTests {
 
     @Test("trigger ignores VersionObjects from other installs")
     func ignoresOtherInstalls() throws {
-        let other = VersionObject.stub(date: Date(), appVersion: "1.0", buildNumber: "1", in: context)
-        other.installID = UUID()
+        let otherInstall = InstallObject.stub(date: Date(), in: context)
+        otherInstall.installID = UUID()
+
+        let otherLaunch = LaunchObject.stub(date: Date(), install: otherInstall, in: context)
+        otherLaunch.launchID = UUID()
+
+        VersionObject.stub(date: Date(), appVersion: "1.0", buildNumber: "1", launch: otherLaunch, in: context)
         try context.save()
 
         try VersionObject.trigger(appVersion: "1.0", buildNumber: "1", in: context)

@@ -19,10 +19,7 @@ extension SyncableObject {
             cutoff as NSDate
         )
 
-        for object in try context.fetch(request) {
-            if let hub = object as? HubObject, hub.isReferenced {
-                continue
-            }
+        for object in try context.fetch(request) where object.references.count == 0 {
             context.delete(object)
         }
 

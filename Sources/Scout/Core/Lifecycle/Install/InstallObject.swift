@@ -8,14 +8,21 @@
 import CoreData
 
 @objc(InstallObject)
-final class InstallObject: SyncableObject {
+final class InstallObject: SyncableObject, HasDevice {
     static let recordType = "Install"
 
-    func versions(in context: NSManagedObjectContext) throws -> [VersionObject] {
-        let request = NSFetchRequest<VersionObject>(entityName: "VersionObject")
-        request.predicate = NSPredicate(format: "installID == %@", installID as CVarArg)
-        request.sortDescriptors = [NSSortDescriptor(key: DateObject.datePrimitiveKey, ascending: true)]
-        return try context.fetch(request)
+    @NSManaged var installID: UUID
+    @NSManaged var device: DeviceObject?
+    @NSManaged var launches: Set<LaunchObject>
+    @NSManaged var markers: Set<VersionMarker>
+
+    override var references: Set<DateObject> {
+        Set(Array(launches) + Array(markers))
+    }
+
+    override func awakeFromInsert() {
+        super.awakeFromInsert()
+        installID = IDs.install
     }
 }
 
@@ -24,6 +31,8 @@ extension InstallObject: RecordEncodable {
         var record = Record(recordType: Self.recordType, recordID: installID.uuidString)
 
         record["date"] = date
+        record["install_id"] = installID.uuidString
+        record["device_id"] = deviceID?.uuidString
         record.setValues(metadata)
 
         return record

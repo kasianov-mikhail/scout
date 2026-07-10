@@ -27,10 +27,10 @@ struct HangObjectTests {
     @Test("record includes the session ID")
     func testRecordIncludesSessionID() {
         let object = makeHangObject(name: "Main Thread Blocked", date: date)
-        let sessionID = UUID()
-        object.sessionID = sessionID
+        let session = SessionObject.stub(date: date, in: context)
+        object.session = session
 
-        #expect(object.record["session_id"] == sessionID.uuidString)
+        #expect(object.record["session_id"] == session.sessionID.uuidString)
     }
 
     @Test("record includes the duration")

@@ -8,39 +8,15 @@
 import CoreData
 
 @objc(CrashObject)
-final class CrashObject: TrackedObject {
+final class CrashObject: IncidentObject, HasSession {
     static let recordType = "Crash"
 
-    @NSManaged var appVersion: String?
-    @NSManaged var name: String?
+    @NSManaged var session: SessionObject?
     @NSManaged var crashID: UUID
-    @NSManaged var fingerprint: String?
-    @NSManaged var reason: String?
-    @NSManaged var stackTrace: Data?
 }
 
 extension CrashObject: RecordEncodable {
     var record: Record {
-        var record = Record(recordType: Self.recordType, recordID: crashID.uuidString)
-
-        record["name"] = name
-        record["fingerprint"] = fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
-        record["reason"] = reason
-        record["stack_trace"] = stackTrace
-        record["date"] = date
-        record["uuid"] = crashID.uuidString
-        record["app_version"] = appVersion
-        record["session_id"] = sessionID.uuidString
-
-        record.setValues(metadata)
-
-        return record
-    }
-
-    private var decodedStackTrace: [String] {
-        guard let stackTrace, let decoded = try? JSONDecoder().decode([String].self, from: stackTrace) else {
-            return []
-        }
-        return decoded
+        incident(type: Self.recordType, id: crashID)
     }
 }

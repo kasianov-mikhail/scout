@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(SyncableObject)
-class SyncableObject: IDObject {
+class SyncableObject: DateObject {
     class var isLocalOnly: Bool { false }
 
     @NSManaged var deliveries: Set<SyncDelivery>
@@ -36,10 +36,8 @@ final class SyncDelivery: NSManagedObject {
         let rawValue: Int
 
         static let raw = Progress(rawValue: 1 << 0)
-        // No longer planned; kept so rows persisted by the legacy matrix channel keep decoding.
-        static let matrix = Progress(rawValue: 1 << 1)
 
-        static let all: Progress = [.raw, .matrix]
+        static let all: Progress = [.raw]
     }
 }
 
