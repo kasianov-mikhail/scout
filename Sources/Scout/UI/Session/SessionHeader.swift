@@ -13,8 +13,8 @@ struct SessionHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             FlowLayout(spacing: 6) {
-                if let model = info.model {
-                    InfoChip(systemImage: "iphone", text: model, color: .blue)
+                if let model = info.model.map(DeviceModel.init) {
+                    InfoChip(systemImage: model.symbol, text: model.name, color: .blue)
                 }
                 if let osVersion = info.osVersion {
                     InfoChip(systemImage: "gearshape", text: osVersion, color: .indigo)

@@ -24,14 +24,13 @@ struct DeviceRow: View {
 
     var body: some View {
         HStack(spacing: 12) {
-            Image(systemName: device.model.hasPrefix("iPad") ? "ipad" : "iphone")
+            Image(systemName: device.symbol)
                 .foregroundStyle(.blue)
                 .frame(width: 20)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: device.model)
+                Text(verbatim: device.modelName)
                     .font(.subheadline.weight(.medium))
-                    .monospaced()
                 Text(verbatim: device.osVersion + " · " + device.sessions.plain + " sessions")
                     .font(.caption)
                     .foregroundStyle(.gray)

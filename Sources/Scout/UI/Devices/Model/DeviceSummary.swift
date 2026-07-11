@@ -14,6 +14,14 @@ struct DeviceSummary: Identifiable, Equatable {
     let lastSeen: Date
     let sessions: Int
     let crashes: Int
+
+    var modelName: String {
+        DeviceModel(identifier: model).name
+    }
+
+    var symbol: String {
+        DeviceModel(identifier: model).symbol
+    }
 }
 
 extension DeviceSummary {

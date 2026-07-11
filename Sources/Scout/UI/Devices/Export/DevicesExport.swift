@@ -32,6 +32,6 @@ extension DevicesExport {
     private func row(for device: DeviceSummary) -> ExportLine {
         let sessions = ExportFormat.counted(device.sessions, .session)
         let crashes = ExportFormat.counted(device.crashes, .crash)
-        return .bullet("\(device.model)  (\(device.osVersion), \(sessions), \(crashes), seen \(ExportFormat.timestamp(device.lastSeen)))")
+        return .bullet("\(device.modelName)  (\(device.osVersion), \(sessions), \(crashes), seen \(ExportFormat.timestamp(device.lastSeen)))")
     }
 }
