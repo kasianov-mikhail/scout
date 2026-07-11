@@ -98,6 +98,37 @@ struct NativeDatabaseTests {
         #expect(checkout.points.map(\.date) == [TestDate.reference.addingTimeInterval(10 * .hour).millisecondsSince1970])
     }
 
+    @Test("Session records round-trip their captured environment")
+    func sessionEnvironmentRoundTrip() async throws {
+        var record = makeSessionRecord(id: "s-1", device: "a", day: 0)
+        record["build_number"] = "412"
+        record["os_version"] = "iOS 17.4"
+        record["locale"] = "en_US"
+        record["channel"] = "TestFlight"
+        try await database.write(record: record)
+
+        let query = RecordQuery(recordType: Session.self)
+        let chunk = try await database.read(matching: query, fields: ["build_number", "os_version", "locale", "channel"])
+        let read = try #require(chunk.records.first)
+
+        #expect(read["build_number"] == "412")
+        #expect(read["os_version"] == "iOS 17.4")
+        #expect(read["locale"] == "en_US")
+        #expect(read["channel"] == "TestFlight")
+    }
+
+    @Test("Device records round-trip the hardware model")
+    func deviceModelRoundTrip() async throws {
+        try await database.write(record: makeDeviceRecord(id: "d-1", model: "iPhone16,1"))
+
+        let query = RecordQuery(recordType: Device.self)
+        let chunk = try await database.read(matching: query, fields: ["device_id", "model"])
+        let record = try #require(chunk.records.first)
+
+        #expect(record["device_id"] == "d-1")
+        #expect(record["model"] == "iPhone16,1")
+    }
+
     @Test("Activity derives DAU, WAU, and MAU from sessions")
     func activity() async throws {
         try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
@@ -137,6 +168,76 @@ func makeMetricRecord(id: String, name: String, value: Int64) -> Record {
     record["value"] = value
     record["date"] = TestDate.reference.addingTimeInterval(10 * .hour)
     record["session_id"] = "session-1"
+    return record
+}
+
+@Suite("Schema bootstrap healing")
+struct SchemaBootstrapTests {
+    // Simulates the schema an older app published: Device@1 without `model`.
+    private func publishStaleDeviceSchema(to cloud: ScoutDBTesting.InMemoryDatabase) async throws {
+        let current = try #require(EntityCatalog.definition(for: DeviceEntry.recordType))
+        let stale = EntityDefinition(
+            entity: current.entity,
+            version: current.version,
+            fields: current.fields.filter { $0.name != "model" },
+            envelopeDate: current.envelopeDate,
+            unique: current.unique,
+            views: current.views
+        )
+        try await SchemaRegistry(database: cloud).publish(stale)
+    }
+
+    @Test("A stale published Device schema without model blocks reads until the local schema is registered")
+    func staleSchemaHealing() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        try await publishStaleDeviceSchema(to: cloud)
+
+        // A fresh launch: a new registry over the same CloudKit, before bootstrap.
+        let registry = SchemaRegistry(database: cloud)
+        let database = NativeDatabase(store: EntityStore(database: cloud, registry: registry))
+
+        let query = RecordQuery(recordType: Device.self)
+
+        await #expect(throws: SchemaError.self) {
+            _ = try await database.read(matching: query, fields: ["device_id", "model"])
+        }
+
+        await EntityCatalog.register(into: registry)
+
+        try await database.write(record: makeDeviceRecord(id: "d-1", model: "iPhone16,1"))
+        let chunk = try await database.read(matching: query, fields: ["device_id", "model"])
+        #expect(chunk.records.first?["model"] == "iPhone16,1")
+
+        // Reconcile republishes the local schema so later launches preload it clean.
+        await EntityCatalog.reconcile(registry: SchemaRegistry(database: cloud), database: cloud)
+        let republished = try await SchemaRegistry(database: cloud).definition(for: DeviceEntry.recordType)
+        #expect(republished.fields.contains { $0.name == "model" })
+    }
+
+    @Test("A backend self-registers its schema, so reads work without setup()")
+    func selfRegistration() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        try await publishStaleDeviceSchema(to: cloud)
+
+        // Build the backend the way Backend.cloudKit does — with a registration task —
+        // but never call setup(). The read must still resolve `model`.
+        let registry = SchemaRegistry(database: cloud)
+        let database = NativeDatabase(
+            store: EntityStore(database: cloud, registry: registry),
+            registration: Task { await EntityCatalog.register(into: registry) }
+        )
+
+        try await database.write(record: makeDeviceRecord(id: "d-1", model: "iPhone16,1"))
+        let chunk = try await database.read(matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
+        #expect(chunk.records.first?["model"] == "iPhone16,1")
+    }
+}
+
+func makeDeviceRecord(id: String, model: String) -> Record {
+    var record = Record(recordType: DeviceEntry.recordType, recordID: id)
+    record["date"] = TestDate.reference
+    record["device_id"] = id
+    record["model"] = model
     return record
 }
 

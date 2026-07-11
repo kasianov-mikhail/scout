@@ -18,10 +18,11 @@ extension Backend {
     public static func cloudKit(container: CKContainer) -> Backend {
         let registry = SchemaRegistry(database: container.publicCloudDatabase)
         let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
+        let registration = Task { await EntityCatalog.register(into: registry) }
 
         return Backend(
             id: container.containerIdentifier ?? "cloudKit",
-            database: NativeDatabase(store: store),
+            database: NativeDatabase(store: store, registration: registration),
             checkAvailability: {
                 (try? await container.accountStatus()) == .available
             },
@@ -48,7 +49,7 @@ extension Backend {
             },
             onSetup: {
                 Task {
-                    await EntityCatalog.bootstrap(registry: registry)
+                    await EntityCatalog.reconcile(registry: registry, database: container.publicCloudDatabase)
                 }
             }
         )
@@ -56,9 +57,18 @@ extension Backend {
 }
 
 extension EntityCatalog {
-    static func bootstrap(registry: SchemaRegistry) async {
-        _ = try? await registry.preload()
-        let remote = await registry.definitions()
+    static func register(into registry: SchemaRegistry) async {
+        for definition in definitions {
+            try? await registry.register(definition)
+        }
+    }
+
+    static func reconcile(registry: SchemaRegistry, database: any CloudDatabase) async {
+        // Read the published schema through a throwaway registry so preload never
+        // overwrites the authoritative local definitions already in `registry`.
+        let mirror = SchemaRegistry(database: database)
+        _ = try? await mirror.preload()
+        let remote = await mirror.definitions()
 
         for definition in definitions {
             let published = remote.first { $0.entity == definition.entity }
@@ -66,9 +76,6 @@ extension EntityCatalog {
             if let published, published.version > definition.version {
                 continue
             }
-
-            try? await registry.register(definition)
-
             if published != definition {
                 try? await registry.publish(definition)
             }

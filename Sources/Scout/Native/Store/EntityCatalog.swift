@@ -58,6 +58,12 @@ enum EntityCatalog {
             ("session_id", .string),
             ("app_version", .string),
         ],
+        trailing: [
+            ("build_number", .string),
+            ("os_version", .string),
+            ("locale", .string),
+            ("channel", .string),
+        ],
         envelopeDate: "start_date"
     )
 
@@ -77,7 +83,8 @@ enum EntityCatalog {
 
     private static let device = definition(
         entity: DeviceEntry.recordType,
-        fields: [("date", .timestamp)]
+        fields: [("date", .timestamp)],
+        trailing: [("model", .string)]
     )
 
     private static let version = definition(
@@ -131,13 +138,15 @@ enum EntityCatalog {
         )
     }
 
-    private static func definition(entity: String, fields: [(String, FieldType)], envelopeDate: String = "date", views: [AggregateView]? = nil)
+    private typealias Spec = (String, FieldType)
+
+    private static func definition(entity: String, fields: [Spec], trailing: [Spec] = [], envelopeDate: String = "date", views: [AggregateView]? = nil)
         -> EntityDefinition
     {
-        EntityDefinition(entity: entity, version: 1, fields: slotted(fields + metadata), envelopeDate: envelopeDate, views: views)
+        EntityDefinition(entity: entity, version: 1, fields: slotted(fields + metadata + trailing), envelopeDate: envelopeDate, views: views)
     }
 
-    private static let metadata: [(String, FieldType)] = [
+    private static let metadata: [Spec] = [
         ("hour", .timestamp),
         ("day", .timestamp),
         ("week", .timestamp),
@@ -148,7 +157,7 @@ enum EntityCatalog {
         ("version", .int),
     ]
 
-    private static func slotted(_ specs: [(String, FieldType)]) -> [FieldDefinition] {
+    private static func slotted(_ specs: [Spec]) -> [FieldDefinition] {
         var next: [Pool: Int] = [:]
         return specs.map { name, type in
             let pool = pool(for: type)

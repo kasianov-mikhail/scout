@@ -8,19 +8,25 @@
 import Foundation
 import ScoutDB
 
-// Scout's neutral record layer served by a scout-db EntityStore: raw records
-// live in Item slots, while matrix reads are synthesized from GridItem
-// aggregate views and from raw entities.
 struct NativeDatabase: Sendable {
     let store: EntityStore
+
+    let registration: Task<Void, Never>
+
+    init(store: EntityStore, registration: Task<Void, Never> = Task {}) {
+        self.store = store
+        self.registration = registration
+    }
 }
 
 extension NativeDatabase: RecordWriter {
     func write(record: Record) async throws {
+        await registration.value
         try await store.write(Self.values(for: record), entity: record.recordType, uuid: record.recordID)
     }
 
     func write(records: [Record]) async throws {
+        await registration.value
         for (entity, group) in Dictionary(grouping: records, by: \.recordType) {
             let batch = group.map { EntityWrite(values: Self.values(for: $0), uuid: $0.recordID) }
             try await store.write(batch, entity: entity)
@@ -40,6 +46,7 @@ extension NativeDatabase: RecordReader {
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+        await registration.value
         let entity = query.recordType.recordType
 
         if let series = MatrixSeries(recordType: entity) {
@@ -67,6 +74,7 @@ extension NativeDatabase: RecordReader {
 
 extension NativeDatabase: RecordLocator {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
+        await registration.value
         guard let entityRecord = try await store.fetch(uuid: recordName) else {
             throw RecordNotFoundError()
         }
@@ -76,6 +84,7 @@ extension NativeDatabase: RecordLocator {
 
 extension NativeDatabase: MetricReader {
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        await registration.value
         let entity = T.seriesValues == Int.seriesValues ? IntMetricsEntry.recordType : DoubleMetricsEntry.recordType
         let prefix = category + "|"
         let points = try await store.series(
@@ -99,6 +108,7 @@ extension NativeDatabase: MetricReader {
 
 extension NativeDatabase: ActivityReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        await registration.value
         // WAU/MAU windows reach back before the visible range.
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
         let sessions = try await store.read(
