@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A362" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="IncidentObject" representedClassName="IncidentObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="IncidentEntry" representedClassName="IncidentEntry" isAbstract="YES" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="fingerprint" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="reason" optional="YES" attributeType="String"/>
         <attribute name="stackTrace" optional="YES" attributeType="Binary"/>
     </entity>
-    <entity name="CrashObject" representedClassName="CrashObject" parentEntity="IncidentObject" syncable="YES" codeGenerationType="none">
+    <entity name="CrashEntry" representedClassName="CrashEntry" parentEntity="IncidentEntry" syncable="YES" codeGenerationType="none">
         <attribute name="crashID" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="crashes" inverseEntity="SessionObject"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="crashes" inverseEntity="SessionEntry"/>
         <fetchIndex name="bySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -20,7 +20,7 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="DateObject" representedClassName="DateObject" isAbstract="YES" syncable="YES" codeGenerationType="none">
+    <entity name="DateEntry" representedClassName="DateEntry" isAbstract="YES" syncable="YES" codeGenerationType="none">
         <attribute name="datePrimitive" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="day" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="hour" attributeType="Date" usesScalarValueType="NO"/>
@@ -30,11 +30,11 @@
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="SyncDelivery" representedClassName="SyncDelivery" syncable="YES" codeGenerationType="none">
+    <entity name="DeliveryEntry" representedClassName="DeliveryEntry" syncable="YES" codeGenerationType="none">
         <attribute name="attempts" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="backendID" attributeType="String"/>
         <attribute name="isPending" attributeType="Boolean" defaultValueString="NO" renamingIdentifier="progressPrimitive" usesScalarValueType="YES"/>
-        <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableObject" inverseName="deliveries" inverseEntity="SyncableObject"/>
+        <relationship name="object" maxCount="1" deletionRule="Nullify" destinationEntity="SyncableEntry" inverseName="deliveries" inverseEntity="SyncableEntry"/>
         <fetchIndex name="byBackend">
             <fetchIndexElement property="backendID" type="Binary" order="ascending"/>
             <fetchIndexElement property="isPending" type="Binary" order="ascending"/>
@@ -47,16 +47,16 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="DoubleMetricsObject" representedClassName="DoubleMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="none">
+    <entity name="DoubleMetricsEntry" representedClassName="DoubleMetricsEntry" parentEntity="MetricsEntry" syncable="YES" codeGenerationType="none">
         <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
     </entity>
-    <entity name="EventObject" representedClassName="EventObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="EventEntry" representedClassName="EventEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="level" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="paramCount" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="params" optional="YES" attributeType="Binary"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="events" inverseEntity="SessionObject"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="events" inverseEntity="SessionEntry"/>
         <fetchIndex name="bySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -67,19 +67,19 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="DeviceObject" representedClassName="DeviceObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="DeviceEntry" representedClassName="DeviceEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="deviceID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="model" optional="YES" attributeType="String"/>
-        <relationship name="installs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="InstallObject" inverseName="device" inverseEntity="InstallObject"/>
+        <relationship name="installs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="InstallEntry" inverseName="device" inverseEntity="InstallEntry"/>
         <fetchIndex name="byDeviceID">
             <fetchIndexElement property="deviceID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="HangObject" representedClassName="HangObject" parentEntity="IncidentObject" syncable="YES" codeGenerationType="none">
+    <entity name="HangEntry" representedClassName="HangEntry" parentEntity="IncidentEntry" syncable="YES" codeGenerationType="none">
         <attribute name="duration" attributeType="Double" usesScalarValueType="YES"/>
         <attribute name="hangID" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="hangs" inverseEntity="SessionObject"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="hangs" inverseEntity="SessionEntry"/>
         <fetchIndex name="bySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -90,11 +90,11 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="InstallObject" representedClassName="InstallObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="InstallEntry" representedClassName="InstallEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="installID" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="device" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeviceObject" inverseName="installs" inverseEntity="DeviceObject"/>
-        <relationship name="launches" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LaunchObject" inverseName="install" inverseEntity="LaunchObject"/>
-        <relationship name="markers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VersionMarker" inverseName="install" inverseEntity="VersionMarker"/>
+        <relationship name="device" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeviceEntry" inverseName="installs" inverseEntity="DeviceEntry"/>
+        <relationship name="launches" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LaunchEntry" inverseName="install" inverseEntity="LaunchEntry"/>
+        <relationship name="markers" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MarkerEntry" inverseName="install" inverseEntity="MarkerEntry"/>
         <fetchIndex name="byInstallID">
             <fetchIndexElement property="installID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -104,15 +104,15 @@
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="IntMetricsObject" representedClassName="IntMetricsObject" parentEntity="MetricsObject" syncable="YES" codeGenerationType="none">
+    <entity name="IntMetricsEntry" representedClassName="IntMetricsEntry" parentEntity="MetricsEntry" syncable="YES" codeGenerationType="none">
         <attribute name="value" attributeType="Integer 64" usesScalarValueType="YES"/>
     </entity>
-    <entity name="LaunchObject" representedClassName="LaunchObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="LaunchEntry" representedClassName="LaunchEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="launchID" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallObject" inverseName="launches" inverseEntity="InstallObject"/>
-        <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="launch" inverseEntity="SessionObject"/>
-        <relationship name="versions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VersionObject" inverseName="launch" inverseEntity="VersionObject"/>
+        <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallEntry" inverseName="launches" inverseEntity="InstallEntry"/>
+        <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="launch" inverseEntity="SessionEntry"/>
+        <relationship name="versions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VersionEntry" inverseName="launch" inverseEntity="VersionEntry"/>
         <fetchIndex name="byLaunchID">
             <fetchIndexElement property="launchID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -125,16 +125,16 @@
             <fetchIndexElement property="endDate" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="MetricsObject" representedClassName="MetricsObject" isAbstract="YES" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="MetricsEntry" representedClassName="MetricsEntry" isAbstract="YES" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="name" attributeType="String"/>
         <attribute name="telemetry" attributeType="String"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="metrics" inverseEntity="SessionObject"/>
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="metrics" inverseEntity="SessionEntry"/>
         <fetchIndex name="bySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="SessionObject" representedClassName="SessionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="SessionEntry" representedClassName="SessionEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="buildNumber" optional="YES" attributeType="String"/>
         <attribute name="channel" optional="YES" attributeType="String"/>
@@ -142,12 +142,12 @@
         <attribute name="locale" optional="YES" attributeType="String"/>
         <attribute name="osVersion" optional="YES" attributeType="String"/>
         <attribute name="sessionID" attributeType="UUID" usesScalarValueType="NO"/>
-        <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchObject" inverseName="sessions" inverseEntity="LaunchObject"/>
-        <relationship name="crashes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CrashObject" inverseName="session" inverseEntity="CrashObject"/>
-        <relationship name="hangs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HangObject" inverseName="session" inverseEntity="HangObject"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EventObject" inverseName="session" inverseEntity="EventObject"/>
-        <relationship name="metrics" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MetricsObject" inverseName="session" inverseEntity="MetricsObject"/>
-        <relationship name="activities" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="UserActivityObject" inverseName="session" inverseEntity="UserActivityObject"/>
+        <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchEntry" inverseName="sessions" inverseEntity="LaunchEntry"/>
+        <relationship name="crashes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CrashEntry" inverseName="session" inverseEntity="CrashEntry"/>
+        <relationship name="hangs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="HangEntry" inverseName="session" inverseEntity="HangEntry"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EventEntry" inverseName="session" inverseEntity="EventEntry"/>
+        <relationship name="metrics" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MetricsEntry" inverseName="session" inverseEntity="MetricsEntry"/>
+        <relationship name="activities" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ActivityEntry" inverseName="session" inverseEntity="ActivityEntry"/>
         <fetchIndex name="bySessionID">
             <fetchIndexElement property="sessionID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -160,26 +160,26 @@
             <fetchIndexElement property="endDate" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="SyncableObject" representedClassName="SyncableObject" parentEntity="DateObject" syncable="YES" codeGenerationType="none">
-        <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="SyncDelivery" inverseName="object" inverseEntity="SyncDelivery"/>
+    <entity name="SyncableEntry" representedClassName="SyncableEntry" parentEntity="DateEntry" syncable="YES" codeGenerationType="none">
+        <relationship name="deliveries" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="DeliveryEntry" inverseName="object" inverseEntity="DeliveryEntry"/>
     </entity>
-    <entity name="VersionObject" representedClassName="VersionObject" parentEntity="SyncableObject" syncable="YES" codeGenerationType="none">
+    <entity name="VersionEntry" representedClassName="VersionEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="buildNumber" optional="YES" attributeType="String"/>
-        <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchObject" inverseName="versions" inverseEntity="LaunchObject"/>
+        <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchEntry" inverseName="versions" inverseEntity="LaunchEntry"/>
         <fetchIndex name="byLaunch">
             <fetchIndexElement property="launch" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="UserActivityObject" representedClassName="UserActivityObject" parentEntity="DateObject" syncable="YES" codeGenerationType="none">
+    <entity name="ActivityEntry" representedClassName="ActivityEntry" parentEntity="DateEntry" syncable="YES" codeGenerationType="none">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="period" attributeType="String"/>
         <attribute name="userActivityID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="weekCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionObject" inverseName="activities" inverseEntity="SessionObject"/>
-        <fetchIndex name="bySession">
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="activities" inverseEntity="SessionEntry"/>
+        <fetchIndex name="byActivitySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
@@ -193,11 +193,11 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="VersionMarker" representedClassName="VersionMarker" parentEntity="DateObject" syncable="YES" codeGenerationType="none">
+    <entity name="MarkerEntry" representedClassName="MarkerEntry" parentEntity="DateEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="markerID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
-        <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallObject" inverseName="markers" inverseEntity="InstallObject"/>
+        <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallEntry" inverseName="markers" inverseEntity="InstallEntry"/>
         <fetchIndex name="byInstallNameVersion">
             <fetchIndexElement property="install" type="Binary" order="ascending"/>
             <fetchIndexElement property="name" type="Binary" order="ascending"/>

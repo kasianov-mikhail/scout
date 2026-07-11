@@ -18,18 +18,18 @@ extension Identity {
         await HangArchive.system.flush(deviceID: device)
 
         try await persistentContainer.run(
-            SessionObject.Recovery(launchID: launch),
-            LaunchObject.Recovery(launchID: launch)
+            SessionEntry.Recovery(launchID: launch),
+            LaunchEntry.Recovery(launchID: launch)
         )
 
         try await persistentContainer.run(
-            DeviceObject.Trigger(deviceID: device),
-            InstallObject.Trigger(installID: install, deviceID: device),
-            VersionObject.Trigger(installID: install, launchID: launch),
-            LaunchObject.Trigger(launchID: launch, installID: install),
-            SessionObject.Trigger(session: session, launchID: launch),
-            UserActivityObject.Trigger(session: session),
-            VersionMarker.Trigger(installID: install)
+            DeviceEntry.Trigger(deviceID: device),
+            InstallEntry.Trigger(installID: install, deviceID: device),
+            VersionEntry.Trigger(installID: install, launchID: launch),
+            LaunchEntry.Trigger(launchID: launch, installID: install),
+            SessionEntry.Trigger(session: session, launchID: launch),
+            ActivityEntry.Trigger(session: session),
+            MarkerEntry.Trigger(installID: install)
         )
     }
 }

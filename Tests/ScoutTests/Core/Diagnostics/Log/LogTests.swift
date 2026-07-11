@@ -32,7 +32,7 @@ private func makeEvent(
         context: context
     )
 
-    let events = try context.fetchAll(EventObject.self)
+    let events = try context.fetchAll(EventEntry.self)
 
     #expect(events.count == 1)
 
@@ -59,7 +59,7 @@ private func makeEvent(
 
     try log(makeEvent("Array Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
 
-    let events = try context.fetchAll(EventObject.self)
+    let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
     let params = try JSONDecoder().decode([String: String].self, from: paramData)
 
@@ -75,7 +75,7 @@ private func makeEvent(
 
     try log(makeEvent("Dict Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
 
-    let events = try context.fetchAll(EventObject.self)
+    let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
     let params = try JSONDecoder().decode([String: String].self, from: paramData)
 
@@ -93,7 +93,7 @@ private func makeEvent(
 
     try log(makeEvent("Mixed Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
 
-    let events = try context.fetchAll(EventObject.self)
+    let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
     let params = try JSONDecoder().decode([String: String].self, from: paramData)
 

@@ -74,7 +74,7 @@ struct ReleaseReportTests {
 
         let crashes = Matrix<GridCell<Int>>(
             date: start,
-            name: CrashObject.recordType,
+            name: CrashEntry.recordType,
             version: "5.0",
             cells: [
                 GridCell(row: 1, column: 0, value: 2),
@@ -101,7 +101,7 @@ struct ReleaseReportTests {
 
         let matrix = Matrix<GridCell<Int>>(
             date: start,
-            name: SessionObject.recordType,
+            name: SessionEntry.recordType,
             version: "5.0",
             cells: [
                 GridCell(row: 1, column: 0, value: 5),
@@ -138,23 +138,23 @@ struct ReleaseReportTests {
     }
 
     private func sessionMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: SessionObject.recordType, version: version, count: count)
+        matrix(name: SessionEntry.recordType, version: version, count: count)
     }
 
     private func crashMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: CrashObject.recordType, version: version, count: count)
+        matrix(name: CrashEntry.recordType, version: version, count: count)
     }
 
     private func hangMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: HangObject.recordType, version: version, count: count)
+        matrix(name: HangEntry.recordType, version: version, count: count)
     }
 
     private func installMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: VersionMarker.installName, version: version, count: count)
+        matrix(name: MarkerEntry.installName, version: version, count: count)
     }
 
     private func crashedInstallMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: VersionMarker.crashName, version: version, count: count)
+        matrix(name: MarkerEntry.crashName, version: version, count: count)
     }
 
     private func matrix(name: String, version: String, count: Int) -> GridMatrix<Int> {

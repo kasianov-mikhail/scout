@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HasSession {
-    var session: SessionObject? { get }
+    var session: SessionEntry? { get }
 }
 
 extension HasSession {

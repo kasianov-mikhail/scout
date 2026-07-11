@@ -18,8 +18,8 @@ enum EntityCatalog {
 
     static let definitions: [EntityDefinition] = [
         event, session, launch, install, device, version, crash, hang,
-        metric(entity: IntMetricsObject.recordType, valueType: .int),
-        metric(entity: DoubleMetricsObject.recordType, valueType: .double),
+        metric(entity: IntMetricsEntry.recordType, valueType: .int),
+        metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
 
     static func definition(for entity: String) -> EntityDefinition? {
@@ -29,7 +29,7 @@ enum EntityCatalog {
     // Metric series are grouped by a single grid key, so the category and name
     // are packed into one pipe-separated field on write and split on read.
     static func seriesKey(for record: Record) -> ScoutDB.RecordValue? {
-        guard record.recordType == IntMetricsObject.recordType || record.recordType == DoubleMetricsObject.recordType else {
+        guard record.recordType == IntMetricsEntry.recordType || record.recordType == DoubleMetricsEntry.recordType else {
             return nil
         }
         let category: String? = record["category"]
@@ -38,7 +38,7 @@ enum EntityCatalog {
     }
 
     private static let event = definition(
-        entity: EventObject.recordType,
+        entity: EventEntry.recordType,
         fields: [
             ("name", .text),
             ("level", .string),
@@ -51,7 +51,7 @@ enum EntityCatalog {
     )
 
     private static let session = definition(
-        entity: SessionObject.recordType,
+        entity: SessionEntry.recordType,
         fields: [
             ("start_date", .timestamp),
             ("end_date", .timestamp),
@@ -62,7 +62,7 @@ enum EntityCatalog {
     )
 
     private static let launch = definition(
-        entity: LaunchObject.recordType,
+        entity: LaunchEntry.recordType,
         fields: [
             ("start_date", .timestamp),
             ("end_date", .timestamp),
@@ -71,17 +71,17 @@ enum EntityCatalog {
     )
 
     private static let install = definition(
-        entity: InstallObject.recordType,
+        entity: InstallEntry.recordType,
         fields: [("date", .timestamp)]
     )
 
     private static let device = definition(
-        entity: DeviceObject.recordType,
+        entity: DeviceEntry.recordType,
         fields: [("date", .timestamp)]
     )
 
     private static let version = definition(
-        entity: VersionObject.recordType,
+        entity: VersionEntry.recordType,
         fields: [
             ("date", .timestamp),
             ("app_version", .string),
@@ -90,7 +90,7 @@ enum EntityCatalog {
     )
 
     private static let crash = definition(
-        entity: CrashObject.recordType,
+        entity: CrashEntry.recordType,
         fields: [
             ("name", .text),
             ("fingerprint", .string),
@@ -103,7 +103,7 @@ enum EntityCatalog {
     )
 
     private static let hang = definition(
-        entity: HangObject.recordType,
+        entity: HangEntry.recordType,
         fields: [
             ("name", .text),
             ("fingerprint", .string),

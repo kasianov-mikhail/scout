@@ -14,7 +14,7 @@ struct Device {
 }
 
 extension Device: RecordDecodable {
-    static let recordType = DeviceObject.recordType
+    static let recordType = DeviceEntry.recordType
 
     static let desiredKeys = [
         "date",

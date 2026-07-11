@@ -23,15 +23,15 @@ struct EntityCatalogTests {
     @Test("Definitions exist for every syncable record type")
     func coverage() {
         let entities = [
-            EventObject.recordType,
-            SessionObject.recordType,
-            LaunchObject.recordType,
-            InstallObject.recordType,
-            DeviceObject.recordType,
-            VersionObject.recordType,
-            CrashObject.recordType,
-            IntMetricsObject.recordType,
-            DoubleMetricsObject.recordType,
+            EventEntry.recordType,
+            SessionEntry.recordType,
+            LaunchEntry.recordType,
+            InstallEntry.recordType,
+            DeviceEntry.recordType,
+            VersionEntry.recordType,
+            CrashEntry.recordType,
+            IntMetricsEntry.recordType,
+            DoubleMetricsEntry.recordType,
         ]
         for entity in entities {
             #expect(EntityCatalog.definition(for: entity) != nil)
@@ -41,13 +41,13 @@ struct EntityCatalogTests {
     @Test("Definitions cover the fields the UI requests")
     func desiredKeys() throws {
         let requests: [(String, [String])] = [
-            (EventObject.recordType, Event.desiredKeys),
-            (SessionObject.recordType, Session.desiredKeys),
-            (LaunchObject.recordType, Launch.desiredKeys),
-            (InstallObject.recordType, Install.desiredKeys),
-            (DeviceObject.recordType, Device.desiredKeys),
-            (VersionObject.recordType, Version.desiredKeys),
-            (CrashObject.recordType, Crash.desiredKeys),
+            (EventEntry.recordType, Event.desiredKeys),
+            (SessionEntry.recordType, Session.desiredKeys),
+            (LaunchEntry.recordType, Launch.desiredKeys),
+            (InstallEntry.recordType, Install.desiredKeys),
+            (DeviceEntry.recordType, Device.desiredKeys),
+            (VersionEntry.recordType, Version.desiredKeys),
+            (CrashEntry.recordType, Crash.desiredKeys),
         ]
 
         for (entity, keys) in requests {
@@ -62,11 +62,11 @@ struct EntityCatalogTests {
 
     @Test("Series key packs category and name")
     func seriesKey() {
-        var record = Record(recordType: IntMetricsObject.recordType, recordID: "m-1")
+        var record = Record(recordType: IntMetricsEntry.recordType, recordID: "m-1")
         record["name"] = "checkout"
         record["category"] = "timer"
 
         #expect(EntityCatalog.seriesKey(for: record) == .string("timer|checkout"))
-        #expect(EntityCatalog.seriesKey(for: Record(recordType: EventObject.recordType, recordID: "e-1")) == nil)
+        #expect(EntityCatalog.seriesKey(for: Record(recordType: EventEntry.recordType, recordID: "e-1")) == nil)
     }
 }

@@ -32,8 +32,8 @@ struct HomeLogProviderTests {
         let ints = MatrixSpan(matrices: result.0, range: allTime)
         let doubles = MatrixSpan(matrices: result.1, range: allTime)
 
-        #expect(ints.total { $0 != CrashObject.recordType } == 3)
-        #expect(ints.total { $0 == CrashObject.recordType } == 2)
+        #expect(ints.total { $0 != CrashEntry.recordType } == 3)
+        #expect(ints.total { $0 == CrashEntry.recordType } == 2)
         #expect(ints.series + doubles.series == 2)
         #expect(database.readCount(of: Int.recordType) == 1)
         #expect(database.readCount(of: Double.recordType) == 1)
@@ -72,7 +72,7 @@ struct HomeLogProviderTests {
         let result = try #require(try provider.result?.get())
 
         #expect(result.0.count == 1)
-        #expect(MatrixSpan(matrices: result.0, range: allTime).total { $0 != CrashObject.recordType } == 7)
+        #expect(MatrixSpan(matrices: result.0, range: allTime).total { $0 != CrashEntry.recordType } == 7)
     }
 
     @Test("Each period fetches only its own range")

@@ -43,19 +43,19 @@ struct DeliverTests {
     }
 
     /// Run the delivery engine for a type the way `synchronize` does: raw records to every backend.
-    func deliver<T: SyncableObject & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
-        SyncDelivery.recordAttempt(for: backend.id, in: context)
+    func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
+        DeliveryEntry.recordAttempt(for: backend.id, in: context)
         try await RecordSender(backend: backend).deliver(type: type, in: context)
     }
 
     @Test("Events go raw to every backend")
     func eventsFanOut() async throws {
-        EventObject.stub(name: "login", in: context)
+        EventEntry.stub(name: "login", in: context)
         try context.save()
-        try SyncableObject.plan(backends: backends, in: context)
+        try SyncableEntry.plan(backends: backends, in: context)
 
         for backend in backends {
-            try await deliver(EventObject.self, to: backend)
+            try await deliver(EventEntry.self, to: backend)
         }
 
         #expect(cloud.records.count(of: "Event") == 1)
@@ -64,16 +64,16 @@ struct DeliverTests {
 
     @Test("A failing backend leaves its row outstanding without blocking the others")
     func failureIsolatedToBackend() async throws {
-        let event = EventObject.stub(name: "login", in: context)
+        let event = EventEntry.stub(name: "login", in: context)
         try context.save()
-        try SyncableObject.plan(backends: backends, in: context)
+        try SyncableEntry.plan(backends: backends, in: context)
 
         server.writeErrors.append(Self.testError)
 
         // The cloud engine succeeds independently of the failing server engine.
-        try await deliver(EventObject.self, to: cloudBackend)
+        try await deliver(EventEntry.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
-            try await deliver(EventObject.self, to: serverBackend)
+            try await deliver(EventEntry.self, to: serverBackend)
         }
 
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
@@ -85,12 +85,12 @@ struct DeliverTests {
 
     @Test("An unavailable backend is left untouched without blocking the others")
     func unavailableBackendIsSkipped() async throws {
-        let event = EventObject.stub(name: "login", in: context)
+        let event = EventEntry.stub(name: "login", in: context)
         try context.save()
-        try SyncableObject.plan(backends: backends, in: context)
+        try SyncableEntry.plan(backends: backends, in: context)
 
         // The server is unavailable this cycle, so only the cloud engine runs.
-        try await deliver(EventObject.self, to: cloudBackend)
+        try await deliver(EventEntry.self, to: cloudBackend)
 
         // The server's row is seeded but untouched — not even an attempt is
         // counted — so it is delivered once its engine runs again.
@@ -103,14 +103,14 @@ struct DeliverTests {
 
     @Test("A backend abandoned after too many attempts is no longer retried")
     func abandonedBackendSettles() async throws {
-        let event = EventObject.stub(name: "login", synced: true, in: context)
+        let event = EventEntry.stub(name: "login", synced: true, in: context)
         event.seedDelivery(for: "cloud", in: context)
         // The server is already at the attempt ceiling and still owes its raw record.
-        event.seedDelivery(attempts: Int16(SyncDelivery.maxAttempts), for: "server", in: context)
+        event.seedDelivery(attempts: Int16(DeliveryEntry.maxAttempts), for: "server", in: context)
         try context.save()
 
-        try await deliver(EventObject.self, to: cloudBackend)
-        try await deliver(EventObject.self, to: serverBackend)
+        try await deliver(EventEntry.self, to: cloudBackend)
+        try await deliver(EventEntry.self, to: serverBackend)
 
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
         #expect(event.delivery(for: "server")?.isAbandoned == true)
@@ -120,19 +120,19 @@ struct DeliverTests {
 
     @Test("The recovered backend is retried alone; healthy ones aren't rewritten")
     func resumesWithoutRewritingHealthyBackends() async throws {
-        let event = EventObject.stub(name: "login", in: context)
+        let event = EventEntry.stub(name: "login", in: context)
         try context.save()
-        try SyncableObject.plan(backends: backends, in: context)
+        try SyncableEntry.plan(backends: backends, in: context)
 
         // First cycle: the server is down, cloud succeeds.
         server.writeErrors.append(Self.testError)
-        try await deliver(EventObject.self, to: cloudBackend)
+        try await deliver(EventEntry.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
-            try await deliver(EventObject.self, to: serverBackend)
+            try await deliver(EventEntry.self, to: serverBackend)
         }
 
         // Second cycle: only the recovered server engine runs.
-        try await deliver(EventObject.self, to: serverBackend)
+        try await deliver(EventEntry.self, to: serverBackend)
 
         #expect(event.delivery(for: "server")?.isDelivered == true)
         #expect(server.records.count(of: "Event") == 1)
@@ -143,24 +143,24 @@ struct DeliverTests {
     @Test("Dropping a never-reached backend lets cleanup reclaim the record")
     func droppingBackendUnblocks() async throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        let event = EventObject.stub(name: "login", date: old, in: context)
+        let event = EventEntry.stub(name: "login", date: old, in: context)
         try context.save()
-        try SyncableObject.plan(backends: backends, in: context)
+        try SyncableEntry.plan(backends: backends, in: context)
 
         // Cloud delivered; the server never accepts the record.
         server.writeErrors.append(Self.testError)
-        try await deliver(EventObject.self, to: cloudBackend)
+        try await deliver(EventEntry.self, to: cloudBackend)
         await #expect(throws: (any Error).self) {
-            try await deliver(EventObject.self, to: serverBackend)
+            try await deliver(EventEntry.self, to: serverBackend)
         }
         #expect(event.delivery(for: "server")?.isDelivered == false)
 
         // While the server is configured, the outstanding row keeps the record...
-        try DateObject.cleanup(backends: backends, in: context)
-        #expect(try context.fetchAll(EventObject.self).count == 1)
+        try DateEntry.cleanup(backends: backends, in: context)
+        #expect(try context.fetchAll(EventEntry.self).count == 1)
 
         // ...but once it is dropped from the config, cleanup reclaims it.
-        try DateObject.cleanup(backends: [cloudBackend], in: context)
-        #expect(try context.fetchAll(EventObject.self).isEmpty)
+        try DateEntry.cleanup(backends: [cloudBackend], in: context)
+        #expect(try context.fetchAll(EventEntry.self).isEmpty)
     }
 }

@@ -66,20 +66,20 @@ struct MatrixSeriesTests {
         let query = RecordQuery(
             recordType: GridMatrix<Int>.self,
             filters: range.dateFilters + [
-                RecordQuery.Filter(field: "name", op: .equals, value: .string(SessionObject.recordType))
+                RecordQuery.Filter(field: "name", op: .equals, value: .string(SessionEntry.recordType))
             ]
         )
         let matrices: [GridMatrix<Int>] = try await database.readAll(matching: query)
         let matrix = try #require(matrices.first)
 
-        #expect(matrix.name == SessionObject.recordType)
+        #expect(matrix.name == SessionEntry.recordType)
         #expect(matrix.version == "1.2.0")
         #expect(matrix.cells.map(\.value).reduce(0, +) == 2)
     }
 
     @Test("Hangs aggregate into a per-version matrix")
     func hangMatrices() async throws {
-        var hang = Record(recordType: HangObject.recordType, recordID: "h-1")
+        var hang = Record(recordType: HangEntry.recordType, recordID: "h-1")
         hang["name"] = "Main Thread Blocked"
         hang["date"] = TestDate.reference.addingTimeInterval(2 * .hour)
         hang["app_version"] = "1.2.0"
@@ -89,20 +89,20 @@ struct MatrixSeriesTests {
         let query = RecordQuery(
             recordType: GridMatrix<Int>.self,
             filters: range.dateFilters + [
-                RecordQuery.Filter(field: "name", op: .equals, value: .string(HangObject.recordType))
+                RecordQuery.Filter(field: "name", op: .equals, value: .string(HangEntry.recordType))
             ]
         )
         let matrices: [GridMatrix<Int>] = try await database.readAll(matching: query)
         let matrix = try #require(matrices.first)
 
-        #expect(matrix.name == HangObject.recordType)
+        #expect(matrix.name == HangEntry.recordType)
         #expect(matrix.version == "1.2.0")
         #expect(matrix.cells.map(\.value).reduce(0, +) == 1)
     }
 
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
-        var version = Record(recordType: VersionObject.recordType, recordID: "v-1")
+        var version = Record(recordType: VersionEntry.recordType, recordID: "v-1")
         version["date"] = TestDate.reference.addingTimeInterval(.hour)
         version["app_version"] = "1.2.0"
         version["build_number"] = "42"
@@ -110,7 +110,7 @@ struct MatrixSeriesTests {
         try await database.write(record: version)
 
         for (id, install) in [("c-1", "install-a"), ("c-2", "install-a"), ("c-3", "install-b")] {
-            var crash = Record(recordType: CrashObject.recordType, recordID: id)
+            var crash = Record(recordType: CrashEntry.recordType, recordID: id)
             crash["name"] = "SIGSEGV"
             crash["date"] = TestDate.reference.addingTimeInterval(2 * .hour)
             crash["app_version"] = "1.2.0"
@@ -123,7 +123,7 @@ struct MatrixSeriesTests {
             matching: RecordQuery(
                 recordType: GridMatrix<Int>.self,
                 filters: range.dateFilters + [
-                    RecordQuery.Filter(field: "name", op: .equals, value: .string(VersionMarker.installName))
+                    RecordQuery.Filter(field: "name", op: .equals, value: .string(MarkerEntry.installName))
                 ]
             )
         )
@@ -134,7 +134,7 @@ struct MatrixSeriesTests {
             matching: RecordQuery(
                 recordType: GridMatrix<Int>.self,
                 filters: range.dateFilters + [
-                    RecordQuery.Filter(field: "name", op: .equals, value: .string(VersionMarker.crashName))
+                    RecordQuery.Filter(field: "name", op: .equals, value: .string(MarkerEntry.crashName))
                 ]
             )
         )
@@ -143,7 +143,7 @@ struct MatrixSeriesTests {
 
     @Test("Double metric matrices carry name and category")
     func doubleMetricMatrices() async throws {
-        var record = Record(recordType: DoubleMetricsObject.recordType, recordID: "m-1")
+        var record = Record(recordType: DoubleMetricsEntry.recordType, recordID: "m-1")
         record["name"] = "latency"
         record["category"] = "recorder"
         record["value"] = 1.5

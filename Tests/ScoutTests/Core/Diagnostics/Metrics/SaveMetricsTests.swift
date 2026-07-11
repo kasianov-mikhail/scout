@@ -17,11 +17,11 @@ struct SaveMetricsTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date(timeIntervalSinceReferenceDate: 0)
 
-    @Test("Persists an IntMetricsObject with correct fields")
+    @Test("Persists an IntMetricsEntry with correct fields")
     func persistsIntMetrics() throws {
         try saveMetrics("api_calls", date: date, category: "counter", value: 5, sessionID: UUID(), context)
 
-        let results = try context.fetchAll(IntMetricsObject.self)
+        let results = try context.fetchAll(IntMetricsEntry.self)
 
         #expect(results.count == 1)
 
@@ -32,11 +32,11 @@ struct SaveMetricsTests {
         #expect(object.date == date)
     }
 
-    @Test("Persists a DoubleMetricsObject with correct fields")
+    @Test("Persists a DoubleMetricsEntry with correct fields")
     func persistsDoubleMetrics() throws {
         try saveMetrics("response_time", date: date, category: "timer", value: 1.5, sessionID: UUID(), context)
 
-        let results = try context.fetchAll(DoubleMetricsObject.self)
+        let results = try context.fetchAll(DoubleMetricsEntry.self)
 
         #expect(results.count == 1)
 

@@ -32,15 +32,15 @@ struct MergePolicyTests {
         let context = container.viewContext
         let eventID = UUID()
 
-        let first = EventObject.stub(name: "first", in: context)
+        let first = EventEntry.stub(name: "first", in: context)
         first.eventID = eventID
         try context.save()
 
-        let second = EventObject.stub(name: "second", in: context)
+        let second = EventEntry.stub(name: "second", in: context)
         second.eventID = eventID
         try context.save()
 
-        let request = NSFetchRequest<EventObject>(entityName: "EventObject")
+        let request = NSFetchRequest<EventEntry>(entityName: "EventEntry")
         let events = try context.fetch(request)
         #expect(events.count == 1)
     }

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HasInstall {
-    var install: InstallObject? { get }
+    var install: InstallEntry? { get }
 }
 
 extension HasInstall {

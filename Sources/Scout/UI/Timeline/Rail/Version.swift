@@ -16,7 +16,7 @@ struct Version {
 }
 
 extension Version: RecordDecodable {
-    static let recordType = VersionObject.recordType
+    static let recordType = VersionEntry.recordType
 
     static let desiredKeys = [
         "app_version",

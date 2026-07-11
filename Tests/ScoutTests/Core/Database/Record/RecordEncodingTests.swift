@@ -18,7 +18,7 @@ struct RecordEncodingTests {
 
     @Test("Events encode to a raw Event record")
     func eventRecord() throws {
-        let event = EventObject.stub(name: "login", in: context)
+        let event = EventEntry.stub(name: "login", in: context)
         try context.save()
 
         let record = event.record
@@ -29,12 +29,12 @@ struct RecordEncodingTests {
 
     @Test("Int metrics serialize as raw IntMetric records")
     func intMetricRecord() throws {
-        let device = DeviceObject.stub(date: Date(), in: context)
-        let install = InstallObject.stub(date: Date(), device: device, in: context)
-        let launch = LaunchObject.stub(date: Date(), install: install, in: context)
-        let session = SessionObject.stub(date: Date(), launch: launch, in: context)
+        let device = DeviceEntry.stub(date: Date(), in: context)
+        let install = InstallEntry.stub(date: Date(), device: device, in: context)
+        let launch = LaunchEntry.stub(date: Date(), install: install, in: context)
+        let session = SessionEntry.stub(date: Date(), launch: launch, in: context)
 
-        let metric = IntMetricsObject.stub(name: "requests", telemetry: "counter", value: 5, in: context)
+        let metric = IntMetricsEntry.stub(name: "requests", telemetry: "counter", value: 5, in: context)
         metric.session = session
         try context.save()
 
@@ -50,7 +50,7 @@ struct RecordEncodingTests {
 
     @Test("Metric record names are stable across repeated serialization")
     func stableMetricRecordName() throws {
-        let metric = DoubleMetricsObject.stub(name: "duration", telemetry: "timer", value: 1.5, in: context)
+        let metric = DoubleMetricsEntry.stub(name: "duration", telemetry: "timer", value: 1.5, in: context)
         try context.save()
 
         let record = metric.record
@@ -62,7 +62,7 @@ struct RecordEncodingTests {
 
     @Test("Session records carry the app version")
     func sessionAppVersionRecord() throws {
-        let session = SessionObject.stub(date: Date(), appVersion: "3.2.0", in: context)
+        let session = SessionEntry.stub(date: Date(), appVersion: "3.2.0", in: context)
         try context.save()
 
         #expect(session.record.recordType == "Session")
@@ -71,7 +71,7 @@ struct RecordEncodingTests {
 
     @Test("Session records carry the runtime environment")
     func sessionEnvironmentRecord() throws {
-        let session = SessionObject.stub(date: Date(), in: context)
+        let session = SessionEntry.stub(date: Date(), in: context)
         session.buildNumber = "412"
         session.osVersion = "iOS 17.4"
         session.locale = "en_US"
@@ -86,7 +86,7 @@ struct RecordEncodingTests {
 
     @Test("Device records carry the hardware model")
     func deviceModelRecord() throws {
-        let device = DeviceObject.stub(date: Date(), in: context)
+        let device = DeviceEntry.stub(date: Date(), in: context)
         device.model = "iPhone16,1"
         try context.save()
 
@@ -96,7 +96,7 @@ struct RecordEncodingTests {
 
     @Test("Crash records carry the app version")
     func crashAppVersionRecord() throws {
-        let crash = CrashObject(entity: NSEntityDescription.entity(forEntityName: "CrashObject", in: context)!, insertInto: context)
+        let crash = CrashEntry(entity: NSEntityDescription.entity(forEntityName: "CrashEntry", in: context)!, insertInto: context)
         crash.name = "SIGABRT"
         crash.crashID = UUID()
         crash.appVersion = "3.2.0"
@@ -107,10 +107,10 @@ struct RecordEncodingTests {
     }
 }
 
-extension IntMetricsObject {
-    @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext) -> IntMetricsObject {
-        let entity = NSEntityDescription.entity(forEntityName: "IntMetricsObject", in: context)!
-        let metric = IntMetricsObject(entity: entity, insertInto: context)
+extension IntMetricsEntry {
+    @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext) -> IntMetricsEntry {
+        let entity = NSEntityDescription.entity(forEntityName: "IntMetricsEntry", in: context)!
+        let metric = IntMetricsEntry(entity: entity, insertInto: context)
 
         metric.name = name
         metric.telemetry = telemetry
@@ -121,10 +121,10 @@ extension IntMetricsObject {
     }
 }
 
-extension DoubleMetricsObject {
-    @discardableResult static func stub(name: String, telemetry: String, value: Double, in context: NSManagedObjectContext) -> DoubleMetricsObject {
-        let entity = NSEntityDescription.entity(forEntityName: "DoubleMetricsObject", in: context)!
-        let metric = DoubleMetricsObject(entity: entity, insertInto: context)
+extension DoubleMetricsEntry {
+    @discardableResult static func stub(name: String, telemetry: String, value: Double, in context: NSManagedObjectContext) -> DoubleMetricsEntry {
+        let entity = NSEntityDescription.entity(forEntityName: "DoubleMetricsEntry", in: context)!
+        let metric = DoubleMetricsEntry(entity: entity, insertInto: context)
 
         metric.name = name
         metric.telemetry = telemetry

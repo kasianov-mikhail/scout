@@ -24,7 +24,7 @@ struct EventProviderTests {
         await provider.fetchIfNeeded(for: Event.Query(), in: database)
 
         #expect(provider.events?.count == 2)
-        #expect(database.readCount(of: EventObject.recordType) == 1)
+        #expect(database.readCount(of: EventEntry.recordType) == 1)
     }
 
     @Test("fetchIfNeeded does not reload once events are present")
@@ -36,6 +36,6 @@ struct EventProviderTests {
         await provider.fetchIfNeeded(for: Event.Query(), in: database)
         await provider.fetchIfNeeded(for: Event.Query(), in: database)
 
-        #expect(database.readCount(of: EventObject.recordType) == 1)
+        #expect(database.readCount(of: EventEntry.recordType) == 1)
     }
 }

@@ -17,16 +17,16 @@ extension Identity {
 
     func enter() async throws {
         try await persistentContainer.run(
-            SessionObject.Trigger(session: session, launchID: launch),
-            UserActivityObject.Trigger(session: session),
-            VersionMarker.Trigger(installID: install)
+            SessionEntry.Trigger(session: session, launchID: launch),
+            ActivityEntry.Trigger(session: session),
+            MarkerEntry.Trigger(installID: install)
         )
     }
 
     func leave() async throws {
         try await persistentContainer.run(
-            SessionObject.Complete(launchID: launch),
-            UserActivityObject.Trigger(session: session)
+            SessionEntry.Complete(launchID: launch),
+            ActivityEntry.Trigger(session: session)
         )
     }
 }
