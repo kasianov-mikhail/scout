@@ -33,4 +33,15 @@ final class DeliveryEntry: NSManagedObject {
             print("Failed to record delivery attempt: \(error.localizedDescription)")
         }
     }
+
+    static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<NSManagedObjectID> {
+        let request = NSFetchRequest<DeliveryEntry>(entityName: "DeliveryEntry")
+        request.predicate = NSPredicate(
+            format: "backendID IN %@ AND isPending == YES AND attempts < %d",
+            backendIDs,
+            DeliveryEntry.maxAttempts
+        )
+
+        return Set(try context.fetch(request).map(\.object.objectID))
+    }
 }

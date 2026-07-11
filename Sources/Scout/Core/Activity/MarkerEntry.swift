@@ -8,9 +8,7 @@
 import CoreData
 
 @objc(MarkerEntry)
-final class MarkerEntry: SyncableEntry {
-    override class var isLocalOnly: Bool { true }
-
+final class MarkerEntry: DateEntry {
     static let installName = "VersionInstall"
     static let crashName = "VersionCrash"
     static let hangName = "VersionHang"

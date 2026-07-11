@@ -172,14 +172,14 @@
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
-    <entity name="ActivityEntry" representedClassName="ActivityEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
+    <entity name="ActivityEntry" representedClassName="ActivityEntry" parentEntity="DateEntry" syncable="YES" codeGenerationType="none">
         <attribute name="dayCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="monthCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="period" attributeType="String"/>
         <attribute name="userActivityID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="weekCount" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="activities" inverseEntity="SessionEntry"/>
-        <fetchIndex name="bySession">
+        <fetchIndex name="byActivitySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
@@ -193,7 +193,7 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="MarkerEntry" representedClassName="MarkerEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
+    <entity name="MarkerEntry" representedClassName="MarkerEntry" parentEntity="DateEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="markerID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>

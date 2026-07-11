@@ -156,11 +156,11 @@ struct DeliverTests {
         #expect(event.delivery(for: "server")?.isDelivered == false)
 
         // While the server is configured, the outstanding row keeps the record...
-        try SyncableEntry.cleanup(backends: backends, in: context)
+        try DateEntry.cleanup(backends: backends, in: context)
         #expect(try context.fetchAll(EventEntry.self).count == 1)
 
         // ...but once it is dropped from the config, cleanup reclaims it.
-        try SyncableEntry.cleanup(backends: [cloudBackend], in: context)
+        try DateEntry.cleanup(backends: [cloudBackend], in: context)
         #expect(try context.fetchAll(EventEntry.self).isEmpty)
     }
 }

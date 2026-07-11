@@ -9,8 +9,6 @@ import CoreData
 
 @objc(SyncableEntry)
 class SyncableEntry: DateEntry {
-    class var isLocalOnly: Bool { false }
-
     @NSManaged var deliveries: Set<DeliveryEntry>
 
     func delivery(for backendID: String) -> DeliveryEntry? {

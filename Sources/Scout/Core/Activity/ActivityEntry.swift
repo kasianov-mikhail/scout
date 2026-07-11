@@ -8,9 +8,7 @@
 import CoreData
 
 @objc(ActivityEntry)
-final class ActivityEntry: SyncableEntry {
-    override class var isLocalOnly: Bool { true }
-
+final class ActivityEntry: DateEntry {
     @NSManaged var session: SessionEntry?
     @NSManaged var dayCount: Int32
     @NSManaged var monthCount: Int32

@@ -12,7 +12,7 @@ extension SyncableEntry {
         let request = NSFetchRequest<SyncableEntry>(entityName: "SyncableEntry")
         request.predicate = NSPredicate(format: "deliveries.@count == 0")
 
-        for object in try context.fetch(request) where !type(of: object).isLocalOnly {
+        for object in try context.fetch(request) {
             for backend in backends {
                 let row = context.insert(DeliveryEntry.self)
                 row.backendID = backend.id
