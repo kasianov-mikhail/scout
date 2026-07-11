@@ -26,7 +26,7 @@ struct DevicesExportTests {
 
         #expect(text.hasPrefix("# Scout Devices"))
         #expect(text.contains("1 device"))
-        #expect(text.contains("iPhone15,3"))
+        #expect(text.contains("iPhone 14 Pro Max"))
         #expect(text.contains("iOS 17.4"))
         #expect(text.contains("10 sessions"))
         #expect(text.contains("2 crashes"))
@@ -39,8 +39,8 @@ struct DevicesExportTests {
         let newer = DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSince1970: 3600), sessions: 1, crashes: 0)
         let text = try #require(DevicesExport(devices: [older, newer]).text)
 
-        let newerRange = try #require(text.range(of: "iPhone15,3"))
-        let olderRange = try #require(text.range(of: "iPhone14,2"))
+        let newerRange = try #require(text.range(of: "iPhone 14 Pro Max"))
+        let olderRange = try #require(text.range(of: "iPhone 13 Pro"))
         #expect(newerRange.lowerBound < olderRange.lowerBound)
     }
 

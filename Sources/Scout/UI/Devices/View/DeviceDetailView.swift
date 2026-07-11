@@ -21,7 +21,10 @@ struct DeviceDetailView: View {
     var body: some View {
         List {
             FlowLayout(spacing: 6) {
-                InfoChip(systemImage: device.model.hasPrefix("iPad") ? "ipad" : "iphone", text: device.model, color: .blue, monospaced: true)
+                InfoChip(systemImage: device.symbol, text: device.modelName, color: .blue)
+                if device.modelName != device.model {
+                    InfoChip(systemImage: "number", text: device.model, color: .gray, monospaced: true)
+                }
                 InfoChip(systemImage: "gearshape", text: device.osVersion, color: .indigo)
                 InfoChip(systemImage: "clock", text: "seen \(device.lastSeen.relativeString)", color: .teal)
             }
@@ -69,7 +72,7 @@ struct DeviceDetailView: View {
             }
         }
         .listStyle(.plain)
-        .navigationTitle(en: device.model)
+        .navigationTitle(en: device.modelName)
         .task {
             await incidents.fetchIfNeeded(in: database)
         }

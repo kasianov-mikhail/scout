@@ -35,7 +35,7 @@ struct DevicesView: View {
         let activeCutoff = Date(timeIntervalSinceNow: -7 * 86400)
         let activeCount = devices.filter { $0.lastSeen > activeCutoff }.count
         let crashingCount = devices.filter { $0.crashes > 0 }.count
-        let modelBreakdown = IncidentBreakdown.segments(from: devices.map(\.model))
+        let modelBreakdown = IncidentBreakdown.segments(from: devices.map(\.modelName))
         let osBreakdown = IncidentBreakdown.segments(from: devices.map(\.osVersion))
 
         return List {
