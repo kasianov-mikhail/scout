@@ -138,13 +138,15 @@ enum EntityCatalog {
         )
     }
 
-    private static func definition(entity: String, fields: [(String, FieldType)], trailing: [(String, FieldType)] = [], envelopeDate: String = "date", views: [AggregateView]? = nil)
+    private typealias Spec = (String, FieldType)
+
+    private static func definition(entity: String, fields: [Spec], trailing: [Spec] = [], envelopeDate: String = "date", views: [AggregateView]? = nil)
         -> EntityDefinition
     {
         EntityDefinition(entity: entity, version: 1, fields: slotted(fields + metadata + trailing), envelopeDate: envelopeDate, views: views)
     }
 
-    private static let metadata: [(String, FieldType)] = [
+    private static let metadata: [Spec] = [
         ("hour", .timestamp),
         ("day", .timestamp),
         ("week", .timestamp),
@@ -155,7 +157,7 @@ enum EntityCatalog {
         ("version", .int),
     ]
 
-    private static func slotted(_ specs: [(String, FieldType)]) -> [FieldDefinition] {
+    private static func slotted(_ specs: [Spec]) -> [FieldDefinition] {
         var next: [Pool: Int] = [:]
         return specs.map { name, type in
             let pool = pool(for: type)
