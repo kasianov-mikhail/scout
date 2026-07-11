@@ -39,7 +39,7 @@ struct EventView: View {
         }
         .listStyle(.plain)
         .navigationTint(color)
-        .navigationTitle(event.name)
+        .monospacedNavigationTitle(en: event.name)
         .navigationDestination(isPresented: $isParamPresented) {
             if let items = try? param.result?.get() {
                 ParamList(items: items)

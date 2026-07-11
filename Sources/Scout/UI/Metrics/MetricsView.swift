@@ -49,7 +49,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
             extra(extent)
         }
         .listStyle(.plain)
-        .navigationTitle(group.name)
+        .monospacedNavigationTitle(en: group.name)
         .scrollDisabled(Extra.self == EmptyView.self)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {

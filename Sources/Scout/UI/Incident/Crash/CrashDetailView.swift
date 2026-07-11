@@ -39,7 +39,7 @@ struct CrashDetailView: View {
                 Spacer()
             }
         }
-        .navigationTitle(crash.name)
+        .monospacedNavigationTitle(en: crash.name)
     }
 }
 

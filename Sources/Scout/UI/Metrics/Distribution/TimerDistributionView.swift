@@ -45,6 +45,6 @@ extension LatencyPercentiles {
             TimerDistributionView(percentiles: .sample, trend: .sample, unit: .hour)
                 .padding(.horizontal)
         }
-        .navigationTitle(en: "http_request")
+        .monospacedNavigationTitle(en: "http_request")
     }
 }

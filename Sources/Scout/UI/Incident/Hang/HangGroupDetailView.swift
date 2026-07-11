@@ -36,7 +36,7 @@ struct HangGroupDetailView: View {
                 Spacer()
             }
         }
-        .navigationTitle(group.name)
+        .monospacedNavigationTitle(en: group.name)
         .task {
             await breakdown.fetchIfNeeded(in: database)
         }

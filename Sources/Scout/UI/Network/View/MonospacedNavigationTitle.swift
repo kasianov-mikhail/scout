@@ -43,7 +43,7 @@ extension View {
                     }
 
                     for appearance in bar.allAppearances {
-                        appearance.largeTitleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 34, weight: .bold)
+                        appearance.largeTitleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 24, weight: .bold)
                         appearance.titleTextAttributes[.font] = UIFont.monospacedSystemFont(ofSize: 17, weight: .semibold)
                     }
                 }
