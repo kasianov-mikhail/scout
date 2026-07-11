@@ -34,7 +34,7 @@ final class SyncDelivery: NSManagedObject {
         }
     }
 
-    static func retainedObjectIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<NSManagedObjectID> {
+    static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<NSManagedObjectID> {
         let request = NSFetchRequest<SyncDelivery>(entityName: "SyncDelivery")
         request.predicate = NSPredicate(
             format: "backendID IN %@ AND isPending == YES AND attempts < %d",

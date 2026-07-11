@@ -11,7 +11,7 @@ extension DateObject {
     static func cleanup(backends: [Backend], in context: NSManagedObjectContext) throws {
         let cutoff = Date().addingDay(-7)
         let backendIDs = Set(backends.map(\.id))
-        let retained = try SyncDelivery.retainedObjectIDs(to: backendIDs, in: context)
+        let retained = try SyncDelivery.retainedIDs(to: backendIDs, in: context)
 
         let request = NSFetchRequest<DateObject>(entityName: "DateObject")
         request.predicate = NSPredicate(format: "datePrimitive < %@", cutoff as NSDate)
