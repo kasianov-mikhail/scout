@@ -15,7 +15,7 @@ struct Install {
 }
 
 extension Install: RecordDecodable {
-    static let recordType = InstallObject.recordType
+    static let recordType = InstallEntry.recordType
 
     static let desiredKeys = [
         "date",

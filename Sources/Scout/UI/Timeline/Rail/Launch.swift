@@ -16,7 +16,7 @@ struct Launch {
 }
 
 extension Launch: RecordDecodable {
-    static let recordType = LaunchObject.recordType
+    static let recordType = LaunchEntry.recordType
 
     static let desiredKeys = [
         "start_date",

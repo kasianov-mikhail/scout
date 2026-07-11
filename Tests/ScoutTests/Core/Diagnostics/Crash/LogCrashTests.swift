@@ -21,13 +21,13 @@ struct LogCrashTests {
         CrashInfo(name: name, reason: reason, stackTrace: stackTrace, identity: .stub)
     }
 
-    @Test("Creates a CrashObject with correct fields")
+    @Test("Creates a CrashEntry with correct fields")
     func createsCrashObject() throws {
         let crash = makeCrashInfo(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"])
 
         try logCrash(crash, deviceID: deviceID, context: context)
 
-        let results = try context.fetchAll(CrashObject.self)
+        let results = try context.fetchAll(CrashEntry.self)
 
         #expect(results.count == 1)
 
@@ -56,7 +56,7 @@ struct LogCrashTests {
 
         try logCrash(crash, deviceID: deviceID, context: context)
 
-        let object = try #require(try context.fetchAll(CrashObject.self).first)
+        let object = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(object.sessionID == crashedSessionID)
     }
 
@@ -66,7 +66,7 @@ struct LogCrashTests {
 
         try logCrash(crash, deviceID: deviceID, context: context)
 
-        let object = try #require(try context.fetchAll(CrashObject.self).first)
+        let object = try #require(try context.fetchAll(CrashEntry.self).first)
 
         let data = try #require(object.stackTrace)
         let decoded = try JSONDecoder().decode([String].self, from: data)
@@ -79,7 +79,7 @@ struct LogCrashTests {
 
         try logCrash(crash, deviceID: deviceID, context: context)
 
-        let object = try #require(try context.fetchAll(CrashObject.self).first)
+        let object = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(object.reason == nil)
     }
 
@@ -100,6 +100,6 @@ struct LogCrashTests {
         try logCrash(crash, id: id, deviceID: deviceID, context: context)
         try logCrash(crash, id: id, deviceID: deviceID, context: context)
 
-        #expect(try context.fetchAll(CrashObject.self).count == 1)
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
     }
 }

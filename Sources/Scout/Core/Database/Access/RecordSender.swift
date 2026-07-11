@@ -21,16 +21,16 @@ extension RecordSender {
 
 @MainActor
 extension RecordSender {
-    func deliver<T: SyncableObject & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
+    func deliver<T: SyncableEntry & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext) async throws {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
         request.predicate = NSPredicate(
             format: "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.isPending == YES AND $d.attempts < %d).@count > 0",
             id,
-            SyncDelivery.maxAttempts
+            DeliveryEntry.maxAttempts
         )
 
         var objects: [T] = []
-        var deliveries: [SyncDelivery] = []
+        var deliveries: [DeliveryEntry] = []
 
         for object in try context.fetch(request) {
             if let delivery = object.delivery(for: id), delivery.isPending {

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HasDevice {
-    var device: DeviceObject? { get }
+    var device: DeviceEntry? { get }
 }
 
 extension HasDevice {

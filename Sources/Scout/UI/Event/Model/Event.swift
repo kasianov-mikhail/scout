@@ -20,7 +20,7 @@ struct Event: Identifiable {
 }
 
 extension Event: RecordDecodable {
-    static let recordType = EventObject.recordType
+    static let recordType = EventEntry.recordType
 
     static let desiredKeys = Key.allCases.map(\.rawValue)
 

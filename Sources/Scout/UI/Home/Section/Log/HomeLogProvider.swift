@@ -49,11 +49,11 @@ class HomeLogProvider: ObservableObject, Provider {
 }
 
 private let lifecycleNames: Set = [
-    DeviceObject.recordType,
-    InstallObject.recordType,
-    LaunchObject.recordType,
-    SessionObject.recordType,
-    VersionObject.recordType,
+    DeviceEntry.recordType,
+    InstallEntry.recordType,
+    LaunchEntry.recordType,
+    SessionEntry.recordType,
+    VersionEntry.recordType,
 ]
 
 private func matrices<T: MetricScalar>(of type: T.Type, in range: Range<Date>, from database: DatabaseReader) async throws -> [GridMatrix<T>] {
@@ -71,17 +71,17 @@ extension HomeLogProvider {
         let intMatrices = [
             GridMatrix(
                 date: date,
-                name: EventObject.recordType,
+                name: EventEntry.recordType,
                 cells: [GridCell(row: 1, column: 0, value: 48)]
             ),
             GridMatrix(
                 date: date,
-                name: CrashObject.recordType,
+                name: CrashEntry.recordType,
                 cells: [GridCell(row: 1, column: 1, value: 3)]
             ),
             GridMatrix(
                 date: date,
-                name: HangObject.recordType,
+                name: HangEntry.recordType,
                 cells: [GridCell(row: 1, column: 4, value: 6)]
             ),
             GridMatrix(

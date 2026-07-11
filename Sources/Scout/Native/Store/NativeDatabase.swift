@@ -76,7 +76,7 @@ extension NativeDatabase: RecordLocator {
 
 extension NativeDatabase: MetricReader {
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
-        let entity = T.seriesValues == Int.seriesValues ? IntMetricsObject.recordType : DoubleMetricsObject.recordType
+        let entity = T.seriesValues == Int.seriesValues ? IntMetricsEntry.recordType : DoubleMetricsEntry.recordType
         let prefix = category + "|"
         let points = try await store.series(
             entity: entity,
@@ -102,7 +102,7 @@ extension NativeDatabase: ActivityReader {
         // WAU/MAU windows reach back before the visible range.
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
         let sessions = try await store.read(
-            entity: SessionObject.recordType,
+            entity: SessionEntry.recordType,
             filters: [
                 EntityStore.Filter(field: "start_date", op: .greaterThanOrEquals, value: .date(lookback)),
                 EntityStore.Filter(field: "start_date", op: .lessThan, value: .date(range.upperBound)),

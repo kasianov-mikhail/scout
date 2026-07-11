@@ -21,13 +21,13 @@ struct LogHangTests {
         HangInfo(name: name, reason: reason, stackTrace: stackTrace, duration: duration, identity: .stub)
     }
 
-    @Test("Creates a HangObject with correct fields")
+    @Test("Creates a HangEntry with correct fields")
     func createsHangObject() throws {
         let hang = makeHangInfo(name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"], duration: 4.2)
 
         try logHang(hang, deviceID: deviceID, context: context)
 
-        let results = try context.fetchAll(HangObject.self)
+        let results = try context.fetchAll(HangEntry.self)
 
         #expect(results.count == 1)
 
@@ -54,7 +54,7 @@ struct LogHangTests {
 
         try logHang(hang, deviceID: deviceID, context: context)
 
-        let object = try #require(try context.fetchAll(HangObject.self).first)
+        let object = try #require(try context.fetchAll(HangEntry.self).first)
         #expect(object.sessionID == hangSessionID)
     }
 
@@ -64,7 +64,7 @@ struct LogHangTests {
 
         try logHang(hang, deviceID: deviceID, context: context)
 
-        let object = try #require(try context.fetchAll(HangObject.self).first)
+        let object = try #require(try context.fetchAll(HangEntry.self).first)
 
         let data = try #require(object.stackTrace)
         let decoded = try JSONDecoder().decode([String].self, from: data)
@@ -77,7 +77,7 @@ struct LogHangTests {
 
         try logHang(hang, deviceID: deviceID, context: context)
 
-        let object = try #require(try context.fetchAll(HangObject.self).first)
+        let object = try #require(try context.fetchAll(HangEntry.self).first)
         #expect(object.reason == nil)
     }
 
@@ -98,6 +98,6 @@ struct LogHangTests {
         try logHang(hang, id: id, deviceID: deviceID, context: context)
         try logHang(hang, id: id, deviceID: deviceID, context: context)
 
-        #expect(try context.fetchAll(HangObject.self).count == 1)
+        #expect(try context.fetchAll(HangEntry.self).count == 1)
     }
 }
