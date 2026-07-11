@@ -38,7 +38,7 @@ extension Hang: Comparable {
 }
 
 extension Hang: RecordDecodable {
-    static let recordType = HangObject.recordType
+    static let recordType = HangEntry.recordType
 
     static let desiredKeys = [
         "name",

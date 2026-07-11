@@ -19,19 +19,19 @@ class ReleaseHealthProvider: ObservableObject, Provider {
         let range = Calendar.utc.defaultRange
 
         async let sessions: IntMatrices = database.readAll(
-            matching: query(name: SessionObject.recordType, in: range)
+            matching: query(name: SessionEntry.recordType, in: range)
         )
         async let crashes: IntMatrices = database.readAll(
-            matching: query(name: CrashObject.recordType, in: range)
+            matching: query(name: CrashEntry.recordType, in: range)
         )
         async let hangs: IntMatrices = database.readAll(
-            matching: query(name: HangObject.recordType, in: range)
+            matching: query(name: HangEntry.recordType, in: range)
         )
         async let installs: IntMatrices = database.readAll(
-            matching: query(name: VersionMarker.installName, in: range)
+            matching: query(name: MarkerEntry.installName, in: range)
         )
         async let crashedInstalls: IntMatrices = database.readAll(
-            matching: query(name: VersionMarker.crashName, in: range)
+            matching: query(name: MarkerEntry.crashName, in: range)
         )
 
         return try await ReleaseMatrices(

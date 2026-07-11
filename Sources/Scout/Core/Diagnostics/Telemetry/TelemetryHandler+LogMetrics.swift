@@ -53,7 +53,7 @@ func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, 
     metrics.telemetry = category
     metrics.date = date
     metrics.name = name
-    metrics.session = try context.existing(SessionObject.self, key: "sessionID", id: sessionID)
+    metrics.session = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
 
     try context.save()
 }

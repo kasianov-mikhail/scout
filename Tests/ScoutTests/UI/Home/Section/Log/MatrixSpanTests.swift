@@ -22,7 +22,7 @@ struct MatrixSpanTests {
             makeMatrix(name: "api_calls", category: "counter", date: Date(year: 2026, month: 6, day: 2), value: 7),
         ])
 
-        #expect(span.total { $0 != CrashObject.recordType } == 7)
+        #expect(span.total { $0 != CrashEntry.recordType } == 7)
     }
 
     @Test("Count keeps points inside the range only")
@@ -33,7 +33,7 @@ struct MatrixSpanTests {
             makeMatrix(name: "login", date: Date(year: 2026, month: 6, day: 8), value: 5),
         ])
 
-        #expect(span.total { $0 != CrashObject.recordType } == 3)
+        #expect(span.total { $0 != CrashEntry.recordType } == 3)
     }
 
     @Test("Count sums the Crash matrices")
@@ -44,7 +44,7 @@ struct MatrixSpanTests {
             makeMatrix(name: "login", date: Date(year: 2026, month: 6, day: 2), value: 3),
         ])
 
-        #expect(span.total { $0 == CrashObject.recordType } == 2)
+        #expect(span.total { $0 == CrashEntry.recordType } == 2)
     }
 
     @Test("Metric count tallies distinct metrics across both matrix kinds")

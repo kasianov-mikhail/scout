@@ -48,7 +48,7 @@ extension NSPersistentContainer {
         // the long-lived viewContext every later save() throws too. Merging by
         // property dedupes the colliding row instead — the reason the
         // constraints exist — and keeps a batched save (e.g. plan inserting many
-        // SyncDelivery rows at once) from being rejected over a single duplicate.
+        // DeliveryEntry rows at once) from being rejected over a single duplicate.
         viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     }
 }

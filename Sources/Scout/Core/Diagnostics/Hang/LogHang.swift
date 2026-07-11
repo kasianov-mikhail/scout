@@ -11,12 +11,12 @@ func logHang(_ hang: HangInfo, id: UUID = UUID(), deviceID: UUID, context: NSMan
     // The id doubles as the archive file's UUID, so a flush interrupted
     // between the save and the file removal doesn't insert a duplicate
     // on the next launch.
-    let request = NSFetchRequest<HangObject>(entityName: "HangObject")
+    let request = NSFetchRequest<HangEntry>(entityName: "HangEntry")
     request.predicate = NSPredicate(format: "hangID == %@", id as CVarArg)
     request.fetchLimit = 1
     guard try context.count(for: request) == 0 else { return }
 
-    let object = context.insert(HangObject.self)
+    let object = context.insert(HangEntry.self)
 
     object.hangID = id
     object.date = hang.date
@@ -38,8 +38,8 @@ func logHang(_ hang: HangInfo, id: UUID = UUID(), deviceID: UUID, context: NSMan
     )
     object.session = session
 
-    try VersionMarker.mark(
-        name: VersionMarker.hangName,
+    try MarkerEntry.mark(
+        name: MarkerEntry.hangName,
         install: session.launch?.install,
         appVersion: hang.appVersion,
         in: context

@@ -72,7 +72,7 @@ struct NativeDatabaseTests {
         let record = try await database.lookup(recordName: "e-9", fields: ["params"])
         let params: Data? = record["params"]
 
-        #expect(record.recordType == EventObject.recordType)
+        #expect(record.recordType == EventEntry.recordType)
         #expect(params == Data("{}".utf8))
 
         await #expect(throws: RecordNotFoundError.self) {
@@ -116,7 +116,7 @@ struct NativeDatabaseTests {
 }
 
 func makeEventRecord(id: String, name: String) -> Record {
-    var record = Record(recordType: EventObject.recordType, recordID: id)
+    var record = Record(recordType: EventEntry.recordType, recordID: id)
     record["name"] = name
     record["level"] = "info"
     record["params"] = Data("{}".utf8)
@@ -131,7 +131,7 @@ func makeEventRecord(id: String, name: String) -> Record {
 }
 
 func makeMetricRecord(id: String, name: String, value: Int64) -> Record {
-    var record = Record(recordType: IntMetricsObject.recordType, recordID: id)
+    var record = Record(recordType: IntMetricsEntry.recordType, recordID: id)
     record["name"] = name
     record["category"] = "timer"
     record["value"] = value
@@ -141,7 +141,7 @@ func makeMetricRecord(id: String, name: String, value: Int64) -> Record {
 }
 
 func makeSessionRecord(id: String, device: String, day: Int) -> Record {
-    var record = Record(recordType: SessionObject.recordType, recordID: id)
+    var record = Record(recordType: SessionEntry.recordType, recordID: id)
     record["start_date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + .hour)
     record["end_date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + 2 * .hour)
     record["session_id"] = id

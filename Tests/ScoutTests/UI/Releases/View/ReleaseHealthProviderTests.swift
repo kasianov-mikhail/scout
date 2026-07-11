@@ -53,11 +53,11 @@ struct ReleaseHealthProviderTests {
     }
 
     private func sessionMatrix(version: String?, count: Int) -> Record {
-        matrix(name: SessionObject.recordType, version: version, count: count)
+        matrix(name: SessionEntry.recordType, version: version, count: count)
     }
 
     private func crashMatrix(version: String?, count: Int) -> Record {
-        matrix(name: CrashObject.recordType, version: version, count: count)
+        matrix(name: CrashEntry.recordType, version: version, count: count)
     }
 
     private func matrix(name: String, version: String?, count: Int) -> Record {

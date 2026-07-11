@@ -27,7 +27,7 @@ extension Crash: Comparable {
 }
 
 extension Crash: RecordDecodable {
-    static let recordType = CrashObject.recordType
+    static let recordType = CrashEntry.recordType
 
     static let desiredKeys = [
         "name",

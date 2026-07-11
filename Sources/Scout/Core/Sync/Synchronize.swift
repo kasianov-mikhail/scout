@@ -13,30 +13,30 @@ typealias Synchronize = @MainActor () async throws -> Void
 func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Void {
     let context = persistentContainer.viewContext
 
-    try SyncableObject.plan(backends: backends, in: context)
-    try SyncableObject.cleanup(backends: backends, in: context)
+    try SyncableEntry.plan(backends: backends, in: context)
+    try SyncableEntry.cleanup(backends: backends, in: context)
 
     try await dispatcher.performEnsuringBackground {
         await withTaskGroup(of: Void.self) { group in
             for backend in backends where await backend.checkAvailability() {
-                await SyncDelivery.recordAttempt(for: backend.id, in: context)
+                await DeliveryEntry.recordAttempt(for: backend.id, in: context)
 
                 let recordSender = RecordSender(backend: backend)
 
-                func deliver<T: SyncableObject & RecordEncodable>(_ type: T.Type) {
+                func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type) {
                     group.addTask { try? await recordSender.deliver(type: type, in: context) }
                 }
 
-                deliver(EventObject.self)
-                deliver(SessionObject.self)
-                deliver(LaunchObject.self)
-                deliver(VersionObject.self)
-                deliver(InstallObject.self)
-                deliver(DeviceObject.self)
-                deliver(CrashObject.self)
-                deliver(HangObject.self)
-                deliver(IntMetricsObject.self)
-                deliver(DoubleMetricsObject.self)
+                deliver(EventEntry.self)
+                deliver(SessionEntry.self)
+                deliver(LaunchEntry.self)
+                deliver(VersionEntry.self)
+                deliver(InstallEntry.self)
+                deliver(DeviceEntry.self)
+                deliver(CrashEntry.self)
+                deliver(HangEntry.self)
+                deliver(IntMetricsEntry.self)
+                deliver(DoubleMetricsEntry.self)
             }
         }
         try Task.checkCancellation()

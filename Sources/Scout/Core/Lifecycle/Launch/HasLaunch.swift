@@ -8,7 +8,7 @@
 import Foundation
 
 protocol HasLaunch {
-    var launch: LaunchObject? { get }
+    var launch: LaunchEntry? { get }
 }
 
 extension HasLaunch {

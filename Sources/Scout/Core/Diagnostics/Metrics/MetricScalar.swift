@@ -13,11 +13,11 @@ protocol MetricScalar: AdditiveArithmetic & Comparable & Hashable & Sendable & R
 }
 
 extension Int: MetricScalar {
-    typealias Object = IntMetricsObject
+    typealias Object = IntMetricsEntry
     static let recordType = "DateIntMatrix"
 }
 
 extension Double: MetricScalar {
-    typealias Object = DoubleMetricsObject
+    typealias Object = DoubleMetricsEntry
     static let recordType = "DateDoubleMatrix"
 }

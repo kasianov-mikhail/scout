@@ -28,11 +28,11 @@ struct MatrixSeries {
 
         switch scalar {
         case .double:
-            return try await metricRecords(entity: DoubleMetricsObject.recordType, from: from, to: to, name: name, store: store)
+            return try await metricRecords(entity: DoubleMetricsEntry.recordType, from: from, to: to, name: name, store: store)
 
         case .int where name == nil:
             async let events = eventRecords(from: from, to: to, name: nil, store: store)
-            async let metrics = metricRecords(entity: IntMetricsObject.recordType, from: from, to: to, name: nil, store: store)
+            async let metrics = metricRecords(entity: IntMetricsEntry.recordType, from: from, to: to, name: nil, store: store)
             async let crashes = entityRecords(.crashes, from: from, to: to, store: store)
             async let hangs = entityRecords(.hangs, from: from, to: to, store: store)
             async let installs = entityRecords(.versionInstalls, from: from, to: to, store: store)
@@ -41,19 +41,19 @@ struct MatrixSeries {
 
         case .int:
             switch name {
-            case SessionObject.recordType:
+            case SessionEntry.recordType:
                 return try await entityRecords(.sessions, from: from, to: to, store: store)
-            case CrashObject.recordType:
+            case CrashEntry.recordType:
                 return try await entityRecords(.crashes, from: from, to: to, store: store)
-            case HangObject.recordType:
+            case HangEntry.recordType:
                 return try await entityRecords(.hangs, from: from, to: to, store: store)
-            case VersionMarker.installName:
+            case MarkerEntry.installName:
                 return try await entityRecords(.versionInstalls, from: from, to: to, store: store)
-            case VersionMarker.crashName:
+            case MarkerEntry.crashName:
                 return try await entityRecords(.versionCrashes, from: from, to: to, store: store)
             default:
                 async let events = eventRecords(from: from, to: to, name: name, store: store)
-                async let metrics = metricRecords(entity: IntMetricsObject.recordType, from: from, to: to, name: name, store: store)
+                async let metrics = metricRecords(entity: IntMetricsEntry.recordType, from: from, to: to, name: name, store: store)
                 return try await events + metrics
             }
         }
@@ -76,7 +76,7 @@ struct MatrixSeries {
     }
 
     private func eventRecords(from: Date?, to: Date?, name: String?, store: EntityStore) async throws -> [Record] {
-        let points = try await store.series(entity: EventObject.recordType, view: EntityCatalog.eventCountView, from: from?.startOfDay, to: to)
+        let points = try await store.series(entity: EventEntry.recordType, view: EntityCatalog.eventCountView, from: from?.startOfDay, to: to)
         var buckets: [SeriesBucket: [CellIndex: Double]] = [:]
 
         for point in points where name == nil || point.group == name {
@@ -150,11 +150,11 @@ struct MatrixSeries {
 
     private static func layout(of source: Source) -> (entity: String, dateField: String, matrixName: String) {
         switch source {
-        case .sessions: (SessionObject.recordType, "start_date", SessionObject.recordType)
-        case .crashes: (CrashObject.recordType, "date", CrashObject.recordType)
-        case .hangs: (HangObject.recordType, "date", HangObject.recordType)
-        case .versionInstalls: (VersionObject.recordType, "date", VersionMarker.installName)
-        case .versionCrashes: (CrashObject.recordType, "date", VersionMarker.crashName)
+        case .sessions: (SessionEntry.recordType, "start_date", SessionEntry.recordType)
+        case .crashes: (CrashEntry.recordType, "date", CrashEntry.recordType)
+        case .hangs: (HangEntry.recordType, "date", HangEntry.recordType)
+        case .versionInstalls: (VersionEntry.recordType, "date", MarkerEntry.installName)
+        case .versionCrashes: (CrashEntry.recordType, "date", MarkerEntry.crashName)
         }
     }
 
