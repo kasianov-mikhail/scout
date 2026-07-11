@@ -47,7 +47,7 @@ struct HangDetailView: View {
                 Spacer()
             }
         }
-        .navigationTitle(hang.name)
+        .monospacedNavigationTitle(en: hang.name)
     }
 }
 

@@ -54,6 +54,6 @@ struct TimerDistributionSection: View {
             )
         }
         .listStyle(.plain)
-        .navigationTitle(en: "http_request")
+        .monospacedNavigationTitle(en: "http_request")
     }
 }

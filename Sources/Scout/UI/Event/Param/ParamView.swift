@@ -41,7 +41,7 @@ struct ParamView: View {
                 ParamScalarView(raw: raw, value: value)
             }
         }
-        .navigationTitle(key)
+        .monospacedNavigationTitle(en: key)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 ShareLink(item: raw)
