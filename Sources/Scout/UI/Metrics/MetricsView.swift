@@ -25,8 +25,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     }
 
     var body: some View {
-        SegmentStrip(selection: $extent.period, title: \.shortTitle)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        SegmentStrip(selection: $extent.period, distribution: .justified, title: \.shortTitle)
             .padding(.horizontal)
 
         RangeControl(extent: $extent)
