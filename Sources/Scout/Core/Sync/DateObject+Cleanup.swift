@@ -7,19 +7,18 @@
 
 import CoreData
 
-extension SyncableObject {
+extension DateObject {
     static func cleanup(backends: [Backend], in context: NSManagedObjectContext) throws {
         let cutoff = Date().addingDay(-7)
+        let backendIDs = Set(backends.map(\.id))
 
-        let request = NSFetchRequest<SyncableObject>(entityName: "SyncableObject")
-        request.predicate = NSPredicate(
-            format: "SUBQUERY(deliveries, $d, $d.backendID IN %@ AND $d.isPending == YES AND $d.attempts < %d).@count == 0 AND datePrimitive < %@",
-            backends.map(\.id),
-            SyncDelivery.maxAttempts,
-            cutoff as NSDate
-        )
+        let request = NSFetchRequest<DateObject>(entityName: "DateObject")
+        request.predicate = NSPredicate(format: "datePrimitive < %@", cutoff as NSDate)
 
         for object in try context.fetch(request) where object.references.count == 0 {
+            if let syncable = object as? SyncableObject, syncable.hasPendingDelivery(to: backendIDs) {
+                continue
+            }
             context.delete(object)
         }
 

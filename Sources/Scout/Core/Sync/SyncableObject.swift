@@ -9,11 +9,13 @@ import CoreData
 
 @objc(SyncableObject)
 class SyncableObject: DateObject {
-    class var isLocalOnly: Bool { false }
-
     @NSManaged var deliveries: Set<SyncDelivery>
 
     func delivery(for backendID: String) -> SyncDelivery? {
         deliveries.first { $0.backendID == backendID }
+    }
+
+    func hasPendingDelivery(to backendIDs: Set<String>) -> Bool {
+        deliveries.contains { backendIDs.contains($0.backendID) && $0.isPending && $0.attempts < SyncDelivery.maxAttempts }
     }
 }

@@ -14,7 +14,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
     let context = persistentContainer.viewContext
 
     try SyncableObject.plan(backends: backends, in: context)
-    try SyncableObject.cleanup(backends: backends, in: context)
+    try DateObject.cleanup(backends: backends, in: context)
 
     try await dispatcher.performEnsuringBackground {
         await withTaskGroup(of: Void.self) { group in

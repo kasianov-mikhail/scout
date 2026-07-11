@@ -11,8 +11,8 @@ import Testing
 @testable import Scout
 
 @MainActor
-@Suite("SyncableObject.cleanup")
-struct SyncableObjectCleanupTests {
+@Suite("DateObject.cleanup")
+struct DateObjectCleanupTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     @Test("Deletes synced events older than 7 days")
@@ -21,7 +21,7 @@ struct SyncableObjectCleanupTests {
         EventObject.stub(name: "old", date: old, synced: true, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(backends: [], in: context)
+        try DateObject.cleanup(backends: [], in: context)
 
         #expect(try context.fetchAll(EventObject.self).isEmpty)
     }
@@ -32,7 +32,7 @@ struct SyncableObjectCleanupTests {
         LaunchObject.stub(date: old, synced: true, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(backends: [], in: context)
+        try DateObject.cleanup(backends: [], in: context)
 
         #expect(try context.fetchAll(LaunchObject.self).isEmpty)
     }
@@ -43,7 +43,7 @@ struct SyncableObjectCleanupTests {
         EventObject.stub(name: "recent", date: recent, synced: true, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(backends: [], in: context)
+        try DateObject.cleanup(backends: [], in: context)
 
         #expect(try context.fetchAll(EventObject.self).count == 1)
     }
@@ -56,7 +56,7 @@ struct SyncableObjectCleanupTests {
         EventObject.stub(name: "child", session: session, in: context)
         try context.save()
 
-        try SyncableObject.cleanup(backends: [], in: context)
+        try DateObject.cleanup(backends: [], in: context)
 
         #expect(try context.fetchAll(LaunchObject.self).count == 1)
     }
@@ -70,8 +70,36 @@ struct SyncableObjectCleanupTests {
         event.seedDelivery(for: "cloud", in: context)
         try context.save()
 
-        try SyncableObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+        try DateObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
 
         #expect(try context.fetchAll(EventObject.self).count == 1)
+    }
+
+    @Test("Deletes local-only objects older than 7 days")
+    func deletesOldLocalOnly() throws {
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        let marker = context.insert(VersionMarker.self)
+        marker.markerID = UUID()
+        marker.name = VersionMarker.installName
+        marker.date = old
+        try context.save()
+
+        try DateObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(VersionMarker.self).isEmpty)
+    }
+
+    @Test("Keeps local-only objects newer than 7 days")
+    func keepsRecentLocalOnly() throws {
+        let recent = Date(timeIntervalSinceNow: -6 * 86400)
+        let marker = context.insert(VersionMarker.self)
+        marker.markerID = UUID()
+        marker.name = VersionMarker.installName
+        marker.date = recent
+        try context.save()
+
+        try DateObject.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(VersionMarker.self).count == 1)
     }
 }
