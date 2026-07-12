@@ -26,9 +26,12 @@ struct HangDetailView: View {
                 }
 
                 if let reason = hang.reason {
-                    (Text(verbatim: "BLOCKED ON:   ") + Text(reason).foregroundColor(hang.severity.color))
-                        .lineSpacing(4)
-                        .fontWeight(.bold)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(verbatim: "BLOCKED ON:")
+                        Text(reason)
+                            .foregroundColor(hang.severity.color)
+                    }
+                    .fontWeight(.bold)
                 }
             }
             .padding(.vertical, 4)
