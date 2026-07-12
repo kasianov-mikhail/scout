@@ -19,7 +19,7 @@ struct ConnectionRow: View {
                 Image(systemName: "circle.fill")
                     .imageScale(.medium)
                     .foregroundStyle(connection.status.healthColor)
-                    .accessibilityLabel(Text(verbatim: connection.status.label))
+                    .accessibilityLabel(Text(verbatim: connection.status.healthLabel))
                 VStack(spacing: 0) {
                     HStack {
                         Text(verbatim: connection.name).font(.callout)
@@ -52,14 +52,4 @@ struct ConnectionRow: View {
         ConnectionRow(connection: [Connection].samples[1], isActive: false, showsSeparator: false, action: {})
     }
     .frame(minWidth: 240)
-}
-
-extension Backend.Status {
-    fileprivate var label: String {
-        switch self {
-        case .reachable: "Reachable"
-        case .unreachable: "Unreachable"
-        case .unknown: "Unknown"
-        }
-    }
 }

@@ -66,7 +66,7 @@ extension Backend.AccountStatus {
     fileprivate var title: String {
         switch self {
         case .noAccount:
-            "iCloud Unavailable"
+            "Not Signed In to iCloud"
         case .restricted:
             "iCloud Restricted"
         case .temporarilyUnavailable:
