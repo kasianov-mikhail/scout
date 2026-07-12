@@ -39,8 +39,8 @@ struct CrashListView: View {
         }
         .navigationTitle(en: "Crashes")
         .message($provider.message)
-        .task {
-            await provider.fetchIfNeeded(in: database)
+        .autoRefresh {
+            await provider.fetchLatest(in: database)
         }
     }
 

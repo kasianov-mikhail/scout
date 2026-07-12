@@ -28,10 +28,10 @@ struct SessionInspector: View {
                 SessionHeader(info: info)
             }
         }
-        .task {
-            await events.fetchIfNeeded(for: query, in: database)
-            await info.fetchIfNeeded(in: database)
-        }
+        .autoRefresh(rotating: [
+            { await events.fetchLatest(for: query, in: database) },
+            { await info.fetchLatest(in: database) },
+        ])
         .navigationTitle(en: "Session")
     }
 

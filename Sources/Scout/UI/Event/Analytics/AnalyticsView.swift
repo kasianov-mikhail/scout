@@ -70,19 +70,12 @@ struct AnalyticsView: View {
                     }
                 }
             }
-            .task {
-                await provider.fetchIfNeeded(for: filter, in: database)
+            .autoRefresh(on: filter) {
+                await provider.fetchLatest(for: filter, in: database)
             }
             .onChange(of: filter.levels) { _ in
-                Task {
-                    provider.events = nil
-                    await fetch()
-                }
+                provider.events = nil
             }
-    }
-
-    func fetch() async {
-        await provider.fetch(for: filter, in: database)
     }
 }
 

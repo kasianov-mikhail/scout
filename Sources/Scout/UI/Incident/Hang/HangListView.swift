@@ -41,8 +41,8 @@ struct HangListView: View {
         }
         .navigationTitle(en: "Hangs")
         .message($provider.message)
-        .task {
-            await provider.fetchIfNeeded(in: database)
+        .autoRefresh {
+            await provider.fetchLatest(in: database)
         }
     }
 }

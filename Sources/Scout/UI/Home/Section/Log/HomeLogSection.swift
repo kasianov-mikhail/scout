@@ -53,9 +53,6 @@ struct HomeLogSection: View {
             count: deviceCount,
             destination: { DevicesView() }
         )
-        .task {
-            await devices.fetchIfNeeded(in: database)
-        }
 
         HomeLogRow(
             title: "Crashes",

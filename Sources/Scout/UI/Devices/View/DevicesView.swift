@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct DevicesView: View {
-    @Environment(\.database) var database
     @StateObject var provider = DevicesProvider()
     @State private var showAllDevices = false
 
@@ -25,9 +24,6 @@ struct DevicesView: View {
             }
         }
         .navigationTitle(en: "Devices")
-        .task {
-            await provider.fetchIfNeeded(in: database)
-        }
     }
 
     private func content(_ devices: [DeviceSummary]) -> some View {

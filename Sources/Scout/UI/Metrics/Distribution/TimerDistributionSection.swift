@@ -35,8 +35,8 @@ struct TimerDistributionSection: View {
             }
         }
         .listRowSeparator(.hidden)
-        .task {
-            await provider.fetchIfNeeded(in: database)
+        .autoRefresh {
+            await provider.fetchLatest(in: database)
         }
     }
 }

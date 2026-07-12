@@ -10,7 +10,6 @@ import SwiftUI
 struct HomeStatSection: View {
     let section: HomeSection
 
-    @Environment(\.database) var database
     @ObservedObject var stat: StatProvider
 
     var body: some View {
@@ -30,11 +29,6 @@ struct HomeStatSection: View {
                 .navigationTitle(en: section.title)
             }
             .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
-        }
-        .onAppear {
-            Task {
-                await stat.fetchIfNeeded(in: database)
-            }
         }
     }
 }

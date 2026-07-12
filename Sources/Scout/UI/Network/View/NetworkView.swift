@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct NetworkView: View {
-    @Environment(\.database) var database
     @State private var showAllEndpoints = false
     @StateObject var provider = NetworkProvider()
 
@@ -26,9 +25,6 @@ struct NetworkView: View {
             }
         }
         .navigationTitle(en: "Network")
-        .task {
-            await provider.fetchIfNeeded(in: database)
-        }
     }
 
     private func content(_ report: NetworkReport) -> some View {
