@@ -14,6 +14,12 @@ struct ProviderView<P: Provider, Content: View>: View {
     @ViewBuilder let content: (P.Output) -> Content
 
     var body: some View {
+        state.autoRefresh {
+            await provider.fetchLatest(in: database)
+        }
+    }
+
+    @ViewBuilder private var state: some View {
         switch provider.result {
         case nil:
             RingIndicator().frame(maxHeight: .infinity)

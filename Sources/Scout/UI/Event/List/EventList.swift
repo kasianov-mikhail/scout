@@ -15,7 +15,7 @@ struct EventList<Header: View>: View {
     @ViewBuilder let header: () -> Header
 
     var body: some View {
-        if let events = provider.events {
+        if let events = provider.records {
             if events.isEmpty {
                 Placeholder(
                     text: "No results",
@@ -76,7 +76,7 @@ extension EventList where Header == EmptyView {
 
 #Preview("Empty State") {
     let provider = EventProvider()
-    provider.events = []
+    provider.records = []
     return NavigationStack {
         EventList(provider: provider)
     }

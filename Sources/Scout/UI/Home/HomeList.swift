@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct HomeList: View {
+    @Environment(\.database) var database
     @AppStorage("scout_home_section") var section = HomeSection.sessions
 
     @StateObject var activities = ActivityProvider()
@@ -46,6 +47,14 @@ struct HomeList: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .autoRefresh(rotating: [
+                { await sessions.fetchLatest(in: database) },
+                { await crashes.fetchLatest(in: database) },
+                { await activities.fetchLatest(in: database) },
+                { await logs.fetchLatest(in: database) },
+                { await releases.fetchLatest(in: database) },
+                { await devices.fetchLatest(in: database) },
+            ])
         }
     }
 }

@@ -41,15 +41,15 @@ struct HangListView: View {
         }
         .navigationTitle(en: "Hangs")
         .message($provider.message)
-        .task {
-            await provider.fetchIfNeeded(in: database)
+        .autoRefresh {
+            await provider.fetchLatest(in: database)
         }
     }
 }
 
 #Preview {
     let provider = IncidentProvider<Hang>()
-    provider.groups = IncidentGroup.groups(from: [Hang].samples)
+    provider.records = [Hang].samples
 
     return NavigationStack {
         HangListView(provider: provider)
