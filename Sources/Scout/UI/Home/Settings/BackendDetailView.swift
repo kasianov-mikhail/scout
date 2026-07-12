@@ -106,7 +106,7 @@ struct BackendDetailView: View {
                         .foregroundStyle(.tint)
                     if isChecking {
                         Spacer()
-                        ProgressView()
+                        RingIndicator(size: 22)
                     }
                 }
             }
