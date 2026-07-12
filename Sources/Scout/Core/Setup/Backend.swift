@@ -47,9 +47,9 @@ extension Backend.Status: Equatable {
     static func == (lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
         case (.reachable, .reachable),
-             (.readOnly, .readOnly),
-             (.unreachable, .unreachable),
-             (.unknown, .unknown):
+            (.readOnly, .readOnly),
+            (.unreachable, .unreachable),
+            (.unknown, .unknown):
             true
         case let (.failed(lhsError), .failed(rhsError)):
             lhsError as NSError == rhsError as NSError
