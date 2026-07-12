@@ -70,7 +70,7 @@ struct CrashListView: View {
 
 #Preview {
     let provider = IncidentProvider<Crash>()
-    provider.groups = IncidentGroup.groups(from: .samples)
+    provider.records = .samples
 
     return NavigationStack {
         CrashListView(provider: provider)

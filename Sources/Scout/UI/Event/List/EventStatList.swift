@@ -39,7 +39,7 @@ struct EventStatList: View {
 
 #Preview {
     let provider = EventProvider()
-    provider.events = .samples
+    provider.records = .samples
 
     return NavigationStack {
         EventStatList(eventName: "Event", range: Period.week.initialRange, provider: provider)

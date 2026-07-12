@@ -42,7 +42,7 @@ struct SessionInspector: View {
 
 #Preview {
     let events = EventProvider()
-    events.events = .samples
+    events.records = .samples
 
     let info = SessionInfoProvider(sessionID: UUID(), deviceID: UUID())
     info.result = .success(.sample)
