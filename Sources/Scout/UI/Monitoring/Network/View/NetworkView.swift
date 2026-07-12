@@ -54,7 +54,7 @@ struct NetworkView: View {
                 AllButton { showAllEndpoints = true }
             }
             ForEach(endpoints.prefix(3)) { endpoint in
-                NetworkEndpointLink(endpoint: endpoint, report: report, range: range)
+                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
             }
         }
         .listStyle(.plain)
