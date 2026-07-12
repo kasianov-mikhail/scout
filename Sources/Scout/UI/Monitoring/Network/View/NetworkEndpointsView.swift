@@ -28,7 +28,7 @@ struct NetworkEndpointsView: View {
 
             Header(title: "Endpoints")
             ForEach(endpoints) { endpoint in
-                NetworkEndpointLink(endpoint: endpoint, report: report, range: range)
+                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
             }
         }
         .listStyle(.plain)
