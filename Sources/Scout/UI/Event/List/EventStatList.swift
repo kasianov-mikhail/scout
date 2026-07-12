@@ -32,8 +32,8 @@ struct EventStatList: View {
         }
     }
 
-    var query: Event.Query {
-        Event.Query(name: eventName, dates: range)
+    var query: EventQuery {
+        EventQuery(name: eventName, dates: range)
     }
 }
 

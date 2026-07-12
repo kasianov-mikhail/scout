@@ -38,14 +38,14 @@ struct FeedProviderTests {
         )
 
         let provider = EventProvider()
-        await provider.fetchLatest(for: Event.Query(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
         #expect(provider.records?.count == 2)
 
         provider.clear()
         #expect(provider.records == nil)
         #expect(provider.cursor == nil)
 
-        await provider.fetchLatest(for: Event.Query(name: "login"), in: database)
+        await provider.fetchLatest(for: EventQuery(name: "login"), in: database)
         #expect(provider.records?.count == 1)
     }
 
@@ -55,11 +55,11 @@ struct FeedProviderTests {
         database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
 
         let provider = EventProvider()
-        await provider.fetchLatest(for: Event.Query(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
         #expect(provider.records?.count == 1)
 
         let failing = FailingDatabase()
-        let succeeded = await provider.fetchLatest(for: Event.Query(), in: failing)
+        let succeeded = await provider.fetchLatest(for: EventQuery(), in: failing)
 
         #expect(succeeded == false)
         #expect(provider.records?.count == 1)

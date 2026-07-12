@@ -9,15 +9,15 @@ import SwiftUI
 
 struct FilterView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject var criteria: FilterCriteria<Event.Level>
+    @StateObject var criteria: FilterCriteria<EventLevel>
 
-    init(selected: Binding<Set<Event.Level>>) {
+    init(selected: Binding<Set<EventLevel>>) {
         _criteria = StateObject(wrappedValue: FilterCriteria(selected: selected))
     }
 
     var body: some View {
         NavigationView {
-            List(Event.Level.allCases, id: \.rawValue) { level in
+            List(EventLevel.allCases, id: \.rawValue) { level in
                 HStack {
                     Image(systemName: "circle.fill")
                         .imageScale(.medium)
@@ -63,7 +63,7 @@ struct FilterView: View {
 }
 
 struct FilterButton: View {
-    @Binding var levels: Set<Event.Level>
+    @Binding var levels: Set<EventLevel>
 
     @State private var isFilterPresented = false
 
