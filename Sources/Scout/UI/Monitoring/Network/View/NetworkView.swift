@@ -32,6 +32,7 @@ struct NetworkView: View {
         let endpoints = report.endpoints(in: range)
         let breakdown = report.summary(in: range)
         let successRate = breakdown.total > 0 ? breakdown.successRate : nil
+        let trend = report.trend(in: range, component: .hour)
 
         return List {
             HStack(spacing: 28) {
@@ -42,9 +43,11 @@ struct NetworkView: View {
             }
             .listRowSeparator(.hidden)
 
-            Header(title: "Latency P99")
-            PercentileTrendChart(trend: report.trend(in: range, component: .hour), unit: .hour)
-                .listRowSeparator(.hidden)
+            if trend.count > 0 {
+                Header(title: "Latency P99")
+                PercentileTrendChart(trend: trend, unit: .hour)
+                    .listRowSeparator(.hidden)
+            }
 
             Header(title: "Status codes")
             SegmentBar(segments: breakdown.segments)
