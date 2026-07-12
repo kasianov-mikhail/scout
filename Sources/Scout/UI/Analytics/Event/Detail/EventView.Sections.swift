@@ -15,7 +15,6 @@ extension EventView {
 
         @ObservedObject var param: ParamProvider
         @Binding var isParamPresented: Bool
-        @Environment(\.database) var database
 
         var body: some View {
             let items = try? param.result?.get()
@@ -25,9 +24,6 @@ extension EventView {
                 if canSeeAll {
                     AllButton { isParamPresented = true }
                 }
-            }
-            .task {
-                await param.fetchIfNeeded(in: database)
             }
 
             if let items {
@@ -47,12 +43,8 @@ extension EventView {
     struct StatSection: View {
         @ObservedObject var stat: StatProvider
 
-        @Environment(\.database) var database
-
         var body: some View {
-            Header(title: "Stats").task {
-                await stat.fetchIfNeeded(in: database)
-            }
+            Header(title: "Stats")
             ForEach(Period.allCases) { period in
                 StatRow(
                     color: .blue,

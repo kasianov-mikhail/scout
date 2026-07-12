@@ -9,7 +9,7 @@ import Foundation
 
 struct Event: Identifiable {
     let name: String
-    let level: Level?
+    let level: EventLevel?
     let date: Date?
     let paramCount: Int?
     let uuid: UUID?
@@ -37,7 +37,7 @@ extension Event: RecordDecodable {
 
     init(record: Record) throws {
         name = record[Key.name.rawValue] ?? ""
-        level = record[Key.level.rawValue].flatMap { Level(rawValue: $0) }
+        level = record[Key.level.rawValue].flatMap { EventLevel(rawValue: $0) }
         date = record[Key.date.rawValue]
         paramCount = record[Key.paramCount.rawValue]
         uuid = record[Key.uuid.rawValue].flatMap(UUID.init)

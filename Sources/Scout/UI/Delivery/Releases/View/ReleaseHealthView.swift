@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct ReleaseHealthView: View {
-    @Environment(\.database) var database
-
     @StateObject var provider = ReleaseHealthProvider()
 
     var body: some View {
@@ -30,9 +28,6 @@ struct ReleaseHealthView: View {
             }
         }
         .navigationTitle(en: "Releases")
-        .task {
-            await provider.fetchIfNeeded(in: database)
-        }
     }
 }
 

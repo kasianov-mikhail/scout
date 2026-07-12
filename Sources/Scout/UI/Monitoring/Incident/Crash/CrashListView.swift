@@ -39,8 +39,8 @@ struct CrashListView: View {
         }
         .navigationTitle(en: "Crashes")
         .message($provider.message)
-        .task {
-            await provider.fetchIfNeeded(in: database)
+        .autoRefresh {
+            await provider.fetchLatest(in: database)
         }
     }
 
@@ -70,7 +70,7 @@ struct CrashListView: View {
 
 #Preview {
     let provider = IncidentProvider<Crash>()
-    provider.groups = IncidentGroup.groups(from: .samples)
+    provider.records = .samples
 
     return NavigationStack {
         CrashListView(provider: provider)

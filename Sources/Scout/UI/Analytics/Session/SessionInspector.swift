@@ -28,21 +28,21 @@ struct SessionInspector: View {
                 SessionHeader(info: info)
             }
         }
-        .task {
-            await events.fetchIfNeeded(for: query, in: database)
-            await info.fetchIfNeeded(in: database)
-        }
+        .autoRefresh(rotating: [
+            { await events.fetchLatest(for: query, in: database) },
+            { await info.fetchLatest(in: database) },
+        ])
         .navigationTitle(en: "Session")
     }
 
-    private var query: Event.Query {
-        Event.Query(sessionID: sessionID)
+    private var query: EventQuery {
+        EventQuery(sessionID: sessionID)
     }
 }
 
 #Preview {
     let events = EventProvider()
-    events.events = .samples
+    events.records = .samples
 
     let info = SessionInfoProvider(sessionID: UUID(), deviceID: UUID())
     info.result = .success(.sample)

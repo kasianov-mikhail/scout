@@ -41,12 +41,10 @@ struct VersionDetailView: View {
         .monospacedNavigationTitle(en: release.id)
         .message($crashes.message)
         .message($hangs.message)
-        .task {
-            await crashes.fetchIfNeeded(in: database)
-        }
-        .task {
-            await hangs.fetchIfNeeded(in: database)
-        }
+        .autoRefresh(rotating: [
+            { await crashes.fetchLatest(in: database) },
+            { await hangs.fetchLatest(in: database) },
+        ])
     }
 
     private var headerSection: some View {

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AnalyticsView: View {
-    @State private var filter = Event.Query()
+    @State private var filter = EventQuery()
 
     @StateObject var provider = EventProvider()
     @StateObject var search = EventProvider()
@@ -27,7 +27,7 @@ struct AnalyticsView: View {
         .autocorrectionDisabled(true)
         .alphabetKeyboard()
         .searchSuggestions {
-            if let events = provider.events, filter.text.isEmpty {
+            if let events = provider.records, filter.text.isEmpty {
                 ForEach(events.unique(by: \.name, max: 7), id: \.self) {
                     Suggestion(text: $0)
                 }
@@ -44,12 +44,12 @@ struct AnalyticsView: View {
             #endif
 
             Task {
-                search.events = nil
+                search.clear()
                 await search.fetch(for: filter, in: database)
             }
         }
         .onChange(of: filter.text) { _ in
-            search.events = nil
+            search.clear()
         }
         .navigationTitle(en: "Events")
         .resetsTint()
@@ -62,7 +62,7 @@ struct AnalyticsView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     FilterButton(levels: $filter.levels)
                 }
-                if let text = EventListExport(events: provider.events ?? []).text {
+                if let text = EventListExport(events: provider.records ?? []).text {
                     ToolbarItemGroup(placement: .bottomBar) {
                         ShareLink(item: text)
                         CopyButton(text: text)
@@ -70,19 +70,12 @@ struct AnalyticsView: View {
                     }
                 }
             }
-            .task {
-                await provider.fetchIfNeeded(for: filter, in: database)
+            .autoRefresh(on: filter) {
+                await provider.fetchLatest(for: filter, in: database)
             }
             .onChange(of: filter.levels) { _ in
-                Task {
-                    provider.events = nil
-                    await fetch()
-                }
+                provider.clear()
             }
-    }
-
-    func fetch() async {
-        await provider.fetch(for: filter, in: database)
     }
 }
 
@@ -110,7 +103,7 @@ extension View {
 
 #Preview {
     let provider = EventProvider()
-    provider.events = .samples
+    provider.records = .samples
 
     return NavigationStack {
         AnalyticsView(provider: provider)

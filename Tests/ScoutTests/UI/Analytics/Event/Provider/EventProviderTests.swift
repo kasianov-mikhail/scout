@@ -12,8 +12,8 @@ import Testing
 
 @MainActor
 struct EventProviderTests {
-    @Test("fetchIfNeeded loads events on the first call")
-    func fetchIfNeededLoadsOnFirstCall() async throws {
+    @Test("fetchLatest loads events on the first call")
+    func fetchLatestLoadsOnFirstCall() async throws {
         let database = DatabaseStub()
         database.add(
             Record.eventStub(name: "login", sessionID: UUID(), date: Date()),
@@ -21,21 +21,22 @@ struct EventProviderTests {
         )
 
         let provider = EventProvider()
-        await provider.fetchIfNeeded(for: Event.Query(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
 
-        #expect(provider.events?.count == 2)
+        #expect(provider.records?.count == 2)
         #expect(database.readCount(of: EventEntry.recordType) == 1)
     }
 
-    @Test("fetchIfNeeded does not reload once events are present")
-    func fetchIfNeededSkipsWhenLoaded() async throws {
+    @Test("fetchLatest does not duplicate events already loaded")
+    func fetchLatestMergesById() async throws {
         let database = DatabaseStub()
         database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
 
         let provider = EventProvider()
-        await provider.fetchIfNeeded(for: Event.Query(), in: database)
-        await provider.fetchIfNeeded(for: Event.Query(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
 
-        #expect(database.readCount(of: EventEntry.recordType) == 1)
+        #expect(provider.records?.count == 1)
+        #expect(database.readCount(of: EventEntry.recordType) == 2)
     }
 }

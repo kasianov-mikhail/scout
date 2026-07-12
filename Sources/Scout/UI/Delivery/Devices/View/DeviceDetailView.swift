@@ -73,8 +73,8 @@ struct DeviceDetailView: View {
         }
         .listStyle(.plain)
         .navigationTitle(en: device.modelName)
-        .task {
-            await incidents.fetchIfNeeded(in: database)
+        .autoRefresh {
+            await incidents.fetchLatest(in: database)
         }
     }
 
