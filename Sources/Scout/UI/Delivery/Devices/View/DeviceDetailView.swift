@@ -22,9 +22,6 @@ struct DeviceDetailView: View {
         List {
             FlowLayout(spacing: 6) {
                 InfoChip(systemImage: device.symbol, text: device.modelName, color: .blue)
-                if device.modelName != device.model {
-                    InfoChip(systemImage: "number", text: device.model, color: .gray, monospaced: true)
-                }
                 InfoChip(systemImage: "gearshape", text: device.osVersion, color: .indigo)
                 InfoChip(systemImage: "clock", text: "seen \(device.lastSeen.relativeString)", color: .teal)
             }
