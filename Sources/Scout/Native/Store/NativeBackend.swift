@@ -28,8 +28,11 @@ extension Backend {
             },
             displayName: "iCloud",
             probeStatus: {
-                let status = try? await container.accountStatus()
-                return status == .available ? .reachable : .unreachable
+                do {
+                    return try await container.accountStatus().backendStatus
+                } catch {
+                    return .failed(error)
+                }
             },
             accountWarning: {
                 switch try await container.accountStatus() {
@@ -53,6 +56,21 @@ extension Backend {
                 }
             }
         )
+    }
+}
+
+extension CKAccountStatus {
+    var backendStatus: Backend.Status {
+        switch self {
+        case .available:
+            .reachable
+        case .noAccount, .restricted, .temporarilyUnavailable:
+            .readOnly
+        case .couldNotDetermine:
+            .unreachable
+        @unknown default:
+            .unreachable
+        }
     }
 }
 

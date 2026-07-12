@@ -24,7 +24,7 @@ extension Backend {
                     try await HTTPDatabase(url: url, apiKey: apiKey).ping()
                     return .reachable
                 } catch {
-                    return .unreachable
+                    return .failed(error)
                 }
             },
             onSetup: {

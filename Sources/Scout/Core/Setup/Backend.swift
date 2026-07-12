@@ -21,12 +21,12 @@ public struct Backend: Sendable {
     var runBenchmark: (@Sendable () async -> Bool)? = nil
     var onSetup: @MainActor @Sendable () -> Void = {}
 
-    enum Status: CaseIterable, Identifiable, Sendable {
+    enum Status: Sendable {
         case reachable
+        case readOnly
         case unreachable
+        case failed(any Error & Sendable)
         case unknown
-
-        var id: Self { self }
     }
 
     enum AccountStatus: Sendable {
@@ -40,6 +40,22 @@ public struct Backend: Sendable {
         let endpoint: String
         let hasAPIKey: Bool
         let isSecure: Bool
+    }
+}
+
+extension Backend.Status: Equatable {
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        switch (lhs, rhs) {
+        case (.reachable, .reachable),
+             (.readOnly, .readOnly),
+             (.unreachable, .unreachable),
+             (.unknown, .unknown):
+            true
+        case let (.failed(lhsError), .failed(rhsError)):
+            lhsError as NSError == rhsError as NSError
+        default:
+            false
+        }
     }
 }
 

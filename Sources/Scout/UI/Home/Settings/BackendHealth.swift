@@ -77,7 +77,8 @@ extension Backend.Status {
     var healthLabel: String {
         switch self {
         case .reachable: "Operational"
-        case .unreachable: "Unreachable"
+        case .readOnly: "Read-Only"
+        case .unreachable, .failed: "Unreachable"
         case .unknown: "Checking"
         }
     }
@@ -85,7 +86,8 @@ extension Backend.Status {
     var healthColor: Color {
         switch self {
         case .reachable: .green
-        case .unreachable: .red
+        case .readOnly: .orange
+        case .unreachable, .failed: .red
         case .unknown: .gray
         }
     }
@@ -93,7 +95,8 @@ extension Backend.Status {
     var healthIcon: String {
         switch self {
         case .reachable: "checkmark.circle.fill"
-        case .unreachable: "xmark.octagon.fill"
+        case .readOnly: "exclamationmark.triangle.fill"
+        case .unreachable, .failed: "xmark.octagon.fill"
         case .unknown: "questionmark.circle.fill"
         }
     }
