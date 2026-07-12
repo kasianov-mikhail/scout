@@ -11,6 +11,14 @@ struct ErrorView: View {
     let description: Text
     let retry: (() -> Void)?
 
+    @State private var isRetrying: Bool
+
+    init(description: Text, retry: (() -> Void)?, isRetrying: Bool = false) {
+        self.description = description
+        self.retry = retry
+        _isRetrying = State(initialValue: isRetrying)
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             Spacer()
@@ -28,11 +36,7 @@ struct ErrorView: View {
                 .multilineTextAlignment(.center)
 
             if let retry {
-                Button(action: retry) {
-                    Text(verbatim: "Retry")
-                }
-                .buttonStyle(.pill)
-                .padding(8)
+                retryControl(retry).padding(8)
             }
 
             Spacer()
@@ -41,12 +45,28 @@ struct ErrorView: View {
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
+
+    @ViewBuilder
+    private func retryControl(_ retry: @escaping () -> Void) -> some View {
+        if isRetrying {
+            RingIndicator(size: 22)
+                .frame(maxWidth: .infinity)
+                .padding(10)
+        } else {
+            Button {
+                isRetrying = true
+                retry()
+            } label: {
+                Text(verbatim: "Retry")
+            }
+            .buttonStyle(.pill)
+        }
+    }
 }
 
 extension ErrorView {
-    init(description: String, retry: (() -> Void)?) {
-        self.description = Text(verbatim: description)
-        self.retry = retry
+    init(description: String, retry: (() -> Void)?, isRetrying: Bool = false) {
+        self.init(description: Text(verbatim: description), retry: retry, isRetrying: isRetrying)
     }
 }
 
@@ -56,5 +76,15 @@ extension ErrorView {
             + "to test how the ErrorView handles multiline text display. "
             + "It should properly wrap and be readable without any issues.",
         retry: {}
+    )
+}
+
+#Preview("Retrying") {
+    ErrorView(
+        description: "This is a sample error message that is intentionally made very long "
+            + "to test how the ErrorView handles multiline text display. "
+            + "It should properly wrap and be readable without any issues.",
+        retry: {},
+        isRetrying: true
     )
 }
