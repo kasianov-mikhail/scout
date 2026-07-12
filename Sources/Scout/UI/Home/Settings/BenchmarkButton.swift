@@ -33,7 +33,7 @@ struct BenchmarkButton: View {
                     .foregroundStyle(.tint)
                 if isBenchmarking {
                     Spacer()
-                    ProgressView()
+                    RingIndicator(size: 22)
                 }
             }
         }
