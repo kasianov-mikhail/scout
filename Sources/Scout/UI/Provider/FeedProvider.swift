@@ -23,8 +23,10 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
             }
             records = dedup(new: try results.records.map(Element.init), old: records ?? [])
             return true
+
         } catch is CancellationError {
             return true
+
         } catch {
             if records == nil {
                 message = Message(error.localizedDescription, level: .error)
