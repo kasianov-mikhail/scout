@@ -15,6 +15,14 @@ struct NetworkEndpointDetailView: View {
     let range: Range<Date>
     var unit: Calendar.Component = .hour
 
+    init(endpoint: NetworkEndpoint, report: NetworkReport, range: Range<Date>, unit: Calendar.Component = .hour) {
+        self.endpoint = endpoint
+        self.distribution = report.distributions[endpoint.name]
+        self.statuses = report.statuses[endpoint.name]
+        self.range = range
+        self.unit = unit
+    }
+
     var body: some View {
         List {
             HStack(spacing: 28) {
@@ -44,6 +52,7 @@ struct NetworkEndpointDetailView: View {
             }
         }
         .listStyle(.plain)
+        .monospacedNavigationTitle(en: endpoint.path)
     }
 }
 
@@ -53,12 +62,6 @@ struct NetworkEndpointDetailView: View {
     let endpoint = report.endpoints(in: range)[2]
 
     NavigationStack {
-        NetworkEndpointDetailView(
-            endpoint: endpoint,
-            distribution: report.distributions[endpoint.name],
-            statuses: report.statuses[endpoint.name],
-            range: range
-        )
-        .monospacedNavigationTitle(en: endpoint.path)
+        NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
     }
 }

@@ -17,13 +17,7 @@ struct NetworkEndpointLink: View {
         Row {
             NetworkEndpointRow(endpoint: endpoint)
         } destination: {
-            NetworkEndpointDetailView(
-                endpoint: endpoint,
-                distribution: report.distributions[endpoint.name],
-                statuses: report.statuses[endpoint.name],
-                range: range
-            )
-            .monospacedNavigationTitle(en: endpoint.path)
+            NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
         }
     }
 }
