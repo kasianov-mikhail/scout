@@ -38,7 +38,7 @@ struct SegmentBar: View {
                 ForEach(segments) { segment in
                     HStack(spacing: 5) {
                         Circle().fill(segment.color).frame(width: 7, height: 7)
-                        Text(verbatim: segment.label + " " + segment.count.plain)
+                        Text(verbatim: segment.label)
                             .font(.caption)
                             .foregroundStyle(.gray)
                     }
