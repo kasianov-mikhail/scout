@@ -14,7 +14,7 @@ extension EventEntry {
         name: String,
         date: Date = Date(),
         synced: Bool = false,
-        level: Event.Level = .info,
+        level: EventLevel = .info,
         session: SessionEntry? = nil,
         in context: NSManagedObjectContext
     ) -> EventEntry {

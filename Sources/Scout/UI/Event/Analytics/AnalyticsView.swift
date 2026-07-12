@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AnalyticsView: View {
-    @State private var filter = Event.Query()
+    @State private var filter = EventQuery()
 
     @StateObject var provider = EventProvider()
     @StateObject var search = EventProvider()

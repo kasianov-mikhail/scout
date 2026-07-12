@@ -21,7 +21,7 @@ struct EventProviderTests {
         )
 
         let provider = EventProvider()
-        await provider.fetchLatest(for: Event.Query(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
 
         #expect(provider.records?.count == 2)
         #expect(database.readCount(of: EventEntry.recordType) == 1)
@@ -33,8 +33,8 @@ struct EventProviderTests {
         database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
 
         let provider = EventProvider()
-        await provider.fetchLatest(for: Event.Query(), in: database)
-        await provider.fetchLatest(for: Event.Query(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        await provider.fetchLatest(for: EventQuery(), in: database)
 
         #expect(provider.records?.count == 1)
         #expect(database.readCount(of: EventEntry.recordType) == 2)

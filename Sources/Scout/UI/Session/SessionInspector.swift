@@ -35,8 +35,8 @@ struct SessionInspector: View {
         .navigationTitle(en: "Session")
     }
 
-    private var query: Event.Query {
-        Event.Query(sessionID: sessionID)
+    private var query: EventQuery {
+        EventQuery(sessionID: sessionID)
     }
 }
 

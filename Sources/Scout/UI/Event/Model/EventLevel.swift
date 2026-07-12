@@ -8,11 +8,9 @@
 import Logging
 import SwiftUI
 
-extension Event {
-    typealias Level = Logger.Level
-}
+typealias EventLevel = Logger.Level
 
-extension Event.Level {
+extension EventLevel {
     var descriptionText: Text {
         Text(description.uppercased()).foregroundColor(color ?? .blue)
     }

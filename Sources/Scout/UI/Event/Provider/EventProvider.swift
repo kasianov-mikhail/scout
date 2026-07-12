@@ -10,16 +10,16 @@ import SwiftUI
 
 @MainActor
 final class EventProvider: FeedProvider<Event> {
-    func fetch(for filter: Event.Query, in database: DatabaseReader) async {
+    func fetch(for filter: EventQuery, in database: DatabaseReader) async {
         await fetchAgain(matching: query(for: filter), in: database)
     }
 
     @discardableResult
-    func fetchLatest(for filter: Event.Query, in database: DatabaseReader) async -> Bool {
+    func fetchLatest(for filter: EventQuery, in database: DatabaseReader) async -> Bool {
         await fetchLatest(matching: query(for: filter), in: database)
     }
 
-    private func query(for filter: Event.Query) -> RecordQuery {
+    private func query(for filter: EventQuery) -> RecordQuery {
         RecordQuery(
             recordType: Event.self,
             filters: filter.buildFilters(),
