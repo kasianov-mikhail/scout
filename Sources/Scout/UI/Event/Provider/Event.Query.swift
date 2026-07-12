@@ -8,7 +8,7 @@
 import Foundation
 
 extension Event {
-    struct Query {
+    struct Query: Equatable {
         private static let allLevels = Set(Level.allCases)
 
         var levels = Query.allLevels

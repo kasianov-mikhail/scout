@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct HomeActivitySection: View {
-    @Environment(\.database) var database
     @ObservedObject var activity: ActivityProvider
 
     var body: some View {
@@ -20,9 +19,6 @@ struct HomeActivitySection: View {
                 activity: activity
             )
             .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
-        }
-        .onAppear {
-            Task { await activity.fetchIfNeeded(in: database) }
         }
     }
 }

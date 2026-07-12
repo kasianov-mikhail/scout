@@ -27,6 +27,21 @@ extension Provider {
         await fetchAgain(in: database)
     }
 
+    @discardableResult
+    func fetchLatest(in database: DatabaseReader) async -> Bool {
+        do {
+            result = .success(try await fetch(in: database))
+            return true
+        } catch is CancellationError {
+            return true
+        } catch {
+            if result == nil {
+                result = .failure(error)
+            }
+            return false
+        }
+    }
+
     private func resolve(in database: DatabaseReader) async {
         do {
             result = .success(try await fetch(in: database))

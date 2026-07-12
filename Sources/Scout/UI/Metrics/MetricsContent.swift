@@ -13,7 +13,6 @@ struct MetricsContent<T: ChartNumeric>: View {
     let telemetry: Telemetry.Export
 
     @StateObject var provider: MetricsProvider<T>
-    @Environment(\.database) var database
 
     init(period: Period, formatter: KeyPath<T, String>, telemetry: Telemetry.Export) {
         self.period = period
@@ -46,9 +45,6 @@ struct MetricsContent<T: ChartNumeric>: View {
                 }
                 .listStyle(.plain)
             }
-        }
-        .task {
-            await provider.fetchIfNeeded(in: database)
         }
     }
 

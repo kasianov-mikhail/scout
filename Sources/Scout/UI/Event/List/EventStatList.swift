@@ -24,8 +24,8 @@ struct EventStatList: View {
     var body: some View {
         VStack {
             EventList(provider: provider)
-                .task {
-                    await provider.fetchIfNeeded(for: query, in: database)
+                .autoRefresh {
+                    await provider.fetchLatest(for: query, in: database)
                 }
                 .navigationTitle(range.label(using: formatter))
                 .font(.caption)
@@ -39,7 +39,7 @@ struct EventStatList: View {
 
 #Preview {
     let provider = EventProvider()
-    provider.events = .samples
+    provider.records = .samples
 
     return NavigationStack {
         EventStatList(eventName: "Event", range: Period.week.initialRange, provider: provider)

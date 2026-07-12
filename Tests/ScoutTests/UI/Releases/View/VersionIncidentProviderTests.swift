@@ -24,7 +24,7 @@ struct VersionIncidentProviderTests {
         )
 
         let provider = VersionIncidentProvider<Crash>(version: "2.0")
-        await provider.fetchIfNeeded(in: database)
+        await provider.fetchLatest(in: database)
         let crashes = try #require(provider.records)
 
         #expect(crashes.count == 2)
@@ -36,7 +36,7 @@ struct VersionIncidentProviderTests {
         database.add(crashRecord(appVersion: nil))
 
         let provider = VersionIncidentProvider<Crash>(version: "2.0")
-        await provider.fetchIfNeeded(in: database)
+        await provider.fetchLatest(in: database)
 
         #expect(provider.records?.isEmpty == true)
     }
@@ -51,7 +51,7 @@ struct VersionIncidentProviderTests {
         )
 
         let provider = VersionIncidentProvider<Hang>(version: "2.0")
-        await provider.fetchIfNeeded(in: database)
+        await provider.fetchLatest(in: database)
         let hangs = try #require(provider.records)
 
         #expect(hangs.count == 2)
@@ -63,7 +63,7 @@ struct VersionIncidentProviderTests {
         database.add(hangRecord(appVersion: nil))
 
         let provider = VersionIncidentProvider<Hang>(version: "2.0")
-        await provider.fetchIfNeeded(in: database)
+        await provider.fetchLatest(in: database)
 
         #expect(provider.records?.isEmpty == true)
     }

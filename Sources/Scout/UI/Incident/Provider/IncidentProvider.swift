@@ -8,51 +8,21 @@
 import SwiftUI
 
 @MainActor
-class IncidentProvider<Element: RecordDecodable & Incident>: ObservableObject {
-    @Published var groups: [IncidentGroup<Element>]?
-    @Published var cursor: RecordCursor?
-    @Published var message: Message?
-
-    private var records: [Element] = []
-
-    func fetchIfNeeded(in database: DatabaseReader) async {
-        guard groups == nil else { return }
-        await fetch(in: database)
+final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element> {
+    var groups: [IncidentGroup<Element>]? {
+        records.map(IncidentGroup.groups)
     }
 
-    func fetch(in database: DatabaseReader) async {
-        do {
-            let query = RecordQuery(
-                recordType: Element.self,
-                filters: Calendar.utc.defaultRange.dateFilters,
-                sort: [RecordQuery.Sort(field: "date", ascending: false)]
-            )
-
-            let results = try await database.read(
-                matching: query,
-                fields: Element.desiredKeys
-            )
-
-            self.cursor = results.cursor
-            self.records = try results.records.map(Element.init)
-            self.groups = IncidentGroup.groups(from: records)
-        } catch {
-            self.message = Message(error.localizedDescription, level: .error)
-        }
+    private var query: RecordQuery {
+        RecordQuery(
+            recordType: Element.self,
+            filters: Calendar.utc.defaultRange.dateFilters,
+            sort: [RecordQuery.Sort(field: "date", ascending: false)]
+        )
     }
 
-    func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async {
-        do {
-            let results = try await database.readMore(
-                from: cursor,
-                fields: nil
-            )
-
-            self.cursor = results.cursor
-            self.records.append(contentsOf: try results.records.map(Element.init))
-            self.groups = IncidentGroup.groups(from: records)
-        } catch {
-            self.message = Message(error.localizedDescription, level: .error)
-        }
+    @discardableResult
+    func fetchLatest(in database: DatabaseReader) async -> Bool {
+        await fetchLatest(matching: query, in: database)
     }
 }

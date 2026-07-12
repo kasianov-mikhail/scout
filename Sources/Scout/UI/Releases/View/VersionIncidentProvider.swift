@@ -19,27 +19,30 @@ class VersionIncidentProvider<Element: RecordDecodable & Incident>: ObservableOb
         self.records = records
     }
 
-    func fetchIfNeeded(in database: DatabaseReader) async {
-        if records == nil {
-            await fetch(in: database)
-        }
+    private var query: RecordQuery {
+        RecordQuery(
+            recordType: Element.self,
+            filters: Calendar.utc.defaultRange.dateFilters + [
+                RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))
+            ]
+        )
     }
 
-    func fetch(in database: DatabaseReader) async {
+    @discardableResult
+    func fetchLatest(in database: DatabaseReader) async -> Bool {
         do {
-            let query = RecordQuery(
-                recordType: Element.self,
-                filters: Calendar.utc.defaultRange.dateFilters + [
-                    RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))
-                ]
-            )
-
             records = try await database.readAll(
                 matching: query,
                 fields: Element.desiredKeys
             )
+            return true
+        } catch is CancellationError {
+            return true
         } catch {
-            message = Message(error.localizedDescription, level: .error)
+            if records == nil {
+                message = Message(error.localizedDescription, level: .error)
+            }
+            return false
         }
     }
 }
