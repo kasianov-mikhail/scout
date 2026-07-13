@@ -47,14 +47,14 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 <tr>
 <td><strong>Cost</strong></td>
 <td><img src="https://img.shields.io/badge/Free-brightgreen?style=flat-square" alt="Free"><br>Free within <a href="https://developer.apple.com/icloud/cloudkit/">CloudKit's limits</a> — no servers to pay for, and the quota grows with your app</td>
-<td><img src="https://img.shields.io/badge/Metered-yellow?style=flat-square" alt="Metered"><br>Free tier, then metered <a href="https://firebase.google.com/pricing">Blaze</a> billing as reads and traffic grow</td>
-<td><img src="https://img.shields.io/badge/Paid-red?style=flat-square" alt="Paid"><br>Servers, database, and bandwidth billed from day one</td>
+<td><img src="https://img.shields.io/badge/Metered-yellow?style=flat-square" alt="Metered"><br>Free tier, then metered <a href="https://firebase.google.com/pricing">Blaze</a> billing as reads and traffic grow<br><br></td>
+<td><img src="https://img.shields.io/badge/Paid-red?style=flat-square" alt="Paid"><br>Servers, database, and bandwidth billed from day one<br><br></td>
 </tr>
 <tr>
 <td><strong>Data privacy</strong></td>
-<td><img src="https://img.shields.io/badge/Private-brightgreen?style=flat-square" alt="Private"><br>Data stays in your own CloudKit container on Apple's infrastructure — no third-party analytics vendor, and Apple doesn't mine it for advertising</td>
+<td><img src="https://img.shields.io/badge/Private-brightgreen?style=flat-square" alt="Private"><br>Data stays in your own CloudKit container on Apple's infrastructure — no third-party analytics vendor</td>
 <td><img src="https://img.shields.io/badge/Vendor--owned-red?style=flat-square" alt="Vendor-owned"><br>Data lives on Google's servers and can be linked across its ad and analytics products</td>
-<td><img src="https://img.shields.io/badge/Your_responsibility-yellow?style=flat-square" alt="Your responsibility"><br>You control everything — and carry all the responsibility for securing it</td>
+<td><img src="https://img.shields.io/badge/Your_responsibility-yellow?style=flat-square" alt="Your responsibility"><br>You control everything — and carry all the responsibility for securing it<br><br></td>
 </tr>
 <tr>
 <td><strong>Infrastructure</strong></td>
