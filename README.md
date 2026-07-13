@@ -35,13 +35,15 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 
 How Scout compares to a hosted analytics SDK and to rolling your own backend:
 
+✅ strength &nbsp; ⚠️ trade-off &nbsp; ❌ cost or burden
+
 | | **Scout (CloudKit)** | **Firebase** | **Custom backend** |
 |-|-|-|-|
-| **Cost** | Free within [CloudKit's limits](https://developer.apple.com/icloud/cloudkit/) — no servers to pay for, and the quota grows with your app | Free tier, then metered [Blaze](https://firebase.google.com/pricing) billing as reads and traffic grow | Servers, database, and bandwidth billed from day one |
-| **Data privacy** | Data stays in your own CloudKit container on Apple's infrastructure — no third-party analytics vendor, and Apple doesn't mine it for advertising | Data lives on Google's servers and can be linked across its ad and analytics products | You control everything — and carry all the responsibility for securing it |
-| **Infrastructure** | Zero servers — Apple runs the backend | Managed by Google, with vendor lock-in | You deploy and maintain it yourself |
-| **Scaling** | Automatic, within the container quota | Automatic, but the bill scales too | Manual — you provision and pay for capacity |
-| **Setup** | Already included with your Apple Developer account | New project, SDK, and API keys | Build the API, schema, and deployment |
+| **Cost** | ✅ Free within [CloudKit's limits](https://developer.apple.com/icloud/cloudkit/) — no servers to pay for, and the quota grows with your app | ⚠️ Free tier, then metered [Blaze](https://firebase.google.com/pricing) billing as reads and traffic grow | ❌ Servers, database, and bandwidth billed from day one |
+| **Data privacy** | ✅ Data stays in your own CloudKit container on Apple's infrastructure — no third-party analytics vendor, and Apple doesn't mine it for advertising | ❌ Data lives on Google's servers and can be linked across its ad and analytics products | ⚠️ You control everything — and carry all the responsibility for securing it |
+| **Infrastructure** | ✅ Zero servers — Apple runs the backend | ⚠️ Managed by Google, with vendor lock-in | ❌ You deploy and maintain it yourself |
+| **Scaling** | ✅ Automatic, within the container quota | ⚠️ Automatic, but the bill scales too | ❌ Manual — you provision and pay for capacity |
+| **Setup** | ✅ Already included with your Apple Developer account | ⚠️ New project, SDK, and API keys | ❌ Build the API, schema, and deployment |
 
 ## Requirements
 
