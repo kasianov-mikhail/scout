@@ -13,7 +13,8 @@ extension MarkerEntry {
 
         func execute(in context: NSManagedObjectContext) throws {
             let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
-            try MarkerEntry.mark(name: MarkerEntry.installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
+            try MarkerEntry.mark(
+                name: MarkerEntry.installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
 
             if context.hasChanges {
                 try context.save()
@@ -21,7 +22,9 @@ extension MarkerEntry {
         }
     }
 
-    static func mark(name: String, install: InstallEntry?, appVersion: String?, in context: NSManagedObjectContext) throws {
+    static func mark(name: String, install: InstallEntry?, appVersion: String?, in context: NSManagedObjectContext)
+        throws
+    {
         guard let appVersion, let install else { return }
 
         let request = NSFetchRequest<MarkerEntry>(entityName: "MarkerEntry")

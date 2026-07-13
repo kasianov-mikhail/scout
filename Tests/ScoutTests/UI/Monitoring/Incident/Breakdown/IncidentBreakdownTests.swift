@@ -31,7 +31,8 @@ struct IncidentBreakdownTests {
     @Test("Buckets everything past the top cutoff into Other")
     func bucketsIntoOther() {
         let labels =
-            Array(repeating: "A", count: 5) + Array(repeating: "B", count: 4) + Array(repeating: "C", count: 3) + Array(repeating: "D", count: 2)
+            Array(repeating: "A", count: 5) + Array(repeating: "B", count: 4) + Array(repeating: "C", count: 3)
+            + Array(repeating: "D", count: 2)
             + Array(repeating: "E", count: 1)
         let segments = IncidentBreakdown.segments(from: labels, top: 4)
 

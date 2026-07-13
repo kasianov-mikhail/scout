@@ -22,7 +22,9 @@ extension ChartExtent {
     /// months differ in length), the oldest current buckets have no
     /// counterpart and are omitted; the chart draws no reference for them.
     ///
-    func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>]) -> [ChartPoint<U>] {
+    func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>])
+        -> [ChartPoint<U>]
+    {
         zip(segment, previousSegment(from: points)).map { ChartPoint(date: $0.date, count: $1.count) }
     }
 

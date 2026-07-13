@@ -83,7 +83,9 @@ extension NativeDatabase: RecordLocator {
 }
 
 extension NativeDatabase: MetricReader {
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+        -> [MetricSeries]
+    {
         await registration.value
         let entity = T.seriesValues == Int.seriesValues ? IntMetricsEntry.recordType : DoubleMetricsEntry.recordType
         let prefix = category + "|"

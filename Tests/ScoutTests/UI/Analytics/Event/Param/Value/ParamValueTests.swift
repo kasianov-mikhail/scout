@@ -58,7 +58,8 @@ struct ParamValueTests {
     @Test("ISO 8601 dates read as dates")
     func dates() {
         #expect(ParamValue(parsing: "2026-06-11T09:41:00Z") == .stringConvertible(.date("2026-06-11T09:41:00Z")))
-        #expect(ParamValue(parsing: "2026-06-09T18:25:43.511Z") == .stringConvertible(.date("2026-06-09T18:25:43.511Z")))
+        #expect(
+            ParamValue(parsing: "2026-06-09T18:25:43.511Z") == .stringConvertible(.date("2026-06-09T18:25:43.511Z")))
     }
 
     @Test("JSON objects become dictionaries with sorted keys")

@@ -8,14 +8,17 @@
 import Foundation
 
 extension Session {
-    static func fetchChunk(installIDs: [UUID], anchor: Date?, ascending: Bool, limit: Int, in database: DatabaseReader) async throws -> RecordChunk {
+    static func fetchChunk(installIDs: [UUID], anchor: Date?, ascending: Bool, limit: Int, in database: DatabaseReader)
+        async throws -> RecordChunk
+    {
         var filters = [
             RecordQuery.Filter(field: "install_id", op: .in, value: .strings(installIDs.map(\.uuidString)))
         ]
 
         if let anchor {
             filters.append(
-                RecordQuery.Filter(field: "start_date", op: ascending ? .greaterThan : .lessThanOrEquals, value: .date(anchor))
+                RecordQuery.Filter(
+                    field: "start_date", op: ascending ? .greaterThan : .lessThanOrEquals, value: .date(anchor))
             )
         }
 

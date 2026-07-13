@@ -29,7 +29,8 @@ enum EntityCatalog {
     // Metric series are grouped by a single grid key, so the category and name
     // are packed into one pipe-separated field on write and split on read.
     static func seriesKey(for record: Record) -> ScoutDB.RecordValue? {
-        guard record.recordType == IntMetricsEntry.recordType || record.recordType == DoubleMetricsEntry.recordType else {
+        guard record.recordType == IntMetricsEntry.recordType || record.recordType == DoubleMetricsEntry.recordType
+        else {
             return nil
         }
         let category: String? = record["category"]
@@ -140,10 +141,15 @@ enum EntityCatalog {
 
     private typealias Spec = (String, FieldType)
 
-    private static func definition(entity: String, fields: [Spec], trailing: [Spec] = [], envelopeDate: String = "date", views: [AggregateView]? = nil)
+    private static func definition(
+        entity: String, fields: [Spec], trailing: [Spec] = [], envelopeDate: String = "date",
+        views: [AggregateView]? = nil
+    )
         -> EntityDefinition
     {
-        EntityDefinition(entity: entity, version: 1, fields: slotted(fields + metadata + trailing), envelopeDate: envelopeDate, views: views)
+        EntityDefinition(
+            entity: entity, version: 1, fields: slotted(fields + metadata + trailing), envelopeDate: envelopeDate,
+            views: views)
     }
 
     private static let metadata: [Spec] = [
@@ -163,7 +169,8 @@ enum EntityCatalog {
             let pool = pool(for: type)
             let index = next[pool, default: 0]
             next[pool] = index + 1
-            return FieldDefinition(name: name, type: type, storage: .slot(pool, String(format: "%@_%02d", pool.rawValue, index)))
+            return FieldDefinition(
+                name: name, type: type, storage: .slot(pool, String(format: "%@_%02d", pool.rawValue, index)))
         }
     }
 

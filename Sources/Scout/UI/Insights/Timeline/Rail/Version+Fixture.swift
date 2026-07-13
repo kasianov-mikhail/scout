@@ -8,7 +8,9 @@
 import Foundation
 
 extension Version: Fixture {
-    static func sample(appVersion: String = "2.4.1", buildNumber: String = "214", minutesAgo: Double = 0, launchID: UUID = UUID()) -> Version {
+    static func sample(
+        appVersion: String = "2.4.1", buildNumber: String = "214", minutesAgo: Double = 0, launchID: UUID = UUID()
+    ) -> Version {
         Version(
             appVersion: appVersion,
             buildNumber: buildNumber,

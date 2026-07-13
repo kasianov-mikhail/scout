@@ -45,7 +45,8 @@ extension Collection {
     /// sitting on the same date; buckets missing from `reference` get a nil
     /// reference and draw no comparison marks.
     ///
-    func paired<T>(with reference: [ChartPoint<T>], unit: Calendar.Component) -> [ComparisonPair<T>] where Element == ChartPoint<T> {
+    func paired<T>(with reference: [ChartPoint<T>], unit: Calendar.Component) -> [ComparisonPair<T>]
+    where Element == ChartPoint<T> {
         let counts = Dictionary(reference.map { ($0.date, $0.count) }, uniquingKeysWith: +)
         return map { point in
             ComparisonPair(

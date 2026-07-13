@@ -96,7 +96,8 @@ struct RecordEncodingTests {
 
     @Test("Crash records carry the app version")
     func crashAppVersionRecord() throws {
-        let crash = CrashEntry(entity: NSEntityDescription.entity(forEntityName: "CrashEntry", in: context)!, insertInto: context)
+        let crash = CrashEntry(
+            entity: NSEntityDescription.entity(forEntityName: "CrashEntry", in: context)!, insertInto: context)
         crash.name = "SIGABRT"
         crash.crashID = UUID()
         crash.appVersion = "3.2.0"
@@ -108,7 +109,9 @@ struct RecordEncodingTests {
 }
 
 extension IntMetricsEntry {
-    @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext) -> IntMetricsEntry {
+    @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext)
+        -> IntMetricsEntry
+    {
         let entity = NSEntityDescription.entity(forEntityName: "IntMetricsEntry", in: context)!
         let metric = IntMetricsEntry(entity: entity, insertInto: context)
 
@@ -122,7 +125,9 @@ extension IntMetricsEntry {
 }
 
 extension DoubleMetricsEntry {
-    @discardableResult static func stub(name: String, telemetry: String, value: Double, in context: NSManagedObjectContext) -> DoubleMetricsEntry {
+    @discardableResult static func stub(
+        name: String, telemetry: String, value: Double, in context: NSManagedObjectContext
+    ) -> DoubleMetricsEntry {
         let entity = NSEntityDescription.entity(forEntityName: "DoubleMetricsEntry", in: context)!
         let metric = DoubleMetricsEntry(entity: entity, insertInto: context)
 

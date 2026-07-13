@@ -86,7 +86,9 @@ struct MatrixSpanTests {
     }
 
     /// A one-cell matrix whose single point lands exactly on `date`.
-    private func makeMatrix<T: MetricScalar>(name: String, category: String? = nil, date: Date, value: T) -> GridMatrix<T> {
+    private func makeMatrix<T: MetricScalar>(name: String, category: String? = nil, date: Date, value: T) -> GridMatrix<
+        T
+    > {
         Matrix(
             date: date,
             name: name,

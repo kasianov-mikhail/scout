@@ -88,7 +88,9 @@ struct MiniChart: View {
             HStack {
                 Text(verbatim: "Empty")
                 Spacer()
-                MiniChart(series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), color: .red)
+                MiniChart(
+                    series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), color: .red
+                )
             }
         }
         .listStyle(.plain)

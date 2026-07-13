@@ -39,7 +39,8 @@ struct CrashArchive {
     }
 
     func flush(deviceID: UUID) async {
-        guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
+        guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        else {
             return
         }
 
@@ -47,7 +48,8 @@ struct CrashArchive {
         decoder.dateDecodingStrategy = .iso8601
 
         for file in files where file.pathExtension == "crash" {
-            guard let data = try? Data(contentsOf: file), let crash = try? decoder.decode(CrashInfo.self, from: data) else {
+            guard let data = try? Data(contentsOf: file), let crash = try? decoder.decode(CrashInfo.self, from: data)
+            else {
                 try? FileManager.default.removeItem(at: file)
                 continue
             }

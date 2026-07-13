@@ -71,7 +71,8 @@ extension View {
 
     extension UINavigationBar {
         fileprivate var allAppearances: [UINavigationBarAppearance] {
-            [standardAppearance, compactAppearance, scrollEdgeAppearance, compactScrollEdgeAppearance].compactMap(\.self)
+            [standardAppearance, compactAppearance, scrollEdgeAppearance, compactScrollEdgeAppearance].compactMap(
+                \.self)
         }
     }
 

@@ -65,7 +65,9 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         RecordChunk(records: [], cursor: nil)
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+        -> [MetricSeries]
+    {
         []
     }
 
@@ -137,7 +139,10 @@ extension Record {
         return record
     }
 
-    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil, deviceID: UUID? = nil) -> Record {
+    static func sessionStub(
+        sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil,
+        deviceID: UUID? = nil
+    ) -> Record {
         var record = Session(
             startDate: startDate,
             endDate: nil,

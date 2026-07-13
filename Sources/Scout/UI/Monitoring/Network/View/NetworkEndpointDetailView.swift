@@ -28,7 +28,9 @@ struct NetworkEndpointDetailView: View {
             HStack(spacing: 28) {
                 Metric(title: "Method", value: endpoint.method ?? "—", color: endpoint.methodColor)
                 Metric(title: "Requests", value: endpoint.requests.plain, color: .primary)
-                Metric(title: "Success", value: endpoint.successRate?.formatted ?? "—", color: endpoint.successRate?.color ?? .gray)
+                Metric(
+                    title: "Success", value: endpoint.successRate?.formatted ?? "—",
+                    color: endpoint.successRate?.color ?? .gray)
                 Spacer()
             }
             .listRowSeparator(.hidden)

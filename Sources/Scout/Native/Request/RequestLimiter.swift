@@ -107,7 +107,9 @@ actor RequestLimiter {
         try await holding({ await acquireAll() }, until: { await releaseAll() }, body: body)
     }
 
-    nonisolated private func holding<R>(_ claim: () async -> Void, until free: () async -> Void, body: () async throws -> R) async rethrows -> R {
+    nonisolated private func holding<R>(
+        _ claim: () async -> Void, until free: () async -> Void, body: () async throws -> R
+    ) async rethrows -> R {
         await claim()
         do {
             let result = try await body()

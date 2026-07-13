@@ -56,7 +56,9 @@ private let lifecycleNames: Set = [
     VersionEntry.recordType,
 ]
 
-private func matrices<T: MetricScalar>(of type: T.Type, in range: Range<Date>, from database: DatabaseReader) async throws -> [GridMatrix<T>] {
+private func matrices<T: MetricScalar>(of type: T.Type, in range: Range<Date>, from database: DatabaseReader)
+    async throws -> [GridMatrix<T>]
+{
     let query = RecordQuery(
         recordType: GridMatrix<T>.self,
         filters: (range.lowerBound.startOfWeek..<range.upperBound).dateFilters

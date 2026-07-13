@@ -42,9 +42,12 @@ struct IncidentBreakdownProviderTests {
 
         let database = DatabaseStub()
         database.add(
-            .sessionStub(sessionID: sessionA, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
-            .sessionStub(sessionID: sessionB, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
-            .sessionStub(sessionID: other, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 16.7")
+            .sessionStub(
+                sessionID: sessionA, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
+            .sessionStub(
+                sessionID: sessionB, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
+            .sessionStub(
+                sessionID: other, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 16.7")
         )
 
         let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [sessionA, sessionB])

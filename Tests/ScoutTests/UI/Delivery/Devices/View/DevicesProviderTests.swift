@@ -23,8 +23,12 @@ struct DevicesProviderTests {
         database.add(
             .deviceStub(deviceID: deviceA, date: date, model: "iPhone15,3"),
             .deviceStub(deviceID: deviceB, date: date, model: "iPad13,1"),
-            .sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.4", deviceID: deviceA),
-            .sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.2", deviceID: deviceB),
+            .sessionStub(
+                sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.4",
+                deviceID: deviceA),
+            .sessionStub(
+                sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.2",
+                deviceID: deviceB),
             .crashStub(deviceID: deviceA, date: date)
         )
 

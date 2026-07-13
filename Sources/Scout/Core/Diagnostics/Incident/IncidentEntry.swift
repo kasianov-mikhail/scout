@@ -21,7 +21,8 @@ extension HasSession where Self: IncidentEntry {
         var record = Record(recordType: type, recordID: id.uuidString)
 
         record["name"] = name
-        record["fingerprint"] = fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
+        record["fingerprint"] =
+            fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
         record["reason"] = reason
         record["stack_trace"] = stackTrace
         record["date"] = date

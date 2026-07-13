@@ -12,9 +12,12 @@ final class DevicesProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[DeviceSummary]>?
 
     func fetch(in database: DatabaseReader) async throws -> [DeviceSummary] {
-        async let devices: [Record] = database.readAll(matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
-        async let sessions: [Record] = database.readAll(matching: RecordQuery(recordType: Session.self), fields: ["device_id", "os_version", "start_date"])
-        async let crashes: [Record] = database.readAll(matching: RecordQuery(recordType: Crash.self), fields: ["device_id"])
+        async let devices: [Record] = database.readAll(
+            matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
+        async let sessions: [Record] = database.readAll(
+            matching: RecordQuery(recordType: Session.self), fields: ["device_id", "os_version", "start_date"])
+        async let crashes: [Record] = database.readAll(
+            matching: RecordQuery(recordType: Crash.self), fields: ["device_id"])
 
         return try await DeviceSummary.summaries(devices: devices, sessions: sessions, crashes: crashes)
     }

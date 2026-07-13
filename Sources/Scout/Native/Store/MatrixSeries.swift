@@ -28,11 +28,13 @@ struct MatrixSeries {
 
         switch scalar {
         case .double:
-            return try await metricRecords(entity: DoubleMetricsEntry.recordType, from: from, to: to, name: name, store: store)
+            return try await metricRecords(
+                entity: DoubleMetricsEntry.recordType, from: from, to: to, name: name, store: store)
 
         case .int where name == nil:
             async let events = eventRecords(from: from, to: to, name: nil, store: store)
-            async let metrics = metricRecords(entity: IntMetricsEntry.recordType, from: from, to: to, name: nil, store: store)
+            async let metrics = metricRecords(
+                entity: IntMetricsEntry.recordType, from: from, to: to, name: nil, store: store)
             async let crashes = entityRecords(.crashes, from: from, to: to, store: store)
             async let hangs = entityRecords(.hangs, from: from, to: to, store: store)
             async let installs = entityRecords(.versionInstalls, from: from, to: to, store: store)
@@ -53,7 +55,8 @@ struct MatrixSeries {
                 return try await entityRecords(.versionCrashes, from: from, to: to, store: store)
             default:
                 async let events = eventRecords(from: from, to: to, name: name, store: store)
-                async let metrics = metricRecords(entity: IntMetricsEntry.recordType, from: from, to: to, name: name, store: store)
+                async let metrics = metricRecords(
+                    entity: IntMetricsEntry.recordType, from: from, to: to, name: name, store: store)
                 return try await events + metrics
             }
         }
@@ -76,7 +79,8 @@ struct MatrixSeries {
     }
 
     private func eventRecords(from: Date?, to: Date?, name: String?, store: EntityStore) async throws -> [Record] {
-        let points = try await store.series(entity: EventEntry.recordType, view: EntityCatalog.eventCountView, from: from?.startOfDay, to: to)
+        let points = try await store.series(
+            entity: EventEntry.recordType, view: EntityCatalog.eventCountView, from: from?.startOfDay, to: to)
         var buckets: [SeriesBucket: [CellIndex: Double]] = [:]
 
         for point in points where name == nil || point.group == name {
@@ -88,8 +92,11 @@ struct MatrixSeries {
         return assemble(buckets)
     }
 
-    private func metricRecords(entity: String, from: Date?, to: Date?, name: String?, store: EntityStore) async throws -> [Record] {
-        let points = try await store.series(entity: entity, view: EntityCatalog.metricSeriesView, from: from?.startOfDay, to: to)
+    private func metricRecords(entity: String, from: Date?, to: Date?, name: String?, store: EntityStore) async throws
+        -> [Record]
+    {
+        let points = try await store.series(
+            entity: entity, view: EntityCatalog.metricSeriesView, from: from?.startOfDay, to: to)
         var buckets: [SeriesBucket: [CellIndex: Double]] = [:]
 
         for point in points {
@@ -114,13 +121,15 @@ struct MatrixSeries {
         let (entity, dateField, matrixName) = Self.layout(of: source)
         var filters: [EntityStore.Filter] = []
         if let from {
-            filters.append(EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(from.startOfDay)))
+            filters.append(
+                EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(from.startOfDay)))
         }
         if let to {
             filters.append(EntityStore.Filter(field: dateField, op: .lessThan, value: .date(to)))
         }
 
-        let records = try await store.read(entity: entity, filters: filters, fields: [dateField, "app_version", "install_id"])
+        let records = try await store.read(
+            entity: entity, filters: filters, fields: [dateField, "app_version", "install_id"])
         var visits = records.compactMap { record -> (date: Date, version: String?, install: String?)? in
             guard case .date(let date)? = record.values[dateField] else { return nil }
             let version: String? = record["app_version"]

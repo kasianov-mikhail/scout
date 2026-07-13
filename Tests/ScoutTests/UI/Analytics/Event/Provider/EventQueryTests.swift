@@ -41,7 +41,9 @@ struct EventQueryTests {
         let sessionID = UUID()
         let filters = EventQuery(sessionID: sessionID).buildFilters()
 
-        #expect(filters.contains(RecordQuery.Filter(field: "session_id", op: .equals, value: .string(sessionID.uuidString))))
+        #expect(
+            filters.contains(RecordQuery.Filter(field: "session_id", op: .equals, value: .string(sessionID.uuidString)))
+        )
     }
 
     @Test("No session produces no session filter") func noSession() {
@@ -52,7 +54,8 @@ struct EventQueryTests {
         let deviceID = UUID()
         let filters = EventQuery(deviceID: deviceID).buildFilters()
 
-        #expect(filters.contains(RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))))
+        #expect(
+            filters.contains(RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))))
     }
 
     @Test("Filter by date range") func dates() {

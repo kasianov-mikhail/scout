@@ -26,8 +26,12 @@ extension CKTelemetryHandler {
         let sessionID = session.current
         persistMetrics { context in
             let date = Date()
-            try saveMetrics(label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, sessionID: sessionID, context)
-            try saveMetrics(label, date: date, category: LatencyBuckets.category(for: seconds), value: 1, sessionID: sessionID, context)
+            try saveMetrics(
+                label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, sessionID: sessionID,
+                context)
+            try saveMetrics(
+                label, date: date, category: LatencyBuckets.category(for: seconds), value: 1, sessionID: sessionID,
+                context)
         }
     }
 
@@ -46,7 +50,9 @@ extension CKTelemetryHandler {
     }
 }
 
-func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, value: T, sessionID: UUID, _ context: NSManagedObjectContext) throws {
+func saveMetrics<T: MetricScalar>(
+    _ name: String, date: Date, category: String, value: T, sessionID: UUID, _ context: NSManagedObjectContext
+) throws {
     let metrics = context.insert(T.Object.self)
 
     metrics.value = value

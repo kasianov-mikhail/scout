@@ -37,7 +37,8 @@ extension RecordValue: Codable {
         } else if let value = try container.decodeIfPresent([String].self, forKey: .strings) {
             self = .strings(value)
         } else {
-            throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown field value type"))
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown field value type"))
         }
     }
 

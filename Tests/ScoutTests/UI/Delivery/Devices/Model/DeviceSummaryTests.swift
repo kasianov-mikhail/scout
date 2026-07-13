@@ -21,8 +21,12 @@ struct DeviceSummaryTests {
         let summaries = DeviceSummary.summaries(
             devices: [.deviceStub(deviceID: deviceID, date: older, model: "iPhone15,3")],
             sessions: [
-                .sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: older, osVersion: "iOS 17.3", deviceID: deviceID),
-                .sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: newer, osVersion: "iOS 17.4", deviceID: deviceID),
+                .sessionStub(
+                    sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: older, osVersion: "iOS 17.3",
+                    deviceID: deviceID),
+                .sessionStub(
+                    sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: newer, osVersion: "iOS 17.4",
+                    deviceID: deviceID),
             ],
             crashes: [.crashStub(deviceID: deviceID, date: newer)]
         )
@@ -55,7 +59,10 @@ struct DeviceSummaryTests {
 
         let summaries = DeviceSummary.summaries(
             devices: [.deviceStub(deviceID: deviceID, date: Date(), model: nil)],
-            sessions: [.sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: Date(), deviceID: deviceID)],
+            sessions: [
+                .sessionStub(
+                    sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: Date(), deviceID: deviceID)
+            ],
             crashes: []
         )
 
@@ -73,8 +80,10 @@ struct DeviceSummaryTests {
                 .deviceStub(deviceID: deviceB, date: Date(), model: "iPad13,1"),
             ],
             sessions: [
-                .sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: Date(), deviceID: deviceA),
-                .sessionStub(sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: Date(), deviceID: deviceB),
+                .sessionStub(
+                    sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: Date(), deviceID: deviceA),
+                .sessionStub(
+                    sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: Date(), deviceID: deviceB),
             ],
             crashes: [.crashStub(deviceID: deviceA, date: Date())]
         )

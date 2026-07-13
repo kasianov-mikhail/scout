@@ -20,7 +20,9 @@ extension ParamValue {
             return convertible.text
         case .dictionary, .array:
             let options: JSONSerialization.WritingOptions = [.prettyPrinted, .sortedKeys]
-            guard let data = try? JSONSerialization.data(withJSONObject: jsonObject, options: options), let text = String(data: data, encoding: .utf8) else {
+            guard let data = try? JSONSerialization.data(withJSONObject: jsonObject, options: options),
+                let text = String(data: data, encoding: .utf8)
+            else {
                 return summary
             }
             return text

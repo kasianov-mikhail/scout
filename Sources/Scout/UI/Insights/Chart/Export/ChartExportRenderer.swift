@@ -29,7 +29,9 @@ enum ChartExportRenderer {
         #if os(iOS)
             return renderer.uiImage?.pngData()
         #else
-            guard let image = renderer.nsImage, let tiff = image.tiffRepresentation, let bitmap = NSBitmapImageRep(data: tiff) else {
+            guard let image = renderer.nsImage, let tiff = image.tiffRepresentation,
+                let bitmap = NSBitmapImageRep(data: tiff)
+            else {
                 return nil
             }
             return bitmap.representation(using: .png, properties: [:])
@@ -43,7 +45,9 @@ enum ChartExportRenderer {
             let pdf = NSMutableData()
             var box = CGRect(origin: .zero, size: size)
 
-            guard let consumer = CGDataConsumer(data: pdf as CFMutableData), let context = CGContext(consumer: consumer, mediaBox: &box, nil) else {
+            guard let consumer = CGDataConsumer(data: pdf as CFMutableData),
+                let context = CGContext(consumer: consumer, mediaBox: &box, nil)
+            else {
                 return
             }
 

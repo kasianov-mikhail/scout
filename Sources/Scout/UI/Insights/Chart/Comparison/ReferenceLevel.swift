@@ -32,10 +32,12 @@ extension ReferenceLevel {
         guard pair.count != .zero || referenceCount != .zero else {
             return nil
         }
-        guard let barStartX = proxy.position(forX: pair.barStart), let barEndX = proxy.position(forX: pair.barEnd) else {
+        guard let barStartX = proxy.position(forX: pair.barStart), let barEndX = proxy.position(forX: pair.barEnd)
+        else {
             return nil
         }
-        guard let countY = proxy.position(forY: pair.count), let referenceY = proxy.position(forY: referenceCount) else {
+        guard let countY = proxy.position(forY: pair.count), let referenceY = proxy.position(forY: referenceCount)
+        else {
             return nil
         }
 

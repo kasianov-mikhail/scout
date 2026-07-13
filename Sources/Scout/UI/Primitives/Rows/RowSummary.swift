@@ -46,7 +46,9 @@ struct RowSummary: View {
             HStack {
                 Text(verbatim: "Empty")
                 Spacer()
-                RowSummary(series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), count: 0, color: .blue)
+                RowSummary(
+                    series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), count: 0,
+                    color: .blue)
             }
         }
         .listStyle(.plain)

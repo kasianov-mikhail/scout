@@ -126,7 +126,9 @@ struct ReleaseReportTests {
     @Test("Releases are ordered newest version first, regardless of report order")
     func testSortedByVersion() {
         let releases = ReleaseMatrices(
-            sessions: [sessionMatrix("3.9", count: 1), sessionMatrix("3.10", count: 1), sessionMatrix("4.0", count: 1)],
+            sessions: [
+                sessionMatrix("3.9", count: 1), sessionMatrix("3.10", count: 1), sessionMatrix("4.0", count: 1),
+            ],
             crashes: [],
             hangs: [],
             installs: [],

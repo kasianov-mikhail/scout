@@ -37,10 +37,13 @@ extension IncidentBreakdown {
     static var sample: IncidentBreakdown {
         IncidentBreakdown(
             devices: segments(
-                from: Array(repeating: "iPhone15,3", count: 5) + Array(repeating: "iPhone14,2", count: 3) + Array(repeating: "iPhone13,2", count: 2) + [
-                    "iPad13,1"
-                ]),
-            osVersions: segments(from: Array(repeating: "iOS 17.4", count: 6) + Array(repeating: "iOS 17.3", count: 3) + Array(repeating: "iOS 16.7", count: 2))
+                from: Array(repeating: "iPhone15,3", count: 5) + Array(repeating: "iPhone14,2", count: 3)
+                    + Array(repeating: "iPhone13,2", count: 2) + [
+                        "iPad13,1"
+                    ]),
+            osVersions: segments(
+                from: Array(repeating: "iOS 17.4", count: 6) + Array(repeating: "iOS 17.3", count: 3)
+                    + Array(repeating: "iOS 16.7", count: 2))
         )
     }
 }

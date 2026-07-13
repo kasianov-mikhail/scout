@@ -72,8 +72,12 @@ private struct RefreshFailure: Error {}
 private final class FailingDatabase: DatabaseReader, @unchecked Sendable {
     func lookup(recordName: String, fields: [String]?) async throws -> Record { throw RefreshFailure() }
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk { throw RefreshFailure() }
-    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk { throw RefreshFailure() }
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+        throw RefreshFailure()
+    }
     func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk { throw RefreshFailure() }
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] { throw RefreshFailure() }
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+        -> [MetricSeries]
+    { throw RefreshFailure() }
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw RefreshFailure() }
 }

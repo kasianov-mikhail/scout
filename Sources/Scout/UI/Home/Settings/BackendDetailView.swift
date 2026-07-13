@@ -115,10 +115,13 @@ struct BackendDetailView: View {
             if let benchmark = backend.runBenchmark {
                 BenchmarkButton(benchmark: benchmark, message: $message)
 
-                Text(verbatim: "The benchmark issues test queries to verify the \(RequestLimiter.requestLimit)-request limit.")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .listRowSeparator(.hidden)
+                Text(
+                    verbatim:
+                        "The benchmark issues test queries to verify the \(RequestLimiter.requestLimit)-request limit."
+                )
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .listRowSeparator(.hidden)
             }
         }
         .listStyle(.plain)

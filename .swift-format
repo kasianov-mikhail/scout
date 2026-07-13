@@ -3,7 +3,7 @@
   "indentation": {
     "spaces": 4
   },
-  "lineLength": 160,
+  "lineLength": 120,
   "rules": {
     "AlwaysUseLiteralForEmptyCollectionInit": true,
     "BeginDocumentationCommentWithOneLineSummary": true,

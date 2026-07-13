@@ -23,7 +23,9 @@ struct LogHangTests {
 
     @Test("Creates a HangEntry with correct fields")
     func createsHangObject() throws {
-        let hang = makeHangInfo(name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"], duration: 4.2)
+        let hang = makeHangInfo(
+            name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"],
+            duration: 4.2)
 
         try logHang(hang, deviceID: deviceID, context: context)
 
@@ -32,7 +34,8 @@ struct LogHangTests {
         #expect(results.count == 1)
 
         let object = try #require(results.first)
-        let expectedFingerprint = CrashFingerprint(name: hang.name, reason: hang.reason, stackTrace: hang.stackTrace).value
+        let expectedFingerprint = CrashFingerprint(name: hang.name, reason: hang.reason, stackTrace: hang.stackTrace)
+            .value
         #expect(object.name == "Main Thread Blocked")
         #expect(object.fingerprint == expectedFingerprint)
         #expect(object.reason == "Main thread unresponsive for 4.2s")
