@@ -15,6 +15,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 ## Table of Contents
 - [Features](#features)
 - [Comparison](#comparison)
+- [Dashboard](#dashboard)
 - [Requirements](#requirements)
 - [License](#license)
 
@@ -28,8 +29,6 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 | ☁️ | **CloudKit Sync** | All data is stored locally with Core Data and synced to a public [CloudKit](https://developer.apple.com/icloud/cloudkit/) database. No custom backend required. |
 | 🌐 | **Multiple Backends** | Sync to CloudKit, to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server), or to any combination of them at once. |
 | 📱 | **SwiftUI Dashboard** | A built-in dashboard with charts, event lists, crash details, and activity tracking for debugging in development builds. |
-
-<img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
 ## Comparison
 
@@ -75,6 +74,10 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 <td><img src="https://img.shields.io/badge/Build_it-red?style=flat-square" alt="Build it"><br>Build the API, schema, and deployment</td>
 </tr>
 </table>
+
+## Dashboard
+
+<img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
 ## Requirements
 
