@@ -15,6 +15,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 ## Table of Contents
 - [Features](#features)
 - [Comparison](#comparison)
+- [Dashboard](#dashboard)
 - [Requirements](#requirements)
 - [License](#license)
 
@@ -29,8 +30,6 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 | 🌐 | **Multiple Backends** | Sync to CloudKit, to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server), or to any combination of them at once. |
 | 📱 | **SwiftUI Dashboard** | A built-in dashboard with charts, event lists, crash details, and activity tracking for debugging in development builds. |
 
-<img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
-
 ## Comparison
 
 How Scout compares to a hosted analytics SDK and to rolling your own backend:
@@ -42,6 +41,10 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 | **Infrastructure** | ![Serverless](https://img.shields.io/badge/Serverless-brightgreen?style=flat-square)<br>Zero servers — Apple runs the backend<br><br> | ![Managed](https://img.shields.io/badge/Managed-yellow?style=flat-square)<br>Managed by Google, with vendor lock-in | ![Self-hosted](https://img.shields.io/badge/Self--hosted-red?style=flat-square)<br>You deploy and maintain it yourself |
 | **Scaling** | ![Automatic](https://img.shields.io/badge/Automatic-brightgreen?style=flat-square)<br>Automatic, within the container quota<br><br> | ![Metered](https://img.shields.io/badge/Metered-yellow?style=flat-square)<br>Automatic, but the bill scales too | ![Manual](https://img.shields.io/badge/Manual-red?style=flat-square)<br>Manual — you provision and pay for capacity |
 | **Setup** | ![Built-in](https://img.shields.io/badge/Built--in-brightgreen?style=flat-square)<br>Already included with your Apple Developer account<br><br> | ![Setup needed](https://img.shields.io/badge/Setup_needed-yellow?style=flat-square)<br>New project, SDK, and API keys | ![Build it](https://img.shields.io/badge/Build_it-red?style=flat-square)<br>Build the API, schema, and deployment |
+
+## Dashboard
+
+<img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
 ## Requirements
 
