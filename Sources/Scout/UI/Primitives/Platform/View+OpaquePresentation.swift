@@ -9,14 +9,13 @@
 import SwiftUI
 
 extension View {
-    /// Stops a scroll view from bouncing when its content already fits, so a
-    /// non-scrolling list can't be pulled into an empty overscroll area — which
-    /// also blocks any pull-to-refresh inherited from a host view's environment.
+    /// Gives a sheet an opaque system background, overriding the translucent
+    /// material newer OS versions apply by default.
     ///
     @ViewBuilder
-    func disabledScrollBounce() -> some View {
+    func opaquePresentation() -> some View {
         if #available(iOS 16.4, macOS 13.3, *) {
-            scrollBounceBehavior(.basedOnSize)
+            presentationBackground(.background)
         } else {
             self
         }
