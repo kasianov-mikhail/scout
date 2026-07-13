@@ -17,6 +17,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 - [Comparison](#comparison)
 - [Dashboard](#dashboard)
 - [Requirements](#requirements)
+- [Installation](#installation)
 - [License](#license)
 
 ## Features
@@ -33,8 +34,6 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 ## Comparison
 
 How Scout compares to a hosted analytics SDK and to rolling your own backend:
-
-![strength](https://img.shields.io/badge/strength-brightgreen?style=flat-square) &nbsp; ![trade-off](https://img.shields.io/badge/trade--off-yellow?style=flat-square) &nbsp; ![cost or burden](https://img.shields.io/badge/cost_or_burden-red?style=flat-square)
 
 <table>
 <tr>
@@ -84,6 +83,8 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 - iOS 16.0+
 - Swift 6.0+
 - [Apple Developer](https://developer.apple.com) account with [CloudKit](https://developer.apple.com/icloud/cloudkit/) enabled
+
+## Installation
 
 To add the package and set up CloudKit, see the [Installation Guide](docs/INSTALLATION.md).
 
