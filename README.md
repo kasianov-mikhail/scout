@@ -35,13 +35,46 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 
 How Scout compares to a hosted analytics SDK and to rolling your own backend:
 
-| | **Scout (CloudKit)** | **Firebase** | **Custom backend** |
-|-|-|-|-|
-| **Cost** | ![Free](https://img.shields.io/badge/Free-brightgreen?style=flat-square)<br>Free within [CloudKit's limits](https://developer.apple.com/icloud/cloudkit/) — no servers to pay for, and the quota grows with your app<br><br> | ![Metered](https://img.shields.io/badge/Metered-yellow?style=flat-square)<br>Free tier, then metered [Blaze](https://firebase.google.com/pricing) billing as reads and traffic grow | ![Paid](https://img.shields.io/badge/Paid-red?style=flat-square)<br>Servers, database, and bandwidth billed from day one |
-| **Data privacy** | ![Private](https://img.shields.io/badge/Private-brightgreen?style=flat-square)<br>Data stays in your own CloudKit container on Apple's infrastructure — no third-party analytics vendor, and Apple doesn't mine it for advertising<br><br> | ![Vendor-owned](https://img.shields.io/badge/Vendor--owned-red?style=flat-square)<br>Data lives on Google's servers and can be linked across its ad and analytics products<br><br> | ![Your responsibility](https://img.shields.io/badge/Your_responsibility-yellow?style=flat-square)<br>You control everything — and carry all the responsibility for securing it |
-| **Infrastructure** | ![Serverless](https://img.shields.io/badge/Serverless-brightgreen?style=flat-square)<br>Zero servers — Apple runs the backend<br><br> | ![Managed](https://img.shields.io/badge/Managed-yellow?style=flat-square)<br>Managed by Google, with vendor lock-in | ![Self-hosted](https://img.shields.io/badge/Self--hosted-red?style=flat-square)<br>You deploy and maintain it yourself |
-| **Scaling** | ![Automatic](https://img.shields.io/badge/Automatic-brightgreen?style=flat-square)<br>Automatic, within the container quota<br><br> | ![Metered](https://img.shields.io/badge/Metered-yellow?style=flat-square)<br>Automatic, but the bill scales too | ![Manual](https://img.shields.io/badge/Manual-red?style=flat-square)<br>Manual — you provision and pay for capacity |
-| **Setup** | ![Built-in](https://img.shields.io/badge/Built--in-brightgreen?style=flat-square)<br>Already included with your Apple Developer account<br><br> | ![Setup needed](https://img.shields.io/badge/Setup_needed-yellow?style=flat-square)<br>New project, SDK, and API keys | ![Build it](https://img.shields.io/badge/Build_it-red?style=flat-square)<br>Build the API, schema, and deployment |
+![strength](https://img.shields.io/badge/strength-brightgreen?style=flat-square) &nbsp; ![trade-off](https://img.shields.io/badge/trade--off-yellow?style=flat-square) &nbsp; ![cost or burden](https://img.shields.io/badge/cost_or_burden-red?style=flat-square)
+
+<table>
+<tr>
+<th width="10%"></th>
+<th width="30%">Scout (CloudKit)</th>
+<th width="30%">Firebase</th>
+<th width="30%">Custom backend</th>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td><img src="https://img.shields.io/badge/Free-brightgreen?style=flat-square" alt="Free"><br>Free within <a href="https://developer.apple.com/icloud/cloudkit/">CloudKit's limits</a> — no servers to pay for, and the quota grows with your app</td>
+<td><img src="https://img.shields.io/badge/Metered-yellow?style=flat-square" alt="Metered"><br>Free tier, then metered <a href="https://firebase.google.com/pricing">Blaze</a> billing as reads and traffic grow</td>
+<td><img src="https://img.shields.io/badge/Paid-red?style=flat-square" alt="Paid"><br>Servers, database, and bandwidth billed from day one</td>
+</tr>
+<tr>
+<td><strong>Data privacy</strong></td>
+<td><img src="https://img.shields.io/badge/Private-brightgreen?style=flat-square" alt="Private"><br>Data stays in your own CloudKit container on Apple's infrastructure — no third-party analytics vendor, and Apple doesn't mine it for advertising</td>
+<td><img src="https://img.shields.io/badge/Vendor--owned-red?style=flat-square" alt="Vendor-owned"><br>Data lives on Google's servers and can be linked across its ad and analytics products</td>
+<td><img src="https://img.shields.io/badge/Your_responsibility-yellow?style=flat-square" alt="Your responsibility"><br>You control everything — and carry all the responsibility for securing it</td>
+</tr>
+<tr>
+<td><strong>Infrastructure</strong></td>
+<td><img src="https://img.shields.io/badge/Serverless-brightgreen?style=flat-square" alt="Serverless"><br>Zero servers — Apple runs the backend</td>
+<td><img src="https://img.shields.io/badge/Managed-yellow?style=flat-square" alt="Managed"><br>Managed by Google, with vendor lock-in</td>
+<td><img src="https://img.shields.io/badge/Self--hosted-red?style=flat-square" alt="Self-hosted"><br>You deploy and maintain it yourself</td>
+</tr>
+<tr>
+<td><strong>Scaling</strong></td>
+<td><img src="https://img.shields.io/badge/Automatic-brightgreen?style=flat-square" alt="Automatic"><br>Automatic, within the container quota</td>
+<td><img src="https://img.shields.io/badge/Metered-yellow?style=flat-square" alt="Metered"><br>Automatic, but the bill scales too</td>
+<td><img src="https://img.shields.io/badge/Manual-red?style=flat-square" alt="Manual"><br>Manual — you provision and pay for capacity</td>
+</tr>
+<tr>
+<td><strong>Setup</strong></td>
+<td><img src="https://img.shields.io/badge/Built--in-brightgreen?style=flat-square" alt="Built-in"><br>Already included with your Apple Developer account</td>
+<td><img src="https://img.shields.io/badge/Setup_needed-yellow?style=flat-square" alt="Setup needed"><br>New project, SDK, and API keys</td>
+<td><img src="https://img.shields.io/badge/Build_it-red?style=flat-square" alt="Build it"><br>Build the API, schema, and deployment</td>
+</tr>
+</table>
 
 ## Requirements
 
