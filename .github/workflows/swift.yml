@@ -58,6 +58,7 @@ jobs:
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
             -enableCodeCoverage YES \
+            -skipMacroValidation \
             build-for-testing
 
       - name: Test
