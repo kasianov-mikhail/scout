@@ -27,10 +27,14 @@ struct DeviceSummary: Identifiable, Equatable {
 extension DeviceSummary {
     static func summaries(devices: [Record], sessions: [Record], crashes: [Record]) -> [DeviceSummary] {
         let sessionsByDevice = Dictionary(grouping: sessions.compactMap(SessionFields.init), by: \.deviceID)
-        let crashCounts = Dictionary(crashes.compactMap { (record: Record) -> String? in record["device_id"] }.map { ($0, 1) }, uniquingKeysWith: +)
+        let crashCounts = Dictionary(
+            crashes.compactMap { (record: Record) -> String? in record["device_id"] }.map { ($0, 1) },
+            uniquingKeysWith: +)
 
         return devices.compactMap { device -> DeviceSummary? in
-            guard let deviceID: String = device["device_id"], let uuid = UUID(uuidString: deviceID), let model: String = device["model"] else {
+            guard let deviceID: String = device["device_id"], let uuid = UUID(uuidString: deviceID),
+                let model: String = device["model"]
+            else {
                 return nil
             }
 
@@ -67,14 +71,32 @@ extension DeviceSummary {
 
 extension DeviceSummary: Fixture {
     static let samples: [DeviceSummary] = [
-        DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -15 * 60), sessions: 812, crashes: 3),
-        DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.3", lastSeen: Date(timeIntervalSinceNow: -3 * 3600), sessions: 540, crashes: 0),
-        DeviceSummary(id: UUID(), model: "iPhone14,2", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -6 * 3600), sessions: 391, crashes: 1),
-        DeviceSummary(id: UUID(), model: "iPhone14,2", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSinceNow: -2 * 86400), sessions: 205, crashes: 0),
-        DeviceSummary(id: UUID(), model: "iPhone13,2", osVersion: "iOS 17.3", lastSeen: Date(timeIntervalSinceNow: -1 * 86400), sessions: 178, crashes: 2),
-        DeviceSummary(id: UUID(), model: "iPhone13,2", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSinceNow: -9 * 86400), sessions: 96, crashes: 0),
-        DeviceSummary(id: UUID(), model: "iPad13,1", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -4 * 3600), sessions: 143, crashes: 0),
-        DeviceSummary(id: UUID(), model: "iPad14,1", osVersion: "iOS 17.2", lastSeen: Date(timeIntervalSinceNow: -12 * 86400), sessions: 64, crashes: 1),
-        DeviceSummary(id: UUID(), model: "iPhone12,1", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSinceNow: -30 * 86400), sessions: 22, crashes: 0),
+        DeviceSummary(
+            id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -15 * 60),
+            sessions: 812, crashes: 3),
+        DeviceSummary(
+            id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.3", lastSeen: Date(timeIntervalSinceNow: -3 * 3600),
+            sessions: 540, crashes: 0),
+        DeviceSummary(
+            id: UUID(), model: "iPhone14,2", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -6 * 3600),
+            sessions: 391, crashes: 1),
+        DeviceSummary(
+            id: UUID(), model: "iPhone14,2", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSinceNow: -2 * 86400),
+            sessions: 205, crashes: 0),
+        DeviceSummary(
+            id: UUID(), model: "iPhone13,2", osVersion: "iOS 17.3", lastSeen: Date(timeIntervalSinceNow: -1 * 86400),
+            sessions: 178, crashes: 2),
+        DeviceSummary(
+            id: UUID(), model: "iPhone13,2", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSinceNow: -9 * 86400),
+            sessions: 96, crashes: 0),
+        DeviceSummary(
+            id: UUID(), model: "iPad13,1", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSinceNow: -4 * 3600),
+            sessions: 143, crashes: 0),
+        DeviceSummary(
+            id: UUID(), model: "iPad14,1", osVersion: "iOS 17.2", lastSeen: Date(timeIntervalSinceNow: -12 * 86400),
+            sessions: 64, crashes: 1),
+        DeviceSummary(
+            id: UUID(), model: "iPhone12,1", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSinceNow: -30 * 86400),
+            sessions: 22, crashes: 0),
     ]
 }

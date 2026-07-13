@@ -16,7 +16,8 @@ extension DateEntry {
         let request = NSFetchRequest<DateEntry>(entityName: "DateEntry")
         request.predicate = NSPredicate(format: "datePrimitive < %@", cutoff as NSDate)
 
-        for object in try context.fetch(request) where object.references.count == 0 && !retained.contains(object.objectID) {
+        for object in try context.fetch(request)
+        where object.references.count == 0 && !retained.contains(object.objectID) {
             context.delete(object)
         }
 

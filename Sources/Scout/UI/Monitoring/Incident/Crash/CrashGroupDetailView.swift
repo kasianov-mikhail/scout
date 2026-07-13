@@ -15,7 +15,9 @@ struct CrashGroupDetailView: View {
 
     init(group: IncidentGroup<Crash>, breakdown: IncidentBreakdownProvider? = nil) {
         self.group = group
-        self._breakdown = StateObject(wrappedValue: breakdown ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+        self._breakdown = StateObject(
+            wrappedValue: breakdown
+                ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
     }
 
     var body: some View {

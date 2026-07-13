@@ -29,7 +29,9 @@ extension Backend {
             },
             onSetup: {
                 if apiKey != nil, url.scheme?.lowercased() != "https" {
-                    print("[Scout] The API key for '\(url)' will be sent over a non-HTTPS connection in cleartext. Use an https:// URL.")
+                    print(
+                        "[Scout] The API key for '\(url)' will be sent over a non-HTTPS connection in cleartext. Use an https:// URL."
+                    )
                 }
             }
         )

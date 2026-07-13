@@ -141,9 +141,13 @@ struct NetworkReportTests {
     @Test("isEmpty reflects endpoint presence")
     func isEmpty() {
         #expect(NetworkReport(series: []).isEmpty)
-        #expect(NetworkReport(series: [makeSeries(name: "plain_timer", category: "timer_le_1", points: [(base, 1)])]).isEmpty)
-        #expect(!NetworkReport(series: [makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 1)])]).isEmpty)
-        #expect(!NetworkReport(series: [makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 1)])]).isEmpty)
+        #expect(
+            NetworkReport(series: [makeSeries(name: "plain_timer", category: "timer_le_1", points: [(base, 1)])])
+                .isEmpty)
+        #expect(
+            !NetworkReport(series: [makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 1)])]).isEmpty)
+        #expect(
+            !NetworkReport(series: [makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 1)])]).isEmpty)
     }
 
     private func makeSeries(name: String, category: String, points: [(Date, Int)]) -> MetricSeries {

@@ -113,7 +113,8 @@ final class RailLane: ObservableObject {
 
     private func chunk(in database: DatabaseReader) async throws -> RecordChunk {
         guard let cursor else {
-            return try await Session.fetchChunk(installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, limit: chunkLimit, in: database)
+            return try await Session.fetchChunk(
+                installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, limit: chunkLimit, in: database)
         }
         return try await database.readMore(from: cursor, fields: Session.desiredKeys)
     }

@@ -57,7 +57,8 @@ extension Crash: RecordDecodable {
         } else {
             stackTrace = []
         }
-        fingerprint = record["fingerprint"] ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
+        fingerprint =
+            record["fingerprint"] ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
     }
 }
 

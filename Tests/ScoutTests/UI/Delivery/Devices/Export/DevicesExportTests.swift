@@ -35,8 +35,12 @@ struct DevicesExportTests {
 
     @Test("Rows follow the newest-lastSeen-first order")
     func testDevicesExportOrdersByLastSeen() throws {
-        let older = DeviceSummary(id: UUID(), model: "iPhone14,2", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSince1970: 0), sessions: 1, crashes: 0)
-        let newer = DeviceSummary(id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSince1970: 3600), sessions: 1, crashes: 0)
+        let older = DeviceSummary(
+            id: UUID(), model: "iPhone14,2", osVersion: "iOS 16.7", lastSeen: Date(timeIntervalSince1970: 0),
+            sessions: 1, crashes: 0)
+        let newer = DeviceSummary(
+            id: UUID(), model: "iPhone15,3", osVersion: "iOS 17.4", lastSeen: Date(timeIntervalSince1970: 3600),
+            sessions: 1, crashes: 0)
         let text = try #require(DevicesExport(devices: [older, newer]).text)
 
         let newerRange = try #require(text.range(of: "iPhone 14 Pro Max"))

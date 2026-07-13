@@ -15,7 +15,10 @@ struct VersionDetailView: View {
     @StateObject var crashes: VersionIncidentProvider<Crash>
     @StateObject var hangs: VersionIncidentProvider<Hang>
 
-    init(release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil, hangs: VersionIncidentProvider<Hang>? = nil) {
+    init(
+        release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil,
+        hangs: VersionIncidentProvider<Hang>? = nil
+    ) {
         self.release = release
         self._crashes = StateObject(wrappedValue: crashes ?? VersionIncidentProvider(version: release.id))
         self._hangs = StateObject(wrappedValue: hangs ?? VersionIncidentProvider(version: release.id))
@@ -25,13 +28,17 @@ struct VersionDetailView: View {
         List {
             headerSection
 
-            IncidentTrendSection(title: "Crashes over time", records: crashes.records ?? [], color: release.freeSessions.color)
-            IncidentIssuesSection(title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? [])) { group in
+            IncidentTrendSection(
+                title: "Crashes over time", records: crashes.records ?? [], color: release.freeSessions.color)
+            IncidentIssuesSection(title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? []))
+            { group in
                 CrashGroupDetailView(group: group)
             }
 
-            IncidentTrendSection(title: "Hangs over time", records: hangs.records ?? [], color: release.freeSessions.color)
-            IncidentIssuesSection(title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? [])) { group in
+            IncidentTrendSection(
+                title: "Hangs over time", records: hangs.records ?? [], color: release.freeSessions.color)
+            IncidentIssuesSection(title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? [])) {
+                group in
                 HangGroupDetailView(group: group)
             }
         }

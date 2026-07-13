@@ -95,7 +95,8 @@ struct NativeDatabaseTests {
         #expect(Set(series.map(\.name)) == ["checkout", "signup"])
         let checkout = try #require(series.first { $0.name == "checkout" })
         #expect(checkout.points.map(\.value) == [.int(7)])
-        #expect(checkout.points.map(\.date) == [TestDate.reference.addingTimeInterval(10 * .hour).millisecondsSince1970])
+        #expect(
+            checkout.points.map(\.date) == [TestDate.reference.addingTimeInterval(10 * .hour).millisecondsSince1970])
     }
 
     @Test("Session records round-trip their captured environment")
@@ -108,7 +109,8 @@ struct NativeDatabaseTests {
         try await database.write(record: record)
 
         let query = RecordQuery(recordType: Session.self)
-        let chunk = try await database.read(matching: query, fields: ["build_number", "os_version", "locale", "channel"])
+        let chunk = try await database.read(
+            matching: query, fields: ["build_number", "os_version", "locale", "channel"])
         let read = try #require(chunk.records.first)
 
         #expect(read["build_number"] == "412")
@@ -228,7 +230,8 @@ struct SchemaBootstrapTests {
         )
 
         try await database.write(record: makeDeviceRecord(id: "d-1", model: "iPhone16,1"))
-        let chunk = try await database.read(matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
+        let chunk = try await database.read(
+            matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
         #expect(chunk.records.first?["model"] == "iPhone16,1")
     }
 }

@@ -8,7 +8,8 @@
 import Foundation
 
 protocol MetricReader: RecordReader {
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries]
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+        -> [MetricSeries]
 }
 
 struct MetricSeries: Decodable {
@@ -38,7 +39,8 @@ enum MetricValue: Decodable, Equatable {
         } else if let value = try container.decodeIfPresent(Double.self, forKey: .double) {
             self = .double(value)
         } else {
-            throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown metric value type"))
+            throw DecodingError.dataCorrupted(
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown metric value type"))
         }
     }
 }

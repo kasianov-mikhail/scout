@@ -69,7 +69,9 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+        -> [MetricSeries]
+    {
         series.filter { $0.category == category }
     }
 
@@ -89,7 +91,9 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
         throw Failure()
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws -> [MetricSeries] {
+    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+        -> [MetricSeries]
+    {
         throw Failure()
     }
 

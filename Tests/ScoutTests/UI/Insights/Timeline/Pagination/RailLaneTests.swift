@@ -19,7 +19,8 @@ struct RailLaneTests {
     private func makeDatabase() -> DatabaseStub {
         let database = DatabaseStub()
         database.add(
-            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.baseDate),
+            .sessionStub(
+                sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.baseDate),
             .eventStub(name: "e", sessionID: sessionID, date: TimelineFixture.baseDate.addingTimeInterval(10))
         )
         return database

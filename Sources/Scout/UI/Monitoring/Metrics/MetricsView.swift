@@ -17,7 +17,10 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     @State private var isComparing = false
     @ViewBuilder let extra: (ChartExtent<Period>) -> Extra
 
-    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra) {
+    init(
+        group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period,
+        @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra
+    ) {
         self.group = group
         self.formatter = formatter
         self.extra = extra

@@ -46,7 +46,8 @@ struct HangArchive {
     /// into the database for syncing.
     ///
     func flush(deviceID: UUID) async {
-        guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
+        guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        else {
             return
         }
 
@@ -54,7 +55,8 @@ struct HangArchive {
         decoder.dateDecodingStrategy = .iso8601
 
         for file in files where file.pathExtension == "hang" {
-            guard let data = try? Data(contentsOf: file), let hang = try? decoder.decode(HangInfo.self, from: data) else {
+            guard let data = try? Data(contentsOf: file), let hang = try? decoder.decode(HangInfo.self, from: data)
+            else {
                 try? FileManager.default.removeItem(at: file)
                 continue
             }

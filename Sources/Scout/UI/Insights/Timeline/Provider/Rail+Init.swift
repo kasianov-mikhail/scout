@@ -8,7 +8,10 @@
 import Foundation
 
 extension Rail {
-    init(device: Device, installs: [Install], launches: [Launch], sessions: [Session] = [], events: [Event] = [], crashes: [Crash] = []) {
+    init(
+        device: Device, installs: [Install], launches: [Launch], sessions: [Session] = [], events: [Event] = [],
+        crashes: [Crash] = []
+    ) {
         let installs = Dictionary(grouping: installs, by: \.deviceID)
         let launches = Dictionary(grouping: launches, by: \.installID)
         let sessions = Dictionary(grouping: sessions, by: \.launchID)

@@ -49,7 +49,9 @@ struct HangEntryTests {
 
         #expect(
             object.record["fingerprint"]
-                == CrashFingerprint(name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"]).value)
+                == CrashFingerprint(
+                    name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"]
+                ).value)
     }
 
     private func makeHangObject(name: String, date: Date, appVersion: String? = nil) -> HangEntry {

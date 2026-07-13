@@ -34,7 +34,9 @@ final class DeliveryEntry: NSManagedObject {
         }
     }
 
-    static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<NSManagedObjectID> {
+    static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<
+        NSManagedObjectID
+    > {
         let request = NSFetchRequest<DeliveryEntry>(entityName: "DeliveryEntry")
         request.predicate = NSPredicate(
             format: "backendID IN %@ AND isPending == YES AND attempts < %d",

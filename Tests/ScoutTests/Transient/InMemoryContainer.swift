@@ -23,7 +23,9 @@ final class InMemoryContainer: NSPersistentContainer, @unchecked Sendable {
         self.persistentStoreDescriptions = [description]
     }
 
-    override func loadPersistentStores(completionHandler block: @escaping (NSPersistentStoreDescription, Error?) -> Void) {
+    override func loadPersistentStores(
+        completionHandler block: @escaping (NSPersistentStoreDescription, Error?) -> Void
+    ) {
         // Call completion with the injected error to simulate a failure.
         let description = persistentStoreDescriptions.first ?? NSPersistentStoreDescription()
         block(description, injectedError)

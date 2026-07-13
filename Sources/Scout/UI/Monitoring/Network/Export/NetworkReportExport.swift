@@ -16,7 +16,9 @@ struct NetworkReportExport {
         let endpoints = report.endpoints(in: range)
         guard endpoints.count > 0 else { return nil }
 
-        var lines: [ExportLine] = [.heading(level: 1, title), .text(summary), .blank, .heading(level: 2, "Status codes")]
+        var lines: [ExportLine] = [
+            .heading(level: 1, title), .text(summary), .blank, .heading(level: 2, "Status codes"),
+        ]
         lines.append(contentsOf: statusLines)
 
         lines.append(.blank)

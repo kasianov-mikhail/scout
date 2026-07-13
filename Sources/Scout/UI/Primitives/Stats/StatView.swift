@@ -27,9 +27,11 @@ struct StatView: View {
                     let points = data.flatMap(\.points)
                     let segment = extent.segment(from: points)
 
-                    ComparableChart(segment: segment, points: points, extent: extent, color: color, isComparing: isComparing)
-                        .listRowSeparator(.hidden, edges: .top)
-                        .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
+                    ComparableChart(
+                        segment: segment, points: points, extent: extent, color: color, isComparing: isComparing
+                    )
+                    .listRowSeparator(.hidden, edges: .top)
+                    .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
 
                     ComparisonToggle(isOn: $isComparing)
                         .disabled(!extent.canCompare(points: points, segment: segment))
@@ -42,7 +44,9 @@ struct StatView: View {
                 .scrollDisabled(true)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        ChartExportButton(title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)) {
+                        ChartExportButton(
+                            title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)
+                        ) {
                             ChartView(segment: extent.segment(from: data.flatMap(\.points)), timing: extent)
                                 .foregroundStyle(color)
                         }

@@ -39,7 +39,9 @@ struct CrashEntryTests {
         object.reason = "Fatal error"
         object.stackTrace = try JSONEncoder().encode(["frame0"])
 
-        #expect(object.record["fingerprint"] == CrashFingerprint(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"]).value)
+        #expect(
+            object.record["fingerprint"]
+                == CrashFingerprint(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"]).value)
     }
 
     private func makeCrashObject(name: String, date: Date, appVersion: String? = nil) -> CrashEntry {

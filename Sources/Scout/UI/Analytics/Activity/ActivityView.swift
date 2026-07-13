@@ -45,7 +45,9 @@ struct ActivityView: View {
                 .scrollDisabled(true)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
-                        ChartExportButton(title: "Active Users", rangeLabel: extent.domain.label(using: rangeDateFormatter)) {
+                        ChartExportButton(
+                            title: "Active Users", rangeLabel: extent.domain.label(using: rangeDateFormatter)
+                        ) {
                             ChartView(segment: extent.segment(from: data.points(on: extent.period)), timing: extent)
                                 .foregroundStyle(.green)
                         }

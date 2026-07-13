@@ -25,7 +25,8 @@ struct TimelineExportTests {
     @Test("Renders the rail as a hierarchical Markdown document")
     func testDocument() throws {
         let session = SessionRoot(
-            session: .stub(sessionID: try uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(400)),
+            session: .stub(
+                sessionID: try uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(400)),
             events: [
                 .stub(name: "purchase_completed", date: TimelineFixture.at(160)),
                 .stub(name: "app_open", date: TimelineFixture.at(40)),
@@ -114,7 +115,9 @@ struct TimelineExportTests {
     @Test("Session ranges spanning days repeat the date in the end bound")
     func testMultiDayRange() throws {
         let session = SessionRoot(
-            session: .stub(sessionID: try uuid("DDDDDDDD"), startDate: TimelineFixture.at(40), endDate: TimelineFixture.at(40 + .day)),
+            session: .stub(
+                sessionID: try uuid("DDDDDDDD"), startDate: TimelineFixture.at(40),
+                endDate: TimelineFixture.at(40 + .day)),
             events: [],
             crashes: []
         )

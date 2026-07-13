@@ -22,8 +22,10 @@ struct TimelineProviderTests {
         database.add(
             .deviceStub(deviceID: deviceID, date: TimelineFixture.baseDate),
             .installStub(installID: installID, deviceID: deviceID, date: TimelineFixture.baseDate),
-            .launchStub(launchID: launchID, installID: installID, deviceID: deviceID, startDate: TimelineFixture.at(10)),
-            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20)),
+            .launchStub(
+                launchID: launchID, installID: installID, deviceID: deviceID, startDate: TimelineFixture.at(10)),
+            .sessionStub(
+                sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20)),
             .eventStub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))
         )
         return database

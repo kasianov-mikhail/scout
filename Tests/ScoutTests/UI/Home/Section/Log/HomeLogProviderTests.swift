@@ -115,7 +115,9 @@ struct HomeLogProviderTests {
         #expect(provider.result != nil)
     }
 
-    private func makeRecord<T: MetricScalar>(name: String, category: String? = nil, date: Date = Date(), value: T) -> Record {
+    private func makeRecord<T: MetricScalar>(name: String, category: String? = nil, date: Date = Date(), value: T)
+        -> Record
+    {
         Matrix(
             date: date,
             name: name,
