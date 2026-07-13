@@ -78,7 +78,7 @@ struct ChartExportSheet<ChartContent: View>: View {
             }
         }
         .listStyle(.plain)
-        .disabledScrollBounce()
+        .disabledBounce()
         .scrollContentBackground(.hidden)
         .background(.background)
         .safeAreaInset(edge: .bottom) {

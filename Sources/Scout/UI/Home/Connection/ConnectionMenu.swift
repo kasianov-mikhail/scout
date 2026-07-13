@@ -55,7 +55,7 @@ struct ConnectionMenu: View {
                 connections = await connections.refreshingStatuses()
             }
             .popoverDropdown()
-            .opaquePresentationBackground()
+            .opaquePresentation()
         }
     }
 }

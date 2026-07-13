@@ -76,7 +76,7 @@ struct FilterButton: View {
         .sheet(isPresented: $isFilterPresented) {
             FilterView(selected: $levels)
                 .presentationHeight(440)
-                .opaquePresentationBackground()
+                .opaquePresentation()
         }
         .tint(.primary)
     }
