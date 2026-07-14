@@ -67,4 +67,11 @@ extension MiniChartSeries {
 
     /// No slices at all: a chart with nothing but its gridlines.
     static let empty = MiniChartSeries(values: [])
+
+    /// Whether the series has anything to draw: a series whose every slice
+    /// sits at zero carries no shape and is drawn as `empty`.
+    ///
+    var isEmpty: Bool {
+        values.allSatisfy { $0 == .zero }
+    }
 }
