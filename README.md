@@ -84,7 +84,7 @@ To add the package and set up CloudKit, see the [Installation Guide](docs/INSTAL
 
 ## Roadmap
 
-- [ ] **Hosted Scout** — a managed [scout-server](https://github.com/kasianov-mikhail/scout-server) instance *(in progress)*
+- [ ] **Hosted Scout** *(in progress)* — a managed [scout-server](https://github.com/kasianov-mikhail/scout-server) instance
 - [ ] **AI tools** — an MCP server over the Scout backend
 - [ ] **More platforms** — macOS, watchOS, tvOS, and visionOS
 - [ ] **OpenTelemetry** — [OTLP](https://opentelemetry.io) support in both directions
