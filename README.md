@@ -15,9 +15,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 - [Comparison](#comparison)
 - [Dashboard](#dashboard)
 - [Installation](#installation)
-- [Roadmap — option 1: table](#roadmap--option-1-table)
-- [Roadmap — option 2: checkboxes](#roadmap--option-2-checkboxes)
-- [Roadmap — option 3: status badges](#roadmap--option-3-status-badges)
+- [Roadmap](#roadmap)
 - [License](#license)
 
 ## Features
@@ -84,49 +82,16 @@ The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports
 
 To add the package and set up CloudKit, see the [Installation Guide](docs/INSTALLATION.md).
 
-## Roadmap — option 1: table
+## Roadmap
 
 What's being worked on next, roughly in the order it's planned:
 
 | | | |
 |:-:|-|-|
-| 🚧 | **Hosted Scout** | A managed instance of [scout-server](https://github.com/kasianov-mikhail/scout-server) — point the SDK at a URL and skip both CloudKit setup and self-hosting. *In progress.* |
-| 🤖 | **AI tools** | An MCP server over the Scout backend so an agent can query events, dig into a crash, and answer questions about your app's telemetry. |
-| 🌍 | **More platforms** | Extend the SDK beyond iOS to macOS, watchOS, tvOS, and visionOS — one framework across every Apple platform your app ships on. |
+| 🚧 | **Hosted&nbsp;Scout**<br>*(in&nbsp;progress)* | A managed instance of [scout-server](https://github.com/kasianov-mikhail/scout-server) — point the SDK at a URL and skip both CloudKit setup and self-hosting. |
+| 🤖 | **AI&nbsp;tools** | An MCP server over the Scout backend so an agent can query events, dig into a crash, and answer questions about your app's telemetry. |
+| 🌍 | **More&nbsp;platforms** | Extend the SDK beyond iOS to macOS, watchOS, tvOS, and visionOS — one framework across every Apple platform your app ships on. |
 | 🔌 | **OpenTelemetry** | Speak [OTLP](https://opentelemetry.io) so Scout can feed any observability stack, and any OTel-instrumented service can feed Scout. |
-
-Have an idea, or want one of these sooner? Open an [issue](https://github.com/kasianov-mikhail/scout/issues).
-
-## Roadmap — option 2: checkboxes
-
-What's being worked on next, roughly in the order it's planned:
-
-- [ ] 🚧 **Hosted Scout** *(in progress)* — a managed instance of [scout-server](https://github.com/kasianov-mikhail/scout-server): point the SDK at a URL and skip both CloudKit setup and self-hosting.
-- [ ] **AI tools** — an MCP server over the Scout backend, so an agent can query events, dig into a crash, and answer questions about your app's telemetry.
-- [ ] **More platforms** — extend the SDK beyond iOS to macOS, watchOS, tvOS, and visionOS: one framework across every Apple platform your app ships on.
-- [ ] **OpenTelemetry** — speak [OTLP](https://opentelemetry.io), so Scout can feed any observability stack and any OTel-instrumented service can feed Scout.
-
-Have an idea, or want one of these sooner? Open an [issue](https://github.com/kasianov-mikhail/scout/issues).
-
-## Roadmap — option 3: status badges
-
-What's being worked on next, roughly in the order it's planned:
-
-#### ![In progress](https://img.shields.io/badge/In_progress-yellow?style=flat-square) Hosted Scout
-
-A managed instance of [scout-server](https://github.com/kasianov-mikhail/scout-server) — point the SDK at a URL and skip both CloudKit setup and self-hosting.
-
-#### ![Planned](https://img.shields.io/badge/Planned-lightgrey?style=flat-square) AI tools
-
-An MCP server over the Scout backend, so an agent can query events, dig into a crash, and answer questions about your app's telemetry.
-
-#### ![Planned](https://img.shields.io/badge/Planned-lightgrey?style=flat-square) More platforms
-
-Extend the SDK beyond iOS to macOS, watchOS, tvOS, and visionOS — one framework across every Apple platform your app ships on.
-
-#### ![Planned](https://img.shields.io/badge/Planned-lightgrey?style=flat-square) OpenTelemetry
-
-Speak [OTLP](https://opentelemetry.io) so Scout can feed any observability stack, and any OTel-instrumented service can feed Scout.
 
 Have an idea, or want one of these sooner? Open an [issue](https://github.com/kasianov-mikhail/scout/issues).
 
