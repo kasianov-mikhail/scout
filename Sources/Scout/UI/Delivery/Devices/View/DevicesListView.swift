@@ -37,6 +37,7 @@ struct DevicesListView: View {
                 }
             }
         }
+        .requestGauge()
     }
 }
 

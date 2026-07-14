@@ -32,5 +32,11 @@ struct SystemInfoTests {
     @Test("channel is one of the known distribution channels")
     func channel() {
         #expect(["Debug", "Simulator", "TestFlight", "App Store"].contains(SystemInfo.channel))
+        #expect(SystemInfo.channel == SystemInfo.buildChannel.rawValue)
+    }
+
+    @Test("every channel but the App Store counts as an internal build")
+    func internalBuild() {
+        #expect(SystemInfo.isInternalBuild == (SystemInfo.buildChannel != .appStore))
     }
 }

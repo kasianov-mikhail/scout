@@ -56,6 +56,7 @@ struct ActivityView: View {
             }
         }
         .navigationTitle(en: "Active Users")
+        .requestGauge()
     }
 }
 

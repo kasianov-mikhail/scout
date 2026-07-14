@@ -48,6 +48,7 @@ struct LogView: View {
             await log.fetchIfNeeded(in: database)
         }
         .navigationTitle(en: "Log")
+        .requestGauge()
     }
 
     private var report: LogReport? {
