@@ -11,6 +11,7 @@ struct HomeView: View {
     let backends: [Backend]
 
     @AppStorage("scout_active_backend") private var activeID = ""
+    @State private var path: [HomeDestination] = []
     @StateObject private var tint = Tint()
 
     init(backends: [Backend]) {
@@ -30,10 +31,10 @@ struct HomeView: View {
     }
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $path) {
             Group {
                 if let backend {
-                    HomeList().iCloudWarning(backend.accountWarning)
+                    HomeList(path: $path).iCloudWarning(backend.accountWarning)
                 } else {
                     ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
                 }
