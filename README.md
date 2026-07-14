@@ -1,7 +1,5 @@
 <img width="1371" alt="logo" src="https://github.com/user-attachments/assets/9e27f4e8-603b-4ec5-b0b0-e3d2f8d0d8d9">
 
-A free, CloudKit-powered Firebase/Crashlytics alternative for indie developers. No third-party servers, zero maintenance cost.
-
 [![Swift](https://github.com/kasianov-mikhail/scout/actions/workflows/swift.yml/badge.svg)](https://github.com/kasianov-mikhail/scout/actions/workflows/swift.yml)
 [![codecov](https://codecov.io/gh/kasianov-mikhail/scout/branch/main/graph/badge.svg)](https://codecov.io/gh/kasianov-mikhail/scout)
 [![Release](https://img.shields.io/github/v/release/kasianov-mikhail/scout)](https://github.com/kasianov-mikhail/scout/releases)
@@ -75,6 +73,8 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 </table>
 
 ## Dashboard
+
+The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports right inside your development builds — browse charts, drill into event lists and crash details, and track activity over time without leaving the app.
 
 <img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
