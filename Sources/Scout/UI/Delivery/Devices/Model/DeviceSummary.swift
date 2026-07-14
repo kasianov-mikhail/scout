@@ -9,18 +9,18 @@ import Foundation
 
 struct DeviceSummary: Identifiable, Equatable {
     let id: UUID
-    let model: String
+    let model: String?
     let osVersion: String
     let lastSeen: Date
     let sessions: Int
     let crashes: Int
 
     var modelName: String {
-        DeviceModel(identifier: model).name
+        model.map { DeviceModel(identifier: $0).name } ?? "Unknown"
     }
 
     var symbol: String {
-        DeviceModel(identifier: model).symbol
+        DeviceModel(identifier: model ?? "").symbol
     }
 }
 
@@ -32,11 +32,7 @@ extension DeviceSummary {
             uniquingKeysWith: +)
 
         return devices.compactMap { device -> DeviceSummary? in
-            guard let deviceID: String = device["device_id"], let uuid = UUID(uuidString: deviceID),
-                let model: String = device["model"]
-            else {
-                return nil
-            }
+            guard let deviceID: String = device["device_id"], let uuid = UUID(uuidString: deviceID) else { return nil }
 
             guard let latest = (sessionsByDevice[deviceID] ?? []).max(by: { $0.startDate < $1.startDate }) else {
                 return nil
@@ -44,7 +40,7 @@ extension DeviceSummary {
 
             return DeviceSummary(
                 id: uuid,
-                model: model,
+                model: device["model"],
                 osVersion: latest.osVersion,
                 lastSeen: latest.startDate,
                 sessions: sessionsByDevice[deviceID]?.count ?? 0,
