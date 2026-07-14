@@ -1,5 +1,11 @@
 # Installation
 
+## Requirements
+
+- iOS 16.0+
+- Swift 6.0+
+- [Apple Developer](https://developer.apple.com) account with [CloudKit](https://developer.apple.com/icloud/cloudkit/) enabled
+
 ## Enable CloudKit
 
 Ensure CloudKit is enabled in your Apple Developer account and configured for your project. Refer to [Enabling CloudKit in Your App](https://developer.apple.com/documentation/cloudkit/enabling_cloudkit_in_your_app).
