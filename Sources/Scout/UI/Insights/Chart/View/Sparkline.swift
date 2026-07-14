@@ -8,15 +8,25 @@
 import Charts
 import SwiftUI
 
+struct SparklineStyle {
+    let lineWidth: Double
+    let columns: Int
+
+    static let card = SparklineStyle(lineWidth: 2, columns: 3)
+    static let row = SparklineStyle(lineWidth: 1.5, columns: 1)
+}
+
 struct Sparkline: View {
     let series: MiniChartSeries
     let color: Color
+    var style: SparklineStyle = .card
 
     var body: some View {
-        let scale = SparklineScale(values: series.values)
-        let last = Double(max(series.values.count - 1, 1))
+        let values = series.isEmpty ? [] : series.values
+        let scale = SparklineScale(values: values)
+        let last = Double(max(values.count - 1, 1))
 
-        Chart(Array(series.values.enumerated()), id: \.offset) { index, value in
+        Chart(Array(values.enumerated()), id: \.offset) { index, value in
             AreaMark(
                 x: .value("Slice", Double(index)),
                 yStart: .value("Bottom", scale.bottom),
@@ -37,10 +47,10 @@ struct Sparkline: View {
             )
             .interpolationMethod(.catmullRom)
             .foregroundStyle(color)
-            .lineStyle(StrokeStyle(lineWidth: 2, lineCap: .round))
+            .lineStyle(StrokeStyle(lineWidth: style.lineWidth, lineCap: .round))
         }
         .chartXAxis {
-            AxisMarks(values: [0, last / 3, last * 2 / 3, last]) { _ in
+            AxisMarks(values: (0...style.columns).map { last * Double($0) / Double(style.columns) }) { _ in
                 AxisGridLine()
             }
         }
@@ -62,6 +72,8 @@ struct Sparkline: View {
         Sparkline(series: MiniChartSeries(values: [9, 7, 8, 6, 7, 5, 4]), color: .red)
             .frame(height: 60)
         Sparkline(series: MiniChartSeries(values: [4, 4, 4, 4, 4, 4, 4]), color: .green)
+            .frame(height: 60)
+        Sparkline(series: .empty, color: .orange)
             .frame(height: 60)
     }
     .padding()

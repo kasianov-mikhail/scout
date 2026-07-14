@@ -50,6 +50,9 @@ struct MetricCard: View {
         MetricCard(summary: summary, color: .purple)
             .frame(width: 162, height: 100)
 
+        MetricCard(summary: MetricSummary(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0]), color: .red)
+            .frame(width: 162, height: 100)
+
         MetricCard(summary: .loading, color: .green)
             .frame(width: 162, height: 100)
 

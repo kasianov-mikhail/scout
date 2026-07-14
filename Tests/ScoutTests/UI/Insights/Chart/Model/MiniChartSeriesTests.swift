@@ -97,4 +97,19 @@ struct MiniChartSeriesTests {
 
         #expect(series.values == [4, 0, 0, 0, 9, 0, 0])
     }
+
+    @Test("An all-zero series counts as empty")
+    func allZeroIsEmpty() {
+        let series = MiniChartSeries(points: [], range: range, aggregation: .total)
+
+        #expect(series.isEmpty)
+        #expect(MiniChartSeries.empty.isEmpty)
+    }
+
+    @Test("A series with any value is not empty")
+    func nonZeroIsNotEmpty() {
+        let series = MiniChartSeries(points: [makePoint(day: 1, count: 1)], range: range, aggregation: .total)
+
+        #expect(!series.isEmpty)
+    }
 }

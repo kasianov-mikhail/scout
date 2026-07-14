@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import Charts
 import SwiftUI
 
 /// An inline sparkline for Home rows: the period's slice values drawn as a
@@ -25,35 +24,13 @@ struct MiniChart: View {
     var body: some View {
         Group {
             if let series {
-                chart(for: series, tint: color)
+                Sparkline(series: series, color: color, style: .row)
             } else {
-                chart(for: .placeholder, tint: Color(.systemGray3))
+                Sparkline(series: .placeholder, color: Color(.systemGray3), style: .row)
                     .redacted(reason: .placeholder)
             }
         }
         .frame(width: Self.size.width, height: Self.size.height)
-    }
-
-    private func chart(for series: MiniChartSeries, tint: Color) -> some View {
-        Chart(series.values.indices, id: \.self) { index in
-            AreaMark(x: .value("X", index), y: .value("Y", series.values[index]))
-                .interpolationMethod(.catmullRom)
-                .foregroundStyle(gradient(of: tint))
-            LineMark(x: .value("X", index), y: .value("Y", series.values[index]))
-                .interpolationMethod(.catmullRom)
-                .lineStyle(StrokeStyle(lineWidth: 1.5))
-                .foregroundStyle(tint)
-        }
-        .chartXAxis(.hidden)
-        .chartYAxis(.hidden)
-    }
-
-    private func gradient(of tint: Color) -> LinearGradient {
-        LinearGradient(
-            colors: [tint.opacity(0.35), tint.opacity(0.02)],
-            startPoint: .top,
-            endPoint: .bottom
-        )
     }
 }
 
