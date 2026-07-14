@@ -33,7 +33,7 @@ struct MetricCard: View {
             }
 
             if let series = summary?.series {
-                Sparkline(series: series.isEmpty ? .empty : series, color: color)
+                Sparkline(series: series, color: color)
             } else if summary != nil {
                 Sparkline(series: .placeholder, color: Color(.systemGray3)).redacted(reason: .placeholder)
             } else {
