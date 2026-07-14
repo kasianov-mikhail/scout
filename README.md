@@ -84,12 +84,10 @@ To add the package and set up CloudKit, see the [Installation Guide](docs/INSTAL
 
 ## Roadmap
 
-| | | |
-|:-:|-|-|
-| 🚧 | **Hosted&nbsp;Scout**<br>*(in&nbsp;progress)* | A managed instance of [scout-server](https://github.com/kasianov-mikhail/scout-server) — point the SDK at a URL and skip both CloudKit setup and self-hosting. |
-| 🤖 | **AI&nbsp;tools** | An MCP server over the Scout backend so an agent can query events, dig into a crash, and answer questions about your app's telemetry. |
-| 🌍 | **More&nbsp;platforms** | Extend the SDK beyond iOS to macOS, watchOS, tvOS, and visionOS — one framework across every Apple platform. |
-| 🔌 | **OpenTelemetry** | Speak [OTLP](https://opentelemetry.io) so Scout can feed any observability stack, and any OTel-instrumented service can feed Scout. |
+- [ ] **Hosted Scout** — a managed [scout-server](https://github.com/kasianov-mikhail/scout-server) instance *(in progress)*
+- [ ] **AI tools** — an MCP server over the Scout backend
+- [ ] **More platforms** — macOS, watchOS, tvOS, and visionOS
+- [ ] **OpenTelemetry** — [OTLP](https://opentelemetry.io) support in both directions
 
 Have an idea, or want one of these sooner? Open an [issue](https://github.com/kasianov-mikhail/scout/issues).
 
