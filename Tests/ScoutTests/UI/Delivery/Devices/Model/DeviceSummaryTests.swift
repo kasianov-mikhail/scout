@@ -53,8 +53,8 @@ struct DeviceSummaryTests {
         #expect(summaries.isEmpty)
     }
 
-    @Test("Excludes devices with no model")
-    func summariesExcludeModellessDevices() {
+    @Test("Keeps devices with no model, naming them Unknown")
+    func summariesKeepModellessDevices() throws {
         let deviceID = UUID()
 
         let summaries = DeviceSummary.summaries(
@@ -66,7 +66,10 @@ struct DeviceSummaryTests {
             crashes: []
         )
 
-        #expect(summaries.isEmpty)
+        let summary = try #require(summaries.first)
+        #expect(summaries.count == 1)
+        #expect(summary.model == nil)
+        #expect(summary.modelName == "Unknown")
     }
 
     @Test("Keeps devices independent")

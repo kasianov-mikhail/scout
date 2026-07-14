@@ -57,6 +57,23 @@ struct HomeLogProviderTests {
         #expect(Set(result.0.map(\.name)) == ["login", "Crash"])
     }
 
+    @Test("Fetch drops the release markers so they never count as events")
+    func fetchDropsMarkers() async throws {
+        let database = DatabaseStub()
+        database.add(
+            makeRecord(name: "login", value: 3),
+            makeRecord(name: MarkerEntry.installName, value: 1),
+            makeRecord(name: MarkerEntry.crashName, value: 1)
+        )
+
+        let provider = HomeLogProvider()
+        provider.period = .today
+        await provider.fetchIfNeeded(in: database)
+        let result = try #require(try provider.result?.get())
+
+        #expect(Set(result.0.map(\.name)) == ["login"])
+    }
+
     @Test("Records of the same matrix merge into one")
     func mergesDuplicates() async throws {
         let date = Date()

@@ -54,6 +54,8 @@ private let lifecycleNames: Set = [
     DeviceEntry.recordType,
     InstallEntry.recordType,
     LaunchEntry.recordType,
+    MarkerEntry.crashName,
+    MarkerEntry.installName,
     SessionEntry.recordType,
     VersionEntry.recordType,
 ]
