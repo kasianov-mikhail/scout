@@ -26,13 +26,11 @@ extension MetricSummary {
     }
 
     init(levels: [ChartPoint<Int>], period: some ChartTimeScale) {
-        let current = levels.latest(in: period.initialRange)
-        let previous = levels.latest(in: period.previousRange)
+        let current = levels.latest(in: period.initialRange) ?? 0
+        let previous = levels.latest(in: period.previousRange) ?? 0
 
         count = current
-        delta = current.flatMap { current in
-            previous.flatMap { Delta(current: current, previous: $0) }
-        }
+        delta = Delta(current: current, previous: previous)
         series = MiniChartSeries(points: levels, range: period.initialRange, aggregation: .latest)
     }
 
