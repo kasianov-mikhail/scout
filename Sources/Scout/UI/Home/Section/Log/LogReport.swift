@@ -18,7 +18,8 @@ struct LogReport {
 
         return switch category {
         case .events:
-            MetricSummary(points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType }, period: period)
+            MetricSummary(
+                points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType }, period: period)
         case .crashes:
             MetricSummary(points: span.points { $0 == CrashEntry.recordType }, period: period)
         case .hangs:

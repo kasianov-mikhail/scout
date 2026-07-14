@@ -16,8 +16,8 @@ extension Range where Bound == Date {
         }
 
         return (0..<count).map { index in
-            lowerBound.addingTimeInterval(step * Double(index))
-                ..< lowerBound.addingTimeInterval(step * Double(index + 1))
+            lowerBound.addingTimeInterval(
+                step * Double(index))..<lowerBound.addingTimeInterval(step * Double(index + 1))
         }
     }
 }
