@@ -52,12 +52,21 @@ struct MetricSummaryTests {
         #expect(try #require(summary.delta).formatted == "+33%")
     }
 
-    @Test("Levels outside the window leave nothing to show")
+    @Test("Levels outside the window read as a zero level, not as loading")
     func levelsOutsideWindow() {
         let summary = MetricSummary(levels: [makePoint(day: 1, hour: 0, count: 100)], period: scale)
 
-        #expect(summary.count == nil)
+        #expect(summary.count == 0)
         #expect(summary.delta == nil)
+    }
+
+    @Test("An empty level series reads as a zero level, not as loading")
+    func emptyLevels() throws {
+        let summary = MetricSummary(levels: [], period: scale)
+
+        #expect(summary.count == 0)
+        #expect(summary.delta == nil)
+        #expect(try #require(summary.series).values.allSatisfy { $0 == .zero })
     }
 
     @Test("Distinct counts pass their slices through untouched")
