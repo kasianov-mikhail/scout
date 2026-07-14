@@ -17,8 +17,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0" ..< "3.0.0"),
-        .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.8.1"),
+        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0"..<"3.0.0"),
+        .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.9.0"),
     ],
     targets: [
         .target(

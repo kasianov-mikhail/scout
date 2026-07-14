@@ -32,6 +32,7 @@ private struct ConnectionToolbar: ViewModifier {
                     }
                 }
             }
+            .requestGauge()
             .sheet(isPresented: $isSettingsPresented) {
                 NavigationStack {
                     SettingsOverviewView(backends: backends, activeID: $activeID)
