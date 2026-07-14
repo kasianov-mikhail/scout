@@ -34,11 +34,36 @@ struct DevicesProviderTests {
 
         let provider = DevicesProvider()
         await provider.fetchIfNeeded(in: database)
-        let summaries = try #require(provider.result).get()
+        let report = try #require(provider.result).get()
+        let summaries = report.summaries
 
         #expect(Set(summaries.map(\.model)) == ["iPhone15,3", "iPad13,1"])
         #expect(summaries.first { $0.model == "iPhone15,3" }?.crashes == 1)
         #expect(summaries.first { $0.model == "iPad13,1" }?.crashes == 0)
+    }
+
+    @Test("Keeps one visit per session so devices can be counted per period")
+    func fetchKeepsSessionVisits() async throws {
+        let deviceA = UUID()
+        let date = Date(year: 2026, month: 6, day: 3)
+
+        let database = DatabaseStub()
+        database.add(
+            .deviceStub(deviceID: deviceA, date: date, model: "iPhone15,3"),
+            .sessionStub(
+                sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.4",
+                deviceID: deviceA),
+            .sessionStub(
+                sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.4",
+                deviceID: deviceA)
+        )
+
+        let provider = DevicesProvider()
+        await provider.fetchIfNeeded(in: database)
+        let report = try #require(provider.result).get()
+
+        #expect(report.visits.count == 2)
+        #expect(report.visits.allSatisfy { $0.deviceID == deviceA.uuidString })
     }
 
     @Test("No devices yields no summaries")
@@ -47,8 +72,8 @@ struct DevicesProviderTests {
 
         let provider = DevicesProvider()
         await provider.fetchIfNeeded(in: database)
-        let summaries = try #require(provider.result).get()
+        let report = try #require(provider.result).get()
 
-        #expect(summaries.isEmpty)
+        #expect(report.summaries.count == 0)
     }
 }

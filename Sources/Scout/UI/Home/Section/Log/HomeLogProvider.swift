@@ -29,15 +29,17 @@ class HomeLogProvider: ObservableObject, Provider {
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {
+        let window = period.previousRange.lowerBound..<period.initialRange.upperBound
+
         async let intMatrices = matrices(
             of: Int.self,
-            in: period.initialRange,
+            in: window,
             from: database
         )
 
         async let doubleMatrices = matrices(
             of: Double.self,
-            in: period.initialRange,
+            in: window,
             from: database
         )
 

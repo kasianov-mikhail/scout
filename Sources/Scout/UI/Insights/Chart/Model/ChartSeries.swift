@@ -29,12 +29,12 @@ extension Collection where Element: ChartSeries {
         bucket(in: period.initialRange, component: period.pointComponent)
     }
 
-    /// Groups chart points into contiguous date buckets and sums their counts.
-    ///
-    /// Provide an explicit date range and calendar component to produce one result
-    /// per interval. Each result uses the interval’s start date and the aggregated
-    /// count of points whose dates fall inside that interval.
-    ///
+    func latest(in range: Range<Date>) -> Element.Count? {
+        filter { range.contains($0.date) }
+            .max { $0.date < $1.date }?
+            .count
+    }
+
     func bucket(in range: Range<Date>, component: Calendar.Component) -> [Element] {
         var result: [Element] = []
         var date = range.upperBound

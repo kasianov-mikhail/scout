@@ -32,8 +32,8 @@ struct HomeLogProviderTests {
         let ints = MatrixSpan(matrices: result.0, range: allTime)
         let doubles = MatrixSpan(matrices: result.1, range: allTime)
 
-        #expect(ints.total { $0 != CrashEntry.recordType } == 3)
-        #expect(ints.total { $0 == CrashEntry.recordType } == 2)
+        #expect(ints.points { $0 != CrashEntry.recordType }.total == 3)
+        #expect(ints.points { $0 == CrashEntry.recordType }.total == 2)
         #expect(ints.series + doubles.series == 2)
         #expect(database.readCount(of: Int.recordType) == 1)
         #expect(database.readCount(of: Double.recordType) == 1)
@@ -72,15 +72,16 @@ struct HomeLogProviderTests {
         let result = try #require(try provider.result?.get())
 
         #expect(result.0.count == 1)
-        #expect(MatrixSpan(matrices: result.0, range: allTime).total { $0 != CrashEntry.recordType } == 7)
+        #expect(MatrixSpan(matrices: result.0, range: allTime).points { $0 != CrashEntry.recordType }.total == 7)
     }
 
-    @Test("Each period fetches only its own range")
-    func fetchesSelectedPeriodOnly() async throws {
+    @Test("Each period fetches its own range and the one before it")
+    func fetchesSelectedPeriodAndPrevious() async throws {
         let database = DatabaseStub()
         database.add(
             makeRecord(name: "recent", date: Date().addingDay(-2).startOfWeek, value: 3),
-            makeRecord(name: "old", date: Date().addingDay(-60).startOfWeek, value: 4)
+            makeRecord(name: "previous", date: Date().addingDay(-40).startOfWeek, value: 4),
+            makeRecord(name: "old", date: Date().addingDay(-200).startOfWeek, value: 5)
         )
 
         let provider = HomeLogProvider()
@@ -92,8 +93,8 @@ struct HomeLogProviderTests {
         await provider.fetchIfNeeded(in: database)
         let year = try #require(try provider.result?.get())
 
-        #expect(Set(month.0.map(\.name)) == ["recent"])
-        #expect(Set(year.0.map(\.name)) == ["recent", "old"])
+        #expect(Set(month.0.map(\.name)) == ["recent", "previous"])
+        #expect(Set(year.0.map(\.name)) == ["recent", "previous", "old"])
     }
 
     @Test("Switching periods keeps earlier results cached")

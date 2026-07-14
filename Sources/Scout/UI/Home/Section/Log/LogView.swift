@@ -7,43 +7,47 @@
 
 import SwiftUI
 
-struct HomeLogSection: View {
+struct LogView: View {
     @Environment(\.database) var database
 
-    let period: Period
+    @State var period: Period
 
     @ObservedObject var log: HomeLogProvider
     @ObservedObject var devices: DevicesProvider
 
-    @Binding var showLog: Bool
+    private let columns = [
+        GridItem(.flexible(), spacing: 24),
+        GridItem(.flexible(), spacing: 24),
+    ]
 
     var body: some View {
-        Header(title: "Log") {
-            AllButton { showLog = true }
+        ScrollView {
+            VStack(spacing: 24) {
+                SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
+
+                LazyVGrid(columns: columns, spacing: 36) {
+                    ForEach(LogCategory.allCases) { category in
+                        NavigationLink {
+                            LogDestination(category: category)
+                        } label: {
+                            MetricColumn(
+                                title: category.title,
+                                image: category.systemImage,
+                                color: category.color,
+                                summary: report?.summary(for: category) ?? .loading
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(16)
         }
         .task(id: period) {
             log.period = period
             await log.fetchIfNeeded(in: database)
         }
-
-        let report = report
-
-        ForEach(Array(LogCategory.allCases.enumerated()), id: \.element) { index, category in
-            Row {
-                Image(systemName: category.systemImage)
-                    .foregroundColor(category.color)
-                    .frame(width: 24)
-                Text(verbatim: category.title)
-                Spacer()
-                RedactedText(count: report?.summary(for: category).count)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .frame(minWidth: RowSummary.countWidth, alignment: .trailing)
-            } destination: {
-                LogDestination(category: category)
-            }
-            .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
-        }
+        .navigationTitle(en: "Log")
     }
 
     private var report: LogReport? {
@@ -76,14 +80,6 @@ struct HomeLogSection: View {
     devices.result = .success(.sample)
 
     return NavigationStack {
-        List {
-            HomeLogSection(
-                period: .today,
-                log: makeLog(),
-                devices: devices,
-                showLog: .constant(false)
-            )
-        }
-        .listStyle(.plain)
+        LogView(period: .today, log: makeLog(), devices: devices)
     }
 }
