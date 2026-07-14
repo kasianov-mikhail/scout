@@ -11,14 +11,13 @@ struct HomeList: View {
     @Environment(\.database) var database
     @AppStorage("scout_home_period") var period = Period.today
 
+    @Binding var path: [HomeDestination]
+
     @StateObject var activities = ActivityProvider()
     @StateObject var sessions = StatProvider(eventName: "Session", periods: Period.summary)
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
     @StateObject var devices = DevicesProvider()
-
-    @State var showLog = false
-    @State var showReleaseHealth = false
 
     var body: some View {
         if let error = HomeErrorView(providers: [sessions, activities, logs, releases, devices]) {
@@ -31,8 +30,8 @@ struct HomeList: View {
                     .listRowSeparator(.hidden)
 
                 HStack(spacing: 24) {
-                    NavigationLink {
-                        activityDestination
+                    Button {
+                        path.append(.activity)
                     } label: {
                         MetricColumn(
                             title: period.activityPeriod?.acronym ?? "Users",
@@ -44,10 +43,8 @@ struct HomeList: View {
                     .buttonStyle(.plain)
                     .disabled(period.activityPeriod == nil)
 
-                    NavigationLink {
-                        StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
-                            .environment(\.chartColor, .purple)
-                            .navigationTitle(en: "Sessions")
+                    Button {
+                        path.append(.sessions)
                     } label: {
                         MetricColumn(
                             title: "Sessions",
@@ -60,14 +57,24 @@ struct HomeList: View {
                 }
                 .listRowSeparator(.hidden)
 
-                HomeLogSection(period: period, log: logs, devices: devices, showLog: $showLog)
-                HomeReleaseSection(provider: releases, showReleaseHealth: $showReleaseHealth)
+                HomeLogSection(period: period, log: logs, devices: devices) {
+                    path.append(.log)
+                }
+                HomeReleaseSection(provider: releases) {
+                    path.append(.releaseHealth)
+                }
             }
-            .navigationDestination(isPresented: $showLog) {
-                LogView(period: period, log: logs, devices: devices)
-            }
-            .navigationDestination(isPresented: $showReleaseHealth) {
-                ReleaseHealthView(provider: releases)
+            .navigationDestination(for: HomeDestination.self) { destination in
+                switch destination {
+                case .activity:
+                    activityDestination
+                case .sessions:
+                    sessionDestination
+                case .log:
+                    LogView(period: period, log: logs, devices: devices)
+                case .releaseHealth:
+                    ReleaseHealthView(provider: releases)
+                }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
@@ -86,6 +93,12 @@ struct HomeList: View {
         if let activityPeriod = period.activityPeriod {
             ActivityView(activity: activities, period: activityPeriod)
         }
+    }
+
+    private var sessionDestination: some View {
+        StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
+            .environment(\.chartColor, .purple)
+            .navigationTitle(en: "Sessions")
     }
 
     private var activitySummary: MetricSummary? {
@@ -135,6 +148,7 @@ struct HomeList: View {
 
     return NavigationStack {
         HomeList(
+            path: .constant([]),
             activities: activities,
             sessions: sessions,
             releases: releases,

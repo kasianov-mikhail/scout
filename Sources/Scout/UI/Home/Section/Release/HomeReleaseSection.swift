@@ -9,12 +9,13 @@ import SwiftUI
 
 struct HomeReleaseSection: View {
     @ObservedObject var provider: ReleaseHealthProvider
-    @Binding var showReleaseHealth: Bool
+
+    let showAll: () -> Void
 
     var body: some View {
         Header(title: "Releases") {
             if let releases = try? provider.result?.get(), releases.count > 0 {
-                AllButton { showReleaseHealth = true }
+                AllButton(action: showAll)
             }
         }
 
@@ -45,8 +46,8 @@ struct HomeReleaseSection: View {
 
     return NavigationStack {
         List {
-            HomeReleaseSection(provider: provider, showReleaseHealth: .constant(false))
-            HomeReleaseSection(provider: ReleaseHealthProvider(releases: []), showReleaseHealth: .constant(false))
+            HomeReleaseSection(provider: provider, showAll: {})
+            HomeReleaseSection(provider: ReleaseHealthProvider(releases: []), showAll: {})
         }
         .listStyle(.plain)
     }
