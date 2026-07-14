@@ -22,7 +22,7 @@ struct MatrixSpanTests {
             makeMatrix(name: "api_calls", category: "counter", date: Date(year: 2026, month: 6, day: 2), value: 7),
         ])
 
-        #expect(span.total { $0 != CrashEntry.recordType } == 7)
+        #expect(span.points { $0 != CrashEntry.recordType }.total == 7)
     }
 
     @Test("Count keeps points inside the range only")
@@ -33,7 +33,7 @@ struct MatrixSpanTests {
             makeMatrix(name: "login", date: Date(year: 2026, month: 6, day: 8), value: 5),
         ])
 
-        #expect(span.total { $0 != CrashEntry.recordType } == 3)
+        #expect(span.points { $0 != CrashEntry.recordType }.total == 3)
     }
 
     @Test("Count sums the Crash matrices")
@@ -44,7 +44,7 @@ struct MatrixSpanTests {
             makeMatrix(name: "login", date: Date(year: 2026, month: 6, day: 2), value: 3),
         ])
 
-        #expect(span.total { $0 == CrashEntry.recordType } == 2)
+        #expect(span.points { $0 == CrashEntry.recordType }.total == 2)
     }
 
     @Test("Metric count tallies distinct metrics across both matrix kinds")
@@ -78,6 +78,35 @@ struct MatrixSpanTests {
         ])
 
         #expect(span.series == 0)
+    }
+
+    @Test("Points carry the record matrices that pass the filter, inside the range only")
+    func pointsByName() {
+        let span = makeSpan([
+            makeMatrix(name: "login", date: Date(year: 2026, month: 6, day: 2), value: 3),
+            makeMatrix(name: "Crash", date: Date(year: 2026, month: 6, day: 3), value: 2),
+            makeMatrix(name: "login", date: Date(year: 2026, month: 5, day: 20), value: 9),
+            makeMatrix(name: "api_calls", category: "counter", date: Date(year: 2026, month: 6, day: 2), value: 7),
+        ])
+
+        let points = span.points { $0 != CrashEntry.recordType }
+
+        #expect(points.map(\.count) == [3])
+    }
+
+    @Test("Points by category keep the telemetry matrices filed under it")
+    func pointsByCategory() {
+        let span = makeSpan([
+            makeMatrix(name: "/users", category: "status_2xx", date: Date(year: 2026, month: 6, day: 2), value: 5),
+            makeMatrix(name: "/users", category: "status_5xx", date: Date(year: 2026, month: 6, day: 3), value: 1),
+            makeMatrix(name: "/users", category: "timer_le_500", date: Date(year: 2026, month: 6, day: 3), value: 8),
+            makeMatrix(name: "login", date: Date(year: 2026, month: 6, day: 2), value: 3),
+        ])
+
+        let points = span.points(inCategories: Set(StatusBuckets.categories))
+
+        #expect(points.map(\.count).sorted() == [1, 5])
+        #expect(points.total == 6)
     }
 
     /// A span already narrowed to `range`, matching how the log section consumes it.

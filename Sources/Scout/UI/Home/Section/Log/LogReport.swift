@@ -1,0 +1,68 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Foundation
+
+struct LogReport {
+    let intMatrices: [GridMatrix<Int>]
+    let doubleMatrices: [GridMatrix<Double>]
+    let visits: [DeviceVisit]
+    let period: Period
+
+    func summary(for category: LogCategory) -> MetricSummary {
+        let span = span
+
+        return switch category {
+        case .events:
+            MetricSummary(
+                points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType }, period: period)
+        case .crashes:
+            MetricSummary(points: span.points { $0 == CrashEntry.recordType }, period: period)
+        case .hangs:
+            MetricSummary(points: span.points { $0 == HangEntry.recordType }, period: period)
+        case .network:
+            MetricSummary(points: span.points(inCategories: Set(StatusBuckets.categories)), period: period)
+        case .metrics:
+            metricsSummary
+        case .devices:
+            devicesSummary
+        }
+    }
+
+    private var window: Range<Date> {
+        period.previousRange.lowerBound..<period.initialRange.upperBound
+    }
+
+    private var span: MatrixSpan<Int> {
+        MatrixSpan(matrices: intMatrices, range: window)
+    }
+
+    private var metricsSummary: MetricSummary {
+        func series(in range: Range<Date>) -> Int {
+            MatrixSpan(matrices: intMatrices, range: range).series
+                + MatrixSpan(matrices: doubleMatrices, range: range).series
+        }
+
+        return MetricSummary(
+            count: series(in: period.initialRange),
+            previous: series(in: period.previousRange),
+            values: slices.map(series)
+        )
+    }
+
+    private var devicesSummary: MetricSummary {
+        MetricSummary(
+            count: visits.devices(in: period.initialRange),
+            previous: visits.devices(in: period.previousRange),
+            values: slices.map { visits.devices(in: $0) }
+        )
+    }
+
+    private var slices: [Range<Date>] {
+        period.initialRange.slices(count: MiniChartSeries.sliceCount)
+    }
+}

@@ -13,12 +13,19 @@ struct MatrixSpan<T: ChartNumeric> {
     let matrices: [GridMatrix<T>]
     let range: Range<Date>
 
-    func total(where isIncluded: (String) -> Bool) -> T {
+    func points(where isIncluded: (String) -> Bool) -> [ChartPoint<T>] {
+        points { $0.category == nil && isIncluded($0.name) }
+    }
+
+    func points(inCategories categories: Set<String>) -> [ChartPoint<T>] {
+        points { $0.category.map(categories.contains) ?? false }
+    }
+
+    private func points(matching isIncluded: (GridMatrix<T>) -> Bool) -> [ChartPoint<T>] {
         matrices
-            .filter { $0.category == nil && isIncluded($0.name) }
+            .filter(isIncluded)
             .flatMap(\.points)
             .filter { range.contains($0.date) }
-            .total
     }
 
     var series: Int {

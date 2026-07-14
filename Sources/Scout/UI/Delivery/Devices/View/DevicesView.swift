@@ -12,15 +12,15 @@ struct DevicesView: View {
     @State private var showAllDevices = false
 
     var body: some View {
-        ProviderView(provider: provider) { devices in
-            if devices.isEmpty {
+        ProviderView(provider: provider) { report in
+            if report.summaries.count > 0 {
+                content(report.summaries)
+            } else {
                 Placeholder(
                     text: "No devices",
                     systemImage: "iphone.gen3",
                     description: "Devices appear here once your app reports sessions"
                 )
-            } else {
-                content(devices)
             }
         }
         .navigationTitle(en: "Devices")
@@ -65,7 +65,7 @@ struct DevicesView: View {
 
 #Preview("Devices") {
     let provider = DevicesProvider()
-    provider.result = .success(DeviceSummary.samples)
+    provider.result = .success(.sample)
 
     return NavigationStack {
         DevicesView(provider: provider)
@@ -74,7 +74,7 @@ struct DevicesView: View {
 
 #Preview("Devices — Empty") {
     let provider = DevicesProvider()
-    provider.result = .success([])
+    provider.result = .success(.empty)
 
     return NavigationStack {
         DevicesView(provider: provider)
