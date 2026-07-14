@@ -10,30 +10,34 @@ import SwiftUI
 
 struct NetworkEndpointDetailView: View {
     let endpoint: NetworkEndpoint
-    let distribution: TimerDistribution?
-    let statuses: StatusDistribution?
+    let report: NetworkReport
     let range: Range<Date>
     var unit: Calendar.Component = .hour
-
-    init(endpoint: NetworkEndpoint, report: NetworkReport, range: Range<Date>, unit: Calendar.Component = .hour) {
-        self.endpoint = endpoint
-        self.distribution = report.distributions[endpoint.name]
-        self.statuses = report.statuses[endpoint.name]
-        self.range = range
-        self.unit = unit
-    }
 
     var body: some View {
         List {
             HStack(spacing: 28) {
-                Metric(title: "Method", value: endpoint.method ?? "—", color: endpoint.methodColor)
-                Metric(title: "Requests", value: endpoint.requests.plain, color: .primary)
                 Metric(
-                    title: "Success", value: endpoint.successRate?.formatted ?? "—",
-                    color: endpoint.successRate?.color ?? .gray)
+                    title: "Method",
+                    value: endpoint.method ?? "—",
+                    color: endpoint.methodColor
+                )
+                Metric(
+                    title: "Requests",
+                    value: endpoint.requests.plain,
+                    color: .primary
+                )
+                Metric(
+                    title: "Success",
+                    value: endpoint.successRate?.formatted ?? "—",
+                    color: endpoint.successRate?.color ?? .gray
+                )
                 Spacer()
             }
             .listRowSeparator(.hidden)
+
+            let distribution = report.distributions[endpoint.name]
+            let statuses = report.statuses[endpoint.name]
 
             if let percentiles = distribution?.summary(in: range) {
                 Header(title: "Latency")
