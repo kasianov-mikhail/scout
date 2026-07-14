@@ -13,8 +13,8 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 ## Table of Contents
 - [Features](#features)
 - [Comparison](#comparison)
-- [Dashboard](#dashboard)
 - [Installation](#installation)
+- [Dashboard](#dashboard)
 - [Roadmap](#roadmap)
 - [License](#license)
 
@@ -72,24 +72,22 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 </tr>
 </table>
 
+## Installation
+
+To add the package and set up CloudKit, see the [Installation Guide](docs/INSTALLATION.md).
+
 ## Dashboard
 
 The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports right inside your development builds — browse charts, drill into event lists and crash details, and track activity over time without leaving the app.
 
 <img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
-## Installation
-
-To add the package and set up CloudKit, see the [Installation Guide](docs/INSTALLATION.md).
-
 ## Roadmap
 
-| | | |
-|:-:|-|-|
-| 🚧 | **Hosted&nbsp;Scout**<br>*(in&nbsp;progress)* | A managed instance of [scout-server](https://github.com/kasianov-mikhail/scout-server) — point the SDK at a URL and skip both CloudKit setup and self-hosting. |
-| 🤖 | **AI&nbsp;tools** | An MCP server over the Scout backend so an agent can query events, dig into a crash, and answer questions about your app's telemetry. |
-| 🌍 | **More&nbsp;platforms** | Extend the SDK beyond iOS to macOS, watchOS, tvOS, and visionOS — one framework across every Apple platform. |
-| 🔌 | **OpenTelemetry** | Speak [OTLP](https://opentelemetry.io) so Scout can feed any observability stack, and any OTel-instrumented service can feed Scout. |
+- [ ] **Hosted Scout** *(in progress)* — a managed [scout-server](https://github.com/kasianov-mikhail/scout-server) instance
+- [ ] **AI tools** — an MCP server over the Scout backend
+- [ ] **More platforms** — macOS, watchOS, tvOS, and visionOS
+- [ ] **OpenTelemetry** — [OTLP](https://opentelemetry.io) support in both directions
 
 Have an idea, or want one of these sooner? Open an [issue](https://github.com/kasianov-mikhail/scout/issues).
 
