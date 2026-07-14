@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import ScoutDB
 import SwiftUI
 
 struct BenchmarkButton: View {
@@ -22,7 +23,7 @@ struct BenchmarkButton: View {
                 isBenchmarking = false
                 message = Message(
                     passed
-                        ? "Parallelism limit verified: \(RequestLimiter.requestLimit) in-flight requests hold up."
+                        ? "Parallelism limit verified: \(cloudKitParallelismLimit) in-flight requests hold up."
                         : "Parallelism check failed — see the console log.",
                     level: passed ? .success : .warning
                 )
