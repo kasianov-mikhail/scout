@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import ScoutDB
 import SwiftUI
 
 struct BackendDetailView: View {
@@ -117,7 +118,7 @@ struct BackendDetailView: View {
 
                 Text(
                     verbatim:
-                        "The benchmark issues test queries to verify the \(RequestLimiter.requestLimit)-request limit."
+                        "The benchmark issues test queries to verify the \(cloudKitParallelismLimit)-request limit."
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
