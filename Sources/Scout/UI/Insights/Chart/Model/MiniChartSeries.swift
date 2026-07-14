@@ -64,4 +64,7 @@ extension MiniChartSeries {
 extension MiniChartSeries {
     /// A gentle wave drawn under redaction while the real series loads.
     static let placeholder = MiniChartSeries(values: [3, 5, 4, 6, 5, 7, 6])
+
+    /// No slices at all: a chart with nothing but its gridlines.
+    static let empty = MiniChartSeries(values: [])
 }
