@@ -29,29 +29,16 @@ enum SystemInfo {
         Locale.current.identifier
     }
 
-    enum Channel: String {
-        case debug = "Debug"
-        case simulator = "Simulator"
-        case testFlight = "TestFlight"
-        case appStore = "App Store"
-    }
-
-    static var buildChannel: Channel {
-        #if DEBUG
-            .debug
-        #elseif targetEnvironment(simulator)
-            .simulator
-        #else
-            Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt" ? .testFlight : .appStore
-        #endif
-    }
-
     static var channel: String {
-        buildChannel.rawValue
-    }
-
-    static var isInternalBuild: Bool {
-        buildChannel != .appStore
+        #if DEBUG
+            "Debug"
+        #elseif targetEnvironment(simulator)
+            "Simulator"
+        #else
+            Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
+                ? "TestFlight"
+                : "App Store"
+        #endif
     }
 
     private static var osName: String {

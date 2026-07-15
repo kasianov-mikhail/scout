@@ -71,22 +71,19 @@ struct LogDestination: View {
     let category: LogCategory
 
     var body: some View {
-        Group {
-            switch category {
-            case .events:
-                AnalyticsView()
-            case .metrics:
-                MetricsList().navigationTitle(en: "Metrics")
-            case .network:
-                NetworkView()
-            case .devices:
-                DevicesView()
-            case .crashes:
-                CrashListView()
-            case .hangs:
-                HangListView()
-            }
+        switch category {
+        case .events:
+            AnalyticsView()
+        case .metrics:
+            MetricsList().navigationTitle(en: "Metrics")
+        case .network:
+            NetworkView()
+        case .devices:
+            DevicesView()
+        case .crashes:
+            CrashListView()
+        case .hangs:
+            HangListView()
         }
-        .requestGauge()
     }
 }
