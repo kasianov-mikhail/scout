@@ -42,7 +42,6 @@ struct HomeLogSection: View {
             } destination: {
                 LogDestination(category: category)
             }
-            .listRowSeparator(index == 0 ? .hidden : .automatic, edges: .top)
         }
     }
 
