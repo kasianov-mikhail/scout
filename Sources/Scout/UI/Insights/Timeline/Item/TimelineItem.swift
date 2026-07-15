@@ -18,9 +18,12 @@ struct TimelineItem {
 
     func groupID(_ kind: LegendKind) -> UUID? {
         switch kind {
-        case .install: installID
-        case .launch: launchID
-        case .session: sessionID
+        case .install:
+            installID
+        case .launch:
+            launchID
+        case .session:
+            sessionID
         }
     }
 }

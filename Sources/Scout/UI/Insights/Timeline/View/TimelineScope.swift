@@ -15,8 +15,10 @@ enum TimelineScope: CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .all: "All"
-        case .event: "Event"
+        case .all:
+            "All"
+        case .event:
+            "Event"
         }
     }
 }

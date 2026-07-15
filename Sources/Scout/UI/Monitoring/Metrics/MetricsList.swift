@@ -17,9 +17,12 @@ struct MetricsList: View {
 
         var telemetry: Telemetry.Export {
             switch self {
-            case .int: .counter
-            case .double: .floatingCounter
-            case .timer: .timer
+            case .int:
+                .counter
+            case .double:
+                .floatingCounter
+            case .timer:
+                .timer
             }
         }
     }

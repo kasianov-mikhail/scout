@@ -34,10 +34,14 @@ extension ParamValue {
     ///
     var icon: Icon {
         switch self {
-        case .string: .symbol("textformat")
-        case .stringConvertible(let convertible): .symbol(convertible.iconName)
-        case .dictionary: .symbol("curlybraces")
-        case .array: .text("[ ]")
+        case .string:
+            .symbol("textformat")
+        case .stringConvertible(let convertible):
+            .symbol(convertible.iconName)
+        case .dictionary:
+            .symbol("curlybraces")
+        case .array:
+            .text("[ ]")
         }
     }
 
@@ -62,23 +66,34 @@ extension ParamValue.Convertible {
     /// A short name of the scalar kind, shown in the value badge.
     var label: String {
         switch self {
-        case .number: "Number"
-        case .boolean: "Boolean"
-        case .uuid: "UUID"
-        case .url: "URL"
-        case .date: "Date"
+        case .number:
+            "Number"
+        case .boolean:
+            "Boolean"
+        case .uuid:
+            "UUID"
+        case .url:
+            "URL"
+        case .date:
+            "Date"
         }
     }
 
     /// An SF Symbol of the scalar kind.
     var iconName: String {
         switch self {
-        case .number: "number"
-        case .boolean(true): "checkmark.circle"
-        case .boolean(false): "xmark.circle"
-        case .uuid: "tag"
-        case .url: "link"
-        case .date: "calendar"
+        case .number:
+            "number"
+        case .boolean(true):
+            "checkmark.circle"
+        case .boolean(false):
+            "xmark.circle"
+        case .uuid:
+            "tag"
+        case .url:
+            "link"
+        case .date:
+            "calendar"
         }
     }
 }

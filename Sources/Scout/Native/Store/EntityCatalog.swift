@@ -176,13 +176,20 @@ enum EntityCatalog {
 
     private static func pool(for type: FieldType) -> Pool {
         switch type {
-        case .string: .string
-        case .text: .text
-        case .int: .int
-        case .double: .double
-        case .timestamp: .timestamp
-        case .bytes: .bytes
-        default: fatalError("Unsupported field type \(type)")
+        case .string:
+            .string
+        case .text:
+            .text
+        case .int:
+            .int
+        case .double:
+            .double
+        case .timestamp:
+            .timestamp
+        case .bytes:
+            .bytes
+        default:
+            fatalError("Unsupported field type \(type)")
         }
     }
 }

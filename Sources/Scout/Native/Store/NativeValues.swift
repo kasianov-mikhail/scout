@@ -11,24 +11,37 @@ import ScoutDB
 extension RecordValue {
     var storeValue: ScoutDB.RecordValue {
         switch self {
-        case .string(let value): .string(value)
-        case .int(let value): .int(value)
-        case .double(let value): .double(value)
-        case .date(let value): .date(value)
-        case .bytes(let value): .bytes(value)
-        case .strings(let value): .strings(value)
+        case .string(let value):
+            .string(value)
+        case .int(let value):
+            .int(value)
+        case .double(let value):
+            .double(value)
+        case .date(let value):
+            .date(value)
+        case .bytes(let value):
+            .bytes(value)
+        case .strings(let value):
+            .strings(value)
         }
     }
 
     init?(storeValue: ScoutDB.RecordValue) {
         switch storeValue {
-        case .string(let value): self = .string(value)
-        case .int(let value): self = .int(value)
-        case .double(let value): self = .double(value)
-        case .date(let value): self = .date(value)
-        case .bytes(let value): self = .bytes(value)
-        case .strings(let value): self = .strings(value)
-        default: return nil
+        case .string(let value):
+            self = .string(value)
+        case .int(let value):
+            self = .int(value)
+        case .double(let value):
+            self = .double(value)
+        case .date(let value):
+            self = .date(value)
+        case .bytes(let value):
+            self = .bytes(value)
+        case .strings(let value):
+            self = .strings(value)
+        default:
+            return nil
         }
     }
 }
@@ -56,14 +69,22 @@ extension RecordQuery.Filter {
 
     private var storeMatch: EntityStore.Match {
         switch op {
-        case .equals: .equals
-        case .notEquals: .notEquals
-        case .greaterThan: .greaterThan
-        case .greaterThanOrEquals: .greaterThanOrEquals
-        case .lessThan: .lessThan
-        case .lessThanOrEquals: .lessThanOrEquals
-        case .in: .in
-        case .beginsWith: .beginsWith
+        case .equals:
+            .equals
+        case .notEquals:
+            .notEquals
+        case .greaterThan:
+            .greaterThan
+        case .greaterThanOrEquals:
+            .greaterThanOrEquals
+        case .lessThan:
+            .lessThan
+        case .lessThanOrEquals:
+            .lessThanOrEquals
+        case .in:
+            .in
+        case .beginsWith:
+            .beginsWith
         }
     }
 }
