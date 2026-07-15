@@ -9,7 +9,6 @@ import SwiftUI
 
 struct MetricCard: View {
     let title: String
-    let image: String
     let color: Color
     let summary: MetricSummary?
 
@@ -57,24 +56,21 @@ struct MetricCard: View {
         Group {
             MetricCard(
                 title: "Sessions",
-                image: "clock",
                 color: .purple,
                 summary: MetricSummary(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
             )
             MetricCard(
                 title: "Crashes",
-                image: "exclamationmark.triangle",
                 color: .red,
                 summary: MetricSummary(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
             )
             MetricCard(
                 title: "Empty",
-                image: "clock",
                 color: .red,
                 summary: MetricSummary(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
             )
-            MetricCard(title: "Loading", image: "clock", color: .green, summary: .loading)
-            MetricCard(title: "Missing", image: "clock", color: .green, summary: nil)
+            MetricCard(title: "Loading", color: .green, summary: .loading)
+            MetricCard(title: "Missing", color: .green, summary: nil)
         }
         .frame(height: 120)
     }
