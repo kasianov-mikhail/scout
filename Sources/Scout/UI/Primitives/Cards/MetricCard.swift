@@ -13,7 +13,7 @@ struct MetricCard: View {
     let summary: MetricSummary?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: title.uppercased())
                 .font(.system(size: 14, weight: .medium))
                 .foregroundStyle(.secondary)
@@ -38,6 +38,8 @@ struct MetricCard: View {
                         .padding(.top, 2)
                 }
             }
+
+            Spacer().frame(height: 4)
 
             Group {
                 if let series = summary?.series {

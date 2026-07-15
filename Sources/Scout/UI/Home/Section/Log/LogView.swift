@@ -63,22 +63,14 @@ struct LogView: View {
 }
 
 #Preview {
-    @MainActor func makeLog() -> HomeLogProvider {
-        let provider = HomeLogProvider()
-
-        for period in Period.allCases {
-            provider.period = period
-            provider.result = .success(HomeLogProvider.sample(for: period))
-        }
-
-        provider.period = .today
-        return provider
-    }
+    let log = HomeLogProvider()
+    log.period = .week
+    log.result = .success(HomeLogProvider.sample(for: .week))
 
     let devices = DevicesProvider()
     devices.result = .success(.sample)
 
     return NavigationStack {
-        LogView(period: .today, log: makeLog(), devices: devices)
+        LogView(period: .week, log: log, devices: devices)
     }
 }

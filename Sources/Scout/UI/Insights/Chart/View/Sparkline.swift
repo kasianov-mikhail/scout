@@ -8,18 +8,11 @@
 import Charts
 import SwiftUI
 
-struct SparklineStyle {
-    let lineWidth: Double
-    let columns: Int
-
-    static let card = SparklineStyle(lineWidth: 2, columns: 3)
-    static let row = SparklineStyle(lineWidth: 1.5, columns: 1)
-}
-
 struct Sparkline: View {
     let series: MiniChartSeries
     let color: Color
-    var style: SparklineStyle = .card
+    var lineWidth: Double = 2
+    var showsGridlines = true
 
     var body: some View {
         let values = series.isEmpty ? [] : series.values
@@ -47,16 +40,20 @@ struct Sparkline: View {
             )
             .interpolationMethod(.catmullRom)
             .foregroundStyle(color)
-            .lineStyle(StrokeStyle(lineWidth: style.lineWidth, lineCap: .round))
+            .lineStyle(StrokeStyle(lineWidth: lineWidth, lineCap: .round))
         }
         .chartXAxis {
-            AxisMarks(values: (0...style.columns).map { last * Double($0) / Double(style.columns) }) { _ in
-                AxisGridLine()
+            if showsGridlines {
+                AxisMarks(values: (0...3).map { last * Double($0) / 3 }) { _ in
+                    AxisGridLine()
+                }
             }
         }
         .chartYAxis {
-            AxisMarks(values: [scale.bottom]) { _ in
-                AxisGridLine()
+            if showsGridlines {
+                AxisMarks(values: [scale.bottom, scale.top]) { _ in
+                    AxisGridLine()
+                }
             }
         }
         .chartXScale(domain: 0...last)
