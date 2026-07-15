@@ -32,7 +32,6 @@ struct LogView: View {
                         } label: {
                             MetricCard(
                                 title: category.title,
-                                image: category.systemImage,
                                 color: category.color,
                                 summary: report?.summary(for: category) ?? .loading
                             )

@@ -35,7 +35,6 @@ struct HomeList: View {
                     } label: {
                         MetricCard(
                             title: period.activityPeriod?.acronym ?? "Users",
-                            image: "person.2",
                             color: .green,
                             summary: activitySummary
                         )
@@ -48,7 +47,6 @@ struct HomeList: View {
                     } label: {
                         MetricCard(
                             title: "Sessions",
-                            image: "clock",
                             color: .purple,
                             summary: sessionSummary
                         )
