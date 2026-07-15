@@ -26,7 +26,6 @@ struct HomeList: View {
             List {
                 SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
                     .padding(.top, 8)
-                    .padding(.bottom, 4)
                     .listRowSeparator(.hidden)
 
                 HStack(spacing: 24) {
@@ -34,7 +33,7 @@ struct HomeList: View {
                         path.append(.activity)
                     } label: {
                         MetricCard(
-                            title: period.activityPeriod?.acronym ?? "Users",
+                            title: "Users",
                             color: .green,
                             summary: activitySummary
                         )
