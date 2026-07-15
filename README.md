@@ -7,10 +7,10 @@
 ![Platform](https://img.shields.io/badge/platform-iOS%2016%2B-blue)
 [![License](https://img.shields.io/github/license/kasianov-mikhail/scout)](LICENSE)
 
-## Description
+## 📖 Description
 Scout is an iOS logging and analytics framework backed by CloudKit. It collects structured logs, metrics, and crash reports from your app and syncs them to a public CloudKit database where you can inspect them through a built-in SwiftUI dashboard.
 
-## Table of Contents
+## 📋 Table of Contents
 - [Features](#features)
 - [Comparison](#comparison)
 - [Installation](#installation)
@@ -18,7 +18,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 - [Roadmap](#roadmap)
 - [License](#license)
 
-## Features
+## ✨ Features
 
 | | | |
 |:-:|-|-|
@@ -29,7 +29,7 @@ Scout is an iOS logging and analytics framework backed by CloudKit. It collects 
 | 🌐 | **Multiple Backends** | Sync to CloudKit, to one or more self-hosted [Scout servers](https://github.com/kasianov-mikhail/scout-server), or to any combination of them at once. |
 | 📱 | **SwiftUI Dashboard** | A built-in dashboard with charts, event lists, crash details, and activity tracking for debugging in development builds. |
 
-## Comparison
+## ⚖️ Comparison
 
 How Scout compares to a hosted analytics SDK and to rolling your own backend:
 
@@ -72,17 +72,17 @@ How Scout compares to a hosted analytics SDK and to rolling your own backend:
 </tr>
 </table>
 
-## Installation
+## 📦 Installation
 
 To add the package and set up CloudKit, see the [Installation Guide](docs/INSTALLATION.md).
 
-## Dashboard
+## 📱 Dashboard
 
 The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports right inside your development builds — browse charts, drill into event lists and crash details, and track activity over time without leaving the app.
 
 <img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
-## Roadmap
+## 🚀 Roadmap
 
 - [ ] **Hosted Scout** *(in progress)* — a managed [scout-server](https://github.com/kasianov-mikhail/scout-server) instance
 - [ ] **AI tools** — an MCP server over the Scout backend
@@ -91,5 +91,5 @@ The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports
 
 Have an idea, or want one of these sooner? Open an [issue](https://github.com/kasianov-mikhail/scout/issues).
 
-## License
+## 📄 License
 Scout is released under the MIT License. See [LICENSE](LICENSE) for details.
