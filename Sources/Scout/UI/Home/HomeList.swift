@@ -33,7 +33,7 @@ struct HomeList: View {
                     Button {
                         path.append(.activity)
                     } label: {
-                        MetricColumn(
+                        MetricCard(
                             title: period.activityPeriod?.acronym ?? "Users",
                             image: "person.2",
                             color: .green,
@@ -46,7 +46,7 @@ struct HomeList: View {
                     Button {
                         path.append(.sessions)
                     } label: {
-                        MetricColumn(
+                        MetricCard(
                             title: "Sessions",
                             image: "clock",
                             color: .purple,
