@@ -47,10 +47,14 @@ extension ParamValue {
     /// The accent color of the value's kind.
     var color: Color {
         switch self {
-        case .string: .primary
-        case .stringConvertible(let convertible): convertible.color
-        case .dictionary: .indigo
-        case .array: .brown
+        case .string:
+            .primary
+        case .stringConvertible(let convertible):
+            convertible.color
+        case .dictionary:
+            .indigo
+        case .array:
+            .brown
         }
     }
 }
@@ -59,12 +63,18 @@ extension ParamValue.Convertible {
     /// The accent color of the scalar kind.
     var color: Color {
         switch self {
-        case .number: .blue
-        case .boolean(true): .green
-        case .boolean(false): .red
-        case .uuid: .purple
-        case .url: .teal
-        case .date: .orange
+        case .number:
+            .blue
+        case .boolean(true):
+            .green
+        case .boolean(false):
+            .red
+        case .uuid:
+            .purple
+        case .url:
+            .teal
+        case .date:
+            .orange
         }
     }
 }

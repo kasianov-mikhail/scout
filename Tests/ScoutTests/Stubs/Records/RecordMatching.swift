@@ -36,11 +36,16 @@ extension Record {
         case .greaterThan, .greaterThanOrEquals, .lessThan, .lessThanOrEquals:
             guard let lhs = value.comparable, let rhs = filter.value.comparable else { return false }
             switch filter.op {
-            case .greaterThan: return lhs > rhs
-            case .greaterThanOrEquals: return lhs >= rhs
-            case .lessThan: return lhs < rhs
-            case .lessThanOrEquals: return lhs <= rhs
-            default: return false
+            case .greaterThan:
+                return lhs > rhs
+            case .greaterThanOrEquals:
+                return lhs >= rhs
+            case .lessThan:
+                return lhs < rhs
+            case .lessThanOrEquals:
+                return lhs <= rhs
+            default:
+                return false
             }
         }
     }
@@ -50,10 +55,14 @@ extension RecordValue {
     /// A scalar projection used to order values for range comparisons.
     fileprivate var comparable: Double? {
         switch self {
-        case .int(let value): Double(value)
-        case .double(let value): value
-        case .date(let value): value.timeIntervalSince1970
-        default: nil
+        case .int(let value):
+            Double(value)
+        case .double(let value):
+            value
+        case .date(let value):
+            value.timeIntervalSince1970
+        default:
+            nil
         }
     }
 }

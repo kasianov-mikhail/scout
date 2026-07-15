@@ -60,15 +60,19 @@ extension BackendHealth {
 extension BackendHealth.Engine {
     var label: String {
         switch self {
-        case .cloudKit: "CloudKit"
-        case .server: "Scout Server"
+        case .cloudKit:
+            "CloudKit"
+        case .server:
+            "Scout Server"
         }
     }
 
     var icon: String {
         switch self {
-        case .cloudKit: "icloud"
-        case .server: "server.rack"
+        case .cloudKit:
+            "icloud"
+        case .server:
+            "server.rack"
         }
     }
 }
@@ -76,28 +80,40 @@ extension BackendHealth.Engine {
 extension Backend.Status {
     var healthLabel: String {
         switch self {
-        case .reachable: "Operational"
-        case .readOnly: "Read-Only"
-        case .unreachable, .failed: "Unreachable"
-        case .unknown: "Checking"
+        case .reachable:
+            "Operational"
+        case .readOnly:
+            "Read-Only"
+        case .unreachable, .failed:
+            "Unreachable"
+        case .unknown:
+            "Checking"
         }
     }
 
     var healthColor: Color {
         switch self {
-        case .reachable: .green
-        case .readOnly: .orange
-        case .unreachable, .failed: .red
-        case .unknown: .gray
+        case .reachable:
+            .green
+        case .readOnly:
+            .orange
+        case .unreachable, .failed:
+            .red
+        case .unknown:
+            .gray
         }
     }
 
     var healthIcon: String {
         switch self {
-        case .reachable: "checkmark.circle.fill"
-        case .readOnly: "exclamationmark.triangle.fill"
-        case .unreachable, .failed: "xmark.octagon.fill"
-        case .unknown: "questionmark.circle.fill"
+        case .reachable:
+            "checkmark.circle.fill"
+        case .readOnly:
+            "exclamationmark.triangle.fill"
+        case .unreachable, .failed:
+            "xmark.octagon.fill"
+        case .unknown:
+            "questionmark.circle.fill"
         }
     }
 }

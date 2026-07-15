@@ -159,11 +159,16 @@ struct MatrixSeries {
 
     private static func layout(of source: Source) -> (entity: String, dateField: String, matrixName: String) {
         switch source {
-        case .sessions: (SessionEntry.recordType, "start_date", SessionEntry.recordType)
-        case .crashes: (CrashEntry.recordType, "date", CrashEntry.recordType)
-        case .hangs: (HangEntry.recordType, "date", HangEntry.recordType)
-        case .versionInstalls: (VersionEntry.recordType, "date", MarkerEntry.installName)
-        case .versionCrashes: (CrashEntry.recordType, "date", MarkerEntry.crashName)
+        case .sessions:
+            (SessionEntry.recordType, "start_date", SessionEntry.recordType)
+        case .crashes:
+            (CrashEntry.recordType, "date", CrashEntry.recordType)
+        case .hangs:
+            (HangEntry.recordType, "date", HangEntry.recordType)
+        case .versionInstalls:
+            (VersionEntry.recordType, "date", MarkerEntry.installName)
+        case .versionCrashes:
+            (CrashEntry.recordType, "date", MarkerEntry.crashName)
         }
     }
 

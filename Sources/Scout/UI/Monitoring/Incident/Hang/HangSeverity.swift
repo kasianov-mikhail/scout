@@ -13,22 +13,28 @@ enum HangSeverity {
 
     var label: String {
         switch self {
-        case .warning: "Hang"
-        case .critical: "Severe Hang"
+        case .warning:
+            "Hang"
+        case .critical:
+            "Severe Hang"
         }
     }
 
     var color: Color {
         switch self {
-        case .warning: .orange
-        case .critical: .red
+        case .warning:
+            .orange
+        case .critical:
+            .red
         }
     }
 
     var systemImage: String {
         switch self {
-        case .warning: "hourglass"
-        case .critical: "exclamationmark.octagon"
+        case .warning:
+            "hourglass"
+        case .critical:
+            "exclamationmark.octagon"
         }
     }
 }

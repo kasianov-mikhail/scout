@@ -48,8 +48,10 @@ enum MetricValue: Decodable, Equatable {
 extension MetricValue {
     var doubleValue: Double {
         switch self {
-        case .int(let value): Double(value)
-        case .double(let value): value
+        case .int(let value):
+            Double(value)
+        case .double(let value):
+            value
         }
     }
 }
