@@ -76,7 +76,12 @@ struct MetricCard: View {
 
 #Preview("MetricCard — states") {
     VStack(spacing: 24) {
-        MetricCard(title: "Empty", image: "clock", color: .red, summary: MetricSummary(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0]))
+        MetricCard(
+            title: "Empty",
+            image: "clock",
+            color: .red,
+            summary: MetricSummary(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
+        )
         MetricCard(title: "Loading", image: "clock", color: .green, summary: .loading)
         MetricCard(title: "Missing", image: "clock", color: .green, summary: nil)
     }
