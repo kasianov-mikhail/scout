@@ -24,9 +24,9 @@ struct MiniChart: View {
     var body: some View {
         Group {
             if let series {
-                Sparkline(series: series, color: color, style: .row)
+                Sparkline(series: series, color: color, lineWidth: 1.5, showsGridlines: false)
             } else {
-                Sparkline(series: .placeholder, color: Color(.systemGray3), style: .row)
+                Sparkline(series: .placeholder, color: Color(.systemGray3), lineWidth: 1.5, showsGridlines: false)
                     .redacted(reason: .placeholder)
             }
         }
