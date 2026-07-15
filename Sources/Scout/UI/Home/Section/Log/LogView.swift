@@ -30,7 +30,7 @@ struct LogView: View {
                         NavigationLink {
                             LogDestination(category: category)
                         } label: {
-                            MetricColumn(
+                            MetricCard(
                                 title: category.title,
                                 image: category.systemImage,
                                 color: category.color,
