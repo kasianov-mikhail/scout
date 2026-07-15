@@ -18,7 +18,7 @@ struct Row<Content: View, Destination: View>: View {
             }
 
             NavigationLink {
-                destination().requestGauge()
+                destination()
             } label: {
                 EmptyView()
             }

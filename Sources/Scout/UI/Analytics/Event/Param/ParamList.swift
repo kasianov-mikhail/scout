@@ -31,7 +31,6 @@ struct ParamList: View {
             }
         }
         .resetsTint()
-        .requestGauge()
     }
 }
 

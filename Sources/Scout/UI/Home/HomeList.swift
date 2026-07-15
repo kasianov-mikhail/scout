@@ -99,7 +99,6 @@ struct HomeList: View {
         StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
             .environment(\.chartColor, .purple)
             .navigationTitle(en: "Sessions")
-            .requestGauge()
     }
 
     private var activitySummary: MetricSummary? {

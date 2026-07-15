@@ -33,7 +33,6 @@ struct NetworkEndpointsView: View {
         }
         .listStyle(.plain)
         .navigationTitle(en: "Endpoints")
-        .requestGauge()
     }
 }
 

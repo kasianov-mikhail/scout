@@ -28,7 +28,6 @@ struct ReleaseHealthView: View {
             }
         }
         .navigationTitle(en: "Releases")
-        .requestGauge()
     }
 }
 
