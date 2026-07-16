@@ -30,7 +30,8 @@ struct NativeSeries {
             series.append(assemble(key, totals) { .double($0) })
         }
 
-        return series
+        return
+            series
             .filter { $0.points.count > 0 }
             .sorted { ($0.name, $0.category ?? "", $0.version ?? "") < ($1.name, $1.category ?? "", $1.version ?? "") }
     }
@@ -72,7 +73,9 @@ struct NativeSeries {
         }
     }
 
-    private func collectEvents(name: String?, into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
+    private func collectEvents(name: String?, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
+        async throws
+    {
         let points = try await store.series(
             entity: EventEntry.recordType, view: EntityCatalog.eventCountView, from: from, to: query.range.upperBound)
 
@@ -81,7 +84,9 @@ struct NativeSeries {
         }
     }
 
-    private func collectMetrics(entity: String, into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
+    private func collectMetrics(entity: String, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
+        async throws
+    {
         let points = try await store.series(
             entity: entity, view: EntityCatalog.metricSeriesView, from: from, to: query.range.upperBound)
 
@@ -108,7 +113,9 @@ struct NativeSeries {
         case sessions, crashes, hangs, installs, firstCrashes
     }
 
-    private func collectCounts(of source: Source, into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
+    private func collectCounts(of source: Source, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
+        async throws
+    {
         let (entity, dateField, name) = Self.layout(of: source)
         let filters = [
             EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(from)),
@@ -161,13 +168,17 @@ struct NativeSeries {
         }
     }
 
-    private func add(_ value: Double, name: String, category: String?, version: String?, date: Date, to totals: inout [GroupKey: [Date: Double]]) {
+    private func add(
+        _ value: Double, name: String, category: String?, version: String?, date: Date,
+        to totals: inout [GroupKey: [Date: Double]]
+    ) {
         let key = GroupKey(name: name, category: category, version: version)
         totals[key, default: [:]][bucketStart(of: date), default: 0] += value
     }
 
     private func assemble(_ key: GroupKey, _ totals: [Date: Double], value: (Double) -> MetricValue) -> MetricSeries {
-        let points = totals
+        let points =
+            totals
             .filter { $0.value != 0 }
             .sorted { $0.key < $1.key }
             .map { MetricSeriesPoint(date: $0.key.millisecondsSince1970, value: value($0.value)) }
