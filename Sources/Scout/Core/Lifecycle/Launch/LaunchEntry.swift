@@ -16,9 +16,10 @@ final class LaunchEntry: SyncableEntry, HasInstall {
     @NSManaged var install: InstallEntry?
     @NSManaged var sessions: Set<SessionEntry>
     @NSManaged var versions: Set<VersionEntry>
+    @NSManaged var visits: Set<VisitEntry>
 
     override var references: Set<DateEntry> {
-        Set(Array(sessions) + Array(versions))
+        Set(Array(sessions) + Array(versions) + Array(visits))
     }
 }
 

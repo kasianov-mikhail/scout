@@ -113,20 +113,30 @@ extension NativeDatabase: ActivityReader {
         await registration.value
         // WAU/MAU windows reach back before the visible range.
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
-        let sessions = try await store.read(
-            entity: SessionEntry.recordType,
+
+        // Visit markers carry one record per device per day; sessions still
+        // back the days written before markers existed. The union dedupes, so
+        // dropping the session leg once every client ships markers is safe.
+        async let markers = visits(entity: VisitEntry.recordType, dateField: "date", from: lookback, in: range)
+        async let sessions = visits(entity: SessionEntry.recordType, dateField: "start_date", from: lookback, in: range)
+
+        return ActivityPoint.points(visits: try await markers + sessions, in: range)
+    }
+
+    private func visits(entity: String, dateField: String, from lookback: Date, in range: Range<Date>) async throws -> [ActivityVisit] {
+        let records = try await store.read(
+            entity: entity,
             filters: [
-                EntityStore.Filter(field: "start_date", op: .greaterThanOrEquals, value: .date(lookback)),
-                EntityStore.Filter(field: "start_date", op: .lessThan, value: .date(range.upperBound)),
+                EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(lookback)),
+                EntityStore.Filter(field: dateField, op: .lessThan, value: .date(range.upperBound)),
             ],
-            fields: ["start_date", "device_id"]
+            fields: [dateField, "device_id"]
         )
 
-        let visits = sessions.compactMap { record -> ActivityVisit? in
-            guard case .date(let date)? = record.values["start_date"] else { return nil }
+        return records.compactMap { record -> ActivityVisit? in
+            guard case .date(let date)? = record.values[dateField] else { return nil }
             guard case .string(let user)? = record.values["device_id"] else { return nil }
             return ActivityVisit(date: date, user: user)
         }
-        return ActivityPoint.points(visits: visits, in: range)
     }
 }

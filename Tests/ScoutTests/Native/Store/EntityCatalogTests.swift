@@ -25,6 +25,7 @@ struct EntityCatalogTests {
         let entities = [
             EventEntry.recordType,
             SessionEntry.recordType,
+            VisitEntry.recordType,
             LaunchEntry.recordType,
             InstallEntry.recordType,
             DeviceEntry.recordType,

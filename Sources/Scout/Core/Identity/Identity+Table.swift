@@ -19,6 +19,7 @@ extension Identity {
         try await persistentContainer.run(
             SessionEntry.Trigger(session: session, launchID: launch),
             ActivityEntry.Trigger(session: session),
+            VisitEntry.Trigger(launchID: launch),
             MarkerEntry.Trigger(installID: install)
         )
     }

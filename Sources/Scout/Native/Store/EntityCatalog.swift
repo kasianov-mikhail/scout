@@ -17,7 +17,7 @@ enum EntityCatalog {
     static let metricSeriesKey = "series_key"
 
     static let definitions: [EntityDefinition] = [
-        event, session, launch, install, device, version, crash, hang,
+        event, session, visit, launch, install, device, version, crash, hang,
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
@@ -66,6 +66,11 @@ enum EntityCatalog {
             ("channel", .string),
         ],
         envelopeDate: "start_date"
+    )
+
+    private static let visit = definition(
+        entity: VisitEntry.recordType,
+        fields: [("date", .timestamp)]
     )
 
     private static let launch = definition(
