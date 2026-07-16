@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import ScoutDB
 import SwiftUI
 
 struct BackendDetailView: View {
@@ -15,7 +14,6 @@ struct BackendDetailView: View {
     @Binding var activeID: String
 
     @State private var isChecking = false
-    @State private var message: Message?
 
     private var backend: BackendHealth? {
         provider.backends.first { $0.id == id }
@@ -31,7 +29,6 @@ struct BackendDetailView: View {
         }
         .navigationTitle(en: backend?.name ?? "Backend")
         .inlineNavigationTitle()
-        .message($message)
     }
 
     private func content(for backend: BackendHealth) -> some View {
@@ -112,18 +109,6 @@ struct BackendDetailView: View {
                 }
             }
             .disabled(isChecking)
-
-            if let benchmark = backend.runBenchmark {
-                BenchmarkButton(benchmark: benchmark, message: $message)
-
-                Text(
-                    verbatim:
-                        "The benchmark issues test queries to verify the \(cloudKitParallelismLimit)-request limit."
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .listRowSeparator(.hidden)
-            }
         }
         .listStyle(.plain)
     }

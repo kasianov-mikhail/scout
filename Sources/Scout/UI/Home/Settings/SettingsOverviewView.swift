@@ -12,15 +12,9 @@ struct SettingsOverviewView: View {
     @Binding var activeID: String
     @StateObject var provider: BackendHealthProvider
 
-    @State private var message: Message?
-
     init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil) {
         _activeID = activeID
         _provider = StateObject(wrappedValue: provider ?? BackendHealthProvider(backends: backends))
-    }
-
-    private var benchmark: (@Sendable () async -> Bool)? {
-        provider.backends.compactMap(\.runBenchmark).first
     }
 
     var body: some View {
@@ -47,14 +41,9 @@ struct SettingsOverviewView: View {
                 Text(verbatim: "Check All Backends")
                     .foregroundStyle(.tint)
             }
-
-            if let benchmark {
-                BenchmarkButton(benchmark: benchmark, message: $message)
-            }
         }
         .listStyle(.plain)
         .navigationTitle(en: "Settings")
-        .message($message)
         .dismissable()
         .opaquePresentation()
         .task {
