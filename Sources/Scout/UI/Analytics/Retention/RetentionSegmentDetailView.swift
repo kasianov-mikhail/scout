@@ -64,8 +64,7 @@ struct RetentionSegmentDetailView: View {
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
                             AxisValueLabel(
-                                rate.formatted(
-                                    .percent.locale(Locale(identifier: "en_US")).precision(.fractionLength(0))))
+                                rate.formatted(.retentionRate))
                         }
                     }
                 }

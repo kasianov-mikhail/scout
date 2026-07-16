@@ -46,6 +46,7 @@ struct HomeList: View {
                 path: $path
             )
             HomeRetentionSection(
+                retention: retention,
                 path: $path
             )
         }
@@ -78,6 +79,9 @@ struct HomeList: View {
     let sessions = StatProvider(eventName: "Session", periods: Period.summary)
     sessions.result = .success([.sample(name: "Session")])
 
+    let retention = RetentionProvider()
+    retention.result = .success(.samples)
+
     let releases = ReleaseHealthProvider()
     releases.result = .success(.samples)
 
@@ -102,6 +106,7 @@ struct HomeList: View {
         HomeList(
             path: .constant([]),
             activities: activities,
+            retention: retention,
             sessions: sessions,
             releases: releases,
             logs: logs,

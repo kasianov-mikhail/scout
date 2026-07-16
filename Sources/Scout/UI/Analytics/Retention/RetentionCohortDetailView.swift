@@ -64,8 +64,7 @@ struct RetentionCohortDetailView: View {
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
                             AxisValueLabel(
-                                rate.formatted(
-                                    .percent.locale(Locale(identifier: "en_US")).precision(.fractionLength(0))))
+                                rate.formatted(.retentionRate))
                         }
                     }
                 }
@@ -123,7 +122,7 @@ struct RetentionCohortDetailView: View {
             Text(verbatim: "D\(day)").font(.caption2).foregroundStyle(.secondary)
             Text(
                 verbatim: rate(retention, day: day).map {
-                    $0.formatted(.percent.locale(Locale(identifier: "en_US")).precision(.fractionLength(0)))
+                    $0.formatted(.retentionRate)
                 } ?? "—"
             )
             .font(.caption.weight(.semibold))
