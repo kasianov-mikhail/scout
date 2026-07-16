@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+#if canImport(UIKit)
 import SnapshotTesting
 import SwiftUI
 import Testing
@@ -51,3 +52,4 @@ import Testing
         assertSnapshot(of: view, as: .scout(height: 140))
     }
 }
+#endif

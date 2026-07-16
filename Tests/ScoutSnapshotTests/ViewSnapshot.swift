@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+#if canImport(UIKit)
 import SnapshotTesting
 import SwiftUI
 
@@ -31,3 +32,4 @@ extension Snapshotting where Value: SwiftUI.View, Format == UIImage {
         return .image(perceptualPrecision: 0.98, layout: .fixed(width: width, height: height), traits: traits)
     }
 }
+#endif
