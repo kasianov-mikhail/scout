@@ -69,6 +69,10 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+        []
+    }
+
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
         -> [MetricSeries]
     {
@@ -88,6 +92,10 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
     struct Failure: Error {}
 
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        throw Failure()
+    }
+
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         throw Failure()
     }
 

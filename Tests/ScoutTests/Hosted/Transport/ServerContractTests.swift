@@ -111,6 +111,28 @@ struct ServerContractTests {
         #expect(point.mau >= 1)
     }
 
+    @Test("The retention table counts a written Install and its return visit")
+    func retentionCohort() async throws {
+        let database = try makeDatabase()
+        let install = UUID().uuidString
+        let installDay = eventDate.startOfDay
+
+        try await database.write(records: [
+            makeInstall(installID: install, date: installDay),
+            makeSession(installID: install, startDate: installDay.addingTimeInterval(3600)),
+        ])
+
+        let week = installDay.startOfWeek
+        let cohorts = try await database.retention(in: week..<week.addingDay(14))
+        let cohort = try #require(cohorts.first { $0.id == week })
+
+        // Our install anchors the cohort and is active on D0; shared data may
+        // add more installs to the same week, so assert a lower bound.
+        #expect(cohort.size >= 1)
+        let d0 = try #require(cohort.retention.first ?? nil)
+        #expect(d0 > 0)
+    }
+
     @Test("Sessions aggregate into a per-version matrix")
     func versionedSessionMatrix() async throws {
         let database = try makeDatabase()
@@ -238,6 +260,13 @@ struct ServerContractTests {
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
         record["start_date"] = startDate
+        return record
+    }
+
+    private func makeInstall(installID: String, date: Date) -> Record {
+        var record = Record(recordType: "Install", recordID: installID)
+        record["install_id"] = installID
+        record["date"] = date
         return record
     }
 

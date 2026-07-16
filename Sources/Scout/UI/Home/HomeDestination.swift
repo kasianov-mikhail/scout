@@ -9,6 +9,7 @@ import Foundation
 
 enum HomeDestination: Hashable {
     case activity
+    case retention
     case sessions
     case log
     case releaseHealth

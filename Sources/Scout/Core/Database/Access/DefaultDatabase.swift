@@ -24,6 +24,10 @@ struct DefaultDatabase: Database {
         []
     }
 
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+        []
+    }
+
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
         -> [MetricSeries]
     {
