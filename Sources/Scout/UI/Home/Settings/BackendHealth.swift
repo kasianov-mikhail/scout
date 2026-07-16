@@ -22,7 +22,6 @@ struct BackendHealth: Identifiable {
     var lastChecked: Date? = nil
     var pings: [Int] = []
     var probe: @Sendable () async -> Backend.Status = { .unknown }
-    var runBenchmark: (@Sendable () async -> Bool)? = nil
 
     enum Engine {
         case cloudKit
@@ -39,8 +38,7 @@ extension BackendHealth {
             engine: backend.serverInfo == nil ? .cloudKit : .server,
             hasAPIKey: backend.serverInfo?.hasAPIKey ?? false,
             isSecure: backend.serverInfo?.isSecure ?? true,
-            probe: backend.probeStatus,
-            runBenchmark: backend.runBenchmark
+            probe: backend.probeStatus
         )
     }
 
@@ -164,8 +162,7 @@ extension BackendHealth: Fixture {
                 probe: {
                     try? await Task.sleep(for: .milliseconds(264))
                     return .reachable
-                },
-                runBenchmark: { true }
+                }
             ),
             BackendHealth(
                 id: "https://staging.scout.app",
