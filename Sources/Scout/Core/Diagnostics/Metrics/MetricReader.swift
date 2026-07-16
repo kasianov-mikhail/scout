@@ -31,7 +31,7 @@ struct SeriesQuery {
     var values: String?
     var bucket: Bucket = .day
     var byVersion = false
-    let range: Range<Date>
+    var range: Range<Date>
 }
 
 struct MetricSeries: Decodable {
