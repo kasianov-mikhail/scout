@@ -5,26 +5,28 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import SnapshotTesting
-import SwiftUI
-import Testing
+#if canImport(UIKit)
+    import SnapshotTesting
+    import SwiftUI
+    import Testing
 
-@testable import Scout
+    @testable import Scout
 
-@Suite(.enabled(if: ViewSnapshot.isSupported))
-@MainActor struct HeatmapViewSnapshotTests {
-    @Test("Populated grid")
-    func populated() {
-        guard ViewSnapshot.isSupported else { return }
+    @Suite(.enabled(if: ViewSnapshot.isSupported))
+    @MainActor struct HeatmapViewSnapshotTests {
+        @Test("Populated grid")
+        func populated() {
+            guard ViewSnapshot.isSupported else { return }
 
-        assertSnapshot(of: HeatmapView(grid: .sample).padding(), as: .scout(height: 320))
+            assertSnapshot(of: HeatmapView(grid: .sample).padding(), as: .scout(height: 320))
+        }
+
+        @Test("Empty grid")
+        func empty() {
+            guard ViewSnapshot.isSupported else { return }
+
+            let grid = HeatmapGrid(counts: [[Int]](repeating: [Int](repeating: 0, count: 24), count: 7))
+            assertSnapshot(of: HeatmapView(grid: grid).padding(), as: .scout(height: 320))
+        }
     }
-
-    @Test("Empty grid")
-    func empty() {
-        guard ViewSnapshot.isSupported else { return }
-
-        let grid = HeatmapGrid(counts: [[Int]](repeating: [Int](repeating: 0, count: 24), count: 7))
-        assertSnapshot(of: HeatmapView(grid: grid).padding(), as: .scout(height: 320))
-    }
-}
+#endif
