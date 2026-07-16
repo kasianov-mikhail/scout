@@ -28,6 +28,13 @@ jobs:
           fetch-depth: 0
           filter: blob:none
 
+      - name: Cache Swift package checkouts
+        uses: actions/cache@v4
+        with:
+          path: /tmp/spm
+          key: spm-${{ hashFiles('Package.swift') }}
+          restore-keys: spm-
+
       # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
       # only processed by the Xcode build system), so instead of
       # `swift package diagnose-api-breaking-changes` we build both versions
@@ -38,6 +45,7 @@ jobs:
             -scheme Scout \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath /tmp/dd-current \
+            -clonedSourcePackagesDirPath /tmp/spm \
             -skipMacroValidation \
             -quiet \
             build
@@ -55,7 +63,18 @@ jobs:
             -I /tmp/dd-current/Build/Products/Debug-iphonesimulator \
             "${digester_flags[@]}"
 
+      # The baseline dump depends only on the base commit, which changes far
+      # less often than the PR head: on a cache hit the whole baseline build
+      # is skipped.
+      - name: Cache baseline API dump
+        id: baseline-cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/baseline.json
+          key: api-baseline-${{ github.event.pull_request.base.sha }}
+
       - name: Dump baseline API
+        if: steps.baseline-cache.outputs.cache-hit != 'true'
         run: |
           # Compare against the PR's base (main), so the check flags only the
           # API changes this PR introduces — not cumulative drift since release.
@@ -74,6 +93,7 @@ jobs:
             -scheme Scout \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath /tmp/dd-baseline \
+            -clonedSourcePackagesDirPath /tmp/spm \
             -skipMacroValidation \
             -quiet \
             build; then
