@@ -32,6 +32,7 @@ struct IncidentBreakdownProviderTests {
         let breakdown = try #require(try? provider.result?.get())
 
         #expect(Set(breakdown.devices.map(\.label)) == ["iPhone15,3", "iPhone14,2"])
+        #expect(breakdown.modelsByDevice == [deviceA: "iPhone15,3", deviceB: "iPhone14,2"])
     }
 
     @Test("Groups OS versions for the requested session IDs")
@@ -56,6 +57,7 @@ struct IncidentBreakdownProviderTests {
 
         #expect(breakdown.osVersions.map(\.label) == ["iOS 17.4"])
         #expect(breakdown.osVersions.first?.count == 2)
+        #expect(breakdown.versionsBySession == [sessionA: "iOS 17.4", sessionB: "iOS 17.4"])
     }
 
     @Test("Skips fetching when there are no IDs to resolve")
