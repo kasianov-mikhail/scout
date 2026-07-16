@@ -11,7 +11,7 @@ struct RangeControl<T: ChartTimeScale>: View {
     @Binding var extent: ChartExtent<T>
 
     var body: some View {
-        HStack {
+        HStack(spacing: 0) {
             MoveButton(image: "chevron.left") {
                 extent.moveLeft()
             }
@@ -22,7 +22,6 @@ struct RangeControl<T: ChartTimeScale>: View {
                 .monospaced()
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .frame(height: 44)
                 .frame(maxWidth: .infinity)
 
             MoveButton(image: "chevron.right") {
@@ -35,6 +34,7 @@ struct RangeControl<T: ChartTimeScale>: View {
             )
             .disabled(!extent.isRightEnabled)
         }
+        .frame(height: 44)
         .padding(.top)
         .padding(.horizontal)
     }
@@ -46,9 +46,13 @@ struct RangeControl<T: ChartTimeScale>: View {
         var body: some View {
             Button(action: action) {
                 Image(systemName: image)
+                    .font(.system(size: 14, weight: .bold))
+                    .frame(width: 40, height: 40)
+                    .background(Circle().fill(.tint.opacity(0.12)))
+                    .frame(width: 44, height: 44)
             }
-            .font(.system(size: 16))
-            .frame(width: 44, height: 44)
+            .buttonStyle(.plain)
+            .foregroundStyle(.tint)
         }
     }
 }
