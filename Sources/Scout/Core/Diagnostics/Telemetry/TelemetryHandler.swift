@@ -8,7 +8,7 @@
 import Foundation
 import Metrics
 
-final class CKTelemetryHandler: NSObject {
+final class TelemetryHandler: NSObject {
     let label: String
     let dimensions: [(String, String)]
     let sync: Synchronize
@@ -24,7 +24,7 @@ final class CKTelemetryHandler: NSObject {
     func reset() {}
 }
 
-extension CKTelemetryHandler: CounterHandler {
+extension TelemetryHandler: CounterHandler {
     func increment(by value: Int64) {
         if let category = StatusBuckets.category(in: dimensions) {
             logMetrics(category: category, value: Int(value))
@@ -34,13 +34,13 @@ extension CKTelemetryHandler: CounterHandler {
     }
 }
 
-extension CKTelemetryHandler: FloatingPointCounterHandler {
+extension TelemetryHandler: FloatingPointCounterHandler {
     func increment(by value: Double) {
         logMetrics(telemetry: .floatingCounter, value: value)
     }
 }
 
-extension CKTelemetryHandler: TimerHandler {
+extension TelemetryHandler: TimerHandler {
     func recordNanoseconds(_ duration: Int64) {
         logTimer(seconds: Double(duration) / 1_000_000_000)
     }
