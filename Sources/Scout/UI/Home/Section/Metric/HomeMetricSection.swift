@@ -40,6 +40,7 @@ struct HomeMetricSection: View {
             }
             .buttonStyle(.plain)
         }
+        .padding(.bottom, -11)
         .listRowSeparator(.hidden)
     }
 

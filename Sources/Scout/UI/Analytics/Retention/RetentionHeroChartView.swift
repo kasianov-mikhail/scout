@@ -75,8 +75,7 @@ private struct RetentionHeroChart: View {
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
                             AxisValueLabel(
-                                rate.formatted(
-                                    .percent.locale(Locale(identifier: "en_US")).precision(.fractionLength(0))))
+                                rate.formatted(.retentionRate))
                         }
                     }
                 }
@@ -99,7 +98,7 @@ private struct RetentionHeroChart: View {
                         if let day7 = rate(cohort, day: 7) {
                             Text(
                                 verbatim:
-                                    "D7 \(day7.formatted(.percent.locale(Locale(identifier: "en_US")).precision(.fractionLength(0))))"
+                                    "D7 \(day7.formatted(.retentionRate))"
                             )
                             .font(.caption.weight(.semibold))
                             .foregroundStyle(.green)

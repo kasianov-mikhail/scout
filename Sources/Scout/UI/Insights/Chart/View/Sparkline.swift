@@ -13,11 +13,16 @@ struct Sparkline: View {
     let color: Color
     var lineWidth: Double = 2
     var showsGridlines = true
+    var gridlinesAtPoints = false
 
     var body: some View {
         let values = series.isEmpty ? [] : series.values
         let scale = SparklineScale(values: values)
         let last = Double(max(values.count - 1, 1))
+        let xGridlines =
+            gridlinesAtPoints
+            ? Array(stride(from: 0, through: last, by: 1))
+            : (0...3).map { last * Double($0) / 3 }
 
         Chart(Array(values.enumerated()), id: \.offset) { index, value in
             AreaMark(
@@ -44,7 +49,7 @@ struct Sparkline: View {
         }
         .chartXAxis {
             if showsGridlines {
-                AxisMarks(values: (0...3).map { last * Double($0) / 3 }) { _ in
+                AxisMarks(values: xGridlines) { _ in
                     AxisGridLine()
                 }
             }

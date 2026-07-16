@@ -10,6 +10,7 @@ import Foundation
 
 struct RetentionCohort: Identifiable, Hashable {
     static let dayOffsets = [0, 1, 3, 7, 14, 30]
+    static let summaryOffsets = [1, 7, 30]
 
     let id: Date
     let size: Int
@@ -43,6 +44,12 @@ let cohortDateFormatter: DateFormatter = {
     formatter.dateFormat = "MMM d"
     return formatter
 }()
+
+extension FormatStyle where Self == FloatingPointFormatStyle<Double>.Percent {
+    static var retentionRate: FloatingPointFormatStyle<Double>.Percent {
+        .percent.locale(Locale(identifier: "en_US")).precision(.fractionLength(0))
+    }
+}
 
 extension RetentionCohort {
     struct DayStat: Identifiable {
