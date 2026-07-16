@@ -13,23 +13,23 @@ struct TelemetryFactory: MetricsFactory {
     let session: Protected<UUID>
 
     func makeCounter(label: String, dimensions: [(String, String)]) -> CounterHandler {
-        CKTelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
+        TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
     }
 
     func makeFloatingPointCounter(label: String, dimensions: [(String, String)]) -> FloatingPointCounterHandler {
-        CKTelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
+        TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
     }
 
     func makeMeter(label: String, dimensions: [(String, String)]) -> MeterHandler {
-        CKTelemetryHandler.Idle()
+        TelemetryHandler.Idle()
     }
 
     func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool) -> RecorderHandler {
-        CKTelemetryHandler.Idle()
+        TelemetryHandler.Idle()
     }
 
     func makeTimer(label: String, dimensions: [(String, String)]) -> TimerHandler {
-        CKTelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
+        TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
     }
 
     func destroyCounter(_ handler: CounterHandler) {}

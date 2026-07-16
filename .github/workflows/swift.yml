@@ -35,13 +35,19 @@ jobs:
 
     strategy:
       matrix:
+        # Coverage is collected on one leg only: the reports differ between
+        # legs by fractions of a percent, and instrumentation, xcresult
+        # conversion, and the Codecov upload cost minutes on every run. The
+        # iOS 26 leg carries it because the snapshot suites only execute there.
         include:
           - os: macos-15
             device: iPhone 16
             ios: 18
+            coverage: false
           - os: macos-26
             device: iPhone 17
             ios: 26
+            coverage: true
 
     steps:
       - uses: actions/checkout@v7
@@ -52,12 +58,24 @@ jobs:
             xcodebuild -downloadPlatform iOS
           fi
 
+      # Package.resolved is not committed, so the key falls back to the
+      # manifest: any Package.swift change starts a fresh cache, and
+      # restore-keys reuse the previous checkouts for the git fetches that
+      # resolution still performs.
+      - name: Cache Swift package checkouts
+        uses: actions/cache@v4
+        with:
+          path: /tmp/spm
+          key: spm-${{ hashFiles('Package.swift') }}
+          restore-keys: spm-
+
       - name: Build
         run: |
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
-            -enableCodeCoverage YES \
+            -clonedSourcePackagesDirPath /tmp/spm \
+            -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
             -skipMacroValidation \
             build-for-testing
 
@@ -66,11 +84,12 @@ jobs:
           xcodebuild \
             -scheme Scout \
             -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
-            -enableCodeCoverage YES \
+            -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
             -resultBundlePath TestResults.xcresult \
             test-without-building
 
       - name: Report coverage
+        if: matrix.coverage
         run: |
           {
             echo "### Coverage (iOS ${{ matrix.ios }})"

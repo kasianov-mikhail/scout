@@ -12,16 +12,16 @@ import Testing
 @testable import Scout
 
 struct TelemetryHandlerTests {
-    @Test("CKTelemetryHandler stores label")
+    @Test("TelemetryHandler stores label")
     func storesLabel() {
-        let handler = CKTelemetryHandler(label: "test_label", dimensions: [], sync: {}, session: Protected(UUID()))
+        let handler = TelemetryHandler(label: "test_label", dimensions: [], sync: {}, session: Protected(UUID()))
         #expect(handler.label == "test_label")
     }
 
-    @Test("CKTelemetryHandler stores dimensions")
+    @Test("TelemetryHandler stores dimensions")
     func storesDimensions() {
         let dims = [("key1", "value1"), ("key2", "value2")]
-        let handler = CKTelemetryHandler(label: "test", dimensions: dims, sync: {}, session: Protected(UUID()))
+        let handler = TelemetryHandler(label: "test", dimensions: dims, sync: {}, session: Protected(UUID()))
         #expect(handler.dimensions.count == 2)
         #expect(handler.dimensions[0].0 == "key1")
         #expect(handler.dimensions[1].1 == "value2")

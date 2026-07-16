@@ -15,9 +15,13 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      # blob:none keeps the full-history fetch below from downloading every
+      # historical blob (snapshot PNGs included): the name-status diff only
+      # walks commit trees, so content is never needed.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          filter: blob:none
 
       - name: Check model version rules
         run: |

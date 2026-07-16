@@ -55,7 +55,7 @@ public func setup(backends: [Backend]) async throws {
     identity.table.startListening(completion: sync)
 
     LoggingSystem.bootstrap {
-        CKLogHandler(sync: sync, session: session, label: $0)
+        ScoutLogHandler(sync: sync, session: session, label: $0)
     }
     MetricsSystem.bootstrap(
         TelemetryFactory(sync: sync, session: session)

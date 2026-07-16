@@ -8,7 +8,7 @@
 import Foundation
 import Logging
 
-struct CKLogHandler: LogHandler {
+struct ScoutLogHandler: LogHandler {
     let sync: Synchronize
     let session: Protected<UUID>
     let label: String

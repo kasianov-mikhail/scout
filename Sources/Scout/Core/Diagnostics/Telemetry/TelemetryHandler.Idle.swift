@@ -7,7 +7,7 @@
 
 import Metrics
 
-extension CKTelemetryHandler {
+extension TelemetryHandler {
     final class Idle: MeterHandler, RecorderHandler {
         func set(_ value: Int64) {}
 

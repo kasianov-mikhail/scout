@@ -8,7 +8,7 @@
 
 import CoreData
 
-extension CKTelemetryHandler {
+extension TelemetryHandler {
     func logMetrics(telemetry: Telemetry.Export, value: some MetricScalar) {
         logMetrics(category: telemetry.rawValue, value: value)
     }
