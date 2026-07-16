@@ -83,7 +83,7 @@ jobs:
       # restore-keys reuse the previous checkouts for the git fetches that
       # resolution still performs.
       - name: Cache Swift package checkouts
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/spm
           key: spm-${{ hashFiles('Package.swift') }}
