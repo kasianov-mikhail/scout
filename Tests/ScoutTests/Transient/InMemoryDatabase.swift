@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Scout
 
-final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable {
+final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var records: [Record] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []

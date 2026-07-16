@@ -19,7 +19,7 @@ struct NativeDatabase: Sendable {
     }
 }
 
-extension NativeDatabase: RecordWriter {
+extension NativeDatabase: DatabaseWriter {
     func write(record: Record) async throws {
         await registration.value
         try await store.write(Self.values(for: record), entity: record.recordType, uuid: record.recordID)
@@ -40,7 +40,7 @@ extension NativeDatabase: RecordWriter {
     }
 }
 
-extension NativeDatabase: RecordReader {
+extension NativeDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         try await read(matching: query, fields: fields, limit: Int.max)
     }
@@ -68,7 +68,7 @@ extension NativeDatabase: RecordReader {
     }
 }
 
-extension NativeDatabase: RecordLocator {
+extension NativeDatabase {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         await registration.value
         guard let entityRecord = try await store.fetch(uuid: recordName) else {
@@ -78,14 +78,14 @@ extension NativeDatabase: RecordLocator {
     }
 }
 
-extension NativeDatabase: MetricReader {
+extension NativeDatabase {
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
         await registration.value
         return try await NativeSeries(query: query).series(store: store)
     }
 }
 
-extension NativeDatabase: ActivityReader {
+extension NativeDatabase {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         await registration.value
         // WAU/MAU windows reach back before the visible range.
@@ -119,7 +119,7 @@ extension NativeDatabase: ActivityReader {
     }
 }
 
-extension NativeDatabase: RetentionReader {
+extension NativeDatabase {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         await registration.value
 
