@@ -34,6 +34,9 @@ jobs:
       id-token: write
 
     strategy:
+      # The xcode-27 leg runs a public-preview image; keep a failure there from
+      # cancelling the stable legs, whose checks are required on main.
+      fail-fast: false
       matrix:
         # Coverage is collected on one leg only: the reports differ between
         # legs by fractions of a percent, and instrumentation, xcresult
@@ -53,7 +56,7 @@ jobs:
           # a required check, so its failures don't block merges. Snapshot
           # baselines are iOS 26 only, so those suites skip on this leg.
           - os: xcode-27
-            device: iPhone 18
+            device: iPhone 17
             ios: 27
             coverage: false
 
