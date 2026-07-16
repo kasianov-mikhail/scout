@@ -8,8 +8,15 @@
 import Foundation
 
 enum CachedMetricSeries {
-    static func fingerprint(scope: String, values: String, category: String) -> String {
-        [scope, "series", values, category].joined(separator: "|")
+    static func fingerprint(scope: String, query: SeriesQuery) -> String {
+        [
+            scope, "series",
+            query.name ?? "*",
+            query.category ?? "*",
+            query.values ?? "*",
+            query.bucket.rawValue,
+            query.byVersion ? "version" : "*",
+        ].joined(separator: "|")
     }
 
     static func records(from series: [MetricSeries]) -> [Record] {
@@ -19,6 +26,7 @@ enum CachedMetricSeries {
                 record.fields["date"] = .date(Date(millisecondsSince1970: point.date))
                 record.fields["name"] = .string(series.name)
                 record.fields["category"] = series.category.map(RecordValue.string)
+                record.fields["app_version"] = series.version.map(RecordValue.string)
                 record.fields["value"] = recordValue(point.value)
                 return record
             }
@@ -35,25 +43,37 @@ enum CachedMetricSeries {
 
             let category: String? =
                 if case .string(let category)? = record.fields["category"] { category } else { nil }
+            let version: String? =
+                if case .string(let version)? = record.fields["app_version"] { version } else { nil }
             let point = MetricSeriesPoint(date: date.millisecondsSince1970, value: value)
-            points[SeriesKey(name: name, category: category), default: []].append(point)
+            points[SeriesKey(name: name, category: category, version: version), default: []].append(point)
         }
 
         for series in fetched {
-            points[SeriesKey(name: series.name, category: series.category), default: []] += series.points
+            points[SeriesKey(name: series.name, category: series.category, version: series.version), default: []] +=
+                series.points
         }
 
         return
             points
-            .sorted { ($0.key.name, $0.key.category ?? "") < ($1.key.name, $1.key.category ?? "") }
+            .sorted {
+                ($0.key.name, $0.key.category ?? "", $0.key.version ?? "")
+                    < ($1.key.name, $1.key.category ?? "", $1.key.version ?? "")
+            }
             .map { key, points in
-                MetricSeries(name: key.name, category: key.category, points: points.sorted { $0.date < $1.date })
+                MetricSeries(
+                    name: key.name,
+                    category: key.category,
+                    version: key.version,
+                    points: points.sorted { $0.date < $1.date }
+                )
             }
     }
 
     private struct SeriesKey: Hashable {
         let name: String
         let category: String?
+        let version: String?
     }
 
     private static func recordValue(_ value: MetricValue) -> RecordValue {

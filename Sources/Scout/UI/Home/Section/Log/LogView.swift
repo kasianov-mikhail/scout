@@ -50,12 +50,11 @@ struct LogView: View {
     }
 
     private var report: LogReport? {
-        guard let matrices = try? log.result?.get() else {
+        guard let series = try? log.result?.get() else {
             return nil
         }
         return LogReport(
-            intMatrices: matrices.0,
-            doubleMatrices: matrices.1,
+            series: series,
             visits: (try? devices.result?.get().visits) ?? [],
             period: period
         )

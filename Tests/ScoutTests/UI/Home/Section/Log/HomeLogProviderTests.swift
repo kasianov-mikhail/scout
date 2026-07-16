@@ -14,14 +14,14 @@ import Testing
 struct HomeLogProviderTests {
     let allTime = Date.distantPast..<Date.distantFuture
 
-    @Test("Fetch builds matrices from both record types")
-    func fetchBuildsMatrices() async throws {
+    @Test("Fetch carries every value flavor in one sweep")
+    func fetchSweepsAllFlavors() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(name: "login", value: 3),
-            makeRecord(name: "Crash", value: 2),
-            makeRecord(name: "api_calls", category: "counter", value: 7),
-            makeRecord(name: "load_time", category: "timer", value: 0.25)
+            series: makeSeries(name: "login", value: .int(3)),
+            makeSeries(name: "Crash", value: .int(2)),
+            makeSeries(name: "api_calls", category: "counter", value: .int(7)),
+            makeSeries(name: "load_time", category: "timer", value: .double(0.25))
         )
 
         let provider = HomeLogProvider()
@@ -29,24 +29,22 @@ struct HomeLogProviderTests {
         await provider.fetchIfNeeded(in: database)
         let result = try #require(try provider.result?.get())
 
-        let ints = MatrixSpan(matrices: result.0, range: allTime)
-        let doubles = MatrixSpan(matrices: result.1, range: allTime)
+        let span = SeriesSpan(series: result, range: allTime)
 
-        #expect(ints.points { $0 != CrashEntry.recordType }.total == 3)
-        #expect(ints.points { $0 == CrashEntry.recordType }.total == 2)
-        #expect(ints.series + doubles.series == 2)
-        #expect(database.readCount(of: Int.recordType) == 1)
-        #expect(database.readCount(of: Double.recordType) == 1)
+        #expect(span.points { $0 != CrashEntry.recordType }.total == 3)
+        #expect(span.points { $0 == CrashEntry.recordType }.total == 2)
+        #expect(span.metricCount == 2)
+        #expect(database.seriesReadCount == 1)
     }
 
-    @Test("Fetch drops lifecycle matrices, keeping crashes")
+    @Test("Fetch drops lifecycle series, keeping crashes")
     func fetchDropsLifecycle() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(name: "login", value: 3),
-            makeRecord(name: "Crash", value: 2),
-            makeRecord(name: "Session", value: 5),
-            makeRecord(name: "Launch", value: 1)
+            series: makeSeries(name: "login", value: .int(3)),
+            makeSeries(name: "Crash", value: .int(2)),
+            makeSeries(name: "Session", value: .int(5)),
+            makeSeries(name: "Launch", value: .int(1))
         )
 
         let provider = HomeLogProvider()
@@ -54,16 +52,16 @@ struct HomeLogProviderTests {
         await provider.fetchIfNeeded(in: database)
         let result = try #require(try provider.result?.get())
 
-        #expect(Set(result.0.map(\.name)) == ["login", "Crash"])
+        #expect(Set(result.map(\.name)) == ["login", "Crash"])
     }
 
     @Test("Fetch drops the release markers so they never count as events")
     func fetchDropsMarkers() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(name: "login", value: 3),
-            makeRecord(name: MarkerEntry.installName, value: 1),
-            makeRecord(name: MarkerEntry.crashName, value: 1)
+            series: makeSeries(name: "login", value: .int(3)),
+            makeSeries(name: VersionEntry.recordType, value: .int(1)),
+            makeSeries(name: MarkerEntry.crashName, value: .int(1))
         )
 
         let provider = HomeLogProvider()
@@ -71,34 +69,16 @@ struct HomeLogProviderTests {
         await provider.fetchIfNeeded(in: database)
         let result = try #require(try provider.result?.get())
 
-        #expect(Set(result.0.map(\.name)) == ["login"])
-    }
-
-    @Test("Records of the same matrix merge into one")
-    func mergesDuplicates() async throws {
-        let date = Date()
-        let database = DatabaseStub()
-        database.add(
-            makeRecord(name: "login", date: date, value: 3),
-            makeRecord(name: "login", date: date, value: 4)
-        )
-
-        let provider = HomeLogProvider()
-        provider.period = .today
-        await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
-
-        #expect(result.0.count == 1)
-        #expect(MatrixSpan(matrices: result.0, range: allTime).points { $0 != CrashEntry.recordType }.total == 7)
+        #expect(Set(result.map(\.name)) == ["login"])
     }
 
     @Test("Each period fetches its own range and the one before it")
     func fetchesSelectedPeriodAndPrevious() async throws {
         let database = DatabaseStub()
         database.add(
-            makeRecord(name: "recent", date: Date().addingDay(-2).startOfWeek, value: 3),
-            makeRecord(name: "previous", date: Date().addingDay(-40).startOfWeek, value: 4),
-            makeRecord(name: "old", date: Date().addingDay(-200).startOfWeek, value: 5)
+            series: makeSeries(name: "recent", date: Date().addingDay(-2), value: .int(3)),
+            makeSeries(name: "previous", date: Date().addingDay(-40), value: .int(4)),
+            makeSeries(name: "old", date: Date().addingDay(-200), value: .int(5))
         )
 
         let provider = HomeLogProvider()
@@ -110,14 +90,14 @@ struct HomeLogProviderTests {
         await provider.fetchIfNeeded(in: database)
         let year = try #require(try provider.result?.get())
 
-        #expect(Set(month.0.map(\.name)) == ["recent", "previous"])
-        #expect(Set(year.0.map(\.name)) == ["recent", "previous", "old"])
+        #expect(Set(month.map(\.name)) == ["recent", "previous"])
+        #expect(Set(year.map(\.name)) == ["recent", "previous", "old"])
     }
 
     @Test("Switching periods keeps earlier results cached")
     func cachesResultsPerPeriod() async throws {
         let database = DatabaseStub()
-        database.add(makeRecord(name: "login", value: 3))
+        database.add(series: makeSeries(name: "login", value: .int(3)))
 
         let provider = HomeLogProvider()
         provider.period = .today
@@ -127,20 +107,19 @@ struct HomeLogProviderTests {
         provider.period = .today
         await provider.fetchIfNeeded(in: database)
 
-        #expect(database.readCount(of: Int.recordType) == 2)
+        #expect(database.seriesReadCount == 2)
         #expect(provider.result != nil)
         provider.period = .week
         #expect(provider.result != nil)
     }
 
-    private func makeRecord<T: MetricScalar>(name: String, category: String? = nil, date: Date = Date(), value: T)
-        -> Record
+    private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: MetricValue)
+        -> MetricSeries
     {
-        Matrix(
-            date: date,
+        MetricSeries(
             name: name,
             category: category,
-            cells: [GridCell(row: 1, column: 0, value: value)]
-        ).record
+            points: [MetricSeriesPoint(date: date.millisecondsSince1970, value: value)]
+        )
     }
 }

@@ -18,7 +18,7 @@ struct HTTPQueryCodingTests {
         let to = Date(timeIntervalSince1970: 1_800_000_000)
 
         let query = RecordQuery(
-            recordType: GridMatrix<Int>.self,
+            recordType: Event.self,
             filters: [
                 RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
                 RecordQuery.Filter(field: "date", op: .lessThan, value: .date(to)),
@@ -28,7 +28,7 @@ struct HTTPQueryCodingTests {
 
         let http = HTTPQuery(query: query, fields: nil, limit: nil)
 
-        #expect(http.recordType == "DateIntMatrix")
+        #expect(http.recordType == "Event")
         #expect(
             http.filters == [
                 RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),

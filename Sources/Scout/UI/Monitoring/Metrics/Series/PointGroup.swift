@@ -21,16 +21,6 @@ extension PointGroup: Comparable {
 
 extension [MetricSeries] {
     func pointGroups<T: ChartNumeric>() -> [PointGroup<T>] {
-        map { series in
-            PointGroup(
-                name: series.name,
-                points: series.points.map { point in
-                    ChartPoint(
-                        date: Date(millisecondsSince1970: point.date),
-                        count: T(point.value.doubleValue)
-                    )
-                }
-            )
-        }
+        map { PointGroup(name: $0.name, points: $0.chartPoints()) }
     }
 }

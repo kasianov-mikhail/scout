@@ -76,9 +76,7 @@ private final class FailingDatabase: DatabaseReader, @unchecked Sendable {
         throw RefreshFailure()
     }
     func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk { throw RefreshFailure() }
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    { throw RefreshFailure() }
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] { throw RefreshFailure() }
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw RefreshFailure() }
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw RefreshFailure() }
 }

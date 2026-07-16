@@ -31,60 +31,8 @@ struct CachedDatabaseTests {
         )
     }
 
-    func makeQuery(in range: Range<Date>) -> RecordQuery {
-        RecordQuery(
-            recordType: GridMatrix<Int>.self,
-            filters: range.dateFilters + [RecordQuery.Filter(field: "name", op: .equals, value: .string("Session"))]
-        )
-    }
-
-    func makeRecord(date: Date) -> Record {
-        var record = Record(recordType: GridMatrix<Int>.recordType, recordID: UUID().uuidString)
-        record.fields["date"] = .date(date)
-        record.fields["name"] = .string("Session")
-        record.fields["cell_1_00"] = .int(5)
-        return record
-    }
-
     @available(iOS 17, macOS 14, *)
-    @Test("A repeated query only fetches the live remainder")
-    func fetchesRemainderOnly() async throws {
-        let base = SpyDatabase()
-        let database = try makeDatabase(base: base)
-        let frozen = makeRecord(date: Date(timeIntervalSince1970: 1_000_000))
-        let live = makeRecord(date: Date(timeIntervalSince1970: 3_500_000))
-        base.records = [frozen, live]
-
-        let first = try await database.readAll(matching: makeQuery(in: lower..<upper), fields: nil)
-        let second = try await database.readAll(matching: makeQuery(in: lower..<upper), fields: nil)
-
-        #expect(first.map(\.recordID) == [frozen, live].map(\.recordID))
-        #expect(second.map(\.recordID) == [frozen, live].map(\.recordID))
-        #expect(base.queries.count == 2)
-
-        let fullLower = RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(lower))
-        let remainderLower = RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(cutoff))
-        #expect(base.queries.first?.filters.contains(fullLower) == true)
-        #expect(base.queries.last?.filters.contains(remainderLower) == true)
-    }
-
-    @available(iOS 17, macOS 14, *)
-    @Test("A fully frozen query is served from the cache alone")
-    func servesFrozenFromCache() async throws {
-        let base = SpyDatabase()
-        let database = try makeDatabase(base: base)
-        base.records = [makeRecord(date: Date(timeIntervalSince1970: 1_000_000))]
-
-        let first = try await database.readAll(matching: makeQuery(in: lower..<cutoff), fields: nil)
-        let second = try await database.readAll(matching: makeQuery(in: lower..<cutoff), fields: nil)
-
-        #expect(first.count == 1)
-        #expect(first.map(\.recordID) == second.map(\.recordID))
-        #expect(base.queries.count == 1)
-    }
-
-    @available(iOS 17, macOS 14, *)
-    @Test("Non-matrix queries pass through unchanged")
+    @Test("Record queries pass through unchanged")
     func passesThroughOtherQueries() async throws {
         let base = SpyDatabase()
         let database = try makeDatabase(base: base)
@@ -146,6 +94,30 @@ struct CachedDatabaseTests {
         _ = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
 
         #expect(base.seriesRanges == [lower..<upper, lower..<upper])
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("Version-grouped series round-trip through the cache")
+    func cachesVersionGroups() async throws {
+        let base = SpyDatabase()
+        let database = try makeDatabase(base: base)
+        base.series = [
+            MetricSeries(
+                name: "Session",
+                category: nil,
+                version: "1.2.0",
+                points: [MetricSeriesPoint(date: 1_000_000_000, value: .int(4))]
+            )
+        ]
+        let query = SeriesQuery(name: "Session", byVersion: true, range: lower..<upper)
+
+        let first = try await database.series(matching: query)
+        let second = try await database.series(matching: query)
+
+        #expect(base.seriesRanges == [lower..<upper, cutoff..<upper])
+        #expect(first.map(\.version) == ["1.2.0"])
+        #expect(second.map(\.version) == ["1.2.0"])
+        #expect(second.first?.points.map(\.value) == [.int(4)])
     }
 
     @available(iOS 17, macOS 14, *)
@@ -221,14 +193,12 @@ final class SpyDatabase: Database, @unchecked Sendable {
         []
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
-        seriesRanges.append(range)
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+        seriesRanges.append(query.range)
         return series.compactMap { series in
-            let points = series.points.filter { range.contains(Date(millisecondsSince1970: $0.date)) }
+            let points = series.points.filter { query.range.contains(Date(millisecondsSince1970: $0.date)) }
             guard points.count > 0 else { return nil }
-            return MetricSeries(name: series.name, category: series.category, points: points)
+            return MetricSeries(name: series.name, category: series.category, version: series.version, points: points)
         }
     }
 

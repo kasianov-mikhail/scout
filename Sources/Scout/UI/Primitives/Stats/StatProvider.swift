@@ -7,21 +7,22 @@
 
 import Foundation
 
-class StatProvider: QueryProvider<GridMatrix<Int>> {
+@MainActor
+class StatProvider: ObservableObject, Provider {
+    @Published var result: ProviderResult<[ChartPoint<Int>]>?
+
     let eventName: String
     let periods: [Period]
 
     init(eventName: String, periods: [Period]) {
         self.eventName = eventName
         self.periods = periods
+    }
 
-        super.init {
-            RecordQuery(
-                recordType: GridMatrix<Int>.self,
-                filters: Calendar.utc.defaultRange.dateFilters + [
-                    RecordQuery.Filter(field: "name", op: .equals, value: .string(eventName))
-                ]
-            )
-        }
+    func fetch(in database: DatabaseReader) async throws -> [ChartPoint<Int>] {
+        let series = try await database.series(
+            matching: SeriesQuery(name: eventName, bucket: .hour, range: Calendar.utc.defaultRange)
+        )
+        return series.flatMap { $0.chartPoints() }
     }
 }

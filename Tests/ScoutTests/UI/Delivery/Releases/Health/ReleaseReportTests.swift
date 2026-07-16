@@ -13,11 +13,11 @@ import Testing
 struct ReleaseReportTests {
     private let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 700_000)
 
-    @Test("Sessions and crashes are counted per version from matrices")
+    @Test("Sessions and crashes are counted per version from series")
     func testCrashFreeByVersion() {
-        let releases = ReleaseMatrices(
-            sessions: [sessionMatrix("2.0", count: 2), sessionMatrix("1.0", count: 1)],
-            crashes: [crashMatrix("2.0", count: 1)],
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 2), sessionSeries("1.0", count: 1)],
+            crashes: [crashSeries("2.0", count: 1)],
             hangs: [],
             installs: [],
             crashedInstalls: []
@@ -40,12 +40,12 @@ struct ReleaseReportTests {
         #expect(abs(previous.adoption.value - 1.0 / 3.0) < 1e-9)
     }
 
-    @Test("Hangs are counted per version from matrices")
+    @Test("Hangs are counted per version from series")
     func testHangsByVersion() {
-        let releases = ReleaseMatrices(
-            sessions: [sessionMatrix("2.0", count: 2)],
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 2)],
             crashes: [],
-            hangs: [hangMatrix("2.0", count: 3)],
+            hangs: [hangSeries("2.0", count: 3)],
             installs: [],
             crashedInstalls: []
         )
@@ -54,36 +54,36 @@ struct ReleaseReportTests {
         #expect(releases[0].hangs == 3)
     }
 
-    @Test("Crash-free users come from distinct install markers")
-    func testFreeUsersFromInstallMarkers() {
-        let releases = ReleaseMatrices(
-            sessions: [sessionMatrix("2.0", count: 10)],
+    @Test("Crash-free users come from install and first-crash counts")
+    func testFreeUsersFromInstallCounts() {
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 10)],
             crashes: [],
             hangs: [],
-            installs: [installMatrix("2.0", count: 4)],
-            crashedInstalls: [crashedInstallMatrix("2.0", count: 1)]
+            installs: [installSeries("2.0", count: 4)],
+            crashedInstalls: [crashedInstallSeries("2.0", count: 1)]
         )
         .report(in: range)
 
         #expect(releases[0].freeUsers?.value == 0.75)
     }
 
-    @Test("Crash trend is bucketed from the matrix cell dates")
-    func testCrashTrendFromMatrix() {
+    @Test("Crash trend is bucketed from the point dates")
+    func testCrashTrendFromPoints() {
         let start = Date(timeIntervalSince1970: 0)
 
-        let crashes = Matrix<GridCell<Int>>(
-            date: start,
+        let crashes = MetricSeries(
             name: CrashEntry.recordType,
+            category: nil,
             version: "5.0",
-            cells: [
-                GridCell(row: 1, column: 0, value: 2),
-                GridCell(row: 3, column: 0, value: 3),
+            points: [
+                MetricSeriesPoint(date: start.millisecondsSince1970, value: .int(2)),
+                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400).millisecondsSince1970, value: .int(3)),
             ]
         )
 
-        let releases = ReleaseMatrices(
-            sessions: [sessionMatrix("5.0", count: 10)],
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("5.0", count: 10)],
             crashes: [crashes],
             hangs: [],
             installs: [],
@@ -95,39 +95,53 @@ struct ReleaseReportTests {
         #expect(releases[0].trend == [2, 0, 3, 0, 0, 0, 0])
     }
 
-    @Test("Session matrix cells outside the range are excluded from the count")
-    func testSessionMatricesCountedInRange() {
+    @Test("Session points outside the range are excluded from the count")
+    func testSessionPointsCountedInRange() {
         let start = Date(timeIntervalSince1970: 0)
 
-        let matrix = Matrix<GridCell<Int>>(
-            date: start,
+        let sessions = MetricSeries(
             name: SessionEntry.recordType,
+            category: nil,
             version: "5.0",
-            cells: [
-                GridCell(row: 1, column: 0, value: 5),
-                GridCell(row: 3, column: 0, value: 7),
+            points: [
+                MetricSeriesPoint(date: start.millisecondsSince1970, value: .int(5)),
+                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400).millisecondsSince1970, value: .int(7)),
             ]
         )
 
-        let releases = ReleaseMatrices(sessions: [matrix], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [])
             .report(in: start..<start.addingTimeInterval(86_400))
 
         #expect(releases.map(\.id) == ["5.0"])
         #expect(releases[0].sessions == 5)
     }
 
+    @Test("Series without a version are left out of the report")
+    func testUnversionedSeriesIgnored() {
+        let unversioned = MetricSeries(
+            name: SessionEntry.recordType,
+            category: nil,
+            points: [MetricSeriesPoint(date: range.lowerBound.millisecondsSince1970, value: .int(5))]
+        )
+
+        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+            .report(in: range)
+
+        #expect(releases.isEmpty)
+    }
+
     @Test("No data yields no releases")
     func testEmpty() {
-        let releases = ReleaseMatrices(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [])
             .report(in: range)
         #expect(releases.isEmpty)
     }
 
     @Test("Releases are ordered newest version first, regardless of report order")
     func testSortedByVersion() {
-        let releases = ReleaseMatrices(
+        let releases = ReleaseSeries(
             sessions: [
-                sessionMatrix("3.9", count: 1), sessionMatrix("3.10", count: 1), sessionMatrix("4.0", count: 1),
+                sessionSeries("3.9", count: 1), sessionSeries("3.10", count: 1), sessionSeries("4.0", count: 1),
             ],
             crashes: [],
             hangs: [],
@@ -139,32 +153,32 @@ struct ReleaseReportTests {
         #expect(releases.map(\.id) == ["4.0", "3.10", "3.9"])
     }
 
-    private func sessionMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: SessionEntry.recordType, version: version, count: count)
+    private func sessionSeries(_ version: String, count: Int) -> MetricSeries {
+        series(name: SessionEntry.recordType, version: version, count: count)
     }
 
-    private func crashMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: CrashEntry.recordType, version: version, count: count)
+    private func crashSeries(_ version: String, count: Int) -> MetricSeries {
+        series(name: CrashEntry.recordType, version: version, count: count)
     }
 
-    private func hangMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: HangEntry.recordType, version: version, count: count)
+    private func hangSeries(_ version: String, count: Int) -> MetricSeries {
+        series(name: HangEntry.recordType, version: version, count: count)
     }
 
-    private func installMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: MarkerEntry.installName, version: version, count: count)
+    private func installSeries(_ version: String, count: Int) -> MetricSeries {
+        series(name: VersionEntry.recordType, version: version, count: count)
     }
 
-    private func crashedInstallMatrix(_ version: String, count: Int) -> GridMatrix<Int> {
-        matrix(name: MarkerEntry.crashName, version: version, count: count)
+    private func crashedInstallSeries(_ version: String, count: Int) -> MetricSeries {
+        series(name: MarkerEntry.crashName, version: version, count: count)
     }
 
-    private func matrix(name: String, version: String, count: Int) -> GridMatrix<Int> {
-        Matrix(
-            date: Date(timeIntervalSince1970: 0),
+    private func series(name: String, version: String, count: Int) -> MetricSeries {
+        MetricSeries(
             name: name,
+            category: nil,
             version: version,
-            cells: [GridCell(row: 1, column: 0, value: count)]
+            points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0).millisecondsSince1970, value: .int(count))]
         )
     }
 }
