@@ -68,6 +68,10 @@ extension InMemoryDatabase {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         []
     }
+
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+        []
+    }
 }
 
 extension InMemoryDatabase {

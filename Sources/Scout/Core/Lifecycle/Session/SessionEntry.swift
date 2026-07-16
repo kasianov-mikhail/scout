@@ -24,10 +24,9 @@ final class SessionEntry: SyncableEntry, HasLaunch {
     @NSManaged var hangs: Set<HangEntry>
     @NSManaged var events: Set<EventEntry>
     @NSManaged var metrics: Set<MetricsEntry>
-    @NSManaged var activities: Set<ActivityEntry>
 
     override var references: Set<DateEntry> {
-        Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics) + Array(activities))
+        Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics))
     }
 }
 

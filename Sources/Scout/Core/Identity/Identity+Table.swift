@@ -18,7 +18,6 @@ extension Identity {
     func enter() async throws {
         try await persistentContainer.run(
             SessionEntry.Trigger(session: session, launchID: launch),
-            ActivityEntry.Trigger(session: session),
             VisitEntry.Trigger(launchID: launch),
             MarkerEntry.Trigger(installID: install)
         )
@@ -26,8 +25,7 @@ extension Identity {
 
     func leave() async throws {
         try await persistentContainer.run(
-            SessionEntry.Complete(launchID: launch),
-            ActivityEntry.Trigger(session: session)
+            SessionEntry.Complete(launchID: launch)
         )
     }
 }

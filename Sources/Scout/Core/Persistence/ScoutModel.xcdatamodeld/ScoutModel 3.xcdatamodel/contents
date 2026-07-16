@@ -113,6 +113,7 @@
         <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallEntry" inverseName="launches" inverseEntity="InstallEntry"/>
         <relationship name="sessions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="launch" inverseEntity="SessionEntry"/>
         <relationship name="versions" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VersionEntry" inverseName="launch" inverseEntity="VersionEntry"/>
+        <relationship name="visits" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="VisitEntry" inverseName="launch" inverseEntity="VisitEntry"/>
         <fetchIndex name="byLaunchID">
             <fetchIndexElement property="launchID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -170,6 +171,18 @@
             <fetchIndexElement property="launch" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
         </fetchIndex>
+    </entity>
+    <entity name="VisitEntry" representedClassName="VisitEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
+        <attribute name="visitID" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchEntry" inverseName="visits" inverseEntity="LaunchEntry"/>
+        <fetchIndex name="byDay">
+            <fetchIndexElement property="day" type="Binary" order="ascending"/>
+        </fetchIndex>
+        <uniquenessConstraints>
+            <uniquenessConstraint>
+                <constraint value="visitID"/>
+            </uniquenessConstraint>
+        </uniquenessConstraints>
     </entity>
     <entity name="MarkerEntry" representedClassName="MarkerEntry" parentEntity="DateEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
