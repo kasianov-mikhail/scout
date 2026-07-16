@@ -35,6 +35,7 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
                     indicator = newValue
                 }
             }
+            .hapticFeedback(.selection, trigger: selection)
     }
 
     @ViewBuilder
