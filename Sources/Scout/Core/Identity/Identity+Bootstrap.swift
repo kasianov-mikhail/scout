@@ -28,6 +28,7 @@ extension Identity {
             VersionEntry.Trigger(installID: install, launchID: launch),
             LaunchEntry.Trigger(launchID: launch, installID: install),
             SessionEntry.Trigger(session: session, launchID: launch),
+            VisitEntry.Trigger(launchID: launch),
             MarkerEntry.Trigger(installID: install)
         )
     }

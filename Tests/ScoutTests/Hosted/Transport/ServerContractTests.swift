@@ -111,6 +111,20 @@ struct ServerContractTests {
         #expect(point.mau >= 1)
     }
 
+    @Test("A written Visit marker round-trips")
+    func visitRoundTrip() async throws {
+        let database = try makeDatabase()
+        var record = Record(recordType: "Visit", recordID: "contract-\(UUID().uuidString)")
+        record["device_id"] = UUID().uuidString
+        record["date"] = eventDate
+
+        try await database.write(record: record)
+        let restored = try await database.lookup(recordName: record.recordID, fields: nil)
+
+        #expect(restored.recordType == "Visit")
+        #expect(restored["date"] == eventDate)
+    }
+
     @Test("The retention table counts a written Install and its return visit")
     func retentionCohort() async throws {
         let database = try makeDatabase()

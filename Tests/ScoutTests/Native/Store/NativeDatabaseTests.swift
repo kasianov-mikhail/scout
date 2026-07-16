@@ -146,6 +146,23 @@ struct NativeDatabaseTests {
         #expect(points.last?.wau == 2)
         #expect(points.last?.mau == 2)
     }
+
+    @Test("Activity merges visit markers with sessions without double counting")
+    func activityFromMarkers() async throws {
+        try await database.write(record: makeVisitRecord(device: "a", day: 0))
+        try await database.write(record: makeVisitRecord(device: "b", day: 0))
+        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
+        try await database.write(record: makeVisitRecord(device: "a", day: 1))
+
+        let range = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
+        let points = try await database.activity(in: range)
+
+        #expect(points.count == 2)
+        #expect(points.first?.dau == 2)
+        #expect(points.last?.dau == 1)
+        #expect(points.last?.wau == 2)
+        #expect(points.last?.mau == 2)
+    }
 }
 
 func makeEventRecord(id: String, name: String) -> Record {
@@ -241,6 +258,14 @@ func makeDeviceRecord(id: String, model: String) -> Record {
     record["date"] = TestDate.reference
     record["device_id"] = id
     record["model"] = model
+    return record
+}
+
+func makeVisitRecord(device: String, day: Int) -> Record {
+    var record = Record(recordType: VisitEntry.recordType, recordID: "\(device)-\(day)")
+    record["date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + .hour)
+    record["device_id"] = device
+    record["install_id"] = "install-\(device)"
     return record
 }
 

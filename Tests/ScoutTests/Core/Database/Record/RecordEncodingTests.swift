@@ -94,6 +94,26 @@ struct RecordEncodingTests {
         #expect(device.record["model"] == "iPhone16,1")
     }
 
+    @Test("Visit records get a deterministic device-day name")
+    func visitRecord() throws {
+        let device = DeviceEntry.stub(date: Date(), in: context)
+        let install = InstallEntry.stub(date: Date(), device: device, in: context)
+        let launch = LaunchEntry.stub(date: Date(), install: install, in: context)
+
+        let visit = context.insert(VisitEntry.self)
+        visit.visitID = UUID()
+        visit.date = Date()
+        visit.launch = launch
+        try context.save()
+
+        let record = visit.record
+
+        #expect(record.recordType == "Visit")
+        #expect(record["device_id"] == device.deviceID.uuidString)
+        #expect(record.recordID == "\(device.deviceID.uuidString)-\(visit.day?.millisecondsSince1970 ?? 0)")
+        #expect(record.fields["date"] != nil)
+    }
+
     @Test("Crash records carry the app version")
     func crashAppVersionRecord() throws {
         let crash = CrashEntry(

@@ -29,6 +29,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
 
                 deliver(EventEntry.self)
                 deliver(SessionEntry.self)
+                deliver(VisitEntry.self)
                 deliver(LaunchEntry.self)
                 deliver(VersionEntry.self)
                 deliver(InstallEntry.self)
