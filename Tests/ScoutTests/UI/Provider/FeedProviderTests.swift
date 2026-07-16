@@ -80,4 +80,5 @@ private final class FailingDatabase: DatabaseReader, @unchecked Sendable {
         -> [MetricSeries]
     { throw RefreshFailure() }
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw RefreshFailure() }
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw RefreshFailure() }
 }

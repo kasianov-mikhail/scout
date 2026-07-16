@@ -74,6 +74,10 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         []
     }
+
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+        []
+    }
 }
 
 /// A reusable async latch: `wait()` suspends until `open()` is called; once

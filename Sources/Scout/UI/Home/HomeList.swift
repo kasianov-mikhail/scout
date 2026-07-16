@@ -14,6 +14,7 @@ struct HomeList: View {
     @Binding var path: [HomeDestination]
 
     @StateObject var activities = ActivityProvider()
+    @StateObject var retention = RetentionProvider()
     @StateObject var sessions = StatProvider(eventName: "Session", periods: Period.summary)
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
@@ -60,11 +61,27 @@ struct HomeList: View {
                 HomeReleaseSection(provider: releases) {
                     path.append(.releaseHealth)
                 }
+
+                Button {
+                    path.append(.retention)
+                } label: {
+                    HStack {
+                        Text(verbatim: "Retention").font(.body)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(.tertiary)
+                    }
+                }
+                .buttonStyle(.plain)
+                .listRowSeparator(.hidden)
             }
             .navigationDestination(for: HomeDestination.self) { destination in
                 switch destination {
                 case .activity:
                     activityDestination
+                case .retention:
+                    RetentionHeroChartView(provider: retention)
                 case .sessions:
                     sessionDestination
                 case .log:

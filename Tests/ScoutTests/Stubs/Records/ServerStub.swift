@@ -10,19 +10,25 @@ import Foundation
 @testable import Scout
 
 // A `DatabaseReader` standing in for a Scout server backend: it returns the
-// activity and metric series it is seeded with, and empty results for every
-// other query.
+// activity, retention, and metric series it is seeded with, and empty results
+// for every other query.
 final class ServerStub: DatabaseReader, @unchecked Sendable {
     let activitySeries: [ActivityPoint]
+    let retentionCohorts: [RetentionCohort]
     let metricsSeries: [MetricSeries]
 
-    init(activity: [ActivityPoint] = [], metrics: [MetricSeries] = []) {
+    init(activity: [ActivityPoint] = [], retention: [RetentionCohort] = [], metrics: [MetricSeries] = []) {
         self.activitySeries = activity
+        self.retentionCohorts = retention
         self.metricsSeries = metrics
     }
 
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         activitySeries
+    }
+
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+        retentionCohorts
     }
 
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
