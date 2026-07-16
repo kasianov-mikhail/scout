@@ -29,7 +29,7 @@ jobs:
           filter: blob:none
 
       - name: Cache Swift package checkouts
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/spm
           key: spm-${{ hashFiles('Package.swift') }}
@@ -68,7 +68,7 @@ jobs:
       # is skipped.
       - name: Cache baseline API dump
         id: baseline-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /tmp/baseline.json
           key: api-baseline-${{ github.event.pull_request.base.sha }}
