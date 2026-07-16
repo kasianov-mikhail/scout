@@ -63,6 +63,10 @@
 
 - Prefer `extension [Type] { ... }` over `extension Array where Element == Type { ... }` when extending a concrete element type — matches existing usage across the codebase (e.g. `Connection.swift`, `PointGroup.swift`, `ReferenceLevel.swift`).
 
+## `ViewModifier` types
+
+- A `ViewModifier` type is always `private`, exposed only through a `View` extension method (e.g. `func rotatingProviders(_ providers: [any Provider]) -> some View`). The file is named after that method, not the modifier type, and drops the `Modifier` suffix (e.g. `RotatingProviders.swift`, not `RotatingProvidersModifier.swift`).
+
 # Design
 
 - When planning visual design (layout proportions, spacing, sizing of UI elements), prefer the golden ratio (≈1.618) for proportions where a ratio choice is otherwise arbitrary.

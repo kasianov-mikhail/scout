@@ -8,18 +8,18 @@
 import SwiftUI
 
 struct HomeReleaseSection: View {
-    @ObservedObject var provider: ReleaseHealthProvider
+    @ObservedObject var releases: ReleaseHealthProvider
 
-    let showAll: () -> Void
+    @Binding var path: [HomeDestination]
 
     var body: some View {
         Header(title: "Releases") {
-            if let releases = try? provider.result?.get(), releases.count > 0 {
-                AllButton(action: showAll)
+            if let releases = try? releases.result?.get(), releases.count > 0 {
+                AllButton { path.append(.releaseHealth) }
             }
         }
 
-        switch provider.result {
+        switch releases.result {
         case .success(let releases) where releases.count > 0:
             ForEach(releases.prefix(3)) { release in
                 ReleaseRow(release: release)
@@ -41,13 +41,13 @@ struct HomeReleaseSection: View {
 }
 
 #Preview {
-    let provider = ReleaseHealthProvider()
-    provider.result = .success(.samples)
+    let releases = ReleaseHealthProvider()
+    releases.result = .success(.samples)
 
     return NavigationStack {
         List {
-            HomeReleaseSection(provider: provider, showAll: {})
-            HomeReleaseSection(provider: ReleaseHealthProvider(releases: []), showAll: {})
+            HomeReleaseSection(releases: releases, path: .constant([]))
+            HomeReleaseSection(releases: ReleaseHealthProvider(releases: []), path: .constant([]))
         }
         .listStyle(.plain)
     }
