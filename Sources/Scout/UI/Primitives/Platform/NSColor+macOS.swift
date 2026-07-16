@@ -33,5 +33,13 @@
                     : NSColor(red: 229 / 255, green: 229 / 255, blue: 234 / 255, alpha: 1)
             }
         }
+
+        static var systemGray6: NSColor {
+            NSColor(name: nil) { appearance in
+                appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                    ? NSColor(red: 28 / 255, green: 28 / 255, blue: 30 / 255, alpha: 1)
+                    : NSColor(red: 242 / 255, green: 242 / 255, blue: 247 / 255, alpha: 1)
+            }
+        }
     }
 #endif
