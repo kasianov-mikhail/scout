@@ -54,5 +54,6 @@ struct Legend: View {
 
             Divider()
         }
+        .hapticFeedback(.selection, trigger: expanded)
     }
 }

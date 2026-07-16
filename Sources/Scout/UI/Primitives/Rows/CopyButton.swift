@@ -14,6 +14,7 @@ struct CopyButton: View {
     let text: String
 
     @State private var isCopied = false
+    @State private var copyCount = 0
     @State private var revert = DebouncedReset()
 
     var body: some View {
@@ -25,6 +26,7 @@ struct CopyButton: View {
                 NSPasteboard.general.setString(text, forType: .string)
             #endif
             isCopied = true
+            copyCount += 1
 
             revert.schedule(after: .seconds(2)) {
                 isCopied = false
@@ -33,6 +35,7 @@ struct CopyButton: View {
             Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
         }
         .animation(.easeInOut(duration: 0.15), value: isCopied)
+        .hapticFeedback(.success, trigger: copyCount)
     }
 }
 

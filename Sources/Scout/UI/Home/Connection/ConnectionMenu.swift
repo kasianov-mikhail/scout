@@ -51,6 +51,7 @@ struct ConnectionMenu: View {
             }
             .padding(.vertical, 8)
             .frame(minWidth: 240)
+            .hapticFeedback(.selection, trigger: activeID)
             .task {
                 connections = await connections.refreshingStatuses()
             }
