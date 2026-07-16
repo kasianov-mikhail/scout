@@ -65,17 +65,7 @@ struct HangGroupDetailView: View {
     @ViewBuilder
     private var breakdownSection: some View {
         if let value = try? breakdown.result?.get() {
-            if value.devices.count > 0 {
-                Header(title: "Top Devices")
-                SegmentBar(segments: value.devices)
-                    .listRowSeparator(.hidden, edges: .bottom)
-            }
-
-            if value.osVersions.count > 0 {
-                Header(title: "OS Versions")
-                SegmentBar(segments: value.osVersions)
-                    .listRowSeparator(.hidden, edges: .bottom)
-            }
+            IncidentBreakdownSection(breakdown: value, records: group.records, row: occurrenceRow)
         }
     }
 
@@ -83,21 +73,23 @@ struct HangGroupDetailView: View {
     private var occurrencesSection: some View {
         Header(title: "Occurrences")
 
-        ForEach(group.records) { hang in
-            Row {
-                if let date = hang.date {
-                    UTCTimestampText(date: date, size: 14)
-                }
+        ForEach(group.records, content: occurrenceRow)
+    }
 
-                Spacer()
-
-                Text(verbatim: hang.durationText)
-                    .font(.footnote)
-                    .monospacedDigit()
-                    .foregroundStyle(hang.severity.color)
-            } destination: {
-                HangDetailView(hang: hang)
+    private func occurrenceRow(_ hang: Hang) -> some View {
+        Row {
+            if let date = hang.date {
+                UTCTimestampText(date: date, size: 14)
             }
+
+            Spacer()
+
+            Text(verbatim: hang.durationText)
+                .font(.footnote)
+                .monospacedDigit()
+                .foregroundStyle(hang.severity.color)
+        } destination: {
+            HangDetailView(hang: hang)
         }
     }
 }

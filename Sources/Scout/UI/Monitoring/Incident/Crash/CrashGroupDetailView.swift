@@ -69,17 +69,7 @@ struct CrashGroupDetailView: View {
     @ViewBuilder
     private var breakdownSection: some View {
         if let value = try? breakdown.result?.get() {
-            if value.devices.count > 0 {
-                Header(title: "Top Devices")
-                SegmentBar(segments: value.devices)
-                    .listRowSeparator(.hidden, edges: .bottom)
-            }
-
-            if value.osVersions.count > 0 {
-                Header(title: "OS Versions")
-                SegmentBar(segments: value.osVersions)
-                    .listRowSeparator(.hidden, edges: .bottom)
-            }
+            IncidentBreakdownSection(breakdown: value, records: group.records, row: occurrenceRow)
         }
     }
 
@@ -87,23 +77,25 @@ struct CrashGroupDetailView: View {
     private var occurrencesSection: some View {
         Header(title: "Occurrences")
 
-        ForEach(group.records) { crash in
-            Row {
-                if let date = crash.date {
-                    UTCTimestampText(date: date, size: 14)
-                }
+        ForEach(group.records, content: occurrenceRow)
+    }
 
-                Spacer()
-
-                if let sessionID = crash.sessionID {
-                    Text(ExportFormat.shortID(sessionID))
-                        .font(.footnote)
-                        .monospaced()
-                        .foregroundStyle(Color.gray)
-                }
-            } destination: {
-                CrashDetailView(crash: crash)
+    private func occurrenceRow(_ crash: Crash) -> some View {
+        Row {
+            if let date = crash.date {
+                UTCTimestampText(date: date, size: 14)
             }
+
+            Spacer()
+
+            if let sessionID = crash.sessionID {
+                Text(ExportFormat.shortID(sessionID))
+                    .font(.footnote)
+                    .monospaced()
+                    .foregroundStyle(Color.gray)
+            }
+        } destination: {
+            CrashDetailView(crash: crash)
         }
     }
 }
