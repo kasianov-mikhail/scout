@@ -49,10 +49,6 @@ extension NativeDatabase: RecordReader {
         await registration.value
         let entity = query.recordType.recordType
 
-        if let series = MatrixSeries(recordType: entity) {
-            return RecordChunk(records: try await series.records(matching: query, store: store), cursor: nil)
-        }
-
         let records = try await store.read(
             entity: entity,
             filters: query.filters.map(\.storeFilter),
@@ -83,28 +79,9 @@ extension NativeDatabase: RecordLocator {
 }
 
 extension NativeDatabase: MetricReader {
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
         await registration.value
-        let entity = T.seriesValues == Int.seriesValues ? IntMetricsEntry.recordType : DoubleMetricsEntry.recordType
-        let prefix = category + "|"
-        let points = try await store.series(
-            entity: entity,
-            view: EntityCatalog.metricSeriesView,
-            from: range.lowerBound.startOfDay,
-            to: range.upperBound
-        )
-
-        var series: [String: [MetricSeriesPoint]] = [:]
-        for point in points where range.contains(point.date) && point.group.hasPrefix(prefix) {
-            guard let value = point.value else { continue }
-            let name = String(point.group.dropFirst(prefix.count))
-            series[name, default: []].append(
-                MetricSeriesPoint(date: point.date.millisecondsSince1970, value: T(value).metricValue)
-            )
-        }
-        return series.map { MetricSeries(name: $0, category: category, points: $1) }
+        return try await NativeSeries(query: query).series(store: store)
     }
 }
 

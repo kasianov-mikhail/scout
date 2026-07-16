@@ -8,21 +8,36 @@
 import Foundation
 
 extension HTTPDatabase: MetricReader {
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
-        let from = range.lowerBound.millisecondsSince1970
-        let to = range.upperBound.millisecondsSince1970
-        let category = category.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? category
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+        var params = [
+            "bucket=\(query.bucket.rawValue)",
+            "from=\(query.range.lowerBound.millisecondsSince1970)",
+            "to=\(query.range.upperBound.millisecondsSince1970)",
+        ]
+        if let name = query.name {
+            params.append("name=\(Self.encode(name))")
+        }
+        if let category = query.category {
+            params.append("category=\(Self.encode(category))")
+        }
+        if let values = query.values {
+            params.append("values=\(values)")
+        }
+        if query.byVersion {
+            params.append("by=version")
+        }
 
-        let path =
-            "api/v1/metrics/series?category=\(category)&values=\(T.seriesValues)&bucket=hour&dense=false&from=\(from)&to=\(to)"
+        let path = "api/v1/metrics/series?" + params.joined(separator: "&")
         guard let endpoint = URL(string: path, relativeTo: url) else {
             throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
         }
 
         let data = try await perform(request(for: endpoint, method: "GET"))
         return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
+    }
+
+    private static func encode(_ value: String) -> String {
+        value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
     }
 
     private struct MetricSeriesResponse: Decodable {

@@ -21,6 +21,18 @@ extension ChartPoint: Comparable {
     }
 }
 
+extension ChartPoint: Fixture where T == Int {
+    static var samples: [ChartPoint<Int>] {
+        let base = Calendar.utc.defaultRange.lowerBound
+        return (1...372).map { day in
+            ChartPoint(
+                date: base.addingTimeInterval(TimeInterval(day - 1) * .day + 12 * .hour),
+                count: 12 + day % 40 + (day / 9) % 18
+            )
+        }
+    }
+}
+
 extension ChartPoint {
     static func + (lhs: ChartPoint, rhs: ChartPoint) -> ChartPoint {
         ChartPoint(date: lhs.date, count: lhs.count + rhs.count)

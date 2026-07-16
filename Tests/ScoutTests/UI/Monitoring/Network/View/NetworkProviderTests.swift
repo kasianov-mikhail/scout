@@ -73,10 +73,8 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
-        series.filter { $0.category == category }
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+        series.filter { $0.category == query.category }
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
@@ -99,9 +97,7 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
         throw Failure()
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
         throw Failure()
     }
 

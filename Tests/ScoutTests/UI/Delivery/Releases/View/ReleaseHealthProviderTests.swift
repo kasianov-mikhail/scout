@@ -14,13 +14,13 @@ import Testing
 struct ReleaseHealthProviderTests {
     private let date = Date().addingTimeInterval(-3600)
 
-    @Test("Builds per-version sessions and crashes from matrices")
+    @Test("Builds per-version sessions and crashes from series")
     func fetchAggregatesByVersion() async throws {
         let database = DatabaseStub()
         database.add(
-            sessionMatrix(version: "2.0", count: 2),
-            sessionMatrix(version: "1.0", count: 1),
-            crashMatrix(version: "2.0", count: 1)
+            series: sessionSeries(version: "2.0", count: 2),
+            sessionSeries(version: "1.0", count: 1),
+            crashSeries(version: "2.0", count: 1)
         )
 
         let provider = ReleaseHealthProvider()
@@ -36,12 +36,12 @@ struct ReleaseHealthProviderTests {
         #expect(releases[1].freeSessions.value == 1)
     }
 
-    @Test("Skips session matrices that carry no version")
-    func fetchSkipsVersionlessMatrices() async throws {
+    @Test("Skips session series that carry no version")
+    func fetchSkipsVersionlessSeries() async throws {
         let database = DatabaseStub()
         database.add(
-            sessionMatrix(version: "3.0", count: 4),
-            sessionMatrix(version: nil, count: 9)
+            series: sessionSeries(version: "3.0", count: 4),
+            sessionSeries(version: nil, count: 9)
         )
 
         let provider = ReleaseHealthProvider()
@@ -52,20 +52,20 @@ struct ReleaseHealthProviderTests {
         #expect(releases[0].sessions == 4)
     }
 
-    private func sessionMatrix(version: String?, count: Int) -> Record {
-        matrix(name: SessionEntry.recordType, version: version, count: count)
+    private func sessionSeries(version: String?, count: Int) -> MetricSeries {
+        series(name: SessionEntry.recordType, version: version, count: count)
     }
 
-    private func crashMatrix(version: String?, count: Int) -> Record {
-        matrix(name: CrashEntry.recordType, version: version, count: count)
+    private func crashSeries(version: String?, count: Int) -> MetricSeries {
+        series(name: CrashEntry.recordType, version: version, count: count)
     }
 
-    private func matrix(name: String, version: String?, count: Int) -> Record {
-        Matrix<GridCell<Int>>(
-            date: date,
+    private func series(name: String, version: String?, count: Int) -> MetricSeries {
+        MetricSeries(
             name: name,
+            category: nil,
             version: version,
-            cells: [GridCell(row: 1, column: 0, value: count)]
-        ).record
+            points: [MetricSeriesPoint(date: date.millisecondsSince1970, value: .int(count))]
+        )
     }
 }

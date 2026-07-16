@@ -16,11 +16,11 @@ struct LogReportTests {
     @Test("Events count everything that is neither a crash nor a hang")
     func events() {
         let report = makeReport(
-            intMatrices: [
-                makeMatrix(name: "login", value: 3),
-                makeMatrix(name: "purchase", value: 4),
-                makeMatrix(name: CrashEntry.recordType, value: 2),
-                makeMatrix(name: HangEntry.recordType, value: 1),
+            series: [
+                makeSeries(name: "login", value: .int(3)),
+                makeSeries(name: "purchase", value: .int(4)),
+                makeSeries(name: CrashEntry.recordType, value: .int(2)),
+                makeSeries(name: HangEntry.recordType, value: .int(1)),
             ]
         )
 
@@ -32,25 +32,23 @@ struct LogReportTests {
     @Test("Network counts the status buckets and leaves the latency histogram alone")
     func network() {
         let report = makeReport(
-            intMatrices: [
-                makeMatrix(name: "/users", category: "status_2xx", value: 5),
-                makeMatrix(name: "/users", category: "status_5xx", value: 1),
-                makeMatrix(name: "/users", category: "timer_le_500", value: 8),
+            series: [
+                makeSeries(name: "/users", category: "status_2xx", value: .int(5)),
+                makeSeries(name: "/users", category: "status_5xx", value: .int(1)),
+                makeSeries(name: "/users", category: "timer_le_500", value: .int(8)),
             ]
         )
 
         #expect(report.summary(for: .network).count == 6)
     }
 
-    @Test("Metrics count distinct reporting series across both matrix kinds")
+    @Test("Metrics count distinct reporting series across value flavors")
     func metrics() {
         let report = makeReport(
-            intMatrices: [
-                makeMatrix(name: "api_calls", category: "counter", value: 7),
-                makeMatrix(name: "api_calls", category: "counter", value: 2),
-            ],
-            doubleMatrices: [
-                makeMatrix(name: "load_time", category: "timer", value: 1.0)
+            series: [
+                makeSeries(name: "api_calls", category: "counter", value: .int(7)),
+                makeSeries(name: "api_calls", category: "counter", value: .int(2)),
+                makeSeries(name: "load_time", category: "timer", value: .double(1.0)),
             ]
         )
 
@@ -75,7 +73,7 @@ struct LogReportTests {
     @Test("Every category draws a sparkline with one value per slice")
     func sliceCount() throws {
         let report = makeReport(
-            intMatrices: [makeMatrix(name: "login", value: 3)],
+            series: [makeSeries(name: "login", value: .int(3))],
             visits: [DeviceVisit(deviceID: UUID().uuidString, date: today.addingTimeInterval(3600))]
         )
 
@@ -85,26 +83,19 @@ struct LogReportTests {
         }
     }
 
-    private func makeReport(
-        intMatrices: [GridMatrix<Int>] = [],
-        doubleMatrices: [GridMatrix<Double>] = [],
-        visits: [DeviceVisit] = []
-    ) -> LogReport {
+    private func makeReport(series: [MetricSeries] = [], visits: [DeviceVisit] = []) -> LogReport {
         LogReport(
-            intMatrices: intMatrices,
-            doubleMatrices: doubleMatrices,
+            series: series,
             visits: visits,
             period: .today
         )
     }
 
-    private func makeMatrix<T: MetricScalar>(name: String, category: String? = nil, value: T) -> GridMatrix<T> {
-        Matrix(
-            date: today.addingTimeInterval(3600),
+    private func makeSeries(name: String, category: String? = nil, value: MetricValue) -> MetricSeries {
+        MetricSeries(
             name: name,
             category: category,
-            baseRecord: nil,
-            cells: [GridCell(row: 1, column: 0, value: value)]
+            points: [MetricSeriesPoint(date: today.addingTimeInterval(3600).millisecondsSince1970, value: value)]
         )
     }
 }

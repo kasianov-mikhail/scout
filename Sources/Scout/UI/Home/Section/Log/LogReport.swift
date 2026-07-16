@@ -8,8 +8,7 @@
 import Foundation
 
 struct LogReport {
-    let intMatrices: [GridMatrix<Int>]
-    let doubleMatrices: [GridMatrix<Double>]
+    let series: [MetricSeries]
     let visits: [DeviceVisit]
     let period: Period
 
@@ -37,20 +36,19 @@ struct LogReport {
         period.previousRange.lowerBound..<period.initialRange.upperBound
     }
 
-    private var span: MatrixSpan<Int> {
-        MatrixSpan(matrices: intMatrices, range: window)
+    private var span: SeriesSpan {
+        SeriesSpan(series: series, range: window)
     }
 
     private var metricsSummary: MetricSummary {
-        func series(in range: Range<Date>) -> Int {
-            MatrixSpan(matrices: intMatrices, range: range).series
-                + MatrixSpan(matrices: doubleMatrices, range: range).series
+        func count(in range: Range<Date>) -> Int {
+            SeriesSpan(series: series, range: range).metricCount
         }
 
         return MetricSummary(
-            count: series(in: period.initialRange),
-            previous: series(in: period.previousRange),
-            values: slices.map(series)
+            count: count(in: period.initialRange),
+            previous: count(in: period.previousRange),
+            values: slices.map(count)
         )
     }
 

@@ -18,23 +18,13 @@ class ReleaseHealthProvider: ObservableObject, Provider {
     func fetch(in database: DatabaseReader) async throws -> [ReleaseHealth] {
         let range = Calendar.utc.defaultRange
 
-        async let sessions: IntMatrices = database.readAll(
-            matching: query(name: SessionEntry.recordType, in: range)
-        )
-        async let crashes: IntMatrices = database.readAll(
-            matching: query(name: CrashEntry.recordType, in: range)
-        )
-        async let hangs: IntMatrices = database.readAll(
-            matching: query(name: HangEntry.recordType, in: range)
-        )
-        async let installs: IntMatrices = database.readAll(
-            matching: query(name: MarkerEntry.installName, in: range)
-        )
-        async let crashedInstalls: IntMatrices = database.readAll(
-            matching: query(name: MarkerEntry.crashName, in: range)
-        )
+        async let sessions = database.series(matching: query(name: SessionEntry.recordType, in: range))
+        async let crashes = database.series(matching: query(name: CrashEntry.recordType, in: range))
+        async let hangs = database.series(matching: query(name: HangEntry.recordType, in: range))
+        async let installs = database.series(matching: query(name: VersionEntry.recordType, in: range))
+        async let crashedInstalls = database.series(matching: query(name: MarkerEntry.crashName, in: range))
 
-        return try await ReleaseMatrices(
+        return try await ReleaseSeries(
             sessions: sessions,
             crashes: crashes,
             hangs: hangs,
@@ -44,12 +34,7 @@ class ReleaseHealthProvider: ObservableObject, Provider {
         .report(in: range)
     }
 
-    private func query(name: String, in range: Range<Date>) -> RecordQuery {
-        RecordQuery(
-            recordType: GridMatrix<Int>.self,
-            filters: range.dateFilters + [
-                RecordQuery.Filter(field: "name", op: .equals, value: .string(name))
-            ]
-        )
+    private func query(name: String, in range: Range<Date>) -> SeriesQuery {
+        SeriesQuery(name: name, bucket: .day, byVersion: true, range: range)
     }
 }

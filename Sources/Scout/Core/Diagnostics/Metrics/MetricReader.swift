@@ -8,14 +8,44 @@
 import Foundation
 
 protocol MetricReader: RecordReader {
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries]
+}
+
+extension MetricReader {
     func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
         -> [MetricSeries]
+    {
+        try await series(
+            matching: SeriesQuery(category: category, values: T.seriesValues, bucket: .hour, range: range)
+        )
+    }
+}
+
+struct SeriesQuery {
+    enum Bucket: String {
+        case hour, day, week
+    }
+
+    var name: String?
+    var category: String?
+    var values: String?
+    var bucket: Bucket = .day
+    var byVersion = false
+    let range: Range<Date>
 }
 
 struct MetricSeries: Decodable {
     let name: String
     let category: String?
+    let version: String?
     let points: [MetricSeriesPoint]
+
+    init(name: String, category: String?, version: String? = nil, points: [MetricSeriesPoint]) {
+        self.name = name
+        self.category = category
+        self.version = version
+        self.points = points
+    }
 }
 
 struct MetricSeriesPoint: Decodable {
@@ -52,6 +82,15 @@ extension MetricValue {
             Double(value)
         case .double(let value):
             value
+        }
+    }
+
+    var intValue: Int {
+        switch self {
+        case .int(let value):
+            value
+        case .double(let value):
+            Int(value.rounded())
         }
     }
 }

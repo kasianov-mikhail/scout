@@ -10,15 +10,12 @@ import Foundation
 protocol SeriesScalar: MetricScalar {
     static var seriesValues: String { get }
     init(_ value: Double)
-    var metricValue: MetricValue { get }
 }
 
 extension Int: SeriesScalar {
     static var seriesValues: String { "int" }
-    var metricValue: MetricValue { .int(self) }
 }
 
 extension Double: SeriesScalar {
     static var seriesValues: String { "double" }
-    var metricValue: MetricValue { .double(self) }
 }

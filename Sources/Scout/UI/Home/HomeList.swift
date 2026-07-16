@@ -77,7 +77,7 @@ struct HomeList: View {
     activities.result = .success(.samples)
 
     let sessions = StatProvider(eventName: "Session", periods: Period.summary)
-    sessions.result = .success([.sample(name: "Session")])
+    sessions.result = .success(.samples)
 
     let retention = RetentionProvider()
     retention.result = .success(.samples)

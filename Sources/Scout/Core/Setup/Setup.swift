@@ -13,9 +13,9 @@ import Metrics
 
 /// Initializes Scout's global infrastructure against one or more backends.
 ///
-/// Every raw record is synced to every backend. CloudKit backends also
-/// receive client-maintained matrix records; Scout servers aggregate
-/// natively and receive raw metric values instead.
+/// Every raw record is synced to every backend. Aggregates are maintained
+/// backend-side — by scout-db views on CloudKit and by native aggregation
+/// on Scout servers — so clients upload raw records only.
 ///
 /// - Parameter backends: The backends to sync to, in any combination of
 ///   CloudKit containers and Scout servers.
