@@ -26,19 +26,6 @@ extension View {
             self
         }
     }
-
-    /// Plays haptic feedback when `trigger` changes and `condition` holds for
-    /// the old and new value, degrading to no feedback on the iOS 16 /
-    /// macOS 13 floor where `sensoryFeedback` is unavailable.
-    ///
-    @ViewBuilder
-    func hapticFeedback<T: Equatable>(_ feedback: HapticFeedback, trigger: T, condition: @escaping (T, T) -> Bool) -> some View {
-        if #available(iOS 17.0, macOS 14.0, *) {
-            sensoryFeedback(feedback.resolved, trigger: trigger, condition: condition)
-        } else {
-            self
-        }
-    }
 }
 
 @available(iOS 17.0, macOS 14.0, *)
