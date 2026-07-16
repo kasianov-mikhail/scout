@@ -11,6 +11,18 @@ import SwiftUI
 struct IncidentBreakdown: Equatable {
     let devices: [Segment]
     let osVersions: [Segment]
+    let modelsByDevice: [UUID: String]
+    let versionsBySession: [UUID: String]
+
+    init(
+        devices: [Segment], osVersions: [Segment], modelsByDevice: [UUID: String] = [:],
+        versionsBySession: [UUID: String] = [:]
+    ) {
+        self.devices = devices
+        self.osVersions = osVersions
+        self.modelsByDevice = modelsByDevice
+        self.versionsBySession = versionsBySession
+    }
 }
 
 extension IncidentBreakdown {
@@ -31,6 +43,45 @@ extension IncidentBreakdown {
     }
 
     private static let colors: [Color] = [.blue, .indigo, .purple, .teal]
+}
+
+extension IncidentBreakdown {
+    enum Dimension {
+        case devices
+        case osVersions
+    }
+
+    func records<Element: SessionContext>(from records: [Element], in dimension: Dimension, matching segment: Segment)
+        -> [Element]
+    {
+        guard segment.label == "Other" else {
+            return records.filter { label(of: $0, in: dimension) == segment.label }
+        }
+
+        let named = Set(segments(in: dimension).map(\.label))
+        return records.filter { record in
+            guard let label = label(of: record, in: dimension) else { return false }
+            return !named.contains(label)
+        }
+    }
+
+    private func segments(in dimension: Dimension) -> [Segment] {
+        switch dimension {
+        case .devices:
+            devices
+        case .osVersions:
+            osVersions
+        }
+    }
+
+    private func label<Element: SessionContext>(of record: Element, in dimension: Dimension) -> String? {
+        switch dimension {
+        case .devices:
+            record.deviceID.flatMap { modelsByDevice[$0] }
+        case .osVersions:
+            record.sessionID.flatMap { versionsBySession[$0] }
+        }
+    }
 }
 
 extension IncidentBreakdown {

@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import Foundation
 import Testing
 
 @testable import Scout
@@ -50,5 +51,85 @@ struct IncidentBreakdownTests {
     @Test("Returns no segments for empty input")
     func emptyInput() {
         #expect(IncidentBreakdown.segments(from: []).isEmpty)
+    }
+}
+
+extension IncidentBreakdownTests {
+    private struct Context: SessionContext {
+        let sessionID: UUID?
+        let deviceID: UUID?
+    }
+
+    private func makeContext(deviceID: UUID? = nil, sessionID: UUID? = nil) -> Context {
+        Context(sessionID: sessionID, deviceID: deviceID)
+    }
+
+    @Test("Filters records matching a device segment")
+    func filtersByDeviceSegment() throws {
+        let deviceA = UUID()
+        let deviceB = UUID()
+        let breakdown = IncidentBreakdown(
+            devices: IncidentBreakdown.segments(from: ["iPhone15,3", "iPhone14,2"]),
+            osVersions: [],
+            modelsByDevice: [deviceA: "iPhone15,3", deviceB: "iPhone14,2"]
+        )
+        let records = [
+            makeContext(deviceID: deviceA),
+            makeContext(deviceID: deviceA),
+            makeContext(deviceID: deviceB),
+            makeContext(),
+        ]
+
+        let segment = try #require(breakdown.devices.first { $0.label == "iPhone15,3" })
+        let matched = breakdown.records(from: records, in: .devices, matching: segment)
+
+        #expect(matched.count == 2)
+        #expect(matched.allSatisfy { $0.deviceID == deviceA })
+    }
+
+    @Test("Filters records matching an OS version segment")
+    func filtersByOSVersionSegment() throws {
+        let sessionA = UUID()
+        let sessionB = UUID()
+        let breakdown = IncidentBreakdown(
+            devices: [],
+            osVersions: IncidentBreakdown.segments(from: ["iOS 17.4", "iOS 16.7"]),
+            versionsBySession: [sessionA: "iOS 17.4", sessionB: "iOS 16.7"]
+        )
+        let records = [
+            makeContext(sessionID: sessionA),
+            makeContext(sessionID: sessionB),
+        ]
+
+        let segment = try #require(breakdown.osVersions.first { $0.label == "iOS 16.7" })
+        let matched = breakdown.records(from: records, in: .osVersions, matching: segment)
+
+        #expect(matched.count == 1)
+        #expect(matched.first?.sessionID == sessionB)
+    }
+
+    @Test("Matches the Other segment to labels outside the top cutoff")
+    func filtersByOtherSegment() throws {
+        let deviceA = UUID()
+        let deviceB = UUID()
+        let deviceC = UUID()
+        let breakdown = IncidentBreakdown(
+            devices: IncidentBreakdown.segments(from: ["A", "A", "B", "C"], top: 1),
+            osVersions: [],
+            modelsByDevice: [deviceA: "A", deviceB: "B", deviceC: "C"]
+        )
+        let records = [
+            makeContext(deviceID: deviceA),
+            makeContext(deviceID: deviceB),
+            makeContext(deviceID: deviceC),
+            makeContext(deviceID: UUID()),
+            makeContext(),
+        ]
+
+        let other = try #require(breakdown.devices.first { $0.label == "Other" })
+        let matched = breakdown.records(from: records, in: .devices, matching: other)
+
+        #expect(matched.count == 2)
+        #expect(Set(matched.compactMap(\.deviceID)) == [deviceB, deviceC])
     }
 }
