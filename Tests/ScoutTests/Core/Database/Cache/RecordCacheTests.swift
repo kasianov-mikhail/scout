@@ -1,0 +1,127 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Foundation
+import SwiftData
+import Testing
+
+@testable import Scout
+
+struct RecordCacheTests {
+    @available(iOS 17, macOS 14, *)
+    func makeCache() throws -> RecordCache {
+        let schema = Schema([CachedRecord.self, CachedSpan.self])
+        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [configuration])
+        return RecordCache(modelContainer: container)
+    }
+
+    func makeRecord(date: Date, name: String = "Session") -> Record {
+        var record = Record(recordType: GridMatrix<Int>.recordType, recordID: UUID().uuidString)
+        record.fields["date"] = .date(date)
+        record.fields["name"] = .string(name)
+        record.fields["cell_1_00"] = .int(5)
+        return record
+    }
+
+    func date(_ interval: TimeInterval) -> Date {
+        Date(timeIntervalSince1970: interval)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("Stored records round-trip through the cache")
+    func roundTrip() async throws {
+        let cache = try makeCache()
+        let records = [makeRecord(date: date(100)), makeRecord(date: date(200))]
+
+        await cache.store(records, for: "fp", covering: date(0)..<date(300))
+
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(300)))
+        #expect(cached.map(\.recordID) == records.map(\.recordID))
+        #expect(cached.first?.fields == records.first?.fields)
+        #expect(await cache.coveredRange(for: "fp") == date(0)..<date(300))
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("Contiguous stores extend the covered span")
+    func extendsSpan() async throws {
+        let cache = try makeCache()
+
+        await cache.store([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(300))
+        await cache.store([makeRecord(date: date(400))], for: "fp", covering: date(300)..<date(600))
+
+        #expect(await cache.coveredRange(for: "fp") == date(0)..<date(600))
+
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(600)))
+        #expect(cached.count == 2)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("A disjoint store replaces the previous span")
+    func replacesDisjointSpan() async throws {
+        let cache = try makeCache()
+
+        await cache.store([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(300))
+        await cache.store([makeRecord(date: date(700))], for: "fp", covering: date(600)..<date(900))
+
+        #expect(await cache.coveredRange(for: "fp") == date(600)..<date(900))
+
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(900)))
+        #expect(cached.count == 1)
+        #expect(cached.first?.fields["date"] == .date(date(700)))
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("Overlapping stores do not duplicate records")
+    func deduplicatesOverlap() async throws {
+        let cache = try makeCache()
+        let record = makeRecord(date: date(100))
+
+        await cache.store([record], for: "fp", covering: date(0)..<date(300))
+        await cache.store([record], for: "fp", covering: date(0)..<date(300))
+
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(300)))
+        #expect(cached.count == 1)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("Fingerprints are isolated from each other")
+    func isolatesFingerprints() async throws {
+        let cache = try makeCache()
+
+        await cache.store([makeRecord(date: date(100))], for: "a", covering: date(0)..<date(300))
+
+        #expect(await cache.coveredRange(for: "b") == nil)
+
+        let cached = try #require(await cache.records(for: "b", in: date(0)..<date(300)))
+        #expect(cached.count == 0)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("A record without a date aborts the store")
+    func abortsWithoutDate() async throws {
+        let cache = try makeCache()
+        let record = Record(recordType: GridMatrix<Int>.recordType, recordID: UUID().uuidString)
+
+        await cache.store([record], for: "fp", covering: date(0)..<date(300))
+
+        #expect(await cache.coveredRange(for: "fp") == nil)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @Test("Records outside the covered range are skipped")
+    func skipsOutOfRange() async throws {
+        let cache = try makeCache()
+        let records = [makeRecord(date: date(100)), makeRecord(date: date(500))]
+
+        await cache.store(records, for: "fp", covering: date(0)..<date(300))
+
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(900)))
+        #expect(cached.count == 1)
+        #expect(cached.first?.fields["date"] == .date(date(100)))
+    }
+}
