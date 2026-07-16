@@ -9,15 +9,16 @@ import CoreData
 
 protocol MetricScalar: AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
     associatedtype Object: MetricsValued where Object.Value == Self
-    static var recordType: String { get }
+    static var seriesValues: String { get }
+    init(_ value: Double)
 }
 
 extension Int: MetricScalar {
     typealias Object = IntMetricsEntry
-    static let recordType = "DateIntMatrix"
+    static var seriesValues: String { "int" }
 }
 
 extension Double: MetricScalar {
     typealias Object = DoubleMetricsEntry
-    static let recordType = "DateDoubleMatrix"
+    static var seriesValues: String { "double" }
 }

@@ -13,37 +13,12 @@ struct CachedDatabase: Database {
     let scope: String
     let cache: RecordCache
 
-    // Matrices are keyed by start of week, and late uploads from offline devices can still
-    // mutate recently closed weeks, so only weeks that ended over a week ago are frozen.
+    // Series buckets are cut at week starts, and late uploads from offline devices can
+    // still mutate recently closed weeks, so only weeks that ended over a week ago are frozen.
     var settledCutoff: @Sendable () -> Date = { Date().startOfWeek.addingWeek(-1) }
 
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        guard fields == nil, let plan = CachedQuery(query: query, scope: scope, cutoff: settledCutoff()) else {
-            return try await base.read(matching: query, fields: fields)
-        }
-
-        var cachedUpper = await cachedUpper(for: plan.fingerprint, in: plan.range, frozenUpper: plan.frozenUpper)
-
-        var cached: [Record] = []
-        if cachedUpper > plan.range.lowerBound {
-            if let records = await cache.records(for: plan.fingerprint, in: plan.range.lowerBound..<cachedUpper) {
-                cached = records
-            } else {
-                cachedUpper = plan.range.lowerBound
-            }
-        }
-
-        guard cachedUpper < plan.range.upperBound else {
-            return RecordChunk(records: cached, cursor: nil)
-        }
-
-        let remainder = cachedUpper..<plan.range.upperBound
-        let fetched = try await base.readAll(matching: plan.query(in: remainder), fields: nil)
-
-        if remainder.lowerBound < plan.frozenUpper {
-            await cache.store(fetched, for: plan.fingerprint, covering: remainder.lowerBound..<plan.frozenUpper)
-        }
-        return RecordChunk(records: cached + fetched, cursor: nil)
+        try await base.read(matching: query, fields: fields)
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
@@ -72,29 +47,29 @@ struct CachedDatabase: Database {
         try await base.retention(in: range)
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
-        let frozenUpper = min(range.upperBound, settledCutoff())
-        guard range.lowerBound < frozenUpper else {
-            return try await base.metricSeries(valueType, category: category, in: range)
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+        let frozenUpper = min(query.range.upperBound, settledCutoff())
+        guard query.range.lowerBound < frozenUpper else {
+            return try await base.series(matching: query)
         }
 
-        let fingerprint = CachedMetricSeries.fingerprint(scope: scope, values: T.seriesValues, category: category)
-        var cachedUpper = await cachedUpper(for: fingerprint, in: range, frozenUpper: frozenUpper)
+        let fingerprint = CachedMetricSeries.fingerprint(scope: scope, query: query)
+        var cachedUpper = await cachedUpper(for: fingerprint, in: query.range, frozenUpper: frozenUpper)
 
         var cached: [Record] = []
-        if cachedUpper > range.lowerBound {
-            if let records = await cache.records(for: fingerprint, in: range.lowerBound..<cachedUpper) {
+        if cachedUpper > query.range.lowerBound {
+            if let records = await cache.records(for: fingerprint, in: query.range.lowerBound..<cachedUpper) {
                 cached = records
             } else {
-                cachedUpper = range.lowerBound
+                cachedUpper = query.range.lowerBound
             }
         }
 
         var fetched: [MetricSeries] = []
-        if cachedUpper < range.upperBound {
-            fetched = try await base.metricSeries(valueType, category: category, in: cachedUpper..<range.upperBound)
+        if cachedUpper < query.range.upperBound {
+            var remainder = query
+            remainder.range = cachedUpper..<query.range.upperBound
+            fetched = try await base.series(matching: remainder)
 
             if cachedUpper < frozenUpper {
                 let records = CachedMetricSeries.records(from: fetched)

@@ -9,7 +9,7 @@ import Foundation
 
 @MainActor
 class HomeLogProvider: ObservableObject, Provider {
-    typealias Output = ([GridMatrix<Int>], [GridMatrix<Double>])
+    typealias Output = [MetricSeries]
 
     @Published var period: Period {
         didSet {
@@ -30,23 +30,10 @@ class HomeLogProvider: ObservableObject, Provider {
 
     func fetch(in database: DatabaseReader) async throws -> Output {
         let window = period.previousRange.lowerBound..<period.initialRange.upperBound
-
-        async let intMatrices = matrices(
-            of: Int.self,
-            in: window,
-            from: database
+        let series = try await database.series(
+            matching: SeriesQuery(bucket: period.logBucket, range: window)
         )
-
-        async let doubleMatrices = matrices(
-            of: Double.self,
-            in: window,
-            from: database
-        )
-
-        return try await (
-            intMatrices.filter { !lifecycleNames.contains($0.name) },
-            doubleMatrices
-        )
+        return series.filter { !lifecycleNames.contains($0.name) }
     }
 }
 
@@ -55,56 +42,58 @@ private let lifecycleNames: Set = [
     InstallEntry.recordType,
     LaunchEntry.recordType,
     MarkerEntry.crashName,
-    MarkerEntry.installName,
     SessionEntry.recordType,
     VersionEntry.recordType,
 ]
 
-private func matrices<T: MetricScalar>(of type: T.Type, in range: Range<Date>, from database: DatabaseReader)
-    async throws -> [GridMatrix<T>]
-{
-    let query = RecordQuery(
-        recordType: GridMatrix<T>.self,
-        filters: (range.lowerBound.startOfWeek..<range.upperBound).dateFilters
-    )
-    let matrices: [GridMatrix<T>] = try await database.readAll(matching: query)
-    return matrices.mergeDuplicates()
+extension Period {
+    fileprivate var logBucket: SeriesQuery.Bucket {
+        switch self {
+        case .today, .yesterday:
+            .hour
+        case .week, .month, .year:
+            .day
+        }
+    }
 }
 
 extension HomeLogProvider {
     static func sample(for period: Period) -> Output {
         let date = period.initialRange.lowerBound
-        let intMatrices = [
-            GridMatrix(
-                date: date,
+
+        func point(hour: Int, value: MetricValue) -> MetricSeriesPoint {
+            MetricSeriesPoint(
+                date: date.addingTimeInterval(TimeInterval(hour) * .hour).millisecondsSince1970,
+                value: value
+            )
+        }
+
+        return [
+            MetricSeries(
                 name: EventEntry.recordType,
-                cells: [GridCell(row: 1, column: 0, value: 48)]
+                category: nil,
+                points: [point(hour: 0, value: .int(48))]
             ),
-            GridMatrix(
-                date: date,
+            MetricSeries(
                 name: CrashEntry.recordType,
-                cells: [GridCell(row: 1, column: 1, value: 3)]
+                category: nil,
+                points: [point(hour: 1, value: .int(3))]
             ),
-            GridMatrix(
-                date: date,
+            MetricSeries(
                 name: HangEntry.recordType,
-                cells: [GridCell(row: 1, column: 4, value: 6)]
+                category: nil,
+                points: [point(hour: 4, value: .int(6))]
             ),
-            GridMatrix(
-                date: date,
+            MetricSeries(
                 name: "api_calls",
                 category: Telemetry.Export.counter.rawValue,
-                cells: [GridCell(row: 1, column: 2, value: 140)]
+                points: [point(hour: 2, value: .int(140))]
             ),
-        ]
-        let doubleMatrices = [
-            GridMatrix(
-                date: date,
+            MetricSeries(
                 name: "cache_hit_rate",
                 category: Telemetry.Export.floatingCounter.rawValue,
-                cells: [GridCell(row: 1, column: 3, value: 91.5)]
-            )
+                points: [point(hour: 3, value: .double(91.5))]
+            ),
         ]
-        return (intMatrices, doubleMatrices)
     }
 }

@@ -7,14 +7,12 @@
 
 import Foundation
 
-typealias IntMatrices = [GridMatrix<Int>]
-
-struct ReleaseMatrices {
-    let sessions: IntMatrices
-    let crashes: IntMatrices
-    let hangs: IntMatrices
-    let installs: IntMatrices
-    let crashedInstalls: IntMatrices
+struct ReleaseSeries {
+    let sessions: [MetricSeries]
+    let crashes: [MetricSeries]
+    let hangs: [MetricSeries]
+    let installs: [MetricSeries]
+    let crashedInstalls: [MetricSeries]
 
     func report(in range: Range<Date>) -> [ReleaseHealth] {
         let sessionCounts = sessions.points(in: range).mapValues(\.total)
@@ -50,12 +48,13 @@ struct ReleaseMatrices {
     }
 }
 
-extension [GridMatrix<Int>] {
+extension [MetricSeries] {
     fileprivate func points(in range: Range<Date>) -> [String: [ChartPoint<Int>]] {
         var result: [String: [ChartPoint<Int>]] = [:]
-        for matrix in self {
-            if let version = matrix.version {
-                result[version, default: []] += matrix.points.filter { range.contains($0.date) }
+        for series in self {
+            if let version = series.version {
+                let points: [ChartPoint<Int>] = series.chartPoints()
+                result[version, default: []] += points.filter { range.contains($0.date) }
             }
         }
         return result

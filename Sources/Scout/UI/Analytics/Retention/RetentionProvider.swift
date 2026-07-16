@@ -14,7 +14,3 @@ class RetentionProvider: ObservableObject, Provider {
         try await database.retention(in: Calendar.utc.defaultRange)
     }
 }
-
-protocol RetentionReader: RecordReader {
-    func retention(in range: Range<Date>) async throws -> [RetentionCohort]
-}

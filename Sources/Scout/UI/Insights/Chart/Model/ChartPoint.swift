@@ -8,7 +8,7 @@
 import Charts
 import Foundation
 
-typealias ChartNumeric = Plottable & SeriesScalar
+typealias ChartNumeric = Plottable & MetricScalar
 
 struct ChartPoint<T: ChartNumeric>: ChartSeries {
     let date: Date
@@ -18,6 +18,18 @@ struct ChartPoint<T: ChartNumeric>: ChartSeries {
 extension ChartPoint: Comparable {
     static func < (lhs: ChartPoint, rhs: ChartPoint) -> Bool {
         lhs.date < rhs.date
+    }
+}
+
+extension ChartPoint: Fixture where T == Int {
+    static var samples: [ChartPoint<Int>] {
+        let base = Calendar.utc.defaultRange.lowerBound
+        return (1...372).map { day in
+            ChartPoint(
+                date: base.addingTimeInterval(TimeInterval(day - 1) * .day + 12 * .hour),
+                count: 12 + day % 40 + (day / 9) % 18
+            )
+        }
     }
 }
 

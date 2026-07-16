@@ -147,10 +147,10 @@ struct ServerContractTests {
         #expect(d0 > 0)
     }
 
-    @Test("Sessions aggregate into a per-version matrix")
-    func versionedSessionMatrix() async throws {
+    @Test("Sessions aggregate into a per-version series")
+    func versionedSessionSeries() async throws {
         let database = try makeDatabase()
-        // A unique version isolates this matrix from any shared server data.
+        // A unique version isolates this series from any shared server data.
         let version = "contract-\(UUID().uuidString)"
 
         var first = makeSession(installID: UUID().uuidString, startDate: eventDate)
@@ -159,19 +159,42 @@ struct ServerContractTests {
         second["app_version"] = version
         try await database.write(records: [first, second])
 
-        let query = RecordQuery(
-            recordType: GridMatrix<Int>.self,
-            filters: [
-                RecordQuery.Filter(field: "name", op: .equals, value: .string("Session")),
-                RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version)),
-            ]
+        let series = try await database.series(
+            matching: SeriesQuery(
+                name: "Session",
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
         )
-        let matrices: [GridMatrix<Int>] = try await database.readAll(matching: query)
+        let sessions = try #require(series.first { $0.version == version })
 
-        #expect(matrices.count == 1)
-        let matrix = try #require(matrices.first)
-        #expect(matrix.version == version)
-        #expect(matrix.cells.map(\.value).reduce(0, +) == 2)
+        #expect(sessions.name == "Session")
+        #expect(sessions.points.map(\.value.doubleValue).reduce(0, +) == 2)
+    }
+
+    @Test("First crashes per install aggregate under the VersionCrash series")
+    func versionCrashSeries() async throws {
+        let database = try makeDatabase()
+        // A unique version isolates this series from any shared server data.
+        let version = "contract-\(UUID().uuidString)"
+        let install = UUID().uuidString
+
+        var first = makeCrash(appVersion: version)
+        first["install_id"] = install
+        var second = makeCrash(appVersion: version)
+        second["install_id"] = install
+        try await database.write(records: [first, second])
+
+        let series = try await database.series(
+            matching: SeriesQuery(
+                name: "VersionCrash",
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let crashes = try #require(series.first { $0.version == version })
+
+        #expect(crashes.points.map(\.value.doubleValue).reduce(0, +) == 1)
     }
 
     @Test("Crashes filter by app version on the server")

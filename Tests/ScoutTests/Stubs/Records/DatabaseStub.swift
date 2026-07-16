@@ -20,7 +20,9 @@ import Foundation
 final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private let lock = NSLock()
     private var storage: [String: [Record]] = [:]
+    private var seriesStorage: [MetricSeries] = []
     private var counts: [String: Int] = [:]
+    private var seriesCalls = 0
 
     /// When set, every read suspends until the gate opens.
     var gate: Gate?
@@ -33,10 +35,22 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         }
     }
 
+    func add(series: MetricSeries...) {
+        lock.lock()
+        defer { lock.unlock() }
+        seriesStorage += series
+    }
+
     func readCount(of recordType: String) -> Int {
         lock.lock()
         defer { lock.unlock() }
         return counts[recordType] ?? 0
+    }
+
+    var seriesReadCount: Int {
+        lock.lock()
+        defer { lock.unlock() }
+        return seriesCalls
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
@@ -65,10 +79,24 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         RecordChunk(records: [], cursor: nil)
     }
 
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
-        []
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+        seriesChunk(matching: query)
+    }
+
+    private func seriesChunk(matching query: SeriesQuery) -> [MetricSeries] {
+        lock.lock()
+        defer { lock.unlock() }
+        seriesCalls += 1
+
+        return
+            seriesStorage
+            .filter { query.name == nil || $0.name == query.name }
+            .compactMap { series in
+                let points = series.points.filter { query.range.contains(Date(millisecondsSince1970: $0.date)) }
+                guard points.count > 0 else { return nil }
+                return MetricSeries(
+                    name: series.name, category: series.category, version: series.version, points: points)
+            }
     }
 
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {

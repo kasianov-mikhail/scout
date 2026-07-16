@@ -9,7 +9,7 @@ import Foundation
 
 @testable import Scout
 
-final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable {
+final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var records: [Record] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
@@ -59,9 +59,7 @@ final class InMemoryDatabase: DatabaseReader, RecordWriter, @unchecked Sendable 
 }
 
 extension InMemoryDatabase {
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
-        -> [MetricSeries]
-    {
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
         []
     }
 

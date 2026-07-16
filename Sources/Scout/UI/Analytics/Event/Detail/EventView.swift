@@ -95,7 +95,7 @@ extension EventView {
     param.result = .success(params.sorted())
 
     let stat = StatProvider(eventName: event.name, periods: Period.allCases)
-    stat.result = .success([.sample(name: event.name)])
+    stat.result = .success(.samples)
 
     return NavigationStack {
         EventView(event: event, param: param, stat: stat)

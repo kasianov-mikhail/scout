@@ -7,7 +7,7 @@
 
 import Foundation
 
-extension HTTPDatabase: RecordWriter {
+extension HTTPDatabase: DatabaseWriter {
     func write(record: Record) async throws {
         try await write(records: [record])
     }

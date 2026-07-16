@@ -55,10 +55,10 @@ struct HomeMetricSection: View {
     }
 
     private var sessionSummary: MetricSummary {
-        guard let matrices = try? sessions.result?.get() else {
+        guard let points = try? sessions.result?.get() else {
             return .loading
         }
-        return MetricSummary(points: matrices.flatMap(\.points), period: period)
+        return MetricSummary(points: points, period: period)
     }
 }
 
@@ -67,7 +67,7 @@ struct HomeMetricSection: View {
     activities.result = .success(.samples)
 
     let sessions = StatProvider(eventName: "Session", periods: Period.summary)
-    sessions.result = .success([.sample(name: "Session")])
+    sessions.result = .success(.samples)
 
     return NavigationStack {
         List {

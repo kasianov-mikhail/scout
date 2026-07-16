@@ -21,10 +21,10 @@ struct RecordCacheTests {
     }
 
     func makeRecord(date: Date, name: String = "Session") -> Record {
-        var record = Record(recordType: GridMatrix<Int>.recordType, recordID: UUID().uuidString)
+        var record = Record(recordType: "MetricSeriesPoint", recordID: UUID().uuidString)
         record.fields["date"] = .date(date)
         record.fields["name"] = .string(name)
-        record.fields["cell_1_00"] = .int(5)
+        record.fields["value"] = .int(5)
         return record
     }
 
@@ -105,7 +105,7 @@ struct RecordCacheTests {
     @Test("A record without a date aborts the store")
     func abortsWithoutDate() async throws {
         let cache = try makeCache()
-        let record = Record(recordType: GridMatrix<Int>.recordType, recordID: UUID().uuidString)
+        let record = Record(recordType: "MetricSeriesPoint", recordID: UUID().uuidString)
 
         await cache.store([record], for: "fp", covering: date(0)..<date(300))
 
