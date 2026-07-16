@@ -18,6 +18,13 @@ struct ActivityView: View {
         self._extent = State(wrappedValue: ChartExtent(period: period))
     }
 
+    init?(activity: ActivityProvider, period: ActivityPeriod?) {
+        guard let period else {
+            return nil
+        }
+        self.init(activity: activity, period: period)
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct HomeList: View {
-    @Environment(\.database) var database
     @AppStorage("scout_home_period") var period = Period.today
 
     @Binding var path: [HomeDestination]
@@ -21,115 +20,54 @@ struct HomeList: View {
     @StateObject var devices = DevicesProvider()
 
     var body: some View {
-        if let error = HomeErrorView(providers: [sessions, activities, logs, releases, devices]) {
-            error
-        } else {
-            List {
-                SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
-                    .padding(.top, 8)
-                    .listRowSeparator(.hidden)
+        List {
+            SegmentStrip(
+                selection: $period,
+                distribution: .justified,
+                title: \.shortTitle
+            )
+            .padding(.top, 8)
+            .listRowSeparator(.hidden)
 
-                HStack(spacing: 24) {
-                    Button {
-                        path.append(.activity)
-                    } label: {
-                        MetricCard(
-                            title: "Users",
-                            color: .green,
-                            summary: activitySummary
-                        )
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(period.activityPeriod == nil)
-
-                    Button {
-                        path.append(.sessions)
-                    } label: {
-                        MetricCard(
-                            title: "Sessions",
-                            color: .purple,
-                            summary: sessionSummary
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-                .listRowSeparator(.hidden)
-
-                HomeLogSection(period: period, log: logs, devices: devices) {
-                    path.append(.log)
-                }
-                HomeReleaseSection(provider: releases) {
-                    path.append(.releaseHealth)
-                }
-
-                Button {
-                    path.append(.retention)
-                } label: {
-                    HStack {
-                        Text(verbatim: "Retention").font(.body)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-                .buttonStyle(.plain)
-                .listRowSeparator(.hidden)
+            HomeMetricSection(
+                activities: activities,
+                sessions: sessions,
+                period: period,
+                path: $path
+            )
+            HomeLogSection(
+                period: period,
+                log: logs,
+                devices: devices,
+                path: $path
+            )
+            HomeReleaseSection(
+                releases: releases,
+                path: $path
+            )
+            HomeRetentionSection(
+                path: $path
+            )
+        }
+        .navigationDestination(for: HomeDestination.self) { destination in
+            switch destination {
+            case .activity:
+                ActivityView(activity: activities, period: period.activityPeriod)
+            case .retention:
+                RetentionHeroChartView(provider: retention)
+            case .sessions:
+                StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
+                    .environment(\.chartColor, .purple)
+                    .navigationTitle(en: "Sessions")
+            case .log:
+                LogView(period: period, log: logs, devices: devices)
+            case .releaseHealth:
+                ReleaseHealthView(provider: releases)
             }
-            .navigationDestination(for: HomeDestination.self) { destination in
-                switch destination {
-                case .activity:
-                    activityDestination
-                case .retention:
-                    RetentionHeroChartView(provider: retention)
-                case .sessions:
-                    sessionDestination
-                case .log:
-                    LogView(period: period, log: logs, devices: devices)
-                case .releaseHealth:
-                    ReleaseHealthView(provider: releases)
-                }
-            }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .autoRefresh(rotating: [
-                { await sessions.fetchLatest(in: database) },
-                { await activities.fetchLatest(in: database) },
-                { await logs.fetchLatest(in: database) },
-                { await releases.fetchLatest(in: database) },
-                { await devices.fetchLatest(in: database) },
-            ])
         }
-    }
-
-    @ViewBuilder
-    private var activityDestination: some View {
-        if let activityPeriod = period.activityPeriod {
-            ActivityView(activity: activities, period: activityPeriod)
-        }
-    }
-
-    private var sessionDestination: some View {
-        StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
-            .environment(\.chartColor, .purple)
-            .navigationTitle(en: "Sessions")
-    }
-
-    private var activitySummary: MetricSummary? {
-        guard let activityPeriod = period.activityPeriod else {
-            return nil
-        }
-        guard let points = try? activities.result?.get() else {
-            return .loading
-        }
-        return MetricSummary(levels: points.points(on: activityPeriod), period: period)
-    }
-
-    private var sessionSummary: MetricSummary {
-        guard let matrices = try? sessions.result?.get() else {
-            return .loading
-        }
-        return MetricSummary(points: matrices.flatMap(\.points), period: period)
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .rotatingProviders([sessions, activities, logs, releases, devices])
     }
 }
 

@@ -15,11 +15,11 @@ struct HomeLogSection: View {
     @ObservedObject var log: HomeLogProvider
     @ObservedObject var devices: DevicesProvider
 
-    let showAll: () -> Void
+    @Binding var path: [HomeDestination]
 
     var body: some View {
         Header(title: "Log") {
-            AllButton(action: showAll)
+            AllButton { path.append(.log) }
         }
         .task(id: period) {
             log.period = period
@@ -80,7 +80,7 @@ struct HomeLogSection: View {
                 period: .today,
                 log: makeLog(),
                 devices: devices,
-                showAll: {}
+                path: .constant([])
             )
         }
         .listStyle(.plain)
