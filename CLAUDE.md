@@ -94,6 +94,14 @@
 - Providers/view models don't expose `fixture()`. A `#Preview` builds the provider directly and sets its published state inline, e.g. `provider.result = .success([ReleaseHealth].samples)`; if priming needs control flow, wrap it in a local `@MainActor func` (`#Preview`'s `@ViewBuilder` body rejects a bare loop) and call that in a `let`.
 - Tests use `make<Name>(...)` instead.
 
+## Snapshot tests
+
+- Image snapshot suites live in the separate `ScoutSnapshotTests` target (`Tests/ScoutSnapshotTests`), never in `ScoutTests` — this keeps the SnapshotTesting dependency and the `__Snapshots__` baselines out of the mirrored test tree.
+- Snapshot views through the shared `Snapshotting.scout(width:height:)` strategy, and gate every suite with `@Suite(.enabled(if: ViewSnapshot.isSupported))`: baselines are recorded on iOS 26, and CI legs on other iOS versions must skip rather than diff against them.
+- Views under test must render deterministically. Relative-time labels resolve against `Date()`, so time-bearing fixtures use offsets from now placed mid-bucket (e.g. −150 s for "2m ago"), never fixed epoch dates.
+- To re-record a baseline, delete its PNG under `__Snapshots__` and run the suite twice: the first run records and fails, the second verifies.
+- Keep the suite a small curated set of deterministically rendering primitives, and keep baselines in plain git — no Git LFS while they stay lightweight (revisit at tens of MB).
+
 ## Core Data migrations
 
 - Never reset, wipe, or destroy the persistent store to recover from a model mismatch — user data must survive schema changes.
