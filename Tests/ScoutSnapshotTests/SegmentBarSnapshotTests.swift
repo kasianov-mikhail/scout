@@ -24,6 +24,11 @@ import Testing
             serverError: 18
         )
         assertSnapshot(of: SegmentBar(segments: breakdown.segments).padding(), as: .scout(height: 80))
+        assertSnapshot(
+            of: SegmentBar(segments: breakdown.segments).padding(),
+            as: .scout(height: 80, style: .dark),
+            named: "dark"
+        )
     }
 
     @Test("Success only")
@@ -32,5 +37,10 @@ import Testing
 
         let breakdown = StatusBreakdown.sample(success: 1200)
         assertSnapshot(of: SegmentBar(segments: breakdown.segments).padding(), as: .scout(height: 80))
+        assertSnapshot(
+            of: SegmentBar(segments: breakdown.segments).padding(),
+            as: .scout(height: 80, style: .dark),
+            named: "dark"
+        )
     }
 }

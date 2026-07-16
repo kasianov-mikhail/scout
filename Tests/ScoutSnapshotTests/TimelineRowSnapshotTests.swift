@@ -49,5 +49,6 @@ import Testing
         }
 
         assertSnapshot(of: view, as: .scout(height: 140))
+        assertSnapshot(of: view, as: .scout(height: 140, style: .dark), named: "dark")
     }
 }

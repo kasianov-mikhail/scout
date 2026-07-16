@@ -30,5 +30,6 @@ import Testing
         .padding()
 
         assertSnapshot(of: view, as: .scout(height: 400))
+        assertSnapshot(of: view, as: .scout(height: 400, style: .dark), named: "dark")
     }
 }
