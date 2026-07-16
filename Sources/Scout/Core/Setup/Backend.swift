@@ -18,7 +18,6 @@ public struct Backend: Sendable {
     var serverInfo: ServerInfo? = nil
     var probeStatus: @Sendable () async -> Status = { .unknown }
     var accountWarning: AccountWarning = { nil }
-    var runBenchmark: (@Sendable () async -> Bool)? = nil
     var onSetup: @MainActor @Sendable () -> Void = {}
 
     enum Status: Sendable {
