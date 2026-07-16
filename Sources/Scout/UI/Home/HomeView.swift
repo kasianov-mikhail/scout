@@ -52,7 +52,7 @@ struct HomeView: View {
         .imageScale(.medium)
         .dynamicTypeSize(.large)
         .tint(tint.value)
-        .environment(\.database, backend?.database ?? DefaultDatabase())
+        .environment(\.database, backend?.cachedDatabase ?? DefaultDatabase())
         .environmentObject(tint)
     }
 }
