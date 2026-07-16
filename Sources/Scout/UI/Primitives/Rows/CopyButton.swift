@@ -33,6 +33,7 @@ struct CopyButton: View {
             Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
         }
         .animation(.easeInOut(duration: 0.15), value: isCopied)
+        .hapticFeedback(.success, trigger: isCopied) { _, copied in copied }
     }
 }
 

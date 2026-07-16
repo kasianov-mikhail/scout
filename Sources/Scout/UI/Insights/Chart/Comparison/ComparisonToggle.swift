@@ -16,6 +16,7 @@ struct ComparisonToggle: View {
             Text(verbatim: "Compare with previous period")
         }
         .listRowSeparator(.hidden)
+        .hapticFeedback(.selection, trigger: isOn)
     }
 }
 

@@ -37,6 +37,7 @@ struct RangeControl<T: ChartTimeScale>: View {
         }
         .padding(.top)
         .padding(.horizontal)
+        .hapticFeedback(.selection, trigger: extent.domain)
     }
 
     struct MoveButton: View {
