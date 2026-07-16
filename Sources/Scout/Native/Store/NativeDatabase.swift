@@ -117,18 +117,19 @@ extension NativeDatabase: ActivityReader {
         // Visit markers carry one record per device per day; sessions still
         // back the days written before markers existed. The union dedupes, so
         // dropping the session leg once every client ships markers is safe.
-        async let markers = visits(entity: VisitEntry.recordType, dateField: "date", from: lookback, in: range)
-        async let sessions = visits(entity: SessionEntry.recordType, dateField: "start_date", from: lookback, in: range)
+        let window = lookback..<range.upperBound
+        async let markers = visits(entity: VisitEntry.recordType, dateField: "date", in: window)
+        async let sessions = visits(entity: SessionEntry.recordType, dateField: "start_date", in: window)
 
         return ActivityPoint.points(visits: try await markers + sessions, in: range)
     }
 
-    private func visits(entity: String, dateField: String, from lookback: Date, in range: Range<Date>) async throws -> [ActivityVisit] {
+    private func visits(entity: String, dateField: String, in window: Range<Date>) async throws -> [ActivityVisit] {
         let records = try await store.read(
             entity: entity,
             filters: [
-                EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(lookback)),
-                EntityStore.Filter(field: dateField, op: .lessThan, value: .date(range.upperBound)),
+                EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(window.lowerBound)),
+                EntityStore.Filter(field: dateField, op: .lessThan, value: .date(window.upperBound)),
             ],
             fields: [dateField, "device_id"]
         )
