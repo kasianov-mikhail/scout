@@ -19,6 +19,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0" ..< "3.0.0"),
         .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.10.0"),
+        .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.4.0"),
     ],
     targets: [
         .target(
@@ -31,6 +32,9 @@ let package = Package(
                 .product(name: "Metrics", package: "swift-metrics"),
                 .product(name: "ScoutDB", package: "scout-db"),
                 "CScoutHang",
+            ],
+            resources: [
+                .process("Core/Persistence/ScoutModel.xcdatamodeld")
             ]
         ),
         .testTarget(

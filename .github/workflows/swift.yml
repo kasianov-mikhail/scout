@@ -52,11 +52,31 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # A name-only destination resolves to the newest runtime on the image,
+      # so the iOS 18 leg was silently running its tests on an iOS 26
+      # simulator. Resolve a device on the matrix major version explicitly and
+      # address it by UDID.
       - name: Prepare simulator
+        id: sim
         run: |
-          if ! xcrun simctl list devices available | grep -q "iPhone"; then
+          if ! xcrun simctl list runtimes | grep -q "^iOS ${{ matrix.ios }}\."; then
             xcodebuild -downloadPlatform iOS
           fi
+          runtime=$(xcrun simctl list runtimes --json \
+            | jq -r '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ matrix.ios }}."))) | .identifier' \
+            | tail -1)
+          if [ -z "$runtime" ]; then
+            echo "No iOS ${{ matrix.ios }} simulator runtime is available."
+            xcrun simctl list runtimes
+            exit 1
+          fi
+          udid=$(xcrun simctl list devices available --json \
+            | jq -r --arg rt "$runtime" '.devices[$rt][]? | select(.name == "${{ matrix.device }}") | .udid' \
+            | head -1)
+          if [ -z "$udid" ]; then
+            udid=$(xcrun simctl create "${{ matrix.device }}" "${{ matrix.device }}" "$runtime")
+          fi
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
 
       # Package.resolved is not committed, so the key falls back to the
       # manifest: any Package.swift change starts a fresh cache, and
@@ -73,7 +93,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
+            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
             -skipMacroValidation \
@@ -83,7 +103,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout \
-            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
+            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
             -resultBundlePath TestResults.xcresult \
             test-without-building
