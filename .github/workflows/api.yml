@@ -20,9 +20,13 @@ jobs:
     timeout-minutes: 30
 
     steps:
+      # blob:none avoids downloading every historical blob (snapshot PNGs
+      # included): only HEAD is materialized at checkout, and `git worktree add`
+      # below batch-fetches just the baseline commit's blobs on demand.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          filter: blob:none
 
       # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
       # only processed by the Xcode build system), so instead of

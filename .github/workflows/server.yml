@@ -57,9 +57,14 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
+      # blob:none keeps the full-history fetch below from downloading every
+      # historical blob (snapshot PNGs included): this job only greps the
+      # working tree and diffs file names, so historical content is never
+      # needed.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          filter: blob:none
 
       # Tripwire against filter drift. The path filter below duplicates the
       # knowledge of where the wire code lives, so a future move out of the
