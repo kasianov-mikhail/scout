@@ -20,6 +20,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0" ..< "3.0.0"),
         .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.10.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.4.0"),
+        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.0"),
     ],
     targets: [
         .target(
@@ -42,6 +43,13 @@ let package = Package(
             dependencies: [
                 "Scout",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
+            ]
+        ),
+        .testTarget(
+            name: "ScoutSnapshotTests",
+            dependencies: [
+                "Scout",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
         ),
     ]
