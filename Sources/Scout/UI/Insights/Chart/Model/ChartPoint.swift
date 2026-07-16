@@ -8,7 +8,7 @@
 import Charts
 import Foundation
 
-typealias ChartNumeric = Plottable & SeriesScalar
+typealias ChartNumeric = Plottable & MetricScalar
 
 struct ChartPoint<T: ChartNumeric>: ChartSeries {
     let date: Date

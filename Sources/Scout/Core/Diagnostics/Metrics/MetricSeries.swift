@@ -7,12 +7,8 @@
 
 import Foundation
 
-protocol MetricReader: RecordReader {
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries]
-}
-
-extension MetricReader {
-    func metricSeries<T: SeriesScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
+extension DatabaseReader {
+    func metricSeries<T: MetricScalar>(_ valueType: T.Type, category: String, in range: Range<Date>) async throws
         -> [MetricSeries]
     {
         try await series(
