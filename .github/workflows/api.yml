@@ -63,13 +63,19 @@ jobs:
           echo "Comparing against base $baseline"
           git worktree add /tmp/baseline "$baseline"
           cd /tmp/baseline
-          xcodebuild \
+          # The baseline resolves dependencies fresh (Package.resolved is not
+          # committed), so a dependency release that breaks the old code makes
+          # the baseline unbuildable. Nothing to compare against then — skip.
+          if ! xcodebuild \
             -scheme Scout \
             -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath /tmp/dd-baseline \
             -skipMacroValidation \
             -quiet \
-            build
+            build; then
+            echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
+            exit 0
+          fi
           ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
           digester_flags=()
           for modulemap in /tmp/dd-baseline/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/*.modulemap; do
