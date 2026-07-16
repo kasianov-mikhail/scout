@@ -55,7 +55,9 @@ struct RangeSheet: View {
 
     private var footer: some View {
         HStack(spacing: 12) {
-            Button(role: .cancel) { dismiss() } label: {
+            Button(role: .cancel) {
+                dismiss()
+            } label: {
                 Text(verbatim: "Cancel").frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
@@ -104,7 +106,9 @@ private struct RangeSheetPreviewHost: View {
             .buttonStyle(.borderedProminent)
 
             if let selection {
-                Text(verbatim: "\(selection.lowerBound.formatted(date: .abbreviated, time: .omitted)) – \(selection.upperBound.formatted(date: .abbreviated, time: .omitted))")
+                let lower = selection.lowerBound.formatted(date: .abbreviated, time: .omitted)
+                let upper = selection.upperBound.formatted(date: .abbreviated, time: .omitted)
+                Text(verbatim: "\(lower) – \(upper)")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

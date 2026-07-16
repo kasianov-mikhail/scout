@@ -41,7 +41,7 @@ struct TintedMonthGrid: View {
             .overlay {
                 Text(verbatim: "\(day.number)")
                     .font(.callout.monospacedDigit())
-                    .foregroundStyle(isEndpoint ? AnyShapeStyle(.white) : day.isCurrentMonth ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary))
+                    .foregroundStyle(textStyle(day, isEndpoint: isEndpoint))
             }
             .overlay {
                 if month.isToday(day) && !isEndpoint && !selection.contains(day.date) {
@@ -59,5 +59,12 @@ struct TintedMonthGrid: View {
             return Color.accentColor.opacity(0.25)
         }
         return day.isCurrentMonth ? Color.accentColor.opacity(0.10) : Color(.systemGray6)
+    }
+
+    private func textStyle(_ day: CalendarMonth.Day, isEndpoint: Bool) -> AnyShapeStyle {
+        if isEndpoint {
+            return AnyShapeStyle(.white)
+        }
+        return day.isCurrentMonth ? AnyShapeStyle(.primary) : AnyShapeStyle(.tertiary)
     }
 }
