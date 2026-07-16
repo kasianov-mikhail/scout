@@ -39,9 +39,24 @@ struct StatView: View {
                     if showList {
                         total(count: segment.total)
                     }
+
+                    Header(title: "Weekly Pattern") {
+                        Text(verbatim: "Last 4 weeks")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .listRowSeparator(.hidden)
+
+                    HeatmapView(
+                        grid: HeatmapGrid(
+                            points: points,
+                            range: HeatmapGrid.recentRange(weeks: 4),
+                            calendar: .utc
+                        )
+                    )
+                    .listRowSeparator(.hidden)
                 }
                 .listStyle(.plain)
-                .scrollDisabled(true)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         ChartExportButton(
