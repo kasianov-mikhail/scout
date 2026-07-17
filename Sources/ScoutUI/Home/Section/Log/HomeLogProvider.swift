@@ -30,10 +30,18 @@ class HomeLogProvider: ObservableObject, Provider {
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {
+        let period = period
         let window = period.previousRange.lowerBound..<period.initialRange.upperBound
         let series = try await database.series(
             matching: SeriesQuery(bucket: period.logBucket, range: window)
         )
+
+        // The fetch was started under `period`; if the user switched meanwhile, dropping the
+        // completion keeps its wrong-bucket series out of the newly selected period's slot.
+        guard period == self.period else {
+            throw CancellationError()
+        }
+
         return series.filter { !lifecycleNames.contains($0.name) }
     }
 }
