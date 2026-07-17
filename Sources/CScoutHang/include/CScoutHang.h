@@ -5,8 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-#ifndef SCOUT_HANG_H
-#define SCOUT_HANG_H
+#ifndef SCOUT_C_SCOUT_HANG_H
+#define SCOUT_C_SCOUT_HANG_H
 
 #include <mach/mach.h>
 #include <stdint.h>
