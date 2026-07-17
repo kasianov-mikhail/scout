@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-#include "CScoutHang.h"
+#include "ScoutHang.h"
 
 #if defined(__arm64__) || defined(__aarch64__)
 

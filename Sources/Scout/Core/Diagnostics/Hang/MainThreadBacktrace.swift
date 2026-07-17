@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CScoutHang
+import ScoutHang
 import Foundation
 import MachO
 
