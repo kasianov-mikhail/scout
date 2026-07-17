@@ -18,9 +18,19 @@ actor Coalescer: Dispatcher {
 
         defer { isRunning = false }
 
+        var caught: Error?
+
         while let next = pending {
             pending = nil
-            try await next()
+            do {
+                try await next()
+            } catch {
+                if caught == nil { caught = error }
+            }
+        }
+
+        if let caught {
+            throw caught
         }
     }
 }
