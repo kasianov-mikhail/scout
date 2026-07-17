@@ -9,15 +9,20 @@ import Foundation
 
 extension Provider {
     func fetchAgain(in database: DatabaseReader) async {
-        result = nil
-        await resolve(in: database)
+        do {
+            result = .success(try await fetch(in: database))
+        } catch is CancellationError {
+            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
+        } catch {
+            result = .failure(error)
+        }
     }
 
     func fetchIfNeeded(in database: DatabaseReader) async {
         guard result == nil else {
             return
         }
-        await resolve(in: database)
+        await fetchAgain(in: database)
     }
 
     func fetchIfFailed(in database: DatabaseReader) async {
@@ -39,16 +44,6 @@ extension Provider {
                 result = .failure(error)
             }
             return false
-        }
-    }
-
-    private func resolve(in database: DatabaseReader) async {
-        do {
-            result = .success(try await fetch(in: database))
-        } catch is CancellationError {
-            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
-        } catch {
-            result = .failure(error)
         }
     }
 }
