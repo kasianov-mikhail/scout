@@ -14,20 +14,13 @@ struct EventStatList: View {
     @StateObject var provider = EventProvider()
     @Environment(\.database) var database
 
-    let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.dateFormat = "d MMM"
-        return formatter
-    }()
-
     var body: some View {
         VStack {
             EventList(provider: provider)
                 .autoRefresh {
                     await provider.fetchLatest(for: query, in: database)
                 }
-                .navigationTitle(range.label(using: formatter))
+                .navigationTitle(range.label(using: eventRangeDateFormatter))
                 .font(.caption)
         }
     }
@@ -36,6 +29,13 @@ struct EventStatList: View {
         EventQuery(name: eventName, dates: range)
     }
 }
+
+private let eventRangeDateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US")
+    formatter.dateFormat = "d MMM"
+    return formatter
+}()
 
 #Preview {
     let provider = EventProvider()
