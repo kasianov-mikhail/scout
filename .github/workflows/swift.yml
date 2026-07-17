@@ -26,6 +26,7 @@ jobs:
 
   tests:
     name: test-ios-${{ matrix.ios }}
+    needs: lint
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -34,9 +35,11 @@ jobs:
       id-token: write
 
     strategy:
-      # The xcode-27 leg runs a public-preview image; keep a failure there from
-      # cancelling the stable legs, whose checks are required on main.
-      fail-fast: false
+      # A failure in any leg cancels the remaining in-progress legs, including
+      # the stable iOS 18 / iOS 26 legs whose checks are required on main. Note
+      # this also lets a flake on the xcode-27 public-preview image tear down the
+      # whole run.
+      fail-fast: true
       matrix:
         # Coverage is collected on one leg only: the reports differ between
         # legs by fractions of a percent, and instrumentation, xcresult
