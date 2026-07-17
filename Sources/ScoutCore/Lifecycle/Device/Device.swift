@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct Device {
-    public let date: Date?
-    public let id: String
-    public let deviceID: UUID?
+package struct Device {
+    package let date: Date?
+    package let id: String
+    package let deviceID: UUID?
 
-    public init(date: Date?, id: String, deviceID: UUID?) {
+    package init(date: Date?, id: String, deviceID: UUID?) {
         self.date = date
         self.id = id
         self.deviceID = deviceID
@@ -20,14 +20,14 @@ public struct Device {
 }
 
 extension Device: RecordDecodable {
-    public static let recordType = DeviceEntry.recordType
+    package static let recordType = DeviceEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "date",
         "device_id",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         date = record["date"]
         id = record.recordID
         deviceID = record["device_id"].flatMap(UUID.init)
@@ -35,7 +35,7 @@ extension Device: RecordDecodable {
 }
 
 extension Device: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["date"] = date
         record["device_id"] = deviceID?.uuidString

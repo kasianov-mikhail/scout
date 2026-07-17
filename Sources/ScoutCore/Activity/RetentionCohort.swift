@@ -13,15 +13,15 @@ import Foundation
 /// milestone (`nil` where the milestone has not elapsed). It is what a
 /// ``Database`` returns from its retention query.
 ///
-public struct RetentionCohort: Identifiable, Hashable, Sendable {
-    public static let dayOffsets = [0, 1, 3, 7, 14, 30]
-    public static let summaryOffsets = [1, 7, 30]
+package struct RetentionCohort: Identifiable, Hashable, Sendable {
+    package static let dayOffsets = [0, 1, 3, 7, 14, 30]
+    package static let summaryOffsets = [1, 7, 30]
 
-    public let id: Date
-    public let size: Int
-    public let retention: [Double?]
+    package let id: Date
+    package let size: Int
+    package let retention: [Double?]
 
-    public init(id: Date, size: Int, retention: [Double?]) {
+    package init(id: Date, size: Int, retention: [Double?]) {
         self.id = id
         self.size = size
         self.retention = retention
@@ -33,7 +33,7 @@ extension RetentionCohort {
     /// count, and a retained count per ``dayOffsets`` milestone (`nil` where the
     /// milestone has not elapsed) — into display rates.
     ///
-    public init(date: Int64, size: Int, retained: [Int?]) {
+    package init(date: Int64, size: Int, retained: [Int?]) {
         self.init(
             id: Date(millisecondsSince1970: date),
             size: size,

@@ -14,14 +14,14 @@ import ScoutCore
 /// anything that only links it, including its test bundles — does not link
 /// SwiftData and keeps loading on earlier systems.
 ///
-public enum ScoutCache {
+package enum ScoutCache {
     /// Routes Scout's backends through the SwiftData-backed record cache.
     ///
     /// Call this once during app startup. Without it, `Scout` resolves every
     /// backend to its uncached database. On systems earlier than iOS 17 /
     /// macOS 14 the call is a no-op and backends stay uncached.
     ///
-    @MainActor public static func enable() {
+    @MainActor package static func enable() {
         DatabaseCaching.provider = { backend in
             guard #available(iOS 17, macOS 14, *) else { return nil }
             return DatabaseCacheRegistry.database(for: backend)

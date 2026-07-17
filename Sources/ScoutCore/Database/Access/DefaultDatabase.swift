@@ -10,29 +10,29 @@ import Foundation
 /// A no-op ``Database`` used as the neutral default before a backend is wired
 /// in — every read returns empty and every write is discarded.
 ///
-public struct DefaultDatabase: Database {
-    public init() {}
+package struct DefaultDatabase: Database {
+    package init() {}
 
-    public func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+    package func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 
-    public func lookup(recordName: String, fields: [String]?) async throws -> Record {
+    package func lookup(recordName: String, fields: [String]?) async throws -> Record {
         throw RecordNotFoundError()
     }
 
-    public func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+    package func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         []
     }
 
-    public func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+    package func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         []
     }
 
-    public func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+    package func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
         []
     }
 
-    public func write(record: Record) async throws {}
-    public func write(records: [Record]) async throws {}
+    package func write(record: Record) async throws {}
+    package func write(records: [Record]) async throws {}
 }

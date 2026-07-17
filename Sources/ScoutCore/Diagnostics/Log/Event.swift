@@ -7,18 +7,18 @@
 
 import Foundation
 
-public struct Event: Identifiable {
-    public let name: String
-    public let level: EventLevel?
-    public let date: Date?
-    public let paramCount: Int?
-    public let uuid: UUID?
-    public let id: String
-    public let installID: UUID?
-    public let sessionID: UUID?
-    public let deviceID: UUID?
+package struct Event: Identifiable {
+    package let name: String
+    package let level: EventLevel?
+    package let date: Date?
+    package let paramCount: Int?
+    package let uuid: UUID?
+    package let id: String
+    package let installID: UUID?
+    package let sessionID: UUID?
+    package let deviceID: UUID?
 
-    public init(
+    package init(
         name: String, level: EventLevel?, date: Date?, paramCount: Int?, uuid: UUID?, id: String, installID: UUID?,
         sessionID: UUID?, deviceID: UUID?
     ) {
@@ -35,9 +35,9 @@ public struct Event: Identifiable {
 }
 
 extension Event: RecordDecodable {
-    public static let recordType = EventEntry.recordType
+    package static let recordType = EventEntry.recordType
 
-    public static let desiredKeys = Key.allCases.map(\.rawValue)
+    package static let desiredKeys = Key.allCases.map(\.rawValue)
 
     private enum Key: String, CaseIterable {
         case name
@@ -50,7 +50,7 @@ extension Event: RecordDecodable {
         case deviceID = "device_id"
     }
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         name = record[Key.name.rawValue] ?? ""
         level = record[Key.level.rawValue].flatMap { EventLevel(rawValue: $0) }
         date = record[Key.date.rawValue]
@@ -64,7 +64,7 @@ extension Event: RecordDecodable {
 }
 
 extension Event: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record[Key.name.rawValue] = name
         record[Key.level.rawValue] = level?.rawValue

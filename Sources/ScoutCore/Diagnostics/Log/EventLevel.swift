@@ -10,4 +10,4 @@ import Logging
 /// The severity of a logged event — an alias for swift-log's `Logger.Level`,
 /// the neutral vocabulary shared by the event model and its wire encoding.
 ///
-public typealias EventLevel = Logger.Level
+package typealias EventLevel = Logger.Level

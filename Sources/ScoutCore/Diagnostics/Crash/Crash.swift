@@ -7,19 +7,19 @@
 
 import Foundation
 
-public struct Crash {
-    public let name: String
-    public let fingerprint: String
-    public let reason: String?
-    public let stackTrace: [String]
-    public let date: Date?
-    public let id: String
-    public let deviceID: UUID?
-    public let installID: UUID?
-    public let launchID: UUID?
-    public let sessionID: UUID?
+package struct Crash {
+    package let name: String
+    package let fingerprint: String
+    package let reason: String?
+    package let stackTrace: [String]
+    package let date: Date?
+    package let id: String
+    package let deviceID: UUID?
+    package let installID: UUID?
+    package let launchID: UUID?
+    package let sessionID: UUID?
 
-    public init(
+    package init(
         name: String, fingerprint: String, reason: String?, stackTrace: [String], date: Date?, id: String,
         deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?
     ) {
@@ -37,15 +37,15 @@ public struct Crash {
 }
 
 extension Crash: Comparable {
-    static public func < (lhs: Crash, rhs: Crash) -> Bool {
+    static package func < (lhs: Crash, rhs: Crash) -> Bool {
         (lhs.date ?? .distantPast) > (rhs.date ?? .distantPast)
     }
 }
 
 extension Crash: RecordDecodable {
-    public static let recordType = CrashEntry.recordType
+    package static let recordType = CrashEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "name",
         "fingerprint",
         "reason",
@@ -58,7 +58,7 @@ extension Crash: RecordDecodable {
         "session_id",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         name = record["name"] ?? ""
         reason = record["reason"]
         date = record["date"]
@@ -79,7 +79,7 @@ extension Crash: RecordDecodable {
 }
 
 extension Crash: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["name"] = name
         record["fingerprint"] = fingerprint

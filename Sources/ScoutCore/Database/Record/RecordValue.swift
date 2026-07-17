@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum RecordValue: Equatable, Sendable {
+package enum RecordValue: Equatable, Sendable {
     case string(String)
     case int(Int64)
     case double(Double)
@@ -21,7 +21,7 @@ extension RecordValue: Codable {
         case string, int, double, date, bytes, strings
     }
 
-    public init(from decoder: any Decoder) throws {
+    package init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         if let value = try container.decodeIfPresent(String.self, forKey: .string) {
@@ -42,7 +42,7 @@ extension RecordValue: Codable {
         }
     }
 
-    public func encode(to encoder: any Encoder) throws {
+    package func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
         switch self {

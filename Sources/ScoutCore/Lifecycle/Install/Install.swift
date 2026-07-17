@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct Install {
-    public let date: Date?
-    public let id: String
-    public let installID: UUID?
-    public let deviceID: UUID?
+package struct Install {
+    package let date: Date?
+    package let id: String
+    package let installID: UUID?
+    package let deviceID: UUID?
 
-    public init(date: Date?, id: String, installID: UUID?, deviceID: UUID?) {
+    package init(date: Date?, id: String, installID: UUID?, deviceID: UUID?) {
         self.date = date
         self.id = id
         self.installID = installID
@@ -22,15 +22,15 @@ public struct Install {
 }
 
 extension Install: RecordDecodable {
-    public static let recordType = InstallEntry.recordType
+    package static let recordType = InstallEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "date",
         "install_id",
         "device_id",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         date = record["date"]
         id = record.recordID
         installID = record["install_id"].flatMap(UUID.init)
@@ -39,7 +39,7 @@ extension Install: RecordDecodable {
 }
 
 extension Install: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["date"] = date
         record["install_id"] = installID?.uuidString

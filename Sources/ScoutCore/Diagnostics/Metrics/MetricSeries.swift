@@ -18,19 +18,19 @@ extension DatabaseReader {
     }
 }
 
-public struct SeriesQuery: Sendable {
-    public enum Bucket: String, Sendable {
+package struct SeriesQuery: Sendable {
+    package enum Bucket: String, Sendable {
         case hour, day, week
     }
 
-    public var name: String?
-    public var category: String?
-    public var values: String?
-    public var bucket: Bucket = .day
-    public var byVersion = false
-    public var range: Range<Date>
+    package var name: String?
+    package var category: String?
+    package var values: String?
+    package var bucket: Bucket = .day
+    package var byVersion = false
+    package var range: Range<Date>
 
-    public init(
+    package init(
         name: String? = nil, category: String? = nil, values: String? = nil, bucket: Bucket = .day,
         byVersion: Bool = false, range: Range<Date>
     ) {
@@ -43,13 +43,13 @@ public struct SeriesQuery: Sendable {
     }
 }
 
-public struct MetricSeries: Decodable, Sendable {
-    public let name: String
-    public let category: String?
-    public let version: String?
-    public let points: [MetricSeriesPoint]
+package struct MetricSeries: Decodable, Sendable {
+    package let name: String
+    package let category: String?
+    package let version: String?
+    package let points: [MetricSeriesPoint]
 
-    public init(name: String, category: String?, version: String? = nil, points: [MetricSeriesPoint]) {
+    package init(name: String, category: String?, version: String? = nil, points: [MetricSeriesPoint]) {
         self.name = name
         self.category = category
         self.version = version
@@ -57,17 +57,17 @@ public struct MetricSeries: Decodable, Sendable {
     }
 }
 
-public struct MetricSeriesPoint: Decodable, Sendable {
-    public let date: Int64
-    public let value: MetricValue
+package struct MetricSeriesPoint: Decodable, Sendable {
+    package let date: Int64
+    package let value: MetricValue
 
-    public init(date: Int64, value: MetricValue) {
+    package init(date: Int64, value: MetricValue) {
         self.date = date
         self.value = value
     }
 }
 
-public enum MetricValue: Decodable, Equatable, Sendable {
+package enum MetricValue: Decodable, Equatable, Sendable {
     case int(Int)
     case double(Double)
 
@@ -75,7 +75,7 @@ public enum MetricValue: Decodable, Equatable, Sendable {
         case int, double
     }
 
-    public init(from decoder: any Decoder) throws {
+    package init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         if let value = try container.decodeIfPresent(Int.self, forKey: .int) {
@@ -90,7 +90,7 @@ public enum MetricValue: Decodable, Equatable, Sendable {
 }
 
 extension MetricValue {
-    public var doubleValue: Double {
+    package var doubleValue: Double {
         switch self {
         case .int(let value):
             Double(value)
@@ -99,7 +99,7 @@ extension MetricValue {
         }
     }
 
-    public var intValue: Int {
+    package var intValue: Int {
         switch self {
         case .int(let value):
             value

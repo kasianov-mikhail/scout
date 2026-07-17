@@ -7,15 +7,15 @@
 
 import Foundation
 
-public struct Session: Identifiable {
-    public let startDate: Date?
-    public let endDate: Date?
-    public let id: String
-    public let sessionID: UUID?
-    public let launchID: UUID?
-    public let installID: UUID?
+package struct Session: Identifiable {
+    package let startDate: Date?
+    package let endDate: Date?
+    package let id: String
+    package let sessionID: UUID?
+    package let launchID: UUID?
+    package let installID: UUID?
 
-    public init(startDate: Date?, endDate: Date?, id: String, sessionID: UUID?, launchID: UUID?, installID: UUID?) {
+    package init(startDate: Date?, endDate: Date?, id: String, sessionID: UUID?, launchID: UUID?, installID: UUID?) {
         self.startDate = startDate
         self.endDate = endDate
         self.id = id
@@ -26,9 +26,9 @@ public struct Session: Identifiable {
 }
 
 extension Session: RecordDecodable {
-    public static let recordType = SessionEntry.recordType
+    package static let recordType = SessionEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "start_date",
         "end_date",
         "session_id",
@@ -36,7 +36,7 @@ extension Session: RecordDecodable {
         "install_id",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
         id = record.recordID
@@ -47,7 +47,7 @@ extension Session: RecordDecodable {
 }
 
 extension Session: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["start_date"] = startDate
         record["end_date"] = endDate

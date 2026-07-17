@@ -7,20 +7,20 @@
 
 import Foundation
 
-public typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
+package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
 
 public struct Backend: Sendable {
-    public let id: String
-    public let database: any Database
-    public let checkAvailability: @Sendable () async -> Bool
-    public let displayName: String
+    package let id: String
+    package let database: any Database
+    package let checkAvailability: @Sendable () async -> Bool
+    package let displayName: String
 
-    public var serverInfo: ServerInfo? = nil
-    public var probeStatus: @Sendable () async -> Status = { .unknown }
-    public var accountWarning: AccountWarning = { nil }
-    public var onSetup: @MainActor @Sendable () -> Void = {}
+    package var serverInfo: ServerInfo? = nil
+    package var probeStatus: @Sendable () async -> Status = { .unknown }
+    package var accountWarning: AccountWarning = { nil }
+    package var onSetup: @MainActor @Sendable () -> Void = {}
 
-    public init(
+    package init(
         id: String,
         database: any Database,
         checkAvailability: @escaping @Sendable () async -> Bool,
@@ -40,7 +40,7 @@ public struct Backend: Sendable {
         self.onSetup = onSetup
     }
 
-    public enum Status: Sendable {
+    package enum Status: Sendable {
         case reachable
         case readOnly
         case unreachable
@@ -48,19 +48,19 @@ public struct Backend: Sendable {
         case unknown
     }
 
-    public enum AccountStatus: Sendable {
+    package enum AccountStatus: Sendable {
         case noAccount
         case restricted
         case couldNotDetermine
         case temporarilyUnavailable
     }
 
-    public struct ServerInfo: Sendable {
-        public let endpoint: String
-        public let hasAPIKey: Bool
-        public let isSecure: Bool
+    package struct ServerInfo: Sendable {
+        package let endpoint: String
+        package let hasAPIKey: Bool
+        package let isSecure: Bool
 
-        public init(endpoint: String, hasAPIKey: Bool, isSecure: Bool) {
+        package init(endpoint: String, hasAPIKey: Bool, isSecure: Bool) {
             self.endpoint = endpoint
             self.hasAPIKey = hasAPIKey
             self.isSecure = isSecure
@@ -69,7 +69,7 @@ public struct Backend: Sendable {
 }
 
 extension Backend.Status: Equatable {
-    static public func == (lhs: Self, rhs: Self) -> Bool {
+    static package func == (lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
         case (.reachable, .reachable), (.readOnly, .readOnly), (.unreachable, .unreachable), (.unknown, .unknown):
             true

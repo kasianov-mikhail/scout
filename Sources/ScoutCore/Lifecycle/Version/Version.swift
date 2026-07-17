@@ -7,14 +7,14 @@
 
 import Foundation
 
-public struct Version {
-    public let appVersion: String?
-    public let buildNumber: String?
-    public let launchID: UUID?
-    public let date: Date?
-    public let id: String
+package struct Version {
+    package let appVersion: String?
+    package let buildNumber: String?
+    package let launchID: UUID?
+    package let date: Date?
+    package let id: String
 
-    public init(appVersion: String?, buildNumber: String?, launchID: UUID?, date: Date?, id: String) {
+    package init(appVersion: String?, buildNumber: String?, launchID: UUID?, date: Date?, id: String) {
         self.appVersion = appVersion
         self.buildNumber = buildNumber
         self.launchID = launchID
@@ -24,16 +24,16 @@ public struct Version {
 }
 
 extension Version: RecordDecodable {
-    public static let recordType = VersionEntry.recordType
+    package static let recordType = VersionEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "app_version",
         "build_number",
         "launch_id",
         "date",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         appVersion = record["app_version"]
         buildNumber = record["build_number"]
         launchID = record["launch_id"].flatMap(UUID.init)
@@ -43,7 +43,7 @@ extension Version: RecordDecodable {
 }
 
 extension Version: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["app_version"] = appVersion
         record["build_number"] = buildNumber

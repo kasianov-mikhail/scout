@@ -7,20 +7,20 @@
 
 import Foundation
 
-public struct RecordQuery: Sendable {
-    public let recordType: any RecordDecodable.Type
+package struct RecordQuery: Sendable {
+    package let recordType: any RecordDecodable.Type
 
-    public var filters: [Filter] = []
-    public var sort: [Sort] = []
+    package var filters: [Filter] = []
+    package var sort: [Sort] = []
 
-    public init(recordType: any RecordDecodable.Type, filters: [Filter] = [], sort: [Sort] = []) {
+    package init(recordType: any RecordDecodable.Type, filters: [Filter] = [], sort: [Sort] = []) {
         self.recordType = recordType
         self.filters = filters
         self.sort = sort
     }
 
-    public struct Filter: Codable, Equatable, Sendable {
-        public enum Operator: String, Codable, Sendable {
+    package struct Filter: Codable, Equatable, Sendable {
+        package enum Operator: String, Codable, Sendable {
             case equals
             case notEquals
             case greaterThan
@@ -31,29 +31,29 @@ public struct RecordQuery: Sendable {
             case beginsWith
         }
 
-        public let field: String
-        public let op: Operator
-        public let value: RecordValue
+        package let field: String
+        package let op: Operator
+        package let value: RecordValue
 
-        public init(field: String, op: Operator, value: RecordValue) {
+        package init(field: String, op: Operator, value: RecordValue) {
             self.field = field
             self.op = op
             self.value = value
         }
     }
 
-    public struct Sort: Codable, Equatable, Sendable {
-        public let field: String
-        public let ascending: Bool
+    package struct Sort: Codable, Equatable, Sendable {
+        package let field: String
+        package let ascending: Bool
 
-        public init(field: String, ascending: Bool) {
+        package init(field: String, ascending: Bool) {
             self.field = field
             self.ascending = ascending
         }
     }
 }
 
-public protocol RecordDecodable: Sendable, Equatable, RecordEncodable {
+package protocol RecordDecodable: Sendable, Equatable, RecordEncodable {
     static var desiredKeys: [String] { get }
 
     init(record: Record) throws

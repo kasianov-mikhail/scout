@@ -7,20 +7,20 @@
 
 import Foundation
 
-public struct Hang {
-    public let name: String
-    public let fingerprint: String
-    public let reason: String?
-    public let stackTrace: [String]
-    public let duration: TimeInterval
-    public let date: Date?
-    public let id: String
-    public let deviceID: UUID?
-    public let installID: UUID?
-    public let launchID: UUID?
-    public let sessionID: UUID?
+package struct Hang {
+    package let name: String
+    package let fingerprint: String
+    package let reason: String?
+    package let stackTrace: [String]
+    package let duration: TimeInterval
+    package let date: Date?
+    package let id: String
+    package let deviceID: UUID?
+    package let installID: UUID?
+    package let launchID: UUID?
+    package let sessionID: UUID?
 
-    public init(
+    package init(
         name: String, fingerprint: String, reason: String?, stackTrace: [String], duration: TimeInterval, date: Date?,
         id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?
     ) {
@@ -39,15 +39,15 @@ public struct Hang {
 }
 
 extension Hang: Comparable {
-    static public func < (lhs: Hang, rhs: Hang) -> Bool {
+    static package func < (lhs: Hang, rhs: Hang) -> Bool {
         (lhs.date ?? .distantPast) > (rhs.date ?? .distantPast)
     }
 }
 
 extension Hang: RecordDecodable {
-    public static let recordType = HangEntry.recordType
+    package static let recordType = HangEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "name",
         "fingerprint",
         "reason",
@@ -61,7 +61,7 @@ extension Hang: RecordDecodable {
         "session_id",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         name = record["name"] ?? ""
         reason = record["reason"]
         duration = record["duration"] ?? 0
@@ -83,7 +83,7 @@ extension Hang: RecordDecodable {
 }
 
 extension Hang: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["name"] = name
         record["fingerprint"] = fingerprint

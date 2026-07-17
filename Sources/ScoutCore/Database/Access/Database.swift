@@ -7,9 +7,9 @@
 
 import Foundation
 
-public typealias Database = DatabaseReader & DatabaseWriter
+package typealias Database = DatabaseReader & DatabaseWriter
 
-public protocol DatabaseReader: Sendable {
+package protocol DatabaseReader: Sendable {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk
     func lookup(recordName: String, fields: [String]?) async throws -> Record
@@ -18,21 +18,21 @@ public protocol DatabaseReader: Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort]
 }
 
-public protocol DatabaseWriter: Sendable {
+package protocol DatabaseWriter: Sendable {
     func write(record: Record) async throws
     func write(records: [Record]) async throws
 }
 
 extension DatabaseReader {
-    public func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+    package func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         try await read(matching: query, fields: fields)
     }
 
-    public func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
+    package func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
         try await cursor.next(fields)
     }
 
-    public func readAll(matching query: RecordQuery, fields: [String]?) async throws -> [Record] {
+    package func readAll(matching query: RecordQuery, fields: [String]?) async throws -> [Record] {
         var chunk = try await read(matching: query, fields: fields)
         while let cursor = chunk.cursor {
             chunk += try await readMore(from: cursor, fields: fields)
@@ -40,7 +40,7 @@ extension DatabaseReader {
         return chunk.records
     }
 
-    public func readAll<T: RecordDecodable>(matching query: RecordQuery, fields: [String]? = nil) async throws -> [T] {
+    package func readAll<T: RecordDecodable>(matching query: RecordQuery, fields: [String]? = nil) async throws -> [T] {
         try await readAll(matching: query, fields: fields).map(T.init)
     }
 }
@@ -51,8 +51,8 @@ extension DatabaseWriter {
     package static var maxBatchSize: Int { 400 }
 }
 
-public struct RecordNotFoundError: LocalizedError {
-    public let errorDescription: String? = "No record found for the requested identifier"
+package struct RecordNotFoundError: LocalizedError {
+    package let errorDescription: String? = "No record found for the requested identifier"
 
-    public init() {}
+    package init() {}
 }

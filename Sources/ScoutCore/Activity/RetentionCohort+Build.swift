@@ -26,7 +26,7 @@ extension RetentionCohort {
     ///   - asOf: the maturity cutoff, normally now.
     /// - Returns: one cohort per install week in `range`, sorted by week ascending.
     ///
-    public static func build(
+    package static func build(
         installDays: [String: Date], sessionDays: [String: Set<Date>], in range: Range<Date>, asOf: Date
     )
         -> [RetentionCohort]

@@ -7,14 +7,14 @@
 
 import Foundation
 
-public struct Launch {
-    public let startDate: Date?
-    public let endDate: Date?
-    public let id: String
-    public let launchID: UUID?
-    public let installID: UUID?
+package struct Launch {
+    package let startDate: Date?
+    package let endDate: Date?
+    package let id: String
+    package let launchID: UUID?
+    package let installID: UUID?
 
-    public init(startDate: Date?, endDate: Date?, id: String, launchID: UUID?, installID: UUID?) {
+    package init(startDate: Date?, endDate: Date?, id: String, launchID: UUID?, installID: UUID?) {
         self.startDate = startDate
         self.endDate = endDate
         self.id = id
@@ -24,16 +24,16 @@ public struct Launch {
 }
 
 extension Launch: RecordDecodable {
-    public static let recordType = LaunchEntry.recordType
+    package static let recordType = LaunchEntry.recordType
 
-    public static let desiredKeys = [
+    package static let desiredKeys = [
         "start_date",
         "end_date",
         "launch_id",
         "install_id",
     ]
 
-    public init(record: Record) throws {
+    package init(record: Record) throws {
         startDate = record["start_date"]
         endDate = record["end_date"]
         id = record.recordID
@@ -43,7 +43,7 @@ extension Launch: RecordDecodable {
 }
 
 extension Launch: RecordEncodable {
-    public var record: Record {
+    package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: id)
         record["start_date"] = startDate
         record["end_date"] = endDate

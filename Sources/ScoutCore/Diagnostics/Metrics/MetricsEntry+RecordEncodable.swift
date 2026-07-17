@@ -8,17 +8,17 @@
 import Foundation
 
 extension IntMetricsEntry: RecordEncodable {
-    static public let recordType = "IntMetric"
+    static package let recordType = "IntMetric"
 
-    public var record: Record {
+    package var record: Record {
         metricRecord(type: Self.recordType, value: value)
     }
 }
 
 extension DoubleMetricsEntry: RecordEncodable {
-    static public let recordType = "DoubleMetric"
+    static package let recordType = "DoubleMetric"
 
-    public var record: Record {
+    package var record: Record {
         metricRecord(type: Self.recordType, value: value)
     }
 }
