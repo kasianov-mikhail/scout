@@ -22,7 +22,7 @@ struct CachedDatabaseTests {
     }
 
     @available(iOS 17, macOS 14, *)
-    func makeDatabase<Row: CachedRecordModel>(base: SpyDatabase, row: Row.Type) throws -> CachedDatabase {
+    func makeDatabase<Row: CacheRow>(base: SpyDatabase, row: Row.Type) throws -> CachedDatabase {
         let frozen = cutoff
 
         return CachedDatabase(

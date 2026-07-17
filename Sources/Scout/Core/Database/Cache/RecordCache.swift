@@ -19,7 +19,7 @@ protocol RecordCaching: Actor {
 
 @available(iOS 17, macOS 14, *)
 @ModelActor
-actor RecordCache<Row: CachedRecordModel> {
+actor RecordCache<Row: CacheRow> {
     func coveredRange(for fingerprint: String) -> Range<Date>? {
         guard let span = span(for: fingerprint), span.lowerDate < span.upperDate else { return nil }
         return span.lowerDate..<span.upperDate

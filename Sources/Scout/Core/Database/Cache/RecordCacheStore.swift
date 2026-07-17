@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @available(iOS 17, macOS 14, *)
-protocol CachedRecordModel: PersistentModel {
+protocol CacheRow: PersistentModel {
     static var schemaVersion: Int { get }
 
     var fingerprint: String { get }
@@ -21,7 +21,7 @@ protocol CachedRecordModel: PersistentModel {
 
 @available(iOS 17, macOS 14, *)
 @Model
-final class CachedRecord: CachedRecordModel {
+final class CachedRecord: CacheRow {
     static let schemaVersion = 2
 
     var fingerprint: String
@@ -37,7 +37,7 @@ final class CachedRecord: CachedRecordModel {
 
 @available(iOS 18, macOS 15, *)
 @Model
-final class IndexedCachedRecord: CachedRecordModel {
+final class IndexedCachedRecord: CacheRow {
     #Index<IndexedCachedRecord>([\.fingerprint, \.date])
 
     static let schemaVersion = 3
@@ -81,12 +81,12 @@ enum RecordCacheStore {
         return cache(CachedRecord.self, at: url, defaults: .standard)
     }
 
-    static func cache<Row: CachedRecordModel>(_ row: Row.Type, at url: URL, defaults: UserDefaults) -> RecordCache<Row>? {
+    static func cache<Row: CacheRow>(_ row: Row.Type, at url: URL, defaults: UserDefaults) -> RecordCache<Row>? {
         container(for: row, at: url, defaults: defaults).map { RecordCache<Row>(modelContainer: $0) }
     }
 
     // The cache is disposable: any schema mismatch destroys the store instead of migrating.
-    static func container<Row: CachedRecordModel>(for row: Row.Type, at url: URL, defaults: UserDefaults) -> ModelContainer? {
+    static func container<Row: CacheRow>(for row: Row.Type, at url: URL, defaults: UserDefaults) -> ModelContainer? {
         if defaults.integer(forKey: versionKey) != Row.schemaVersion {
             destroyStore(at: url)
         }
@@ -106,7 +106,7 @@ enum RecordCacheStore {
         }
     }
 
-    private static func openContainer<Row: CachedRecordModel>(for row: Row.Type, at url: URL) -> ModelContainer? {
+    private static func openContainer<Row: CacheRow>(for row: Row.Type, at url: URL) -> ModelContainer? {
         let schema = Schema([Row.self, CachedSpan.self])
         let configuration = ModelConfiguration(schema: schema, url: url)
         return try? ModelContainer(for: schema, configurations: [configuration])

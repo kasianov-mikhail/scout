@@ -12,7 +12,7 @@ import Testing
 @testable import Scout
 
 @available(iOS 17, macOS 14, *)
-func makeRecordCache<Row: CachedRecordModel>(_ row: Row.Type) throws -> RecordCache<Row> {
+func makeRecordCache<Row: CacheRow>(_ row: Row.Type) throws -> RecordCache<Row> {
     let schema = Schema([Row.self, CachedSpan.self])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
     let container = try ModelContainer(for: schema, configurations: [configuration])
