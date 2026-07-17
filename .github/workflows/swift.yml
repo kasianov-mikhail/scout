@@ -44,6 +44,10 @@ jobs:
         # iOS 26 leg carries it because the snapshot suites only execute there.
         include:
           - os: macos-15
+            device: iPhone 15
+            ios: 17
+            coverage: false
+          - os: macos-15
             device: iPhone 16
             ios: 18
             coverage: false
