@@ -23,21 +23,9 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
 
                 let recordSender = RecordSender(backend: backend)
 
-                func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type) {
+                for type in SyncableEntry.deliverableTypes {
                     group.addTask { try? await recordSender.deliver(type: type, in: context) }
                 }
-
-                deliver(EventEntry.self)
-                deliver(SessionEntry.self)
-                deliver(VisitEntry.self)
-                deliver(LaunchEntry.self)
-                deliver(VersionEntry.self)
-                deliver(InstallEntry.self)
-                deliver(DeviceEntry.self)
-                deliver(CrashEntry.self)
-                deliver(HangEntry.self)
-                deliver(IntMetricsEntry.self)
-                deliver(DoubleMetricsEntry.self)
             }
         }
         try Task.checkCancellation()
