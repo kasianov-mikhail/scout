@@ -43,28 +43,52 @@ extension NativeDatabase: DatabaseWriter {
 
 extension NativeDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: Int.max)
-    }
-
-    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         await registration.value
-        let entity = query.recordType.recordType
-
         let records = try await store.read(
-            entity: entity,
+            entity: query.recordType.recordType,
             filters: query.filters.map(\.storeFilter),
             sort: query.sort.map { EntityStore.Sort(field: $0.field, ascending: $0.ascending) },
             fields: fields.map { keys in keys.filter { $0 != "uuid" } }
         )
-        return Self.chunk(records.map(Record.init(entityRecord:)), limit: limit)
+        return RecordChunk(records: records.map(Record.init(entityRecord:)), cursor: nil)
     }
 
-    private static func chunk(_ records: [Record], limit: Int) -> RecordChunk {
-        guard records.count > limit else { return RecordChunk(records: records, cursor: nil) }
-        let rest = Array(records.dropFirst(limit))
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+        await registration.value
+        // The keyset pager orders by a single field, so a query without a sort
+        // has no page order to follow — fall back to the full read.
+        guard let sort = query.sort.first else {
+            return try await read(matching: query, fields: fields)
+        }
+        return try await page(
+            entity: query.recordType.recordType,
+            filters: query.filters.map(\.storeFilter),
+            field: sort.field,
+            ascending: sort.ascending,
+            limit: limit,
+            after: nil
+        )
+    }
+
+    // Reads one keyset page and wraps its continuation cursor so the next page
+    // re-queries the store for the following bounded slice instead of retaining
+    // the whole pre-fetched tail in memory.
+    private func page(
+        entity: String, filters: [EntityStore.Filter], field: String, ascending: Bool, limit: Int,
+        after cursor: FieldCursor?
+    ) async throws
+        -> RecordChunk
+    {
+        let page = try await store.read(
+            entity: entity, filters: filters, orderedBy: field, descending: !ascending, limit: limit, after: cursor)
         return RecordChunk(
-            records: Array(records.prefix(limit)),
-            cursor: RecordCursor { _ in Self.chunk(rest, limit: limit) }
+            records: page.records.map(Record.init(entityRecord:)),
+            cursor: page.cursor.map { next in
+                RecordCursor { _ in
+                    try await self.page(
+                        entity: entity, filters: filters, field: field, ascending: ascending, limit: limit, after: next)
+                }
+            }
         )
     }
 }
