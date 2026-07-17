@@ -11,7 +11,7 @@ import Foundation
 struct CachedDatabase: Database {
     let base: any Database
     let scope: String
-    let cache: RecordCache
+    let cache: any RecordCaching
 
     // Series buckets are cut at week starts, and late uploads from offline devices can
     // still mutate recently closed weeks, so only weeks that ended over a week ago are frozen.
@@ -111,8 +111,14 @@ extension Backend {
 @available(iOS 17, macOS 14, *)
 @MainActor
 enum DatabaseCacheRegistry {
+    private enum CacheState {
+        case unresolved
+        case unavailable
+        case ready(any RecordCaching)
+    }
+
     private static var databases: [String: any Database] = [:]
-    private static var cache: RecordCache??
+    private static var state: CacheState = .unresolved
 
     static func database(for backend: Backend) -> any Database {
         if let database = databases[backend.id] {
@@ -128,12 +134,16 @@ enum DatabaseCacheRegistry {
         return database
     }
 
-    private static func sharedCache() -> RecordCache? {
-        if let cache {
+    private static func sharedCache() -> (any RecordCaching)? {
+        switch state {
+        case .unresolved:
+            let created = RecordCacheStore.cache()
+            state = created.map(CacheState.ready) ?? .unavailable
+            return created
+        case .unavailable:
+            return nil
+        case .ready(let cache):
             return cache
         }
-        let created = RecordCacheStore.container().map { RecordCache(modelContainer: $0) }
-        cache = .some(created)
-        return created
     }
 }

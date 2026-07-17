@@ -25,27 +25,37 @@ struct RecordCacheStoreTests {
     @available(iOS 17, macOS 14, *)
     @Test("Opens a fresh store and stamps the schema version")
     func opensFreshStore() {
-        #expect(RecordCacheStore.container(at: url, defaults: defaults) != nil)
-        #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == RecordCacheStore.schemaVersion)
+        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == CachedRecord.schemaVersion)
     }
 
     @available(iOS 17, macOS 14, *)
     @Test("A version mismatch destroys the existing store")
     func destroysOnVersionMismatch() throws {
         try Data("garbage".utf8).write(to: url)
-        defaults.set(RecordCacheStore.schemaVersion + 1, forKey: "scout_record_cache_schema_version")
+        defaults.set(CachedRecord.schemaVersion + 1, forKey: "scout_record_cache_schema_version")
 
-        #expect(RecordCacheStore.container(at: url, defaults: defaults) != nil)
-        #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == RecordCacheStore.schemaVersion)
+        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == CachedRecord.schemaVersion)
+    }
+
+    @available(iOS 18, macOS 15, *)
+    @Test("Switching to the indexed row variant restamps the store")
+    func restampsOnVariantSwitch() {
+        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == CachedRecord.schemaVersion)
+
+        #expect(RecordCacheStore.container(for: IndexedCachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == IndexedCachedRecord.schemaVersion)
     }
 
     @available(iOS 17, macOS 14, *)
     @Test("An unreadable store is destroyed and recreated")
     func recoversFromUnreadableStore() throws {
         try Data("garbage".utf8).write(to: url)
-        defaults.set(RecordCacheStore.schemaVersion, forKey: "scout_record_cache_schema_version")
+        defaults.set(CachedRecord.schemaVersion, forKey: "scout_record_cache_schema_version")
 
-        #expect(RecordCacheStore.container(at: url, defaults: defaults) != nil)
+        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
     }
 
     @available(iOS 17, macOS 14, *)
