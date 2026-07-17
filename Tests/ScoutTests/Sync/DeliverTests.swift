@@ -43,9 +43,11 @@ struct DeliverTests {
         [cloudBackend, serverBackend]
     }
 
-    /// Run the delivery engine for a type the way `synchronize` does: raw records to every backend.
+    /// Run the delivery engine for a type the way `synchronize` does: skip an
+    /// unavailable backend, otherwise send its raw records and let the send itself
+    /// count the attempt on failure.
     func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
-        DeliveryEntry.recordAttempt(for: backend.id, in: context)
+        guard await backend.checkAvailability() else { return }
         try await RecordSender(backend: backend).deliver(type: type, in: context)
     }
 
@@ -139,6 +141,63 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 1)
         // Cloud's raw record was written exactly once.
         #expect(cloud.records.count(of: "Event") == 1)
+    }
+
+    @Test("Offline passes cost nothing: an unavailable backend keeps its full budget")
+    func offlinePassesPreserveAttempts() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: backends, in: context)
+
+        let offlineServer = Backend(
+            id: "server",
+            database: server,
+            checkAvailability: { false },
+            displayName: "server"
+        )
+
+        // Many sync passes fire while the backend is unreachable...
+        for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
+            try await deliver(EventEntry.self, to: offlineServer)
+        }
+
+        // ...yet not one attempt is spent, so the record is still deliverable.
+        #expect(event.delivery(for: "server")?.attempts == 0)
+        #expect(event.delivery(for: "server")?.isPending == true)
+        #expect(server.records.count(of: "Event") == 0)
+
+        // Connectivity returns and the record delivers on the first real send.
+        try await deliver(EventEntry.self, to: serverBackend)
+        #expect(event.delivery(for: "server")?.isDelivered == true)
+        #expect(server.records.count(of: "Event") == 1)
+    }
+
+    @Test("A record is retried the full attempt budget before being abandoned")
+    func fullAttemptBudget() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        // The server rejects every write for the whole attempt budget.
+        for _ in 0..<DeliveryEntry.maxAttempts {
+            server.writeErrors.append(Self.testError)
+        }
+
+        for _ in 0..<DeliveryEntry.maxAttempts {
+            await #expect(throws: (any Error).self) {
+                try await deliver(EventEntry.self, to: serverBackend)
+            }
+        }
+
+        // Every attempt in the budget was a real send: the ceiling is reached only
+        // after maxAttempts writes, not one short of it.
+        #expect(server.writeErrors.isEmpty)
+        #expect(event.delivery(for: "server")?.attempts == Int16(DeliveryEntry.maxAttempts))
+        #expect(event.delivery(for: "server")?.isAbandoned == true)
+
+        // Once abandoned, no further write is attempted.
+        try await deliver(EventEntry.self, to: serverBackend)
+        #expect(server.records.count(of: "Event") == 0)
     }
 
     @Test("Dropping a never-reached backend lets cleanup reclaim the record")
