@@ -13,8 +13,6 @@
 
     @testable import ScoutUI
 
-    @testable import ScoutTestSupport
-
     enum ViewSnapshot {
         // Baselines are recorded on iOS 26, so other CI legs skip the snapshot suites
         // instead of diffing against images rendered by a different OS. #available

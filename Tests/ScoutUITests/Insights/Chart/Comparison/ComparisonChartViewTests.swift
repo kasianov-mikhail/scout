@@ -9,7 +9,6 @@ import SwiftUI
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 @testable import ScoutUI
 
 /// Render smoke tests: drawing the chart through `ImageRenderer` exercises

@@ -7,6 +7,4 @@
 
 import ScoutCore
 
-extension Crash: SessionContext {}
-
 extension Crash: Incident {}

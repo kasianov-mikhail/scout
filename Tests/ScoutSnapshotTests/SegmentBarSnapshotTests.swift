@@ -14,8 +14,6 @@
 
     @testable import ScoutUI
 
-    @testable import ScoutTestSupport
-
     @Suite(.enabled(if: ViewSnapshot.isSupported))
     @MainActor struct SegmentBarSnapshotTests {
         @Test("Mixed status breakdown")

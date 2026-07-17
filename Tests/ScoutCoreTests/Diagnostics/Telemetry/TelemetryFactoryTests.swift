@@ -10,7 +10,6 @@ import Metrics
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct TelemetryFactoryTests {
     let factory = TelemetryFactory(sync: {}, session: Protected(UUID()))

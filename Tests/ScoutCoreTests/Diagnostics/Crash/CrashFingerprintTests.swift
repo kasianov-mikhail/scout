@@ -8,7 +8,6 @@
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 @Suite("CrashFingerprint")
 struct CrashFingerprintTests {

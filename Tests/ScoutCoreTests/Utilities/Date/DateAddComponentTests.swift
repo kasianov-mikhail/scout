@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct DateAddComponentTests {
     let base = Date(timeIntervalSinceReferenceDate: 0)  // 2001-01-01 00:00:00 UTC

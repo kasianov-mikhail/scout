@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct LifecycleErrorTests {
     @Test("notFound equals notFound")

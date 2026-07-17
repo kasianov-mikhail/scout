@@ -10,7 +10,6 @@ import Metrics
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct TelemetryHandlerTests {
     @Test("TelemetryHandler stores label")

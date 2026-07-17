@@ -14,8 +14,6 @@
 
     @testable import ScoutUI
 
-    @testable import ScoutTestSupport
-
     @Suite(.enabled(if: ViewSnapshot.isSupported))
     @MainActor struct PercentileRowSnapshotTests {
         @Test("P50, P90, and P99 latency metrics")

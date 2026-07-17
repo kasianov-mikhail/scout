@@ -10,7 +10,6 @@ import Testing
 
 @testable import ScoutCore
 @testable import ScoutTestSupport
-@testable import ScoutUI
 
 struct RetentionCohortBuildTests {
     private let installDay = Date(year: 2026, month: 6, day: 1)

@@ -11,7 +11,6 @@ import Testing
 
 @testable import ScoutCore
 @testable import ScoutNative
-@testable import ScoutTestSupport
 
 @Suite("EntityCatalog")
 struct EntityCatalogTests {

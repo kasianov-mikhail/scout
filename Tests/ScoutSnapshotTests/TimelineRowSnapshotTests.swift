@@ -14,8 +14,6 @@
 
     @testable import ScoutUI
 
-    @testable import ScoutTestSupport
-
     @Suite(.enabled(if: ViewSnapshot.isSupported))
     @MainActor struct TimelineRowSnapshotTests {
         @Test("Rows with a highlighted middle item")

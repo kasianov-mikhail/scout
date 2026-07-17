@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 @testable import ScoutUI
 
 struct ChartExtentSegmentTests {

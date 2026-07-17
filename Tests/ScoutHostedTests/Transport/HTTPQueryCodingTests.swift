@@ -10,7 +10,6 @@ import Testing
 
 @testable import ScoutCore
 @testable import ScoutHosted
-@testable import ScoutTestSupport
 
 @Suite("HTTPQuery translation")
 struct HTTPQueryCodingTests {

@@ -8,7 +8,6 @@
 import Foundation
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 @testable import ScoutUI
 
 extension Event {

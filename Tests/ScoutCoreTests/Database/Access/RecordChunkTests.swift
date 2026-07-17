@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct RecordChunkTests {
     @Test("Addition concatenates records")

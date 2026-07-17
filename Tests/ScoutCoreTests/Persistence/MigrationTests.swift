@@ -9,7 +9,6 @@ import CoreData
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 @Suite("ScoutModel migrations")
 struct MigrationTests {

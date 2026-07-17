@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct TelemetryExportTests {
     @Test("Init with counter name creates counter")

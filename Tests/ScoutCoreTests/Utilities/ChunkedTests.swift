@@ -8,7 +8,6 @@
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct ChunkedTests {
     @Test("Empty array returns empty result")

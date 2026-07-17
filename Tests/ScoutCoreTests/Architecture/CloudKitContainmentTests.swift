@@ -52,10 +52,16 @@ struct CloudKitContainmentTests {
         return enumerator.compactMap { $0 as? URL }.filter { $0.pathExtension == "swift" }
     }
 
+    // Matches every import form that links CloudKit: plain, attributed
+    // (@preconcurrency/@_exported), access-scoped (internal import), and
+    // declaration-scoped (import class CloudKit.CKRecord).
     private static func importsCloudKit(_ file: URL) throws -> Bool {
         try String(contentsOf: file, encoding: .utf8)
             .split(separator: "\n")
-            .contains { $0.trimmingCharacters(in: .whitespaces) == "import CloudKit" }
+            .contains {
+                $0.trimmingCharacters(in: .whitespaces)
+                    .starts(with: /(?:@\w+\s+)*(?:\w+\s+)?import\s+(?:\w+\s+)?CloudKit\b/)
+            }
     }
 
     private enum ContainmentError: Error {

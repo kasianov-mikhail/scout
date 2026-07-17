@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
-import Logging
 
 @testable import ScoutCore
 
@@ -15,7 +14,7 @@ extension EventEntry {
         name: String,
         date: Date = Date(),
         synced: Bool = false,
-        level: Logger.Level = .info,
+        level: EventLevel = .info,
         session: SessionEntry? = nil,
         in context: NSManagedObjectContext
     ) -> EventEntry {

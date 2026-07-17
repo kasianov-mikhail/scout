@@ -10,7 +10,6 @@ import Testing
 
 @testable import ScoutCore
 @testable import ScoutHosted
-@testable import ScoutTestSupport
 
 /// The live server under test, supplied by the Server workflow.
 private let serverURL = ProcessInfo.processInfo.environment["SCOUT_SERVER_URL"].flatMap(URL.init(string:))

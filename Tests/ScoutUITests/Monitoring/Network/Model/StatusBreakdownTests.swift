@@ -9,7 +9,6 @@
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 @testable import ScoutUI
 
 @Suite("StatusBreakdown")

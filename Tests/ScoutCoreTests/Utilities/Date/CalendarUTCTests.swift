@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 
 struct CalendarUTCTests {
     @Test("Calendar.utc uses the Gregorian identifier")

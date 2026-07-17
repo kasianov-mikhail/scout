@@ -8,8 +8,6 @@
 import Foundation
 import ScoutCore
 
-extension Hang: SessionContext {}
-
 extension Hang: Incident {}
 
 extension Hang {

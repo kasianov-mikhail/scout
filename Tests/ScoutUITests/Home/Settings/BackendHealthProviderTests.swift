@@ -11,7 +11,6 @@ import ScoutHosted
 import Testing
 
 @testable import ScoutCore
-@testable import ScoutTestSupport
 @testable import ScoutUI
 
 @MainActor
