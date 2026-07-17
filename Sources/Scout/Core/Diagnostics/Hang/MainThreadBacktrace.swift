@@ -5,9 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import ScoutHang
 import Foundation
 import MachO
+import ScoutHang
 
 /// Captures the main thread's call stack from a different thread by briefly
 /// suspending it and manually walking its frame-pointer chain.
