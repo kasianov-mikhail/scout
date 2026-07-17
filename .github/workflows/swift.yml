@@ -86,9 +86,9 @@ jobs:
             ios: 26
             coverage: true
           # Public-preview image, labelled by Xcode major version rather than
-          # the OS and arm64-only. It runs alongside the stable legs and is not
-          # a required check, so its failures don't block merges. Snapshot
-          # baselines are iOS 26 only, so those suites skip on this leg.
+          # the OS and arm64-only. It runs alongside the stable legs and is a
+          # required check, so its failures block merges. Snapshot baselines are
+          # iOS 26 only, so those suites skip on this leg.
           - os: xcode-27
             device: iPhone 17
             ios: 27
