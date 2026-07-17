@@ -25,8 +25,8 @@ private let pingInterval: TimeInterval = 1
 private let warningThreshold: TimeInterval = 3
 private let criticalThreshold: TimeInterval = 8
 
-/// Installs a watchdog that detects an unresponsive main thread and
-/// captures its stack trace before the system watchdog can kill the app.
+// Installs a watchdog that detects an unresponsive main thread and captures
+// its stack trace before the system watchdog can kill the app.
 func installHangHandler(identity: Identity) {
     guard !isInstalled else { return }
     isInstalled = true
