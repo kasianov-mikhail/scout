@@ -17,11 +17,6 @@ struct RetentionCohortDetailView: View {
         RetentionCohort.stats(for: cohorts)
     }
 
-    private func rate(_ retention: [Double?], day: Int) -> Double? {
-        guard let index = RetentionCohort.dayOffsets.firstIndex(of: day) else { return nil }
-        return retention[index]
-    }
-
     var body: some View {
         List {
             VStack(alignment: .leading, spacing: 4) {
@@ -99,21 +94,8 @@ struct RetentionCohortDetailView: View {
 
     private var legend: some View {
         HStack(spacing: 16) {
-            legendItem(color: .green, dashed: false, title: "This cohort")
-            legendItem(color: Color(.systemGray4), dashed: true, title: "Average")
-        }
-    }
-
-    private func legendItem(color: Color, dashed: Bool, title: String) -> some View {
-        HStack(spacing: 4) {
-            Path { path in
-                path.move(to: CGPoint(x: 0, y: 1))
-                path.addLine(to: CGPoint(x: 14, y: 1))
-            }
-            .stroke(color, style: StrokeStyle(lineWidth: 2, dash: dashed ? [3, 2] : []))
-            .frame(width: 14, height: 2)
-
-            Text(verbatim: title).font(.caption2).foregroundStyle(.secondary)
+            RetentionLegendItem(color: .green, dashed: false, title: "This cohort")
+            RetentionLegendItem(color: Color(.systemGray4), dashed: true, title: "Average")
         }
     }
 
@@ -121,7 +103,7 @@ struct RetentionCohortDetailView: View {
         VStack(spacing: 2) {
             Text(verbatim: "D\(day)").font(.caption2).foregroundStyle(.secondary)
             Text(
-                verbatim: rate(retention, day: day).map {
+                verbatim: RetentionCohort.rate(retention, onDay: day).map {
                     $0.formatted(.retentionRate)
                 } ?? "—"
             )
