@@ -20,6 +20,75 @@ struct Message: Equatable {
 
 extension View {
     func message(_ message: Binding<Message?>) -> some View {
-        modifier(MessageView.Presenter(message: message))
+        modifier(MessagePresenter(message: message))
     }
+}
+
+private struct MessagePresenter: ViewModifier {
+    @Binding var message: Message?
+    @State private var hide = DebouncedReset()
+
+    func body(content: Content) -> some View {
+        content.overlay(alignment: .top) {
+            if let message {
+                MessageView(text: message.text, level: message.level)
+                    .transition(.move(edge: .top).combined(with: .opacity))
+                    .onTapGesture {
+                        self.message = nil
+                    }
+                    .gesture(
+                        DragGesture().onChanged { _ in
+                            self.message = nil
+                        }
+                    )
+            }
+        }
+        .onChange(of: message) { message in
+            if message != nil {
+                hide.schedule(after: .seconds(5)) {
+                    self.message = nil
+                }
+            } else {
+                hide.cancel()
+            }
+        }
+        .animation(.easeInOut, value: message)
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("Above the navigation bar") {
+    @Previewable @State var message: Message?
+
+    NavigationStack {
+        VStack(spacing: 32) {
+            Button {
+                message = Message(
+                    Message.Level.info.text,
+                    level: .info
+                )
+            } label: {
+                Text(verbatim: "Show Info")
+            }
+
+            Button {
+                message = Message(
+                    Message.Level.warning.longText,
+                    level: .warning
+                )
+            } label: {
+                Text(verbatim: "Show Multiline Warning")
+            }
+
+            Button {
+                message = nil
+            } label: {
+                Text(verbatim: "Hide")
+            }
+            .disabled(message == nil)
+        }
+        .navigationTitle(en: "Message Presenter")
+        .inlineNavigationTitle()
+    }
+    .message($message)
 }
