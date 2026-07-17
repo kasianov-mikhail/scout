@@ -30,7 +30,7 @@ struct ProviderView<P: Provider, Content: View>: View {
         }
     }
 
-    private func fetch() {
-        Task { await provider.fetchAgain(in: database) }
+    private func fetch() async {
+        await provider.fetchAgain(in: database)
     }
 }

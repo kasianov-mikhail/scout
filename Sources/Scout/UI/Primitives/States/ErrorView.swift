@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ErrorView: View {
     let description: Text
-    let retry: (() -> Void)?
+    let retry: (() async -> Void)?
 
     @State private var isRetrying: Bool
 
-    init(description: Text, retry: (() -> Void)?, isRetrying: Bool = false) {
+    init(description: Text, retry: (() async -> Void)?, isRetrying: Bool = false) {
         self.description = description
         self.retry = retry
         _isRetrying = State(initialValue: isRetrying)
@@ -47,7 +47,7 @@ struct ErrorView: View {
     }
 
     @ViewBuilder
-    private func retryControl(_ retry: @escaping () -> Void) -> some View {
+    private func retryControl(_ retry: @escaping () async -> Void) -> some View {
         if isRetrying {
             RingIndicator(size: 22)
                 .frame(maxWidth: .infinity)
@@ -55,7 +55,10 @@ struct ErrorView: View {
         } else {
             Button {
                 isRetrying = true
-                retry()
+                Task {
+                    await retry()
+                    isRetrying = false
+                }
             } label: {
                 Text(verbatim: "Retry")
             }
@@ -65,7 +68,7 @@ struct ErrorView: View {
 }
 
 extension ErrorView {
-    init(description: String, retry: (() -> Void)?, isRetrying: Bool = false) {
+    init(description: String, retry: (() async -> Void)?, isRetrying: Bool = false) {
         self.init(description: Text(verbatim: description), retry: retry, isRetrying: isRetrying)
     }
 }

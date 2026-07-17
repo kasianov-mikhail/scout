@@ -22,9 +22,7 @@ private struct RotatingProvidersModifier: ViewModifier {
         if let error = providers.compactMap(\.error).first {
             ErrorView(description: error.localizedDescription) {
                 for provider in providers {
-                    Task {
-                        await provider.fetchIfFailed(in: database)
-                    }
+                    await provider.fetchIfFailed(in: database)
                 }
             }
         } else {
