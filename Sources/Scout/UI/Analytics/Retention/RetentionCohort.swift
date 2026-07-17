@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct RetentionCohort: Identifiable, Hashable {
+package struct RetentionCohort: Identifiable, Hashable {
     static let dayOffsets = [0, 1, 3, 7, 14, 30]
     static let summaryOffsets = [1, 7, 30]
 
-    let id: Date
+    package let id: Date
     let size: Int
     let retention: [Double?]
 

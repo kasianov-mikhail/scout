@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RecordChunk {
+package struct RecordChunk {
     let records: [Record]
     let cursor: RecordCursor?
 

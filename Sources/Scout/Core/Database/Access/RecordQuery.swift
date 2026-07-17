@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RecordQuery: Sendable {
+package struct RecordQuery: Sendable {
     let recordType: any RecordDecodable.Type
 
     var filters: [Filter] = []

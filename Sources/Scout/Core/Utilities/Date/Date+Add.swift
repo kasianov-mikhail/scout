@@ -20,7 +20,7 @@ extension Date {
         Calendar.utc.date(byAdding: .hour, value: value, to: self)!
     }
 
-    func addingWeek(_ value: Int = 1) -> Date {
+    package func addingWeek(_ value: Int = 1) -> Date {
         Calendar.utc.date(byAdding: .weekOfYear, value: value, to: self)!
     }
 

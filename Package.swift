@@ -13,11 +13,15 @@ let package = Package(
         .library(
             name: "Scout",
             targets: ["Scout"]
-        )
+        ),
+        .library(
+            name: "ScoutCache",
+            targets: ["ScoutCache"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0" ..< "3.0.0"),
+        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0"..<"3.0.0"),
         .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.10.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.4.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.0"),
@@ -38,6 +42,12 @@ let package = Package(
                 .process("Core/Persistence/ScoutModel.xcdatamodeld")
             ]
         ),
+        .target(
+            name: "ScoutCache",
+            dependencies: [
+                "Scout"
+            ]
+        ),
         .testTarget(
             name: "ScoutTests",
             dependencies: [
@@ -50,6 +60,13 @@ let package = Package(
             dependencies: [
                 "Scout",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+            ]
+        ),
+        .testTarget(
+            name: "ScoutCacheTests",
+            dependencies: [
+                "ScoutCache",
+                "Scout",
             ]
         ),
     ]

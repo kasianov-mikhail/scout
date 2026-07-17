@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 @available(iOS 17, macOS 14, *)
 struct CachedDatabase: Database {
@@ -97,16 +98,7 @@ struct CachedDatabase: Database {
     }
 }
 
-private let cachedLookupTypes: Set<String> = [EventEntry.recordType]
-
-extension Backend {
-    @MainActor var cachedDatabase: any Database {
-        if #available(iOS 17, macOS 14, *) {
-            return DatabaseCacheRegistry.database(for: self)
-        }
-        return database
-    }
-}
+private let cachedLookupTypes = CachedLookupTypes.all
 
 @available(iOS 17, macOS 14, *)
 @MainActor

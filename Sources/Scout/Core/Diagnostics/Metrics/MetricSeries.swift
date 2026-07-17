@@ -17,26 +17,26 @@ extension DatabaseReader {
     }
 }
 
-struct SeriesQuery {
-    enum Bucket: String {
+package struct SeriesQuery {
+    package enum Bucket: String {
         case hour, day, week
     }
 
-    var name: String?
-    var category: String?
-    var values: String?
-    var bucket: Bucket = .day
-    var byVersion = false
-    var range: Range<Date>
+    package var name: String?
+    package var category: String?
+    package var values: String?
+    package var bucket: Bucket = .day
+    package var byVersion = false
+    package var range: Range<Date>
 }
 
-struct MetricSeries: Decodable {
-    let name: String
-    let category: String?
-    let version: String?
-    let points: [MetricSeriesPoint]
+package struct MetricSeries: Decodable {
+    package let name: String
+    package let category: String?
+    package let version: String?
+    package let points: [MetricSeriesPoint]
 
-    init(name: String, category: String?, version: String? = nil, points: [MetricSeriesPoint]) {
+    package init(name: String, category: String?, version: String? = nil, points: [MetricSeriesPoint]) {
         self.name = name
         self.category = category
         self.version = version
@@ -44,12 +44,17 @@ struct MetricSeries: Decodable {
     }
 }
 
-struct MetricSeriesPoint: Decodable {
-    let date: Int64
-    let value: MetricValue
+package struct MetricSeriesPoint: Decodable {
+    package let date: Int64
+    package let value: MetricValue
+
+    package init(date: Int64, value: MetricValue) {
+        self.date = date
+        self.value = value
+    }
 }
 
-enum MetricValue: Decodable, Equatable {
+package enum MetricValue: Decodable, Equatable {
     case int(Int)
     case double(Double)
 
@@ -57,7 +62,7 @@ enum MetricValue: Decodable, Equatable {
         case int, double
     }
 
-    init(from decoder: any Decoder) throws {
+    package init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         if let value = try container.decodeIfPresent(Int.self, forKey: .int) {

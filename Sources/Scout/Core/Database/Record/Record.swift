@@ -7,12 +7,19 @@
 
 import Foundation
 
-struct Record: Sendable {
-    let recordType: String
-    let recordID: String
+package struct Record: Sendable {
+    package let recordType: String
+    package let recordID: String
 
-    var fields: [String: RecordValue] = [:]
-    var metadata: Data?
+    package var fields: [String: RecordValue] = [:]
+    package var metadata: Data?
+
+    package init(recordType: String, recordID: String, fields: [String: RecordValue] = [:], metadata: Data? = nil) {
+        self.recordType = recordType
+        self.recordID = recordID
+        self.fields = fields
+        self.metadata = metadata
+    }
 
     subscript<T: RecordValueConvertible>(key: String) -> T? {
         get { fields[key].flatMap(T.init(recordValue:)) }

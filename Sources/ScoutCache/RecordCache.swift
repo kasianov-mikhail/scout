@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import SwiftData
 
 @available(iOS 17, macOS 14, *)

@@ -10,8 +10,8 @@ import Foundation
 typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
 
 public struct Backend: Sendable {
-    let id: String
-    let database: any Database
+    package let id: String
+    package let database: any Database
     let checkAvailability: @Sendable () async -> Bool
     let displayName: String
 
