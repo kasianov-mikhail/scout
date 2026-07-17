@@ -18,12 +18,12 @@ final class TimelineProvider: ObservableObject {
         }
     }
 
-    /// Derived from `result` once per change, so view body re-evaluations
-    /// (legend toggles, scroll) don't rebuild the row list from the tree.
+    // Derived from `result` once per change, so view body re-evaluations
+    // (legend toggles, scroll) don't rebuild the row list from the tree.
     private(set) var items: [TimelineItem] = []
 
-    /// The Markdown export of `result`, rebuilt once per change rather than
-    /// on every toolbar render.
+    // The Markdown export of `result`, rebuilt once per change rather than
+    // on every toolbar render.
     private(set) var exportText: String?
 
     let older = RailLane(ascending: false)
