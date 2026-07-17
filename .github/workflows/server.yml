@@ -29,7 +29,7 @@ on:
     branches: [main]
     paths:
       - "Sources/ScoutHosted/**"
-      - "Sources/ScoutCore/Database/**"
+      - "Sources/Scout/Database/**"
       - "Tests/ScoutHostedTests/**"
       - ".github/workflows/server.yml"
   pull_request:

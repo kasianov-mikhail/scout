@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct RefreshSchedule {
     private static let seeds = (3, 5)

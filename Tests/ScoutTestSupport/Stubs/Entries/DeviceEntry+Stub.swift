@@ -7,7 +7,7 @@
 
 import CoreData
 
-@testable import ScoutCore
+@testable import Scout
 
 extension DeviceEntry {
     @discardableResult static func stub(

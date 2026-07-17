@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import ScoutCore
+import Scout
 import SwiftUI
 
 struct BackendDetailView: View {

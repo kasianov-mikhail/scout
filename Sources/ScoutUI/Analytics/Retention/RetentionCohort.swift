@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension RetentionCohort {
     var label: String {

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 /// The points of a Home row's period compressed into a fixed number of
 /// equal time slices, ready to be drawn as an inline mini-chart.

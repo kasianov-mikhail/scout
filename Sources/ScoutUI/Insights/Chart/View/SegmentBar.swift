@@ -7,7 +7,7 @@
 //
 
 import Charts
-import ScoutCore
+import Scout
 import SwiftUI
 
 struct Segment: Identifiable, Equatable {

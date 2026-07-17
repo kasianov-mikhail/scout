@@ -8,7 +8,7 @@
 import CoreData
 import Testing
 
-@testable import ScoutCore
+@testable import Scout
 
 extension NSManagedObjectContext {
     static func inMemoryContext() -> NSManagedObjectContext {

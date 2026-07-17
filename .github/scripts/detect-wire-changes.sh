@@ -8,7 +8,7 @@ if [ "$EVENT_NAME" != "pull_request" ]; then
   exit 0
 fi
 if git diff --name-only "$BASE_SHA"...HEAD \
-  | grep -qE '^(Sources/ScoutHosted/|Sources/ScoutCore/Database/|Tests/ScoutHostedTests/|\.github/workflows/server\.yml$)'; then
+  | grep -qE '^(Sources/ScoutHosted/|Sources/Scout/Database/|Tests/ScoutHostedTests/|\.github/workflows/server\.yml$)'; then
   echo "backend=true" >> "$GITHUB_OUTPUT"
 else
   echo "backend=false" >> "$GITHUB_OUTPUT"

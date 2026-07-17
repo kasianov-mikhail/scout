@@ -7,7 +7,7 @@
 
 import Testing
 
-@testable import ScoutCore
+@testable import Scout
 @testable import ScoutUI
 
 struct ArrayUniqueTests {

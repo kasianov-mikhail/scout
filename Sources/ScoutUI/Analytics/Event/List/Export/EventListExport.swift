@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct EventListExport {
     let events: [Event]

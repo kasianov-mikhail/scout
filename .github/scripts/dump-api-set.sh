@@ -2,13 +2,13 @@
 # Dump the package's public + package API as a module-agnostic set, one
 # "<declKind> <qualified printed name>" per line.
 #
-# The split moved most declarations out of the single `Scout` module into
-# ScoutCore and the adapter modules, re-exporting them through the umbrella.
-# swift-api-digester keys every symbol by its defining module and does not
-# follow `@_exported import`, so a per-module diff reports every moved symbol as
-# removed even though `import Scout` consumers still compile. Flattening every
-# package module into one module-agnostic set makes a move a no-op (the symbol
-# still exists somewhere) while a genuine deletion still drops out of the set.
+# Most declarations live in `Scout` (the package's base module) and the
+# adapter modules (`ScoutNative`, `ScoutHosted`, `ScoutUI`, `ScoutCache`).
+# swift-api-digester keys every symbol by its defining module, so moving a
+# symbol between these modules reports as a removal even though downstream
+# consumers still compile. Flattening every package module into one
+# module-agnostic set makes a move a no-op (the symbol still exists somewhere)
+# while a genuine deletion still drops out of the set.
 #
 # Args: <derived-data-path> <output-set-file>
 set -euo pipefail

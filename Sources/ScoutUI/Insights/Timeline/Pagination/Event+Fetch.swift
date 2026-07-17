@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Event {
     static func fetch(sessionIDs: [UUID], name: String?, in database: DatabaseReader) async throws -> [Event] {

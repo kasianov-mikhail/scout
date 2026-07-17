@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct HTTPQuery: Codable, Equatable, Sendable {
     var recordType: String?

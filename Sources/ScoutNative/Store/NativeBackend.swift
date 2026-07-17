@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CloudKit
-import ScoutCore
+import Scout
 import ScoutDB
 
 extension Backend {

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Collection {
     subscript(safe index: Index) -> Element? {

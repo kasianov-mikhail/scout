@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 /// Whether the rail of `kind` is continuous between two adjacent rows.
 ///

@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import ScoutCore
+import Scout
 import SwiftUI
 
 extension View {

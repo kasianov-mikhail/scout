@@ -7,7 +7,7 @@
 
 import Foundation
 
-@testable import ScoutCore
+@testable import Scout
 
 // A `DatabaseReader` standing in for a Scout server backend: it returns the
 // activity, retention, and metric series it is seeded with, and empty results

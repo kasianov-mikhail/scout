@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 @available(iOS 17, macOS 14, *)
 struct CachedDatabase: Database {

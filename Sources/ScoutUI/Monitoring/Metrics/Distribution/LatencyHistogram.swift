@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct LatencyHistogram: Equatable {
     var counts: [Int]

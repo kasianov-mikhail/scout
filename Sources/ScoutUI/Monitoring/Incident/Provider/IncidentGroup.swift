@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 protocol Incident: Identifiable, Comparable, SessionContext {
     var fingerprint: String { get }

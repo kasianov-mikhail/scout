@@ -15,10 +15,6 @@ let package = Package(
             targets: ["Scout"]
         ),
         .library(
-            name: "ScoutCore",
-            targets: ["ScoutCore"]
-        ),
-        .library(
             name: "ScoutNative",
             targets: ["ScoutNative"]
         ),
@@ -47,7 +43,7 @@ let package = Package(
             name: "ScoutHang"
         ),
         .target(
-            name: "ScoutCore",
+            name: "Scout",
             dependencies: [
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Metrics", package: "swift-metrics"),
@@ -60,48 +56,39 @@ let package = Package(
         .target(
             name: "ScoutNative",
             dependencies: [
-                "ScoutCore",
+                "Scout",
                 .product(name: "ScoutDB", package: "scout-db"),
             ]
         ),
         .target(
             name: "ScoutHosted",
             dependencies: [
-                "ScoutCore"
+                "Scout"
             ]
         ),
         .target(
             name: "ScoutUI",
             dependencies: [
-                "ScoutCore"
+                "Scout"
             ]
         ),
         .target(
             name: "ScoutCache",
             dependencies: [
-                "ScoutCore"
-            ]
-        ),
-        .target(
-            name: "Scout",
-            dependencies: [
-                "ScoutCore",
-                "ScoutNative",
-                "ScoutHosted",
-                "ScoutUI",
+                "Scout"
             ]
         ),
         .target(
             name: "ScoutTestSupport",
             dependencies: [
-                "ScoutCore"
+                "Scout"
             ],
             path: "Tests/ScoutTestSupport"
         ),
         .testTarget(
-            name: "ScoutCoreTests",
+            name: "ScoutTests",
             dependencies: [
-                "ScoutCore",
+                "Scout",
                 "ScoutTestSupport",
             ]
         ),
@@ -132,7 +119,7 @@ let package = Package(
             name: "ScoutCacheTests",
             dependencies: [
                 "ScoutCache",
-                "ScoutCore",
+                "Scout",
             ],
             // ScoutCache autolinks SwiftData (iOS 17+), so a bundle linking it fails
             // to load on the iOS 16 simulator. Weak-link the framework so the bundle
@@ -143,7 +130,7 @@ let package = Package(
             name: "ScoutSnapshotTests",
             dependencies: [
                 "ScoutUI",
-                "ScoutCore",
+                "Scout",
                 "ScoutTestSupport",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]

@@ -7,7 +7,7 @@
 
 import Combine
 import Foundation
-import ScoutCore
+import Scout
 
 @MainActor
 class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {

@@ -7,7 +7,7 @@
 
 import Foundation
 
-@testable import ScoutCore
+@testable import Scout
 
 extension Identity {
     // A shared fixture so object stubs and the monitors under test agree on the

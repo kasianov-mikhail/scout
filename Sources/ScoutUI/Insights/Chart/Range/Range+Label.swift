@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Range<Date> {
     func label(using formatter: DateFormatter) -> String {

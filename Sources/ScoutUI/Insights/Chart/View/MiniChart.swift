@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import ScoutCore
+import Scout
 import SwiftUI
 
 /// An inline sparkline for Home rows: the period's slice values drawn as a

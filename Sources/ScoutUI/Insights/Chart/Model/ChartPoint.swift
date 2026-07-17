@@ -7,7 +7,7 @@
 
 import Charts
 import Foundation
-import ScoutCore
+import Scout
 
 typealias ChartNumeric = Plottable & MetricScalar
 

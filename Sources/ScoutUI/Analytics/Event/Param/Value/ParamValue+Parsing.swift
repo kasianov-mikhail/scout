@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension ParamValue {
     /// Parses a raw parameter string into its display classification.

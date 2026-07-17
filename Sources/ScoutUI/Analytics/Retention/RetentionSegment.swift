@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct RetentionSegment: Identifiable {
     let name: String

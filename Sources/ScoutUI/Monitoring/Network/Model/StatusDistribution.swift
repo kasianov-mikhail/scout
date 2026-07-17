@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct StatusDistribution: Equatable {
     let breakdowns: [Date: StatusBreakdown]

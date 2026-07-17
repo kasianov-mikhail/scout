@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Backend {
     public static func server(url: URL, apiKey: String?) -> Backend {

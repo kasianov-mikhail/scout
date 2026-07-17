@@ -7,7 +7,7 @@
 
 import Foundation
 
-@testable import ScoutCore
+@testable import Scout
 @testable import ScoutTestSupport
 @testable import ScoutUI
 

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension ParamValue {
     /// A shareable text form of the value: scalars verbatim, containers as

@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import ScoutCore
+import Scout
 import SwiftUI
 
 private let referenceDash = StrokeStyle(lineWidth: 1.5, dash: [4, 4])
