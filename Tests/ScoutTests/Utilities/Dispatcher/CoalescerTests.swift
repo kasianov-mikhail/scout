@@ -85,4 +85,24 @@ struct CoalescerTests {
 
         #expect(box.value == [1, 3])
     }
+
+    @Test("Pending work still runs when the current work throws")
+    func testPendingRunsWhenCurrentWorkThrows() async throws {
+        let dispatcher = Coalescer()
+        let box = Box(false)
+
+        let first = Task {
+            try await dispatcher.perform {
+                try? await Task.sleep(for: .milliseconds(100))
+                throw LifecycleError.notFound
+            }
+        }
+
+        // Let the first work item start, then queue follow-up work behind it.
+        try? await Task.sleep(for: .milliseconds(20))
+        try await dispatcher.perform { box.value = true }
+        _ = try? await first.value
+
+        #expect(box.value)
+    }
 }
