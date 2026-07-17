@@ -15,12 +15,12 @@ let package = Package(
             targets: ["Scout"]
         ),
         .library(
-            name: "ScoutNative",
-            targets: ["ScoutNative"]
+            name: "NativeConnector",
+            targets: ["NativeConnector"]
         ),
         .library(
-            name: "ScoutHosted",
-            targets: ["ScoutHosted"]
+            name: "HostedConnector",
+            targets: ["HostedConnector"]
         ),
         .library(
             name: "ScoutUI",
@@ -49,22 +49,25 @@ let package = Package(
                 .product(name: "Metrics", package: "swift-metrics"),
                 "CScoutHang",
             ],
+            exclude: ["Connectors"],
             resources: [
                 .process("Persistence/ScoutModel.xcdatamodeld")
             ]
         ),
         .target(
-            name: "ScoutNative",
+            name: "NativeConnector",
             dependencies: [
                 "Scout",
                 .product(name: "ScoutDB", package: "scout-db"),
-            ]
+            ],
+            path: "Sources/Scout/Connectors/Native"
         ),
         .target(
-            name: "ScoutHosted",
+            name: "HostedConnector",
             dependencies: [
                 "Scout"
-            ]
+            ],
+            path: "Sources/Scout/Connectors/Hosted"
         ),
         .target(
             name: "ScoutUI",
@@ -90,28 +93,31 @@ let package = Package(
             dependencies: [
                 "Scout",
                 "Support",
-            ]
+            ],
+            exclude: ["Connectors"]
         ),
         .testTarget(
-            name: "ScoutNativeTests",
+            name: "NativeConnectorTests",
             dependencies: [
-                "ScoutNative",
+                "NativeConnector",
                 "Support",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
-            ]
+            ],
+            path: "Tests/ScoutTests/Connectors/Native"
         ),
         .testTarget(
-            name: "ScoutHostedTests",
+            name: "HostedConnectorTests",
             dependencies: [
-                "ScoutHosted",
+                "HostedConnector",
                 "Support",
-            ]
+            ],
+            path: "Tests/ScoutTests/Connectors/Hosted"
         ),
         .testTarget(
             name: "ScoutUITests",
             dependencies: [
                 "ScoutUI",
-                "ScoutHosted",
+                "HostedConnector",
                 "Support",
             ]
         ),

@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutHosted
+import HostedConnector
 import Testing
 
 @testable import Scout

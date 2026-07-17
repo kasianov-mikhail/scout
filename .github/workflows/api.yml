@@ -45,7 +45,7 @@ jobs:
       # that the umbrella target is gone, so each one needs its own build.
       - name: Dump current API
         run: |
-          for scheme in Scout ScoutNative ScoutHosted ScoutUI Cache; do
+          for scheme in Scout NativeConnector HostedConnector ScoutUI Cache; do
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
@@ -83,7 +83,7 @@ jobs:
           # The baseline resolves dependencies fresh (Package.resolved is not
           # committed), so a dependency release that breaks the old code makes
           # the baseline unbuildable. Nothing to compare against then — skip.
-          # ScoutNative/ScoutHosted/ScoutUI/Cache may not exist as their
+          # NativeConnector/HostedConnector/ScoutUI/Cache may not exist as their
           # own schemes on an older base (pre-split, or pre-umbrella-removal
           # where Scout alone covered everything transitively); build them
           # best-effort.
@@ -98,7 +98,7 @@ jobs:
             echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
             exit 0
           fi
-          for scheme in ScoutNative ScoutHosted ScoutUI Cache; do
+          for scheme in NativeConnector HostedConnector ScoutUI Cache; do
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \

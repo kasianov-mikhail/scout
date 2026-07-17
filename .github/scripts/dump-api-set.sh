@@ -3,7 +3,7 @@
 # "<declKind> <qualified printed name>" per line.
 #
 # Most declarations live in `Scout` (the package's base module) and the
-# adapter modules (`ScoutNative`, `ScoutHosted`, `ScoutUI`, `Cache`).
+# adapter modules (`NativeConnector`, `HostedConnector`, `ScoutUI`, `Cache`).
 # swift-api-digester keys every symbol by its defining module, so moving a
 # symbol between these modules reports as a removal even though downstream
 # consumers still compile. Flattening every package module into one
@@ -27,10 +27,15 @@ for modulemap in "$dd"/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesim
   [ -f "$modulemap" ] && cc_flags+=(-Xcc -fmodule-map-file="$modulemap")
 done
 
-# The package's own Swift library modules are the built Scout* modules minus the
-# external scout-db products; ScoutHang is a C target with no .swiftmodule.
+# The package's own Swift library modules are the built Scout* modules and the
+# connector modules, minus the external scout-db products; CScoutHang is a C
+# target with no .swiftmodule.
 module_flags=()
-for swiftmodule in "$products"/Scout*.swiftmodule; do
+for swiftmodule in "$products"/Scout*.swiftmodule "$products"/NativeConnector.swiftmodule "$products"/HostedConnector.swiftmodule "$products"/Cache.swiftmodule; do
+  # A .swiftmodule can be either a file or a multi-arch directory, and the
+  # explicit non-Scout* globs stay literal when they don't match — so accept
+  # either kind of entry and skip anything that doesn't exist.
+  [ -e "$swiftmodule" ] || continue
   name="$(basename "$swiftmodule" .swiftmodule)"
   case "$name" in
     ScoutDB | ScoutDBTesting) continue ;;

@@ -8,8 +8,8 @@
 import Foundation
 import Testing
 
+@testable import HostedConnector
 @testable import Scout
-@testable import ScoutHosted
 
 @Suite("HTTPRecord coding")
 struct HTTPRecordCodingTests {
