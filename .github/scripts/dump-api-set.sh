@@ -32,7 +32,10 @@ done
 # target with no .swiftmodule.
 module_flags=()
 for swiftmodule in "$products"/Scout*.swiftmodule "$products"/NativeConnector.swiftmodule "$products"/HostedConnector.swiftmodule; do
-  [ -f "$swiftmodule" ] || continue
+  # A .swiftmodule can be either a file or a multi-arch directory, and the
+  # explicit connector globs stay literal when they don't match — so accept
+  # either kind of entry and skip anything that doesn't exist.
+  [ -e "$swiftmodule" ] || continue
   name="$(basename "$swiftmodule" .swiftmodule)"
   case "$name" in
     ScoutDB | ScoutDBTesting) continue ;;
