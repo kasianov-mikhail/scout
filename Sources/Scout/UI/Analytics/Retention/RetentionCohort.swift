@@ -60,6 +60,12 @@ extension RetentionCohort {
         var id: Int { day }
     }
 
+    // Looks up a retention rate at a `dayOffsets` milestone; nil if `day` isn't
+    // a milestone or that milestone hasn't elapsed yet.
+    static func rate(_ retention: [Double?], onDay day: Int) -> Double? {
+        dayOffsets.firstIndex(of: day).flatMap { retention[$0] }
+    }
+
     static func stats(for cohorts: [RetentionCohort]) -> [DayStat] {
         dayOffsets.enumerated().compactMap { index, day in
             let rates = cohorts.compactMap { $0.retention[index] }

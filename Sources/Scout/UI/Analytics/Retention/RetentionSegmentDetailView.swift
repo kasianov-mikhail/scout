@@ -99,21 +99,8 @@ struct RetentionSegmentDetailView: View {
 
     private var legend: some View {
         HStack(spacing: 16) {
-            legendItem(color: .orange, dashed: false, title: segment.name)
-            legendItem(color: Color(.systemGray4), dashed: true, title: "Cohort")
-        }
-    }
-
-    private func legendItem(color: Color, dashed: Bool, title: String) -> some View {
-        HStack(spacing: 4) {
-            Path { path in
-                path.move(to: CGPoint(x: 0, y: 1))
-                path.addLine(to: CGPoint(x: 14, y: 1))
-            }
-            .stroke(color, style: StrokeStyle(lineWidth: 2, dash: dashed ? [3, 2] : []))
-            .frame(width: 14, height: 2)
-
-            Text(verbatim: title).font(.caption2).foregroundStyle(.secondary)
+            RetentionLegendItem(color: .orange, dashed: false, title: segment.name)
+            RetentionLegendItem(color: Color(.systemGray4), dashed: true, title: "Cohort")
         }
     }
 

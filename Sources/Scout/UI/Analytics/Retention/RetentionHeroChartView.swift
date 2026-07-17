@@ -35,11 +35,6 @@ private struct RetentionHeroChart: View {
         RetentionCohort.stats(for: cohorts)
     }
 
-    private func rate(_ cohort: RetentionCohort, day: Int) -> Double? {
-        guard let index = RetentionCohort.dayOffsets.firstIndex(of: day) else { return nil }
-        return cohort.retention[index]
-    }
-
     var body: some View {
         List {
             VStack(alignment: .leading, spacing: 4) {
@@ -95,7 +90,7 @@ private struct RetentionHeroChart: View {
                         Spacer()
                         Text(verbatim: "\(cohort.size)").font(.caption).foregroundStyle(.secondary)
 
-                        if let day7 = rate(cohort, day: 7) {
+                        if let day7 = RetentionCohort.rate(cohort.retention, onDay: 7) {
                             Text(
                                 verbatim:
                                     "D7 \(day7.formatted(.retentionRate))"
