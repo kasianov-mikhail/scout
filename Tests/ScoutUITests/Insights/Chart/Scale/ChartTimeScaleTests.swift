@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct ChartTimeScaleTests {
     @Test("The previous range is the window right before the current one")

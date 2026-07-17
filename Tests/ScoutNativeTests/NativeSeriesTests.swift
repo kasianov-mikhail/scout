@@ -12,7 +12,7 @@ import Testing
 
 @testable import Scout
 @testable import ScoutNative
-@testable import ScoutTestSupport
+@testable import Support
 
 @Suite("NativeSeries")
 struct NativeSeriesTests {

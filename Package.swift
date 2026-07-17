@@ -79,24 +79,24 @@ let package = Package(
             ]
         ),
         .target(
-            name: "ScoutTestSupport",
+            name: "Support",
             dependencies: [
                 "Scout"
             ],
-            path: "Tests/ScoutTestSupport"
+            path: "Tests/Support"
         ),
         .testTarget(
             name: "ScoutTests",
             dependencies: [
                 "Scout",
-                "ScoutTestSupport",
+                "Support",
             ]
         ),
         .testTarget(
             name: "ScoutNativeTests",
             dependencies: [
                 "ScoutNative",
-                "ScoutTestSupport",
+                "Support",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
             ]
         ),
@@ -104,7 +104,7 @@ let package = Package(
             name: "ScoutHostedTests",
             dependencies: [
                 "ScoutHosted",
-                "ScoutTestSupport",
+                "Support",
             ]
         ),
         .testTarget(
@@ -112,7 +112,7 @@ let package = Package(
             dependencies: [
                 "ScoutUI",
                 "ScoutHosted",
-                "ScoutTestSupport",
+                "Support",
             ]
         ),
         .testTarget(
@@ -131,7 +131,7 @@ let package = Package(
             dependencies: [
                 "ScoutUI",
                 "Scout",
-                "ScoutTestSupport",
+                "Support",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
         ),

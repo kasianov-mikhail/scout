@@ -9,7 +9,7 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
+@testable import Support
 
 struct RetentionCohortBuildTests {
     private let installDay = Date(year: 2026, month: 6, day: 1)

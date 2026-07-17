@@ -9,7 +9,7 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
+@testable import Support
 
 @Suite("CrashArchive")
 struct CrashArchiveTests {

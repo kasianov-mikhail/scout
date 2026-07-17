@@ -8,8 +8,8 @@
 import Foundation
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 extension Rail {
     @discardableResult static func stub(

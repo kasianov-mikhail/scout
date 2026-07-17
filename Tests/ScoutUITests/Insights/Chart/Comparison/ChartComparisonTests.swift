@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct ChartComparisonTests {
     @Test("Previous domain precedes the current one") func testPreviousDomain() {

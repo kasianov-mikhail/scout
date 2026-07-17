@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct RailInitTests {
     @Test("Device with no children has empty installs")
