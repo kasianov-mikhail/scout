@@ -8,8 +8,8 @@
 import Foundation
 import Testing
 
+@testable import ConnectorHosted
 @testable import ScoutCore
-@testable import ScoutHosted
 
 @Suite("HTTPQuery translation")
 struct HTTPQueryCodingTests {

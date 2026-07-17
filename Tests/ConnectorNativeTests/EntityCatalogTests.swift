@@ -9,8 +9,8 @@ import Foundation
 import ScoutDB
 import Testing
 
+@testable import ConnectorNative
 @testable import ScoutCore
-@testable import ScoutNative
 
 @Suite("EntityCatalog")
 struct EntityCatalogTests {

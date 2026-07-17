@@ -10,8 +10,8 @@ import ScoutDB
 import ScoutDBTesting
 import Testing
 
+@testable import ConnectorNative
 @testable import ScoutCore
-@testable import ScoutNative
 @testable import ScoutTestSupport
 
 @Suite("NativeDatabase")
