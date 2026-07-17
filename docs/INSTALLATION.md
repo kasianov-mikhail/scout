@@ -6,6 +6,31 @@
 - Swift 6.0+
 - [Apple Developer](https://developer.apple.com) account with [CloudKit](https://developer.apple.com/icloud/cloudkit/) enabled
 
+## Add the Package
+
+In Xcode, go to **File > Add Package Dependencies…** and enter:
+
+```
+https://github.com/kasianov-mikhail/scout.git
+```
+
+Or add it to your `Package.swift`:
+
+```swift
+.package(url: "https://github.com/kasianov-mikhail/scout.git", from: "3.3.0")
+```
+
+Then add `Scout` as a dependency for your target:
+
+```swift
+.target(
+    name: "YourTarget",
+    dependencies: [
+        .product(name: "Scout", package: "scout")
+    ]
+)
+```
+
 ## Enable CloudKit
 
 Ensure CloudKit is enabled in your Apple Developer account and configured for your project. Refer to [Enabling CloudKit in Your App](https://developer.apple.com/documentation/cloudkit/enabling_cloudkit_in_your_app).
