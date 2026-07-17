@@ -17,10 +17,15 @@ extension IncidentGroup where Element == Hang {
     }
 
     var severity: HangSeverity {
-        maxDuration >= 8 ? .critical : .warning
+        peak.severity
     }
 
     var durationText: String {
-        maxDuration < 60 ? String(format: "%.1fs", maxDuration) : "\(Int(maxDuration) / 60)m \(Int(maxDuration) % 60)s"
+        peak.durationText
+    }
+
+    // The longest hang in the group; groups always hold at least one record.
+    private var peak: Hang {
+        records.max { $0.duration < $1.duration } ?? representative
     }
 }
