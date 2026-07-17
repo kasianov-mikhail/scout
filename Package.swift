@@ -15,12 +15,12 @@ let package = Package(
             targets: ["Scout"]
         ),
         .library(
-            name: "ScoutNative",
-            targets: ["ScoutNative"]
+            name: "NativeConnector",
+            targets: ["NativeConnector"]
         ),
         .library(
-            name: "ScoutHosted",
-            targets: ["ScoutHosted"]
+            name: "HostedConnector",
+            targets: ["HostedConnector"]
         ),
         .library(
             name: "ScoutUI",
@@ -54,17 +54,19 @@ let package = Package(
             ]
         ),
         .target(
-            name: "ScoutNative",
+            name: "NativeConnector",
             dependencies: [
                 "Scout",
                 .product(name: "ScoutDB", package: "scout-db"),
-            ]
+            ],
+            path: "Sources/Connectors/Native"
         ),
         .target(
-            name: "ScoutHosted",
+            name: "HostedConnector",
             dependencies: [
                 "Scout"
-            ]
+            ],
+            path: "Sources/Connectors/Hosted"
         ),
         .target(
             name: "ScoutUI",
@@ -93,25 +95,27 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "ScoutNativeTests",
+            name: "NativeConnectorTests",
             dependencies: [
-                "ScoutNative",
+                "NativeConnector",
                 "ScoutTestSupport",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
-            ]
+            ],
+            path: "Tests/Connectors/Native"
         ),
         .testTarget(
-            name: "ScoutHostedTests",
+            name: "HostedConnectorTests",
             dependencies: [
-                "ScoutHosted",
+                "HostedConnector",
                 "ScoutTestSupport",
-            ]
+            ],
+            path: "Tests/Connectors/Hosted"
         ),
         .testTarget(
             name: "ScoutUITests",
             dependencies: [
                 "ScoutUI",
-                "ScoutHosted",
+                "HostedConnector",
                 "ScoutTestSupport",
             ]
         ),

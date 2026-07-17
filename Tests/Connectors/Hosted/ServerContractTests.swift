@@ -8,8 +8,8 @@
 import Foundation
 import Testing
 
+@testable import HostedConnector
 @testable import Scout
-@testable import ScoutHosted
 
 /// The live server under test, supplied by the Server workflow.
 private let serverURL = ProcessInfo.processInfo.environment["SCOUT_SERVER_URL"].flatMap(URL.init(string:))

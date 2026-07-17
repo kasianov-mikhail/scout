@@ -3,7 +3,7 @@
 # "<declKind> <qualified printed name>" per line.
 #
 # Most declarations live in `Scout` (the package's base module) and the
-# adapter modules (`ScoutNative`, `ScoutHosted`, `ScoutUI`, `ScoutCache`).
+# adapter modules (`NativeConnector`, `HostedConnector`, `ScoutUI`, `ScoutCache`).
 # swift-api-digester keys every symbol by its defining module, so moving a
 # symbol between these modules reports as a removal even though downstream
 # consumers still compile. Flattening every package module into one
@@ -27,10 +27,12 @@ for modulemap in "$dd"/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesim
   [ -f "$modulemap" ] && cc_flags+=(-Xcc -fmodule-map-file="$modulemap")
 done
 
-# The package's own Swift library modules are the built Scout* modules minus the
-# external scout-db products; ScoutHang is a C target with no .swiftmodule.
+# The package's own Swift library modules are the built Scout* modules and the
+# connector modules, minus the external scout-db products; CScoutHang is a C
+# target with no .swiftmodule.
 module_flags=()
-for swiftmodule in "$products"/Scout*.swiftmodule; do
+for swiftmodule in "$products"/Scout*.swiftmodule "$products"/NativeConnector.swiftmodule "$products"/HostedConnector.swiftmodule; do
+  [ -f "$swiftmodule" ] || continue
   name="$(basename "$swiftmodule" .swiftmodule)"
   case "$name" in
     ScoutDB | ScoutDBTesting) continue ;;
