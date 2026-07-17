@@ -21,21 +21,36 @@ enum MainThreadBacktrace {
 
     static func capture() -> [String] {
         guard let mainThread = mainMachThread() else { return [] }
-        guard thread_suspend(mainThread) == KERN_SUCCESS else { return [] }
-        defer { thread_resume(mainThread) }
 
-        guard let (pc, initialFP) = registerState(of: mainThread) else { return [] }
+        // Only raw return addresses are collected while the main thread is
+        // suspended — no malloc, no dyld lock. If the thread is suspended
+        // mid-hang while holding one of those locks, symbolicating here would
+        // deadlock this thread forever. So resume first, then symbolicate.
+        var buffer = [UInt64](repeating: 0, count: maximumFrameCount)
+        let count = buffer.withUnsafeMutableBufferPointer { captureAddresses(of: mainThread, into: $0) }
+        guard count > 0 else { return [] }
 
-        var addresses = [pc]
+        return buffer.prefix(count).enumerated().map(symbolicate)
+    }
+
+    private static func captureAddresses(of thread: thread_t, into buffer: UnsafeMutableBufferPointer<UInt64>) -> Int {
+        guard thread_suspend(thread) == KERN_SUCCESS else { return 0 }
+        defer { thread_resume(thread) }
+
+        guard let (pc, initialFP) = registerState(of: thread) else { return 0 }
+
+        buffer[0] = pc
+        var count = 1
         var fp = initialFP
 
-        for _ in 0..<maximumFrameCount {
+        while count < buffer.count {
             guard fp != 0, let frame = readFrame(at: fp), frame.returnAddress != 0 else { break }
-            addresses.append(frame.returnAddress)
+            buffer[count] = frame.returnAddress
+            count += 1
             fp = frame.previousFP
         }
 
-        return addresses.enumerated().map(symbolicate)
+        return count
     }
 
     // task_threads returns threads in creation order and the main thread is
@@ -64,10 +79,10 @@ enum MainThreadBacktrace {
     }
 
     private static func readFrame(at fp: UInt64) -> Frame? {
-        var buffer = [UInt64](repeating: 0, count: 2)
+        var pair: (previousFP: UInt64, returnAddress: UInt64) = (0, 0)
         var readCount: vm_size_t = 0
 
-        let result = buffer.withUnsafeMutableBytes { rawBuffer in
+        let result = withUnsafeMutableBytes(of: &pair) { rawBuffer in
             vm_read_overwrite(
                 mach_task_self_,
                 vm_address_t(fp),
@@ -81,7 +96,7 @@ enum MainThreadBacktrace {
             return nil
         }
 
-        return Frame(previousFP: buffer[0], returnAddress: buffer[1])
+        return Frame(previousFP: pair.previousFP, returnAddress: pair.returnAddress)
     }
 
     private static func symbolicate(index: Int, address: UInt64) -> String {
