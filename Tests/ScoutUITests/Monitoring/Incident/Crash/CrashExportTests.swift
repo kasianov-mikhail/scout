@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct CrashExportTests {
     private let base = Date(timeIntervalSince1970: 1_700_000_000)

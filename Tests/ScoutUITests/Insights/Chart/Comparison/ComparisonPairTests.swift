@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct ComparisonPairTests {
     @Test("Pairing matches reference counts to segment dates") func testPairing() {

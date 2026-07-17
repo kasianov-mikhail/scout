@@ -10,8 +10,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct TimelineExportTests {
     private func uuid(_ prefix: String) throws -> UUID {

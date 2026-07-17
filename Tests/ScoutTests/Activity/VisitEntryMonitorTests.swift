@@ -10,7 +10,7 @@ import CoreData
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
+@testable import Support
 
 @MainActor
 @Suite("VisitEntry+Monitor")

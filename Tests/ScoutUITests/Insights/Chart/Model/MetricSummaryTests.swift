@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct MetricSummaryTests {
     private let scale = DayScale(horizonDate: Date(year: 2026, month: 6, day: 8))

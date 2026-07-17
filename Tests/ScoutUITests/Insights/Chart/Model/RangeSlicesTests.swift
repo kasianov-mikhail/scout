@@ -9,8 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 struct RangeSlicesTests {
     let range = Date(year: 2026, month: 6, day: 1)..<Date(year: 2026, month: 6, day: 8)
