@@ -8,41 +8,16 @@
 import CoreData
 
 func logCrash(_ crash: CrashInfo, id: UUID = UUID(), deviceID: UUID, context: NSManagedObjectContext) throws {
-    // The id doubles as the archive file's UUID, so a flush interrupted
-    // between the save and the file removal doesn't insert a duplicate
-    // on the next launch.
-    let request = NSFetchRequest<CrashEntry>(entityName: "CrashEntry")
-    request.predicate = NSPredicate(format: "crashID == %@", id as CVarArg)
-    request.fetchLimit = 1
-    guard try context.count(for: request) == 0 else { return }
-
-    let object = context.insert(CrashEntry.self)
-
-    object.crashID = id
-    object.date = crash.date
-    object.appVersion = crash.appVersion
-    object.name = crash.name
-    object.fingerprint = CrashFingerprint(name: crash.name, reason: crash.reason, stackTrace: crash.stackTrace).value
-    object.reason = crash.reason
-    object.stackTrace = try? JSONEncoder().encode(crash.stackTrace)
-
-    // Reattach to the session/launch/install chain captured at crash time,
-    // materializing any hub the faulted run didn't persist.
-    let session = try context.linkedSession(
+    try logIncident(
+        crash,
+        id: id,
         deviceID: deviceID,
-        installID: crash.installID,
-        launchID: crash.launchID,
-        sessionID: crash.sessionID,
-        date: crash.date
-    )
-    object.session = session
-
-    try MarkerEntry.mark(
-        name: MarkerEntry.crashName,
-        install: session.launch?.install,
-        appVersion: crash.appVersion,
-        in: context
-    )
-
-    try context.save()
+        entityName: "CrashEntry",
+        idKey: "crashID",
+        markerName: MarkerEntry.crashName,
+        context: context
+    ) { (entry: CrashEntry, session) in
+        entry.crashID = id
+        entry.session = session
+    }
 }
