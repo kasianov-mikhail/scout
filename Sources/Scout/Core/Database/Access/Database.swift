@@ -7,9 +7,9 @@
 
 import Foundation
 
-typealias Database = DatabaseReader & DatabaseWriter
+package typealias Database = DatabaseReader & DatabaseWriter
 
-protocol DatabaseReader: Sendable {
+package protocol DatabaseReader: Sendable {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk
     func lookup(recordName: String, fields: [String]?) async throws -> Record
@@ -18,7 +18,7 @@ protocol DatabaseReader: Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort]
 }
 
-protocol DatabaseWriter: Sendable {
+package protocol DatabaseWriter: Sendable {
     func write(record: Record) async throws
     func write(records: [Record]) async throws
 }

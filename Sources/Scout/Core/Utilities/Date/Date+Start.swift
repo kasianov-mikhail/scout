@@ -16,7 +16,7 @@ extension Date {
         Calendar.utc.dateComponents([.calendar, .year, .month, .day], from: self).date!
     }
 
-    var startOfWeek: Date {
+    package var startOfWeek: Date {
         Calendar.utc.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: self).date!
     }
 

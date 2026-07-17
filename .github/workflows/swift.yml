@@ -63,11 +63,15 @@ jobs:
           # bare -downloadPlatform iOS only fetches the newest runtime. Pin an
           # exact version so the download step pulls each older runtime
           # explicitly. iOS 16 is the package's minimum deployment target.
+          # ScoutCacheTests links SwiftData (iOS 17+), so its bundle can't load
+          # on iOS 16; skip it there. The rest of the suites carry no SwiftData
+          # and run, exercising the package's minimum deployment target.
           - os: macos-15
             device: iPhone 14
             ios: 16
             runtime: "16.4"
             coverage: false
+            skipTesting: ScoutCacheTests
           - os: macos-15
             device: iPhone 15
             ios: 17
@@ -137,7 +141,7 @@ jobs:
       - name: Build
         run: |
           xcodebuild \
-            -scheme Scout \
+            -scheme Scout-Package \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
@@ -147,9 +151,10 @@ jobs:
       - name: Test
         run: |
           xcodebuild \
-            -scheme Scout \
+            -scheme Scout-Package \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
+            ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
             -resultBundlePath TestResults.xcresult \
             test-without-building
 

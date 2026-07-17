@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 struct CachedRecordPayload: Codable {
     let recordType: String

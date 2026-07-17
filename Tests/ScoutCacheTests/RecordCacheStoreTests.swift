@@ -10,6 +10,7 @@ import SwiftData
 import Testing
 
 @testable import Scout
+@testable import ScoutCache
 
 struct RecordCacheStoreTests {
     let url: URL

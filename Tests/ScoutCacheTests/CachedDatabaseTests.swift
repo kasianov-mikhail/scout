@@ -10,6 +10,7 @@ import SwiftData
 import Testing
 
 @testable import Scout
+@testable import ScoutCache
 
 struct CachedDatabaseTests {
     let lower = Date(timeIntervalSince1970: 0)
@@ -200,7 +201,9 @@ final class SpyDatabase: Database, @unchecked Sendable {
 
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         queries.append(query)
-        return RecordChunk(records: records.filter { $0.matches(query) }, cursor: nil)
+        // The cache never caches reads, so these tests only assert on the recorded
+        // queries — the spy echoes back whatever rows it was seeded with, unfiltered.
+        return RecordChunk(records: records, cursor: nil)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {

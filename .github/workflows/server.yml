@@ -109,7 +109,7 @@ jobs:
           TEST_RUNNER_SCOUT_SERVER_URL: http://127.0.0.1:8080
         run: |
           xcodebuild \
-            -scheme Scout \
+            -scheme Scout-Package \
             -destination 'platform=macOS' \
             -skipMacroValidation \
             -only-testing:ScoutTests/ServerContractTests \

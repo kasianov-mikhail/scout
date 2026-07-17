@@ -15,7 +15,7 @@ class ActivityProvider: ObservableObject, Provider {
     }
 }
 
-struct ActivityPoint: Decodable {
+package struct ActivityPoint: Decodable {
     let date: Int64
     let dau: Int
     let wau: Int

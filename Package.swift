@@ -13,7 +13,11 @@ let package = Package(
         .library(
             name: "Scout",
             targets: ["Scout"]
-        )
+        ),
+        .library(
+            name: "ScoutCache",
+            targets: ["ScoutCache"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
@@ -38,25 +42,32 @@ let package = Package(
                 .process("Core/Persistence/ScoutModel.xcdatamodeld")
             ]
         ),
+        .target(
+            name: "ScoutCache",
+            dependencies: [
+                "Scout"
+            ]
+        ),
         .testTarget(
             name: "ScoutTests",
             dependencies: [
                 "Scout",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
-            ],
-            // Scout autolinks SwiftData (iOS 17+), so a bundle linking it fails
-            // to load on the iOS 16 simulator. Weak-link the framework so the
-            // bundle loads; the SwiftData suites are @available(iOS 17)-gated
-            // and skip there. Only the test target is tainted, not the product.
-            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
+            ]
         ),
         .testTarget(
             name: "ScoutSnapshotTests",
             dependencies: [
                 "Scout",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ],
-            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
+            ]
+        ),
+        .testTarget(
+            name: "ScoutCacheTests",
+            dependencies: [
+                "ScoutCache",
+                "Scout",
+            ]
         ),
     ]
 )

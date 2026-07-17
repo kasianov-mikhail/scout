@@ -11,9 +11,9 @@ import Testing
 @testable import Scout
 
 struct CalendarUTCTests {
-    @Test("Calendar.utc uses ISO 8601 identifier")
+    @Test("Calendar.utc uses the Gregorian identifier")
     func identifier() {
-        #expect(Calendar.utc.identifier == .iso8601)
+        #expect(Calendar.utc.identifier == .gregorian)
     }
 
     @Test("Calendar.utc uses UTC time zone")
