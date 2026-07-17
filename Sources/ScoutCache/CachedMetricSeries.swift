@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import ScoutCore
 
 enum CachedMetricSeries {
     static func fingerprint(scope: String, query: SeriesQuery) -> String {

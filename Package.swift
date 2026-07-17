@@ -30,6 +30,10 @@ let package = Package(
             name: "ScoutUI",
             targets: ["ScoutUI"]
         ),
+        .library(
+            name: "ScoutCache",
+            targets: ["ScoutCache"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
@@ -71,6 +75,12 @@ let package = Package(
             dependencies: [
                 "ScoutCore",
                 .product(name: "Logging", package: "swift-log"),
+            ]
+        ),
+        .target(
+            name: "ScoutCache",
+            dependencies: [
+                "ScoutCore"
             ]
         ),
         .target(
@@ -122,6 +132,13 @@ let package = Package(
                 "ScoutHosted",
                 "ScoutNative",
                 "ScoutTestSupport",
+            ]
+        ),
+        .testTarget(
+            name: "ScoutCacheTests",
+            dependencies: [
+                "ScoutCache",
+                "ScoutCore",
             ]
         ),
         .testTarget(
