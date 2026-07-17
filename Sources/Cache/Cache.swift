@@ -14,7 +14,7 @@ import Scout
 /// anything that only links it, including its test bundles — does not link
 /// SwiftData and keeps loading on earlier systems.
 ///
-public enum ScoutCache {
+public enum Cache {
     /// Routes Scout's backends through the SwiftData-backed record cache.
     ///
     /// Call this once during app startup. Without it, `Scout` resolves every

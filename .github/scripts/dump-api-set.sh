@@ -3,7 +3,7 @@
 # "<declKind> <qualified printed name>" per line.
 #
 # Most declarations live in `Scout` (the package's base module) and the
-# adapter modules (`ScoutNative`, `ScoutHosted`, `ScoutUI`, `ScoutCache`).
+# adapter modules (`ScoutNative`, `ScoutHosted`, `ScoutUI`, `Cache`).
 # swift-api-digester keys every symbol by its defining module, so moving a
 # symbol between these modules reports as a removal even though downstream
 # consumers still compile. Flattening every package module into one
