@@ -24,9 +24,9 @@
     }
 
     extension Snapshotting where Value: SwiftUI.View, Format == UIImage {
-        static func scout(width: CGFloat = 393, height: CGFloat) -> Snapshotting {
+        static func scout(width: CGFloat = 393, height: CGFloat, style: UIUserInterfaceStyle = .light) -> Snapshotting {
             let traits = UITraitCollection(traitsFrom: [
-                UITraitCollection(userInterfaceStyle: .light),
+                UITraitCollection(userInterfaceStyle: style),
                 UITraitCollection(displayScale: 2),
             ])
             return .image(perceptualPrecision: 0.98, layout: .fixed(width: width, height: height), traits: traits)
