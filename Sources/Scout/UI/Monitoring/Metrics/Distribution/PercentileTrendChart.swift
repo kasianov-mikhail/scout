@@ -62,7 +62,7 @@ extension [PercentileTrendPoint] {
             2.8, 2.5, 2.3, 2.7, 3.6, 4.1, 3.0, 2.4, 2.0, 1.8, 1.6, 1.5,
         ]
 
-        let start = Calendar.current.startOfDay(for: .now)
+        let start = Calendar.utc.startOfDay(for: .now)
 
         return p99s.enumerated().map { hour, p99 in
             PercentileTrendPoint(date: start.addingTimeInterval(TimeInterval(hour) * .hour), p99: p99)

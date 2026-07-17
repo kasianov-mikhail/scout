@@ -29,7 +29,19 @@
                 UITraitCollection(userInterfaceStyle: style),
                 UITraitCollection(displayScale: 2),
             ])
-            return .image(perceptualPrecision: 0.98, layout: .fixed(width: width, height: height), traits: traits)
+            // Locale, calendar, and time zone leak into rendered output (chart
+            // axis labels, formatted dates), so pin them — otherwise baselines
+            // depend on the machine that recorded them.
+            return Snapshotting<AnyView, UIImage>
+                .image(perceptualPrecision: 0.98, layout: .fixed(width: width, height: height), traits: traits)
+                .pullback { view in
+                    AnyView(
+                        view
+                            .environment(\.locale, Locale(identifier: "en_US"))
+                            .environment(\.calendar, .utc)
+                            .environment(\.timeZone, TimeZone(identifier: "UTC")!)
+                    )
+                }
         }
     }
 #endif
