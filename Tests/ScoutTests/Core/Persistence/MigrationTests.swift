@@ -15,7 +15,7 @@ struct MigrationTests {
     @Test("Every historical model version migrates to the current model")
     func historicalVersionsMigrate() throws {
         let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
-        let current = try #require(NSManagedObjectModel(contentsOf: momdURL))
+        let current = NSManagedObjectModel.scout
 
         let versions = try FileManager.default
             .contentsOfDirectory(at: momdURL, includingPropertiesForKeys: nil)

@@ -19,9 +19,15 @@ let persistentContainer: NSPersistentContainer = {
     return container
 }()
 
-extension NSPersistentContainer {
-    convenience init(named name: String) {
-        guard let modelURL = Bundle.module.url(forResource: name, withExtension: "momd") else {
+extension NSManagedObjectModel {
+    // Loading ScoutModel.momd more than once registers a duplicate
+    // NSEntityDescription per NSManagedObject subclass, and the resulting
+    // ambiguous class→entity resolution races under parallel test runs —
+    // intermittently escalating a constraint-conflict save into a fatal
+    // "Unable to recover from optimistic locking failure". Every container
+    // must share this single instance.
+    nonisolated(unsafe) static let scout: NSManagedObjectModel = {
+        guard let modelURL = Bundle.module.url(forResource: "ScoutModel", withExtension: "momd") else {
             fatalError("Failed to find data model")
         }
 
@@ -29,7 +35,13 @@ extension NSPersistentContainer {
             fatalError("Failed to create model from file: \(modelURL)")
         }
 
-        self.init(name: name, managedObjectModel: model)
+        return model
+    }()
+}
+
+extension NSPersistentContainer {
+    convenience init(named name: String) {
+        self.init(name: name, managedObjectModel: .scout)
     }
 }
 
