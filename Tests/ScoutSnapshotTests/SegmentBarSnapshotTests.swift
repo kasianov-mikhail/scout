@@ -10,7 +10,11 @@
     import SwiftUI
     import Testing
 
-    @testable import Scout
+    @testable import ScoutCore
+
+    @testable import ScoutUI
+
+    @testable import ScoutTestSupport
 
     @Suite(.enabled(if: ViewSnapshot.isSupported))
     @MainActor struct SegmentBarSnapshotTests {

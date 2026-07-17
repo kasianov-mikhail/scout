@@ -13,11 +13,27 @@ let package = Package(
         .library(
             name: "Scout",
             targets: ["Scout"]
-        )
+        ),
+        .library(
+            name: "ScoutCore",
+            targets: ["ScoutCore"]
+        ),
+        .library(
+            name: "ScoutNative",
+            targets: ["ScoutNative"]
+        ),
+        .library(
+            name: "ScoutHosted",
+            targets: ["ScoutHosted"]
+        ),
+        .library(
+            name: "ScoutUI",
+            targets: ["ScoutUI"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0" ..< "3.0.0"),
+        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0"..<"3.0.0"),
         .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.10.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.4.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.0"),
@@ -27,28 +43,93 @@ let package = Package(
             name: "ScoutHang"
         ),
         .target(
-            name: "Scout",
+            name: "ScoutCore",
             dependencies: [
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Metrics", package: "swift-metrics"),
-                .product(name: "ScoutDB", package: "scout-db"),
                 "ScoutHang",
             ],
             resources: [
-                .process("Core/Persistence/ScoutModel.xcdatamodeld")
+                .process("Persistence/ScoutModel.xcdatamodeld")
+            ]
+        ),
+        .target(
+            name: "ScoutNative",
+            dependencies: [
+                "ScoutCore",
+                .product(name: "ScoutDB", package: "scout-db"),
+            ]
+        ),
+        .target(
+            name: "ScoutHosted",
+            dependencies: [
+                "ScoutCore"
+            ]
+        ),
+        .target(
+            name: "ScoutUI",
+            dependencies: [
+                "ScoutCore",
+                .product(name: "Logging", package: "swift-log"),
+            ]
+        ),
+        .target(
+            name: "Scout",
+            dependencies: [
+                "ScoutCore",
+                "ScoutNative",
+                "ScoutHosted",
+                "ScoutUI",
+            ]
+        ),
+        .target(
+            name: "ScoutTestSupport",
+            dependencies: [
+                "ScoutCore",
+                "ScoutNative",
+                "ScoutHosted",
+                .product(name: "ScoutDBTesting", package: "scout-db"),
+            ],
+            path: "Tests/ScoutTestSupport"
+        ),
+        .testTarget(
+            name: "ScoutCoreTests",
+            dependencies: [
+                "ScoutCore",
+                "ScoutTestSupport",
+                .product(name: "ScoutDBTesting", package: "scout-db"),
             ]
         ),
         .testTarget(
-            name: "ScoutTests",
+            name: "ScoutNativeTests",
             dependencies: [
-                "Scout",
+                "ScoutNative",
+                "ScoutTestSupport",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
+            ]
+        ),
+        .testTarget(
+            name: "ScoutHostedTests",
+            dependencies: [
+                "ScoutHosted",
+                "ScoutTestSupport",
+            ]
+        ),
+        .testTarget(
+            name: "ScoutUITests",
+            dependencies: [
+                "ScoutUI",
+                "ScoutHosted",
+                "ScoutNative",
+                "ScoutTestSupport",
             ]
         ),
         .testTarget(
             name: "ScoutSnapshotTests",
             dependencies: [
-                "Scout",
+                "ScoutUI",
+                "ScoutCore",
+                "ScoutTestSupport",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
         ),
