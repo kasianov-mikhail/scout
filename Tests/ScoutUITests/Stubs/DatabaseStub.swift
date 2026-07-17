@@ -82,7 +82,8 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     }
 
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
-        seriesChunk(matching: query)
+        await gate?.wait()
+        return seriesChunk(matching: query)
     }
 
     private func seriesChunk(matching query: SeriesQuery) -> [MetricSeries] {
