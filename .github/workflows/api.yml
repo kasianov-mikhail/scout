@@ -38,12 +38,14 @@ jobs:
       # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
       # only processed by the Xcode build system), so instead of
       # `swift package diagnose-api-breaking-changes` we build both versions
-      # with xcodebuild and compare swift-api-digester dumps. Building the Scout
-      # and ScoutCache products (not the *-Package scheme) covers every library
-      # module the package vends without also building the test targets.
+      # with xcodebuild and compare swift-api-digester dumps. Building each
+      # library product's own scheme (not the *-Package scheme) covers every
+      # library module the package vends without also building the test
+      # targets — Scout no longer re-exports the adapters transitively now
+      # that the umbrella target is gone, so each one needs its own build.
       - name: Dump current API
         run: |
-          for scheme in Scout ScoutCache; do
+          for scheme in Scout ScoutNative ScoutHosted ScoutUI ScoutCache; do
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
@@ -81,7 +83,10 @@ jobs:
           # The baseline resolves dependencies fresh (Package.resolved is not
           # committed), so a dependency release that breaks the old code makes
           # the baseline unbuildable. Nothing to compare against then — skip.
-          # ScoutCache may not exist on an older base; build it best-effort.
+          # ScoutNative/ScoutHosted/ScoutUI/ScoutCache may not exist as their
+          # own schemes on an older base (pre-split, or pre-umbrella-removal
+          # where Scout alone covered everything transitively); build them
+          # best-effort.
           if ! xcodebuild \
             -scheme Scout \
             -destination 'generic/platform=iOS Simulator' \
@@ -93,14 +98,16 @@ jobs:
             echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
             exit 0
           fi
-          xcodebuild \
-            -scheme ScoutCache \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath /tmp/dd-baseline \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -skipMacroValidation \
-            -quiet \
-            build || true
+          for scheme in ScoutNative ScoutHosted ScoutUI ScoutCache; do
+            xcodebuild \
+              -scheme "$scheme" \
+              -destination 'generic/platform=iOS Simulator' \
+              -derivedDataPath /tmp/dd-baseline \
+              -clonedSourcePackagesDirPath /tmp/spm \
+              -skipMacroValidation \
+              -quiet \
+              build || true
+          done
           "$GITHUB_WORKSPACE/.github/scripts/dump-api-set.sh" /tmp/dd-baseline /tmp/baseline.set
 
       - name: Compare
