@@ -8,7 +8,7 @@
 import Scout
 import SwiftUI
 
-struct AnchoredScroll<ID: Hashable>: ViewModifier {
+private struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let id: ID?
 
     /// The anchor's position in the list (rows above it).
