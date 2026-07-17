@@ -9,8 +9,8 @@ import Foundation
 import SwiftData
 import Testing
 
+@testable import Cache
 @testable import Scout
-@testable import ScoutCache
 
 struct CachedDatabaseTests {
     let lower = Date(timeIntervalSince1970: 0)

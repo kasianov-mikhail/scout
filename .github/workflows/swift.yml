@@ -63,7 +63,7 @@ jobs:
           # bare -downloadPlatform iOS only fetches the newest runtime. Pin an
           # exact version so the download step pulls each older runtime
           # explicitly. iOS 16 is the package's minimum deployment target.
-          # ScoutCacheTests links SwiftData (iOS 17+), so its bundle can't load
+          # CacheTests links SwiftData (iOS 17+), so its bundle can't load
           # on iOS 16; skip it there. The rest of the suites carry no SwiftData
           # and run, exercising the package's minimum deployment target.
           - os: macos-15
@@ -71,7 +71,7 @@ jobs:
             ios: 16
             runtime: "16.4"
             coverage: false
-            skipTesting: ScoutCacheTests
+            skipTesting: CacheTests
           - os: macos-15
             device: iPhone 15
             ios: 17

@@ -27,8 +27,8 @@ let package = Package(
             targets: ["ScoutUI"]
         ),
         .library(
-            name: "ScoutCache",
-            targets: ["ScoutCache"]
+            name: "Cache",
+            targets: ["Cache"]
         ),
     ],
     dependencies: [
@@ -76,7 +76,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "ScoutCache",
+            name: "Cache",
             dependencies: [
                 "Scout"
             ]
@@ -122,12 +122,12 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "ScoutCacheTests",
+            name: "CacheTests",
             dependencies: [
-                "ScoutCache",
+                "Cache",
                 "Scout",
             ],
-            // ScoutCache autolinks SwiftData (iOS 17+), so a bundle linking it fails
+            // Cache autolinks SwiftData (iOS 17+), so a bundle linking it fails
             // to load on the iOS 16 simulator. Weak-link the framework so the bundle
             // loads; the SwiftData suites are @available(iOS 17)-gated and skip there.
             linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
