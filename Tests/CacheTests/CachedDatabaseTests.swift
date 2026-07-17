@@ -178,6 +178,34 @@ struct CachedDatabaseTests {
     }
 
     @available(iOS 17, macOS 14, *)
+    @Test("A backend recreated with a rotated key resolves to the current database")
+    @MainActor
+    func rotatingKeyRebindsDatabase() throws {
+        let stale = SpyDatabase()
+        let rotated = SpyDatabase()
+
+        let first = DatabaseCacheRegistry.database(
+            for: Backend(
+                id: "https://example.com", database: stale, checkAvailability: { true }, displayName: "example")
+        )
+        let second = DatabaseCacheRegistry.database(
+            for: Backend(
+                id: "https://example.com", database: rotated, checkAvailability: { true }, displayName: "example")
+        )
+
+        #expect(spyBase(of: first) === stale)
+        #expect(spyBase(of: second) === rotated)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    private func spyBase(of database: any Database) -> SpyDatabase? {
+        if let cached = database as? CachedDatabase {
+            return cached.base as? SpyDatabase
+        }
+        return database as? SpyDatabase
+    }
+
+    @available(iOS 17, macOS 14, *)
     @Test("Lookups with different field sets are cached separately")
     func separatesLookupFields() async throws {
         let base = SpyDatabase()

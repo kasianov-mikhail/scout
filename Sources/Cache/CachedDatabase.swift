@@ -109,21 +109,11 @@ enum DatabaseCacheRegistry {
         case ready(any RecordCaching)
     }
 
-    private static var databases: [String: any Database] = [:]
     private static var state: CacheState = .unresolved
 
     static func database(for backend: Backend) -> any Database {
-        if let database = databases[backend.id] {
-            return database
-        }
-        let database: any Database =
-            if let cache = sharedCache() {
-                CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
-            } else {
-                backend.database
-            }
-        databases[backend.id] = database
-        return database
+        guard let cache = sharedCache() else { return backend.database }
+        return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
     }
 
     private static func sharedCache() -> (any RecordCaching)? {
