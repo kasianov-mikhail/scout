@@ -28,9 +28,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "Sources/Connectors/Hosted/**"
+      - "Sources/Scout/Connectors/Hosted/**"
       - "Sources/Scout/Database/**"
-      - "Tests/Connectors/Hosted/**"
+      - "Tests/ScoutTests/Connectors/Hosted/**"
       - ".github/workflows/server.yml"
   pull_request:
   repository_dispatch:

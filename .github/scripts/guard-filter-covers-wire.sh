@@ -13,7 +13,7 @@ escaped="$(
   {
     grep -rlE 'HTTPDatabase|HTTPQueryCoding|HTTPRecordCoding' Sources
     grep -rlE '(struct|enum|final class|class) +(RecordReader|RecordChunk|RecordCursor)\b' Sources
-  } | sort -u | grep -vE '^Sources/(Connectors/Hosted/|Scout/Database/)' || true
+  } | sort -u | grep -vE '^Sources/Scout/(Connectors/Hosted/|Database/)' || true
 )"
 if [ -n "$escaped" ]; then
   echo "::error::Wire-contract code lives outside the Server filter's watched paths; update the paths in this workflow to cover:"

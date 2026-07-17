@@ -49,6 +49,7 @@ let package = Package(
                 .product(name: "Metrics", package: "swift-metrics"),
                 "CScoutHang",
             ],
+            exclude: ["Connectors"],
             resources: [
                 .process("Persistence/ScoutModel.xcdatamodeld")
             ]
@@ -59,14 +60,14 @@ let package = Package(
                 "Scout",
                 .product(name: "ScoutDB", package: "scout-db"),
             ],
-            path: "Sources/Connectors/Native"
+            path: "Sources/Scout/Connectors/Native"
         ),
         .target(
             name: "HostedConnector",
             dependencies: [
                 "Scout"
             ],
-            path: "Sources/Connectors/Hosted"
+            path: "Sources/Scout/Connectors/Hosted"
         ),
         .target(
             name: "ScoutUI",
@@ -92,7 +93,8 @@ let package = Package(
             dependencies: [
                 "Scout",
                 "ScoutTestSupport",
-            ]
+            ],
+            exclude: ["Connectors"]
         ),
         .testTarget(
             name: "NativeConnectorTests",
@@ -101,7 +103,7 @@ let package = Package(
                 "ScoutTestSupport",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
             ],
-            path: "Tests/Connectors/Native"
+            path: "Tests/ScoutTests/Connectors/Native"
         ),
         .testTarget(
             name: "HostedConnectorTests",
@@ -109,7 +111,7 @@ let package = Package(
                 "HostedConnector",
                 "ScoutTestSupport",
             ],
-            path: "Tests/Connectors/Hosted"
+            path: "Tests/ScoutTests/Connectors/Hosted"
         ),
         .testTarget(
             name: "ScoutUITests",
