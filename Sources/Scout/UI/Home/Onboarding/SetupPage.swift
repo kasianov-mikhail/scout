@@ -49,7 +49,7 @@ struct SetupPage: View {
         var body: some View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
-                    Text("\(number)")
+                    Text(verbatim: "\(number)")
                         .font(.stepBadge)
                         .foregroundStyle(.white)
                         .frame(width: 22, height: 22)
