@@ -43,9 +43,15 @@ jobs:
         # conversion, and the Codecov upload cost minutes on every run. The
         # iOS 26 leg carries it because the snapshot suites only execute there.
         include:
-          # iOS 17 is not a built-in runtime on the macos-15 image, and a bare
-          # -downloadPlatform iOS only fetches the newest runtime. Pin an exact
-          # version so the download step pulls the iOS 17 runtime explicitly.
+          # iOS 16 and 17 are not built-in runtimes on the macos-15 image, and a
+          # bare -downloadPlatform iOS only fetches the newest runtime. Pin an
+          # exact version so the download step pulls each older runtime
+          # explicitly. iOS 16 is the package's minimum deployment target.
+          - os: macos-15
+            device: iPhone 14
+            ios: 16
+            runtime: "16.4"
+            coverage: false
           - os: macos-15
             device: iPhone 15
             ios: 17
