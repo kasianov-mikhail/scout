@@ -64,26 +64,49 @@ extension TimeInterval {
     /// - `47_304_000` -> `"1.5 y"`
     ///
     var duration: String {
-        switch self {
-        case 0:
-            "0"
-        case ..<0.001:
-            String(format: "%.0f µs", self * 1_000_000)
-        case ..<1:
-            String(format: "%.0f ms", self * 1_000)
-        case ..<(.minute):
-            String(format: "%.1f s", self)
-        case ..<(.hour):
-            String(format: "%d min %d s", Int(rounded()) / Int(.minute), Int(rounded()) % Int(.minute))
-        case ..<(.day):
-            String(format: "%.0f h", self / .hour)
-        case ..<(.month):
-            String(format: "%.0f d", self / .day)
-        case ..<(.year):
-            String(format: "%.0f mo", self / .month)
-        default:
-            String(format: "%.1f y", self / .year)
+        if self == 0 {
+            return "0"
         }
+        if self < 0.001 {
+            let microseconds = (self * 1_000_000).rounded()
+            if microseconds < 1_000 {
+                return String(format: "%.0f µs", microseconds)
+            }
+        }
+        if self < 1 {
+            let milliseconds = (self * 1_000).rounded()
+            if milliseconds < 1_000 {
+                return String(format: "%.0f ms", milliseconds)
+            }
+        }
+        if self < .minute {
+            let seconds = (self * 10).rounded() / 10
+            if seconds < .minute {
+                return String(format: "%.1f s", seconds)
+            }
+        }
+        if self < .hour {
+            let seconds = Int(rounded())
+            if seconds < Int(.hour) {
+                return String(format: "%d min %d s", seconds / Int(.minute), seconds % Int(.minute))
+            }
+        }
+        if self < .day {
+            let hours = (self / .hour).rounded()
+            if hours < .day / .hour {
+                return String(format: "%.0f h", hours)
+            }
+        }
+        if self < .month {
+            let days = (self / .day).rounded()
+            if days < .month / .day {
+                return String(format: "%.0f d", days)
+            }
+        }
+        if self < .year {
+            return String(format: "%.0f mo", (self / .month).rounded())
+        }
+        return String(format: "%.1f y", self / .year)
     }
 }
 
