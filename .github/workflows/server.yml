@@ -28,9 +28,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "Sources/Scout/Hosted/**"
-      - "Sources/Scout/Core/Database/**"
-      - "Tests/ScoutTests/Core/Backend/**"
+      - "Sources/ScoutHosted/**"
+      - "Sources/ScoutCore/Database/**"
+      - "Tests/ScoutHostedTests/**"
       - ".github/workflows/server.yml"
   pull_request:
   repository_dispatch:
@@ -112,7 +112,7 @@ jobs:
             -scheme Scout-Package \
             -destination 'platform=macOS' \
             -skipMacroValidation \
-            -only-testing:ScoutTests/ServerContractTests \
+            -only-testing:ScoutHostedTests/ServerContractTests \
             -resultBundlePath TestResults.xcresult \
             test
 

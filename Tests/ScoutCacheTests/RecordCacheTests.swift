@@ -9,8 +9,8 @@ import Foundation
 import SwiftData
 import Testing
 
-@testable import Scout
 @testable import ScoutCache
+@testable import ScoutCore
 
 @available(iOS 17, macOS 14, *)
 func makeRecordCache<Row: CacheRow>(_ row: Row.Type) throws -> RecordCache<Row> {

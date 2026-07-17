@@ -1,0 +1,59 @@
+//
+// Copyright 2024 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Charts
+import Foundation
+import ScoutCore
+
+typealias ChartNumeric = Plottable & MetricScalar
+
+struct ChartPoint<T: ChartNumeric>: ChartSeries {
+    let date: Date
+    let count: T
+}
+
+extension ChartPoint: Comparable {
+    static func < (lhs: ChartPoint, rhs: ChartPoint) -> Bool {
+        lhs.date < rhs.date
+    }
+}
+
+extension ChartPoint: Fixture where T == Int {
+    static var samples: [ChartPoint<Int>] {
+        let base = Calendar.utc.defaultRange.lowerBound
+        return (1...372).map { day in
+            ChartPoint(
+                date: base.addingTimeInterval(TimeInterval(day - 1) * .day + 12 * .hour),
+                count: 12 + day % 40 + (day / 9) % 18
+            )
+        }
+    }
+}
+
+extension ChartPoint {
+    static func + (lhs: ChartPoint, rhs: ChartPoint) -> ChartPoint {
+        ChartPoint(date: lhs.date, count: lhs.count + rhs.count)
+    }
+
+    static func += (lhs: inout ChartPoint, rhs: ChartPoint) {
+        lhs = lhs + rhs
+    }
+}
+
+extension [ChartPoint<Int>] {
+    static let empty: Self = []
+
+    static var sample: Self {
+        let end = Date()
+        return (0..<168).compactMap { i in
+            Calendar.utc.date(byAdding: .hour, value: -i, to: end).map {
+                ChartPoint(date: $0, count: .random(in: 0...20))
+            }
+        }
+        .sorted()
+    }
+}

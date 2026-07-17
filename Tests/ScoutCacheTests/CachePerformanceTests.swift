@@ -8,8 +8,8 @@
 import Foundation
 import XCTest
 
-@testable import Scout
 @testable import ScoutCache
+@testable import ScoutCore
 
 final class CachedMetricSeriesPerformanceTests: XCTestCase {
     func testSeriesMergePerformance() {

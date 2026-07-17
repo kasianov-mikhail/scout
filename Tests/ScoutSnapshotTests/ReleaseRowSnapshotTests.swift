@@ -10,7 +10,9 @@
     import SwiftUI
     import Testing
 
-    @testable import Scout
+    @testable import ScoutCore
+
+    @testable import ScoutUI
 
     @Suite(.enabled(if: ViewSnapshot.isSupported))
     @MainActor struct ReleaseRowSnapshotTests {

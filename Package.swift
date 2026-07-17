@@ -15,6 +15,22 @@ let package = Package(
             targets: ["Scout"]
         ),
         .library(
+            name: "ScoutCore",
+            targets: ["ScoutCore"]
+        ),
+        .library(
+            name: "ScoutNative",
+            targets: ["ScoutNative"]
+        ),
+        .library(
+            name: "ScoutHosted",
+            targets: ["ScoutHosted"]
+        ),
+        .library(
+            name: "ScoutUI",
+            targets: ["ScoutUI"]
+        ),
+        .library(
             name: "ScoutCache",
             targets: ["ScoutCache"]
         ),
@@ -31,42 +47,105 @@ let package = Package(
             name: "ScoutHang"
         ),
         .target(
-            name: "Scout",
+            name: "ScoutCore",
             dependencies: [
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Metrics", package: "swift-metrics"),
-                .product(name: "ScoutDB", package: "scout-db"),
                 "ScoutHang",
             ],
             resources: [
-                .process("Core/Persistence/ScoutModel.xcdatamodeld")
+                .process("Persistence/ScoutModel.xcdatamodeld")
+            ]
+        ),
+        .target(
+            name: "ScoutNative",
+            dependencies: [
+                "ScoutCore",
+                .product(name: "ScoutDB", package: "scout-db"),
+            ]
+        ),
+        .target(
+            name: "ScoutHosted",
+            dependencies: [
+                "ScoutCore"
+            ]
+        ),
+        .target(
+            name: "ScoutUI",
+            dependencies: [
+                "ScoutCore"
             ]
         ),
         .target(
             name: "ScoutCache",
             dependencies: [
-                "Scout"
+                "ScoutCore"
+            ]
+        ),
+        .target(
+            name: "Scout",
+            dependencies: [
+                "ScoutCore",
+                "ScoutNative",
+                "ScoutHosted",
+                "ScoutUI",
+            ]
+        ),
+        .target(
+            name: "ScoutTestSupport",
+            dependencies: [
+                "ScoutCore"
+            ],
+            path: "Tests/ScoutTestSupport"
+        ),
+        .testTarget(
+            name: "ScoutCoreTests",
+            dependencies: [
+                "ScoutCore",
+                "ScoutTestSupport",
             ]
         ),
         .testTarget(
-            name: "ScoutTests",
+            name: "ScoutNativeTests",
             dependencies: [
-                "Scout",
+                "ScoutNative",
+                "ScoutTestSupport",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
             ]
         ),
         .testTarget(
-            name: "ScoutSnapshotTests",
+            name: "ScoutHostedTests",
             dependencies: [
-                "Scout",
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
+                "ScoutHosted",
+                "ScoutTestSupport",
+            ]
+        ),
+        .testTarget(
+            name: "ScoutUITests",
+            dependencies: [
+                "ScoutUI",
+                "ScoutHosted",
+                "ScoutTestSupport",
             ]
         ),
         .testTarget(
             name: "ScoutCacheTests",
             dependencies: [
                 "ScoutCache",
-                "Scout",
+                "ScoutCore",
+            ],
+            // ScoutCache autolinks SwiftData (iOS 17+), so a bundle linking it fails
+            // to load on the iOS 16 simulator. Weak-link the framework so the bundle
+            // loads; the SwiftData suites are @available(iOS 17)-gated and skip there.
+            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
+        ),
+        .testTarget(
+            name: "ScoutSnapshotTests",
+            dependencies: [
+                "ScoutUI",
+                "ScoutCore",
+                "ScoutTestSupport",
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
         ),
     ]

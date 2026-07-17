@@ -38,40 +38,32 @@ jobs:
       # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
       # only processed by the Xcode build system), so instead of
       # `swift package diagnose-api-breaking-changes` we build both versions
-      # with xcodebuild and compare swift-api-digester dumps.
+      # with xcodebuild and compare swift-api-digester dumps. Building the Scout
+      # and ScoutCache products (not the *-Package scheme) covers every library
+      # module the package vends without also building the test targets.
       - name: Dump current API
         run: |
-          xcodebuild \
-            -scheme Scout \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath /tmp/dd-current \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -skipMacroValidation \
-            -quiet \
-            build
-          ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
-          # swift-api-digester loads the module through the Clang importer, which
-          # doesn't discover a Swift package's C-target module maps on its own —
-          # point it at the ones xcodebuild already generated for this build.
-          digester_flags=()
-          for modulemap in /tmp/dd-current/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/*.modulemap; do
-            [ -f "$modulemap" ] && digester_flags+=(-Xcc -fmodule-map-file="$modulemap")
+          for scheme in Scout ScoutCache; do
+            xcodebuild \
+              -scheme "$scheme" \
+              -destination 'generic/platform=iOS Simulator' \
+              -derivedDataPath /tmp/dd-current \
+              -clonedSourcePackagesDirPath /tmp/spm \
+              -skipMacroValidation \
+              -quiet \
+              build
           done
-          xcrun swift-api-digester -dump-sdk -module Scout -o /tmp/current.json \
-            -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
-            -target "arm64-apple-ios${ios}-simulator" \
-            -I /tmp/dd-current/Build/Products/Debug-iphonesimulator \
-            "${digester_flags[@]}"
+          .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
 
       # The baseline dump depends only on the base commit, which changes far
       # less often than the PR head: on a cache hit the whole baseline build
       # is skipped.
-      - name: Cache baseline API dump
+      - name: Cache baseline API set
         id: baseline-cache
         uses: actions/cache@v6
         with:
-          path: /tmp/baseline.json
-          key: api-baseline-${{ github.event.pull_request.base.sha }}
+          path: /tmp/baseline.set
+          key: api-baseline-set-${{ github.event.pull_request.base.sha }}
 
       - name: Dump baseline API
         if: steps.baseline-cache.outputs.cache-hit != 'true'
@@ -89,6 +81,7 @@ jobs:
           # The baseline resolves dependencies fresh (Package.resolved is not
           # committed), so a dependency release that breaks the old code makes
           # the baseline unbuildable. Nothing to compare against then — skip.
+          # ScoutCache may not exist on an older base; build it best-effort.
           if ! xcodebuild \
             -scheme Scout \
             -destination 'generic/platform=iOS Simulator' \
@@ -100,44 +93,43 @@ jobs:
             echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
             exit 0
           fi
-          ios=$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')
-          digester_flags=()
-          for modulemap in /tmp/dd-baseline/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/*.modulemap; do
-            [ -f "$modulemap" ] && digester_flags+=(-Xcc -fmodule-map-file="$modulemap")
-          done
-          xcrun swift-api-digester -dump-sdk -module Scout -o /tmp/baseline.json \
-            -sdk "$(xcrun --sdk iphonesimulator --show-sdk-path)" \
-            -target "arm64-apple-ios${ios}-simulator" \
-            -I /tmp/dd-baseline/Build/Products/Debug-iphonesimulator \
-            "${digester_flags[@]}"
+          xcodebuild \
+            -scheme ScoutCache \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath /tmp/dd-baseline \
+            -clonedSourcePackagesDirPath /tmp/spm \
+            -skipMacroValidation \
+            -quiet \
+            build || true
+          "$GITHUB_WORKSPACE/.github/scripts/dump-api-set.sh" /tmp/dd-baseline /tmp/baseline.set
 
       - name: Compare
         run: |
-          if [ ! -f /tmp/baseline.json ]; then
+          if [ ! -f /tmp/baseline.set ]; then
             exit 0
           fi
-          xcrun swift-api-digester -diagnose-sdk \
-            -input-paths /tmp/baseline.json -input-paths /tmp/current.json \
-            > /tmp/report.txt 2>&1
-          breakage=$(grep -v -e '^/\*' -e '^[[:space:]]*$' /tmp/report.txt || true)
-          if [ -z "$breakage" ]; then
-            echo "No public API changes against the base branch." >> "$GITHUB_STEP_SUMMARY"
+          # A symbol in the baseline set but not the current set is gone from
+          # every module — a real removal. Moves between modules stay in both
+          # sets (the sets are module-agnostic), so the split does not flag.
+          removed="$(comm -23 /tmp/baseline.set /tmp/current.set || true)"
+          if [ -z "$removed" ]; then
+            echo "No public or package API was removed against the base branch." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           {
-            echo "### Public API changes against the base branch"
+            echo "### API removed against the base branch"
             echo '```'
-            echo "$breakage"
+            echo "$removed"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "$breakage"
+          echo "$removed"
           if ${{ contains(github.event.pull_request.labels.*.name, 'api-breaking') }}; then
             echo
             echo "The api-breaking label is set, treating the break as intentional."
             exit 0
           fi
           echo
-          echo "This PR changes the public API of Scout: existing integrations may stop"
-          echo "compiling, which requires a major release. If the break is intentional,"
-          echo "add the api-breaking label to this PR to acknowledge it."
+          echo "This PR removes API that existing integrations may depend on, which"
+          echo "requires a major release. If the break is intentional, add the"
+          echo "api-breaking label to this PR to acknowledge it."
           exit 1

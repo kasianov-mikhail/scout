@@ -57,6 +57,7 @@
 ## Function and method signatures
 
 - Function/method **signatures** (declarations) should be written on a single line, even with many parameters or default values — do not wrap parameters onto separate lines.
+- Exception: when a single-line signature would exceed the 120-character `lineLength` limit in `.swift-format` (a CI lint gate, so the limit wins), let `swift-format` wrap it; don't fight the formatter.
 - This applies to declarations only, not to call sites: a function or initializer **call** with several arguments wraps each argument onto its own line.
 
 ## Array extensions

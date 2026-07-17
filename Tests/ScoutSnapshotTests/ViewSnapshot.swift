@@ -9,7 +9,9 @@
     import SnapshotTesting
     import SwiftUI
 
-    @testable import Scout
+    @testable import ScoutCore
+
+    @testable import ScoutUI
 
     enum ViewSnapshot {
         // Baselines are recorded on iOS 26, so other CI legs skip the snapshot suites
