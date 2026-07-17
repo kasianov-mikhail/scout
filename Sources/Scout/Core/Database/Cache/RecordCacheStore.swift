@@ -9,8 +9,39 @@ import Foundation
 import SwiftData
 
 @available(iOS 17, macOS 14, *)
+protocol CachedRecordModel: PersistentModel {
+    static var schemaVersion: Int { get }
+
+    var fingerprint: String { get }
+    var date: Date { get }
+    var payload: Data { get }
+
+    init(fingerprint: String, date: Date, payload: Data)
+}
+
+@available(iOS 17, macOS 14, *)
 @Model
-final class CachedRecord {
+final class CachedRecord: CachedRecordModel {
+    static let schemaVersion = 2
+
+    var fingerprint: String
+    var date: Date
+    var payload: Data
+
+    init(fingerprint: String, date: Date, payload: Data) {
+        self.fingerprint = fingerprint
+        self.date = date
+        self.payload = payload
+    }
+}
+
+@available(iOS 18, macOS 15, *)
+@Model
+final class IndexedCachedRecord: CachedRecordModel {
+    #Index<IndexedCachedRecord>([\.fingerprint, \.date])
+
+    static let schemaVersion = 3
+
     var fingerprint: String
     var date: Date
     var payload: Data
@@ -38,28 +69,34 @@ final class CachedSpan {
 
 @available(iOS 17, macOS 14, *)
 enum RecordCacheStore {
-    static let schemaVersion = 1
-
     private static let versionKey = "scout_record_cache_schema_version"
 
-    static func container() -> ModelContainer? {
+    static func cache() -> (any RecordCaching)? {
         let directory = URL.applicationSupportDirectory.appending(path: "Scout", directoryHint: .isDirectory)
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        return container(at: directory.appending(path: "RecordCache.store"), defaults: .standard)
+        let url = directory.appending(path: "RecordCache.store")
+        if #available(iOS 18, macOS 15, *) {
+            return cache(IndexedCachedRecord.self, at: url, defaults: .standard)
+        }
+        return cache(CachedRecord.self, at: url, defaults: .standard)
+    }
+
+    static func cache<Row: CachedRecordModel>(_ row: Row.Type, at url: URL, defaults: UserDefaults) -> RecordCache<Row>? {
+        container(for: row, at: url, defaults: defaults).map { RecordCache<Row>(modelContainer: $0) }
     }
 
     // The cache is disposable: any schema mismatch destroys the store instead of migrating.
-    static func container(at url: URL, defaults: UserDefaults) -> ModelContainer? {
-        if defaults.integer(forKey: versionKey) != schemaVersion {
+    static func container<Row: CachedRecordModel>(for row: Row.Type, at url: URL, defaults: UserDefaults) -> ModelContainer? {
+        if defaults.integer(forKey: versionKey) != Row.schemaVersion {
             destroyStore(at: url)
         }
-        if let container = openContainer(at: url) {
-            defaults.set(schemaVersion, forKey: versionKey)
+        if let container = openContainer(for: row, at: url) {
+            defaults.set(Row.schemaVersion, forKey: versionKey)
             return container
         }
         destroyStore(at: url)
-        guard let container = openContainer(at: url) else { return nil }
-        defaults.set(schemaVersion, forKey: versionKey)
+        guard let container = openContainer(for: row, at: url) else { return nil }
+        defaults.set(Row.schemaVersion, forKey: versionKey)
         return container
     }
 
@@ -69,8 +106,8 @@ enum RecordCacheStore {
         }
     }
 
-    private static func openContainer(at url: URL) -> ModelContainer? {
-        let schema = Schema([CachedRecord.self, CachedSpan.self])
+    private static func openContainer<Row: CachedRecordModel>(for row: Row.Type, at url: URL) -> ModelContainer? {
+        let schema = Schema([Row.self, CachedSpan.self])
         let configuration = ModelConfiguration(schema: schema, url: url)
         return try? ModelContainer(for: schema, configurations: [configuration])
     }

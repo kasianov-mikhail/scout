@@ -18,15 +18,17 @@ struct CachedDatabaseTests {
 
     @available(iOS 17, macOS 14, *)
     func makeDatabase(base: SpyDatabase) throws -> CachedDatabase {
-        let schema = Schema([CachedRecord.self, CachedSpan.self])
-        let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-        let container = try ModelContainer(for: schema, configurations: [configuration])
+        try makeDatabase(base: base, row: CachedRecord.self)
+    }
+
+    @available(iOS 17, macOS 14, *)
+    func makeDatabase<Row: CachedRecordModel>(base: SpyDatabase, row: Row.Type) throws -> CachedDatabase {
         let frozen = cutoff
 
         return CachedDatabase(
             base: base,
             scope: "test",
-            cache: RecordCache(modelContainer: container),
+            cache: try makeRecordCache(row),
             settledCutoff: { frozen }
         )
     }
@@ -118,6 +120,30 @@ struct CachedDatabaseTests {
         #expect(first.map(\.version) == ["1.2.0"])
         #expect(second.map(\.version) == ["1.2.0"])
         #expect(second.first?.points.map(\.value) == [.int(4)])
+    }
+
+    @available(iOS 18, macOS 15, *)
+    @Test("A repeated series request hits the indexed cache")
+    func seriesRoundTripsThroughIndexedRows() async throws {
+        let base = SpyDatabase()
+        let database = try makeDatabase(base: base, row: IndexedCachedRecord.self)
+        base.series = [
+            MetricSeries(
+                name: "2xx",
+                category: "http_status",
+                points: [
+                    MetricSeriesPoint(date: 1_000_000_000, value: .int(4)),
+                    MetricSeriesPoint(date: 3_500_000_000, value: .int(7)),
+                ]
+            )
+        ]
+
+        let first = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
+        let second = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
+
+        #expect(base.seriesRanges == [lower..<upper, cutoff..<upper])
+        #expect(second.first?.points.map(\.date) == first.first?.points.map(\.date))
+        #expect(second.first?.points.map(\.value) == [.int(4), .int(7)])
     }
 
     @available(iOS 17, macOS 14, *)
