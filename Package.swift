@@ -17,7 +17,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
-        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0" ..< "3.0.0"),
+        .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0"..<"3.0.0"),
         .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.10.0"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin.git", from: "1.4.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.0"),
@@ -43,14 +43,20 @@ let package = Package(
             dependencies: [
                 "Scout",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
-            ]
+            ],
+            // Scout autolinks SwiftData (iOS 17+), so a bundle linking it fails
+            // to load on the iOS 16 simulator. Weak-link the framework so the
+            // bundle loads; the SwiftData suites are @available(iOS 17)-gated
+            // and skip there. Only the test target is tainted, not the product.
+            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
         ),
         .testTarget(
             name: "ScoutSnapshotTests",
             dependencies: [
                 "Scout",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ]
+            ],
+            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
         ),
     ]
 )
