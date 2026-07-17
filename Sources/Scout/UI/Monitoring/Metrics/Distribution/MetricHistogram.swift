@@ -10,11 +10,27 @@ import Foundation
 
 protocol MetricHistogram {
     init()
-    mutating func add(count: Int, at index: Int)
+    var counts: [Int] { get set }
+    static var bucketCount: Int { get }
     static func bucketIndex(of category: String) -> Int?
 }
 
 extension MetricHistogram {
+    var total: Int {
+        counts.reduce(0, +)
+    }
+
+    mutating func add(count: Int, at index: Int) {
+        guard counts.indices.contains(index) else { return }
+        counts[index] += count
+    }
+
+    static func + (lhs: Self, rhs: Self) -> Self {
+        var sum = Self()
+        sum.counts = zip(lhs.counts, rhs.counts).map(+)
+        return sum
+    }
+
     static func buckets(from series: [MetricSeries]) -> [Date: Self] {
         var result: [Date: Self] = [:]
 

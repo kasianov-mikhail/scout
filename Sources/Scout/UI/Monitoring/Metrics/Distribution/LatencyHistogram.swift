@@ -9,25 +9,12 @@
 import Foundation
 
 struct LatencyHistogram: Equatable {
-    private(set) var counts: [Int]
+    var counts: [Int]
+
+    static let bucketCount = LatencyBuckets.categories.count
 
     init() {
-        counts = Array(repeating: 0, count: LatencyBuckets.categories.count)
-    }
-
-    var total: Int {
-        counts.reduce(0, +)
-    }
-
-    mutating func add(count: Int, at index: Int) {
-        guard counts.indices.contains(index) else { return }
-        counts[index] += count
-    }
-
-    static func + (lhs: LatencyHistogram, rhs: LatencyHistogram) -> LatencyHistogram {
-        var sum = LatencyHistogram()
-        sum.counts = zip(lhs.counts, rhs.counts).map(+)
-        return sum
+        counts = Array(repeating: 0, count: Self.bucketCount)
     }
 
     func percentile(_ quantile: Double) -> TimeInterval? {
