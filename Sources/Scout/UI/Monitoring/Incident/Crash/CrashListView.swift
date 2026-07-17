@@ -45,24 +45,7 @@ struct CrashListView: View {
     }
 
     private func row(for group: IncidentGroup<Crash>) -> some View {
-        Row {
-            Text(group.name)
-                .font(.body)
-                .lineLimit(1)
-                .monospaced()
-
-            if group.count > 1 {
-                CountBadge(count: group.count, prefix: "×")
-            }
-
-            Spacer()
-
-            if let date = group.lastDate {
-                Text(verbatim: date.relativeString)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.gray)
-            }
-        } destination: {
+        IncidentRow(group: group) { group in
             CrashGroupDetailView(group: group)
         }
     }

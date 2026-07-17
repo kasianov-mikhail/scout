@@ -11,28 +11,10 @@ struct HangRow: View {
     let group: IncidentGroup<Hang>
 
     var body: some View {
-        Row {
-            Image(systemName: group.severity.systemImage)
-                .frame(width: 20)
-                .foregroundStyle(group.severity.color)
-
-            Text(group.name)
-                .font(.body)
-                .lineLimit(1)
-                .monospaced()
-
-            if group.count > 1 {
-                CountBadge(count: group.count, prefix: "×", color: group.severity.color)
-            }
-
-            Spacer()
-
-            if let date = group.lastDate {
-                Text(verbatim: date.relativeString)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.gray)
-            }
-        } destination: {
+        IncidentRow(
+            group: group,
+            accent: (group.severity.systemImage, group.severity.color)
+        ) { group in
             HangGroupDetailView(group: group)
         }
     }
