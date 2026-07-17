@@ -12,7 +12,7 @@ import Testing
 
 @testable import NativeConnector
 @testable import Scout
-@testable import ScoutTestSupport
+@testable import Support
 
 @Suite("NativeDatabase")
 struct NativeDatabaseTests {

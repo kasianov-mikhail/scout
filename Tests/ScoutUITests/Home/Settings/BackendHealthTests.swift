@@ -11,8 +11,8 @@ import HostedConnector
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 @Suite("BackendHealth")
 struct BackendHealthTests {

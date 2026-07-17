@@ -10,7 +10,7 @@ import Logging
 import Testing
 
 @testable import Scout
-@testable import ScoutTestSupport
+@testable import Support
 
 private func makeEvent(
     _ message: String, level: Logger.Level = .info, metadata: Logger.Metadata? = nil

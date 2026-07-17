@@ -8,8 +8,8 @@
 import Foundation
 
 @testable import Scout
-@testable import ScoutTestSupport
 @testable import ScoutUI
+@testable import Support
 
 /// In-memory `DatabaseReader` for timeline tests.
 ///
