@@ -47,13 +47,8 @@ struct ErrorView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
     private func retryControl(_ retry: @escaping () async -> Void) -> some View {
-        if isRetrying {
-            RingIndicator(size: 22)
-                .frame(maxWidth: .infinity)
-                .padding(10)
-        } else {
+        ZStack {
             Button {
                 isRetrying = true
                 Task {
@@ -64,6 +59,12 @@ struct ErrorView: View {
                 Text(verbatim: "Retry")
             }
             .buttonStyle(.pill)
+            .opacity(isRetrying ? 0 : 1)
+            .disabled(isRetrying)
+
+            if isRetrying {
+                RingIndicator(size: 22)
+            }
         }
     }
 }

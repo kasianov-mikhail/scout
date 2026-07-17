@@ -139,7 +139,11 @@ let package = Package(
             dependencies: [
                 "ScoutCache",
                 "ScoutCore",
-            ]
+            ],
+            // ScoutCache autolinks SwiftData (iOS 17+), so a bundle linking it fails
+            // to load on the iOS 16 simulator. Weak-link the framework so the bundle
+            // loads; the SwiftData suites are @available(iOS 17)-gated and skip there.
+            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
         ),
         .testTarget(
             name: "ScoutSnapshotTests",

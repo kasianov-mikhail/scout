@@ -66,43 +66,16 @@ jobs:
           fetch-depth: 0
           filter: blob:none
 
-      # Tripwire against filter drift. The path filter below duplicates the
-      # knowledge of where the wire code lives, so a future move out of the
-      # watched directories would silently stop triggering `contract` while the
-      # gate stays green. Symbol names outlive folder layout, so assert the wire
-      # code still sits under a watched root and fail loudly (red PR) when it
-      # escapes — that is the signal to widen the filter. The HTTP* coders are
-      # wire-specific, so any mention pins them down; the Record pagination types
-      # are shared infra used all over the app, so only their definition sites
-      # matter (their use sites legitimately live outside the watched roots).
+      # Tripwire against filter drift — see the script header for the rationale.
       - name: Guard the filter covers the wire code
-        run: |
-          escaped="$(
-            {
-              grep -rlE 'HTTPDatabase|HTTPQueryCoding|HTTPRecordCoding' Sources
-              grep -rlE '(struct|enum|final class|class) +(RecordReader|RecordChunk|RecordCursor)\b' Sources
-            } | sort -u | grep -vE '^Sources/Scout/(Hosted/|Core/Database/)' || true
-          )"
-          if [ -n "$escaped" ]; then
-            echo "::error::Wire-contract code lives outside the Server filter's watched paths; update the paths in this workflow to cover:"
-            echo "$escaped"
-            exit 1
-          fi
+        run: .github/scripts/guard-filter-covers-wire.sh
 
       - name: Detect wire-surface changes
         id: filter
-        run: |
-          if [ "${{ github.event_name }}" != "pull_request" ]; then
-            echo "backend=true" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          base="${{ github.event.pull_request.base.sha }}"
-          if git diff --name-only "$base"...HEAD \
-            | grep -qE '^(Sources/Scout/Hosted/|Sources/Scout/Core/Database/|Tests/ScoutTests/Core/Backend/|\.github/workflows/server\.yml$)'; then
-            echo "backend=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "backend=false" >> "$GITHUB_OUTPUT"
-          fi
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: .github/scripts/detect-wire-changes.sh
 
   contract:
     needs: changes
@@ -118,39 +91,11 @@ jobs:
           repository: kasianov-mikhail/scout-server
           path: scout-server
 
-      # The server's default Fluent config: user scout, password scout,
-      # database scout on localhost:5432.
       - name: Start PostgreSQL
-        run: |
-          brew install postgresql@17
-          pgbin="$(brew --prefix postgresql@17)/bin"
-          brew services start postgresql@17
-          for _ in $(seq 1 30); do
-            if "$pgbin/pg_isready" -q -h 127.0.0.1; then
-              break
-            fi
-            sleep 1
-          done
-          if ! "$pgbin/pg_isready" -q -h 127.0.0.1; then
-            echo "PostgreSQL did not become ready on 127.0.0.1:5432"
-            exit 1
-          fi
-          "$pgbin/psql" -h 127.0.0.1 -d postgres -c "CREATE ROLE scout LOGIN PASSWORD 'scout'"
-          "$pgbin/createdb" -h 127.0.0.1 -O scout scout
+        run: .github/scripts/start-postgres.sh
 
       - name: Start scout-server
-        working-directory: scout-server
-        run: |
-          swift build
-          nohup swift run --skip-build > server.log 2>&1 &
-          for _ in $(seq 1 60); do
-            if curl -fs -o /dev/null http://127.0.0.1:8080/healthz; then
-              exit 0
-            fi
-            sleep 1
-          done
-          echo "scout-server did not come up on port 8080"
-          exit 1
+        run: .github/scripts/start-scout-server.sh
 
       # The contract is platform-independent, so the tests run on the macOS
       # destination — no simulator needed. xcodebuild forwards only variables
@@ -164,35 +109,16 @@ jobs:
           TEST_RUNNER_SCOUT_SERVER_URL: http://127.0.0.1:8080
         run: |
           xcodebuild \
-            -scheme Scout \
+            -scheme Scout-Package \
             -destination 'platform=macOS' \
             -skipMacroValidation \
             -only-testing:ScoutTests/ServerContractTests \
             -resultBundlePath TestResults.xcresult \
             test
 
-      # The suite is skipped unless SCOUT_SERVER_URL reaches the test process,
-      # so a broken env hand-off (or an -only-testing identifier that matches
-      # nothing) would skip every test while xcodebuild still exits 0. Fail
-      # loudly when nothing actually ran rather than report a green that tested
-      # nothing.
+      # Fail loudly when the suite skipped everything — see the script header.
       - name: Verify the contract suite ran
-        run: |
-          summary="$(xcrun xcresulttool get test-results summary \
-            --path TestResults.xcresult --compact)"
-          # `0 passed` is a real count (jq's // keeps it); only a missing field
-          # yields empty, in which case the schema changed — warn, don't block.
-          passed="$(echo "$summary" | jq '.passedTests // empty')"
-          if [ -z "$passed" ]; then
-            echo "::warning::Could not read passedTests from the result bundle; skipping the ran-something check."
-            echo "$summary" | head -c 2000
-            exit 0
-          fi
-          echo "Contract tests passed: $passed"
-          if [ "$passed" -lt 1 ]; then
-            echo "::error::No contract tests executed — the suite skipped (SCOUT_SERVER_URL likely never reached the test process) or matched nothing."
-            exit 1
-          fi
+        run: .github/scripts/verify-contract-ran.sh
 
       - name: Dump server log
         if: failure()

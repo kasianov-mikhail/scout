@@ -22,10 +22,24 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Lint
-        run: xcrun swift-format lint --strict --recursive Sources Tests
+        run: |
+          if ! xcrun swift-format lint --strict --recursive Sources Tests; then
+            fix="xcrun swift-format format --in-place --recursive Sources Tests"
+            echo "::error::swift-format found formatting issues. Fix them locally with: $fix"
+            {
+              echo "### swift-format failed"
+              echo "Run this locally and commit the result:"
+              echo '```'
+              echo "$fix"
+              echo '```'
+              echo "Tip: install the pre-commit hook so this is applied automatically on every commit."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
 
   tests:
     name: test-ios-${{ matrix.ios }}
+    needs: lint
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 
@@ -34,15 +48,35 @@ jobs:
       id-token: write
 
     strategy:
-      # The xcode-27 leg runs a public-preview image; keep a failure there from
-      # cancelling the stable legs, whose checks are required on main.
-      fail-fast: false
+      # A failure in any leg cancels the remaining in-progress legs, including
+      # the stable iOS 18 / iOS 26 legs whose checks are required on main. Note
+      # this also lets a flake on the xcode-27 public-preview image tear down the
+      # whole run.
+      fail-fast: true
       matrix:
         # Coverage is collected on one leg only: the reports differ between
         # legs by fractions of a percent, and instrumentation, xcresult
         # conversion, and the Codecov upload cost minutes on every run. The
         # iOS 26 leg carries it because the snapshot suites only execute there.
         include:
+          # iOS 16 and 17 are not built-in runtimes on the macos-15 image, and a
+          # bare -downloadPlatform iOS only fetches the newest runtime. Pin an
+          # exact version so the download step pulls each older runtime
+          # explicitly. iOS 16 is the package's minimum deployment target.
+          # ScoutCacheTests links SwiftData (iOS 17+), so its bundle can't load
+          # on iOS 16; skip it there. The rest of the suites carry no SwiftData
+          # and run, exercising the package's minimum deployment target.
+          - os: macos-15
+            device: iPhone 14
+            ios: 16
+            runtime: "16.4"
+            coverage: false
+            skipTesting: ScoutCacheTests
+          - os: macos-15
+            device: iPhone 15
+            ios: 17
+            runtime: "17.5"
+            coverage: false
           - os: macos-15
             device: iPhone 16
             ios: 18
@@ -71,7 +105,11 @@ jobs:
         id: sim
         run: |
           if ! xcrun simctl list runtimes | grep -q "^iOS ${{ matrix.ios }}\."; then
-            xcodebuild -downloadPlatform iOS
+            if [ -n "${{ matrix.runtime }}" ]; then
+              xcodebuild -downloadPlatform iOS -buildVersion "${{ matrix.runtime }}"
+            else
+              xcodebuild -downloadPlatform iOS
+            fi
           fi
           runtime=$(xcrun simctl list runtimes --json \
             | jq -r '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ matrix.ios }}."))) | .identifier' \
@@ -103,7 +141,7 @@ jobs:
       - name: Build
         run: |
           xcodebuild \
-            -scheme Scout \
+            -scheme Scout-Package \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
@@ -113,9 +151,10 @@ jobs:
       - name: Test
         run: |
           xcodebuild \
-            -scheme Scout \
+            -scheme Scout-Package \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
+            ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
             -resultBundlePath TestResults.xcresult \
             test-without-building
 
