@@ -21,11 +21,11 @@ struct StatView: View {
             PeriodPicker(extent: $extent, periods: stat.periods)
 
             ProviderView(provider: stat) { points in
+                let segment = extent.segment(from: points)
+
                 RangeControl(extent: $extent)
 
                 List {
-                    let segment = extent.segment(from: points)
-
                     ComparableChart(
                         segment: segment, points: points, extent: extent, color: color, isComparing: isComparing
                     )
@@ -61,7 +61,7 @@ struct StatView: View {
                         ChartExportButton(
                             title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)
                         ) {
-                            ChartView(segment: extent.segment(from: points), timing: extent)
+                            ChartView(segment: segment, timing: extent)
                                 .foregroundStyle(color)
                         }
                     }
