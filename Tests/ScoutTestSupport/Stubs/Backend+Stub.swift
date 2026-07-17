@@ -7,7 +7,7 @@
 
 import Foundation
 
-@testable import ScoutCore
+@testable import Scout
 
 /// A minimal backend identified only by `id`, for tests that exercise backend-set membership (e.g. `cleanup`) without driving real delivery.
 func makeBackend(id: String) -> Backend {

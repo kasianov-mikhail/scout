@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 private let categories = Set(MetricsList.Scope.allCases.map(\.telemetry.rawValue))
 

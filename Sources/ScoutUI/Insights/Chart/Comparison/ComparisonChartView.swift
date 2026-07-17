@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import ScoutCore
+import Scout
 import SwiftUI
 
 /// A bar chart of the current period with the previous period's per-bucket

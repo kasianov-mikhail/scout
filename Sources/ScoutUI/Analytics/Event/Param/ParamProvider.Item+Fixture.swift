@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension ParamProvider.Item {
     /// An in-app purchase where every value is a typed scalar.

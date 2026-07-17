@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension TimelineItem {
     static func items(from rail: Rail) -> [TimelineItem] {

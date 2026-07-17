@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 import ScoutDB
 
-extension ScoutCore.RecordValue {
+extension Scout.RecordValue {
     var storeValue: ScoutDB.RecordValue {
         switch self {
         case .string(let value):

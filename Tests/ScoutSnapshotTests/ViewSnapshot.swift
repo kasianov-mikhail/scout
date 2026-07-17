@@ -9,7 +9,7 @@
     import SnapshotTesting
     import SwiftUI
 
-    @testable import ScoutCore
+    @testable import Scout
 
     @testable import ScoutUI
 

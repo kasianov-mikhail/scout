@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 // A fresh identity minted on each reload or lane reset. An in-flight async
 // step snapshots the current epoch, then compares its snapshot against the

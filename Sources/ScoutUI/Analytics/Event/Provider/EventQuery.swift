@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct EventQuery: Equatable {
     private static let allLevels = Set(EventLevel.allCases)

@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 let rangeDateFormatter: DateFormatter = {
     let formatter = DateFormatter()

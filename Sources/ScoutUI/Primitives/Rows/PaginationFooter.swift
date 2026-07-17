@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import ScoutCore
+import Scout
 import SwiftUI
 
 /// A list footer that loads the next page when it appears.

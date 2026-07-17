@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension HTTPDatabase: DatabaseWriter {
     func write(record: Record) async throws {

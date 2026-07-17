@@ -7,7 +7,7 @@
 
 import Foundation
 
-@testable import ScoutCore
+@testable import Scout
 
 extension [Record] {
     func count(of recordType: String) -> Int {

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct NetworkReport {
     let distributions: [String: TimerDistribution]

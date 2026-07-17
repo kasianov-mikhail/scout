@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 @MainActor
 class NetworkProvider: ObservableObject, Provider {

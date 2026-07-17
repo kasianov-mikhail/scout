@@ -8,7 +8,7 @@
 import CoreData
 import Testing
 
-@testable import ScoutCore
+@testable import Scout
 
 final class InMemoryContainer: NSPersistentContainer, @unchecked Sendable {
     private let injectedError: Error

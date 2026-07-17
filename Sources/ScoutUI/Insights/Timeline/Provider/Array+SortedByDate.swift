@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Array {
     func sorted(byDate keyPath: KeyPath<Element, Date?>, ascending: Bool = true) -> [Element] {

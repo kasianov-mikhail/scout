@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension HTTPDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {

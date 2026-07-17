@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 class TimerDistributionProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<TimerDistribution>?

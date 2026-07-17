@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 enum Period: String, CaseIterable, Identifiable {
     static let summary = [Period.week, .month, .year]

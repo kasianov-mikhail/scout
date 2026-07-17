@@ -10,7 +10,7 @@ import ScoutDB
 import ScoutDBTesting
 import Testing
 
-@testable import ScoutCore
+@testable import Scout
 @testable import ScoutNative
 @testable import ScoutTestSupport
 

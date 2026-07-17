@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 /// Builds the Markdown document exported by the timeline's share and copy actions.
 ///

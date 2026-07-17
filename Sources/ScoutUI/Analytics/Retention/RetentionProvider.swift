@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 class RetentionProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[RetentionCohort]>?

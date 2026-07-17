@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import ScoutCore
+import Scout
 import SwiftUI
 
 struct HangRow: View {

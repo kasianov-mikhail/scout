@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Session {
     static func fetchChunk(installIDs: [UUID], anchor: Date?, ascending: Bool, limit: Int, in database: DatabaseReader)

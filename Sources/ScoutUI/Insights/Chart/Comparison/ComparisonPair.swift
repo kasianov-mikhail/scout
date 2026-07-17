@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 /// One bucket of the comparison: the current value and the previous-period
 /// value it is compared against, both on the current bucket's date.

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import ScoutCore
+import Scout
 
 struct TimerDistribution: Equatable {
     let histograms: [Date: LatencyHistogram]

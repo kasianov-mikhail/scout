@@ -9,7 +9,7 @@
 import SwiftUI
 import Testing
 
-@testable import ScoutCore
+@testable import Scout
 @testable import ScoutUI
 
 @MainActor

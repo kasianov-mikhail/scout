@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 /// A named group of chart points used by collection helpers for
 /// operations such as lookup by name, per-period filtering, and ranking.

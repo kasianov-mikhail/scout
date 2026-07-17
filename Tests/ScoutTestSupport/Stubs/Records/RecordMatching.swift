@@ -7,7 +7,7 @@
 
 import Foundation
 
-@testable import ScoutCore
+@testable import Scout
 
 /// In-memory evaluation of a neutral ``RecordQuery`` against a ``Record`` —
 /// the stub counterpart of a backend running the query for real. Mirrors the

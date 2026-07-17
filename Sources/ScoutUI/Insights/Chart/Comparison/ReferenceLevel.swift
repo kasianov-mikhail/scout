@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Charts
-import ScoutCore
+import Scout
 import SwiftUI
 
 /// Bar-aligned geometry of one bucket's reference level, in overlay

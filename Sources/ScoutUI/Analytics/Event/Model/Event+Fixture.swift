@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Event: Fixture {
     static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Event {

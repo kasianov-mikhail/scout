@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 import ScoutDB
 
 // Slot assignment follows declaration order, so the field lists below are part

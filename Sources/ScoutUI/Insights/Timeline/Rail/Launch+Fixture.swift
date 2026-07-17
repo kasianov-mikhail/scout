@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 extension Launch: Fixture {
     static func sample(minutesAgo: Double = 0, launchID: UUID = UUID(), installID: UUID = UUID(), ongoing: Bool = false)

@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import ScoutCore
+import Scout
 
 protocol ChartTimeScale: Identifiable, Hashable {
     var rangeComponent: Calendar.Component { get }
