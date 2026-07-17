@@ -36,6 +36,8 @@ struct ChartView<T: ChartNumeric>: View {
         .padding()
         .padding(.bottom)
         .listRowInsets(EdgeInsets())
+        .environment(\.calendar, .utc)
+        .environment(\.timeZone, Calendar.utc.timeZone)
     }
 }
 

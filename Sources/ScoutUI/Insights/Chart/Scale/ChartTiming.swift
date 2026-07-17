@@ -15,12 +15,14 @@ protocol ChartTiming {
 
 /// The time slot a bucket occupies on the x axis.
 ///
-/// `BarMark` bins dates with the local calendar, so charts derive their bar
-/// slots, domains, and ticks from the same bins to stay pixel-aligned with
-/// the binned marks.
+/// Series data is UTC-bucketed and the axis labels are formatted in UTC, so
+/// bar slots, domains, and ticks are derived with `Calendar.utc` to name the
+/// right bucket in any time zone. The chart views set the same UTC calendar
+/// and time zone in their environment so `BarMark`'s own unit-binning agrees
+/// and the marks stay pixel-aligned with these bins.
 ///
 func binRange(of date: Date, unit: Calendar.Component) -> Range<Date> {
-    let interval = Calendar.autoupdatingCurrent.dateInterval(of: unit, for: date)!
+    let interval = Calendar.utc.dateInterval(of: unit, for: date)!
     return interval.start..<interval.end
 }
 
