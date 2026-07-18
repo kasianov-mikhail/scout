@@ -148,7 +148,7 @@ extension NativeDatabase {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         await registration.value
 
-        let installs = try await store.read(
+        async let installs = store.read(
             entity: InstallEntry.recordType,
             filters: [
                 EntityStore.Filter(field: "date", op: .greaterThanOrEquals, value: .date(range.lowerBound)),
@@ -157,14 +157,7 @@ extension NativeDatabase {
             fields: ["date", "install_id"]
         )
 
-        var installDays: [String: Date] = [:]
-        for record in installs {
-            guard case .date(let date)? = record.values["date"] else { continue }
-            guard case .string(let install)? = record.values["install_id"] else { continue }
-            installDays[install] = date
-        }
-
-        let sessions = try await store.read(
+        async let sessions = store.read(
             entity: SessionEntry.recordType,
             filters: [
                 EntityStore.Filter(field: "start_date", op: .greaterThanOrEquals, value: .date(range.lowerBound)),
@@ -173,8 +166,15 @@ extension NativeDatabase {
             fields: ["start_date", "install_id"]
         )
 
+        var installDays: [String: Date] = [:]
+        for record in try await installs {
+            guard case .date(let date)? = record.values["date"] else { continue }
+            guard case .string(let install)? = record.values["install_id"] else { continue }
+            installDays[install] = date
+        }
+
         var sessionDays: [String: Set<Date>] = [:]
-        for record in sessions {
+        for record in try await sessions {
             guard case .date(let date)? = record.values["start_date"] else { continue }
             guard case .string(let install)? = record.values["install_id"] else { continue }
             sessionDays[install, default: []].insert(date.startOfDay)
