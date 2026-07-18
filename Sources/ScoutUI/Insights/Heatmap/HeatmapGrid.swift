@@ -21,9 +21,8 @@ struct HeatmapGrid {
         var counts = [[Int]](repeating: [Int](repeating: 0, count: 24), count: 7)
 
         for point in points where range.contains(point.date) {
-            let weekday = calendar.component(.weekday, from: point.date)
             let hour = calendar.component(.hour, from: point.date)
-            counts[(weekday + 5) % 7][hour] += point.count
+            counts[calendar.mondayBasedWeekday(from: point.date)][hour] += point.count
         }
 
         self.init(counts: counts)

@@ -18,14 +18,13 @@ struct HostedQueryEncodingTests {
     private let database = HTTPDatabase(url: URL(string: "https://example.com/")!, apiKey: nil)
     private let day = Date(timeIntervalSince1970: 1_750_000_000).startOfDay
 
-    @Test("The series name, category, and values parameters are percent-encoded")
+    @Test("The series name and category parameters are percent-encoded")
     func seriesParametersAreEncoded() throws {
         let url = try #require(
             database.seriesEndpoint(
                 for: SeriesQuery(
                     name: "Save & Exit",
-                    category: "a=b/c?d",
-                    values: "int+long",
+                    category: "a=b/c?d+e",
                     range: day..<day.addingDay()
                 )
             )
@@ -33,13 +32,28 @@ struct HostedQueryEncodingTests {
         let items = queryItems(of: url)
 
         #expect(items["name"] == "Save & Exit")
-        #expect(items["category"] == "a=b/c?d")
-        #expect(items["values"] == "int+long")
+        #expect(items["category"] == "a=b/c?d+e")
 
         // URLComponents decodes reserved delimiters but reads a literal `+` as
         // itself, so assert on the raw encoding to guard against a server that
         // form-decodes `+` into a space.
-        #expect(try rawQuery(of: url).contains("int%2Blong"))
+        #expect(try rawQuery(of: url).contains("%2B"))
+    }
+
+    @Test(
+        "The values parameter emits the raw wire strings int and double",
+        arguments: [
+            (SeriesQuery.Values.int, "int"),
+            (SeriesQuery.Values.double, "double"),
+        ])
+    func valuesEmitsWireString(_ values: SeriesQuery.Values, _ expected: String) throws {
+        let url = try #require(
+            database.seriesEndpoint(for: SeriesQuery(values: values, range: day..<day.addingDay()))
+        )
+
+        #expect(values.rawValue == expected)
+        #expect(SeriesQuery.Values(rawValue: expected) == values)
+        #expect(queryItems(of: url)["values"] == expected)
     }
 
     @Test("The lookup field list is percent-encoded")

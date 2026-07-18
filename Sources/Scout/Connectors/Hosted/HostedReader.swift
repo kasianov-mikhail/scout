@@ -32,12 +32,16 @@ extension HTTPDatabase: DatabaseReader {
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        guard let endpoint = recordEndpoint(recordName: recordName, fields: fields) else {
-            throw HTTPDatabaseError(status: 0, reason: "Malformed record URL")
-        }
+        let endpoint = recordEndpoint(recordName: recordName, fields: fields)
+        return try await get(from: endpoint, reason: "Malformed record URL", as: HTTPRecord.self).toRecord()
+    }
 
+    private func get<T: Decodable>(from endpoint: URL?, reason: String, as type: T.Type) async throws -> T {
+        guard let endpoint else {
+            throw HTTPDatabaseError(status: 0, reason: reason)
+        }
         let data = try await perform(request(for: endpoint, method: "GET"))
-        return try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord()
+        return try JSONDecoder().decode(T.self, from: data)
     }
 
     func recordEndpoint(recordName: String, fields: [String]?) -> URL? {
@@ -52,12 +56,8 @@ extension HTTPDatabase: DatabaseReader {
     }
 
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
-        guard let endpoint = seriesEndpoint(for: query) else {
-            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
-        }
-
-        let data = try await perform(request(for: endpoint, method: "GET"))
-        return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
+        try await get(from: seriesEndpoint(for: query), reason: "Malformed metrics URL", as: MetricSeriesResponse.self)
+            .series
     }
 
     func seriesEndpoint(for query: SeriesQuery) -> URL? {
@@ -73,7 +73,7 @@ extension HTTPDatabase: DatabaseReader {
             params.append("category=\(Self.encode(category))")
         }
         if let values = query.values {
-            params.append("values=\(Self.encode(values))")
+            params.append("values=\(Self.encode(values.rawValue))")
         }
         if query.byVersion {
             params.append("by=version")
@@ -95,13 +95,8 @@ extension HTTPDatabase: DatabaseReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         let from = range.lowerBound.millisecondsSince1970
         let to = range.upperBound.millisecondsSince1970
-
-        guard let endpoint = URL(string: "api/v1/metrics/active-users?from=\(from)&to=\(to)", relativeTo: url) else {
-            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
-        }
-
-        let data = try await perform(request(for: endpoint, method: "GET"))
-        return try JSONDecoder().decode(ActivityResponse.self, from: data).series
+        let endpoint = URL(string: "api/v1/metrics/active-users?from=\(from)&to=\(to)", relativeTo: url)
+        return try await get(from: endpoint, reason: "Malformed metrics URL", as: ActivityResponse.self).series
     }
 
     private struct ActivityResponse: Decodable {
@@ -111,13 +106,9 @@ extension HTTPDatabase: DatabaseReader {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         let from = range.lowerBound.millisecondsSince1970
         let to = range.upperBound.millisecondsSince1970
-
-        guard let endpoint = URL(string: "api/v1/metrics/retention?from=\(from)&to=\(to)", relativeTo: url) else {
-            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
-        }
-
-        let data = try await perform(request(for: endpoint, method: "GET"))
-        return try JSONDecoder().decode(RetentionResponse.self, from: data).cohorts.map {
+        let endpoint = URL(string: "api/v1/metrics/retention?from=\(from)&to=\(to)", relativeTo: url)
+        let response = try await get(from: endpoint, reason: "Malformed metrics URL", as: RetentionResponse.self)
+        return response.cohorts.map {
             RetentionCohort(date: $0.date, size: $0.size, retained: $0.retained)
         }
     }
