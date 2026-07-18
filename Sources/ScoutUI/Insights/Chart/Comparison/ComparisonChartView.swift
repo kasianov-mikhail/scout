@@ -62,6 +62,8 @@ struct ComparisonChartView<T: ChartNumeric>: View {
         .padding()
         .padding(.bottom)
         .listRowInsets(EdgeInsets())
+        .environment(\.calendar, .utc)
+        .environment(\.timeZone, Calendar.utc.timeZone)
     }
 
     /// The bar for the current value, plus an invisible mark at the previous

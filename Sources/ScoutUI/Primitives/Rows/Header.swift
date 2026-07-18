@@ -38,4 +38,5 @@ struct Header<Trailing: View>: View {
             AllButton {}
         }
     }
+    .listStyle(.plain)
 }

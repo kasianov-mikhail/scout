@@ -67,6 +67,30 @@ struct NativeDatabaseTests {
         #expect(rest.cursor == nil)
     }
 
+    @Test("A limited read walks the full ordered set across pages without gaps or dupes")
+    func multiPageContinuation() async throws {
+        for index in 0..<5 {
+            try await database.write(record: makeSessionRecord(id: "s-\(index)", device: "a", day: index))
+        }
+
+        let query = RecordQuery(
+            recordType: Session.self,
+            sort: [RecordQuery.Sort(field: "start_date", ascending: false)]
+        )
+
+        var ids: [String] = []
+        var chunk = try await database.read(matching: query, fields: Session.desiredKeys, limit: 2)
+        #expect(chunk.records.count == 2)
+        ids += chunk.records.map(\.recordID)
+        while let cursor = chunk.cursor {
+            chunk = try await database.readMore(from: cursor, fields: Session.desiredKeys)
+            #expect(chunk.records.count <= 2)
+            ids += chunk.records.map(\.recordID)
+        }
+
+        #expect(ids == ["s-4", "s-3", "s-2", "s-1", "s-0"])
+    }
+
     @Test("Lookup restores a record by its identifier")
     func lookup() async throws {
         try await database.write(record: makeEventRecord(id: "e-9", name: "open"))

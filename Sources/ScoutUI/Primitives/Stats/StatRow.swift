@@ -56,5 +56,6 @@ struct StatRow<Destination: View>: View {
                 Text(verbatim: "Detail")
             }
         }
+        .listStyle(.plain)
     }
 }

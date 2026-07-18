@@ -17,10 +17,22 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
     try DateEntry.cleanup(backends: backends, in: context)
 
     try await dispatcher.performEnsuringBackground {
-        await withTaskGroup(of: Void.self) { group in
-            for backend in backends where await backend.checkAvailability() {
-                await DeliveryEntry.recordAttempt(for: backend.id, in: context)
+        // Probe every backend at once: awaiting availability in the loop
+        // condition let a slow or timing-out backend stall delivery for all
+        // the others queued behind it.
+        let availability = await withTaskGroup(of: (Int, Bool).self) { group in
+            for (offset, backend) in backends.enumerated() {
+                group.addTask { (offset, await backend.checkAvailability()) }
+            }
+            var flags = [Bool](repeating: false, count: backends.count)
+            for await (offset, isAvailable) in group {
+                flags[offset] = isAvailable
+            }
+            return flags
+        }
 
+        await withTaskGroup(of: Void.self) { group in
+            for (backend, isAvailable) in zip(backends, availability) where isAvailable {
                 let recordSender = RecordSender(backend: backend)
 
                 for type in SyncableEntry.deliverableTypes {

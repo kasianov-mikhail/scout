@@ -8,7 +8,7 @@
 import Scout
 import SwiftUI
 
-struct AnchoredScroll<ID: Hashable>: ViewModifier {
+private struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let id: ID?
 
     /// The anchor's position in the list (rows above it).
@@ -118,10 +118,10 @@ extension EnvironmentValues {
         LazyVStack(spacing: 0) {
             ForEach(0..<40, id: \.self) { row in
                 HStack {
-                    Text("Row \(row)").monospaced()
+                    Text(verbatim: "Row \(row)").monospaced()
                     Spacer()
                     if row == anchor {
-                        Text("anchor").foregroundStyle(.tint).font(.caption)
+                        Text(verbatim: "anchor").foregroundStyle(.tint).font(.caption)
                     }
                 }
                 .padding()

@@ -114,6 +114,34 @@ struct HomeLogProviderTests {
         #expect(provider.result != nil)
     }
 
+    @Test("A fetch that finishes after a period switch never fills the new period's slot")
+    func staleFetchSkipsSwitchedPeriod() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "login", value: .int(3)))
+        let gate = Gate()
+        database.gate = gate
+
+        let provider = HomeLogProvider()
+        provider.period = .today
+
+        let inFlight = Task { await provider.fetchLatest(in: database) }
+        for _ in 0..<10 {
+            await Task.yield()
+        }
+
+        provider.period = .week
+        gate.open()
+        _ = await inFlight.value
+
+        #expect(provider.result == nil)
+        provider.period = .today
+        #expect(provider.result == nil)
+
+        provider.period = .week
+        await provider.fetchIfNeeded(in: database)
+        #expect(try provider.result?.get() != nil)
+    }
+
     private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: MetricValue)
         -> MetricSeries
     {

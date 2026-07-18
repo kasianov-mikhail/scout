@@ -42,10 +42,17 @@ extension RecordSender {
             }
         }
 
-        if objects.count > 0 {
+        guard objects.count > 0 else { return }
+
+        do {
             try await database.write(records: objects.map(\.record))
             deliveries.forEach { $0.isPending = false }
+        } catch {
+            deliveries.forEach { $0.attempts += 1 }
             try context.save()
+            throw error
         }
+
+        try context.save()
     }
 }

@@ -48,7 +48,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         do {
             let results = try await database.readMore(from: cursor, fields: nil)
             self.cursor = results.cursor
-            records = (records ?? []) + (try results.records.map(Element.init))
+            records = dedup(new: records ?? [], old: try results.records.map(Element.init))
         } catch {
             message = Message(error.localizedDescription, level: .error)
         }

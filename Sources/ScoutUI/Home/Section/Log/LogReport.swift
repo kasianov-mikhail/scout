@@ -9,59 +9,47 @@ import Foundation
 import Scout
 
 struct LogReport {
-    let series: [MetricSeries]
-    let visits: [DeviceVisit]
-    let period: Period
+    private let summaries: [LogCategory: MetricSummary]
+
+    init(series: [MetricSeries], visits: [DeviceVisit], period: Period) {
+        summaries = Self.summaries(series: series, visits: visits, period: period)
+    }
 
     func summary(for category: LogCategory) -> MetricSummary {
-        let span = span
-
-        return switch category {
-        case .events:
-            MetricSummary(
-                points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType }, period: period)
-        case .crashes:
-            MetricSummary(points: span.points { $0 == CrashEntry.recordType }, period: period)
-        case .hangs:
-            MetricSummary(points: span.points { $0 == HangEntry.recordType }, period: period)
-        case .network:
-            MetricSummary(points: span.points(inCategories: Set(StatusBuckets.categories)), period: period)
-        case .metrics:
-            metricsSummary
-        case .devices:
-            devicesSummary
-        }
+        summaries[category] ?? .loading
     }
 
-    private var window: Range<Date> {
-        period.previousRange.lowerBound..<period.initialRange.upperBound
-    }
+    private static func summaries(series: [MetricSeries], visits: [DeviceVisit], period: Period) -> [LogCategory:
+        MetricSummary]
+    {
+        let window = period.previousRange.lowerBound..<period.initialRange.upperBound
+        let span = SeriesSpan(series: series, range: window)
+        let slices = period.initialRange.slices(count: MiniChartSeries.sliceCount)
 
-    private var span: SeriesSpan {
-        SeriesSpan(series: series, range: window)
-    }
-
-    private var metricsSummary: MetricSummary {
-        func count(in range: Range<Date>) -> Int {
+        func metricCount(in range: Range<Date>) -> Int {
             SeriesSpan(series: series, range: range).metricCount
         }
 
-        return MetricSummary(
-            count: count(in: period.initialRange),
-            previous: count(in: period.previousRange),
-            values: slices.map(count)
+        let metrics = MetricSummary(
+            count: metricCount(in: period.initialRange),
+            previous: metricCount(in: period.previousRange),
+            values: slices.map(metricCount)
         )
-    }
 
-    private var devicesSummary: MetricSummary {
-        MetricSummary(
+        let devices = MetricSummary(
             count: visits.devices(in: period.initialRange),
             previous: visits.devices(in: period.previousRange),
             values: slices.map { visits.devices(in: $0) }
         )
-    }
 
-    private var slices: [Range<Date>] {
-        period.initialRange.slices(count: MiniChartSeries.sliceCount)
+        return [
+            .events: MetricSummary(
+                points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType }, period: period),
+            .crashes: MetricSummary(points: span.points { $0 == CrashEntry.recordType }, period: period),
+            .hangs: MetricSummary(points: span.points { $0 == HangEntry.recordType }, period: period),
+            .network: MetricSummary(points: span.points(inCategories: Set(StatusBuckets.categories)), period: period),
+            .metrics: metrics,
+            .devices: devices,
+        ]
     }
 }

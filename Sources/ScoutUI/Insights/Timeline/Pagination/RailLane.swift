@@ -41,11 +41,11 @@ final class RailLane: ObservableObject {
     // cursor) into the fresh timeline.
     private var generation = Epoch()
 
-    /// Whether a load currently holds the cursor; concurrent `loadMore` calls
-    /// wait for it instead of racing the cursor and dropping a chunk.
+    // Whether a load currently holds the cursor; concurrent `loadMore` calls
+    // wait for it instead of racing the cursor and dropping a chunk.
     private var isFetching = false
 
-    /// Continuations of `loadMore` calls parked behind an in-flight load.
+    // Continuations of `loadMore` calls parked behind an in-flight load.
     private var waiters: [CheckedContinuation<Void, Never>] = []
 
     func loadMore(in database: DatabaseReader) async throws -> (sessions: [Session], events: [Event]) {
@@ -107,9 +107,9 @@ final class RailLane: ObservableObject {
         return (sessions, events)
     }
 
-    /// Sessions per chunk: a filtered timeline keeps only the matching events,
-    /// so it needs a bigger net per round to reach the seed target without a
-    /// long tail of follow-up requests.
+    // Sessions per chunk: a filtered timeline keeps only the matching events,
+    // so it needs a bigger net per round to reach the seed target without a
+    // long tail of follow-up requests.
     private var chunkLimit: Int { eventName == nil ? 25 : 100 }
 
     private func chunk(in database: DatabaseReader) async throws -> RecordChunk {

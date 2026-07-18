@@ -40,4 +40,18 @@ struct MetricsFormattersTests {
     {
         #expect(seconds.duration == expected)
     }
+
+    @Test(
+        "Promotes a value that rounds up to the next unit boundary",
+        arguments: [
+            (0.0009996, "1 ms"),
+            (0.9996, "1.0 s"),
+            (59.96, "1 min 0 s"),
+            (3599.7, "1 h"),
+            (86_399.0, "1 d"),
+            (2_591_999.0, "1 mo"),
+        ]) func testDurationUnitPromotion(seconds: TimeInterval, expected: String)
+    {
+        #expect(seconds.duration == expected)
+    }
 }
