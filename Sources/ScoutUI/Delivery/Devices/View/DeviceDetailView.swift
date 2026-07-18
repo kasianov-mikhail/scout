@@ -60,7 +60,7 @@ struct DeviceDetailView: View {
                             UTCTimestampText(date: date, size: 14)
                         }
                         Spacer()
-                        Text(verbatim: hang.durationText)
+                        Text(verbatim: hang.duration.duration)
                             .font(.footnote)
                             .foregroundStyle(Color.gray)
                     } destination: {

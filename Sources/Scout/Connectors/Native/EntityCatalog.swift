@@ -56,11 +56,63 @@ enum EntityCatalog {
     }
 
     // Metric series are grouped by a single grid key, so the category and name
-    // are packed into one pipe-separated field on write and split on read.
+    // are packed into one field on write and split on read. Each component is
+    // backslash-escaped so a "|" (or "\") inside a category or name can't be
+    // mistaken for the separator and scatter points across the wrong series.
     private static func seriesKey(for record: Record) -> [String: ScoutDB.RecordValue] {
         let category: String? = record["category"]
         let name: String? = record["name"]
-        return [metricSeriesKey: .string((category ?? "") + "|" + (name ?? ""))]
+        return [metricSeriesKey: .string(encodeSeriesKey(category: category ?? "", name: name ?? ""))]
+    }
+
+    static func encodeSeriesKey(category: String, name: String) -> String {
+        escape(category) + "|" + escape(name)
+    }
+
+    // Splits a series key at its unescaped separator and unescapes both halves.
+    // Legacy keys carry no escape sequences, so a value without a "|" or "\" in
+    // either component decodes identically to the old first-separator split.
+    static func decodeSeriesKey(_ key: String) -> (category: String, name: String)? {
+        var isEscaped = false
+        var index = key.startIndex
+        while index < key.endIndex {
+            let character = key[index]
+            if isEscaped {
+                isEscaped = false
+            } else if character == "\\" {
+                isEscaped = true
+            } else if character == "|" {
+                return (unescape(String(key[..<index])), unescape(String(key[key.index(after: index)...])))
+            }
+            index = key.index(after: index)
+        }
+        return nil
+    }
+
+    private static func escape(_ component: String) -> String {
+        component.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "|", with: "\\|")
+    }
+
+    private static func unescape(_ escaped: String) -> String {
+        var result = ""
+        var isEscaped = false
+        for character in escaped {
+            if isEscaped {
+                if character != "\\" && character != "|" {
+                    result.append("\\")
+                }
+                result.append(character)
+                isEscaped = false
+            } else if character == "\\" {
+                isEscaped = true
+            } else {
+                result.append(character)
+            }
+        }
+        if isEscaped {
+            result.append("\\")
+        }
+        return result
     }
 
     private static let event = definition(

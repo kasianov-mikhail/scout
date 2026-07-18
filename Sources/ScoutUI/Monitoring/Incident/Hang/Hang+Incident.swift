@@ -14,8 +14,4 @@ extension Hang {
     var severity: HangSeverity {
         duration >= 8 ? .critical : .warning
     }
-
-    var durationText: String {
-        duration < 60 ? String(format: "%.1fs", duration) : "\(Int(duration) / 60)m \(Int(duration) % 60)s"
-    }
 }

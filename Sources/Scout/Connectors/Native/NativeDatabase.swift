@@ -127,19 +127,29 @@ extension NativeDatabase {
     }
 
     private func visits(entity: String, dateField: String, in window: Range<Date>) async throws -> [ActivityVisit] {
-        let records = try await store.read(
-            entity: entity,
-            filters: [
-                EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(window.lowerBound)),
-                EntityStore.Filter(field: dateField, op: .lessThan, value: .date(window.upperBound)),
-            ],
-            fields: [dateField, "device_id"]
-        )
+        try await datedIDs(entity: entity, dateField: dateField, idField: "device_id", in: window)
+            .map { ActivityVisit(date: $0.date, user: $0.id) }
+    }
+}
 
-        return records.compactMap { record -> ActivityVisit? in
+extension NativeDatabase {
+    static func dateFilters(_ field: String, in range: Range<Date>) -> [EntityStore.Filter] {
+        [
+            EntityStore.Filter(field: field, op: .greaterThanOrEquals, value: .date(range.lowerBound)),
+            EntityStore.Filter(field: field, op: .lessThan, value: .date(range.upperBound)),
+        ]
+    }
+
+    func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws
+        -> [(date: Date, id: String)]
+    {
+        let records = try await store.read(
+            entity: entity, filters: Self.dateFilters(dateField, in: range), fields: [dateField, idField])
+
+        return records.compactMap { record -> (date: Date, id: String)? in
             guard case .date(let date)? = record.values[dateField] else { return nil }
-            guard case .string(let user)? = record.values["device_id"] else { return nil }
-            return ActivityVisit(date: date, user: user)
+            guard case .string(let id)? = record.values[idField] else { return nil }
+            return (date, id)
         }
     }
 }
@@ -148,36 +158,19 @@ extension NativeDatabase {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         await registration.value
 
-        async let installs = store.read(
-            entity: InstallEntry.recordType,
-            filters: [
-                EntityStore.Filter(field: "date", op: .greaterThanOrEquals, value: .date(range.lowerBound)),
-                EntityStore.Filter(field: "date", op: .lessThan, value: .date(range.upperBound)),
-            ],
-            fields: ["date", "install_id"]
-        )
-
-        async let sessions = store.read(
-            entity: SessionEntry.recordType,
-            filters: [
-                EntityStore.Filter(field: "start_date", op: .greaterThanOrEquals, value: .date(range.lowerBound)),
-                EntityStore.Filter(field: "start_date", op: .lessThan, value: .date(range.upperBound)),
-            ],
-            fields: ["start_date", "install_id"]
-        )
+        async let installs = datedIDs(
+            entity: InstallEntry.recordType, dateField: "date", idField: "install_id", in: range)
+        async let sessions = datedIDs(
+            entity: SessionEntry.recordType, dateField: "start_date", idField: "install_id", in: range)
 
         var installDays: [String: Date] = [:]
-        for record in try await installs {
-            guard case .date(let date)? = record.values["date"] else { continue }
-            guard case .string(let install)? = record.values["install_id"] else { continue }
-            installDays[install] = date
+        for install in try await installs {
+            installDays[install.id] = install.date
         }
 
         var sessionDays: [String: Set<Date>] = [:]
-        for record in try await sessions {
-            guard case .date(let date)? = record.values["start_date"] else { continue }
-            guard case .string(let install)? = record.values["install_id"] else { continue }
-            sessionDays[install, default: []].insert(date.startOfDay)
+        for session in try await sessions {
+            sessionDays[session.id, default: []].insert(session.date.startOfDay)
         }
 
         return RetentionCohort.build(installDays: installDays, sessionDays: sessionDays, in: range, asOf: Date())

@@ -77,4 +77,37 @@ struct EntityCatalogTests {
         let record = Record(recordType: EventEntry.recordType, recordID: "e-1")
         #expect(EntityCatalog.derivedValues(for: record).isEmpty)
     }
+
+    @Test(
+        "Series key round-trips components containing the separator or escape char",
+        arguments: [
+            ("timer", "checkout"),
+            ("", ""),
+            ("a|b", "c|d"),
+            ("path\\to", "na|me"),
+            ("trailing\\", "\\leading"),
+            ("|", "\\"),
+        ]
+    )
+    func seriesKeyRoundTrip(category: String, name: String) throws {
+        let key = EntityCatalog.encodeSeriesKey(category: category, name: name)
+        let decoded = try #require(EntityCatalog.decodeSeriesKey(key))
+        #expect(decoded.category == category)
+        #expect(decoded.name == name)
+    }
+
+    @Test("A packed pipe no longer truncates the category")
+    func seriesKeyDoesNotSplitOnPackedPipe() throws {
+        let key = EntityCatalog.encodeSeriesKey(category: "billing|eu", name: "renew")
+        let decoded = try #require(EntityCatalog.decodeSeriesKey(key))
+        #expect(decoded.category == "billing|eu")
+        #expect(decoded.name == "renew")
+    }
+
+    @Test("Legacy separator-free keys decode unchanged")
+    func seriesKeyDecodesLegacyValues() throws {
+        let decoded = try #require(EntityCatalog.decodeSeriesKey("timer|checkout"))
+        #expect(decoded.category == "timer")
+        #expect(decoded.name == "checkout")
+    }
 }

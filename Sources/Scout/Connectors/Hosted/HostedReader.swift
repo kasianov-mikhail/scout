@@ -73,7 +73,7 @@ extension HTTPDatabase: DatabaseReader {
             params.append("category=\(Self.encode(category))")
         }
         if let values = query.values {
-            params.append("values=\(Self.encode(values))")
+            params.append("values=\(Self.encode(values.rawValue))")
         }
         if query.byVersion {
             params.append("by=version")

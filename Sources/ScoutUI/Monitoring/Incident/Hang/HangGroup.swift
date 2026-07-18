@@ -22,7 +22,7 @@ extension IncidentGroup where Element == Hang {
     }
 
     var durationText: String {
-        peak.durationText
+        peak.duration.duration
     }
 
     // The longest hang in the group; groups always hold at least one record.
