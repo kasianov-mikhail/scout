@@ -87,7 +87,7 @@ enum RecordCacheStore {
 
     // The cache is disposable: any schema mismatch destroys the store instead of migrating.
     static func container<Row: CacheRow>(for row: Row.Type, at url: URL, defaults: UserDefaults) -> ModelContainer? {
-        if defaults.integer(forKey: versionKey) != Row.schemaVersion {
+        if defaults.integer(forKey: versionKey) != Row.schemaVersion || !storeHasSQLiteHeader(at: url) {
             destroyStore(at: url)
         }
         if let container = openContainer(for: row, at: url) {
@@ -98,6 +98,18 @@ enum RecordCacheStore {
         guard let container = openContainer(for: row, at: url) else { return nil }
         defaults.set(Row.schemaVersion, forKey: versionKey)
         return container
+    }
+
+    // SwiftData can add the store asynchronously, so a corrupt file surfaces its SQLite
+    // "file is not a database" failure on a background queue that escapes `try?` and lets Core
+    // Data abort the process. Destroy anything without a valid SQLite header up front so only an
+    // openable (or absent) store ever reaches ModelContainer; a valid store keeps its bytes.
+    private static func storeHasSQLiteHeader(at url: URL) -> Bool {
+        guard let handle = try? FileHandle(forReadingFrom: url) else { return true }
+        defer { try? handle.close() }
+        let header = (try? handle.read(upToCount: 16)) ?? Data()
+        if header.isEmpty { return true }
+        return header.elementsEqual(Array("SQLite format 3\u{0}".utf8))
     }
 
     static func destroyStore(at url: URL) {
