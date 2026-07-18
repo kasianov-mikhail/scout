@@ -24,10 +24,10 @@ struct HomeLogSection: View {
         }
         .task(id: period) {
             log.period = period
+            log.visits = visits
             await log.fetchIfNeeded(in: database)
         }
-
-        let report = report
+        .onChange(of: visits) { log.visits = $0 }
 
         ForEach(Array(LogCategory.allCases.enumerated()), id: \.element) { index, category in
             Row {
@@ -36,7 +36,7 @@ struct HomeLogSection: View {
                     .frame(width: 24)
                 Text(verbatim: category.title)
                 Spacer()
-                RedactedText(count: report?.summary(for: category).count)
+                RedactedText(count: log.report?.summary(for: category).count)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .frame(minWidth: RowSummary.countWidth, alignment: .trailing)
@@ -46,15 +46,8 @@ struct HomeLogSection: View {
         }
     }
 
-    private var report: LogReport? {
-        guard let series = try? log.result?.get() else {
-            return nil
-        }
-        return LogReport(
-            series: series,
-            visits: (try? devices.result?.get().visits) ?? [],
-            period: period
-        )
+    private var visits: [DeviceVisit] {
+        (try? devices.result?.get().visits) ?? []
     }
 }
 

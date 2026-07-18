@@ -34,7 +34,7 @@ struct LogView: View {
                             MetricCard(
                                 title: category.title,
                                 color: category.color,
-                                summary: report?.summary(for: category) ?? .loading
+                                summary: log.report?.summary(for: category) ?? .loading
                             )
                         }
                         .buttonStyle(.plain)
@@ -45,20 +45,15 @@ struct LogView: View {
         }
         .task(id: period) {
             log.period = period
+            log.visits = visits
             await log.fetchIfNeeded(in: database)
         }
+        .onChange(of: visits) { log.visits = $0 }
         .navigationTitle(en: "Log")
     }
 
-    private var report: LogReport? {
-        guard let series = try? log.result?.get() else {
-            return nil
-        }
-        return LogReport(
-            series: series,
-            visits: (try? devices.result?.get().visits) ?? [],
-            period: period
-        )
+    private var visits: [DeviceVisit] {
+        (try? devices.result?.get().visits) ?? []
     }
 }
 
