@@ -9,6 +9,22 @@ import Foundation
 import Scout
 import ScoutDB
 
+// A scout-db `EntityDefinition` paired with the derivations scout applies on
+// write. Derived fields live here because they compute over scout's `Record`,
+// which the wire-format `EntityDefinition` cannot express.
+struct CatalogEntry {
+    let definition: EntityDefinition
+    let derive: @Sendable (Record) -> [String: ScoutDB.RecordValue]
+
+    init(
+        _ definition: EntityDefinition,
+        derive: @escaping @Sendable (Record) -> [String: ScoutDB.RecordValue] = { _ in [:] }
+    ) {
+        self.definition = definition
+        self.derive = derive
+    }
+}
+
 // Slot assignment follows declaration order, so the field lists below are part
 // of the stored-data contract: never reorder or retype existing fields — append
 // new ones in a new schema version instead.
@@ -17,28 +33,36 @@ enum EntityCatalog {
     static let metricSeriesView = "series"
     static let metricSeriesKey = "series_key"
 
-    static let definitions: [EntityDefinition] = [
-        event, session, visit, launch, install, device, version, crash, hang,
+    static let entries: [CatalogEntry] = [
+        CatalogEntry(event), CatalogEntry(session), CatalogEntry(visit), CatalogEntry(launch),
+        CatalogEntry(install), CatalogEntry(device), CatalogEntry(version), CatalogEntry(crash), CatalogEntry(hang),
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
 
+    static var definitions: [EntityDefinition] {
+        entries.map(\.definition)
+    }
+
     static func definition(for entity: String) -> EntityDefinition? {
-        definitions.first { $0.entity == entity }
+        entries.first { $0.definition.entity == entity }?.definition
+    }
+
+    // The writer applies every entity's declared derivations uniformly, so a new
+    // computed field is a per-entity `derive` closure here rather than a special
+    // case wired into the shared write path.
+    static func derivedValues(for record: Record) -> [String: ScoutDB.RecordValue] {
+        entries.first { $0.definition.entity == record.recordType }?.derive(record) ?? [:]
     }
 
     // Metric series are grouped by a single grid key, so the category and name
     // are packed into one field on write and split on read. Each component is
     // backslash-escaped so a "|" (or "\") inside a category or name can't be
     // mistaken for the separator and scatter points across the wrong series.
-    static func seriesKey(for record: Record) -> ScoutDB.RecordValue? {
-        guard record.recordType == IntMetricsEntry.recordType || record.recordType == DoubleMetricsEntry.recordType
-        else {
-            return nil
-        }
+    private static func seriesKey(for record: Record) -> [String: ScoutDB.RecordValue] {
         let category: String? = record["category"]
         let name: String? = record["name"]
-        return .string(encodeSeriesKey(category: category ?? "", name: name ?? ""))
+        return [metricSeriesKey: .string(encodeSeriesKey(category: category ?? "", name: name ?? ""))]
     }
 
     static func encodeSeriesKey(category: String, name: String) -> String {
@@ -182,18 +206,21 @@ enum EntityCatalog {
         ]
     )
 
-    private static func metric(entity: String, valueType: FieldType) -> EntityDefinition {
-        definition(
-            entity: entity,
-            fields: [
-                ("name", .text),
-                ("category", .string),
-                ("session_id", .string),
-                (metricSeriesKey, .string),
-                ("value", valueType),
-                ("date", .timestamp),
-            ],
-            views: [AggregateView(name: metricSeriesView, groupBy: metricSeriesKey, bucket: .hour, sum: "value")]
+    private static func metric(entity: String, valueType: FieldType) -> CatalogEntry {
+        CatalogEntry(
+            definition(
+                entity: entity,
+                fields: [
+                    ("name", .text),
+                    ("category", .string),
+                    ("session_id", .string),
+                    (metricSeriesKey, .string),
+                    ("value", valueType),
+                    ("date", .timestamp),
+                ],
+                views: [AggregateView(name: metricSeriesView, groupBy: metricSeriesKey, bucket: .hour, sum: "value")]
+            ),
+            derive: seriesKey
         )
     }
 
