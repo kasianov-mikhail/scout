@@ -77,6 +77,26 @@ struct RetentionCohortBuildTests {
         #expect(rate(cohort, day: 30) == nil)
     }
 
+    @Test("A milestone stays nil until the full cohort week plus the offset has elapsed")
+    func maturityRequiresTheFullCohortWeek() throws {
+        let week = installDay.startOfWeek
+
+        func dayZero(asOf: Date) throws -> Double? {
+            let cohorts = RetentionCohort.build(
+                installDays: ["a": installDay],
+                sessionDays: ["a": [installDay]],
+                in: week..<week.addingDay(7),
+                asOf: asOf
+            )
+            let cohort = try #require(cohorts.first { $0.id == week })
+            return rate(cohort, day: 0)
+        }
+
+        // The cohort week spans week+0..week+6 and only fully elapses at week+7.
+        #expect(try dayZero(asOf: week.addingDay(7)) == nil)
+        #expect(try dayZero(asOf: week.addingDay(7).addingTimeInterval(1)) == 1)
+    }
+
     @Test("Installs outside the range are excluded")
     func installsOutsideRangeExcluded() {
         let cohorts = RetentionCohort.build(
