@@ -20,8 +20,7 @@ struct WeekStripCalendar: View {
 
     private var month: CalendarMonth { CalendarMonth(containing: reference) }
     private var week: [CalendarMonth.Day] {
-        let weekday = Calendar.utc.component(.weekday, from: reference)
-        let first = reference.addingDay(-((weekday + 5) % 7))
+        let first = reference.addingDay(-Calendar.utc.mondayBasedWeekday(from: reference))
         return (0..<7).map { offset in
             let date = first.addingDay(offset)
             return CalendarMonth.Day(
