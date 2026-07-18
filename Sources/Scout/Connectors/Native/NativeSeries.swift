@@ -16,10 +16,13 @@ struct NativeSeries {
         var intTotals: [GroupKey: [Date: Double]] = [:]
         var doubleTotals: [GroupKey: [Date: Double]] = [:]
 
-        if query.values != "double" {
+        switch query.values {
+        case .int:
             try await collectInt(into: &intTotals, store: store)
-        }
-        if query.values != "int" {
+        case .double:
+            try await collectMetrics(entity: DoubleMetricsEntry.recordType, into: &doubleTotals, store: store)
+        case nil:
+            try await collectInt(into: &intTotals, store: store)
             try await collectMetrics(entity: DoubleMetricsEntry.recordType, into: &doubleTotals, store: store)
         }
 
