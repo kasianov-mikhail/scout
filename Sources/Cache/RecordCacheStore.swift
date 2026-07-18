@@ -90,14 +90,14 @@ enum RecordCacheStore {
         if defaults.integer(forKey: versionKey) != Row.schemaVersion {
             destroyStore(at: url)
         }
-        if let container = openContainer(for: row, at: url) {
-            defaults.set(Row.schemaVersion, forKey: versionKey)
-            return container
+        for _ in 0..<2 {
+            if let container = openContainer(for: row, at: url) {
+                defaults.set(Row.schemaVersion, forKey: versionKey)
+                return container
+            }
+            destroyStore(at: url)
         }
-        destroyStore(at: url)
-        guard let container = openContainer(for: row, at: url) else { return nil }
-        defaults.set(Row.schemaVersion, forKey: versionKey)
-        return container
+        return nil
     }
 
     static func destroyStore(at url: URL) {
