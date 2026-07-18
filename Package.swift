@@ -126,7 +126,6 @@ let package = Package(
             dependencies: [
                 "Cache",
                 "Scout",
-                "Support",
             ],
             // Cache autolinks SwiftData (iOS 17+), so a bundle linking it fails
             // to load on the iOS 16 simulator. Weak-link the framework so the bundle

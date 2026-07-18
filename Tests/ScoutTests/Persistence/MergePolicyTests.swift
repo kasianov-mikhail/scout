@@ -24,27 +24,25 @@ struct MergePolicyTests {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: directory) }
 
-        let events = try SerializedStore.connect {
-            let container = NSPersistentContainer(named: "ScoutModel")
-            container.persistentStoreDescriptions = [
-                NSPersistentStoreDescription(url: directory.appendingPathComponent("ScoutModel.sqlite"))
-            ]
-            try container.loadStore()
+        let container = NSPersistentContainer(named: "ScoutModel")
+        container.persistentStoreDescriptions = [
+            NSPersistentStoreDescription(url: directory.appendingPathComponent("ScoutModel.sqlite"))
+        ]
+        try container.loadStore()
 
-            let context = container.viewContext
-            let eventID = UUID()
+        let context = container.viewContext
+        let eventID = UUID()
 
-            let first = EventEntry.stub(name: "first", in: context)
-            first.eventID = eventID
-            try context.save()
+        let first = EventEntry.stub(name: "first", in: context)
+        first.eventID = eventID
+        try context.save()
 
-            let second = EventEntry.stub(name: "second", in: context)
-            second.eventID = eventID
-            try context.save()
+        let second = EventEntry.stub(name: "second", in: context)
+        second.eventID = eventID
+        try context.save()
 
-            let request = NSFetchRequest<EventEntry>(entityName: "EventEntry")
-            return try context.fetch(request)
-        }
+        let request = NSFetchRequest<EventEntry>(entityName: "EventEntry")
+        let events = try context.fetch(request)
         #expect(events.count == 1)
     }
 }
