@@ -64,18 +64,9 @@ class HomeLogProvider: ObservableObject, Provider {
             throw CancellationError()
         }
 
-        return series.filter { !lifecycleNames.contains($0.name) }
+        return series.filter { !$0.isLifecycle }
     }
 }
-
-private let lifecycleNames: Set = [
-    DeviceEntry.recordType,
-    InstallEntry.recordType,
-    LaunchEntry.recordType,
-    MarkerEntry.crashName,
-    SessionEntry.recordType,
-    VersionEntry.recordType,
-]
 
 extension Period {
     fileprivate var logBucket: SeriesQuery.Bucket {
