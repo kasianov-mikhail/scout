@@ -36,7 +36,7 @@ extension NativeDatabase: DatabaseWriter {
 
     private static func values(for record: Record) -> [String: ScoutDB.RecordValue] {
         var values = record.storeValues
-        values[EntityCatalog.metricSeriesKey] = EntityCatalog.seriesKey(for: record)
+        values.merge(EntityCatalog.derivedValues(for: record)) { _, derived in derived }
         return values
     }
 }

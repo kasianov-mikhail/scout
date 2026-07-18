@@ -62,13 +62,19 @@ struct EntityCatalogTests {
         }
     }
 
-    @Test("Series key packs category and name")
-    func seriesKey() {
+    @Test("Metric entities derive the series key from their definition")
+    func derivedSeriesKey() {
         var record = Record(recordType: IntMetricsEntry.recordType, recordID: "m-1")
         record["name"] = "checkout"
         record["category"] = "timer"
 
-        #expect(EntityCatalog.seriesKey(for: record) == .string("timer|checkout"))
-        #expect(EntityCatalog.seriesKey(for: Record(recordType: EventEntry.recordType, recordID: "e-1")) == nil)
+        #expect(
+            EntityCatalog.derivedValues(for: record) == [EntityCatalog.metricSeriesKey: .string("timer|checkout")])
+    }
+
+    @Test("Entities without a declared derivation derive nothing")
+    func noDerivation() {
+        let record = Record(recordType: EventEntry.recordType, recordID: "e-1")
+        #expect(EntityCatalog.derivedValues(for: record).isEmpty)
     }
 }
