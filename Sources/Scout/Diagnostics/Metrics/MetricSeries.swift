@@ -23,15 +23,19 @@ package struct SeriesQuery: Sendable {
         case hour, day, week
     }
 
+    package enum Values: String, Sendable {
+        case int, double
+    }
+
     package var name: String?
     package var category: String?
-    package var values: String?
+    package var values: Values?
     package var bucket: Bucket = .day
     package var byVersion = false
     package var range: Range<Date>
 
     package init(
-        name: String? = nil, category: String? = nil, values: String? = nil, bucket: Bucket = .day,
+        name: String? = nil, category: String? = nil, values: Values? = nil, bucket: Bucket = .day,
         byVersion: Bool = false, range: Range<Date>
     ) {
         self.name = name
