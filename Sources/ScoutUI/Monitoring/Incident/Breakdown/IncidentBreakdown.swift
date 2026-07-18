@@ -37,7 +37,7 @@ extension IncidentBreakdown {
 
         let other = ranked.count > top ? ranked[top...].reduce(0) { $0 + $1.value } : 0
         if other > 0 {
-            segments.append(Segment(label: "Other", count: other, color: .gray))
+            segments.append(Segment(count: other, color: .gray, kind: .other))
         }
 
         return segments
@@ -55,11 +55,11 @@ extension IncidentBreakdown {
     func records<Element: SessionContext>(from records: [Element], in dimension: Dimension, matching segment: Segment)
         -> [Element]
     {
-        guard segment.label == "Other" else {
-            return records.filter { label(of: $0, in: dimension) == segment.label }
+        guard segment.kind == .other else {
+            return records.filter { label(of: $0, in: dimension) == segment.value }
         }
 
-        let named = Set(segments(in: dimension).map(\.label))
+        let named = Set(segments(in: dimension).compactMap(\.value))
         return records.filter { record in
             guard let label = label(of: record, in: dimension) else { return false }
             return !named.contains(label)
