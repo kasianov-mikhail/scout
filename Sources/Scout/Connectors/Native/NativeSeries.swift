@@ -92,9 +92,7 @@ struct NativeSeries {
             entity: entity, view: EntityCatalog.metricSeriesView, from: from, to: query.range.upperBound)
 
         for point in points where point.date >= from {
-            guard let separator = point.group.firstIndex(of: "|") else { continue }
-            let category = String(point.group[..<separator])
-            let metric = String(point.group[point.group.index(after: separator)...])
+            guard let (category, metric) = EntityCatalog.decodeSeriesKey(point.group) else { continue }
 
             guard query.name == nil || metric == query.name else { continue }
             guard query.category == nil || category == query.category else { continue }
