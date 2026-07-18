@@ -136,6 +136,39 @@ struct NativeSeriesTests {
         #expect(crashed.first?.version == "1.2.0")
     }
 
+    @Test("An explicit event source reaches a custom event named like a lifecycle counter")
+    func eventSourceUnshadowsLifecycleName() async throws {
+        try await database.write(record: makeEventRecord(id: "e-1", name: SessionEntry.recordType))
+        try await database.write(record: makeEventRecord(id: "e-2", name: SessionEntry.recordType))
+        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
+
+        let series = try await database.series(
+            matching: SeriesQuery(name: SessionEntry.recordType, bucket: .hour, source: .event, range: range)
+        )
+
+        let event = try #require(series.first)
+        #expect(series.count == 1)
+        #expect(event.name == SessionEntry.recordType)
+        #expect(event.points.map(\.value) == [.int(2)])
+    }
+
+    @Test("An explicit lifecycle source ignores a same-named custom event")
+    func lifecycleSourceIgnoresEvents() async throws {
+        try await database.write(record: makeEventRecord(id: "e-1", name: SessionEntry.recordType))
+        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
+        try await database.write(record: makeSessionRecord(id: "s-2", device: "b", day: 0))
+
+        let series = try await database.series(
+            matching: SeriesQuery(
+                name: SessionEntry.recordType, bucket: .day, byVersion: true, source: .lifecycle, range: range)
+        )
+
+        let sessions = try #require(series.first)
+        #expect(series.count == 1)
+        #expect(sessions.version == "1.2.0")
+        #expect(sessions.points.map(\.value) == [.int(2)])
+    }
+
     @Test("Double metric series carry name and category")
     func doubleMetricSeries() async throws {
         var record = Record(recordType: DoubleMetricsEntry.recordType, recordID: "m-1")

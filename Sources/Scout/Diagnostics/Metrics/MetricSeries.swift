@@ -23,22 +23,32 @@ package struct SeriesQuery: Sendable {
         case hour, day, week
     }
 
+    // Picks the namespace a name resolves against so a custom event and a
+    // built-in counter can share a name (e.g. "Session") without one shadowing
+    // the other. When absent the backend infers the namespace from the name,
+    // preserving the original string-guess behavior for existing callers.
+    package enum Source: String, Sendable {
+        case event, lifecycle, metric
+    }
+
     package var name: String?
     package var category: String?
     package var values: String?
     package var bucket: Bucket = .day
     package var byVersion = false
+    package var source: Source?
     package var range: Range<Date>
 
     package init(
         name: String? = nil, category: String? = nil, values: String? = nil, bucket: Bucket = .day,
-        byVersion: Bool = false, range: Range<Date>
+        byVersion: Bool = false, source: Source? = nil, range: Range<Date>
     ) {
         self.name = name
         self.category = category
         self.values = values
         self.bucket = bucket
         self.byVersion = byVersion
+        self.source = source
         self.range = range
     }
 }

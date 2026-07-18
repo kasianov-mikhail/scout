@@ -173,6 +173,36 @@ struct ServerContractTests {
         #expect(sessions.points.map(\.value.doubleValue).reduce(0, +) == 2)
     }
 
+    @Test("An event source reaches a custom event named like the Session counter")
+    func eventSourceUnshadowsSession() async throws {
+        let database = try makeDatabase()
+        // A unique version isolates both series from any shared server data.
+        let version = "contract-\(UUID().uuidString)"
+        let range = eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+
+        var event = makeEvent(name: "Session", index: 0)
+        event["app_version"] = version
+        var session = makeSession(installID: UUID().uuidString, startDate: eventDate)
+        session["app_version"] = version
+        try await database.write(records: [event, session])
+
+        let events = try await database.series(
+            matching: SeriesQuery(name: "Session", byVersion: true, source: .event, range: range)
+        )
+        let sessions = try await database.series(
+            matching: SeriesQuery(name: "Session", byVersion: true, source: .lifecycle, range: range)
+        )
+
+        // The event source counts only the custom "Session" event, and the
+        // lifecycle source counts only the Session record — neither shadows the
+        // other, and neither is conflated into the other's total.
+        let eventSeries = try #require(events.first { $0.version == version })
+        #expect(eventSeries.points.map(\.value.doubleValue).reduce(0, +) == 1)
+
+        let sessionSeries = try #require(sessions.first { $0.version == version })
+        #expect(sessionSeries.points.map(\.value.doubleValue).reduce(0, +) == 1)
+    }
+
     @Test("First crashes per install aggregate under the VersionCrash series")
     func versionCrashSeries() async throws {
         let database = try makeDatabase()
