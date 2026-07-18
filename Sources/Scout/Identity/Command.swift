@@ -13,8 +13,10 @@ protocol Command: Sendable {
 
 extension NSPersistentContainer {
     func run(_ commands: any Command...) async throws {
-        for command in commands {
-            try await performBackgroundTask { try command.execute(in: $0) }
+        try await performBackgroundTask { context in
+            for command in commands {
+                try command.execute(in: context)
+            }
         }
     }
 }
