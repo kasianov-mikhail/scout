@@ -22,7 +22,7 @@ struct ActivitySeriesTests {
         var visits: [ActivityVisit] = []
         for dayOffset in -35..<42 {
             let day = start.addingTimeInterval(TimeInterval(dayOffset) * .day)
-            let activeUsers = (dayOffset * 7 + 3) % 11
+            let activeUsers = ((dayOffset * 7 + 3) % 11 + 11) % 11
             for index in 0...activeUsers {
                 let user = "user-\((dayOffset * 5 + index) % 17)"
                 visits.append(ActivityVisit(date: day.addingTimeInterval(TimeInterval(index) * .hour), user: user))
