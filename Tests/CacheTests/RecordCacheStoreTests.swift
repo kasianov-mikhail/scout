@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Support
 import SwiftData
 import Testing
 
@@ -24,9 +25,14 @@ struct RecordCacheStoreTests {
     }
 
     @available(iOS 17, macOS 14, *)
+    private func container<Row: CacheRow>(for row: Row.Type) -> ModelContainer? {
+        SerializedStore.connect { RecordCacheStore.container(for: row, at: url, defaults: defaults) }
+    }
+
+    @available(iOS 17, macOS 14, *)
     @Test("Opens a fresh store and stamps the schema version")
     func opensFreshStore() {
-        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(container(for: CachedRecord.self) != nil)
         #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == CachedRecord.schemaVersion)
     }
 
@@ -36,17 +42,17 @@ struct RecordCacheStoreTests {
         try Data("garbage".utf8).write(to: url)
         defaults.set(CachedRecord.schemaVersion + 1, forKey: "scout_record_cache_schema_version")
 
-        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(container(for: CachedRecord.self) != nil)
         #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == CachedRecord.schemaVersion)
     }
 
     @available(iOS 18, macOS 15, *)
     @Test("Switching to the indexed row variant restamps the store")
     func restampsOnVariantSwitch() {
-        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(container(for: CachedRecord.self) != nil)
         #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == CachedRecord.schemaVersion)
 
-        #expect(RecordCacheStore.container(for: IndexedCachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(container(for: IndexedCachedRecord.self) != nil)
         #expect(defaults.integer(forKey: "scout_record_cache_schema_version") == IndexedCachedRecord.schemaVersion)
     }
 
@@ -56,7 +62,7 @@ struct RecordCacheStoreTests {
         try Data("garbage".utf8).write(to: url)
         defaults.set(CachedRecord.schemaVersion, forKey: "scout_record_cache_schema_version")
 
-        #expect(RecordCacheStore.container(for: CachedRecord.self, at: url, defaults: defaults) != nil)
+        #expect(container(for: CachedRecord.self) != nil)
     }
 
     @available(iOS 17, macOS 14, *)

@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Support
 import SwiftData
 import Testing
 
@@ -16,7 +17,7 @@ import Testing
 func makeRecordCache<Row: CacheRow>(_ row: Row.Type) throws -> RecordCache<Row> {
     let schema = Schema([Row.self, CachedSpan.self])
     let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-    let container = try ModelContainer(for: schema, configurations: [configuration])
+    let container = try SerializedStore.connect { try ModelContainer(for: schema, configurations: [configuration]) }
     return RecordCache<Row>(modelContainer: container)
 }
 

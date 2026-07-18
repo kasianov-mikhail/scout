@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import Support
 import Testing
 
 @testable import Scout
@@ -34,30 +35,32 @@ struct MigrationTests {
                 .appendingPathComponent(UUID().uuidString)
                 .appendingPathExtension("sqlite")
 
-            let oldCoordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-            let oldStore = try oldCoordinator.addPersistentStore(type: .sqlite, at: storeURL)
-            try oldCoordinator.remove(oldStore)
+            try SerializedStore.connect {
+                let oldCoordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+                let oldStore = try oldCoordinator.addPersistentStore(type: .sqlite, at: storeURL)
+                try oldCoordinator.remove(oldStore)
 
-            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: current)
-            let options: [String: Any] = [
-                NSMigratePersistentStoresAutomaticallyOption: true,
-                NSInferMappingModelAutomaticallyOption: true,
-            ]
+                let coordinator = NSPersistentStoreCoordinator(managedObjectModel: current)
+                let options: [String: Any] = [
+                    NSMigratePersistentStoresAutomaticallyOption: true,
+                    NSInferMappingModelAutomaticallyOption: true,
+                ]
 
-            do {
-                let store = try coordinator.addPersistentStore(
-                    ofType: NSSQLiteStoreType,
-                    configurationName: nil,
-                    at: storeURL,
-                    options: options
-                )
-                let metadata = coordinator.metadata(for: store)
-                #expect(current.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata))
-            } catch {
-                Issue.record("Store created by \(versionURL.lastPathComponent) failed to migrate: \(error)")
+                do {
+                    let store = try coordinator.addPersistentStore(
+                        ofType: NSSQLiteStoreType,
+                        configurationName: nil,
+                        at: storeURL,
+                        options: options
+                    )
+                    let metadata = coordinator.metadata(for: store)
+                    #expect(current.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata))
+                } catch {
+                    Issue.record("Store created by \(versionURL.lastPathComponent) failed to migrate: \(error)")
+                }
+
+                try coordinator.destroyPersistentStore(at: storeURL, ofType: NSSQLiteStoreType)
             }
-
-            try coordinator.destroyPersistentStore(at: storeURL, ofType: NSSQLiteStoreType)
         }
     }
 }
