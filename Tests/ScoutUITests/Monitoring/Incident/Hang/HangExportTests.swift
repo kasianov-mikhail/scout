@@ -32,7 +32,7 @@ struct HangExportTests {
 
         #expect(text.hasPrefix("# Scout Hang — Main Thread Blocked"))
         #expect(text.contains(ExportFormat.timestamp(at(0))))
-        #expect(text.contains("Duration: 4.2s"))
+        #expect(text.contains("Duration: 4.2 s"))
         #expect(text.contains("Reason: found nil"))
         #expect(text.contains("## Stack Trace"))
         #expect(text.contains("0 A 0x1 f + 1"))
@@ -42,7 +42,7 @@ struct HangExportTests {
     @Test("A bare hang exports just its title and duration")
     func testSingleHangExportOmitsEmptyParts() {
         let hang = Hang.stub(name: "E", reason: nil, stackTrace: [], duration: 3.5, date: nil)
-        #expect(HangExport(hang: hang).text == "# Scout Hang — E\n\nDuration: 3.5s")
+        #expect(HangExport(hang: hang).text == "# Scout Hang — E\n\nDuration: 3.5 s")
     }
 
     @Test("A group renders its summary, top frame, and occurrence rows")
@@ -77,12 +77,12 @@ struct HangExportTests {
         #expect(text.hasPrefix("# Scout Hang Issue — Image Layout Pass"))
         #expect(text.contains("2 occurrences · 1 device · 1 session"))
         #expect(text.contains("First seen") && text.contains("Last seen"))
-        #expect(text.contains("Max duration: 9.8s"))
+        #expect(text.contains("Max duration: 9.8 s"))
         #expect(text.contains("Top frame: 2 Scout 0xdef layout + 99"))
         #expect(text.contains("## Occurrences"))
         #expect(
             text.contains(
-                "- \(ExportFormat.timestamp(at(3600)))  9.8s  (device \(ExportFormat.shortID(device)), session \(ExportFormat.shortID(session)))"
+                "- \(ExportFormat.timestamp(at(3600)))  9.8 s  (device \(ExportFormat.shortID(device)), session \(ExportFormat.shortID(session)))"
             )
         )
     }

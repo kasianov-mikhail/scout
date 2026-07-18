@@ -85,7 +85,7 @@ struct HangGroupDetailView: View {
 
             Spacer()
 
-            Text(verbatim: hang.durationText)
+            Text(verbatim: hang.duration.duration)
                 .font(.footnote)
                 .monospacedDigit()
                 .foregroundStyle(hang.severity.color)
