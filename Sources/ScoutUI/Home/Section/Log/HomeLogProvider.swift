@@ -15,10 +15,24 @@ class HomeLogProvider: ObservableObject, Provider {
     @Published var period: Period {
         didSet {
             UserDefaults.standard.set(period.rawValue, forKey: "scout_home_log_period")
+            rebuildReport()
         }
     }
 
-    @Published private var results: [Period: ProviderResult<Output>] = [:]
+    @Published private var results: [Period: ProviderResult<Output>] = [:] {
+        didSet { rebuildReport() }
+    }
+
+    // Device visits back the "Devices" row of the report; the log section feeds
+    // them in from its sibling DevicesProvider as they arrive.
+    @Published var visits: [DeviceVisit] = [] {
+        didSet { rebuildReport() }
+    }
+
+    // Derived from the current period's series, visits, and period once per
+    // change, so view body re-evaluations (scroll, auto-refresh) read the cached
+    // report instead of rebuilding it and its per-category passes every render.
+    private(set) var report: LogReport?
 
     init() {
         self.period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
@@ -27,6 +41,14 @@ class HomeLogProvider: ObservableObject, Provider {
     var result: ProviderResult<Output>? {
         get { results[period] }
         set { results[period] = newValue }
+    }
+
+    private func rebuildReport() {
+        guard let series = try? result?.get() else {
+            report = nil
+            return
+        }
+        report = LogReport(series: series, visits: visits, period: period)
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {
