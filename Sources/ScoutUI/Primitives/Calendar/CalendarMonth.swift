@@ -48,8 +48,7 @@ struct CalendarMonth {
     }
 
     var weeks: [[Day]] {
-        let weekday = calendar.component(.weekday, from: month)
-        let leading = (weekday + 5) % 7
+        let leading = calendar.mondayBasedWeekday(from: month)
         let first = month.addingDay(-leading)
         let days = (0..<42).map { offset -> Day in
             let date = first.addingDay(offset)
