@@ -56,6 +56,27 @@ struct HostedQueryEncodingTests {
         #expect(queryItems(of: url)["values"] == expected)
     }
 
+    @Test("An explicit source is carried as a query parameter")
+    func seriesSourceIsEncoded() throws {
+        let url = try #require(
+            database.seriesEndpoint(
+                for: SeriesQuery(name: "Session", source: .event, range: day..<day.addingDay())
+            )
+        )
+
+        #expect(queryItems(of: url)["source"] == "event")
+        #expect(queryItems(of: url)["name"] == "Session")
+    }
+
+    @Test("An absent source omits the parameter")
+    func seriesSourceOmittedWhenNil() throws {
+        let url = try #require(
+            database.seriesEndpoint(for: SeriesQuery(name: "Session", range: day..<day.addingDay()))
+        )
+
+        #expect(queryItems(of: url)["source"] == nil)
+    }
+
     @Test("The lookup field list is percent-encoded")
     func lookupFieldsAreEncoded() throws {
         let url = try #require(database.recordEndpoint(recordName: "abc", fields: ["a b", "c+d"]))

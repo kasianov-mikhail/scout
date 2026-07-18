@@ -16,13 +16,10 @@ struct NativeSeries {
         var intTotals: [GroupKey: [Date: Double]] = [:]
         var doubleTotals: [GroupKey: [Date: Double]] = [:]
 
-        switch query.values {
-        case .int:
+        if query.values != .double {
             try await collectInt(into: &intTotals, store: store)
-        case .double:
-            try await collectMetrics(entity: DoubleMetricsEntry.recordType, into: &doubleTotals, store: store)
-        case nil:
-            try await collectInt(into: &intTotals, store: store)
+        }
+        if query.values != .int && collectsDoubleMetrics {
             try await collectMetrics(entity: DoubleMetricsEntry.recordType, into: &doubleTotals, store: store)
         }
 
@@ -52,28 +49,57 @@ struct NativeSeries {
         }
     }
 
+    private var collectsDoubleMetrics: Bool {
+        switch query.source {
+        case nil, .metric:
+            true
+        case .event, .lifecycle:
+            false
+        }
+    }
+
     private func collectInt(into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
+        switch query.source {
+        case .event:
+            try await collectEvents(name: query.name, into: &totals, store: store)
+        case .lifecycle:
+            if let source = query.name.flatMap(Self.lifecycle(named:)) {
+                try await collectCounts(of: source, into: &totals, store: store)
+            }
+        case .metric:
+            try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+        case nil:
+            try await collectGuessed(into: &totals, store: store)
+        }
+    }
+
+    private func collectGuessed(into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
         switch (query.name, query.category) {
         case (nil, nil):
             try await collectEvents(name: nil, into: &totals, store: store)
             try await collectCounts(of: .crashes, into: &totals, store: store)
             try await collectCounts(of: .hangs, into: &totals, store: store)
             try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
-        case (SessionEntry.recordType, nil):
-            try await collectCounts(of: .sessions, into: &totals, store: store)
-        case (CrashEntry.recordType, nil):
-            try await collectCounts(of: .crashes, into: &totals, store: store)
-        case (HangEntry.recordType, nil):
-            try await collectCounts(of: .hangs, into: &totals, store: store)
-        case (VersionEntry.recordType, nil):
-            try await collectCounts(of: .installs, into: &totals, store: store)
-        case (MarkerEntry.crashName, nil):
-            try await collectCounts(of: .firstCrashes, into: &totals, store: store)
         case (let name?, nil):
-            try await collectEvents(name: name, into: &totals, store: store)
-            try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+            if let source = Self.lifecycle(named: name) {
+                try await collectCounts(of: source, into: &totals, store: store)
+            } else {
+                try await collectEvents(name: name, into: &totals, store: store)
+                try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+            }
         default:
             try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+        }
+    }
+
+    private static func lifecycle(named name: String) -> Source? {
+        switch name {
+        case SessionEntry.recordType: .sessions
+        case CrashEntry.recordType: .crashes
+        case HangEntry.recordType: .hangs
+        case VersionEntry.recordType: .installs
+        case MarkerEntry.crashName: .firstCrashes
+        default: nil
         }
     }
 

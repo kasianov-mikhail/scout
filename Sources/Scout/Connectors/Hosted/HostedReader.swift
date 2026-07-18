@@ -75,6 +75,9 @@ extension HTTPDatabase: DatabaseReader {
         if let values = query.values {
             params.append("values=\(Self.encode(values.rawValue))")
         }
+        if let source = query.source {
+            params.append("source=\(source.rawValue)")
+        }
         if query.byVersion {
             params.append("by=version")
         }
