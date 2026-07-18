@@ -32,16 +32,7 @@ extension HTTPDatabase: DatabaseReader {
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        let allowed = CharacterSet.urlPathAllowed.subtracting(CharacterSet(charactersIn: "/"))
-        let name = recordName.addingPercentEncoding(withAllowedCharacters: allowed) ?? recordName
-
-        var path = "api/v1/records/\(name)"
-        if let fields {
-            let list = fields.joined(separator: ",")
-            path += "?fields=\(list.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? list)"
-        }
-
-        guard let endpoint = URL(string: path, relativeTo: url) else {
+        guard let endpoint = recordEndpoint(recordName: recordName, fields: fields) else {
             throw HTTPDatabaseError(status: 0, reason: "Malformed record URL")
         }
 
@@ -49,7 +40,27 @@ extension HTTPDatabase: DatabaseReader {
         return try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord()
     }
 
+    func recordEndpoint(recordName: String, fields: [String]?) -> URL? {
+        let allowed = CharacterSet.urlPathAllowed.subtracting(CharacterSet(charactersIn: "/"))
+        let name = recordName.addingPercentEncoding(withAllowedCharacters: allowed) ?? recordName
+
+        var path = "api/v1/records/\(name)"
+        if let fields {
+            path += "?fields=\(Self.encode(fields.joined(separator: ",")))"
+        }
+        return URL(string: path, relativeTo: url)
+    }
+
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+        guard let endpoint = seriesEndpoint(for: query) else {
+            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
+        }
+
+        let data = try await perform(request(for: endpoint, method: "GET"))
+        return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
+    }
+
+    func seriesEndpoint(for query: SeriesQuery) -> URL? {
         var params = [
             "bucket=\(query.bucket.rawValue)",
             "from=\(query.range.lowerBound.millisecondsSince1970)",
@@ -62,23 +73,19 @@ extension HTTPDatabase: DatabaseReader {
             params.append("category=\(Self.encode(category))")
         }
         if let values = query.values {
-            params.append("values=\(values)")
+            params.append("values=\(Self.encode(values))")
         }
         if query.byVersion {
             params.append("by=version")
         }
 
-        let path = "api/v1/metrics/series?" + params.joined(separator: "&")
-        guard let endpoint = URL(string: path, relativeTo: url) else {
-            throw HTTPDatabaseError(status: 0, reason: "Malformed metrics URL")
-        }
-
-        let data = try await perform(request(for: endpoint, method: "GET"))
-        return try JSONDecoder().decode(MetricSeriesResponse.self, from: data).series
+        return URL(string: "api/v1/metrics/series?" + params.joined(separator: "&"), relativeTo: url)
     }
 
+    private static let queryAllowed = CharacterSet.urlQueryAllowed.subtracting(CharacterSet(charactersIn: "&=+?/"))
+
     private static func encode(_ value: String) -> String {
-        value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? value
+        value.addingPercentEncoding(withAllowedCharacters: queryAllowed) ?? value
     }
 
     private struct MetricSeriesResponse: Decodable {

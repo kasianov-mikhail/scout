@@ -265,6 +265,34 @@ struct ServerContractTests {
         #expect(bucketSeries.points.map(\.value.doubleValue).reduce(0, +) == 2)
     }
 
+    @Test("A metric series round-trips a name carrying reserved query characters")
+    func specialCharacterNameSeries() async throws {
+        let database = try makeDatabase()
+        // Reserved delimiters (& = + ? /) and spaces must survive percent
+        // encoding on the way to the server, or the name filter silently
+        // mismatches and the series comes back empty.
+        let marker = "Save & Exit / C++ ?=\(UUID().uuidString)"
+        let category = LatencyBuckets.category(for: 0.1)
+
+        try await database.write(records: [
+            makeMetric(name: marker, category: category),
+            makeMetric(name: marker, category: category),
+        ])
+
+        let series = try await database.series(
+            matching: SeriesQuery(
+                name: marker,
+                category: category,
+                values: Int.seriesValues,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let matched = try #require(series.first { $0.name == marker })
+
+        #expect(matched.category == category)
+        #expect(matched.points.map(\.value.doubleValue).reduce(0, +) == 2)
+    }
+
     @Test("A reachability ping succeeds against a live server")
     func reachabilityPing() async throws {
         let database = try makeDatabase()
