@@ -21,7 +21,7 @@ struct EventStatList: View {
                 .autoRefresh {
                     await provider.fetchLatest(for: query, in: database)
                 }
-                .navigationTitle(range.label(using: eventRangeDateFormatter))
+                .navigationTitle(range.label(using: rangeDateFormatter))
                 .font(.caption)
         }
     }
@@ -30,13 +30,6 @@ struct EventStatList: View {
         EventQuery(name: eventName, dates: range)
     }
 }
-
-private let eventRangeDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US")
-    formatter.dateFormat = "d MMM"
-    return formatter
-}()
 
 #Preview {
     let provider = EventProvider()
