@@ -15,7 +15,7 @@ struct HangExport {
         IncidentExport(
             incident: hang,
             kind: "Hang",
-            detail: [.blank, .text("Duration: \(hang.durationText)")]
+            detail: [.blank, .text("Duration: \(hang.duration.duration)")]
         ).text
     }
 }
@@ -28,7 +28,7 @@ struct HangGroupExport {
             group: group,
             kind: "Hang",
             summaryDetail: [.blank, .text("Max duration: \(group.durationText)")],
-            rowSuffix: { "  \($0.durationText)" }
+            rowSuffix: { "  \($0.duration.duration)" }
         ).text
     }
 }
