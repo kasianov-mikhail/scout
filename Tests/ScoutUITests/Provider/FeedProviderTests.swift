@@ -67,6 +67,58 @@ struct FeedProviderTests {
         #expect(provider.records?.count == 1)
         #expect(provider.message == nil)
     }
+
+    @Test("A refresh that resurrects an exhausted cursor does not let the next fetchMore duplicate records")
+    func fetchMoreStaysDedupedAfterRefreshResurrectsCursor() async throws {
+        let page1 = [
+            Record.eventStub(name: "a", sessionID: UUID(), date: Date()),
+            Record.eventStub(name: "b", sessionID: UUID(), date: Date()),
+        ]
+        let page2 = [
+            Record.eventStub(name: "c", sessionID: UUID(), date: Date()),
+            Record.eventStub(name: "d", sessionID: UUID(), date: Date()),
+        ]
+        let database = PagingDatabase(page1: page1, page2: page2)
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let firstCursor = try #require(provider.cursor)
+        await provider.fetchMore(cursor: firstCursor, in: database)
+        #expect(provider.cursor == nil)
+        #expect(provider.records?.count == 4)
+
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let resurrected = try #require(provider.cursor)
+        await provider.fetchMore(cursor: resurrected, in: database)
+
+        let ids = try #require(provider.records).map(\.id)
+        #expect(Set(ids).count == ids.count)
+        #expect(ids.count == 4)
+    }
+}
+
+private final class PagingDatabase: DatabaseReader, @unchecked Sendable {
+    private let page1: [Record]
+    private let page2: [Record]
+
+    init(page1: [Record], page2: [Record]) {
+        self.page1 = page1
+        self.page2 = page2
+    }
+
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+        let page2 = self.page2
+        return RecordChunk(records: page1, cursor: RecordCursor { _ in RecordChunk(records: page2, cursor: nil) })
+    }
+
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+        try await read(matching: query, fields: fields)
+    }
+
+    func lookup(recordName: String, fields: [String]?) async throws -> Record { throw RecordNotFoundError() }
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] { [] }
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] { [] }
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] { [] }
 }
 
 private struct RefreshFailure: Error {}
