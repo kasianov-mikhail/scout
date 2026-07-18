@@ -14,7 +14,7 @@ enum CachedMetricSeries {
             scope, "series",
             query.name ?? "*",
             query.category ?? "*",
-            query.values ?? "*",
+            query.values?.rawValue ?? "*",
             query.bucket.rawValue,
             query.byVersion ? "version" : "*",
             query.source?.rawValue ?? "*",

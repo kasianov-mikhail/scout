@@ -155,6 +155,7 @@ jobs:
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
             ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
+            -parallel-testing-enabled NO \
             -resultBundlePath TestResults.xcresult \
             test-without-building
 

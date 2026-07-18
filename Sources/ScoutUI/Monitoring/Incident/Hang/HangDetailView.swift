@@ -21,7 +21,7 @@ struct HangDetailView: View {
                 HStack(spacing: 6) {
                     Image(systemName: hang.severity.systemImage)
                         .foregroundStyle(hang.severity.color)
-                    Text(verbatim: "\(hang.severity.label) · \(hang.durationText)")
+                    Text(verbatim: "\(hang.severity.label) · \(hang.duration.duration)")
                         .fontWeight(.bold)
                         .foregroundStyle(hang.severity.color)
                 }

@@ -127,10 +127,37 @@ extension IncidentBreakdownTests {
             makeContext(),
         ]
 
-        let other = try #require(breakdown.devices.first { $0.label == "Other" })
+        let other = try #require(breakdown.devices.first { $0.kind == .other })
         let matched = breakdown.records(from: records, in: .devices, matching: other)
 
         #expect(matched.count == 2)
         #expect(Set(matched.compactMap(\.deviceID)) == [deviceB, deviceC])
+    }
+
+    @Test("Keeps a real Other label separate from the aggregate segment")
+    func distinguishesRealOtherLabelFromAggregate() throws {
+        let deviceOther = UUID()
+        let deviceX = UUID()
+        let deviceY = UUID()
+        let breakdown = IncidentBreakdown(
+            devices: IncidentBreakdown.segments(from: ["Other", "Other", "X", "Y"], top: 1),
+            osVersions: [],
+            modelsByDevice: [deviceOther: "Other", deviceX: "X", deviceY: "Y"]
+        )
+        let records = [
+            makeContext(deviceID: deviceOther),
+            makeContext(deviceID: deviceOther),
+            makeContext(deviceID: deviceX),
+            makeContext(deviceID: deviceY),
+        ]
+
+        let value = try #require(breakdown.devices.first { $0.kind == .value("Other") })
+        let matchedValue = breakdown.records(from: records, in: .devices, matching: value)
+        #expect(matchedValue.count == 2)
+        #expect(matchedValue.allSatisfy { $0.deviceID == deviceOther })
+
+        let aggregate = try #require(breakdown.devices.first { $0.kind == .other })
+        let matchedAggregate = breakdown.records(from: records, in: .devices, matching: aggregate)
+        #expect(Set(matchedAggregate.compactMap(\.deviceID)) == [deviceX, deviceY])
     }
 }

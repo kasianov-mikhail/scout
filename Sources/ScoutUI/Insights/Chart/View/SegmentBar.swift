@@ -11,11 +11,45 @@ import Scout
 import SwiftUI
 
 struct Segment: Identifiable, Equatable {
-    let label: String
+    enum Kind: Equatable {
+        case value(String)
+        case other
+    }
+
     let count: Int
     let color: Color
+    let kind: Kind
 
-    var id: String { label }
+    init(label: String, count: Int, color: Color) {
+        self.init(count: count, color: color, kind: .value(label))
+    }
+
+    init(count: Int, color: Color, kind: Kind) {
+        self.count = count
+        self.color = color
+        self.kind = kind
+    }
+
+    var label: String {
+        switch kind {
+        case .value(let label): label
+        case .other: "Other"
+        }
+    }
+
+    var value: String? {
+        switch kind {
+        case .value(let label): label
+        case .other: nil
+        }
+    }
+
+    var id: String {
+        switch kind {
+        case .value(let label): "value:\(label)"
+        case .other: "other"
+        }
+    }
 }
 
 struct SegmentBar: View {

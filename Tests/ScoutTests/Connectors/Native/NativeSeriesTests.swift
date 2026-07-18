@@ -185,4 +185,21 @@ struct NativeSeriesTests {
         #expect(latency.category == "recorder")
         #expect(latency.points.map(\.value) == [.double(1.5)])
     }
+
+    @Test("A pipe in the category keeps the metric in its own series")
+    func pipeInCategory() async throws {
+        var record = Record(recordType: DoubleMetricsEntry.recordType, recordID: "m-1")
+        record["name"] = "renew"
+        record["category"] = "billing|eu"
+        record["value"] = 2.5
+        record["date"] = TestDate.reference.addingTimeInterval(10 * .hour)
+        record["session_id"] = "session-1"
+        try await database.write(record: record)
+
+        let series = try await database.series(matching: SeriesQuery(bucket: .hour, range: range))
+        let renew = try #require(series.first { $0.name == "renew" })
+
+        #expect(renew.category == "billing|eu")
+        #expect(renew.points.map(\.value) == [.double(2.5)])
+    }
 }
