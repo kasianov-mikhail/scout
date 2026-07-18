@@ -20,29 +20,59 @@ extension ActivityPoint {
             users[visit.date.startOfDay, default: []].insert(visit.user)
         }
 
+        let firstDay = range.lowerBound.startOfDay
+
+        var week = UserWindow()
+        var month = UserWindow()
+        for offset in 1...7 {
+            week.insert(users[firstDay.addingTimeInterval(-TimeInterval(offset) * .day)])
+        }
+        for offset in 1...30 {
+            month.insert(users[firstDay.addingTimeInterval(-TimeInterval(offset) * .day)])
+        }
+
         var points: [ActivityPoint] = []
-        var day = range.lowerBound.startOfDay
+        var day = firstDay
 
         while day < range.upperBound {
             defer { day = day.addingTimeInterval(.day) }
 
-            let dau = users[day]?.count ?? 0
-            let wau = distinctUsers(in: users, ending: day, days: 7)
-            let mau = distinctUsers(in: users, ending: day, days: 30)
+            week.insert(users[day])
+            month.insert(users[day])
+            week.remove(users[day.addingTimeInterval(-7 * .day)])
+            month.remove(users[day.addingTimeInterval(-30 * .day)])
 
+            let mau = month.count
             guard mau > 0 else { continue }
-            points.append(ActivityPoint(date: day.millisecondsSince1970, dau: dau, wau: wau, mau: mau))
+
+            let dau = users[day]?.count ?? 0
+            points.append(ActivityPoint(date: day.millisecondsSince1970, dau: dau, wau: week.count, mau: mau))
         }
-        return points.sorted { $0.date < $1.date }
+        return points
+    }
+}
+
+private struct UserWindow {
+    private var counts: [String: Int] = [:]
+
+    var count: Int { counts.count }
+
+    mutating func insert(_ users: Set<String>?) {
+        guard let users else { return }
+        for user in users {
+            counts[user, default: 0] += 1
+        }
     }
 
-    private static func distinctUsers(in users: [Date: Set<String>], ending day: Date, days: Int) -> Int {
-        var combined: Set<String> = []
-        for offset in 0..<days {
-            if let active = users[day.addingTimeInterval(-TimeInterval(offset) * .day)] {
-                combined.formUnion(active)
+    mutating func remove(_ users: Set<String>?) {
+        guard let users else { return }
+        for user in users where counts[user] != nil {
+            let remaining = counts[user]! - 1
+            if remaining > 0 {
+                counts[user] = remaining
+            } else {
+                counts[user] = nil
             }
         }
-        return combined.count
     }
 }
