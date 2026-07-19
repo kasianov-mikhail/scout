@@ -7,12 +7,6 @@
 
 import Foundation
 
-/// A weekly retention cohort.
-///
-/// The install week, its size, and the retained fraction at each ``dayOffsets``
-/// milestone (`nil` where the milestone has not elapsed). It is what a
-/// ``Database`` returns from its retention query.
-///
 package struct RetentionCohort: Identifiable, Hashable, Sendable {
     package static let dayOffsets = [0, 1, 3, 7, 14, 30]
     package static let summaryOffsets = [1, 7, 30]
@@ -29,10 +23,6 @@ package struct RetentionCohort: Identifiable, Hashable, Sendable {
 }
 
 extension RetentionCohort {
-    /// Maps a wire cohort — a week start in epoch milliseconds, an install
-    /// count, and a retained count per ``dayOffsets`` milestone (`nil` where the
-    /// milestone has not elapsed) — into display rates.
-    ///
     package init(date: Int64, size: Int, retained: [Int?]) {
         self.init(
             id: Date(millisecondsSince1970: date),
