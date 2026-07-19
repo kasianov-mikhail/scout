@@ -28,7 +28,6 @@ struct HomeMetricSection: View {
                 )
             }
             .buttonStyle(.plain)
-            .disabled(period.activityPeriod == nil)
 
             Button {
                 path.append(.sessions)
