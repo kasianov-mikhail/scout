@@ -51,6 +51,9 @@ struct HomeList: View {
                 path: $path
             )
         }
+        .listStyle(.plain)
+        .scrollContentBackground(.hidden)
+        .globalSearch()
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:
@@ -67,8 +70,6 @@ struct HomeList: View {
                 ReleaseHealthView(provider: releases)
             }
         }
-        .listStyle(.plain)
-        .scrollContentBackground(.hidden)
         .rotatingProviders([sessions, activities, logs, releases, devices])
     }
 }
