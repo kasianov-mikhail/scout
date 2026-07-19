@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 struct EventQuery: Equatable {
-    private static let allLevels = Set(EventLevel.allCases)
+    static let allLevels = Set(EventLevel.allCases)
 
     var levels = EventQuery.allLevels
     var text = ""
@@ -17,6 +17,12 @@ struct EventQuery: Equatable {
     var sessionID: UUID?
     var deviceID: UUID?
     var dates: Range<Date>?
+
+    var criteria: EventQuery {
+        var criteria = self
+        criteria.text = ""
+        return criteria
+    }
 
     func buildFilters() -> [RecordQuery.Filter] {
         var filters: [RecordQuery.Filter] = []

@@ -68,6 +68,13 @@ struct EventQueryTests {
         #expect(filters.contains(RecordQuery.Filter(field: "date", op: .lessThan, value: .date(end))))
     }
 
+    @Test("Criteria drops only the search text") func criteria() {
+        let sessionID = UUID()
+        let query = EventQuery(levels: [.error], text: "Search", name: "Login", sessionID: sessionID)
+
+        #expect(query.criteria == EventQuery(levels: [.error], name: "Login", sessionID: sessionID))
+    }
+
     @Test("Multiple filters combine") func combined() {
         let filters = EventQuery(levels: [.error], text: "Search", name: "Login").buildFilters()
 
