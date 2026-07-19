@@ -10,91 +10,79 @@ import SwiftUI
 
 struct FilterView: View {
     @Environment(\.dismiss) var dismiss
-    @StateObject var criteria: FilterCriteria<EventLevel>
+    @StateObject var draft: FilterDraft
 
-    init(selected: Binding<Set<EventLevel>>) {
-        _criteria = StateObject(wrappedValue: FilterCriteria(selected: selected))
+    init(query: Binding<EventQuery>) {
+        _draft = StateObject(wrappedValue: FilterDraft(query: query))
     }
 
     var body: some View {
         NavigationView {
-            List(EventLevel.allCases, id: \.rawValue) { level in
-                HStack {
-                    Image(systemName: "circle.fill")
-                        .imageScale(.medium)
-                        .foregroundStyle(level.color ?? .blue)
-                        .opacity(criteria.isSelected(level) ? 1 : 0)
-                    Text(level.description)
-                        .font(.callout)
-                    Spacer()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    FilterLevelsView(draft: draft)
+                    FilterPeriodView(draft: draft)
+                    FilterContextView(draft: draft)
                 }
-                .contentShape(Rectangle())
-                .trailingRowSeparator()
-                .onTapGesture {
-                    criteria.toggle(level)
-                }
+                .padding()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        criteria.reset()
+                        draft.reset()
                     } label: {
-                        Image(systemName: "arrow.counterclockwise")
+                        Text(verbatim: "Reset")
                     }
-                    .disabled(!criteria.isResetEnabled)
+                    .disabled(!draft.isResetEnabled)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        criteria.apply()
+                        draft.apply()
                         dismiss()
                     } label: {
-                        Image(systemName: "checkmark")
+                        Text(verbatim: "Apply")
                     }
-                    .disabled(!criteria.isApplyEnabled)
+                    .disabled(!draft.isApplyEnabled)
                     .fontWeight(.semibold)
                 }
             }
-            .padding(.top)
-            .listStyle(.plain)
-            .scrollDisabled(true)
             .navigationTitle(en: "Filter")
             .inlineNavigationTitle()
         }
-    }
-}
-
-struct FilterButton: View {
-    @Binding var levels: Set<EventLevel>
-
-    @State private var isFilterPresented = false
-
-    var body: some View {
-        Button {
-            isFilterPresented = true
-        } label: {
-            Text(verbatim: "Filter")
-        }
-        .sheet(isPresented: $isFilterPresented) {
-            FilterView(selected: $levels)
-                .presentationHeight(440)
-                .opaquePresentation()
-        }
-        .tint(.primary)
+        .presentationHeight(draft.isDateRangeEnabled ? 720 : 600)
     }
 }
 
 extension View {
-    // Gives a sheet a fixed height: a detent on iOS, an explicit golden-ratio
-    // frame on macOS, where sheets have no detents.
+    func softCell(selected: Bool = false) -> some View {
+        background(.blue.opacity(selected ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+extension View {
+    @ViewBuilder
     fileprivate func presentationHeight(_ height: CGFloat) -> some View {
         #if os(iOS)
-            presentationDetents([.height(height)])
+            if #available(iOS 16.4, *) {
+                presentationDetents([.height(height)])
+            } else {
+                self
+            }
         #else
             frame(width: height / 1.618, height: height)
         #endif
     }
 }
 
-#Preview {
-    FilterButton(levels: .constant([]))
+#Preview("Filter Form") {
+    Color.clear.sheet(isPresented: .constant(true)) {
+        FilterView(
+            query: .constant(
+                EventQuery(
+                    levels: [.error, .critical],
+                    dates: Date().startOfDay.addingDay(-7)..<Date().startOfDay
+                )
+            )
+        )
+    }
 }
