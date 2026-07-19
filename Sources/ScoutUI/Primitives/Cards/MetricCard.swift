@@ -21,11 +21,15 @@ struct MetricCard: View {
                 .padding(.leading, 1)
 
             HStack(alignment: .top) {
-                Group {
-                    if let summary {
-                        RedactedText(count: summary.count)
+                ZStack(alignment: .leading) {
+                    Text(verbatim: "0").hidden()
+
+                    if let count = summary?.count {
+                        Text(count == 0 ? "—" : count.compact)
+                    } else if summary != nil {
+                        Redacted(length: 5).font(.body)
                     } else {
-                        Text(verbatim: "—")
+                        Text(verbatim: "0")
                     }
                 }
                 .font(.system(size: 24, weight: .bold, design: .rounded))
@@ -45,8 +49,6 @@ struct MetricCard: View {
             Group {
                 if let series = summary?.series {
                     Sparkline(series: series, color: color)
-                } else if summary != nil {
-                    Sparkline(series: .placeholder, color: Color(.systemGray3)).redacted(reason: .placeholder)
                 } else {
                     Sparkline(series: .empty, color: color)
                 }

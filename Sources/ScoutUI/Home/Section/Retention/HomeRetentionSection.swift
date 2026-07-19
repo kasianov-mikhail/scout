@@ -21,11 +21,34 @@ struct HomeRetentionSection: View {
                 AllButton { path.append(.retention) }
             }
         }
-        .task { await retention.fetchIfNeeded(in: database) }
+        .task {
+            await retention.fetchIfNeeded(in: database)
+        }
 
         switch retention.result {
         case .success(let cohorts) where cohorts.count > 0:
-            RetentionContent(cohorts: cohorts, path: $path)
+            let stats = RetentionCohort.stats(for: cohorts)
+            let series = MiniChartSeries(values: stats.map { Int(($0.average * 100).rounded()) })
+
+            HomeRetentionRow(series: series) { path.append(.retention) }
+
+            ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
+                let rate = stats.first { $0.day == day }?.average
+
+                Button {
+                    path.append(.retention)
+                } label: {
+                    HStack {
+                        Text(verbatim: "Day \(day)")
+                            .font(.subheadline)
+                        Spacer()
+                        Text(verbatim: rate?.formatted(.retentionRate) ?? "—")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.green)
+                    }
+                }
+                .buttonStyle(.plain)
+            }
 
         case .success:
             Text(verbatim: "No results")
@@ -35,59 +58,25 @@ struct HomeRetentionSection: View {
                 .listRowSeparator(.hidden)
 
         default:
-            RetentionPlaceholder()
-        }
-    }
-}
-
-private struct RetentionContent: View {
-    let cohorts: [RetentionCohort]
-
-    @Binding var path: [HomeDestination]
-
-    var body: some View {
-        let stats = RetentionCohort.stats(for: cohorts)
-        let series = MiniChartSeries(values: stats.map { Int(($0.average * 100).rounded()) })
-
-        HomeRetentionRow(series: series) { path.append(.retention) }
-
-        ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
-            RetentionMilestoneRow(day: day, rate: stats.first { $0.day == day }?.average) {
-                path.append(.retention)
-            }
-        }
-    }
-}
-
-private struct RetentionPlaceholder: View {
-    var body: some View {
-        HomeRetentionRow(series: .placeholder) {}
-            .redacted(reason: .placeholder)
-
-        ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
-            RetentionMilestoneRow(day: day, rate: nil) {}
+            HomeRetentionRow(series: .placeholder) {}
                 .redacted(reason: .placeholder)
-        }
-    }
-}
 
-private struct RetentionMilestoneRow: View {
-    let day: Int
-    let rate: Double?
-    let action: () -> Void
-
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Text(verbatim: "Day \(day)")
-                    .font(.subheadline)
-                Spacer()
-                Text(verbatim: rate?.formatted(.retentionRate) ?? "—")
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.green)
+            ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
+                Button {
+                } label: {
+                    HStack {
+                        Text(verbatim: "Day \(day)")
+                            .font(.subheadline)
+                        Spacer()
+                        Text(verbatim: "—")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.green)
+                    }
+                }
+                .buttonStyle(.plain)
+                .redacted(reason: .placeholder)
             }
         }
-        .buttonStyle(.plain)
     }
 }
 
