@@ -23,10 +23,6 @@ package struct SeriesQuery: Sendable {
         case hour, day, week
     }
 
-    // Picks the namespace a name resolves against so a custom event and a
-    // built-in counter can share a name (e.g. "Session") without one shadowing
-    // the other. When absent the backend infers the namespace from the name,
-    // preserving the original string-guess behavior for existing callers.
     package enum Source: String, Sendable {
         case event, lifecycle, metric
     }
