@@ -72,9 +72,10 @@ final class RecordCachePerformanceTests: XCTestCase {
 @available(iOS 17, macOS 14, *)
 final class CachedDatabasePerformanceTests: XCTestCase {
     func testCachedSeriesReadPerformance() throws {
-        try XCTSkipIf(true, "Flakes in CI; temporarily disabled")
         let base = SpyDatabase()
-        base.series = makeSeries(versions: 40, points: 800)
+        // Sized so the warm-up store finishes well inside runBlocking's timeout:
+        // at 40×800 the 32k-row SwiftData insert alone brushed 60s on CI runners.
+        base.series = makeSeries(versions: 10, points: 400)
         let cutoff = Date(timeIntervalSince1970: 3_000_000)
         let database = CachedDatabase(
             base: base,
