@@ -44,7 +44,9 @@ struct AlertListView: View {
                 chips(statuses)
 
                 Header(title: "Rules") {
-                    FiringBadge(count: statuses.firingCount)
+                    if statuses.firingCount > 0 {
+                        CountBadge(count: statuses.firingCount)
+                    }
                 }
 
                 ForEach(statuses, id: \.rule) { status in
@@ -116,21 +118,6 @@ private struct AlertChip: View {
     private var text: String {
         guard let current = status.reading.recent.last else { return status.rule.metric.title }
         return "\(status.rule.metric.title) \(status.rule.metric.format(current))"
-    }
-}
-
-struct FiringBadge: View {
-    let count: Int
-
-    var body: some View {
-        if count > 0 {
-            Text(verbatim: String(count))
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.white)
-                .padding(.horizontal, 7)
-                .padding(.vertical, 2)
-                .background(.red, in: Capsule())
-        }
     }
 }
 

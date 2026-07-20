@@ -28,4 +28,8 @@ extension [AlertStatus] {
     var firingCount: Int {
         count { if case .firing = $0.outcome.state { true } else { false } }
     }
+
+    var allHealthy: Bool {
+        count > 0 && allSatisfy { $0.outcome.state == .armed }
+    }
 }
