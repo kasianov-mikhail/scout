@@ -18,6 +18,7 @@ struct GlobalSearchList: View {
         if hits.count > 0 {
             List(hits) { hit in
                 GlobalSearchRow(hit: hit, query: query)
+                    .listRowSeparator(hit.id == hits.first?.id ? .hidden : .automatic, edges: .top)
             }
             .listStyle(.plain)
         } else {

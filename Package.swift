@@ -40,7 +40,8 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "CScoutHang"
+            name: "CScoutHang",
+            path: "Sources/Scout/CScoutHang"
         ),
         .target(
             name: "Scout",
@@ -49,7 +50,7 @@ let package = Package(
                 .product(name: "Metrics", package: "swift-metrics"),
                 "CScoutHang",
             ],
-            exclude: ["Connectors"],
+            exclude: ["Connectors", "CScoutHang"],
             resources: [
                 .process("Persistence/ScoutModel.xcdatamodeld")
             ]
@@ -73,13 +74,15 @@ let package = Package(
             name: "ScoutUI",
             dependencies: [
                 "Scout"
-            ]
+            ],
+            exclude: ["Cache"]
         ),
         .target(
             name: "Cache",
             dependencies: [
                 "Scout"
-            ]
+            ],
+            path: "Sources/ScoutUI/Cache"
         ),
         .target(
             name: "Support",
@@ -119,7 +122,8 @@ let package = Package(
                 "ScoutUI",
                 "HostedConnector",
                 "Support",
-            ]
+            ],
+            exclude: ["Cache"]
         ),
         .testTarget(
             name: "CacheTests",
@@ -127,6 +131,7 @@ let package = Package(
                 "Cache",
                 "Scout",
             ],
+            path: "Tests/ScoutUITests/Cache",
             // Cache autolinks SwiftData (iOS 17+), so a bundle linking it fails
             // to load on the iOS 16 simulator. Weak-link the framework so the bundle
             // loads; the SwiftData suites are @available(iOS 17)-gated and skip there.

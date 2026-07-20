@@ -15,7 +15,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # The fast PR checks (lint, the Core Data model rules, the wire-change probe)
+  # live in sibling workflows, out of `needs` reach. This cheap ubuntu job waits
+  # for their check-runs and fails if any fails, so the 30-minute macOS diff
+  # below never starts behind an already-red fast check.
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    permissions:
+      contents: read
+      checks: read
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
+      - name: Wait for the fast checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHAS: ${{ github.event.pull_request.head.sha }} ${{ github.sha }}
+          CHECKS: lint model-versions changes
+        run: .github/scripts/wait-for-checks.sh
+
   api-breakage:
+    needs: gate
     runs-on: macos-26
     timeout-minutes: 30
 
