@@ -21,7 +21,7 @@ extension Hang: Fixture {
 
         return Hang(
             name: name,
-            fingerprint: CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value,
+            fingerprint: CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value,
             reason: reason,
             stackTrace: stackTrace,
             duration: 6.4,
