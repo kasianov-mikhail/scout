@@ -35,8 +35,7 @@ struct LogHangTests {
         #expect(results.count == 1)
 
         let object = try #require(results.first)
-        let expectedFingerprint = CrashFingerprint(name: hang.name, reason: hang.reason, stackTrace: hang.stackTrace)
-            .value
+        let expectedFingerprint = CrashFingerprint(name: hang.name, reason: nil, stackTrace: hang.stackTrace).value
         #expect(object.name == "Main Thread Blocked")
         #expect(object.fingerprint == expectedFingerprint)
         #expect(object.reason == "Main thread unresponsive for 4.2s")
@@ -46,6 +45,23 @@ struct LogHangTests {
         #expect(object.launchID == hang.launchID)
         #expect(object.sessionID == hang.sessionID)
         #expect(object.appVersion == hang.appVersion)
+    }
+
+    @Test("Hangs with the same stack share a fingerprint despite differing durations")
+    func sharesFingerprintAcrossDurations() throws {
+        let first = makeHangInfo(
+            name: "Main Thread Blocked", reason: "Main thread unresponsive for 3.2s", stackTrace: ["frame0"],
+            duration: 3.2)
+        let second = makeHangInfo(
+            name: "Main Thread Blocked", reason: "Main thread unresponsive for 5.7s", stackTrace: ["frame0"],
+            duration: 5.7)
+
+        try logHang(first, deviceID: deviceID, context: context)
+        try logHang(second, deviceID: deviceID, context: context)
+
+        let fingerprints = try context.fetchAll(HangEntry.self).map(\.fingerprint)
+        #expect(fingerprints.count == 2)
+        #expect(Set(fingerprints).count == 1)
     }
 
     @Test("Preserves sessionID captured at hang time, not the recovery session")

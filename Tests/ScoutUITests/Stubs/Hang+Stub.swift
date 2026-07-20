@@ -25,7 +25,7 @@ extension Hang {
     ) -> Hang {
         Hang(
             name: name,
-            fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value,
+            fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value,
             reason: reason,
             stackTrace: stackTrace,
             duration: duration,
