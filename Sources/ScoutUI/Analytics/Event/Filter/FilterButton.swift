@@ -18,10 +18,17 @@ struct FilterButton: View {
         } label: {
             Text(verbatim: "Filter")
         }
-        .sheet(isPresented: $isFilterPresented) {
-            FilterView(query: $query)
+        #if os(iOS)
+            .fullScreenCover(isPresented: $isFilterPresented) {
+                FilterView(query: $query)
                 .opaquePresentation()
-        }
+            }
+        #else
+            .sheet(isPresented: $isFilterPresented) {
+                FilterView(query: $query)
+                .opaquePresentation()
+            }
+        #endif
         .tint(.primary)
     }
 }
