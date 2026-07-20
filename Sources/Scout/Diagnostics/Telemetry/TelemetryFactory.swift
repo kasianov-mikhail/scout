@@ -25,7 +25,7 @@ struct TelemetryFactory: MetricsFactory {
     }
 
     func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool) -> RecorderHandler {
-        TelemetryHandler.Idle()
+        TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
     }
 
     func makeTimer(label: String, dimensions: [(String, String)]) -> TimerHandler {

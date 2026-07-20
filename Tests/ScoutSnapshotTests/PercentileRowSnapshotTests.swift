@@ -20,9 +20,12 @@
         func metrics() {
             guard ViewSnapshot.isSupported else { return }
 
-            assertSnapshot(of: PercentileRow(percentiles: .sample).padding(), as: .scout(height: 80))
             assertSnapshot(
-                of: PercentileRow(percentiles: .sample).padding(),
+                of: PercentileRow(percentiles: .sample, formatter: \TimeInterval.duration).padding(),
+                as: .scout(height: 80)
+            )
+            assertSnapshot(
+                of: PercentileRow(percentiles: .sample, formatter: \TimeInterval.duration).padding(),
                 as: .scout(height: 80, style: .dark),
                 named: "dark"
             )

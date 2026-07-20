@@ -46,7 +46,7 @@ struct NetworkView: View {
 
             if trend.count > 0 {
                 Header(title: "Latency P99")
-                PercentileTrendChart(trend: trend, unit: .hour)
+                PercentileTrendChart(trend: trend, unit: .hour, formatter: \TimeInterval.duration)
                     .listRowSeparator(.hidden)
             }
 

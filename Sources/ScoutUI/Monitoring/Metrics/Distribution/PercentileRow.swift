@@ -10,13 +10,14 @@ import Scout
 import SwiftUI
 
 struct PercentileRow: View {
-    let percentiles: LatencyPercentiles
+    let percentiles: Percentiles
+    let formatter: KeyPath<Double, String>
 
     var body: some View {
         HStack(spacing: 34) {
-            Metric(title: "P50", value: percentiles.p50.duration, color: .blue)
-            Metric(title: "P90", value: percentiles.p90.duration, color: .teal)
-            Metric(title: "P99", value: percentiles.p99.duration, color: .orange)
+            Metric(title: "P50", value: percentiles.p50[keyPath: formatter], color: .blue)
+            Metric(title: "P90", value: percentiles.p90[keyPath: formatter], color: .teal)
+            Metric(title: "P99", value: percentiles.p99[keyPath: formatter], color: .orange)
             Spacer()
         }
     }

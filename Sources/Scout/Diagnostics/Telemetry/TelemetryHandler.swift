@@ -45,3 +45,13 @@ extension TelemetryHandler: TimerHandler {
         logTimer(seconds: Double(duration) / 1_000_000_000)
     }
 }
+
+extension TelemetryHandler: RecorderHandler {
+    func record(_ value: Int64) {
+        logRecorder(value: Double(value))
+    }
+
+    func record(_ value: Double) {
+        logRecorder(value: value)
+    }
+}
