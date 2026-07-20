@@ -6,13 +6,9 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
-enum HomeDestination: Hashable {
-    case activity
-    case retention
-    case sessions
-    case log
-    case releaseHealth
-    case alerts
+enum AlertState: Equatable, Codable {
+    case armed
+    case firing(since: Date)
+    case muted(until: Date)
 }
