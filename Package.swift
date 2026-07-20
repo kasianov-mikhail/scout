@@ -27,8 +27,8 @@ let package = Package(
             targets: ["ScoutUI"]
         ),
         .library(
-            name: "Cache",
-            targets: ["Cache"]
+            name: "LookupIndex",
+            targets: ["LookupIndex"]
         ),
     ],
     dependencies: [
@@ -40,8 +40,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "CScoutHang",
-            path: "Sources/Scout/CScoutHang"
+            name: "CScoutHang"
         ),
         .target(
             name: "Scout",
@@ -50,7 +49,6 @@ let package = Package(
                 .product(name: "Metrics", package: "swift-metrics"),
                 "CScoutHang",
             ],
-            exclude: ["Connectors", "CScoutHang"],
             resources: [
                 .process("Persistence/ScoutModel.xcdatamodeld")
             ]
@@ -61,28 +59,26 @@ let package = Package(
                 "Scout",
                 .product(name: "ScoutDB", package: "scout-db"),
             ],
-            path: "Sources/Scout/Connectors/Native"
+            path: "Sources/Connectors/Native"
         ),
         .target(
             name: "HostedConnector",
             dependencies: [
                 "Scout"
             ],
-            path: "Sources/Scout/Connectors/Hosted"
+            path: "Sources/Connectors/Hosted"
         ),
         .target(
             name: "ScoutUI",
             dependencies: [
                 "Scout"
-            ],
-            exclude: ["Cache"]
+            ]
         ),
         .target(
-            name: "Cache",
+            name: "LookupIndex",
             dependencies: [
                 "Scout"
-            ],
-            path: "Sources/ScoutUI/Cache"
+            ]
         ),
         .target(
             name: "Support",
@@ -96,8 +92,7 @@ let package = Package(
             dependencies: [
                 "Scout",
                 "Support",
-            ],
-            exclude: ["Connectors"]
+            ]
         ),
         .testTarget(
             name: "NativeConnectorTests",
@@ -106,7 +101,7 @@ let package = Package(
                 "Support",
                 .product(name: "ScoutDBTesting", package: "scout-db"),
             ],
-            path: "Tests/ScoutTests/Connectors/Native"
+            path: "Tests/Connectors/Native"
         ),
         .testTarget(
             name: "HostedConnectorTests",
@@ -114,7 +109,7 @@ let package = Package(
                 "HostedConnector",
                 "Support",
             ],
-            path: "Tests/ScoutTests/Connectors/Hosted"
+            path: "Tests/Connectors/Hosted"
         ),
         .testTarget(
             name: "ScoutUITests",
@@ -122,18 +117,16 @@ let package = Package(
                 "ScoutUI",
                 "HostedConnector",
                 "Support",
-            ],
-            exclude: ["Cache"]
+            ]
         ),
         .testTarget(
-            name: "CacheTests",
+            name: "LookupIndexTests",
             dependencies: [
-                "Cache",
+                "LookupIndex",
                 "Scout",
-            ],
-            // Cache autolinks SwiftData (iOS 17+), so this bundle can't load on
-            // the iOS 16 simulator; the `swift.yml` iOS 16 leg skips it entirely.
-            path: "Tests/ScoutUITests/Cache"
+            ]
+            // LookupIndex autolinks SwiftData (iOS 17+), so this bundle can't load
+            // on the iOS 16 simulator; the `swift.yml` iOS 16 leg skips it entirely.
         ),
         .testTarget(
             name: "ScoutSnapshotTests",

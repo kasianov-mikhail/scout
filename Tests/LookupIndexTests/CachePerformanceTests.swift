@@ -8,7 +8,7 @@
 import Foundation
 import XCTest
 
-@testable import Cache
+@testable import LookupIndex
 @testable import Scout
 
 final class CachedMetricSeriesPerformanceTests: XCTestCase {

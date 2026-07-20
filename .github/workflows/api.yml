@@ -71,7 +71,7 @@ jobs:
       # that the umbrella target is gone, so each one needs its own build.
       - name: Dump current API
         run: |
-          for scheme in Scout NativeConnector HostedConnector ScoutUI Cache; do
+          for scheme in Scout NativeConnector HostedConnector ScoutUI LookupIndex; do
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
@@ -124,7 +124,7 @@ jobs:
             echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
             exit 0
           fi
-          for scheme in NativeConnector HostedConnector ScoutUI Cache; do
+          for scheme in NativeConnector HostedConnector ScoutUI LookupIndex; do
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
