@@ -1,5 +1,9 @@
 name: Stale
 
+# Housekeeping for inactive issues and pull requests. Runs daily on a schedule
+# (and on demand): anything untouched for 60 days is marked stale, then closed
+# 14 days later unless activity resumes. Items labelled pinned or security are
+# exempt.
 on:
   schedule:
     - cron: "17 3 * * *"
