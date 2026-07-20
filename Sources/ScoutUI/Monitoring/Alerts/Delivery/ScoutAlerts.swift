@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-#if canImport(BackgroundTasks)
+#if canImport(BackgroundTasks) && !os(macOS)
     import Foundation
     import Scout
 
