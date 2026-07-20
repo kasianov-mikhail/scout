@@ -12,6 +12,7 @@ import SwiftUI
 struct ChartPlaceholder: View {
     var body: some View {
         Text(verbatim: "No results")
-            .placeholderTextStyle()
+            .font(.placeholderTitle)
+            .foregroundStyle(.gray.opacity(0.7))
     }
 }

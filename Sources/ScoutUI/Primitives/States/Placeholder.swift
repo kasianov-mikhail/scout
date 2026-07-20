@@ -23,7 +23,8 @@ struct Placeholder: View {
             }
 
             Text(text)
-                .placeholderTextStyle()
+                .font(.placeholderTitle)
+                .foregroundStyle(.gray.opacity(0.7))
 
             if let description {
                 Text(description)
