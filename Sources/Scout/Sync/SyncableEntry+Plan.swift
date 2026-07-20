@@ -9,11 +9,14 @@ import CoreData
 
 extension SyncableEntry {
     static func plan(backends: [Backend], in context: NSManagedObjectContext) throws {
-        let request = NSFetchRequest<SyncableEntry>(entityName: "SyncableEntry")
-        request.predicate = NSPredicate(format: "deliveries.@count == 0")
+        for backend in backends {
+            let request = NSFetchRequest<SyncableEntry>(entityName: "SyncableEntry")
+            request.predicate = NSPredicate(
+                format: "SUBQUERY(deliveries, $d, $d.backendID == %@).@count == 0",
+                backend.id
+            )
 
-        for object in try context.fetch(request) {
-            for backend in backends {
+            for object in try context.fetch(request) {
                 let row = context.insert(DeliveryEntry.self)
                 row.backendID = backend.id
                 row.object = object

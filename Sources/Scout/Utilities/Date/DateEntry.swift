@@ -21,6 +21,12 @@ package class DateEntry: NSManagedObject {
         []
     }
 
+    // One-shot entries (device, install, version) are created once and never
+    // re-created, so cleanup must keep them for backends configured later.
+    var isPurgeable: Bool {
+        true
+    }
+
     var inferred: Date? {
         (references.map(\.datePrimitive) + [datePrimitive]).compactMap(\.self).max()
     }
