@@ -35,6 +35,7 @@ struct AlertListView: View {
             NavigationStack {
                 AlertEditorView(provider: provider)
             }
+            .opaquePresentation()
         }
         .task { await provider.fetchIfNeeded(in: database) }
         .refreshable { await provider.fetchAgain(in: database) }
