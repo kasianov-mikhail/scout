@@ -1,5 +1,9 @@
 name: Docs
 
+# Builds the Scout DocC documentation and publishes it to GitHub Pages. Runs on
+# every push to main (and on demand) so the hosted docs track the shipped API;
+# the two jobs split generation (macOS, needs the Swift toolchain) from
+# deployment (ubuntu, just uploads the artifact to Pages).
 on:
   push:
     branches: [ "main" ]

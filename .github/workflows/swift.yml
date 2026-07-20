@@ -1,5 +1,12 @@
 name: Swift
 
+# The primary CI: lints with swift-format, then builds and tests the package
+# across a matrix of iOS versions. The matrix spans the package's minimum
+# deployment target (iOS 16) up to the latest public-preview toolchain
+# (xcode-27), so both old-SDK breakage and new-SDK regressions surface here.
+# Coverage is collected on the iOS 26 leg only — the reports differ between legs
+# by fractions of a percent, and that leg is the one where the snapshot suites
+# run. The stable iOS 18 / iOS 26 legs are the required checks on main.
 on:
   push:
     branches: [ "main" ]
