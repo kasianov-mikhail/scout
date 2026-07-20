@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 import Testing
 
-@testable import Cache
+@testable import LookupIndex
 @testable import Scout
 
 @available(iOS 17, macOS 14, *)
