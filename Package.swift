@@ -131,11 +131,9 @@ let package = Package(
                 "Cache",
                 "Scout",
             ],
-            path: "Tests/ScoutUITests/Cache",
-            // Cache autolinks SwiftData (iOS 17+), so a bundle linking it fails
-            // to load on the iOS 16 simulator. Weak-link the framework so the bundle
-            // loads; the SwiftData suites are @available(iOS 17)-gated and skip there.
-            linkerSettings: [.unsafeFlags(["-weak_framework", "SwiftData"])]
+            // Cache autolinks SwiftData (iOS 17+), so this bundle can't load on
+            // the iOS 16 simulator; the `swift.yml` iOS 16 leg skips it entirely.
+            path: "Tests/ScoutUITests/Cache"
         ),
         .testTarget(
             name: "ScoutSnapshotTests",
