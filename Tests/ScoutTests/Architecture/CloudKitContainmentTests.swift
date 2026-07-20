@@ -11,7 +11,7 @@ import Testing
 /// Enforces the layer boundary the hexagonal refactor established: CloudKit is
 /// an adapter, not a dependency of the rest of the package.
 ///
-/// Only files under `Sources/Scout/Connectors/Native/` may `import CloudKit`; `Scout`,
+/// Only files under `Sources/Connectors/Native/` may `import CloudKit`; `Scout`,
 /// `HostedConnector`, and `ScoutUI` speak the neutral `Record`/`RecordQuery`
 /// vocabulary instead.
 ///
@@ -20,7 +20,7 @@ struct CloudKitContainmentTests {
     @Test("CloudKit is imported only inside the Native adapter")
     func cloudKitConfinedToAdapter() throws {
         let sources = try Self.sourcesDirectory()
-        let adapter = sources.appendingPathComponent("Scout/Connectors/Native")
+        let adapter = sources.appendingPathComponent("Connectors/Native")
 
         let offenders = try Self.swiftFiles(in: sources)
             .filter { !$0.path.hasPrefix(adapter.path + "/") }

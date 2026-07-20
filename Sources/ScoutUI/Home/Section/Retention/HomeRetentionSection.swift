@@ -56,7 +56,7 @@ struct HomeRetentionSection: View {
                 .foregroundStyle(.gray.opacity(0.7))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .listRowSeparator(.hidden, edges: .top)
+                .listRowSeparator(.hidden, edges: .bottom)
 
         default:
             HomeRetentionRow(series: .placeholder) {}
