@@ -20,7 +20,7 @@ struct RailPagination: View {
         if lane.pendingInstalls.isEmpty {
             EmptyView()
         } else if lane.isLoading {
-            RingIndicator(size: 22).frame(height: 72).frame(maxWidth: .infinity)
+            RingIndicator(size: 22).frame(height: 68).frame(maxWidth: .infinity)
         } else {
             Color.clear.frame(height: 1).background {
                 GeometryReader { geo in

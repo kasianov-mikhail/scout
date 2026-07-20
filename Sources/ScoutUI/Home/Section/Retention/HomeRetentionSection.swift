@@ -52,7 +52,8 @@ struct HomeRetentionSection: View {
 
         case .success:
             Text(verbatim: "No results")
-                .placeholderTextStyle()
+                .font(.placeholderTitle)
+                .foregroundStyle(.gray.opacity(0.7))
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
                 .listRowSeparator(.hidden, edges: .bottom)

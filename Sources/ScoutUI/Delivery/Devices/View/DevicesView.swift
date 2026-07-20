@@ -42,13 +42,12 @@ struct DevicesView: View {
                 Metric(title: "With Crashes", value: crashingCount.plain, color: crashingCount > 0 ? .red : .primary)
                 Spacer()
             }
-            .listRowSeparator(.hidden)
 
             Header(title: "Top Models")
-            SegmentBar(segments: modelBreakdown).listRowSeparator(.hidden)
+            SegmentBar(segments: modelBreakdown)
 
             Header(title: "OS Versions")
-            SegmentBar(segments: osBreakdown).listRowSeparator(.hidden)
+            SegmentBar(segments: osBreakdown)
 
             Header(title: "Recent Devices") {
                 AllButton { showAllDevices = true }
