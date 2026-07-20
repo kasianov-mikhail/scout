@@ -11,8 +11,6 @@ import Testing
 @testable import Scout
 
 extension NSManagedObjectContext {
-    // Returns the container's main-queue viewContext, so callers must be
-    // @MainActor-isolated — the annotation makes the compiler enforce it.
     @MainActor
     static func inMemoryContext() -> NSManagedObjectContext {
         let container = NSPersistentContainer(named: "ScoutModel")
