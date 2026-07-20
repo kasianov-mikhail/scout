@@ -53,7 +53,7 @@ struct MetricCard: View {
                     Sparkline(series: .empty, color: color)
                 }
             }
-            .frame(height: 72)
+            .frame(height: 68)
         }
     }
 }

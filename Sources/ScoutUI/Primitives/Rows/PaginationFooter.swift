@@ -19,7 +19,7 @@ struct PaginationFooter: View {
                 await action()
             }
             .id(UUID())
-            .frame(height: 72)
+            .frame(height: 68)
             .frame(maxWidth: .infinity)
             .listRowSeparator(.hidden, edges: .bottom)
     }

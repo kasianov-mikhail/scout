@@ -16,31 +16,22 @@ struct AlertRow: View {
                 .fill(status.outcome.state.color)
                 .frame(width: 8, height: 8)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: status.rule.metric.title)
-                    .font(.body.weight(.medium))
+                    .font(.subheadline.weight(.medium))
 
                 if let detail = status.detail {
                     Text(verbatim: detail)
-                        .font(.footnote)
+                        .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             }
 
             Spacer()
-
-            VStack(alignment: .trailing, spacing: 4) {
-                if case .firing(let since) = status.outcome.state {
-                    Text(verbatim: since.formatted(date: .omitted, time: .shortened))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                MiniChart(series: status.series, color: status.outcome.state.color)
-            }
+            MiniChart(series: status.series, color: status.outcome.state.color)
         }
-        .padding(.vertical, 4)
-        .trailingRowSeparator()
+        .frame(height: 68)
+        .listRowInsets(.sideInsets)
     }
 }
 

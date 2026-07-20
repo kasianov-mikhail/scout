@@ -15,7 +15,7 @@ struct HomeRetentionRow: View {
     var body: some View {
         Button(action: action) {
             Sparkline(series: series, color: .green, gridlinesAtPoints: true)
-                .frame(height: 72)
+                .frame(height: 68)
                 .padding(.horizontal, 16)
                 .padding(.bottom, 12)
         }
