@@ -30,14 +30,14 @@ struct VersionDetailView: View {
             headerSection
 
             IncidentTrendSection(
-                title: "Crashes over time", records: crashes.records ?? [], color: release.freeSessions.color)
+                title: "Crashes over time", records: crashes.records ?? [], color: .red)
             IncidentIssuesSection(title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? []))
             { group in
                 CrashGroupDetailView(group: group)
             }
 
             IncidentTrendSection(
-                title: "Hangs over time", records: hangs.records ?? [], color: release.freeSessions.color)
+                title: "Hangs over time", records: hangs.records ?? [], color: .orange)
             IncidentIssuesSection(title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? [])) {
                 group in
                 HangGroupDetailView(group: group)
