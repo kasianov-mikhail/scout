@@ -9,21 +9,23 @@
 import Foundation
 import Scout
 
-class TimerDistributionProvider: ObservableObject, Provider {
-    @Published var result: ProviderResult<TimerDistribution>?
+class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, Provider {
+    @Published var result: ProviderResult<MetricDistribution<H>>?
 
     private let name: String
+    private let categories: [String]
 
-    init(name: String) {
+    init(name: String, categories: [String]) {
         self.name = name
+        self.categories = categories
     }
 
-    func fetch(in database: DatabaseReader) async throws -> TimerDistribution {
+    func fetch(in database: DatabaseReader) async throws -> MetricDistribution<H> {
         let range = Calendar.utc.defaultRange
         let name = self.name
 
         let series = try await withThrowingTaskGroup(of: [MetricSeries].self) { group in
-            for category in LatencyBuckets.categories {
+            for category in categories {
                 group.addTask {
                     try await database.metricSeries(Int.self, category: category, in: range)
                 }
@@ -35,6 +37,6 @@ class TimerDistributionProvider: ObservableObject, Provider {
             return series
         }
 
-        return TimerDistribution(series: series.filter { $0.name == name })
+        return MetricDistribution(series: series.filter { $0.name == name })
     }
 }

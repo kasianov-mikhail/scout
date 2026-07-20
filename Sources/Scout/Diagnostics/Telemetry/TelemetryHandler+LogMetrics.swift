@@ -35,6 +35,20 @@ extension TelemetryHandler {
         }
     }
 
+    func logRecorder(value: Double) {
+        let label = self.label
+        let sessionID = session.current
+        persistMetrics { context in
+            let date = Date()
+            try saveMetrics(
+                label, date: date, category: Telemetry.Export.recorder.rawValue, value: value, sessionID: sessionID,
+                context)
+            try saveMetrics(
+                label, date: date, category: RecorderBuckets.category(for: value), value: 1, sessionID: sessionID,
+                context)
+        }
+    }
+
     private func persistMetrics(_ save: @escaping @Sendable (NSManagedObjectContext) throws -> Void) {
         let sync = self.sync
         Task {

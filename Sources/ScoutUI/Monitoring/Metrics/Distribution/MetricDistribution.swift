@@ -9,33 +9,36 @@
 import Foundation
 import Scout
 
-struct TimerDistribution: Equatable {
-    let histograms: [Date: LatencyHistogram]
+typealias TimerDistribution = MetricDistribution<LatencyHistogram>
+typealias RecorderDistribution = MetricDistribution<RecorderHistogram>
 
-    init(histograms: [Date: LatencyHistogram]) {
+struct MetricDistribution<H: QuantileHistogram>: Equatable {
+    let histograms: [Date: H]
+
+    init(histograms: [Date: H]) {
         self.histograms = histograms
     }
 
     init(series: [MetricSeries]) {
-        self.init(histograms: LatencyHistogram.buckets(from: series))
+        self.init(histograms: H.buckets(from: series))
     }
 
     var isEmpty: Bool {
         histograms.values.allSatisfy { $0.total == 0 }
     }
 
-    func histogram(in range: Range<Date>) -> LatencyHistogram {
+    func histogram(in range: Range<Date>) -> H {
         histograms
             .filter { range.contains($0.key) }
             .values
-            .reduce(LatencyHistogram(), +)
+            .reduce(H(), +)
     }
 
     func total(in range: Range<Date>) -> Int {
         histogram(in: range).total
     }
 
-    func summary(in range: Range<Date>) -> LatencyPercentiles? {
+    func summary(in range: Range<Date>) -> Percentiles? {
         let combined = histogram(in: range)
 
         guard let p50 = combined.percentile(0.5),
@@ -45,7 +48,7 @@ struct TimerDistribution: Equatable {
             return nil
         }
 
-        return LatencyPercentiles(p50: p50, p90: p90, p99: p99)
+        return Percentiles(p50: p50, p90: p90, p99: p99)
     }
 
     func trend(in range: Range<Date>, component: Calendar.Component) -> [PercentileTrendPoint] {
@@ -68,7 +71,7 @@ struct TimerDistribution: Equatable {
     }
 }
 
-extension TimerDistribution {
+extension MetricDistribution where H == LatencyHistogram {
     static var sample: TimerDistribution {
         let start = Calendar.current.startOfDay(for: .now)
         var histograms: [Date: LatencyHistogram] = [:]
@@ -82,5 +85,22 @@ extension TimerDistribution {
         }
 
         return TimerDistribution(histograms: histograms)
+    }
+}
+
+extension MetricDistribution where H == RecorderHistogram {
+    static var sample: RecorderDistribution {
+        let start = Calendar.current.startOfDay(for: .now)
+        var histograms: [Date: RecorderHistogram] = [:]
+
+        for hour in 0..<24 {
+            var histogram = RecorderHistogram()
+            for (offset, weight) in [2, 8, 21, 34, 27, 13, 5, 3, 2, 1].enumerated() {
+                histogram.add(count: weight * (1 + hour % 5), at: offset + 4)
+            }
+            histograms[start.addingTimeInterval(TimeInterval(hour) * .hour)] = histogram
+        }
+
+        return RecorderDistribution(histograms: histograms)
     }
 }

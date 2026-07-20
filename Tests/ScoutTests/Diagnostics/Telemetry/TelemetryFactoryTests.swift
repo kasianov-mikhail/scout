@@ -38,10 +38,10 @@ struct TelemetryFactoryTests {
         #expect(handler is TelemetryHandler.Idle)
     }
 
-    @Test("makeRecorder returns Idle handler")
+    @Test("makeRecorder returns TelemetryHandler")
     func makeRecorder() {
         let handler = factory.makeRecorder(label: "test", dimensions: [], aggregate: false)
-        #expect(handler is TelemetryHandler.Idle)
+        #expect(handler is TelemetryHandler)
     }
 
     @Test("makeCounter preserves label and dimensions")

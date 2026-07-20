@@ -9,20 +9,20 @@
 import Foundation
 import Scout
 
-struct LatencyHistogram: Equatable {
+struct RecorderHistogram: Equatable {
     var counts: [Int]
 
-    static let bucketCount = LatencyBuckets.categories.count
+    static let bucketCount = RecorderBuckets.categories.count
 
     init() {
         counts = Array(repeating: 0, count: Self.bucketCount)
     }
 }
 
-extension LatencyHistogram: QuantileHistogram {
-    static let bounds = LatencyBuckets.boundsMilliseconds.map { TimeInterval($0) / 1_000 }
+extension RecorderHistogram: QuantileHistogram {
+    static let bounds = RecorderBuckets.bounds.map(Double.init)
 
     static func bucketIndex(of category: String) -> Int? {
-        LatencyBuckets.index(of: category)
+        RecorderBuckets.index(of: category)
     }
 }

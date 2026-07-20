@@ -8,7 +8,7 @@
 import Metrics
 
 extension TelemetryHandler {
-    final class Idle: MeterHandler, RecorderHandler {
+    final class Idle: MeterHandler {
         func set(_ value: Int64) {}
 
         func set(_ value: Double) {}
@@ -16,9 +16,5 @@ extension TelemetryHandler {
         func increment(by: Double) {}
 
         func decrement(by: Double) {}
-
-        func record(_ value: Int64) {}
-
-        func record(_ value: Double) {}
     }
 }

@@ -13,6 +13,7 @@ struct MetricsList: View {
         case int
         case double
         case timer
+        case recorder
 
         var id: Self { self }
 
@@ -24,6 +25,8 @@ struct MetricsList: View {
                 .floatingCounter
             case .timer:
                 .timer
+            case .recorder:
+                .recorder
             }
         }
     }
@@ -55,6 +58,12 @@ struct MetricsList: View {
             MetricsContent(
                 period: period,
                 formatter: \TimeInterval.duration,
+                telemetry: scope.telemetry
+            )
+        case .recorder:
+            MetricsContent(
+                period: period,
+                formatter: \Double.decimal,
                 telemetry: scope.telemetry
             )
         }

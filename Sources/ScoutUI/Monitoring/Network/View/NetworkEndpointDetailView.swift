@@ -42,13 +42,13 @@ struct NetworkEndpointDetailView: View {
 
             if let percentiles = distribution?.summary(in: range) {
                 Header(title: "Latency")
-                PercentileRow(percentiles: percentiles)
+                PercentileRow(percentiles: percentiles, formatter: \TimeInterval.duration)
                     .listRowSeparator(.hidden, edges: .bottom)
             }
 
             if let trend = distribution?.trend(in: range, component: unit), trend.count > 0 {
                 Header(title: "P99 trend")
-                PercentileTrendChart(trend: trend, unit: unit)
+                PercentileTrendChart(trend: trend, unit: unit, formatter: \TimeInterval.duration)
                     .listRowSeparator(.hidden)
             }
 

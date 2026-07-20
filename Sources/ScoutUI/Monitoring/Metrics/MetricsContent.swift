@@ -51,11 +51,26 @@ struct MetricsContent<T: ChartNumeric>: View {
 
     @ViewBuilder
     private func destination(group: PointGroup<T>) -> some View {
-        if telemetry == .timer {
+        switch telemetry {
+        case .timer:
             MetricsView(group: group, formatter: formatter, period: period) { extent in
-                TimerDistributionSection(name: group.name, extent: extent)
+                MetricDistributionSection<LatencyHistogram>(
+                    name: group.name,
+                    categories: LatencyBuckets.categories,
+                    extent: extent,
+                    formatter: \TimeInterval.duration
+                )
             }
-        } else {
+        case .recorder:
+            MetricsView(group: group, formatter: formatter, period: period) { extent in
+                MetricDistributionSection<RecorderHistogram>(
+                    name: group.name,
+                    categories: RecorderBuckets.categories,
+                    extent: extent,
+                    formatter: \Double.decimal
+                )
+            }
+        default:
             MetricsView(group: group, formatter: formatter, period: period)
         }
     }

@@ -20,6 +20,7 @@ struct PercentileTrendPoint: Identifiable, Equatable {
 struct PercentileTrendChart: View {
     let trend: [PercentileTrendPoint]
     let unit: Calendar.Component
+    let formatter: KeyPath<Double, String>
 
     var body: some View {
         Chart(trend) { point in
@@ -46,9 +47,9 @@ struct PercentileTrendChart: View {
         }
         .chartYAxis {
             AxisMarks { value in
-                if let seconds = value.as(TimeInterval.self) {
+                if let value = value.as(Double.self) {
                     AxisGridLine()
-                    AxisValueLabel(seconds.duration)
+                    AxisValueLabel(value[keyPath: formatter])
                 }
             }
         }
@@ -72,6 +73,6 @@ extension [PercentileTrendPoint] {
 }
 
 #Preview("PercentileTrendChart") {
-    PercentileTrendChart(trend: .sample, unit: .hour)
+    PercentileTrendChart(trend: .sample, unit: .hour, formatter: \TimeInterval.duration)
         .padding(.horizontal)
 }

@@ -43,11 +43,26 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
             let groups: [PointGroup<T>] = data.pointGroups()
 
             if let group = groups.named(name) {
-                if telemetry == .timer {
+                switch telemetry {
+                case .timer:
                     MetricsView(group: group, formatter: formatter, period: .today) { extent in
-                        TimerDistributionSection(name: group.name, extent: extent)
+                        MetricDistributionSection<LatencyHistogram>(
+                            name: group.name,
+                            categories: LatencyBuckets.categories,
+                            extent: extent,
+                            formatter: \TimeInterval.duration
+                        )
                     }
-                } else {
+                case .recorder:
+                    MetricsView(group: group, formatter: formatter, period: .today) { extent in
+                        MetricDistributionSection<RecorderHistogram>(
+                            name: group.name,
+                            categories: RecorderBuckets.categories,
+                            extent: extent,
+                            formatter: \Double.decimal
+                        )
+                    }
+                default:
                     MetricsView(group: group, formatter: formatter, period: .today)
                 }
             } else {
