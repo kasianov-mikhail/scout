@@ -14,4 +14,5 @@ enum HomeDestination: Hashable {
     case sessions
     case log
     case releaseHealth
+    case alerts
 }

@@ -11,6 +11,7 @@ protocol IncidentInfo {
     var name: String { get }
     var reason: String? { get }
     var stackTrace: [String] { get }
+    var fingerprint: String { get }
     var date: Date { get }
     var installID: UUID { get }
     var launchID: UUID { get }
@@ -18,8 +19,19 @@ protocol IncidentInfo {
     var appVersion: String? { get }
 }
 
-extension CrashInfo: IncidentInfo {}
-extension HangInfo: IncidentInfo {}
+extension CrashInfo: IncidentInfo {
+    var fingerprint: String {
+        CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
+    }
+}
+
+extension HangInfo: IncidentInfo {
+    // A hang's reason embeds the per-occurrence duration, which would make
+    // every fingerprint unique — identity comes from the name and stack alone.
+    var fingerprint: String {
+        CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value
+    }
+}
 
 func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(
     _ info: Info, id: UUID, deviceID: UUID, entityName: String, idKey: String, markerName: String,
@@ -38,7 +50,7 @@ func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(
     object.date = info.date
     object.appVersion = info.appVersion
     object.name = info.name
-    object.fingerprint = CrashFingerprint(name: info.name, reason: info.reason, stackTrace: info.stackTrace).value
+    object.fingerprint = info.fingerprint
     object.reason = info.reason
     object.stackTrace = try? JSONEncoder().encode(info.stackTrace)
 

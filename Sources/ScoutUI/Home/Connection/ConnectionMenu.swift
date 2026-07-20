@@ -10,14 +10,12 @@ import SwiftUI
 
 struct ConnectionMenu: View {
     @Binding var activeID: Connection.ID
-    let onSettings: () -> Void
 
     @State private var connections: [Connection]
     @State private var isPresented = false
 
-    init(connections: [Connection], activeID: Binding<Connection.ID>, onSettings: @escaping () -> Void = {}) {
+    init(connections: [Connection], activeID: Binding<Connection.ID>) {
         _activeID = activeID
-        self.onSettings = onSettings
         _connections = State(initialValue: connections)
     }
 
@@ -25,7 +23,7 @@ struct ConnectionMenu: View {
         Button {
             isPresented = true
         } label: {
-            Image(systemName: "gearshape")
+            Image(systemName: "server.rack")
         }
         .popover(isPresented: $isPresented) {
             VStack(spacing: 0) {
@@ -37,16 +35,6 @@ struct ConnectionMenu: View {
                     ) {
                         activeID = connection.id
                         isPresented = false
-                    }
-                }
-
-                Divider()
-
-                ConnectionSettingsRow {
-                    isPresented = false
-                    Task { @MainActor in
-                        await Task.yield()
-                        onSettings()
                     }
                 }
             }

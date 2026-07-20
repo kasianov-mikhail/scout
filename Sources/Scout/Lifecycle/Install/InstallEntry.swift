@@ -19,6 +19,10 @@ package final class InstallEntry: SyncableEntry, HasDevice {
     override var references: Set<DateEntry> {
         Set(Array(launches) + Array(markers))
     }
+
+    override var isPurgeable: Bool {
+        false
+    }
 }
 
 extension InstallEntry: RecordEncodable {
