@@ -8,7 +8,8 @@
 import Scout
 import SwiftUI
 
-struct Message: Equatable {
+struct Message: Identifiable, Equatable {
+    let id = UUID()
     let text: String
     let level: Level
 
@@ -26,33 +27,51 @@ extension View {
 
 private struct MessagePresenter: ViewModifier {
     @Binding var message: Message?
-    @State private var hide = DebouncedReset()
+    @State private var stack: [Message] = []
+
+    private let maxVisible = 5
+    private let lifetime = Duration.seconds(5)
 
     func body(content: Content) -> some View {
         content.overlay(alignment: .top) {
-            if let message {
-                MessageView(text: message.text, level: message.level)
-                    .transition(.move(edge: .top).combined(with: .opacity))
-                    .onTapGesture {
-                        self.message = nil
-                    }
-                    .gesture(
-                        DragGesture().onChanged { _ in
-                            self.message = nil
+            VStack(spacing: 8) {
+                ForEach(stack) { message in
+                    MessageView(text: message.text, level: message.level)
+                        .transition(
+                            .asymmetric(
+                                insertion: .opacity.combined(with: .move(edge: .top)),
+                                removal: .move(edge: .top).combined(with: .opacity)
+                            )
+                        )
+                        .onTapGesture {
+                            dismiss(message)
                         }
-                    )
+                        .gesture(
+                            DragGesture().onChanged { _ in
+                                dismiss(message)
+                            }
+                        )
+                        .task {
+                            try? await Task.sleep(for: lifetime)
+                            guard !Task.isCancelled else { return }
+                            dismiss(message)
+                        }
+                }
             }
         }
         .onChange(of: message) { message in
-            if message != nil {
-                hide.schedule(after: .seconds(5)) {
-                    self.message = nil
-                }
-            } else {
-                hide.cancel()
+            guard let message else { return }
+            stack.append(message)
+            if stack.count > maxVisible {
+                stack.removeFirst(stack.count - maxVisible)
             }
+            self.message = nil
         }
-        .animation(.easeInOut, value: message)
+        .animation(.easeInOut, value: stack)
+    }
+
+    private func dismiss(_ message: Message) {
+        stack.removeAll { $0.id == message.id }
     }
 }
 
@@ -79,13 +98,6 @@ private struct MessagePresenter: ViewModifier {
             } label: {
                 Text(verbatim: "Show Multiline Warning")
             }
-
-            Button {
-                message = nil
-            } label: {
-                Text(verbatim: "Hide")
-            }
-            .disabled(message == nil)
         }
         .navigationTitle(en: "Message Presenter")
         .inlineNavigationTitle()

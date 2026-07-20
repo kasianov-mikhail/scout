@@ -20,12 +20,9 @@ struct MessageView: View {
             .padding(.horizontal)
             .padding(.vertical, 12)
             .frame(maxWidth: .infinity, minHeight: 44)
-            .background(level.color.opacity(0.2))
+            .background(level.color.opacity(0.1))
             .background()
-            .cornerRadius(16)
-            .overlay {
-                RoundedRectangle(cornerRadius: 16).stroke(level.color, lineWidth: 1)
-            }
+            .cornerRadius(12)
             .padding(.horizontal)
     }
 }
