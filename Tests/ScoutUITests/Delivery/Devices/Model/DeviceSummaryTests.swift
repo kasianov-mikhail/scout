@@ -54,6 +54,31 @@ struct DeviceSummaryTests {
         #expect(summaries.isEmpty)
     }
 
+    @Test("Lists devices from sessions alone, without a Device record")
+    func summariesListSessionOnlyDevices() throws {
+        let deviceID = UUID()
+        let date = Date()
+
+        let summaries = DeviceSummary.summaries(
+            devices: [],
+            sessions: [
+                .sessionStub(
+                    sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: date, osVersion: "iOS 17.4",
+                    deviceID: deviceID)
+            ],
+            crashes: []
+        )
+
+        let summary = try #require(summaries.first)
+        #expect(summaries.count == 1)
+        #expect(summary.id == deviceID)
+        #expect(summary.model == nil)
+        #expect(summary.modelName == "Unknown")
+        #expect(summary.osVersion == "iOS 17.4")
+        #expect(summary.lastSeen == date)
+        #expect(summary.sessions == 1)
+    }
+
     @Test("Keeps devices with no model, naming them Unknown")
     func summariesKeepModellessDevices() throws {
         let deviceID = UUID()

@@ -29,13 +29,18 @@ struct FilterView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
+                        dismiss()
+                    } label: {
+                        Text(verbatim: "Cancel")
+                    }
+                }
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    Button {
                         draft.reset()
                     } label: {
                         Text(verbatim: "Reset")
                     }
                     .disabled(!draft.isResetEnabled)
-                }
-                ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         draft.apply()
                         dismiss()
@@ -49,25 +54,21 @@ struct FilterView: View {
             .navigationTitle(en: "Filter")
             .inlineNavigationTitle()
         }
-        .presentationHeight(draft.isDateRangeEnabled ? 720 : 600)
+        .modalFrame(height: draft.isDateRangeEnabled ? 720 : 600)
     }
 }
 
 extension View {
-    func softCell(selected: Bool = false) -> some View {
-        background(.blue.opacity(selected ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 12))
+    func softCell(selected: Bool = false, tint: Color = .blue) -> some View {
+        background(tint.opacity(selected ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 12))
     }
 }
 
 extension View {
     @ViewBuilder
-    fileprivate func presentationHeight(_ height: CGFloat) -> some View {
+    fileprivate func modalFrame(height: CGFloat) -> some View {
         #if os(iOS)
-            if #available(iOS 16.4, *) {
-                presentationDetents([.height(height)])
-            } else {
-                self
-            }
+            self
         #else
             frame(width: height / 1.618, height: height)
         #endif

@@ -1,5 +1,9 @@
 name: Notify
 
+# Fans a green main out to the downstream scout-ip repository. When the Swift
+# workflow completes successfully on main, this fires a repository_dispatch so
+# scout-ip can pick up the new Scout revision. It keys off workflow_run (not
+# push) so the notification only goes out once CI has actually passed.
 on:
   workflow_run:
     workflows: [Swift]

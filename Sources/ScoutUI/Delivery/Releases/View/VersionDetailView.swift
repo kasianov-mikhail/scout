@@ -30,16 +30,18 @@ struct VersionDetailView: View {
             headerSection
 
             IncidentTrendSection(
-                title: "Crashes over time", records: crashes.records ?? [], color: release.freeSessions.color)
-            IncidentIssuesSection(title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? []))
-            { group in
+                title: "Crashes over time", records: crashes.records ?? [], color: .red)
+            IncidentIssuesSection(
+                title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? []), color: .red
+            ) { group in
                 CrashGroupDetailView(group: group)
             }
 
             IncidentTrendSection(
-                title: "Hangs over time", records: hangs.records ?? [], color: release.freeSessions.color)
-            IncidentIssuesSection(title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? [])) {
-                group in
+                title: "Hangs over time", records: hangs.records ?? [], color: .orange)
+            IncidentIssuesSection(
+                title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? []), color: .orange
+            ) { group in
                 HangGroupDetailView(group: group)
             }
         }
@@ -124,6 +126,7 @@ private struct IncidentTrendSection<Element: Incident>: View {
 private struct IncidentIssuesSection<Element: Incident, Destination: View>: View {
     let title: String
     let groups: [IncidentGroup<Element>]
+    let color: Color
     @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     @ViewBuilder
@@ -140,7 +143,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
 
                     Spacer()
 
-                    CountBadge(count: group.count)
+                    CountBadge(count: group.count, color: color)
                 } destination: {
                     destination(group)
                 }

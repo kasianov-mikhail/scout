@@ -200,6 +200,26 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 0)
     }
 
+    @Test("A backend added after the first sync still receives one-shot records")
+    func lateAddedBackendReceivesOneShots() async throws {
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        DeviceEntry.stub(date: old, in: context)
+        try context.save()
+
+        // First cycle: only the cloud is configured; the record delivers and
+        // ages past the cleanup window.
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+        try await deliver(DeviceEntry.self, to: cloudBackend)
+        try DateEntry.cleanup(backends: [cloudBackend], in: context)
+
+        // Second cycle: the server joins and receives the same record.
+        try SyncableEntry.plan(backends: backends, in: context)
+        try await deliver(DeviceEntry.self, to: serverBackend)
+
+        #expect(cloud.records.count(of: "Device") == 1)
+        #expect(server.records.count(of: "Device") == 1)
+    }
+
     @Test("Dropping a never-reached backend lets cleanup reclaim the record")
     func droppingBackendUnblocks() async throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)

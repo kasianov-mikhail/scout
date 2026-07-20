@@ -20,7 +20,7 @@ struct HomeView: View {
     }
 
     private var backend: Backend? {
-        backends.first { $0.id == activeID } ?? backends.first
+        backends.active(id: activeID)
     }
 
     private var active: Binding<String> {

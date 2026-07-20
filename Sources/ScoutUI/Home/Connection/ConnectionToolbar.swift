@@ -24,12 +24,18 @@ private struct ConnectionToolbar: ViewModifier {
         content
             .toolbar {
                 if !backends.isEmpty {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItem(placement: .topBarLeading) {
                         ConnectionMenu(
                             connections: backends.map(Connection.init),
-                            activeID: $activeID,
-                            onSettings: { isSettingsPresented = true }
+                            activeID: $activeID
                         )
+                    }
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        isSettingsPresented = true
+                    } label: {
+                        Image(systemName: "gearshape")
                     }
                 }
             }

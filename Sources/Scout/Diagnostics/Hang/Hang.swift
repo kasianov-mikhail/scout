@@ -49,7 +49,6 @@ extension Hang: RecordDecodable {
 
     package static let desiredKeys = [
         "name",
-        "fingerprint",
         "reason",
         "stack_trace",
         "duration",
@@ -77,8 +76,9 @@ extension Hang: RecordDecodable {
         } else {
             stackTrace = []
         }
-        fingerprint =
-            record["fingerprint"] ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
+        // Stored fingerprints from older builds hashed the reason, which embeds
+        // the per-occurrence duration — recompute so legacy records group too.
+        fingerprint = CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value
     }
 }
 

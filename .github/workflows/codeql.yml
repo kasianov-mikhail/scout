@@ -1,5 +1,10 @@
 name: CodeQL
 
+# GitHub's CodeQL static analysis for Swift, uploading results to the
+# security-events dashboard. Analysis needs a full manual build, so this runs
+# nightly on a schedule (and on demand) rather than per-PR: tracing slows
+# compilation down severalfold, so it builds a single architecture of the Scout
+# scheme only.
 on:
   schedule:
     - cron: "33 2 * * *"

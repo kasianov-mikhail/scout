@@ -1,5 +1,12 @@
 name: Swift
 
+# The primary CI: lints with swift-format, then builds and tests the package
+# across a matrix of iOS versions. The matrix spans the package's minimum
+# deployment target (iOS 16) up to the latest public-preview toolchain
+# (xcode-27), so both old-SDK breakage and new-SDK regressions surface here.
+# Coverage is collected on the iOS 26 leg only — the reports differ between legs
+# by fractions of a percent, and that leg is the one where the snapshot suites
+# run. The stable iOS 18 / iOS 26 legs are the required checks on main.
 on:
   push:
     branches: [ "main" ]
@@ -37,9 +44,40 @@ jobs:
             exit 1
           fi
 
+  # `needs: lint` gates the matrix on this workflow's own fast check; the other
+  # fast checks (Core Data model rules, the wire-change probe) live in sibling
+  # workflows where `needs` cannot reach them. This cheap ubuntu job waits for
+  # their check-runs on the PR and fails if either fails, so the expensive macOS
+  # matrix below never starts behind an already-red fast check. It runs only on
+  # PRs — on a push to main those sibling checks do not run.
+  gate:
+    name: gate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    permissions:
+      contents: read
+      checks: read
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
+      - name: Wait for the fast cross-workflow checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHAS: ${{ github.event.pull_request.head.sha }} ${{ github.sha }}
+          CHECKS: model-versions changes
+        run: .github/scripts/wait-for-checks.sh
+
   tests:
     name: test-ios-${{ matrix.ios }}
-    needs: lint
+    needs: [lint, gate]
+    # On a push to main `gate` is skipped (it is PR-only); require lint and let
+    # a skipped gate through, but block on a gate that actually failed.
+    if: ${{ always() && needs.lint.result == 'success' && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
 

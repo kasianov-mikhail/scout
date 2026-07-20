@@ -19,15 +19,20 @@ struct FilterLevelsView: View {
 
             LazyVGrid(columns: columns, spacing: 10) {
                 ForEach(EventLevel.allCases, id: \.rawValue) { level in
-                    let on = draft.isSelected(level)
+                    let tint = level.color ?? .blue
                     HStack {
-                        Image(systemName: on ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(on ? (level.color ?? .blue) : Color(.systemGray3))
+                        if draft.isSelected(level) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(tint)
+                        } else {
+                            Image(systemName: "circle")
+                                .foregroundStyle(Color(.systemGray3))
+                        }
                         Text(level.description).font(.callout)
                         Spacer()
                     }
                     .padding(12)
-                    .softCell(selected: on)
+                    .softCell(selected: draft.isSelected(level), tint: tint)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         draft.toggle(level)

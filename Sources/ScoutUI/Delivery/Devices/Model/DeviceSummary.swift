@@ -31,20 +31,22 @@ extension DeviceSummary {
         let crashCounts = Dictionary(
             crashes.compactMap { (record: Record) -> String? in record["device_id"] }.map { ($0, 1) },
             uniquingKeysWith: +)
-
-        return devices.compactMap { device -> DeviceSummary? in
-            guard let deviceID: String = device["device_id"], let uuid = UUID(uuidString: deviceID) else { return nil }
-
-            guard let latest = (sessionsByDevice[deviceID] ?? []).max(by: { $0.startDate < $1.startDate }) else {
-                return nil
+        let models: [String: String] = devices.reduce(into: [:]) { models, device in
+            if let deviceID: String = device["device_id"], let model: String = device["model"] {
+                models[deviceID] = model
             }
+        }
+
+        return sessionsByDevice.compactMap { deviceID, sessions -> DeviceSummary? in
+            guard let uuid = UUID(uuidString: deviceID) else { return nil }
+            guard let latest = sessions.max(by: { $0.startDate < $1.startDate }) else { return nil }
 
             return DeviceSummary(
                 id: uuid,
-                model: device["model"],
+                model: models[deviceID],
                 osVersion: latest.osVersion,
                 lastSeen: latest.startDate,
-                sessions: sessionsByDevice[deviceID]?.count ?? 0,
+                sessions: sessions.count,
                 crashes: crashCounts[deviceID] ?? 0
             )
         }

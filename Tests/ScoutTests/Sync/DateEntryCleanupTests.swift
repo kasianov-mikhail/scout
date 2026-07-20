@@ -38,6 +38,21 @@ struct DateEntryCleanupTests {
         #expect(try context.fetchAll(LaunchEntry.self).isEmpty)
     }
 
+    @Test("Keeps delivered one-shot entries regardless of age")
+    func keepsOneShotEntries() throws {
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        DeviceEntry.stub(date: old, synced: true, in: context)
+        InstallEntry.stub(date: old, synced: true, in: context)
+        VersionEntry.stub(date: old, synced: true, in: context)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [], in: context)
+
+        #expect(try context.fetchAll(DeviceEntry.self).count == 1)
+        #expect(try context.fetchAll(InstallEntry.self).count == 1)
+        #expect(try context.fetchAll(VersionEntry.self).count == 1)
+    }
+
     @Test("Keeps synced objects newer than 7 days")
     func keepsSyncedRecent() throws {
         let recent = Date(timeIntervalSinceNow: -6 * 86400)

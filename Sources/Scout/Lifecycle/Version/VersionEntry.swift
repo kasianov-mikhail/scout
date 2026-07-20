@@ -14,6 +14,10 @@ package final class VersionEntry: SyncableEntry, HasLaunch {
     @NSManaged var appVersion: String?
     @NSManaged var buildNumber: String?
     @NSManaged var launch: LaunchEntry?
+
+    override var isPurgeable: Bool {
+        false
+    }
 }
 
 extension VersionEntry: RecordEncodable {
