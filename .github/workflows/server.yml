@@ -77,9 +77,45 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: .github/scripts/detect-wire-changes.sh
 
+  # This workflow's own fast check is `changes` (gated below via `needs`); the
+  # other fast checks (lint, the Core Data model rules) live in sibling
+  # workflows out of `needs` reach. This cheap ubuntu job waits for their
+  # check-runs and fails if either fails, so the 30-minute contract run never
+  # starts behind an already-red fast check. It runs only on PRs — on
+  # push/schedule/dispatch those sibling checks do not run.
+  gate:
+    name: gate
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    permissions:
+      contents: read
+      checks: read
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
+      - name: Wait for the fast cross-workflow checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SHAS: ${{ github.event.pull_request.head.sha }} ${{ github.sha }}
+          CHECKS: lint model-versions
+        run: .github/scripts/wait-for-checks.sh
+
   contract:
-    needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    needs: [changes, gate]
+    # Run when the wire surface changed and the fast checks passed. On a PR that
+    # leaves the wire surface untouched, backend is 'false' and this skips; on
+    # push/schedule/dispatch `gate` is skipped (PR-only) and backend is 'true',
+    # so a skipped gate is allowed through while a failed one blocks.
+    if: >-
+      ${{ always()
+      && needs.changes.result == 'success'
+      && needs.changes.outputs.backend == 'true'
+      && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: macos-26
     timeout-minutes: 30
 
