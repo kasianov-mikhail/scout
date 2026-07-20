@@ -11,6 +11,7 @@ import Testing
 @testable import Scout
 @testable import Support
 
+@MainActor
 @Suite("Merge policy")
 struct MergePolicyTests {
     /// Uniqueness constraints are only enforced by the SQLite store, so this
@@ -18,10 +19,7 @@ struct MergePolicyTests {
     /// the duplicate) to prove the merge policy dedupes a colliding insert
     /// instead of throwing.
     ///
-    @Test(
-        "A duplicate insert on the same natural key dedupes instead of throwing",
-        .disabled("Flakes in CI with a Core Data change-processing crash")
-    )
+    @Test("A duplicate insert on the same natural key dedupes instead of throwing")
     func duplicateInsertDedupes() throws {
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
