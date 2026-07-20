@@ -27,7 +27,7 @@ struct FilterLevelsView: View {
                         Spacer()
                     }
                     .padding(12)
-                    .softCell(selected: on)
+                    .softCell(selected: on, tint: level.color ?? .blue)
                     .contentShape(Rectangle())
                     .onTapGesture {
                         draft.toggle(level)

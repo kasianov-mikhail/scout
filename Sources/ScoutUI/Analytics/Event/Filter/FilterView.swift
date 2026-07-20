@@ -54,8 +54,8 @@ struct FilterView: View {
 }
 
 extension View {
-    func softCell(selected: Bool = false) -> some View {
-        background(.blue.opacity(selected ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 12))
+    func softCell(selected: Bool = false, tint: Color = .blue) -> some View {
+        background(tint.opacity(selected ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 12))
     }
 }
 
