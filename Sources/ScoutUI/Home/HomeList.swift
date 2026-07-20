@@ -19,6 +19,7 @@ struct HomeList: View {
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
     @StateObject var devices = DevicesProvider()
+    @StateObject var alerts = AlertProvider(notifier: AlertNotifier())
 
     var body: some View {
         List {
@@ -30,6 +31,10 @@ struct HomeList: View {
             .padding(.top, 8)
             .listRowSeparator(.hidden)
 
+            HomeAlertSection(
+                alerts: alerts,
+                path: $path
+            )
             HomeMetricSection(
                 activities: activities,
                 sessions: sessions,
@@ -68,9 +73,11 @@ struct HomeList: View {
                 LogView(period: period, log: logs, devices: devices)
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
+            case .alerts:
+                AlertListView(provider: alerts)
             }
         }
-        .rotatingProviders([sessions, activities, logs, releases, devices])
+        .rotatingProviders([sessions, activities, logs, releases, devices, alerts])
     }
 }
 
