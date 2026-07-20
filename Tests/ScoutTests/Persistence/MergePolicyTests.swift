@@ -11,6 +11,7 @@ import Testing
 @testable import Scout
 @testable import Support
 
+@MainActor
 @Suite("Merge policy")
 struct MergePolicyTests {
     /// Uniqueness constraints are only enforced by the SQLite store, so this
