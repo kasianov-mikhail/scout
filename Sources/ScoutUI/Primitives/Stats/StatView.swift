@@ -18,53 +18,55 @@ struct StatView: View {
     @Environment(\.chartColor) var color
 
     var body: some View {
-        VStack(spacing: 0) {
-            PeriodPicker(extent: $extent, periods: stat.periods)
+        ProviderView(provider: stat) { points in
+            let segment = extent.segment(from: points)
 
-            ProviderView(provider: stat) { points in
-                let segment = extent.segment(from: points)
+            List {
+                PeriodPicker(extent: $extent, periods: stat.periods)
+                    .listRowInsets(EdgeInsets())
+                    .listRowSeparator(.hidden)
 
                 RangeControl(extent: $extent)
-
-                List {
-                    ComparableChart(
-                        segment: segment, points: points, extent: extent, color: color, isComparing: isComparing
-                    )
-                    .listRowSeparator(.hidden, edges: .top)
-                    .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
-
-                    ComparisonToggle(isOn: $isComparing)
-                        .disabled(!extent.canCompare(points: points, segment: segment))
-
-                    if showList {
-                        total(count: segment.total)
-                    }
-
-                    Header(title: "Weekly Pattern") {
-                        Text(verbatim: "Last 4 weeks")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                    }
+                    .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
 
-                    HeatmapView(
-                        grid: HeatmapGrid(
-                            points: points,
-                            range: HeatmapGrid.recentRange(weeks: 4),
-                            calendar: .utc
-                        )
-                    )
-                    .listRowSeparator(.hidden)
+                ComparableChart(
+                    segment: segment, points: points, extent: extent, color: color, isComparing: isComparing
+                )
+                .listRowSeparator(.hidden, edges: .top)
+                .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
+
+                ComparisonToggle(isOn: $isComparing)
+                    .disabled(!extent.canCompare(points: points, segment: segment))
+
+                if showList {
+                    total(count: segment.total)
                 }
-                .listStyle(.plain)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        ChartExportButton(
-                            title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)
-                        ) {
-                            ChartView(segment: segment, timing: extent)
-                                .foregroundStyle(color)
-                        }
+
+                Header(title: "Weekly Pattern") {
+                    Text(verbatim: "Last 4 weeks")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .listRowSeparator(.hidden)
+
+                HeatmapView(
+                    grid: HeatmapGrid(
+                        points: points,
+                        range: HeatmapGrid.recentRange(weeks: 4),
+                        calendar: .utc
+                    )
+                )
+                .listRowSeparator(.hidden)
+            }
+            .listStyle(.plain)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ChartExportButton(
+                        title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)
+                    ) {
+                        ChartView(segment: segment, timing: extent)
+                            .foregroundStyle(color)
                     }
                 }
             }
