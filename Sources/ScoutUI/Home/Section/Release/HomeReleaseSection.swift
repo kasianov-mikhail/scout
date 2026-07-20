@@ -28,10 +28,11 @@ struct HomeReleaseSection: View {
 
         case .success:
             Text(verbatim: "No results")
-                .placeholderTextStyle()
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundStyle(.gray.opacity(0.7))
                 .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                .listRowSeparator(.hidden)
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
         default:
             ForEach(0..<3, id: \.self) { _ in
@@ -45,10 +46,12 @@ struct HomeReleaseSection: View {
     let releases = ReleaseHealthProvider()
     releases.result = .success(.samples)
 
+    let empty = ReleaseHealthProvider(releases: [])
+
     return NavigationStack {
         List {
             HomeReleaseSection(releases: releases, path: .constant([]))
-            HomeReleaseSection(releases: ReleaseHealthProvider(releases: []), path: .constant([]))
+            HomeReleaseSection(releases: empty, path: .constant([]))
         }
         .listStyle(.plain)
     }
