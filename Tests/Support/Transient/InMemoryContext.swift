@@ -11,6 +11,7 @@ import Testing
 @testable import Scout
 
 extension NSManagedObjectContext {
+    @MainActor
     static func inMemoryContext() -> NSManagedObjectContext {
         let container = NSPersistentContainer(named: "ScoutModel")
 

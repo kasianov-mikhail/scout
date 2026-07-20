@@ -15,52 +15,52 @@ struct AlertListView: View {
     @State private var isEditorPresented = false
 
     var body: some View {
-        List {
-            content
-        }
-        .listStyle(.plain)
-        .navigationTitle(en: "Alerts")
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    isEditorPresented = true
-                } label: {
-                    Image(systemName: "plus")
+        content
+            .navigationTitle(en: "Alerts")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        isEditorPresented = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
             }
-        }
-        .sheet(isPresented: $isEditorPresented) {
-            Task { await provider.fetchAgain(in: database) }
-        } content: {
-            NavigationStack {
-                AlertEditorView(provider: provider)
+            .sheet(isPresented: $isEditorPresented) {
+                Task { await provider.fetchAgain(in: database) }
+            } content: {
+                NavigationStack {
+                    AlertEditorView(provider: provider)
+                }
             }
             .opaquePresentation()
-        }
-        .task { await provider.fetchIfNeeded(in: database) }
-        .refreshable { await provider.fetchAgain(in: database) }
+            .task { await provider.fetchIfNeeded(in: database) }
+            .refreshable { await provider.fetchAgain(in: database) }
     }
 
     @ViewBuilder private var content: some View {
         switch provider.result {
         case .success(let statuses) where statuses.count > 0:
-            chips(statuses)
+            List {
+                chips(statuses)
 
-            Header(title: "Rules") {
-                FiringBadge(count: statuses.firingCount)
-            }
+                Header(title: "Rules") {
+                    FiringBadge(count: statuses.firingCount)
+                }
 
-            ForEach(statuses, id: \.rule) { status in
-                AlertRow(status: status)
-                    .swipeActions {
-                        Button(role: .destructive) {
-                            provider.remove(status.rule)
-                            Task { await provider.fetchAgain(in: database) }
-                        } label: {
-                            Text(verbatim: "Delete")
+                ForEach(statuses, id: \.rule) { status in
+                    AlertRow(status: status)
+                        .swipeActions {
+                            Button(role: .destructive) {
+                                provider.remove(status.rule)
+                                Task { await provider.fetchAgain(in: database) }
+                            } label: {
+                                Text(verbatim: "Delete")
+                            }
                         }
-                    }
+                }
             }
+            .listStyle(.plain)
 
         case .success:
             Placeholder(
@@ -68,22 +68,21 @@ struct AlertListView: View {
                 systemImage: "bell.badge",
                 description: "Add a rule to get notified when a metric misbehaves."
             )
-            .frame(maxWidth: .infinity)
-            .padding(.top, 80)
-            .listRowSeparator(.hidden)
 
         case .failure(let error):
             ErrorView(description: error.localizedDescription) {
                 await provider.fetchAgain(in: database)
             }
-            .listRowSeparator(.hidden)
 
         case nil:
-            Header(title: "Rules")
+            List {
+                Header(title: "Rules")
 
-            ForEach(0..<3, id: \.self) { _ in
-                AlertRowPlaceholder()
+                ForEach(0..<3, id: \.self) { _ in
+                    AlertRowPlaceholder()
+                }
             }
+            .listStyle(.plain)
         }
     }
 
