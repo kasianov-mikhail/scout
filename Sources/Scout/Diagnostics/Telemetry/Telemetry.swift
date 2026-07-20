@@ -13,14 +13,7 @@
 package enum Telemetry {
     case counter(Int)
     case floatingCounter(Double)
-
-    package enum Meter {
-        case set(Double)
-        case increment(Double)
-        case decrement(Double)
-    }
-
-    case meter(Meter)
+    case meter(Double)
     case recorder(Double)
     case timer(Double)
 }

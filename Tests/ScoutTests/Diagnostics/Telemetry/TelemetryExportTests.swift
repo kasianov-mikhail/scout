@@ -23,22 +23,10 @@ struct TelemetryExportTests {
         #expect(telemetry.export == .floatingCounter)
     }
 
-    @Test("Init with meter_set name creates meter set")
-    func initMeterSet() throws {
-        let telemetry = try Telemetry(name: "meter_set", value: 1.0)
-        #expect(telemetry.export == .meterSet)
-    }
-
-    @Test("Init with meter_increment name creates meter increment")
-    func initMeterIncrement() throws {
-        let telemetry = try Telemetry(name: "meter_increment", value: 2.0)
-        #expect(telemetry.export == .meterIncrement)
-    }
-
-    @Test("Init with meter_decrement name creates meter decrement")
-    func initMeterDecrement() throws {
-        let telemetry = try Telemetry(name: "meter_decrement", value: 1.0)
-        #expect(telemetry.export == .meterDecrement)
+    @Test("Init with meter name creates meter")
+    func initMeter() throws {
+        let telemetry = try Telemetry(name: "meter", value: 1.0)
+        #expect(telemetry.export == .meter)
     }
 
     @Test("Init with recorder name creates recorder")
@@ -64,16 +52,14 @@ struct TelemetryExportTests {
     func exportRawValues() {
         #expect(Telemetry.Export.counter.rawValue == "counter")
         #expect(Telemetry.Export.floatingCounter.rawValue == "floating_counter")
-        #expect(Telemetry.Export.meterSet.rawValue == "meter_set")
-        #expect(Telemetry.Export.meterIncrement.rawValue == "meter_increment")
-        #expect(Telemetry.Export.meterDecrement.rawValue == "meter_decrement")
+        #expect(Telemetry.Export.meter.rawValue == "meter")
         #expect(Telemetry.Export.recorder.rawValue == "recorder")
         #expect(Telemetry.Export.timer.rawValue == "timer")
     }
 
-    @Test("Export allCases contains all seven types")
+    @Test("Export allCases contains all five types")
     func exportAllCases() {
-        #expect(Telemetry.Export.allCases.count == 7)
+        #expect(Telemetry.Export.allCases.count == 5)
     }
 
     @Test("ExportError description lists all valid names")

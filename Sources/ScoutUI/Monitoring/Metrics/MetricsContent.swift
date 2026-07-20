@@ -79,12 +79,20 @@ struct MetricsContent<T: ChartNumeric>: View {
         HStack {
             Text(group.name)
             Spacer()
-            Text(group.points.total[keyPath: formatter])
+            Text(summary(of: group)[keyPath: formatter])
         }
         .monospaced()
         .italic()
         .font(.body)
         .lineLimit(1)
+    }
+
+    private func summary(of group: PointGroup<T>) -> T {
+        if telemetry == .meter {
+            group.points.latest(in: period.initialRange) ?? .zero
+        } else {
+            group.points.total
+        }
     }
 }
 

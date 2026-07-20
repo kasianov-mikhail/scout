@@ -14,6 +14,7 @@ struct MetricsList: View {
         case double
         case timer
         case recorder
+        case meter
 
         var id: Self { self }
 
@@ -27,6 +28,8 @@ struct MetricsList: View {
                 .timer
             case .recorder:
                 .recorder
+            case .meter:
+                .meter
             }
         }
     }
@@ -61,6 +64,12 @@ struct MetricsList: View {
                 telemetry: scope.telemetry
             )
         case .recorder:
+            MetricsContent(
+                period: period,
+                formatter: \Double.decimal,
+                telemetry: scope.telemetry
+            )
+        case .meter:
             MetricsContent(
                 period: period,
                 formatter: \Double.decimal,

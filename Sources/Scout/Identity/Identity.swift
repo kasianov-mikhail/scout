@@ -27,4 +27,12 @@ final class Protected<Value: Sendable>: @unchecked Sendable {
         get { queue.sync { raw } }
         set { queue.sync { raw = newValue } }
     }
+
+    @discardableResult
+    func mutate(_ transform: (inout Value) -> Void) -> Value {
+        queue.sync {
+            transform(&raw)
+            return raw
+        }
+    }
 }

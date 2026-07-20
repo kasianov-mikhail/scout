@@ -21,7 +21,7 @@ struct TelemetryFactory: MetricsFactory {
     }
 
     func makeMeter(label: String, dimensions: [(String, String)]) -> MeterHandler {
-        TelemetryHandler.Idle()
+        MeterHandlerImpl(label: label, sync: sync, session: session)
     }
 
     func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool) -> RecorderHandler {

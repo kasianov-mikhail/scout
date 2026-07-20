@@ -11,9 +11,7 @@ extension Telemetry {
     package enum Export: String, CaseIterable {
         case counter = "counter"
         case floatingCounter = "floating_counter"
-        case meterSet = "meter_set"
-        case meterIncrement = "meter_increment"
-        case meterDecrement = "meter_decrement"
+        case meter = "meter"
         case recorder = "recorder"
         case timer = "timer"
     }
@@ -36,12 +34,8 @@ extension Telemetry {
             self = .counter(Int(value))
         case .floatingCounter:
             self = .floatingCounter(value)
-        case .meterSet:
-            self = .meter(.set(value))
-        case .meterIncrement:
-            self = .meter(.increment(value))
-        case .meterDecrement:
-            self = .meter(.decrement(value))
+        case .meter:
+            self = .meter(value)
         case .recorder:
             self = .recorder(value)
         case .timer:
@@ -55,12 +49,8 @@ extension Telemetry {
             .counter
         case .floatingCounter:
             .floatingCounter
-        case .meter(.set):
-            .meterSet
-        case .meter(.increment):
-            .meterIncrement
-        case .meter(.decrement):
-            .meterDecrement
+        case .meter:
+            .meter
         case .recorder:
             .recorder
         case .timer:

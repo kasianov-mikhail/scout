@@ -13,6 +13,10 @@ struct NativeSeries {
     let query: SeriesQuery
 
     func series(store: EntityStore) async throws -> [MetricSeries] {
+        if query.reduce == .last {
+            return try await lastValueSeries(store: store)
+        }
+
         var intTotals: [GroupKey: [Date: Double]] = [:]
         var doubleTotals: [GroupKey: [Date: Double]] = [:]
 
@@ -35,6 +39,63 @@ struct NativeSeries {
             series
             .filter { $0.points.count > 0 }
             .sorted { ($0.name, $0.category ?? "", $0.version ?? "") < ($1.name, $1.category ?? "", $1.version ?? "") }
+    }
+
+    private func lastValueSeries(store: EntityStore) async throws -> [MetricSeries] {
+        var series: [MetricSeries] = []
+
+        if query.values != .double {
+            series += try await collectLast(entity: IntMetricsEntry.recordType, store: store) { .int(Int($0)) }
+        }
+        if query.values != .int {
+            series += try await collectLast(entity: DoubleMetricsEntry.recordType, store: store) { .double($0) }
+        }
+
+        return
+            series
+            .filter { $0.points.count > 0 }
+            .sorted { ($0.name, $0.category ?? "", $0.version ?? "") < ($1.name, $1.category ?? "", $1.version ?? "") }
+    }
+
+    private func collectLast(entity: String, store: EntityStore, value: (Double) -> MetricValue) async throws
+        -> [MetricSeries]
+    {
+        let filters = [
+            EntityStore.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
+            EntityStore.Filter(field: "date", op: .lessThan, value: .date(query.range.upperBound)),
+        ]
+        let records = try await store.read(
+            entity: entity, filters: filters, fields: ["date", "value", "name", "category"])
+
+        var latest: [GroupKey: [Date: (date: Date, sample: Double)]] = [:]
+        for record in records {
+            guard case .date(let date)? = record.values["date"] else { continue }
+            let name: String? = record["name"]
+            let category: String? = record["category"]
+            guard query.name == nil || name == query.name else { continue }
+            guard query.category == nil || category == query.category else { continue }
+            guard let name else { continue }
+
+            let sample: Double
+            switch record.values["value"] {
+            case .double(let raw): sample = raw
+            case .int(let raw): sample = Double(raw)
+            default: continue
+            }
+
+            let key = GroupKey(name: name, category: category.flatMap { $0.isEmpty ? nil : $0 }, version: nil)
+            let bucket = bucketStart(of: date)
+            if let existing = latest[key]?[bucket], existing.date >= date { continue }
+            latest[key, default: [:]][bucket] = (date, sample)
+        }
+
+        return latest.map { key, buckets in
+            let points =
+                buckets
+                .sorted { $0.key < $1.key }
+                .map { MetricSeriesPoint(date: $0.key.millisecondsSince1970, value: value($0.value.sample)) }
+            return MetricSeries(name: key.name, category: key.category, version: key.version, points: points)
+        }
     }
 
     private var from: Date {

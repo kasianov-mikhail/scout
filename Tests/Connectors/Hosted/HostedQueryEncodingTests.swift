@@ -77,6 +77,26 @@ struct HostedQueryEncodingTests {
         #expect(queryItems(of: url)["source"] == nil)
     }
 
+    @Test("A last reduce is carried as a query parameter")
+    func seriesReduceIsEncoded() throws {
+        let url = try #require(
+            database.seriesEndpoint(
+                for: SeriesQuery(category: "meter", reduce: .last, range: day..<day.addingDay())
+            )
+        )
+
+        #expect(queryItems(of: url)["reduce"] == "last")
+    }
+
+    @Test("A sum reduce omits the parameter")
+    func seriesReduceOmittedWhenSum() throws {
+        let url = try #require(
+            database.seriesEndpoint(for: SeriesQuery(category: "counter", range: day..<day.addingDay()))
+        )
+
+        #expect(queryItems(of: url)["reduce"] == nil)
+    }
+
     @Test("The lookup field list is percent-encoded")
     func lookupFieldsAreEncoded() throws {
         let url = try #require(database.recordEndpoint(recordName: "abc", fields: ["a b", "c+d"]))

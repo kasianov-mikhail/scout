@@ -32,10 +32,10 @@ struct TelemetryFactoryTests {
         #expect(handler is TelemetryHandler)
     }
 
-    @Test("makeMeter returns Idle handler")
+    @Test("makeMeter returns MeterHandlerImpl")
     func makeMeter() {
         let handler = factory.makeMeter(label: "test", dimensions: [])
-        #expect(handler is TelemetryHandler.Idle)
+        #expect(handler is MeterHandlerImpl)
     }
 
     @Test("makeRecorder returns TelemetryHandler")

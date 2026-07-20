@@ -21,6 +21,7 @@ class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
         try await database.metricSeries(
             T.self,
             category: telemetry.rawValue,
+            reduce: telemetry == .meter ? .last : .sum,
             in: Calendar.utc.defaultRange
         )
     }
