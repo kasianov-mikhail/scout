@@ -63,13 +63,12 @@ struct ReleaseRowPlaceholder: View {
             CompactRing(adoption: 1.0, color: .gray)
 
             Text(verbatim: "3.2.1")
-                .font(.body)
+                .font(.subheadline)
                 .monospacedDigit()
 
             Spacer()
 
-            MiniChart(series: nil, color: .gray)
-
+            ReleasePercent(text: "1000.00%")
             ReleasePercent(text: "100.00%")
         }
         .redacted(reason: .placeholder)

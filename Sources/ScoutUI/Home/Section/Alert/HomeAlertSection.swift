@@ -13,29 +13,50 @@ struct HomeAlertSection: View {
 
     @Binding var path: [HomeDestination]
 
+    @Environment(\.database) private var database
+    @State private var isEditorPresented = false
+
     var body: some View {
         Header(title: "Alerts") {
             HStack(spacing: 8) {
                 if let statuses = try? alerts.result?.get() {
-                    FiringBadge(count: statuses.firingCount)
-                }
+                    if statuses.firingCount > 0 {
+                        CountBadge(count: statuses.firingCount)
+                    }
 
-                AllButton { path.append(.alerts) }
+                    if statuses.count > 0 {
+                        AllButton { path.append(.alerts) }
+                    }
+                } else {
+                    AllButton { path.append(.alerts) }
+                }
+            }
+        }
+        .sheet(isPresented: $isEditorPresented) {
+            Task { await alerts.fetchAgain(in: database) }
+        } content: {
+            NavigationStack {
+                AlertEditorView(provider: alerts)
             }
         }
 
         switch alerts.result {
+        case .success(let statuses) where statuses.allHealthy:
+            placeholderText("All healthy", color: .green).listRowInsets(.sideInsets)
+
         case .success(let statuses) where statuses.count > 0:
             ForEach(statuses.prefix(2), id: \.rule) { status in
                 AlertRow(status: status)
             }
 
         case .success:
-            Text(verbatim: "No alert rules")
-                .placeholderTextStyle()
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                .listRowSeparator(.hidden)
+            Button {
+                isEditorPresented = true
+            } label: {
+                placeholderText("New rule", color: .blue)
+            }
+            .buttonStyle(.plain)
+            .listRowInsets(.sideInsets)
 
         default:
             ForEach(0..<2, id: \.self) { _ in
@@ -43,18 +64,32 @@ struct HomeAlertSection: View {
             }
         }
     }
+
+    private func placeholderText(_ text: String, color: Color) -> some View {
+        Text(verbatim: text)
+            .font(.body)
+            .fontWeight(.medium)
+            .foregroundStyle(color.opacity(0.7))
+            .frame(height: 68)
+            .frame(maxWidth: .infinity)
+            .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
+    }
 }
 
 #Preview {
-    let alerts = AlertProvider()
-    alerts.result = .success([.firingSample, .armedSample])
+    let firing = AlertProvider()
+    firing.result = .success([.firingSample, .armedSample])
+
+    let healthy = AlertProvider()
+    healthy.result = .success([.armedSample])
 
     let empty = AlertProvider()
     empty.result = .success([])
 
     return NavigationStack {
         List {
-            HomeAlertSection(alerts: alerts, path: .constant([]))
+            HomeAlertSection(alerts: firing, path: .constant([]))
+            HomeAlertSection(alerts: healthy, path: .constant([]))
             HomeAlertSection(alerts: empty, path: .constant([]))
         }
         .listStyle(.plain)
