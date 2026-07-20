@@ -69,7 +69,7 @@ struct GlobalSearchIndexTests {
         let index = makeIndex(series: [
             makeSeries("api_calls", category: Telemetry.Export.counter.rawValue),
             makeSeries("api_latency", category: Telemetry.Export.timer.rawValue),
-            makeSeries("api_meter", category: Telemetry.Export.meterSet.rawValue),
+            makeSeries("api_meter", category: Telemetry.Export.meter.rawValue),
         ])
         let hits = index.hits(matching: "api")
 

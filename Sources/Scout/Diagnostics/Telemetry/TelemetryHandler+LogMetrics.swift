@@ -8,7 +8,7 @@
 
 import CoreData
 
-extension TelemetryHandler {
+extension TelemetryPersisting {
     func logMetrics(telemetry: Telemetry.Export, value: some MetricScalar) {
         logMetrics(category: telemetry.rawValue, value: value)
     }
@@ -33,6 +33,10 @@ extension TelemetryHandler {
                 label, date: date, category: LatencyBuckets.category(for: seconds), value: 1, sessionID: sessionID,
                 context)
         }
+    }
+
+    func logMeter(value: Double) {
+        logMetrics(telemetry: .meter, value: value)
     }
 
     func logRecorder(value: Double) {

@@ -8,7 +8,13 @@
 import Foundation
 import Metrics
 
-final class TelemetryHandler: NSObject {
+protocol TelemetryPersisting {
+    var label: String { get }
+    var sync: Synchronize { get }
+    var session: Protected<UUID> { get }
+}
+
+final class TelemetryHandler: NSObject, TelemetryPersisting {
     let label: String
     let dimensions: [(String, String)]
     let sync: Synchronize
@@ -53,5 +59,36 @@ extension TelemetryHandler: RecorderHandler {
 
     func record(_ value: Double) {
         logRecorder(value: value)
+    }
+}
+
+final class MeterHandlerImpl: NSObject, TelemetryPersisting {
+    let label: String
+    let sync: Synchronize
+    let session: Protected<UUID>
+    let value = Protected<Double>(0)
+
+    init(label: String, sync: @escaping Synchronize, session: Protected<UUID>) {
+        self.label = label
+        self.sync = sync
+        self.session = session
+    }
+}
+
+extension MeterHandlerImpl: MeterHandler {
+    func set(_ value: Int64) {
+        set(Double(value))
+    }
+
+    func set(_ value: Double) {
+        logMeter(value: self.value.mutate { $0 = value })
+    }
+
+    func increment(by amount: Double) {
+        logMeter(value: value.mutate { $0 += amount })
+    }
+
+    func decrement(by amount: Double) {
+        logMeter(value: value.mutate { $0 -= amount })
     }
 }

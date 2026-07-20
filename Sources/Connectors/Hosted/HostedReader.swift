@@ -81,6 +81,9 @@ extension HTTPDatabase: DatabaseReader {
         if query.byVersion {
             params.append("by=version")
         }
+        if query.reduce != .sum {
+            params.append("reduce=\(query.reduce.rawValue)")
+        }
 
         return URL(string: "api/v1/metrics/series?" + params.joined(separator: "&"), relativeTo: url)
     }

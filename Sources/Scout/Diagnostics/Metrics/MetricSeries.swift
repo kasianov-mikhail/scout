@@ -8,12 +8,12 @@
 import Foundation
 
 extension DatabaseReader {
-    package func metricSeries<T: MetricScalar>(_ valueType: T.Type, category: String, in range: Range<Date>)
-        async throws
-        -> [MetricSeries]
-    {
+    package func metricSeries<T: MetricScalar>(
+        _ valueType: T.Type, category: String, reduce: SeriesQuery.Reduce = .sum, in range: Range<Date>
+    ) async throws -> [MetricSeries] {
         try await series(
-            matching: SeriesQuery(category: category, values: T.seriesValues, bucket: .hour, range: range)
+            matching: SeriesQuery(
+                category: category, values: T.seriesValues, bucket: .hour, reduce: reduce, range: range)
         )
     }
 }
@@ -31,17 +31,22 @@ package struct SeriesQuery: Sendable {
         case int, double
     }
 
+    package enum Reduce: String, Sendable {
+        case sum, last
+    }
+
     package var name: String?
     package var category: String?
     package var values: Values?
     package var bucket: Bucket = .day
     package var byVersion = false
     package var source: Source?
+    package var reduce: Reduce = .sum
     package var range: Range<Date>
 
     package init(
         name: String? = nil, category: String? = nil, values: Values? = nil, bucket: Bucket = .day,
-        byVersion: Bool = false, source: Source? = nil, range: Range<Date>
+        byVersion: Bool = false, source: Source? = nil, reduce: Reduce = .sum, range: Range<Date>
     ) {
         self.name = name
         self.category = category
@@ -49,6 +54,7 @@ package struct SeriesQuery: Sendable {
         self.bucket = bucket
         self.byVersion = byVersion
         self.source = source
+        self.reduce = reduce
         self.range = range
     }
 }
