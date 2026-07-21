@@ -69,12 +69,22 @@ struct GlobalSearchIndexTests {
         let index = makeIndex(series: [
             makeSeries("api_calls", category: Telemetry.Export.counter.rawValue),
             makeSeries("api_latency", category: Telemetry.Export.timer.rawValue),
+            makeSeries("api_payload", category: Telemetry.Export.recorder.rawValue),
             makeSeries("api_meter", category: Telemetry.Export.meter.rawValue),
         ])
         let hits = index.hits(matching: "api")
 
-        #expect(hits.map(\.title) == ["api_calls", "api_latency"])
+        #expect(Set(hits.map(\.title)) == ["api_calls", "api_latency", "api_payload", "api_meter"])
         #expect(hits.allSatisfy { $0.category == .metrics })
+    }
+
+    @Test("Reset and bucket categories stay out of the results") func auxiliaryCategoriesAreIgnored() {
+        let index = makeIndex(series: [
+            makeSeries("api_calls", category: ResetMarker.category),
+            makeSeries("api_calls", category: RecorderBuckets.categories[0]),
+        ])
+
+        #expect(index.hits(matching: "api").isEmpty)
     }
 
     @Test("Endpoint series match on status and latency categories") func endpointMatch() {

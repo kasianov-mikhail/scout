@@ -20,6 +20,11 @@ protocol PointSeries {
     init(name: String, points: [ChartPoint<T>])
 }
 
+enum SeriesSummary {
+    case total
+    case latest
+}
+
 extension PointSeries {
     var hasPoints: Bool {
         points.total > .zero
@@ -33,10 +38,22 @@ extension Collection where Element: PointSeries {
 }
 
 extension Collection where Element: PointSeries & Comparable {
-    func ranked(on period: Period) -> [Element] {
-        withPoints(in: period)
-            .filter(\.hasPoints)
-            .sorted()
+    func ranked(on period: Period, by summary: SeriesSummary = .total) -> [Element] {
+        let elements = withPoints(in: period)
+
+        switch summary {
+        case .total:
+            return elements.filter(\.hasPoints).sorted()
+        case .latest:
+            // A gauge reads zero or below just as meaningfully as it reads high, so any
+            // element carrying a point survives and ranks on its newest value.
+            return
+                elements
+                .filter { $0.points.count > 0 }
+                .map { ($0, $0.points.latest(in: period.initialRange) ?? .zero) }
+                .sorted { $0.1 > $1.1 }
+                .map(\.0)
+        }
     }
 
     private func withPoints(in period: Period) -> [Element] {

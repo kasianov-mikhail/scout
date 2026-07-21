@@ -25,7 +25,7 @@ struct MetricsContent<T: ChartNumeric>: View {
     var body: some View {
         ProviderView(provider: provider) { data in
             let groups: [PointGroup<T>] = data.pointGroups()
-            let ranked = groups.ranked(on: period)
+            let ranked = groups.ranked(on: period, by: summary)
 
             if ranked.isEmpty {
                 Placeholder(
@@ -87,11 +87,16 @@ struct MetricsContent<T: ChartNumeric>: View {
         .lineLimit(1)
     }
 
+    private var summary: SeriesSummary {
+        telemetry == .meter ? .latest : .total
+    }
+
     private func summary(of group: PointGroup<T>) -> T {
-        if telemetry == .meter {
-            group.points.latest(in: period.initialRange) ?? .zero
-        } else {
+        switch summary {
+        case .total:
             group.points.total
+        case .latest:
+            group.points.latest(in: period.initialRange) ?? .zero
         }
     }
 }
