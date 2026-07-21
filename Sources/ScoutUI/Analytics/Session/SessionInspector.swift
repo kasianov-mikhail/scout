@@ -34,6 +34,7 @@ struct SessionInspector: View {
             { await info.fetchLatest(in: database) },
         ])
         .navigationTitle(en: "Session")
+        .largeNavigationTitle()
     }
 
     private var query: EventQuery {
