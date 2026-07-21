@@ -31,59 +31,53 @@ struct FilterView: View {
                     Button {
                         dismiss()
                     } label: {
-                        Text(verbatim: "Cancel")
+                        Image(systemName: "xmark")
                     }
+                    .accessibilityLabel(Text(verbatim: "Cancel"))
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button {
                         draft.reset()
                     } label: {
-                        Text(verbatim: "Reset")
+                        Image(systemName: "arrow.counterclockwise")
                     }
+                    .tint(.red)
                     .disabled(!draft.isResetEnabled)
+                    .accessibilityLabel(Text(verbatim: "Reset"))
                     Button {
                         draft.apply()
                         dismiss()
                     } label: {
-                        Text(verbatim: "Apply")
+                        Image(systemName: "checkmark")
                     }
+                    .tint(.green)
                     .disabled(!draft.isApplyEnabled)
                     .fontWeight(.semibold)
+                    .accessibilityLabel(Text(verbatim: "Apply"))
                 }
             }
             .navigationTitle(en: "Filter")
             .inlineNavigationTitle()
         }
-        .modalFrame(height: draft.isDateRangeEnabled ? 720 : 600)
     }
 }
 
 extension View {
     func softCell(selected: Bool = false, tint: Color = .blue) -> some View {
-        background(tint.opacity(selected ? 0.1 : 0.04), in: RoundedRectangle(cornerRadius: 12))
-    }
-}
-
-extension View {
-    @ViewBuilder
-    fileprivate func modalFrame(height: CGFloat) -> some View {
-        #if os(iOS)
-            self
-        #else
-            frame(width: height / 1.618, height: height)
-        #endif
+        padding(12).background(
+            tint.opacity(selected ? 0.1 : 0.04),
+            in: RoundedRectangle(cornerRadius: 12)
+        )
     }
 }
 
 #Preview("Filter Form") {
-    Color.clear.sheet(isPresented: .constant(true)) {
-        FilterView(
-            query: .constant(
-                EventQuery(
-                    levels: [.error, .critical],
-                    dates: Date().startOfDay.addingDay(-7)..<Date().startOfDay
-                )
+    FilterView(
+        query: .constant(
+            EventQuery(
+                levels: [.error, .critical],
+                dates: Date().startOfDay.addingDay(-7)..<Date().startOfDay
             )
         )
-    }
+    )
 }

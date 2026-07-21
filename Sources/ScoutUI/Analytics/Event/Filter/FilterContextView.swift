@@ -11,11 +11,21 @@ struct FilterContextView: View {
     @ObservedObject var draft: FilterDraft
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 16) {
             Header(title: "Context")
 
-            IDField(title: "Session ID", text: $draft.sessionText, isValid: draft.isSessionValid)
-            IDField(title: "Device ID", text: $draft.deviceText, isValid: draft.isDeviceValid)
+            VStack(alignment: .leading, spacing: 10) {
+                IDField(
+                    title: "Session ID",
+                    text: $draft.sessionText,
+                    isValid: draft.isSessionValid
+                )
+                IDField(
+                    title: "Device ID",
+                    text: $draft.deviceText,
+                    isValid: draft.isDeviceValid
+                )
+            }
         }
     }
 }
@@ -54,7 +64,6 @@ private struct IDField: View {
                 .buttonStyle(.plain)
             }
         }
-        .padding(14)
         .softCell()
     }
 
