@@ -14,7 +14,7 @@ struct MetricSearchDetail: View {
 
     var body: some View {
         switch telemetry {
-        case .floatingCounter:
+        case .floatingCounter, .recorder, .meter:
             MetricSearchContent(name: name, telemetry: telemetry, formatter: \Double.decimal)
         case .timer:
             MetricSearchContent(name: name, telemetry: telemetry, formatter: \TimeInterval.duration)

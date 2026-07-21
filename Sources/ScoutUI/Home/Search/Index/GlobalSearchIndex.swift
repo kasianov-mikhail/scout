@@ -30,7 +30,7 @@ struct GlobalSearchIndex {
         self.hangs = hangs
     }
 
-    static let telemetries: [Telemetry.Export] = [.counter, .floatingCounter, .timer]
+    static let telemetries: [Telemetry.Export] = [.counter, .floatingCounter, .timer, .recorder, .meter]
 
     private static let endpointCategories = Set(LatencyBuckets.categories + StatusBuckets.categories)
 
