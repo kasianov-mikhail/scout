@@ -27,9 +27,6 @@ final class TelemetryHandler: NSObject, TelemetryPersisting {
         self.session = session
     }
 
-    // Counters are stored as a stream of increments, so there is no running total to zero out.
-    // A reset is recorded as its own marker instead, leaving the increments that already
-    // happened intact and letting the charts show where the counter restarted.
     func reset() {
         logMetrics(category: ResetMarker.category, value: 1)
     }
@@ -67,9 +64,6 @@ extension TelemetryHandler: RecorderHandler {
     }
 }
 
-/// Backs both `Meter` and `Gauge`, which share point-in-time semantics: every operation resolves to an
-/// absolute value that the backend reads back with `SeriesQuery.Reduce.last`.
-///
 final class GaugeHandler: NSObject, TelemetryPersisting {
     let label: String
     let sync: Synchronize
