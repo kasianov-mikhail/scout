@@ -52,10 +52,63 @@ struct Segment: Identifiable, Equatable {
     }
 }
 
+extension String {
+    var captionWidth: CGFloat {
+        #if os(iOS)
+            let font = UIFont.preferredFont(forTextStyle: .caption1)
+        #else
+            let font = NSFont.preferredFont(forTextStyle: .caption1)
+        #endif
+        return (self as NSString).size(withAttributes: [.font: font]).width
+    }
+}
+
+extension [Segment] {
+    func fittingLegend(width: CGFloat, spacing: CGFloat, chipWidth: (Segment) -> CGFloat) -> [Segment] {
+        var named = filter { $0.kind != .other }
+        var otherCount = first { $0.kind == .other }?.count ?? 0
+
+        func candidate() -> [Segment] {
+            otherCount > 0 ? named + [Segment(count: otherCount, color: .gray, kind: .other)] : named
+        }
+
+        while named.count > 1 {
+            let current = candidate()
+            let chips = current.reduce(0) { $0 + chipWidth($1) }
+            let gaps = spacing * CGFloat(Swift.max(current.count - 1, 0))
+
+            if chips + gaps <= width {
+                break
+            }
+            otherCount += named.removeLast().count
+        }
+
+        return candidate()
+    }
+}
+
 struct SegmentBar: View {
     let segments: [Segment]
 
+    private static let legendSpacing: CGFloat = 16
+    private static let dotWidth: CGFloat = 7
+    private static let dotSpacing: CGFloat = 5
+
     var body: some View {
+        GeometryReader { proxy in
+            content(fitted: fitted(in: proxy.size.width))
+                .frame(maxHeight: .infinity)
+        }
+        .frame(height: 78)
+    }
+
+    private func fitted(in width: CGFloat) -> [Segment] {
+        segments.fittingLegend(width: width, spacing: Self.legendSpacing) { segment in
+            Self.dotWidth + Self.dotSpacing + segment.label.captionWidth
+        }
+    }
+
+    private func content(fitted segments: [Segment]) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Chart(segments) { segment in
                 BarMark(
@@ -69,13 +122,15 @@ struct SegmentBar: View {
             .frame(height: 18)
             .clipShape(Capsule())
 
-            HStack(spacing: 16) {
+            HStack(spacing: Self.legendSpacing) {
                 ForEach(segments) { segment in
-                    HStack(spacing: 5) {
-                        Circle().fill(segment.color).frame(width: 7, height: 7)
+                    HStack(spacing: Self.dotSpacing) {
+                        Circle().fill(segment.color).frame(width: Self.dotWidth, height: Self.dotWidth)
                         Text(verbatim: segment.label)
                             .font(.caption)
                             .foregroundStyle(.gray)
+                            .lineLimit(1)
+                            .fixedSize()
                     }
                 }
             }
