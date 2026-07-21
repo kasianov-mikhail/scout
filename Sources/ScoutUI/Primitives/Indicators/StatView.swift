@@ -24,12 +24,10 @@ struct StatView: View {
 
             InsetList {
                 PeriodPicker(extent: $extent, periods: stat.periods)
-                    .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
 
                 RangeControl(extent: $extent)
                     .padding(.bottom)
-                    .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
 
                 ComparableChart(
