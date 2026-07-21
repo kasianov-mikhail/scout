@@ -51,8 +51,7 @@ struct SessionHeader: View {
 }
 
 #Preview {
-    List {
+    InsetList {
         SessionHeader(info: .sample)
     }
-    .listStyle(.plain)
 }

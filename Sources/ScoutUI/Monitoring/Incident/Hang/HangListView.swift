@@ -22,7 +22,7 @@ struct HangListView: View {
                         description: "No unresponsive main thread has been recorded"
                     )
                 } else {
-                    List {
+                    InsetList {
                         ForEach(groups) { group in
                             HangRow(group: group)
                         }
@@ -33,7 +33,6 @@ struct HangListView: View {
                             }
                         }
                     }
-                    .listStyle(.plain)
                     .animation(nil, value: groups)
                 }
             } else {

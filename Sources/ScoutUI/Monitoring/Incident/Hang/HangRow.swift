@@ -23,12 +23,11 @@ struct HangRow: View {
 
 #Preview {
     NavigationStack {
-        List {
+        InsetList {
             ForEach(IncidentGroup.groups(from: [Hang].samples)) { group in
                 HangRow(group: group)
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Hangs")
     }
     .environmentObject(Tint())

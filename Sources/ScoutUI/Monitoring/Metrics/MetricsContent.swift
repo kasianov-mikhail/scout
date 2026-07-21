@@ -35,16 +35,17 @@ struct MetricsContent<T: ChartNumeric>: View {
                     code: telemetry.snippet
                 )
             } else {
-                List(ranked) { group in
-                    Row {
-                        row(group: group)
-                    } destination: {
-                        if let named = groups.named(group.name) {
-                            destination(group: named)
+                InsetList {
+                    ForEach(ranked) { group in
+                        Row {
+                            row(group: group)
+                        } destination: {
+                            if let named = groups.named(group.name) {
+                                destination(group: named)
+                            }
                         }
                     }
                 }
-                .listStyle(.plain)
             }
         }
     }

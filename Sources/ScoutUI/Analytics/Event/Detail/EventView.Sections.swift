@@ -59,6 +59,7 @@ extension EventView {
                         stat: stat
                     )
                     .navigationTitle(en: "Stats")
+                    .largeNavigationTitle()
                 }
             }
         }

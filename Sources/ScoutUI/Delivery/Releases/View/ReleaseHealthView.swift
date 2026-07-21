@@ -20,12 +20,11 @@ struct ReleaseHealthView: View {
                     description: "Release health appears once your app reports versions"
                 )
             } else {
-                List {
+                InsetList {
                     ForEach(releases) { release in
                         ReleaseRow(release: release)
                     }
                 }
-                .listStyle(.plain)
             }
         }
         .navigationTitle(en: "Releases")

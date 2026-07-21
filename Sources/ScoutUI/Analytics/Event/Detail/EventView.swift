@@ -25,7 +25,7 @@ struct EventView: View {
     var body: some View {
         let color = event.level?.color
 
-        List {
+        InsetList {
             EventHeader(event: event)
 
             if let paramCount = event.paramCount, paramCount > 0 {
@@ -39,7 +39,6 @@ struct EventView: View {
             StatSection(stat: stat)
             HistorySection(event: event)
         }
-        .listStyle(.plain)
         .navigationTint(color)
         .monospacedNavigationTitle(en: event.name)
         .navigationDestination(isPresented: $isParamPresented) {
@@ -61,19 +60,17 @@ extension EventView {
         let event: Event
 
         var body: some View {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 10) {
                 if let date = event.date {
                     UTCTimestampText(date: date)
                 }
-
-                Spacer().frame(height: 10)
 
                 if let level = event.level {
                     (Text(verbatim: "LEVEL:   ") + level.descriptionText)
                         .fontWeight(.bold)
                 }
             }
-            .padding(.vertical, 4)
+            .frame(height: 90)
         }
     }
 }

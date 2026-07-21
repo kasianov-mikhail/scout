@@ -19,7 +19,7 @@ struct RetentionCohortDetailView: View {
     }
 
     var body: some View {
-        List {
+        InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "\(cohort.size) installs").font(.caption).foregroundStyle(.secondary)
 
@@ -69,27 +69,25 @@ struct RetentionCohortDetailView: View {
 
                 legend
             }
+            .padding(.top)
             .listRowSeparator(.hidden)
 
             Header(title: "By OS Version")
 
             ForEach(cohort.segments) { segment in
-                NavigationLink {
-                    RetentionSegmentDetailView(segment: segment, cohort: cohort)
-                } label: {
-                    HStack {
-                        Text(verbatim: segment.name).font(.subheadline)
-                        Spacer()
+                Row {
+                    Text(verbatim: segment.name).font(.subheadline)
+                    Spacer()
 
-                        HStack(spacing: 14) {
-                            stat(day: 7, retention: segment.retention)
-                            stat(day: 30, retention: segment.retention)
-                        }
+                    HStack(spacing: 14) {
+                        stat(day: 7, retention: segment.retention)
+                        stat(day: 30, retention: segment.retention)
                     }
+                } destination: {
+                    RetentionSegmentDetailView(segment: segment, cohort: cohort)
                 }
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Week of \(cohort.label)")
     }
 

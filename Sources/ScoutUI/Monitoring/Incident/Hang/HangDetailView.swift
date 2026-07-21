@@ -12,10 +12,11 @@ struct HangDetailView: View {
     let hang: Hang
 
     var body: some View {
-        List {
-            VStack(alignment: .leading, spacing: 10) {
+        InsetList {
+            VStack(alignment: .leading, spacing: 0) {
                 if let date = hang.date {
                     UTCTimestampText(date: date)
+                        .frame(height: 44)
                 }
 
                 HStack(spacing: 6) {
@@ -25,9 +26,9 @@ struct HangDetailView: View {
                         .fontWeight(.bold)
                         .foregroundStyle(hang.severity.color)
                 }
-
+                Divider().padding(.vertical)
                 if let reason = hang.reason {
-                    VStack(alignment: .leading, spacing: 4) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text(verbatim: "BLOCKED ON:")
                         Text(reason)
                             .foregroundColor(hang.severity.color)
@@ -35,13 +36,13 @@ struct HangDetailView: View {
                     .fontWeight(.bold)
                 }
             }
-            .padding(.vertical, 4)
+            .listRowSeparator(.hidden, edges: .top)
+            .padding(.bottom)
 
             ContextSection(context: hang, timelineHighlight: hang.severity.color)
 
             StackTraceSection(frames: hang.stackTrace)
         }
-        .listStyle(.plain)
         .navigationTint(hang.severity.color)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {

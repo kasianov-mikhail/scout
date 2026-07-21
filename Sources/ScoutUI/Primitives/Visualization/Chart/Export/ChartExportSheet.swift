@@ -22,7 +22,7 @@ struct ChartExportSheet<ChartContent: View>: View {
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
-        List {
+        InsetList {
             ChartSnapshot(
                 title: title,
                 rangeLabel: rangeLabel,
@@ -32,7 +32,6 @@ struct ChartExportSheet<ChartContent: View>: View {
                 chart: chart
             )
             .listRowSeparator(.hidden)
-            .listRowInsets(EdgeInsets())
 
             Header(title: "Format")
                 .listRowSeparator(.hidden, edges: .top)
@@ -78,7 +77,6 @@ struct ChartExportSheet<ChartContent: View>: View {
                 Text(verbatim: "Period Label")
             }
         }
-        .listStyle(.plain)
         .disabledBounce()
         .scrollContentBackground(.hidden)
         .background(.background)

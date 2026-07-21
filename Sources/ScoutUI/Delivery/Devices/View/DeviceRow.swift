@@ -48,13 +48,14 @@ struct DeviceRow: View {
                 .foregroundStyle(.secondary)
                 .frame(minWidth: 64, alignment: .trailing)
         }
-        .frame(height: 44)
+        .frame(height: 70)
     }
 }
 
 #Preview("DeviceRow") {
-    List(DeviceSummary.samples) { device in
-        DeviceRow(device: device)
+    InsetList {
+        ForEach(DeviceSummary.samples) { device in
+            DeviceRow(device: device)
+        }
     }
-    .listStyle(.plain)
 }

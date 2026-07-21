@@ -31,7 +31,6 @@ struct AlertRow: View {
             MiniChart(series: status.series, color: status.outcome.state.color)
         }
         .frame(height: 68)
-        .listRowInsets(.sideInsets)
     }
 }
 
@@ -54,7 +53,6 @@ struct AlertRowPlaceholder: View {
 
             MiniChart(series: nil, color: .gray)
         }
-        .padding(.vertical, 4)
         .redacted(reason: .placeholder)
         .trailingRowSeparator()
     }

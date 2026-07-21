@@ -26,17 +26,16 @@ struct Header<Trailing: View>: View {
 
             trailing()
         }
-        .padding(.top, 16)
-        .padding(.bottom, 4)
+        .padding(.top, 12)
+        .frame(height: 70)
     }
 }
 
 #Preview {
-    List {
+    InsetList {
         Header(title: "Section Title")
         Header(title: "Section Title") {
             AllButton {}
         }
     }
-    .listStyle(.plain)
 }

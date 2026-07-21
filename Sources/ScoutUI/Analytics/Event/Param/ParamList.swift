@@ -17,13 +17,13 @@ struct ParamList: View {
     }
 
     var body: some View {
-        List {
+        InsetList {
             ForEach(items) { item in
                 ParamRow(item: item)
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Params")
+        .largeNavigationTitle()
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 ShareLink(item: text)

@@ -12,7 +12,7 @@ struct CrashDetailView: View {
     let crash: Crash
 
     var body: some View {
-        List {
+        InsetList {
             VStack(alignment: .leading, spacing: 10) {
                 if let date = crash.date {
                     UTCTimestampText(date: date)
@@ -24,13 +24,12 @@ struct CrashDetailView: View {
                         .fontWeight(.bold)
                 }
             }
-            .padding(.vertical, 4)
+            .padding(.vertical)
 
             ContextSection(context: crash, timelineHighlight: .red)
 
             StackTraceSection(frames: crash.stackTrace)
         }
-        .listStyle(.plain)
         .navigationTint(.red)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {

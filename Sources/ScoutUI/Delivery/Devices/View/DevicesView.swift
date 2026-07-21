@@ -35,7 +35,7 @@ struct DevicesView: View {
         let modelBreakdown = IncidentBreakdown.segments(from: devices.map(\.modelName))
         let osBreakdown = IncidentBreakdown.segments(from: devices.map(\.osVersion))
 
-        return List {
+        return InsetList {
             HStack(spacing: 28) {
                 Metric(title: "Devices", value: devices.count.plain, color: .primary)
                 Metric(title: "Active 7d", value: activeCount.plain, color: .blue)
@@ -56,7 +56,6 @@ struct DevicesView: View {
                 DeviceLink(device: device)
             }
         }
-        .listStyle(.plain)
         .navigationDestination(isPresented: $showAllDevices) {
             DevicesListView(devices: devices)
         }

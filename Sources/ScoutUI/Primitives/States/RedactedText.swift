@@ -30,10 +30,9 @@ struct Redacted: View {
 }
 
 #Preview {
-    List {
+    InsetList {
         Redacted(length: 3)
         Redacted(length: 5)
         Redacted(length: 8)
     }
-    .listStyle(.plain)
 }

@@ -37,7 +37,7 @@ struct MiniChart: View {
 
 #Preview {
     NavigationStack {
-        List {
+        InsetList {
             HStack {
                 Text(verbatim: "Loaded")
                 Spacer()
@@ -56,6 +56,5 @@ struct MiniChart: View {
                 )
             }
         }
-        .listStyle(.plain)
     }
 }

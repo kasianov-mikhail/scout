@@ -37,7 +37,7 @@ private struct RetentionHeroChart: View {
     }
 
     var body: some View {
-        List {
+        InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "Average Retention").font(.headline)
                 Text(verbatim: "Across \(cohorts.count) weekly cohorts").font(.caption).foregroundStyle(.secondary)
@@ -78,38 +78,36 @@ private struct RetentionHeroChart: View {
                 .aspectRatio(1.618, contentMode: .fit)
                 .padding(.top, 8)
             }
+            .padding(.top)
             .listRowSeparator(.hidden)
 
             Header(title: "By Cohort")
 
             ForEach(cohorts.reversed()) { cohort in
-                NavigationLink {
-                    RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
-                } label: {
-                    HStack {
-                        Text(verbatim: "Week of \(cohort.label)").font(.subheadline)
-                        Spacer()
-                        Text(verbatim: "\(cohort.size)").font(.caption).foregroundStyle(.secondary)
+                Row {
+                    Text(verbatim: "Week of \(cohort.label)").font(.subheadline)
+                    Spacer()
+                    Text(verbatim: "\(cohort.size)").font(.caption).foregroundStyle(.secondary)
 
-                        if let day7 = RetentionCohort.rate(cohort.retention, onDay: 7) {
-                            Text(
-                                verbatim:
-                                    "D7 \(day7.formatted(.retentionRate))"
-                            )
-                            .font(.caption.weight(.semibold))
-                            .foregroundStyle(.green)
+                    if let day7 = RetentionCohort.rate(cohort.retention, onDay: 7) {
+                        Text(
+                            verbatim:
+                                "D7 \(day7.formatted(.retentionRate))"
+                        )
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.green)
+                        .frame(width: 72, alignment: .trailing)
+                    } else {
+                        Text(verbatim: "—")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
                             .frame(width: 72, alignment: .trailing)
-                        } else {
-                            Text(verbatim: "—")
-                                .font(.caption)
-                                .foregroundStyle(.tertiary)
-                                .frame(width: 72, alignment: .trailing)
-                        }
                     }
+                } destination: {
+                    RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
                 }
             }
         }
-        .listStyle(.plain)
     }
 }
 

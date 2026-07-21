@@ -18,16 +18,19 @@ struct CrashGroupDetailView: View {
         self.group = group
         self._breakdown = StateObject(
             wrappedValue: breakdown
-                ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+                ?? IncidentBreakdownProvider(
+                    deviceIDs: group.deviceIDs,
+                    sessionIDs: group.sessionIDs
+                )
+        )
     }
 
     var body: some View {
-        List {
+        InsetList {
             headerSection
             breakdownSection
             occurrencesSection
         }
-        .listStyle(.plain)
         .navigationTint(.red)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
@@ -61,6 +64,7 @@ struct CrashGroupDetailView: View {
             if let first = group.firstDate, let last = group.lastDate {
                 Text(verbatim: "First seen \(first.relativeString) · Last seen \(last.relativeString)")
                     .font(.system(size: 14))
+                    .padding(.bottom)
                     .foregroundStyle(Color.gray)
             }
         }
@@ -70,7 +74,11 @@ struct CrashGroupDetailView: View {
     @ViewBuilder
     private var breakdownSection: some View {
         if let value = try? breakdown.result?.get() {
-            IncidentBreakdownSection(breakdown: value, records: group.records, row: occurrenceRow)
+            IncidentBreakdownSection(
+                breakdown: value,
+                records: group.records,
+                row: occurrenceRow
+            )
         }
     }
 

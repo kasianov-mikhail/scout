@@ -22,10 +22,9 @@ struct AllButton: View {
 }
 
 #Preview {
-    List {
+    InsetList {
         Header(title: "Section Title") {
             AllButton {}
         }
     }
-    .listStyle(.plain)
 }

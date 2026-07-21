@@ -21,13 +21,11 @@ struct HomeRetentionRow: View {
         }
         .buttonStyle(.plain)
         .listRowSeparator(.hidden)
-        .listRowInsets(EdgeInsets())
     }
 }
 
 #Preview {
-    List {
+    InsetList {
         HomeRetentionRow(series: MiniChartSeries(values: [100, 42, 28, 19, 13, 8])) {}
     }
-    .listStyle(.plain)
 }

@@ -35,14 +35,13 @@ struct NetworkView: View {
         let successRate = breakdown.total > 0 ? breakdown.successRate : nil
         let trend = report.trend(in: range, component: .hour)
 
-        return List {
+        return InsetList {
             HStack(spacing: 28) {
                 Metric(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
                 Metric(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
                 Metric(title: "Req/min", value: report.requestsPerMinute(endpoints, in: range).plain, color: .primary)
                 Spacer()
             }
-            .listRowSeparator(.hidden)
 
             if trend.count > 0 {
                 Header(title: "Latency P99")
@@ -52,16 +51,18 @@ struct NetworkView: View {
 
             Header(title: "Status codes")
             SegmentBar(segments: breakdown.segments)
-                .listRowSeparator(.hidden)
 
             Header(title: "Top endpoints") {
                 AllButton { showAllEndpoints = true }
             }
             ForEach(endpoints.prefix(3)) { endpoint in
-                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
+                NetworkEndpointRow(
+                    endpoint: endpoint,
+                    report: report,
+                    range: range
+                )
             }
         }
-        .listStyle(.plain)
         .navigationDestination(isPresented: $showAllEndpoints) {
             NetworkEndpointsView(report: report, range: range)
         }

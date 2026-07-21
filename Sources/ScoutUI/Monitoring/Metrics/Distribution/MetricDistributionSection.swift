@@ -54,7 +54,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
     provider.result = .success(.sample)
 
     return NavigationStack {
-        List {
+        InsetList {
             MetricDistributionSection(
                 name: "http_request",
                 categories: [],
@@ -63,7 +63,6 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
                 provider: provider
             )
         }
-        .listStyle(.plain)
         .monospacedNavigationTitle(en: "http_request")
     }
 }
@@ -73,7 +72,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
     provider.result = .success(.sample)
 
     return NavigationStack {
-        List {
+        InsetList {
             MetricDistributionSection(
                 name: "payload_size",
                 categories: [],
@@ -82,7 +81,6 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
                 provider: provider
             )
         }
-        .listStyle(.plain)
         .monospacedNavigationTitle(en: "payload_size")
     }
 }

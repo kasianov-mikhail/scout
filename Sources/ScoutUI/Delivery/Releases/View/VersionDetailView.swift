@@ -16,6 +16,9 @@ struct VersionDetailView: View {
     @StateObject var crashes: VersionIncidentProvider<Crash>
     @StateObject var hangs: VersionIncidentProvider<Hang>
 
+    @State private var showAllCrashes = false
+    @State private var showAllHangs = false
+
     init(
         release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil,
         hangs: VersionIncidentProvider<Hang>? = nil
@@ -26,26 +29,58 @@ struct VersionDetailView: View {
     }
 
     var body: some View {
-        List {
-            headerSection
+        InsetList {
+            VStack(alignment: .leading, spacing: -8) {
+                HStack(spacing: 24) {
+                    Metric(title: "Crash-free sessions", stability: release.freeSessions)
+                    if let freeUsers = release.freeUsers {
+                        Metric(title: "Crash-free users", stability: freeUsers)
+                    }
+                }
 
-            IncidentTrendSection(
-                title: "Crashes over time", records: crashes.records ?? [], color: .red)
-            IncidentIssuesSection(
-                title: "Top crash issues", groups: IncidentGroup.groups(from: crashes.records ?? []), color: .red
+                HStack(spacing: 24) {
+                    Metric(title: "Crashes", value: "\(release.crashes)")
+                    Metric(title: "Hangs", value: "\(release.hangs)")
+                    Metric(title: "Sessions", value: release.sessions.compact)
+                    Metric(title: "Adoption", value: release.adoption.formatted)
+                }
+            }
+            .padding(.top)
+            .padding(.bottom, 4)
+            .listRowSeparator(.hidden, edges: .top)
+
+            IncidentTrendSection(title: "Crashes", records: crashRecords, color: .red) {
+                if crashRecords.count > 0 {
+                    AllButton { showAllCrashes = true }
+                }
+            }
+
+            IncidentTrendSection(title: "Hangs", records: hangRecords, color: .orange) {
+                if hangRecords.count > 0 {
+                    AllButton { showAllHangs = true }
+                }
+            }
+        }
+        .navigationDestination(isPresented: $showAllCrashes) {
+            VersionIncidentsView(
+                title: "Crashes",
+                issuesTitle: "Top crash issues",
+                records: crashRecords,
+                color: .red
             ) { group in
                 CrashGroupDetailView(group: group)
             }
-
-            IncidentTrendSection(
-                title: "Hangs over time", records: hangs.records ?? [], color: .orange)
-            IncidentIssuesSection(
-                title: "Top hang issues", groups: IncidentGroup.groups(from: hangs.records ?? []), color: .orange
+        }
+        .navigationDestination(isPresented: $showAllHangs) {
+            VersionIncidentsView(
+                title: "Hangs",
+                issuesTitle: "Top hang issues",
+                records: hangRecords,
+                color: .orange
             ) { group in
                 HangGroupDetailView(group: group)
             }
         }
-        .listStyle(.plain)
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .monospacedNavigationTitle(en: release.id)
@@ -57,29 +92,55 @@ struct VersionDetailView: View {
         ])
     }
 
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 24) {
-                Metric(title: "Crash-free sessions", stability: release.freeSessions)
-                if let freeUsers = release.freeUsers {
-                    Metric(title: "Crash-free users", stability: freeUsers)
-                }
-            }
+    private var crashRecords: [Crash] {
+        crashes.records ?? []
+    }
 
-            HStack(spacing: 24) {
-                Metric(title: "Crashes", value: "\(release.crashes)")
-                Metric(title: "Hangs", value: "\(release.hangs)")
-                Metric(title: "Sessions", value: release.sessions.compact)
-                Metric(title: "Adoption", value: release.adoption.formatted)
-            }
-        }
-        .padding(.vertical, 4)
-        .listRowSeparator(.hidden)
+    private var hangRecords: [Hang] {
+        hangs.records ?? []
     }
 }
 
-private struct IncidentTrendSection<Element: Incident>: View {
+private struct VersionIncidentsView<Element: Incident, Destination: View>: View {
     let title: String
+    let issuesTitle: String
+    let records: [Element]
+    let color: Color
+
+    @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
+
+    var body: some View {
+        InsetList {
+            IncidentTrendChart(records: records, color: color)
+                .padding(.top)
+
+            IncidentIssuesSection(
+                title: issuesTitle,
+                groups: IncidentGroup.groups(from: records),
+                color: color,
+                destination: destination
+            )
+        }
+        .navigationTitle(en: title)
+        .largeNavigationTitle()
+    }
+}
+
+private struct IncidentTrendSection<Element: Incident, Trailing: View>: View {
+    let title: String
+    let records: [Element]
+    let color: Color
+
+    @ViewBuilder let trailing: () -> Trailing
+
+    var body: some View {
+        Header(title: title, trailing: trailing)
+
+        IncidentTrendChart(records: records, color: color)
+    }
+}
+
+private struct IncidentTrendChart<Element: Incident>: View {
     let records: [Element]
     let color: Color
 
@@ -89,8 +150,6 @@ private struct IncidentTrendSection<Element: Incident>: View {
 
     var body: some View {
         let isEmpty = !days.contains(where: { $0.count > 0 })
-
-        Header(title: title)
 
         Chart(days, id: \.date) { day in
             BarMark(
@@ -118,7 +177,6 @@ private struct IncidentTrendSection<Element: Incident>: View {
             }
         }
         .frame(height: 170)
-        .padding(.vertical, 8)
         .listRowSeparator(.hidden)
     }
 }
@@ -160,7 +218,11 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     hangs.records = .samples
 
     return NavigationStack {
-        VersionDetailView(release: [ReleaseHealth].samples[0], crashes: crashes, hangs: hangs)
+        VersionDetailView(
+            release: [ReleaseHealth].samples[0],
+            crashes: crashes,
+            hangs: hangs
+        )
     }
     .environmentObject(Tint())
 }

@@ -26,11 +26,10 @@ struct StackTraceSection: View {
 }
 
 #Preview {
-    List {
+    InsetList {
         StackTraceSection(frames: [
             "0   CoreFoundation        0x0 __exceptionPreprocess + 164",
             "1   libobjc.A.dylib       0x0 objc_exception_throw + 60",
         ])
     }
-    .listStyle(.plain)
 }

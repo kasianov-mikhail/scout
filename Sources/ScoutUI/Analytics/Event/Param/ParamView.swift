@@ -30,14 +30,15 @@ struct ParamView: View {
     var body: some View {
         Group {
             if value.isContainer {
-                List(value.nodes) { node in
-                    Row {
-                        ParamValueRow(node: node)
-                    } destination: {
-                        ParamView(node: node)
+                InsetList {
+                    ForEach(value.nodes) { node in
+                        Row {
+                            ParamValueRow(node: node)
+                        } destination: {
+                            ParamView(node: node)
+                        }
                     }
                 }
-                .listStyle(.plain)
             } else {
                 ParamScalarView(raw: raw, value: value)
             }

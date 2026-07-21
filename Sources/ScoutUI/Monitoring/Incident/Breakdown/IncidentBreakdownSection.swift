@@ -17,14 +17,22 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
     var body: some View {
         if breakdown.devices.count > 0 {
             Header(title: "Top Devices")
-            chart(for: .devices, segments: breakdown.devices, caption: "devices")
-                .listRowSeparator(.hidden, edges: .bottom)
+
+            chart(
+                for: .devices,
+                segments: breakdown.devices,
+                caption: "devices"
+            )
         }
 
         if breakdown.osVersions.count > 0 {
             Header(title: "OS Versions")
-            chart(for: .osVersions, segments: breakdown.osVersions, caption: "sessions")
-                .listRowSeparator(.hidden, edges: .bottom)
+
+            chart(
+                for: .osVersions,
+                segments: breakdown.osVersions,
+                caption: "sessions"
+            )
         }
     }
 
@@ -40,6 +48,11 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
                     row: row
                 )
             }
+            .listRowSeparator(.hidden, edges: .top)
+            .alignmentGuide(.listRowSeparatorLeading) { dimension in
+                dimension[.leading]
+            }
+            .padding(.bottom)
         } else {
             SegmentBar(segments: segments)
         }
@@ -52,7 +65,7 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
 
 #Preview {
     NavigationStack {
-        List {
+        InsetList {
             IncidentBreakdownSection(breakdown: .sample, records: [Crash].samples) { crash in
                 Row {
                     if let date = crash.date {
@@ -63,7 +76,6 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
                 }
             }
         }
-        .listStyle(.plain)
     }
     .environmentObject(Tint())
 }
