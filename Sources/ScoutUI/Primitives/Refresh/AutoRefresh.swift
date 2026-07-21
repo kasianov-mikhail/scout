@@ -72,7 +72,6 @@ private struct AutoRefreshModifier<Token: Equatable>: ViewModifier {
         }
 
         var schedule = RefreshSchedule()
-        var index = 0
 
         while !Task.isCancelled {
             do {
@@ -80,12 +79,20 @@ private struct AutoRefreshModifier<Token: Equatable>: ViewModifier {
             } catch {
                 break
             }
-            if await refreshers[index % refreshers.count]() {
+
+            var isSuccess = true
+            for refresh in refreshers {
+                guard !Task.isCancelled else { return }
+                if await refresh() == false {
+                    isSuccess = false
+                }
+            }
+
+            if isSuccess {
                 schedule.recordSuccess()
             } else {
                 schedule.recordFailure()
             }
-            index += 1
         }
     }
 }
