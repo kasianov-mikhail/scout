@@ -21,7 +21,7 @@ struct EventStatList: View {
                 .autoRefresh {
                     await provider.fetchLatest(for: query, in: database)
                 }
-                .navigationTitle(range.label(using: rangeDateFormatter))
+                .navigationTitle(en: range.label(using: rangeDateFormatter))
                 .font(.caption)
         }
     }
