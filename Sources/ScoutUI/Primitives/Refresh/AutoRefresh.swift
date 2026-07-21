@@ -81,9 +81,11 @@ private struct AutoRefreshModifier<Token: Equatable>: ViewModifier {
             }
 
             var isSuccess = true
+
             for refresh in refreshers {
-                guard !Task.isCancelled else { return }
-                if await refresh() == false {
+                if Task.isCancelled {
+                    return
+                } else if await refresh() == false {
                     isSuccess = false
                 }
             }
