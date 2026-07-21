@@ -23,8 +23,6 @@ struct TimelineSegment: View {
         )
         .fill(color.opacity(isActive ? 1 : 0.08))
         .frame(width: 8)
-        .padding(.top, topRadius > 0 ? 2 : 0)
-        .padding(.bottom, bottomRadius > 0 ? 2 : 0)
         .frame(width: 16)
     }
 }

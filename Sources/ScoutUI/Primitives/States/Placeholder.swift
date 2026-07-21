@@ -38,7 +38,7 @@ struct Placeholder: View {
                 Text(code.swiftSyntax).codeChipStyle()
             }
         }
-        .padding()
+        .padding(.horizontal)
         .frame(maxHeight: .infinity)
     }
 }

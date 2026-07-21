@@ -39,7 +39,7 @@ struct WeekStripCalendar: View {
                     .transition(.scale(scale: 0.92, anchor: .top).combined(with: .opacity))
             }
         }
-        .padding()
+        .padding(.horizontal)
     }
 
     private var control: some View {

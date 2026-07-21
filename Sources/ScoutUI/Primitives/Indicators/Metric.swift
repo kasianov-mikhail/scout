@@ -23,6 +23,7 @@ struct Metric: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Color.gray)
         }
+        .frame(height: 70)
     }
 }
 

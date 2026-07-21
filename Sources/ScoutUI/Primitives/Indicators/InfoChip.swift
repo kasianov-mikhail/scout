@@ -21,7 +21,7 @@ struct InfoChip: View {
         }
         .font(.footnote)
         .padding(.horizontal, 10)
-        .padding(.vertical, 5)
+        .frame(height: 28)
         .background {
             ZStack(alignment: .leading) {
                 Color.gray.opacity(0.12)

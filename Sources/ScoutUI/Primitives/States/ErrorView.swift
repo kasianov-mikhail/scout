@@ -43,7 +43,7 @@ struct ErrorView: View {
             Spacer()
         }
         .lineSpacing(4)
-        .padding()
+        .padding(.horizontal)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 

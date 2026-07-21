@@ -20,7 +20,6 @@ struct PeriodPicker<T: PickerCompatible & ChartTimeScale & CaseIterable>: View {
             distribution: .justified,
             title: title
         )
-        .padding(.horizontal)
     }
 
     private func title(period: T) -> String {

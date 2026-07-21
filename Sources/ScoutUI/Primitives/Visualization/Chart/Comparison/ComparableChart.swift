@@ -8,12 +8,6 @@
 import Scout
 import SwiftUI
 
-/// Chart row that switches between the plain bar chart and the comparison
-/// overlay; pairs with `ComparisonToggle` driving `isComparing`.
-///
-/// `points` is the full data set the reference segment is bucketed from,
-/// while `segment` is the already-computed current-window slice of it.
-///
 struct ComparableChart<T: ChartNumeric, S: ChartTimeScale>: View {
     let segment: [ChartPoint<T>]
     let points: [ChartPoint<T>]

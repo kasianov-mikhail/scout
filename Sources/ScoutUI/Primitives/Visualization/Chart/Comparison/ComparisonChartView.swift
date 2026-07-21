@@ -9,22 +9,6 @@ import Charts
 import Scout
 import SwiftUI
 
-/// A bar chart of the current period with the previous period's per-bucket
-/// levels drawn on top of it.
-///
-/// - where the value grew, a white dashed line marks the previous level and
-///   the slice of the bar above it is lightened;
-/// - where the value dropped, a dashed contour rises above the bar to the
-///   previous level and the missing slice is tinted.
-///
-/// `reference` is expected to sit on the same bucket dates as `segment`
-/// (see `ChartExtent.referenceSegment(from:alignedTo:)`); buckets missing
-/// from it have no comparison data and draw no reference marks.
-///
-/// The y scale covers both periods, rounded up to a nice axis value the same
-/// way plain bar charts round their maximum — so reference contours always
-/// fit and the axis keeps regular tick values.
-///
 struct ComparisonChartView<T: ChartNumeric>: View {
     let segment: [ChartPoint<T>]
     let reference: [ChartPoint<T>]
@@ -59,9 +43,7 @@ struct ComparisonChartView<T: ChartNumeric>: View {
             }
         }
         .aspectRatio(4 / 3, contentMode: .fit)
-        .padding()
-        .padding(.bottom)
-        .listRowInsets(EdgeInsets())
+        .padding(.horizontal)
         .environment(\.calendar, .utc)
         .environment(\.timeZone, Calendar.utc.timeZone)
     }
