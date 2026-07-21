@@ -32,7 +32,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                     text: "No results",
                     systemImage: "chart.bar",
                     description: "Metrics will appear here once your app records data",
-                    code: "Counter(label: \"api_calls\").increment()"
+                    code: telemetry.snippet
                 )
             } else {
                 List(ranked) { group in
@@ -102,7 +102,7 @@ struct MetricsContent<T: ChartNumeric>: View {
             text: "No results",
             systemImage: "chart.bar",
             description: "Metrics will appear here once your app records data",
-            code: "Counter(label: \"api_calls\").increment()"
+            code: Telemetry.Export.timer.snippet
         )
         .navigationTitle(en: "Metrics")
     }
