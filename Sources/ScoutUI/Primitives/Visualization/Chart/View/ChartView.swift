@@ -42,9 +42,6 @@ struct ChartView<T: ChartNumeric>: View {
             }
         }
         .aspectRatio(4 / 3, contentMode: .fit)
-        .padding()
-        .padding(.bottom)
-        .listRowInsets(EdgeInsets())
         .environment(\.calendar, .utc)
         .environment(\.timeZone, Calendar.utc.timeZone)
     }

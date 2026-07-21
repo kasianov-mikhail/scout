@@ -28,8 +28,6 @@ struct RangeSheet: View {
             footer
         }
         .padding(.horizontal, 20)
-        .padding(.top, 32)
-        .padding(.bottom, 20)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.white)
     }
@@ -114,7 +112,7 @@ private struct RangeSheetPreviewHost: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding()
+        .padding(.horizontal)
         .sheet(item: $activeStyle) { style in
             RangeSheet(style: style, selection: $selection)
                 .presentationDetents([.height(540)])

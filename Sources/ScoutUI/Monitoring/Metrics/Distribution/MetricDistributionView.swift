@@ -33,7 +33,6 @@ struct MetricDistributionView: View {
 
             PercentileTrendChart(trend: trend, unit: unit, formatter: formatter)
         }
-        .padding(.vertical)
     }
 }
 

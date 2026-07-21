@@ -21,7 +21,9 @@ struct GlanceSummary {
         averageLatency = latencies.count > 0 ? latencies.reduce(0, +) / latencies.count : nil
     }
 
-    var allOperational: Bool { reachable == total }
+    var allOperational: Bool {
+        reachable == total
+    }
 
     var title: String {
         allOperational ? "All Systems Operational" : "\(reachable) of \(total) Backends Reachable"
@@ -32,9 +34,13 @@ struct GlanceSummary {
         return averageLatency.map { "\(count) · \($0) ms average latency" } ?? count
     }
 
-    var color: Color { allOperational ? .green : .orange }
+    var color: Color {
+        allOperational ? .green : .orange
+    }
 
-    var icon: String { allOperational ? "checkmark.seal.fill" : "exclamationmark.triangle.fill" }
+    var icon: String {
+        allOperational ? "checkmark.seal.fill" : "exclamationmark.triangle.fill"
+    }
 }
 
 struct GlanceHero: View {

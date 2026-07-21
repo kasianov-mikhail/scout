@@ -36,8 +36,6 @@ struct RangeControl<T: ChartTimeScale>: View {
             .disabled(!extent.isRightEnabled)
         }
         .frame(height: 44)
-        .padding(.top)
-        .padding(.horizontal)
         .hapticFeedback(.selection, trigger: extent.domain)
     }
 

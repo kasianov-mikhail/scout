@@ -40,6 +40,7 @@ struct HeatmapView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity)
     }
 
     private func cell(day: Int, block: Int, maxBlock: Int) -> some View {
