@@ -12,7 +12,7 @@ extension EdgeInsets {
     static let sideInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
 }
 
-struct PlainList<Content: View>: View {
+struct InsetList<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
@@ -25,7 +25,7 @@ struct PlainList<Content: View>: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             Header(title: "Section Title")
 
             Row {

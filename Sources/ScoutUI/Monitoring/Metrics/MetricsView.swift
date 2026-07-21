@@ -34,7 +34,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             SegmentStrip(
                 selection: $extent.period,
                 distribution: .justified,

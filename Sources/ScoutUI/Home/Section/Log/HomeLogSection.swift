@@ -68,7 +68,7 @@ struct HomeLogSection: View {
     devices.result = .success(.sample)
 
     return NavigationStack {
-        PlainList {
+        InsetList {
             HomeLogSection(
                 period: .today,
                 log: makeLog(),

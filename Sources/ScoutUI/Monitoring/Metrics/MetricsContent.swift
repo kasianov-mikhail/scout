@@ -35,7 +35,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                     code: telemetry.snippet
                 )
             } else {
-                PlainList {
+                InsetList {
                     ForEach(ranked) { group in
                         Row {
                             row(group: group)

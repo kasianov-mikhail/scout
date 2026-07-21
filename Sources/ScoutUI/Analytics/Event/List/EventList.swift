@@ -25,7 +25,7 @@ struct EventList<Header: View>: View {
                     code: "logger.info(\"button_tapped\")"
                 )
             } else {
-                PlainList {
+                InsetList {
                     header()
                     rows(for: events)
                 }

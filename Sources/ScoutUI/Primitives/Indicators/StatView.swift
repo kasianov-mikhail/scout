@@ -22,7 +22,7 @@ struct StatView: View {
             let segment = extent.segment(from: points)
             let canCompare = extent.canCompare(points: points, segment: segment)
 
-            PlainList {
+            InsetList {
                 PeriodPicker(extent: $extent, periods: stat.periods)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)

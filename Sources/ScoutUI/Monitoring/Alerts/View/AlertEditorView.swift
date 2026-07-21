@@ -18,7 +18,7 @@ struct AlertEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        PlainList {
+        InsetList {
             Header(title: "Metric")
             metricRow
 

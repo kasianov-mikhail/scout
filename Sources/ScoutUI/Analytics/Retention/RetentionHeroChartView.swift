@@ -37,7 +37,7 @@ private struct RetentionHeroChart: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "Average Retention").font(.headline)
                 Text(verbatim: "Across \(cohorts.count) weekly cohorts").font(.caption).foregroundStyle(.secondary)

@@ -34,7 +34,7 @@ struct HomeLogRow<Destination: View>: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             HomeLogRow(title: "Events", image: "list.bullet", color: .blue, count: 42) {
                 Text(verbatim: "Detail")
             }

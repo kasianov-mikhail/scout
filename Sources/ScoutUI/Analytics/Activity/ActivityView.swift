@@ -35,7 +35,7 @@ struct ActivityView: View {
                 RangeControl(extent: $extent)
                     .padding(.vertical)
 
-                PlainList {
+                InsetList {
                     let points = data.points(on: extent.period)
                     let segment = extent.segment(from: points)
                     let canCompare = extent.canCompare(points: points, segment: segment)

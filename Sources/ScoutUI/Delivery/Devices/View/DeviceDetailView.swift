@@ -20,7 +20,7 @@ struct DeviceDetailView: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             FlowLayout(spacing: 6) {
                 InfoChip(systemImage: device.symbol, text: device.modelName, color: .blue)
                 InfoChip(systemImage: "gearshape", text: device.osVersion, color: .indigo)

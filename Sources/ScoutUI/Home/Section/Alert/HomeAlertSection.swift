@@ -86,7 +86,7 @@ struct HomeAlertSection: View {
     empty.result = .success([])
 
     return NavigationStack {
-        PlainList {
+        InsetList {
             HomeAlertSection(alerts: firing, path: .constant([]))
             HomeAlertSection(alerts: healthy, path: .constant([]))
             HomeAlertSection(alerts: empty, path: .constant([]))

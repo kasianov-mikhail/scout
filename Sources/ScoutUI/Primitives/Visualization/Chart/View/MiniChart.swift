@@ -37,7 +37,7 @@ struct MiniChart: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             HStack {
                 Text(verbatim: "Loaded")
                 Spacer()

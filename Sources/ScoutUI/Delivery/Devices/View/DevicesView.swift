@@ -35,7 +35,7 @@ struct DevicesView: View {
         let modelBreakdown = IncidentBreakdown.segments(from: devices.map(\.modelName))
         let osBreakdown = IncidentBreakdown.segments(from: devices.map(\.osVersion))
 
-        return PlainList {
+        return InsetList {
             HStack(spacing: 28) {
                 Metric(title: "Devices", value: devices.count.plain, color: .primary)
                 Metric(title: "Active 7d", value: activeCount.plain, color: .blue)

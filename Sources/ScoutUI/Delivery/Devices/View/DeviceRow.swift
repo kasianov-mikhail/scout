@@ -53,7 +53,7 @@ struct DeviceRow: View {
 }
 
 #Preview("DeviceRow") {
-    PlainList {
+    InsetList {
         ForEach(DeviceSummary.samples) { device in
             DeviceRow(device: device)
         }

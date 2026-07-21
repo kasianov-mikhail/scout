@@ -47,7 +47,7 @@ struct StatRow<Destination: View>: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             StatRow(
                 color: .blue,
                 period: .today,

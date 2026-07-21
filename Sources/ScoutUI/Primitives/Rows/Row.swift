@@ -31,7 +31,7 @@ struct Row<Content: View, Destination: View>: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             Row {
                 Text(verbatim: "Label")
                 Spacer()

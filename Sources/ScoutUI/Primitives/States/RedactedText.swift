@@ -30,7 +30,7 @@ struct Redacted: View {
 }
 
 #Preview {
-    PlainList {
+    InsetList {
         Redacted(length: 3)
         Redacted(length: 5)
         Redacted(length: 8)

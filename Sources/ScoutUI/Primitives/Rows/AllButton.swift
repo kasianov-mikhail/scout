@@ -22,7 +22,7 @@ struct AllButton: View {
 }
 
 #Preview {
-    PlainList {
+    InsetList {
         Header(title: "Section Title") {
             AllButton {}
         }

@@ -20,7 +20,7 @@ struct ReleaseHealthView: View {
                     description: "Release health appears once your app reports versions"
                 )
             } else {
-                PlainList {
+                InsetList {
                     ForEach(releases) { release in
                         ReleaseRow(release: release)
                     }

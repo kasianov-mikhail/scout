@@ -20,7 +20,7 @@ struct DevicesListView: View {
                     description: "Devices appear here once your app reports sessions"
                 )
             } else {
-                PlainList {
+                InsetList {
                     ForEach(devices.sorted { $0.lastSeen > $1.lastSeen }) { device in
                         DeviceLink(device: device)
                     }

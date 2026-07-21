@@ -22,7 +22,7 @@ struct RetentionSegmentDetailView: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "Week of \(cohort.label)").font(.caption).foregroundStyle(.secondary)
 

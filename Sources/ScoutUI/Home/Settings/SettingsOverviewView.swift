@@ -19,7 +19,7 @@ struct SettingsOverviewView: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             GlanceHero(summary: GlanceSummary(backends: provider.backends))
                 .padding(.vertical, 6)
                 .padding(.top)

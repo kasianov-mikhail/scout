@@ -21,7 +21,7 @@ struct ComparisonToggle: View {
 }
 
 #Preview("ComparisonToggle") {
-    PlainList {
+    InsetList {
         ComparisonToggle(isOn: .constant(true))
         ComparisonToggle(isOn: .constant(false))
         ComparisonToggle(isOn: .constant(false))

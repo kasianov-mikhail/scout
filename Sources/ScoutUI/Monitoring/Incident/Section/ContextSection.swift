@@ -63,7 +63,7 @@ struct ContextSection<Context: SessionContext>: View {
     }
 
     return NavigationStack {
-        PlainList {
+        InsetList {
             ContextSection(context: Sample(sessionID: UUID(), deviceID: UUID()), timelineHighlight: .red)
         }
     }

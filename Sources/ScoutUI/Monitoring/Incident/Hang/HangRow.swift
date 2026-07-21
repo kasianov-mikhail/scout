@@ -23,7 +23,7 @@ struct HangRow: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             ForEach(IncidentGroup.groups(from: [Hang].samples)) { group in
                 HangRow(group: group)
             }

@@ -35,7 +35,7 @@ struct NetworkView: View {
         let successRate = breakdown.total > 0 ? breakdown.successRate : nil
         let trend = report.trend(in: range, component: .hour)
 
-        return PlainList {
+        return InsetList {
             HStack(spacing: 28) {
                 Metric(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
                 Metric(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)

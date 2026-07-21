@@ -22,7 +22,7 @@ struct HomeList: View {
     @StateObject var alerts = AlertProvider(notifier: AlertNotifier())
 
     var body: some View {
-        PlainList {
+        InsetList {
             SegmentStrip(
                 selection: $period,
                 distribution: .justified,

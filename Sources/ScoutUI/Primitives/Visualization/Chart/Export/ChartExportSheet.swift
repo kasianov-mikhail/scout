@@ -22,7 +22,7 @@ struct ChartExportSheet<ChartContent: View>: View {
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
-        PlainList {
+        InsetList {
             ChartSnapshot(
                 title: title,
                 rangeLabel: rangeLabel,

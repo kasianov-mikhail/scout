@@ -22,7 +22,7 @@ struct HangGroupDetailView: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             headerSection
             breakdownSection
             occurrencesSection

@@ -19,7 +19,7 @@ struct RetentionCohortDetailView: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "\(cohort.size) installs").font(.caption).foregroundStyle(.secondary)
 

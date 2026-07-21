@@ -25,7 +25,7 @@ struct HomeRetentionRow: View {
 }
 
 #Preview {
-    PlainList {
+    InsetList {
         HomeRetentionRow(series: MiniChartSeries(values: [100, 42, 28, 19, 13, 8])) {}
     }
 }

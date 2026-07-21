@@ -25,7 +25,7 @@ struct EventView: View {
     var body: some View {
         let color = event.level?.color
 
-        PlainList {
+        InsetList {
             EventHeader(event: event)
 
             if let paramCount = event.paramCount, paramCount > 0 {

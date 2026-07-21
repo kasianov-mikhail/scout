@@ -65,7 +65,7 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             IncidentBreakdownSection(breakdown: .sample, records: [Crash].samples) { crash in
                 Row {
                     if let date = crash.date {

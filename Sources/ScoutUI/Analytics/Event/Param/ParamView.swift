@@ -30,7 +30,7 @@ struct ParamView: View {
     var body: some View {
         Group {
             if value.isContainer {
-                PlainList {
+                InsetList {
                     ForEach(value.nodes) { node in
                         Row {
                             ParamValueRow(node: node)

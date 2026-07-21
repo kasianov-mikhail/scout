@@ -49,7 +49,7 @@ struct HomeReleaseSection: View {
     let empty = ReleaseHealthProvider(releases: [])
 
     return NavigationStack {
-        PlainList {
+        InsetList {
             HomeReleaseSection(releases: releases, path: .constant([]))
             HomeReleaseSection(releases: empty, path: .constant([]))
         }

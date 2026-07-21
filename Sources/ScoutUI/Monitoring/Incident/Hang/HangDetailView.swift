@@ -12,7 +12,7 @@ struct HangDetailView: View {
     let hang: Hang
 
     var body: some View {
-        PlainList {
+        InsetList {
             VStack(alignment: .leading, spacing: 0) {
                 if let date = hang.date {
                     UTCTimestampText(date: date)

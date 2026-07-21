@@ -29,7 +29,7 @@ struct VersionDetailView: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             VStack(alignment: .leading, spacing: -8) {
                 HStack(spacing: 24) {
                     Metric(title: "Crash-free sessions", stability: release.freeSessions)
@@ -110,7 +110,7 @@ private struct VersionIncidentsView<Element: Incident, Destination: View>: View 
     @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     var body: some View {
-        PlainList {
+        InsetList {
             IncidentTrendChart(records: records, color: color)
                 .padding(.top)
 

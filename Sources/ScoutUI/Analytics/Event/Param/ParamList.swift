@@ -17,7 +17,7 @@ struct ParamList: View {
     }
 
     var body: some View {
-        PlainList {
+        InsetList {
             ForEach(items) { item in
                 ParamRow(item: item)
             }

@@ -18,7 +18,7 @@ struct NetworkEndpointsView: View {
         let breakdown = report.summary(in: range)
         let worstP99 = endpoints.compactMap(\.p99).max()
 
-        PlainList {
+        InsetList {
             HStack(spacing: 28) {
                 Metric(
                     title: "Requests",

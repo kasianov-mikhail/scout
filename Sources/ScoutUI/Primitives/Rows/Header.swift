@@ -32,7 +32,7 @@ struct Header<Trailing: View>: View {
 }
 
 #Preview {
-    PlainList {
+    InsetList {
         Header(title: "Section Title")
         Header(title: "Section Title") {
             AllButton {}

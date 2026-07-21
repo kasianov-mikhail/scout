@@ -51,7 +51,7 @@ struct SessionHeader: View {
 }
 
 #Preview {
-    PlainList {
+    InsetList {
         SessionHeader(info: .sample)
     }
 }

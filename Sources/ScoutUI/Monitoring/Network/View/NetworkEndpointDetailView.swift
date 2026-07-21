@@ -16,7 +16,7 @@ struct NetworkEndpointDetailView: View {
     var unit: Calendar.Component = .hour
 
     var body: some View {
-        PlainList {
+        InsetList {
             HStack(spacing: 28) {
                 Metric(
                     title: "Method",

@@ -72,7 +72,7 @@ struct GlobalSearchBadge: View {
 
 #Preview {
     NavigationStack {
-        PlainList {
+        InsetList {
             GlobalSearchRow(hit: .event(name: "session_start"), query: "ses")
             GlobalSearchRow(hit: .metric(name: "session_duration", telemetry: .timer), query: "ses")
             GlobalSearchRow(hit: .endpoint(name: "GET /v1/sessions"), query: "ses")

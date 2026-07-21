@@ -52,7 +52,7 @@ struct NetworkEndpointRow: View {
     let range = Period.today.initialRange
 
     NavigationStack {
-        PlainList {
+        InsetList {
             ForEach(report.endpoints(in: range)) { endpoint in
                 NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
             }

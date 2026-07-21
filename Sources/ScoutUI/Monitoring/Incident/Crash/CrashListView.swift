@@ -22,7 +22,7 @@ struct CrashListView: View {
                         description: "No crash reports have been recorded"
                     )
                 } else {
-                    PlainList {
+                    InsetList {
                         ForEach(groups, content: row)
 
                         if let cursor = provider.cursor {

@@ -12,7 +12,7 @@ struct CrashDetailView: View {
     let crash: Crash
 
     var body: some View {
-        PlainList {
+        InsetList {
             VStack(alignment: .leading, spacing: 10) {
                 if let date = crash.date {
                     UTCTimestampText(date: date)

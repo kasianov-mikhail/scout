@@ -22,7 +22,7 @@ struct HangListView: View {
                         description: "No unresponsive main thread has been recorded"
                     )
                 } else {
-                    PlainList {
+                    InsetList {
                         ForEach(groups) { group in
                             HangRow(group: group)
                         }

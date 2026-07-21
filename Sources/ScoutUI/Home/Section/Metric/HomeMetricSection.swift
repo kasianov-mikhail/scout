@@ -69,7 +69,7 @@ struct HomeMetricSection: View {
     sessions.result = .success(.samples)
 
     return NavigationStack {
-        PlainList {
+        InsetList {
             HomeMetricSection(
                 activities: activities,
                 sessions: sessions,

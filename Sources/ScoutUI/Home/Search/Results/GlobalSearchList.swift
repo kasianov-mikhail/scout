@@ -16,7 +16,7 @@ struct GlobalSearchList: View {
         let hits = index.hits(matching: query)
 
         if hits.count > 0 {
-            PlainList {
+            InsetList {
                 ForEach(hits) { hit in
                     GlobalSearchRow(hit: hit, query: query)
                         .listRowSeparator(hit.id == hits.first?.id ? .hidden : .automatic, edges: .top)
