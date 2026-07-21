@@ -21,11 +21,13 @@ struct TelemetryFactory: MetricsFactory {
     }
 
     func makeMeter(label: String, dimensions: [(String, String)]) -> MeterHandler {
-        MeterHandlerImpl(label: label, sync: sync, session: session)
+        GaugeHandler(label: label, sync: sync, session: session)
     }
 
+    // A non-aggregating recorder is what `Gauge` asks for: each value replaces the last one.
     func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool) -> RecorderHandler {
-        TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
+        guard aggregate else { return GaugeHandler(label: label, sync: sync, session: session) }
+        return TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)
     }
 
     func makeTimer(label: String, dimensions: [(String, String)]) -> TimerHandler {

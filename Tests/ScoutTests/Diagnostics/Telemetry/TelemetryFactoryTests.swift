@@ -32,16 +32,22 @@ struct TelemetryFactoryTests {
         #expect(handler is TelemetryHandler)
     }
 
-    @Test("makeMeter returns MeterHandlerImpl")
+    @Test("makeMeter returns GaugeHandler")
     func makeMeter() {
         let handler = factory.makeMeter(label: "test", dimensions: [])
-        #expect(handler is MeterHandlerImpl)
+        #expect(handler is GaugeHandler)
     }
 
-    @Test("makeRecorder returns TelemetryHandler")
-    func makeRecorder() {
-        let handler = factory.makeRecorder(label: "test", dimensions: [], aggregate: false)
+    @Test("An aggregating recorder returns TelemetryHandler")
+    func makeAggregatingRecorder() {
+        let handler = factory.makeRecorder(label: "test", dimensions: [], aggregate: true)
         #expect(handler is TelemetryHandler)
+    }
+
+    @Test("A non-aggregating recorder backs Gauge with GaugeHandler")
+    func makeNonAggregatingRecorder() {
+        let handler = factory.makeRecorder(label: "test", dimensions: [], aggregate: false)
+        #expect(handler is GaugeHandler)
     }
 
     @Test("makeCounter preserves label and dimensions")

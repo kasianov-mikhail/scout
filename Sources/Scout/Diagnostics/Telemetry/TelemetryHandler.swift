@@ -62,7 +62,10 @@ extension TelemetryHandler: RecorderHandler {
     }
 }
 
-final class MeterHandlerImpl: NSObject, TelemetryPersisting {
+/// Backs both `Meter` and `Gauge`, which share point-in-time semantics: every operation resolves to an
+/// absolute value that the backend reads back with `SeriesQuery.Reduce.last`.
+///
+final class GaugeHandler: NSObject, TelemetryPersisting {
     let label: String
     let sync: Synchronize
     let session: Protected<UUID>
@@ -75,7 +78,7 @@ final class MeterHandlerImpl: NSObject, TelemetryPersisting {
     }
 }
 
-extension MeterHandlerImpl: MeterHandler {
+extension GaugeHandler: MeterHandler {
     func set(_ value: Int64) {
         set(Double(value))
     }
@@ -90,5 +93,15 @@ extension MeterHandlerImpl: MeterHandler {
 
     func decrement(by amount: Double) {
         logMeter(value: value.mutate { $0 -= amount })
+    }
+}
+
+extension GaugeHandler: RecorderHandler {
+    func record(_ value: Int64) {
+        set(value)
+    }
+
+    func record(_ value: Double) {
+        set(value)
     }
 }
