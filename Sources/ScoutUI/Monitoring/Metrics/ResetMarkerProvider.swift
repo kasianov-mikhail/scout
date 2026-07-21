@@ -9,11 +9,6 @@
 import Foundation
 import Scout
 
-/// Loads the points where a counter was reset, so the chart can mark them.
-///
-/// Only counters carry resets, so a provider built for any other telemetry stays idle and
-/// resolves to no markers rather than querying a category that cannot match.
-///
 class ResetMarkerProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[Date]>?
 

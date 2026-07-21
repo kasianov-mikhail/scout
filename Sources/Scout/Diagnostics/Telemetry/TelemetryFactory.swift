@@ -24,7 +24,6 @@ struct TelemetryFactory: MetricsFactory {
         GaugeHandler(label: label, sync: sync, session: session)
     }
 
-    // A non-aggregating recorder is what `Gauge` asks for: each value replaces the last one.
     func makeRecorder(label: String, dimensions: [(String, String)], aggregate: Bool) -> RecorderHandler {
         guard aggregate else { return GaugeHandler(label: label, sync: sync, session: session) }
         return TelemetryHandler(label: label, dimensions: dimensions, sync: sync, session: session)

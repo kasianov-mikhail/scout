@@ -15,7 +15,6 @@ extension Telemetry {
         case recorder = "recorder"
         case timer = "timer"
 
-        /// Whether the metric can be reset, which only counters can be.
         package var hasResets: Bool {
             self == .counter || self == .floatingCounter
         }
