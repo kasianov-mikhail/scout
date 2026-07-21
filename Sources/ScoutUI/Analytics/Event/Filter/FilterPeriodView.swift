@@ -12,19 +12,20 @@ struct FilterPeriodView: View {
     @ObservedObject var draft: FilterDraft
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 16) {
             Header(title: "Period")
 
-            Toggle(isOn: $draft.isDateRangeEnabled.animation()) {
-                Text(verbatim: "Date range").font(.callout)
-            }
-            .padding(14)
-            .softCell()
+            VStack(alignment: .leading, spacing: 10) {
+                Toggle(isOn: $draft.isDateRangeEnabled.animation()) {
+                    Text(verbatim: "Date range").font(.callout)
+                }
+                .softCell()
 
-            if draft.isDateRangeEnabled {
-                HStack(spacing: 10) {
-                    dateBox("From", selection: $draft.startDate)
-                    dateBox("To", selection: $draft.endDate)
+                if draft.isDateRangeEnabled {
+                    HStack(spacing: 10) {
+                        dateBox("From", selection: $draft.startDate)
+                        dateBox("To", selection: $draft.endDate)
+                    }
                 }
             }
         }
@@ -33,15 +34,30 @@ struct FilterPeriodView: View {
     private func dateBox(_ title: String, selection: Binding<Date>) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: title).font(.caption).foregroundStyle(.secondary)
-            DatePicker(selection: selection, displayedComponents: .date) {
-                Text(verbatim: title)
-            }
-            .labelsHidden()
-            .environment(\.calendar, Calendar.utc)
-            .environment(\.timeZone, Calendar.utc.timeZone)
+
+            Text(verbatim: dateBoxFormatter.string(from: selection.wrappedValue))
+                .font(.callout)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay {
+                    DatePicker(selection: selection, displayedComponents: .date) {
+                        Text(verbatim: title)
+                    }
+                    .labelsHidden()
+                    .blendMode(.destinationOver)
+                    .environment(\.calendar, Calendar.utc)
+                    .environment(\.timeZone, Calendar.utc.timeZone)
+                }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(14)
         .softCell()
     }
 }
+
+private let dateBoxFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.locale = Locale(identifier: "en_US")
+    formatter.calendar = .utc
+    formatter.timeZone = Calendar.utc.timeZone
+    formatter.dateFormat = "d MMM yyyy"
+    return formatter
+}()

@@ -11,13 +11,16 @@ import SwiftUI
 struct FilterLevelsView: View {
     @ObservedObject var draft: FilterDraft
 
-    private let columns = [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)]
+    private static let columns = [
+        GridItem(.flexible(), spacing: 10),
+        GridItem(.flexible(), spacing: 10),
+    ]
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
+        VStack(alignment: .leading, spacing: 16) {
             Header(title: "Levels")
 
-            LazyVGrid(columns: columns, spacing: 10) {
+            LazyVGrid(columns: Self.columns, spacing: 10) {
                 ForEach(EventLevel.allCases, id: \.rawValue) { level in
                     let tint = level.color ?? .blue
                     HStack {
@@ -31,7 +34,6 @@ struct FilterLevelsView: View {
                         Text(level.description).font(.callout)
                         Spacer()
                     }
-                    .padding(12)
                     .softCell(selected: draft.isSelected(level), tint: tint)
                     .contentShape(Rectangle())
                     .onTapGesture {
