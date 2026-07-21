@@ -12,38 +12,28 @@ extension Telemetry.Export {
         switch self {
         case .counter:
             """
-            Counter(
-                label: "api_calls"
-            )
-            .increment()
+            Counter(label: "api_calls")
+                .increment()
             """
         case .floatingCounter:
             """
-            FloatingPointCounter(
-                label: "mb"
-            )
-            .increment(by: 1.5)
+            FloatingPointCounter(label: "mb")
+                .increment(by: 1.5)
             """
         case .meter:
             """
-            Meter(
-                label: "queue_depth"
-            )
-            .set(12)
+            Meter(label: "queue_depth")
+                .set(12)
             """
         case .recorder:
             """
-            Recorder(
-                label: "payload_size"
-            )
-            .record(1024)
+            Recorder(label: "payload_size")
+                .record(1024)
             """
         case .timer:
             """
-            Timer(
-                label: "request_duration"
-            )
-            .recordSeconds(0.42)
+            Timer(label: "request_duration")
+                .recordSeconds(0.42)
             """
         }
     }
