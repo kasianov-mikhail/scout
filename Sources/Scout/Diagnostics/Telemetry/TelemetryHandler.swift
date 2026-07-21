@@ -27,7 +27,12 @@ final class TelemetryHandler: NSObject, TelemetryPersisting {
         self.session = session
     }
 
-    func reset() {}
+    // Counters are stored as a stream of increments, so there is no running total to zero out.
+    // A reset is recorded as its own marker instead, leaving the increments that already
+    // happened intact and letting the charts show where the counter restarted.
+    func reset() {
+        logMetrics(category: ResetMarker.category, value: 1)
+    }
 }
 
 extension TelemetryHandler: CounterHandler {

@@ -20,6 +20,7 @@ struct ComparableChart<T: ChartNumeric, S: ChartTimeScale>: View {
     let extent: ChartExtent<S>
     let color: Color
     let isComparing: Bool
+    var markers: [Date] = []
 
     var body: some View {
         if isComparing {
@@ -30,7 +31,7 @@ struct ComparableChart<T: ChartNumeric, S: ChartTimeScale>: View {
                 color: color
             )
         } else {
-            ChartView(segment: segment, timing: extent)
+            ChartView(segment: segment, timing: extent, markers: markers)
                 .foregroundStyle(color)
         }
     }

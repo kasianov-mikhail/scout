@@ -18,14 +18,19 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     @State private var isComparing = false
     @ViewBuilder let extra: (ChartExtent<Period>) -> Extra
 
+    @StateObject private var resets: ResetMarkerProvider
+    @Environment(\.database) var database
+
     init(
-        group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period,
+        group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false,
         @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra
     ) {
         self.group = group
         self.formatter = formatter
         self.extra = extra
         self._extent = State(wrappedValue: ChartExtent(period: period))
+        self._resets = StateObject(
+            wrappedValue: ResetMarkerProvider(name: group.name, isEnabled: tracksResets))
     }
 
     var body: some View {
@@ -42,10 +47,14 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
                 points: group.points,
                 extent: extent,
                 color: .blue,
-                isComparing: isComparing
+                isComparing: isComparing,
+                markers: resets.dates(in: extent.domain)
             )
             .chartYAxis(content: { formattedMarks })
             .listRowSeparator(.hidden)
+            .autoRefresh {
+                await resets.fetchLatest(in: database)
+            }
 
             ComparisonToggle(isOn: $isComparing)
                 .disabled(!extent.canCompare(points: group.points, segment: segment))
@@ -77,8 +86,8 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
 }
 
 extension MetricsView where Extra == EmptyView {
-    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period) {
-        self.init(group: group, formatter: formatter, period: period) { _ in EmptyView() }
+    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false) {
+        self.init(group: group, formatter: formatter, period: period, tracksResets: tracksResets) { _ in EmptyView() }
     }
 }
 
