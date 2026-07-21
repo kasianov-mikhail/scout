@@ -34,13 +34,20 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     }
 
     var body: some View {
-        SegmentStrip(selection: $extent.period, distribution: .justified, title: \.shortTitle)
-            .padding(.horizontal)
+        PlainList {
+            SegmentStrip(
+                selection: $extent.period,
+                distribution: .justified,
+                title: \.shortTitle
+            )
+            .listRowSeparator(.hidden)
 
-        RangeControl(extent: $extent)
+            RangeControl(extent: $extent)
+                .padding(.bottom)
+                .listRowSeparator(.hidden)
 
-        List {
             let segment = extent.segment(from: group.points)
+            let canCompare = extent.canCompare(points: group.points, segment: segment)
 
             ComparableChart(
                 segment: segment,
@@ -50,18 +57,19 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
                 isComparing: isComparing,
                 markers: resets.dates(in: extent.domain)
             )
-            .chartYAxis(content: { formattedMarks })
+            .chartYAxis {
+                formattedMarks
+            }
             .listRowSeparator(.hidden)
             .autoRefresh {
                 await resets.fetchLatest(in: database)
             }
+            .padding(.bottom)
 
-            ComparisonToggle(isOn: $isComparing)
-                .disabled(!extent.canCompare(points: group.points, segment: segment))
+            ComparisonToggle(isOn: $isComparing).disabled(!canCompare)
 
             extra(extent)
         }
-        .listStyle(.plain)
         .monospacedNavigationTitle(en: group.name)
         .scrollDisabled(Extra.self == EmptyView.self)
         .toolbar {
@@ -87,7 +95,12 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
 
 extension MetricsView where Extra == EmptyView {
     init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false) {
-        self.init(group: group, formatter: formatter, period: period, tracksResets: tracksResets) { _ in EmptyView() }
+        self.init(
+            group: group,
+            formatter: formatter,
+            period: period,
+            tracksResets: tracksResets
+        ) { _ in EmptyView() }
     }
 }
 

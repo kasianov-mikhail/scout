@@ -18,7 +18,7 @@ struct AlertEditorView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        List {
+        PlainList {
             Header(title: "Metric")
             metricRow
 
@@ -27,13 +27,21 @@ struct AlertEditorView: View {
             }
 
             Header(title: "Condition")
-            PillRow(options: AlertDraft.Kind.allCases, selection: $draft.kind) { $0.label }
+            PillRow(
+                options: AlertDraft.Kind.allCases,
+                selection: $draft.kind
+            ) { $0.label }
+
             valueRow
 
             Header(title: "For at least")
-            PillRow(options: AlertDraft.Hold.allCases, selection: $draft.hold) { $0.label }
+            PillRow(
+                options: AlertDraft.Hold.allCases,
+                selection: $draft.hold
+            ) { $0.label }
 
             Header(title: "Delivery")
+
             Toggle(isOn: $draft.notifies) {
                 Text(verbatim: "Notify on this device")
             }
@@ -41,7 +49,6 @@ struct AlertEditorView: View {
 
             backtestRow
         }
-        .listStyle(.plain)
         .navigationTitle(en: "New Rule")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {

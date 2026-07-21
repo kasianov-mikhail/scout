@@ -15,10 +15,9 @@ struct SegmentOccurrenceList<Element: Incident, RowContent: View>: View {
     @ViewBuilder let row: (Element) -> RowContent
 
     var body: some View {
-        List {
+        PlainList {
             ForEach(records, content: row)
         }
-        .listStyle(.plain)
         .monospacedNavigationTitle(en: title)
     }
 }

@@ -40,7 +40,7 @@ struct NetworkEndpointRow: View {
                         .foregroundStyle(.gray)
                 }
             }
-            .frame(height: 44)
+            .frame(height: 70)
         } destination: {
             NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
         }
@@ -52,9 +52,10 @@ struct NetworkEndpointRow: View {
     let range = Period.today.initialRange
 
     NavigationStack {
-        List(report.endpoints(in: range)) { endpoint in
-            NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
+        PlainList {
+            ForEach(report.endpoints(in: range)) { endpoint in
+                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
+            }
         }
-        .listStyle(.plain)
     }
 }

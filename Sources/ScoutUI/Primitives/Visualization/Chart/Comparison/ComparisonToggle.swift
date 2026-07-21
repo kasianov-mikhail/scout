@@ -8,7 +8,6 @@
 import Scout
 import SwiftUI
 
-/// List row with the switch that turns the previous-period overlay on.
 struct ComparisonToggle: View {
     @Binding var isOn: Bool
 
@@ -16,17 +15,16 @@ struct ComparisonToggle: View {
         Toggle(isOn: $isOn) {
             Text(verbatim: "Compare with previous period")
         }
-        .listRowSeparator(.hidden)
+        .listRowSeparator(.hidden, edges: .top)
         .hapticFeedback(.selection, trigger: isOn)
     }
 }
 
 #Preview("ComparisonToggle") {
-    List {
+    PlainList {
         ComparisonToggle(isOn: .constant(true))
         ComparisonToggle(isOn: .constant(false))
         ComparisonToggle(isOn: .constant(false))
             .disabled(true)
     }
-    .listStyle(.plain)
 }

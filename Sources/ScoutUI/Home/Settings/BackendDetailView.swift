@@ -33,7 +33,7 @@ struct BackendDetailView: View {
     }
 
     private func content(for backend: BackendHealth) -> some View {
-        List {
+        PlainList {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 10) {
                     Image(systemName: backend.status.healthIcon)
@@ -111,7 +111,6 @@ struct BackendDetailView: View {
             }
             .disabled(isChecking)
         }
-        .listStyle(.plain)
     }
 }
 

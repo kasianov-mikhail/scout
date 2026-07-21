@@ -34,7 +34,7 @@ struct HomeLogRow<Destination: View>: View {
 
 #Preview {
     NavigationStack {
-        List {
+        PlainList {
             HomeLogRow(title: "Events", image: "list.bullet", color: .blue, count: 42) {
                 Text(verbatim: "Detail")
             }
@@ -42,6 +42,5 @@ struct HomeLogRow<Destination: View>: View {
                 Text(verbatim: "Detail")
             }
         }
-        .listStyle(.plain)
     }
 }

@@ -34,14 +34,18 @@ struct AlertListView: View {
                 }
             }
             .opaquePresentation()
-            .task { await provider.fetchIfNeeded(in: database) }
-            .refreshable { await provider.fetchAgain(in: database) }
+            .task {
+                await provider.fetchIfNeeded(in: database)
+            }
+            .refreshable {
+                await provider.fetchAgain(in: database)
+            }
     }
 
     @ViewBuilder private var content: some View {
         switch provider.result {
         case .success(let statuses) where statuses.count > 0:
-            List {
+            PlainList {
                 chips(statuses)
 
                 Header(title: "Rules") {
@@ -62,7 +66,7 @@ struct AlertListView: View {
                         }
                 }
             }
-            .listStyle(.plain)
+            .environment(\.defaultMinListRowHeight, 34)
 
         case .success:
             Placeholder(
@@ -77,14 +81,13 @@ struct AlertListView: View {
             }
 
         case nil:
-            List {
+            PlainList {
                 Header(title: "Rules")
 
                 ForEach(0..<3, id: \.self) { _ in
                     AlertRowPlaceholder()
                 }
             }
-            .listStyle(.plain)
         }
     }
 

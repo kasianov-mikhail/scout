@@ -20,27 +20,40 @@ struct StatView: View {
     var body: some View {
         ProviderView(provider: stat) { points in
             let segment = extent.segment(from: points)
+            let canCompare = extent.canCompare(points: points, segment: segment)
 
-            List {
+            PlainList {
                 PeriodPicker(extent: $extent, periods: stat.periods)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
 
                 RangeControl(extent: $extent)
+                    .padding(.bottom)
                     .listRowInsets(EdgeInsets())
                     .listRowSeparator(.hidden)
 
                 ComparableChart(
-                    segment: segment, points: points, extent: extent, color: color, isComparing: isComparing
+                    segment: segment,
+                    points: points,
+                    extent: extent,
+                    color: color,
+                    isComparing: isComparing
                 )
-                .listRowSeparator(.hidden, edges: .top)
-                .listRowSeparator(showList ? .visible : .hidden, edges: .bottom)
+                .listRowSeparator(.hidden)
+                .padding(.bottom)
 
                 ComparisonToggle(isOn: $isComparing)
-                    .disabled(!extent.canCompare(points: points, segment: segment))
+                    .disabled(!canCompare)
 
                 if showList {
-                    total(count: segment.total)
+                    Row {
+                        Text(verbatim: "Events")
+                        Spacer()
+                        RedactedText(count: segment.count)
+                    } destination: {
+                        EventStatList(eventName: stat.eventName, range: extent.domain)
+                    }
+                    .foregroundColor(.blue)
                 }
 
                 Header(title: "Weekly Pattern") {
@@ -48,7 +61,7 @@ struct StatView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                .listRowSeparator(.hidden)
+                .listRowSeparator(.hidden, edges: .bottom)
 
                 HeatmapView(
                     grid: HeatmapGrid(
@@ -59,11 +72,11 @@ struct StatView: View {
                 )
                 .listRowSeparator(.hidden)
             }
-            .listStyle(.plain)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(
-                        title: stat.eventName, rangeLabel: extent.domain.label(using: rangeDateFormatter)
+                        title: stat.eventName,
+                        rangeLabel: extent.domain.label(using: rangeDateFormatter)
                     ) {
                         ChartView(segment: segment, timing: extent)
                             .foregroundStyle(color)
@@ -72,17 +85,6 @@ struct StatView: View {
             }
         }
         .resetsTint()
-    }
-
-    func total(count: Int) -> some View {
-        Row {
-            Text(verbatim: "Events")
-            Spacer()
-            RedactedText(count: count)
-        } destination: {
-            EventStatList(eventName: stat.eventName, range: extent.domain)
-        }
-        .foregroundColor(.blue)
     }
 }
 

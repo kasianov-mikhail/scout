@@ -22,7 +22,7 @@ struct RetentionSegmentDetailView: View {
     }
 
     var body: some View {
-        List {
+        PlainList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "Week of \(cohort.label)").font(.caption).foregroundStyle(.secondary)
 
@@ -74,6 +74,7 @@ struct RetentionSegmentDetailView: View {
 
                 legend
             }
+            .padding(.top)
             .listRowSeparator(.hidden)
 
             Header(title: "Stability")
@@ -82,7 +83,6 @@ struct RetentionSegmentDetailView: View {
                 stabilityStat(title: "Crashes", value: segment.crashRate, color: .red)
                 stabilityStat(title: "Hangs", value: segment.hangRate, color: .orange)
             }
-            .listRowSeparator(.hidden)
 
             if crashMultiplier > 1.2 {
                 Text(
@@ -91,10 +91,9 @@ struct RetentionSegmentDetailView: View {
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
-                .listRowSeparator(.hidden)
+                .listRowSeparator(.hidden, edges: .bottom)
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: segment.name)
     }
 
@@ -113,6 +112,7 @@ struct RetentionSegmentDetailView: View {
                 .foregroundStyle(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: 70)
     }
 }
 

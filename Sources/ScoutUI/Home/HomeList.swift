@@ -22,7 +22,7 @@ struct HomeList: View {
     @StateObject var alerts = AlertProvider(notifier: AlertNotifier())
 
     var body: some View {
-        List {
+        PlainList {
             SegmentStrip(
                 selection: $period,
                 distribution: .justified,
@@ -56,7 +56,6 @@ struct HomeList: View {
                 path: $path
             )
         }
-        .listStyle(.plain)
         .scrollContentBackground(.hidden)
         .globalSearch()
         .navigationDestination(for: HomeDestination.self) { destination in

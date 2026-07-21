@@ -18,21 +18,36 @@ struct NetworkEndpointsView: View {
         let breakdown = report.summary(in: range)
         let worstP99 = endpoints.compactMap(\.p99).max()
 
-        List {
+        PlainList {
             HStack(spacing: 28) {
-                Metric(title: "Requests", value: breakdown.total.plain, color: .primary)
-                Metric(title: "Success", value: breakdown.successRate.formatted, color: breakdown.successRate.color)
-                Metric(title: "Worst P99", value: worstP99?.duration ?? "—", color: .orange)
+                Metric(
+                    title: "Requests",
+                    value: breakdown.total.plain,
+                    color: .primary
+                )
+                Metric(
+                    title: "Success",
+                    value: breakdown.successRate.formatted,
+                    color: breakdown.successRate.color
+                )
+                Metric(
+                    title: "Worst P99",
+                    value: worstP99?.duration ?? "—",
+                    color: .orange
+                )
                 Spacer()
             }
-            .listRowSeparator(.hidden)
 
             Header(title: "Endpoints")
             ForEach(endpoints) { endpoint in
-                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
+                NetworkEndpointRow(
+                    endpoint: endpoint,
+                    report: report,
+                    range: range
+                )
+                .frame(height: 70)
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Endpoints")
     }
 }

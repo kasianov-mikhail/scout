@@ -63,9 +63,8 @@ struct ContextSection<Context: SessionContext>: View {
     }
 
     return NavigationStack {
-        List {
+        PlainList {
             ContextSection(context: Sample(sessionID: UUID(), deviceID: UUID()), timelineHighlight: .red)
         }
-        .listStyle(.plain)
     }
 }

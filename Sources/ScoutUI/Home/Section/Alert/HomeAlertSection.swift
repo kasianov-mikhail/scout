@@ -42,7 +42,7 @@ struct HomeAlertSection: View {
 
         switch alerts.result {
         case .success(let statuses) where statuses.allHealthy:
-            placeholderText("All healthy", color: .green).listRowInsets(.sideInsets)
+            placeholderText("All healthy", color: .green)
 
         case .success(let statuses) where statuses.count > 0:
             ForEach(statuses.prefix(2), id: \.rule) { status in
@@ -56,7 +56,6 @@ struct HomeAlertSection: View {
                 placeholderText("New rule", color: .blue)
             }
             .buttonStyle(.plain)
-            .listRowInsets(.sideInsets)
 
         default:
             ForEach(0..<2, id: \.self) { _ in
@@ -87,11 +86,10 @@ struct HomeAlertSection: View {
     empty.result = .success([])
 
     return NavigationStack {
-        List {
+        PlainList {
             HomeAlertSection(alerts: firing, path: .constant([]))
             HomeAlertSection(alerts: healthy, path: .constant([]))
             HomeAlertSection(alerts: empty, path: .constant([]))
         }
-        .listStyle(.plain)
     }
 }

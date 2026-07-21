@@ -1,5 +1,5 @@
 //
-// Copyright 2025 Mikhail Kasianov
+// Copyright 2026 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -8,30 +8,26 @@
 import Scout
 import SwiftUI
 
-struct Row<Content: View, Destination: View>: View {
+extension EdgeInsets {
+    static let sideInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+}
+
+struct PlainList<Content: View>: View {
     @ViewBuilder let content: () -> Content
-    @ViewBuilder let destination: () -> Destination
 
     var body: some View {
-        ZStack {
-            HStack {
-                content()
-            }
-
-            NavigationLink {
-                destination()
-            } label: {
-                EmptyView()
-            }
-            .opacity(0)
+        List {
+            content().listRowInsets(.sideInsets)
         }
-        .trailingRowSeparator()
+        .listStyle(.plain)
     }
 }
 
 #Preview {
     NavigationStack {
         PlainList {
+            Header(title: "Section Title")
+
             Row {
                 Text(verbatim: "Label")
                 Spacer()
@@ -39,6 +35,10 @@ struct Row<Content: View, Destination: View>: View {
             } destination: {
                 Text(verbatim: "Detail")
             }
+
+            Text(verbatim: "Full width")
+                .frame(maxWidth: .infinity)
+                .background(.blue.opacity(0.1))
         }
     }
 }

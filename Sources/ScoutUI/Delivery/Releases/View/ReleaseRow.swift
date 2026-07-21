@@ -91,14 +91,13 @@ private struct ReleasePercent: View {
 
 #Preview {
     NavigationStack {
-        List {
+        PlainList {
             ForEach([ReleaseHealth].samples) { release in
                 ReleaseRow(release: release)
             }
             ReleaseRowPlaceholder()
             ReleaseRowPlaceholder()
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Releases")
     }
 }

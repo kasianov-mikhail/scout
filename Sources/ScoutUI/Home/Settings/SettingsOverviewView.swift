@@ -19,9 +19,10 @@ struct SettingsOverviewView: View {
     }
 
     var body: some View {
-        List {
+        PlainList {
             GlanceHero(summary: GlanceSummary(backends: provider.backends))
                 .padding(.vertical, 6)
+                .padding(.top)
                 .listRowSeparator(.hidden)
 
             Header(title: "Backends")
@@ -39,11 +40,9 @@ struct SettingsOverviewView: View {
             Button {
                 Task { await provider.refreshAll() }
             } label: {
-                Text(verbatim: "Check All Backends")
-                    .foregroundStyle(.tint)
+                Text(verbatim: "Check All Backends").foregroundStyle(.tint)
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: "Settings")
         .dismissable()
         .opaquePresentation()

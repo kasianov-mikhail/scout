@@ -16,7 +16,7 @@ struct NetworkEndpointDetailView: View {
     var unit: Calendar.Component = .hour
 
     var body: some View {
-        List {
+        PlainList {
             HStack(spacing: 28) {
                 Metric(
                     title: "Method",
@@ -35,7 +35,7 @@ struct NetworkEndpointDetailView: View {
                 )
                 Spacer()
             }
-            .listRowSeparator(.hidden)
+            .listRowSeparator(.hidden, edges: .top)
 
             let distribution = report.distributions[endpoint.name]
             let statuses = report.statuses[endpoint.name]
@@ -43,7 +43,6 @@ struct NetworkEndpointDetailView: View {
             if let percentiles = distribution?.summary(in: range) {
                 Header(title: "Latency")
                 PercentileRow(percentiles: percentiles, formatter: \TimeInterval.duration)
-                    .listRowSeparator(.hidden, edges: .bottom)
             }
 
             if let trend = distribution?.trend(in: range, component: unit), trend.count > 0 {
@@ -58,7 +57,6 @@ struct NetworkEndpointDetailView: View {
                     .listRowSeparator(.hidden, edges: .bottom)
             }
         }
-        .listStyle(.plain)
         .monospacedNavigationTitle(en: endpoint.path)
     }
 }

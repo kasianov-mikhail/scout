@@ -40,7 +40,6 @@ struct HomeMetricSection: View {
             }
             .buttonStyle(.plain)
         }
-        .listRowInsets(.sideInsets)
         .listRowSeparator(.hidden)
     }
 
@@ -70,7 +69,7 @@ struct HomeMetricSection: View {
     sessions.result = .success(.samples)
 
     return NavigationStack {
-        List {
+        PlainList {
             HomeMetricSection(
                 activities: activities,
                 sessions: sessions,
@@ -78,6 +77,5 @@ struct HomeMetricSection: View {
                 path: .constant([])
             )
         }
-        .listStyle(.plain)
     }
 }

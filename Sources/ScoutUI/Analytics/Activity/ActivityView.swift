@@ -29,13 +29,16 @@ struct ActivityView: View {
     var body: some View {
         VStack(spacing: 0) {
             PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)
+                .padding(.top)
 
             ProviderView(provider: activity) { data in
                 RangeControl(extent: $extent)
+                    .padding(.vertical)
 
-                List {
+                PlainList {
                     let points = data.points(on: extent.period)
                     let segment = extent.segment(from: points)
+                    let canCompare = extent.canCompare(points: points, segment: segment)
 
                     ComparableChart(
                         segment: segment,
@@ -45,19 +48,22 @@ struct ActivityView: View {
                         isComparing: isComparing
                     )
                     .listRowSeparator(.hidden)
+                    .padding(.bottom)
 
-                    ComparisonToggle(isOn: $isComparing)
-                        .disabled(!extent.canCompare(points: points, segment: segment))
+                    ComparisonToggle(isOn: $isComparing).disabled(!canCompare)
                 }
-                .listStyle(.plain)
                 .scrollDisabled(true)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         ChartExportButton(
-                            title: "Active Users", rangeLabel: extent.domain.label(using: rangeDateFormatter)
+                            title: "Active Users",
+                            rangeLabel: extent.domain.label(using: rangeDateFormatter)
                         ) {
-                            ChartView(segment: extent.segment(from: data.points(on: extent.period)), timing: extent)
-                                .foregroundStyle(.green)
+                            ChartView(
+                                segment: extent.segment(from: data.points(on: extent.period)),
+                                timing: extent
+                            )
+                            .foregroundStyle(.green)
                         }
                     }
                 }
@@ -70,6 +76,7 @@ struct ActivityView: View {
 #Preview("ActivityView") {
     let activity = ActivityProvider()
     activity.result = .success([])
+
     return NavigationStack {
         ActivityView(activity: activity, period: .daily)
     }

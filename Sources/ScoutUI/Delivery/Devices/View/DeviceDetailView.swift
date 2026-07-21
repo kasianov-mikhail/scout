@@ -20,20 +20,20 @@ struct DeviceDetailView: View {
     }
 
     var body: some View {
-        List {
+        PlainList {
             FlowLayout(spacing: 6) {
                 InfoChip(systemImage: device.symbol, text: device.modelName, color: .blue)
                 InfoChip(systemImage: "gearshape", text: device.osVersion, color: .indigo)
                 InfoChip(systemImage: "clock", text: "seen \(device.lastSeen.relativeString)", color: .teal)
             }
             .listRowSeparator(.hidden)
+            .padding(.vertical)
 
             HStack(spacing: 28) {
                 Metric(title: "Sessions", value: device.sessions.plain, color: .primary)
                 Metric(title: "Crashes", value: device.crashes.plain, color: device.crashes > 0 ? .red : .primary)
                 Spacer()
             }
-            .listRowSeparator(.hidden)
 
             if crashes.count > 0 {
                 Header(title: "Recent Crashes")
@@ -69,7 +69,6 @@ struct DeviceDetailView: View {
                 }
             }
         }
-        .listStyle(.plain)
         .navigationTitle(en: device.modelName)
         .autoRefresh {
             await incidents.fetchLatest(in: database)

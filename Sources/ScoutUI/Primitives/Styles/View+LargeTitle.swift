@@ -8,6 +8,12 @@
 import Scout
 import SwiftUI
 
-extension EdgeInsets {
-    static let sideInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+extension View {
+    func largeNavigationTitle() -> some View {
+        #if os(iOS)
+            navigationBarTitleDisplayMode(.large)
+        #else
+            self
+        #endif
+    }
 }

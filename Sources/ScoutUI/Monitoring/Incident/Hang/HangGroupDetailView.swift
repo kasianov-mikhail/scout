@@ -22,12 +22,11 @@ struct HangGroupDetailView: View {
     }
 
     var body: some View {
-        List {
+        PlainList {
             headerSection
             breakdownSection
             occurrencesSection
         }
-        .listStyle(.plain)
         .navigationTint(group.severity.color)
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
@@ -60,7 +59,7 @@ struct HangGroupDetailView: View {
                     .foregroundStyle(Color.gray)
             }
         }
-        .padding(.vertical, 4)
+        .padding(.bottom)
     }
 
     @ViewBuilder

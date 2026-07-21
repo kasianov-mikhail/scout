@@ -20,12 +20,11 @@ struct DevicesListView: View {
                     description: "Devices appear here once your app reports sessions"
                 )
             } else {
-                List {
+                PlainList {
                     ForEach(devices.sorted { $0.lastSeen > $1.lastSeen }) { device in
                         DeviceLink(device: device)
                     }
                 }
-                .listStyle(.plain)
             }
         }
         .navigationTitle(en: "Devices")

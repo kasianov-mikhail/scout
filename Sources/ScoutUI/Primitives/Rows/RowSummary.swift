@@ -20,7 +20,7 @@ struct RowSummary: View {
         HStack(spacing: 8) {
             MiniChart(series: series, color: color)
             RedactedText(count: count)
-                .foregroundColor(color)
+                .foregroundColor(.primary)
                 .frame(minWidth: Self.countWidth, alignment: .trailing)
         }
     }
@@ -28,7 +28,7 @@ struct RowSummary: View {
 
 #Preview {
     NavigationStack {
-        List {
+        PlainList {
             HStack {
                 Text(verbatim: "Loaded")
                 Spacer()
@@ -52,6 +52,5 @@ struct RowSummary: View {
                     color: .blue)
             }
         }
-        .listStyle(.plain)
     }
 }
