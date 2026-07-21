@@ -63,7 +63,8 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
                         )
                     }
                 default:
-                    MetricsView(group: group, formatter: formatter, period: .today)
+                    MetricsView(
+                        group: group, formatter: formatter, period: .today, tracksResets: telemetry.hasResets)
                 }
             } else {
                 Placeholder(

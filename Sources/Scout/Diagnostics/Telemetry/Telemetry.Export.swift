@@ -14,6 +14,11 @@ extension Telemetry {
         case meter = "meter"
         case recorder = "recorder"
         case timer = "timer"
+
+        /// Whether the metric can be reset, which only counters can be.
+        package var hasResets: Bool {
+            self == .counter || self == .floatingCounter
+        }
     }
 
     enum ExportError: LocalizedError {

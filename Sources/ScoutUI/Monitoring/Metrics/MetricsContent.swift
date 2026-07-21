@@ -71,7 +71,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                 )
             }
         default:
-            MetricsView(group: group, formatter: formatter, period: period)
+            MetricsView(group: group, formatter: formatter, period: period, tracksResets: telemetry.hasResets)
         }
     }
 

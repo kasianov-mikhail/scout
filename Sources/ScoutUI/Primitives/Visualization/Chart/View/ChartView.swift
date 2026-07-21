@@ -12,16 +12,25 @@ import SwiftUI
 struct ChartView<T: ChartNumeric>: View {
     let segment: [ChartPoint<T>]
     let timing: ChartTiming
+    var markers: [Date] = []
 
     var body: some View {
         let isEmpty = segment.total == .zero
 
-        Chart(segment, id: \.date) { point in
-            BarMark(
-                x: .value("X", point.date, unit: timing.unit),
-                y: .value("Y", point.count),
-                width: .ratio(ChartGeometry.barRatio)
-            )
+        Chart {
+            ForEach(segment, id: \.date) { point in
+                BarMark(
+                    x: .value("X", point.date, unit: timing.unit),
+                    y: .value("Y", point.count),
+                    width: .ratio(ChartGeometry.barRatio)
+                )
+            }
+
+            ForEach(markers, id: \.self) { marker in
+                RuleMark(x: .value("Reset", marker, unit: timing.unit))
+                    .foregroundStyle(Color.gray.opacity(0.55))
+                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
+            }
         }
         .placeholderAxis(active: isEmpty)
         .chartXAxis {
