@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-class AlertBacktestProvider: ObservableObject, Provider {
+final class AlertBacktestProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<AlertBacktest>?
 
     var metric: AlertMetric

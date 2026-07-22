@@ -9,7 +9,8 @@
 import Foundation
 import Scout
 
-class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, Provider {
+@MainActor
+final class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, Provider {
     @Published var result: ProviderResult<MetricDistribution<H>>?
 
     private let name: String
@@ -21,22 +22,11 @@ class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, Provid
     }
 
     func fetch(in database: DatabaseReader) async throws -> MetricDistribution<H> {
-        let range = Calendar.utc.defaultRange
-        let name = self.name
-
-        let series = try await withThrowingTaskGroup(of: [MetricSeries].self) { group in
-            for category in categories {
-                group.addTask {
-                    try await database.metricSeries(Int.self, category: category, in: range)
-                }
-            }
-            var series: [MetricSeries] = []
-            for try await chunk in group {
-                series += chunk
-            }
-            return series
-        }
-
+        let series = try await database.metricSeries(
+            Int.self,
+            categories: categories,
+            in: Calendar.utc.defaultRange
+        )
         return MetricDistribution(series: series.filter { $0.name == name })
     }
 }

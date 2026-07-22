@@ -10,7 +10,7 @@ import Foundation
 import Scout
 
 @MainActor
-class BackendHealthProvider: ObservableObject {
+final class BackendHealthProvider: ObservableObject {
     @Published private(set) var backends: [BackendHealth]
 
     init(backends: [Backend]) {

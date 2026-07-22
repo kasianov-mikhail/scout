@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-class AlertProvider: ObservableObject, Provider {
+final class AlertProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[AlertStatus]>?
 
     private let store: AlertStore

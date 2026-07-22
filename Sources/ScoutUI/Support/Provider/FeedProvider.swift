@@ -34,6 +34,21 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         }
     }
 
+    @discardableResult
+    func fetchAll(matching query: RecordQuery, in database: DatabaseReader) async -> Bool {
+        do {
+            records = try await database.readAll(matching: query, fields: Element.desiredKeys)
+            return true
+        } catch is CancellationError {
+            return true
+        } catch {
+            if records == nil {
+                message = Message(error.localizedDescription, level: .error)
+            }
+            return false
+        }
+    }
+
     func fetchAgain(matching query: RecordQuery, in database: DatabaseReader) async {
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)

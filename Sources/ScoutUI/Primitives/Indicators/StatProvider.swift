@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 @MainActor
-class StatProvider: ObservableObject, Provider {
+final class StatProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ChartPoint<Int>]>?
 
     let eventName: String

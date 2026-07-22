@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-class ReleaseHealthProvider: ObservableObject, Provider {
+final class ReleaseHealthProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ReleaseHealth]>?
 
     init(releases: [ReleaseHealth]? = nil) {
