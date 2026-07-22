@@ -18,7 +18,8 @@ enum CachedMetricSeries {
             query.bucket.rawValue,
             query.byVersion ? "version" : "*",
             query.source?.rawValue ?? "*",
-        ].joined(separator: "|")
+        ]
+        .joined(separator: "|")
     }
 
     static func records(from series: [MetricSeries]) -> [Record] {
@@ -36,7 +37,7 @@ enum CachedMetricSeries {
     }
 
     static func series(cached: [Record], fetched: [MetricSeries]) -> [MetricSeries] {
-        var points: [SeriesKey: [MetricSeriesPoint]] = [:]
+        var groups = SeriesGroups()
 
         for record in cached {
             guard case .date(let date)? = record.fields["date"] else { continue }
@@ -47,35 +48,15 @@ enum CachedMetricSeries {
                 if case .string(let category)? = record.fields["category"] { category } else { nil }
             let version: String? =
                 if case .string(let version)? = record.fields["app_version"] { version } else { nil }
-            let point = MetricSeriesPoint(date: date.millisecondsSince1970, value: value)
-            points[SeriesKey(name: name, category: category, version: version), default: []].append(point)
+            let key = SeriesKey(name: name, category: category, version: version)
+            groups.append(MetricSeriesPoint(date: date.millisecondsSince1970, value: value), to: key)
         }
 
         for series in fetched {
-            points[SeriesKey(name: series.name, category: series.category, version: series.version), default: []] +=
-                series.points
+            groups.append(series)
         }
 
-        return
-            points
-            .sorted {
-                ($0.key.name, $0.key.category ?? "", $0.key.version ?? "")
-                    < ($1.key.name, $1.key.category ?? "", $1.key.version ?? "")
-            }
-            .map { key, points in
-                MetricSeries(
-                    name: key.name,
-                    category: key.category,
-                    version: key.version,
-                    points: points.sorted { $0.date < $1.date }
-                )
-            }
-    }
-
-    private struct SeriesKey: Hashable {
-        let name: String
-        let category: String?
-        let version: String?
+        return groups.series
     }
 
     private static func recordValue(_ value: MetricValue) -> RecordValue {
