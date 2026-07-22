@@ -13,8 +13,6 @@ struct ParamView: View {
     private let value: ParamValue
     private let raw: String
 
-    @State private var message: Message?
-
     /// Shows a fetched parameter, keeping its raw text for sharing.
     init(item: ParamProvider.Item) {
         key = item.key
@@ -46,14 +44,7 @@ struct ParamView: View {
             }
         }
         .monospacedNavigationTitle(en: key)
-        .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
-                ShareLink(item: raw)
-                CopyButton(text: raw, message: $message)
-                Spacer()
-            }
-        }
-        .message($message)
+        .exportToolbar(text: raw)
         .resetsTint()
     }
 }

@@ -13,7 +13,6 @@ struct CrashGroupDetailView: View {
 
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
-    @State private var message: Message?
 
     init(group: IncidentGroup<Crash>, breakdown: IncidentBreakdownProvider? = nil) {
         self.group = group
@@ -62,17 +61,7 @@ struct CrashGroupDetailView: View {
             ForEach(group.records, content: occurrenceRow)
         }
         .navigationTint(.red)
-        .toolbar {
-            ToolbarItemGroup(placement: .bottomBar) {
-                let text = CrashGroupExport(group: group).text
-                ShareLink(item: text)
-                    .tint(Color.primary)
-                CopyButton(text: text, message: $message)
-                    .tint(Color.primary)
-                Spacer()
-            }
-        }
-        .message($message)
+        .exportToolbar(text: CrashGroupExport(group: group).text, tint: .primary)
         .monospacedNavigationTitle(en: group.name)
         .task {
             await breakdown.fetchIfNeeded(in: database)
