@@ -29,8 +29,7 @@ private struct MessagePresenter: ViewModifier {
     @Binding var message: Message?
     @State private var stack: [Message] = []
 
-    private let maxVisible = 5
-    private let lifetime = Duration.seconds(5)
+    private let lifetime: Duration = .seconds(5)
 
     func body(content: Content) -> some View {
         content.overlay(alignment: .top) {
@@ -44,34 +43,27 @@ private struct MessagePresenter: ViewModifier {
                             )
                         )
                         .onTapGesture {
-                            dismiss(message)
+                            stack.dismiss(message)
                         }
                         .gesture(
                             DragGesture().onChanged { _ in
-                                dismiss(message)
+                                stack.dismiss(message)
                             }
                         )
                         .task {
                             try? await Task.sleep(for: lifetime)
                             guard !Task.isCancelled else { return }
-                            dismiss(message)
+                            stack.dismiss(message)
                         }
                 }
             }
         }
         .onChange(of: message) { message in
             guard let message else { return }
-            stack.append(message)
-            if stack.count > maxVisible {
-                stack.removeFirst(stack.count - maxVisible)
-            }
+            stack.push(message)
             self.message = nil
         }
         .animation(.easeInOut, value: stack)
-    }
-
-    private func dismiss(_ message: Message) {
-        stack.removeAll { $0.id == message.id }
     }
 }
 

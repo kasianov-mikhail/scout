@@ -13,6 +13,7 @@ struct HangGroupDetailView: View {
 
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
+    @State private var message: Message?
 
     init(group: IncidentGroup<Hang>, breakdown: IncidentBreakdownProvider? = nil) {
         self.group = group
@@ -53,11 +54,12 @@ struct HangGroupDetailView: View {
                 let text = HangGroupExport(group: group).text
                 ShareLink(item: text)
                     .tint(Color.primary)
-                CopyButton(text: text)
+                CopyButton(text: text, message: $message)
                     .tint(Color.primary)
                 Spacer()
             }
         }
+        .message($message)
         .monospacedNavigationTitle(en: group.name)
         .task {
             await breakdown.fetchIfNeeded(in: database)

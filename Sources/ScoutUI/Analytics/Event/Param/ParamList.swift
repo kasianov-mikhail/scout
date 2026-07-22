@@ -11,6 +11,8 @@ import SwiftUI
 struct ParamList: View {
     let items: [ParamProvider.Item]
 
+    @State private var message: Message?
+
     /// All parameters as `key: value` lines, used for sharing and copying.
     private var text: String {
         items.map(\.description).joined(separator: "\n")
@@ -27,10 +29,11 @@ struct ParamList: View {
         .toolbar {
             ToolbarItemGroup(placement: .bottomBar) {
                 ShareLink(item: text)
-                CopyButton(text: text)
+                CopyButton(text: text, message: $message)
                 Spacer()
             }
         }
+        .message($message)
         .resetsTint()
     }
 }

@@ -19,6 +19,7 @@ private struct EventFilter: ViewModifier {
     @ObservedObject var search: EventProvider
 
     @Environment(\.database) var database
+    @State private var message: Message?
 
     private var activeProvider: EventProvider {
         filter.text.isEmpty ? provider : search
@@ -46,11 +47,12 @@ private struct EventFilter: ViewModifier {
             if let text = EventListExport(events: activeProvider.records ?? []).text {
                 ToolbarItemGroup(placement: .bottomBar) {
                     ShareLink(item: text)
-                    CopyButton(text: text)
+                    CopyButton(text: text, message: $message)
                     Spacer()
                 }
             }
         }
+        .message($message)
         .onSubmit(of: .search) {
             #if os(iOS)
                 UIApplication.shared.sendAction(
