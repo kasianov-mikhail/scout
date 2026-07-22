@@ -36,7 +36,7 @@ struct HomeLogSection: View {
                     .frame(width: 24)
                 Text(verbatim: category.title)
                 Spacer()
-                RedactedText(count: log.report?.summary(for: category).count)
+                RedactedText(count: log.report?.trend(for: category).count)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .frame(minWidth: RowSummary.countWidth, alignment: .trailing)

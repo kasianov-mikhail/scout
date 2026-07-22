@@ -51,9 +51,9 @@ struct CrashGroupDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 24) {
-                Metric(title: "Occurrences", value: "\(group.count)")
-                Metric(title: "Devices", value: "\(group.affectedDevices)")
-                Metric(title: "Sessions", value: "\(group.affectedSessions)")
+                Readout(title: "Occurrences", value: "\(group.count)")
+                Readout(title: "Devices", value: "\(group.affectedDevices)")
+                Readout(title: "Sessions", value: "\(group.affectedSessions)")
             }
 
             if let reason = group.representative.reason {

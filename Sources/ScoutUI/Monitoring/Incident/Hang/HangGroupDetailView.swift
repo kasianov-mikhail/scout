@@ -47,10 +47,10 @@ struct HangGroupDetailView: View {
     private var headerSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 16) {
-                Metric(title: "Duration", value: group.durationText, color: group.severity.color)
-                Metric(title: "Occurrences", value: "\(group.count)")
-                Metric(title: "Devices", value: "\(group.affectedDevices)")
-                Metric(title: "Sessions", value: "\(group.affectedSessions)")
+                Readout(title: "Duration", value: group.durationText, color: group.severity.color)
+                Readout(title: "Occurrences", value: "\(group.count)")
+                Readout(title: "Devices", value: "\(group.affectedDevices)")
+                Readout(title: "Sessions", value: "\(group.affectedSessions)")
             }
 
             if let first = group.firstDate, let last = group.lastDate {

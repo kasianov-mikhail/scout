@@ -37,9 +37,9 @@ struct DevicesView: View {
 
         return InsetList {
             HStack(spacing: 28) {
-                Metric(title: "Devices", value: devices.count.plain, color: .primary)
-                Metric(title: "Active 7d", value: activeCount.plain, color: .blue)
-                Metric(title: "With Crashes", value: crashingCount.plain, color: crashingCount > 0 ? .red : .primary)
+                Readout(title: "Devices", value: devices.count.plain, color: .primary)
+                Readout(title: "Active 7d", value: activeCount.plain, color: .blue)
+                Readout(title: "With Crashes", value: crashingCount.plain, color: crashingCount > 0 ? .red : .primary)
                 Spacer()
             }
 

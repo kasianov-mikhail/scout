@@ -31,10 +31,10 @@ struct LogView: View {
                         NavigationLink {
                             LogDestination(category: category)
                         } label: {
-                            MetricCard(
+                            TrendCard(
                                 title: category.title,
                                 color: category.color,
-                                summary: log.report?.summary(for: category) ?? .loading
+                                trend: log.report?.trend(for: category) ?? .loading
                             )
                         }
                         .buttonStyle(.plain)

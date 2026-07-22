@@ -15,9 +15,9 @@ struct PercentileRow: View {
 
     var body: some View {
         HStack(spacing: 34) {
-            Metric(title: "P50", value: percentiles.p50[keyPath: formatter], color: .blue)
-            Metric(title: "P90", value: percentiles.p90[keyPath: formatter], color: .teal)
-            Metric(title: "P99", value: percentiles.p99[keyPath: formatter], color: .orange)
+            Readout(title: "P50", value: percentiles.p50[keyPath: formatter], color: .blue)
+            Readout(title: "P90", value: percentiles.p90[keyPath: formatter], color: .teal)
+            Readout(title: "P99", value: percentiles.p99[keyPath: formatter], color: .orange)
             Spacer()
         }
     }

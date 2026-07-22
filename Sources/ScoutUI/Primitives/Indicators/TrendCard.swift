@@ -8,10 +8,10 @@
 import Scout
 import SwiftUI
 
-struct MetricCard: View {
+struct TrendCard: View {
     let title: String
     let color: Color
-    let summary: MetricSummary?
+    let trend: Trend?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -24,9 +24,9 @@ struct MetricCard: View {
                 ZStack(alignment: .leading) {
                     Text(verbatim: "0").hidden()
 
-                    if let count = summary?.count {
+                    if let count = trend?.count {
                         Text(count == 0 ? "—" : count.compact)
-                    } else if summary != nil {
+                    } else if trend != nil {
                         Redacted(length: 5).font(.body)
                     } else {
                         Text(verbatim: "0")
@@ -36,7 +36,7 @@ struct MetricCard: View {
 
                 Spacer()
 
-                if let delta = summary?.delta {
+                if let delta = trend?.delta {
                     Text(verbatim: delta.formatted)
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundStyle(delta.isPositive ? .green : .red)
@@ -47,7 +47,7 @@ struct MetricCard: View {
             Spacer().frame(height: 4)
 
             Group {
-                if let series = summary?.series {
+                if let series = trend?.series {
                     Sparkline(series: series, color: color)
                 } else {
                     Sparkline(series: .empty, color: color)
@@ -58,34 +58,34 @@ struct MetricCard: View {
     }
 }
 
-#Preview("MetricCard") {
+#Preview("TrendCard") {
     let columns = [GridItem(.fixed(162), spacing: 24), GridItem(.fixed(162), spacing: 24)]
 
     LazyVGrid(columns: columns, spacing: 24) {
-        MetricCard(
+        TrendCard(
             title: "Sessions",
             color: .purple,
-            summary: MetricSummary(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
+            trend: Trend(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
         )
-        MetricCard(
+        TrendCard(
             title: "Crashes",
             color: .red,
-            summary: MetricSummary(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
+            trend: Trend(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
         )
-        MetricCard(
+        TrendCard(
             title: "Empty",
             color: .red,
-            summary: MetricSummary(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
+            trend: Trend(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
         )
-        MetricCard(
+        TrendCard(
             title: "Loading",
             color: .green,
-            summary: .loading
+            trend: .loading
         )
-        MetricCard(
+        TrendCard(
             title: "Missing",
             color: .green,
-            summary: nil
+            trend: nil
         )
     }
     .padding()

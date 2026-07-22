@@ -37,9 +37,9 @@ struct NetworkView: View {
 
         return InsetList {
             HStack(spacing: 28) {
-                Metric(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
-                Metric(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
-                Metric(title: "Req/min", value: report.requestsPerMinute(endpoints, in: range).plain, color: .primary)
+                Readout(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
+                Readout(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
+                Readout(title: "Req/min", value: report.requestsPerMinute(endpoints, in: range).plain, color: .primary)
                 Spacer()
             }
 
