@@ -16,79 +16,21 @@ import Testing
 struct AlertProviderTests {
     private let defaults = UserDefaults(suiteName: "AlertProviderTests-\(UUID().uuidString)")!
 
-    @Test("An error spike over the baseline fires once and stays firing on the next refresh")
-    func firesOnce() async throws {
+    @Test("Fetching reads statuses for display without advancing state or delivering")
+    func fetchIsReadOnly() async throws {
         let database = DatabaseStub()
         database.add(series: makeSeries(name: "Error", counts: errorCounts))
 
-        let provider = makeProvider(rules: [errorRule])
+        let center = NotificationCenterStub()
+        let registry = AlertRegistry(defaults: defaults)
+        registry.rules = [errorRule]
+        let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
 
-        let first = try await provider.fetch(in: database)
-
-        #expect(first.count == 1)
-        #expect(first[0].outcome.shouldNotify)
-
-        let second = try await provider.fetch(in: database)
-
-        #expect(!second[0].outcome.shouldNotify)
-        #expect(second[0].outcome.state == first[0].outcome.state)
-    }
-
-    @Test("A crash-free dip below the threshold fires")
-    func crashFree() async throws {
-        let database = DatabaseStub()
-        database.add(
-            series: makeSeries(
-                name: SessionEntry.recordType, counts: [(hoursAgo: 1, count: 10), (hoursAgo: 2, count: 10)]),
-            makeSeries(name: CrashEntry.recordType, counts: [(hoursAgo: 1, count: 1), (hoursAgo: 2, count: 1)])
-        )
-
-        let provider = makeProvider(rules: [crashFreeRule])
         let statuses = try await provider.fetch(in: database)
 
         #expect(statuses[0].outcome.shouldNotify)
-    }
-
-    @Test("A firing refresh posts one notification and the next refresh stays silent")
-    func deliversOnce() async throws {
-        let database = DatabaseStub()
-        database.add(series: makeSeries(name: "Error", counts: errorCounts))
-
-        let center = NotificationCenterStub()
-        let provider = makeProvider(rules: [errorRule], center: center)
-
-        _ = try await provider.fetch(in: database)
-
-        #expect(center.requests.count == 1)
-        #expect(center.requests.first?.content.title == "Error")
-
-        _ = try await provider.fetch(in: database)
-
-        #expect(center.requests.count == 1)
-    }
-
-    @Test("A firing state survives into a new provider instance")
-    func statePersists() async throws {
-        let database = DatabaseStub()
-        database.add(series: makeSeries(name: "Error", counts: errorCounts))
-
-        let center = NotificationCenterStub()
-
-        _ = try await makeProvider(rules: [errorRule], center: center).fetch(in: database)
-        _ = try await makeProvider(rules: [errorRule], center: center).fetch(in: database)
-
-        #expect(center.requests.count == 1)
-    }
-
-    @Test("A healthy metric stays armed")
-    func healthy() async throws {
-        let database = DatabaseStub()
-        database.add(series: makeSeries(name: SessionEntry.recordType, counts: [(hoursAgo: 1, count: 10)]))
-
-        let provider = makeProvider(rules: [crashFreeRule])
-        let statuses = try await provider.fetch(in: database)
-
-        #expect(statuses[0].outcome == AlertOutcome(state: .armed, shouldNotify: false))
+        #expect(center.requests.count == 0)
+        #expect(registry.state(for: errorRule) == .armed)
     }
 
     @Test("Adding the first rule requests notification authorization once")
@@ -136,9 +78,9 @@ struct AlertProviderTests {
     }
 
     private func makeProvider(rules: [AlertRule], center: NotificationCenterStub? = nil) -> AlertProvider {
-        let store = AlertStore(defaults: defaults)
-        store.rules = rules
-        return AlertProvider(store: store, notifier: center.map { AlertNotifier(center: $0) })
+        let registry = AlertRegistry(defaults: defaults)
+        registry.rules = rules
+        return AlertProvider(registry: registry, notifier: center.map { AlertNotifier(center: $0) })
     }
 
     private func makeSeries(name: String, counts: [(hoursAgo: Int, count: Int)]) -> MetricSeries {

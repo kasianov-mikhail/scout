@@ -32,9 +32,9 @@
         /// later registrations.
         ///
         public static func registerBackgroundRefresh(backends: [Backend]) {
-            let provider = AlertProvider(notifier: AlertNotifier())
+            let engine = AlertEngine(registry: AlertRegistry(), notifier: AlertNotifier())
             let refresher = AlertRefreshScheduler {
-                await refresh(provider: provider, backends: backends)
+                await refresh(engine: engine, backends: backends)
             }
 
             refresher.register()
@@ -43,13 +43,13 @@
 
         /// Requests a background refresh, skipped while no alert rules exist.
         public static func scheduleBackgroundRefresh() {
-            guard AlertStore().rules.count > 0 else { return }
+            guard AlertRegistry().rules.count > 0 else { return }
             scheduler?.schedule()
         }
 
-        private static func refresh(provider: AlertProvider, backends: [Backend]) async {
+        private static func refresh(engine: AlertEngine, backends: [Backend]) async {
             guard let backend = backends.active else { return }
-            _ = try? await provider.fetch(in: backend.cachedDatabase)
+            _ = try? await engine.run(in: backend.cachedDatabase)
         }
     }
 #endif

@@ -12,22 +12,23 @@ import SwiftUI
 final class AlertProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[AlertStatus]>?
 
-    private let store: AlertStore
+    private let registry: AlertRegistry
     private let notifier: AlertNotifier?
-    private let evaluator = AlertEvaluator()
+    private let engine: AlertEngine
 
-    init(store: AlertStore = AlertStore(), notifier: AlertNotifier? = nil) {
-        self.store = store
+    init(registry: AlertRegistry = AlertRegistry(), notifier: AlertNotifier? = nil) {
+        self.registry = registry
         self.notifier = notifier
+        self.engine = AlertEngine(registry: registry, notifier: notifier)
     }
 
     var rules: [AlertRule] {
-        store.rules
+        registry.rules
     }
 
     func add(_ rule: AlertRule) async {
-        let isFirst = store.rules.count == 0
-        store.rules.append(rule)
+        let isFirst = registry.rules.count == 0
+        registry.rules.append(rule)
 
         if isFirst, let notifier {
             _ = await notifier.requestAuthorization()
@@ -35,24 +36,10 @@ final class AlertProvider: ObservableObject, Provider {
     }
 
     func remove(_ rule: AlertRule) {
-        store.rules.removeAll { $0 == rule }
+        registry.rules.removeAll { $0 == rule }
     }
 
     func fetch(in database: DatabaseReader) async throws -> [AlertStatus] {
-        let period = AlertScale.trailing
-        let now = Date()
-
-        var statuses: [AlertStatus] = []
-
-        for rule in store.rules {
-            let reading = try await rule.metric.reading(in: database, period: period)
-            let outcome = evaluator.evaluate(rule, reading: reading, state: store.state(for: rule), now: now)
-
-            store.setState(outcome.state, for: rule)
-            statuses.append(AlertStatus(rule: rule, outcome: outcome, reading: reading))
-        }
-
-        await notifier?.deliver(statuses)
-        return statuses
+        try await engine.statuses(in: database)
     }
 }
