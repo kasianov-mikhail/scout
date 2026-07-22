@@ -27,9 +27,38 @@ struct CrashGroupDetailView: View {
 
     var body: some View {
         InsetList {
-            headerSection
-            breakdownSection
-            occurrencesSection
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 24) {
+                    Readout(title: "Occurrences", value: "\(group.count)")
+                    Readout(title: "Devices", value: "\(group.affectedDevices)")
+                    Readout(title: "Sessions", value: "\(group.affectedSessions)")
+                }
+
+                if let reason = group.representative.reason {
+                    Text(verbatim: "REASON:   ").fontWeight(.bold)
+                        + Text(reason).fontWeight(.bold).foregroundColor(.red)
+                }
+
+                if let first = group.firstDate, let last = group.lastDate {
+                    Text(verbatim: "First seen \(first.relativeString) · Last seen \(last.relativeString)")
+                        .font(.system(size: 14))
+                        .padding(.bottom)
+                        .foregroundStyle(Color.gray)
+                }
+            }
+            .padding(.vertical, 4)
+
+            if let value = try? breakdown.result?.get() {
+                IncidentBreakdownSection(
+                    breakdown: value,
+                    records: group.records,
+                    row: occurrenceRow
+                )
+            }
+
+            Header(title: "Occurrences")
+
+            ForEach(group.records, content: occurrenceRow)
         }
         .navigationTint(.red)
         .toolbar {
@@ -46,47 +75,6 @@ struct CrashGroupDetailView: View {
         .task {
             await breakdown.fetchIfNeeded(in: database)
         }
-    }
-
-    private var headerSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 24) {
-                Readout(title: "Occurrences", value: "\(group.count)")
-                Readout(title: "Devices", value: "\(group.affectedDevices)")
-                Readout(title: "Sessions", value: "\(group.affectedSessions)")
-            }
-
-            if let reason = group.representative.reason {
-                Text(verbatim: "REASON:   ").fontWeight(.bold)
-                    + Text(reason).fontWeight(.bold).foregroundColor(.red)
-            }
-
-            if let first = group.firstDate, let last = group.lastDate {
-                Text(verbatim: "First seen \(first.relativeString) · Last seen \(last.relativeString)")
-                    .font(.system(size: 14))
-                    .padding(.bottom)
-                    .foregroundStyle(Color.gray)
-            }
-        }
-        .padding(.vertical, 4)
-    }
-
-    @ViewBuilder
-    private var breakdownSection: some View {
-        if let value = try? breakdown.result?.get() {
-            IncidentBreakdownSection(
-                breakdown: value,
-                records: group.records,
-                row: occurrenceRow
-            )
-        }
-    }
-
-    @ViewBuilder
-    private var occurrencesSection: some View {
-        Header(title: "Occurrences")
-
-        ForEach(group.records, content: occurrenceRow)
     }
 
     private func occurrenceRow(_ crash: Crash) -> some View {
