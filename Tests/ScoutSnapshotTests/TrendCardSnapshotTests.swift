@@ -15,7 +15,7 @@
     @testable import ScoutUI
 
     @Suite(.enabled(if: ViewSnapshot.isSupported))
-    @MainActor struct MetricCardSnapshotTests {
+    @MainActor struct TrendCardSnapshotTests {
         @Test("Loaded, empty, loading, and missing cards")
         func states() {
             guard ViewSnapshot.isSupported else { return }
@@ -23,23 +23,23 @@
             let columns = [GridItem(.fixed(162), spacing: 24), GridItem(.fixed(162), spacing: 24)]
 
             let view = LazyVGrid(columns: columns, spacing: 24) {
-                MetricCard(
+                TrendCard(
                     title: "Sessions",
                     color: .purple,
-                    summary: MetricSummary(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
+                    trend: Trend(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
                 )
-                MetricCard(
+                TrendCard(
                     title: "Crashes",
                     color: .red,
-                    summary: MetricSummary(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
+                    trend: Trend(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
                 )
-                MetricCard(
+                TrendCard(
                     title: "Empty",
                     color: .red,
-                    summary: MetricSummary(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
+                    trend: Trend(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
                 )
-                MetricCard(title: "Loading", color: .green, summary: .loading)
-                MetricCard(title: "Missing", color: .green, summary: nil)
+                TrendCard(title: "Loading", color: .green, trend: .loading)
+                TrendCard(title: "Missing", color: .green, trend: nil)
             }
             .padding()
 

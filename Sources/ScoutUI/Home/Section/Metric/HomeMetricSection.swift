@@ -21,10 +21,10 @@ struct HomeMetricSection: View {
             Button {
                 path.append(.activity)
             } label: {
-                MetricCard(
+                TrendCard(
                     title: "Users",
                     color: .green,
-                    summary: activitySummary
+                    trend: activityTrend
                 )
             }
             .buttonStyle(.plain)
@@ -32,10 +32,10 @@ struct HomeMetricSection: View {
             Button {
                 path.append(.sessions)
             } label: {
-                MetricCard(
+                TrendCard(
                     title: "Sessions",
                     color: .purple,
-                    summary: sessionSummary
+                    trend: sessionTrend
                 )
             }
             .buttonStyle(.plain)
@@ -43,21 +43,21 @@ struct HomeMetricSection: View {
         .listRowSeparator(.hidden)
     }
 
-    private var activitySummary: MetricSummary? {
+    private var activityTrend: Trend? {
         guard let activityPeriod = period.activityPeriod else {
             return nil
         }
         guard let points = try? activities.result?.get() else {
             return .loading
         }
-        return MetricSummary(levels: points.points(on: activityPeriod), period: period)
+        return Trend(levels: points.points(on: activityPeriod), period: period)
     }
 
-    private var sessionSummary: MetricSummary {
+    private var sessionTrend: Trend {
         guard let points = try? sessions.result?.get() else {
             return .loading
         }
-        return MetricSummary(points: points, period: period)
+        return Trend(points: points, period: period)
     }
 }
 

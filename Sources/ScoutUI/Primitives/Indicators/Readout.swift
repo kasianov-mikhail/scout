@@ -8,7 +8,7 @@
 import Scout
 import SwiftUI
 
-struct Metric: View {
+struct Readout: View {
     let title: String
     let value: String
     var color: Color = .primary
@@ -27,7 +27,7 @@ struct Metric: View {
     }
 }
 
-extension Metric {
+extension Readout {
     init(title: String, stability: Stability) {
         self.init(title: title, value: stability.formatted, color: stability.color)
     }

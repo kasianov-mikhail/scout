@@ -18,17 +18,17 @@ struct NetworkEndpointDetailView: View {
     var body: some View {
         InsetList {
             HStack(spacing: 28) {
-                Metric(
+                Readout(
                     title: "Method",
                     value: endpoint.method ?? "—",
                     color: endpoint.methodColor
                 )
-                Metric(
+                Readout(
                     title: "Requests",
                     value: endpoint.requests.plain,
                     color: .primary
                 )
-                Metric(
+                Readout(
                     title: "Success",
                     value: endpoint.successRate?.formatted ?? "—",
                     color: endpoint.successRate?.color ?? .gray

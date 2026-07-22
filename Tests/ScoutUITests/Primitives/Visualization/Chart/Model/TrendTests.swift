@@ -12,12 +12,12 @@ import Testing
 @testable import ScoutUI
 @testable import Support
 
-struct MetricSummaryTests {
+struct TrendTests {
     private let scale = DayScale(horizonDate: Date(year: 2026, month: 6, day: 8))
 
     @Test("Additive points sum into the count and compare against the previous day")
     func additive() throws {
-        let summary = MetricSummary(
+        let trend = Trend(
             points: [
                 makePoint(day: 7, hour: 1, count: 8),
                 makePoint(day: 7, hour: 2, count: 4),
@@ -26,22 +26,22 @@ struct MetricSummaryTests {
             period: scale
         )
 
-        #expect(summary.count == 12)
-        #expect(try #require(summary.delta).formatted == "+20%")
-        #expect(try #require(summary.series).values.reduce(0, +) == 12)
+        #expect(trend.count == 12)
+        #expect(try #require(trend.delta).formatted == "+20%")
+        #expect(try #require(trend.series).values.reduce(0, +) == 12)
     }
 
     @Test("Additive points with an empty previous day carry no delta")
     func additiveWithoutPrevious() {
-        let summary = MetricSummary(points: [makePoint(day: 7, hour: 1, count: 8)], period: scale)
+        let trend = Trend(points: [makePoint(day: 7, hour: 1, count: 8)], period: scale)
 
-        #expect(summary.count == 8)
-        #expect(summary.delta == nil)
+        #expect(trend.count == 8)
+        #expect(trend.delta == nil)
     }
 
     @Test("Levels are sampled, not summed, and compared level to level")
     func levels() throws {
-        let summary = MetricSummary(
+        let trend = Trend(
             levels: [
                 makePoint(day: 7, hour: 0, count: 100),
                 makePoint(day: 7, hour: 5, count: 120),
@@ -50,41 +50,41 @@ struct MetricSummaryTests {
             period: scale
         )
 
-        #expect(summary.count == 120)
-        #expect(try #require(summary.delta).formatted == "+33%")
+        #expect(trend.count == 120)
+        #expect(try #require(trend.delta).formatted == "+33%")
     }
 
     @Test("Levels outside the window read as a zero level, not as loading")
     func levelsOutsideWindow() {
-        let summary = MetricSummary(levels: [makePoint(day: 1, hour: 0, count: 100)], period: scale)
+        let trend = Trend(levels: [makePoint(day: 1, hour: 0, count: 100)], period: scale)
 
-        #expect(summary.count == 0)
-        #expect(summary.delta == nil)
+        #expect(trend.count == 0)
+        #expect(trend.delta == nil)
     }
 
     @Test("An empty level series reads as a zero level, not as loading")
     func emptyLevels() throws {
-        let summary = MetricSummary(levels: [], period: scale)
+        let trend = Trend(levels: [], period: scale)
 
-        #expect(summary.count == 0)
-        #expect(summary.delta == nil)
-        #expect(try #require(summary.series).values.allSatisfy { $0 == .zero })
+        #expect(trend.count == 0)
+        #expect(trend.delta == nil)
+        #expect(try #require(trend.series).values.allSatisfy { $0 == .zero })
     }
 
     @Test("Distinct counts pass their slices through untouched")
     func distinctCounts() throws {
-        let summary = MetricSummary(count: 5, previous: 4, values: [1, 2, 3, 4, 5, 5, 5])
+        let trend = Trend(count: 5, previous: 4, values: [1, 2, 3, 4, 5, 5, 5])
 
-        #expect(summary.count == 5)
-        #expect(try #require(summary.delta).formatted == "+25%")
-        #expect(try #require(summary.series).values == [1, 2, 3, 4, 5, 5, 5])
+        #expect(trend.count == 5)
+        #expect(try #require(trend.delta).formatted == "+25%")
+        #expect(try #require(trend.series).values == [1, 2, 3, 4, 5, 5, 5])
     }
 
-    @Test("A loading summary has nothing to draw")
+    @Test("A loading trend has nothing to draw")
     func loading() {
-        #expect(MetricSummary.loading.count == nil)
-        #expect(MetricSummary.loading.delta == nil)
-        #expect(MetricSummary.loading.series == nil)
+        #expect(Trend.loading.count == nil)
+        #expect(Trend.loading.delta == nil)
+        #expect(Trend.loading.series == nil)
     }
 
     private func makePoint(day: Int, hour: Int, count: Int) -> ChartPoint<Int> {

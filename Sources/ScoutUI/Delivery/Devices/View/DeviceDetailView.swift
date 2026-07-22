@@ -30,8 +30,8 @@ struct DeviceDetailView: View {
             .padding(.vertical)
 
             HStack(spacing: 28) {
-                Metric(title: "Sessions", value: device.sessions.plain, color: .primary)
-                Metric(title: "Crashes", value: device.crashes.plain, color: device.crashes > 0 ? .red : .primary)
+                Readout(title: "Sessions", value: device.sessions.plain, color: .primary)
+                Readout(title: "Crashes", value: device.crashes.plain, color: device.crashes > 0 ? .red : .primary)
                 Spacer()
             }
 

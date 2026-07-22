@@ -8,14 +8,14 @@
 import Foundation
 import Scout
 
-struct MetricSummary {
+struct Trend {
     let count: Int?
     let delta: Delta?
     let series: MiniChartSeries?
 }
 
-extension MetricSummary {
-    static let loading = MetricSummary(count: nil, delta: nil, series: nil)
+extension Trend {
+    static let loading = Trend(count: nil, delta: nil, series: nil)
 
     init(points: [ChartPoint<Int>], period: some ChartTimeScale) {
         let current = points.bucket(on: period).total

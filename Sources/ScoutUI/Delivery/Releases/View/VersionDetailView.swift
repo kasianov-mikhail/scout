@@ -32,17 +32,17 @@ struct VersionDetailView: View {
         InsetList {
             VStack(alignment: .leading, spacing: -8) {
                 HStack(spacing: 24) {
-                    Metric(title: "Crash-free sessions", stability: release.freeSessions)
+                    Readout(title: "Crash-free sessions", stability: release.freeSessions)
                     if let freeUsers = release.freeUsers {
-                        Metric(title: "Crash-free users", stability: freeUsers)
+                        Readout(title: "Crash-free users", stability: freeUsers)
                     }
                 }
 
                 HStack(spacing: 24) {
-                    Metric(title: "Crashes", value: "\(release.crashes)")
-                    Metric(title: "Hangs", value: "\(release.hangs)")
-                    Metric(title: "Sessions", value: release.sessions.compact)
-                    Metric(title: "Adoption", value: release.adoption.formatted)
+                    Readout(title: "Crashes", value: "\(release.crashes)")
+                    Readout(title: "Hangs", value: "\(release.hangs)")
+                    Readout(title: "Sessions", value: release.sessions.compact)
+                    Readout(title: "Adoption", value: release.adoption.formatted)
                 }
             }
             .padding(.top)

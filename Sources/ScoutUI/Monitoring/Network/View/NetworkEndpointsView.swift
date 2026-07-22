@@ -20,17 +20,17 @@ struct NetworkEndpointsView: View {
 
         InsetList {
             HStack(spacing: 28) {
-                Metric(
+                Readout(
                     title: "Requests",
                     value: breakdown.total.plain,
                     color: .primary
                 )
-                Metric(
+                Readout(
                     title: "Success",
                     value: breakdown.successRate.formatted,
                     color: breakdown.successRate.color
                 )
-                Metric(
+                Readout(
                     title: "Worst P99",
                     value: worstP99?.duration ?? "—",
                     color: .orange
