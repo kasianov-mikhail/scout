@@ -8,7 +8,7 @@
 import Foundation
 
 @MainActor
-final class AlertStore {
+final class AlertRegistry {
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
@@ -29,7 +29,7 @@ final class AlertStore {
         states[rule] ?? .armed
     }
 
-    func setState(_ state: AlertState, for rule: AlertRule) {
+    func remember(_ state: AlertState, for rule: AlertRule) {
         var updated = states
         updated[rule] = state
         states = updated
