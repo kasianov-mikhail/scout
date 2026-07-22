@@ -7,11 +7,15 @@ name: Swift
 # Coverage is collected on the iOS 26 leg only — the reports differ between legs
 # by fractions of a percent, and that leg is the one where the snapshot suites
 # run. The stable iOS 18 / iOS 26 legs are the required checks on main.
+#
+# `pull_request` carries no base-branch filter on purpose. A PR stacked on
+# another PR's branch would otherwise skip this workflow entirely, and the gate
+# jobs in the sibling workflows — which wait for this workflow's `lint`
+# check-run — would hang until their timeout and fail the PR.
 on:
   push:
     branches: [ "main" ]
   pull_request:
-    branches: [ "main" ]
 
 permissions:
   contents: read
