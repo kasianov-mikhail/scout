@@ -77,6 +77,7 @@ struct HomeList: View {
             }
         }
         .rotatingProviders([sessions, activities, logs, releases, devices, alerts])
+        .loadingGate([alerts, releases])
     }
 }
 
@@ -110,6 +111,9 @@ struct HomeList: View {
     let devices = DevicesProvider()
     devices.result = .success(.sample)
 
+    let alerts = AlertProvider()
+    alerts.result = .success([.firingSample, .armedSample])
+
     return NavigationStack {
         HomeList(
             path: .constant([]),
@@ -118,7 +122,8 @@ struct HomeList: View {
             sessions: sessions,
             releases: releases,
             logs: logs,
-            devices: devices
+            devices: devices,
+            alerts: alerts
         )
         .navigationTitle(en: "Home")
     }
