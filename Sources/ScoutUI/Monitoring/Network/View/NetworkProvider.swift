@@ -10,27 +10,16 @@ import Foundation
 import Scout
 
 @MainActor
-class NetworkProvider: ObservableObject, Provider {
+final class NetworkProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<NetworkReport>?
 
     func fetch(in database: DatabaseReader) async throws -> NetworkReport {
-        let range = Calendar.utc.defaultRange
         let categories = LatencyBuckets.categories + StatusBuckets.categories
-
-        let series = try await withThrowingTaskGroup(of: [MetricSeries].self) { group in
-            for category in categories {
-                group.addTask {
-                    try await database.metricSeries(Int.self, category: category, in: range)
-                }
-            }
-
-            var series: [MetricSeries] = []
-            for try await chunk in group {
-                series += chunk
-            }
-            return series
-        }
-
+        let series = try await database.metricSeries(
+            Int.self,
+            categories: categories,
+            in: Calendar.utc.defaultRange
+        )
         return NetworkReport(series: series)
     }
 }

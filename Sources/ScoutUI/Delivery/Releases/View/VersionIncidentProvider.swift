@@ -9,41 +9,27 @@ import Scout
 import SwiftUI
 
 @MainActor
-class VersionIncidentProvider<Element: RecordDecodable & Incident>: ObservableObject {
-    @Published var records: [Element]?
-    @Published var message: Message?
-
+final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element> {
     let version: String
 
     init(version: String, records: [Element]? = nil) {
         self.version = version
+        super.init()
         self.records = records
     }
 
     private var query: RecordQuery {
-        RecordQuery(
-            recordType: Element.self,
-            filters: Calendar.utc.defaultRange.dateFilters + [
-                RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))
-            ]
-        )
+        Element.query(filters: [
+            RecordQuery.Filter(
+                field: "app_version",
+                op: .equals,
+                value:
+                    .string(version))
+        ])
     }
 
     @discardableResult
     func fetchLatest(in database: DatabaseReader) async -> Bool {
-        do {
-            records = try await database.readAll(
-                matching: query,
-                fields: Element.desiredKeys
-            )
-            return true
-        } catch is CancellationError {
-            return true
-        } catch {
-            if records == nil {
-                message = Message(error.localizedDescription, level: .error)
-            }
-            return false
-        }
+        await fetchAll(matching: query, in: database)
     }
 }

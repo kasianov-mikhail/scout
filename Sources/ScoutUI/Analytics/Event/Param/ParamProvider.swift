@@ -8,7 +8,8 @@
 import Scout
 import SwiftUI
 
-class ParamProvider: ObservableObject, Provider {
+@MainActor
+final class ParamProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[Item]>?
 
     private let recordID: String

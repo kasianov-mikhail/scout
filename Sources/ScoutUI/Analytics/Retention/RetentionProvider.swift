@@ -8,7 +8,8 @@
 import Foundation
 import Scout
 
-class RetentionProvider: ObservableObject, Provider {
+@MainActor
+final class RetentionProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[RetentionCohort]>?
 
     func fetch(in database: DatabaseReader) async throws -> [RetentionCohort] {

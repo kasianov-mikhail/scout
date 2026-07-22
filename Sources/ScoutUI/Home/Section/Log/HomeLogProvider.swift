@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 @MainActor
-class HomeLogProvider: ObservableObject, Provider {
+final class HomeLogProvider: ObservableObject, Provider {
     typealias Output = [MetricSeries]
 
     @Published var period: Period {

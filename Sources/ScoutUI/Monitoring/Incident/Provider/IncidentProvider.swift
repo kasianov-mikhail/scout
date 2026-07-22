@@ -14,16 +14,8 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
         records.map(IncidentGroup.groups)
     }
 
-    private var query: RecordQuery {
-        RecordQuery(
-            recordType: Element.self,
-            filters: Calendar.utc.defaultRange.dateFilters,
-            sort: [RecordQuery.Sort(field: "date", ascending: false)]
-        )
-    }
-
     @discardableResult
     func fetchLatest(in database: DatabaseReader) async -> Bool {
-        await fetchLatest(matching: query, in: database)
+        await fetchLatest(matching: Element.query(), in: database)
     }
 }

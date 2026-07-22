@@ -9,7 +9,8 @@
 import Foundation
 import Scout
 
-class ResetMarkerProvider: ObservableObject, Provider {
+@MainActor
+final class ResetMarkerProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[Date]>?
 
     private let name: String

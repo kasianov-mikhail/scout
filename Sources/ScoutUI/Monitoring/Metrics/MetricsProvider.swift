@@ -8,7 +8,8 @@
 import Foundation
 import Scout
 
-class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
+@MainActor
+final class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
     @Published var result: ProviderResult<[MetricSeries]>?
 
     private let telemetry: Telemetry.Export

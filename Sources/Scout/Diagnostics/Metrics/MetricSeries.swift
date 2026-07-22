@@ -13,8 +13,30 @@ extension DatabaseReader {
     ) async throws -> [MetricSeries] {
         try await series(
             matching: SeriesQuery(
-                category: category, values: T.seriesValues, bucket: .hour, reduce: reduce, range: range)
+                category: category,
+                values: T.seriesValues,
+                bucket: .hour,
+                reduce: reduce,
+                range: range
+            )
         )
+    }
+
+    package func metricSeries<T: MetricScalar>(
+        _ valueType: T.Type, categories: [String], in range: Range<Date>
+    ) async throws -> [MetricSeries] {
+        try await withThrowingTaskGroup(of: [MetricSeries].self) { group in
+            for category in categories {
+                group.addTask {
+                    try await self.metricSeries(T.self, category: category, in: range)
+                }
+            }
+            var series: [MetricSeries] = []
+            for try await chunk in group {
+                series += chunk
+            }
+            return series
+        }
     }
 }
 
@@ -100,7 +122,11 @@ package enum MetricValue: Decodable, Equatable, Sendable {
             self = .double(value)
         } else {
             throw DecodingError.dataCorrupted(
-                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown metric value type"))
+                DecodingError.Context(
+                    codingPath: decoder.codingPath,
+                    debugDescription: "Unknown metric value type"
+                )
+            )
         }
     }
 }

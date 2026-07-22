@@ -8,7 +8,8 @@
 import Foundation
 import Scout
 
-class ActivityProvider: ObservableObject, Provider {
+@MainActor
+final class ActivityProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ActivityPoint]>?
 
     func fetch(in database: DatabaseReader) async throws -> [ActivityPoint] {
