@@ -19,7 +19,6 @@ struct Timeline: View {
     @State private var scope: TimelineScope = .all
     @State private var showLegend = false
     @State private var expandedKind: LegendKind?
-    @State private var message: Message?
 
     var body: some View {
         Group {
@@ -61,16 +60,8 @@ struct Timeline: View {
                     }
                 }
             }
-
-            ToolbarItemGroup(placement: .bottomBar) {
-                if let text = provider.exportText {
-                    ShareLink(item: text)
-                    CopyButton(text: text, message: $message)
-                    Spacer()
-                }
-            }
         }
-        .message($message)
+        .exportToolbar(text: provider.exportText)
         .task(load)
         .onChange(of: scope) { _ in
             Task(operation: load)

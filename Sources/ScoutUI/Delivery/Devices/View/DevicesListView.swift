@@ -11,8 +11,6 @@ import SwiftUI
 struct DevicesListView: View {
     let devices: [DeviceSummary]
 
-    @State private var message: Message?
-
     var body: some View {
         Group {
             if devices.isEmpty {
@@ -30,16 +28,7 @@ struct DevicesListView: View {
             }
         }
         .navigationTitle(en: "Devices")
-        .toolbar {
-            if let text = DevicesExport(devices: devices).text {
-                ToolbarItemGroup(placement: .bottomBar) {
-                    ShareLink(item: text)
-                    CopyButton(text: text, message: $message)
-                    Spacer()
-                }
-            }
-        }
-        .message($message)
+        .exportToolbar(text: DevicesExport(devices: devices).text)
     }
 }
 
