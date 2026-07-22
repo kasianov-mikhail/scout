@@ -15,7 +15,7 @@ set -euo pipefail
 
 : "${SHAS:?SHAS is required}"
 : "${CHECKS:?CHECKS is required}"
-timeout="${TIMEOUT:-1200}"
+timeout="${TIMEOUT:-2400}"
 interval="${INTERVAL:-15}"
 
 read -ra shas <<< "$SHAS"
