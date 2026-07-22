@@ -11,6 +11,8 @@ import SwiftUI
 struct CrashDetailView: View {
     let crash: Crash
 
+    @State private var message: Message?
+
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 10) {
@@ -35,10 +37,11 @@ struct CrashDetailView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 let text = CrashExport(crash: crash).text
                 ShareLink(item: text)
-                CopyButton(text: text)
+                CopyButton(text: text, message: $message)
                 Spacer()
             }
         }
+        .message($message)
         .monospacedNavigationTitle(en: crash.name)
     }
 }

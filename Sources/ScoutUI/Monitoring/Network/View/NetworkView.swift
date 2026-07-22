@@ -11,6 +11,7 @@ import SwiftUI
 
 struct NetworkView: View {
     @State private var showAllEndpoints = false
+    @State private var message: Message?
     @StateObject var provider = NetworkProvider()
 
     var body: some View {
@@ -70,11 +71,12 @@ struct NetworkView: View {
             if let text = NetworkReportExport(report: report, range: range).text {
                 ToolbarItemGroup(placement: .bottomBar) {
                     ShareLink(item: text)
-                    CopyButton(text: text)
+                    CopyButton(text: text, message: $message)
                     Spacer()
                 }
             }
         }
+        .message($message)
     }
 }
 

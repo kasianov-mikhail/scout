@@ -11,6 +11,8 @@ import SwiftUI
 struct HangDetailView: View {
     let hang: Hang
 
+    @State private var message: Message?
+
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 0) {
@@ -48,10 +50,11 @@ struct HangDetailView: View {
             ToolbarItemGroup(placement: .bottomBar) {
                 let text = HangExport(hang: hang).text
                 ShareLink(item: text)
-                CopyButton(text: text)
+                CopyButton(text: text, message: $message)
                 Spacer()
             }
         }
+        .message($message)
         .monospacedNavigationTitle(en: hang.name)
     }
 }

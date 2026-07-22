@@ -8,15 +8,14 @@
 import Scout
 import SwiftUI
 
-/// A button that copies `text` to the system pasteboard, briefly turning
-/// its icon into a checkmark to confirm the copy.
+/// A button that copies `text` to the system pasteboard, confirming the copy
+/// with a success message presented by the enclosing screen.
 ///
 struct CopyButton: View {
     let text: String
 
-    @State private var isCopied = false
+    @Binding var message: Message?
     @State private var copyCount = 0
-    @State private var revert = DebouncedReset()
 
     var body: some View {
         Button {
@@ -26,29 +25,28 @@ struct CopyButton: View {
                 NSPasteboard.general.clearContents()
                 NSPasteboard.general.setString(text, forType: .string)
             #endif
-            isCopied = true
             copyCount += 1
-
-            revert.schedule(after: .seconds(2)) {
-                isCopied = false
-            }
+            message = Message("Copied to clipboard", level: .success)
         } label: {
-            Image(systemName: isCopied ? "checkmark" : "doc.on.doc")
+            Image(systemName: "doc.on.doc")
         }
-        .animation(.easeInOut(duration: 0.15), value: isCopied)
         .hapticFeedback(.success, trigger: copyCount)
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
+    @Previewable @State var message: Message?
+
     NavigationStack {
         Text(verbatim: "Content")
             .navigationTitle(en: "Copy Button")
             .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    CopyButton(text: "Copied text")
+                    CopyButton(text: "Copied text", message: $message)
                 }
             }
+            .message($message)
     }
 }
