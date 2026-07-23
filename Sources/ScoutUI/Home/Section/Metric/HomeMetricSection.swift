@@ -40,7 +40,8 @@ struct HomeMetricSection: View {
             }
             .buttonStyle(.plain)
         }
-        .listRowSeparator(.hidden)
+        .padding(.top, 24)
+        .listRowSeparator(.hidden, edges: .bottom)
     }
 
     private var activityTrend: Trend? {

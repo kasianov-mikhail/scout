@@ -32,6 +32,7 @@ struct HomeAlertSection: View {
                 }
             }
         }
+        .padding(.top, -16)
         .sheet(isPresented: $isEditorPresented) {
             Task { await alerts.fetchAgain(in: database) }
         } content: {
@@ -69,7 +70,7 @@ struct HomeAlertSection: View {
             .font(.body)
             .fontWeight(.medium)
             .foregroundStyle(color.opacity(0.7))
-            .frame(height: 68)
+            .frame(height: 44)
             .frame(maxWidth: .infinity)
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }

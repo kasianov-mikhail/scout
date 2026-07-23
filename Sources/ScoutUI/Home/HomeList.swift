@@ -28,7 +28,6 @@ struct HomeList: View {
                 distribution: .justified,
                 title: \.shortTitle
             )
-            .padding(.top, 8)
             .listRowSeparator(.hidden)
 
             HomeAlertSection(
