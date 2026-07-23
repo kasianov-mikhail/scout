@@ -76,20 +76,11 @@ struct HomeAlertSection: View {
 }
 
 #Preview {
-    let firing = AlertProvider()
-    firing.result = .success([.firingSample, .armedSample])
-
-    let healthy = AlertProvider()
-    healthy.result = .success([.armedSample])
-
-    let empty = AlertProvider()
-    empty.result = .success([])
-
-    return NavigationStack {
+    NavigationStack {
         InsetList {
-            HomeAlertSection(alerts: firing, path: .constant([]))
-            HomeAlertSection(alerts: healthy, path: .constant([]))
-            HomeAlertSection(alerts: empty, path: .constant([]))
+            HomeAlertSection(statuses: [.firingSample, .armedSample])
+            HomeAlertSection(statuses: [.armedSample])
+            HomeAlertSection(statuses: [])
         }
     }
 }

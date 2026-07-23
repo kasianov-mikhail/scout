@@ -52,29 +52,9 @@ struct HomeLogSection: View {
 }
 
 #Preview {
-    @MainActor func makeLog() -> HomeLogProvider {
-        let provider = HomeLogProvider()
-
-        for period in Period.allCases {
-            provider.period = period
-            provider.result = .success(HomeLogProvider.sample(for: period))
-        }
-
-        provider.period = .today
-        return provider
-    }
-
-    let devices = DevicesProvider()
-    devices.result = .success(.sample)
-
-    return NavigationStack {
+    NavigationStack {
         InsetList {
-            HomeLogSection(
-                period: .today,
-                log: makeLog(),
-                devices: devices,
-                path: .constant([])
-            )
+            HomeLogSection(period: .today)
         }
     }
 }
