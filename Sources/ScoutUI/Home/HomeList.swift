@@ -82,50 +82,9 @@ struct HomeList: View {
 }
 
 #Preview {
-    let activities = ActivityProvider()
-    activities.result = .success(.samples)
-
-    let sessions = StatProvider(eventName: "Session", periods: Period.summary)
-    sessions.result = .success(.samples)
-
-    let retention = RetentionProvider()
-    retention.result = .success(.samples)
-
-    let releases = ReleaseHealthProvider()
-    releases.result = .success(.samples)
-
-    @MainActor func makeLogs() -> HomeLogProvider {
-        let provider = HomeLogProvider()
-
-        for period in Period.allCases {
-            provider.period = period
-            provider.result = .success(HomeLogProvider.sample(for: period))
-        }
-
-        provider.period = .today
-        return provider
-    }
-
-    let logs = makeLogs()
-
-    let devices = DevicesProvider()
-    devices.result = .success(.sample)
-
-    let alerts = AlertProvider()
-    alerts.result = .success([.firingSample, .armedSample])
-
-    return NavigationStack {
-        HomeList(
-            path: .constant([]),
-            activities: activities,
-            retention: retention,
-            sessions: sessions,
-            releases: releases,
-            logs: logs,
-            devices: devices,
-            alerts: alerts
-        )
-        .navigationTitle(en: "Home")
+    NavigationStack {
+        HomeList(alerts: [.firingSample, .armedSample], releases: .samples)
+            .navigationTitle(en: "Home")
     }
     .environmentObject(Tint())
 }
