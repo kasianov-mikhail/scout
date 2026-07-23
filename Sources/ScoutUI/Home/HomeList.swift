@@ -65,9 +65,7 @@ struct HomeList: View {
             case .retention:
                 RetentionHeroChartView(provider: retention)
             case .sessions:
-                StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
-                    .environment(\.chartColor, .purple)
-                    .navigationTitle(en: "Sessions")
+                statView
             case .log:
                 LogView(period: period, log: logs, devices: devices)
             case .releaseHealth:
@@ -76,22 +74,63 @@ struct HomeList: View {
                 AlertListView(provider: alerts)
             }
         }
-        .loadingGate(gate)
         .rotatingProviders(
-            first: gate,
+            first: [alerts, releases],
             later: [sessions, activities, logs, devices]
         )
     }
 
-    private var gate: [any Provider] {
-        [alerts, releases]
+    private var statView: some View {
+        StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
+            .environment(\.chartColor, .purple)
+            .navigationTitle(en: "Sessions")
     }
 }
 
-#Preview {
+#Preview("Loading") {
     NavigationStack {
-        HomeList(alerts: [.firingSample, .armedSample], releases: .samples)
-            .navigationTitle(en: "Home")
+        HomeList(
+            activities: nil,
+            retention: nil,
+            sessions: nil,
+            releases: .samples,
+            logs: nil,
+            devices: nil,
+            alerts: [.firingSample, .armedSample]
+        )
+        .navigationTitle(en: "Home")
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Full") {
+    NavigationStack {
+        HomeList(
+            activities: .samples,
+            retention: .samples,
+            sessions: .samples,
+            releases: .samples,
+            logs: HomeLogProvider.sample(for: .today),
+            devices: .sample,
+            alerts: [.firingSample, .armedSample]
+        )
+        .navigationTitle(en: "Home")
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        HomeList(
+            activities: [],
+            retention: [],
+            sessions: [],
+            releases: [],
+            logs: [],
+            devices: .empty,
+            alerts: []
+        )
+        .navigationTitle(en: "Home")
     }
     .environmentObject(Tint())
 }

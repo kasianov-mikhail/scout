@@ -21,6 +21,9 @@ protocol Provider: ObservableObject, Periodic {
 
 extension Provider {
     func fetchAgain(in database: DatabaseReader) async {
+        if ProcessInfo.processInfo.isPreview {
+            return
+        }
         do {
             result = .success(try await fetch(in: database))
         } catch is CancellationError {
@@ -46,6 +49,9 @@ extension Provider {
 
     @discardableResult
     func fetchLatest(in database: DatabaseReader) async -> Bool {
+        if ProcessInfo.processInfo.isPreview {
+            return true
+        }
         do {
             result = .success(try await fetch(in: database))
             return true
