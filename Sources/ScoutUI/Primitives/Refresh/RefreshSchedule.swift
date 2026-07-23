@@ -8,22 +8,47 @@
 import Foundation
 import Scout
 
-struct RefreshSchedule {
-    private static let seeds = (3, 5)
-    private static let maxSeconds = 89
+typealias RefreshAction = @MainActor () async -> Bool
 
-    private var current = RefreshSchedule.seeds.0
-    private var next = RefreshSchedule.seeds.1
+private let seeds = (3, 5)
+private let maxSeconds = 89
 
-    var delay: Duration {
-        .seconds(current)
+final class RefreshSchedule {
+    private let refreshers: [RefreshAction]
+    private var current = seeds.0
+    private var next = seeds.1
+
+    init(_ refreshers: [RefreshAction]) {
+        self.refreshers = refreshers
     }
 
-    mutating func recordSuccess() {
-        (current, next) = RefreshSchedule.seeds
+    init(_ refresher: @escaping RefreshAction) {
+        self.refreshers = [refresher]
     }
 
-    mutating func recordFailure() {
-        (current, next) = (next, min(current + next, RefreshSchedule.maxSeconds))
+    func rotate() async {
+        while !Task.isCancelled {
+            do {
+                try await Task.sleep(for: .seconds(current))
+            } catch {
+                break
+            }
+
+            var isSuccess = true
+
+            for refresh in refreshers {
+                if Task.isCancelled {
+                    return
+                } else if await refresh() == false {
+                    isSuccess = false
+                }
+            }
+
+            if isSuccess {
+                (current, next) = seeds
+            } else {
+                (current, next) = (next, min(current + next, maxSeconds))
+            }
+        }
     }
 }

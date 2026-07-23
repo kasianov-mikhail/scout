@@ -19,7 +19,6 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     @ViewBuilder let extra: (ChartExtent<Period>) -> Extra
 
     @StateObject private var resets: ResetMarkerProvider
-    @Environment(\.database) var database
 
     init(
         group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false,
@@ -61,9 +60,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
                 formattedMarks
             }
             .listRowSeparator(.hidden)
-            .autoRefresh {
-                await resets.fetchLatest(in: database)
-            }
+            .periodRefresh(provider: resets)
             .padding(.bottom)
 
             ComparisonToggle(isOn: $isComparing).disabled(!canCompare)

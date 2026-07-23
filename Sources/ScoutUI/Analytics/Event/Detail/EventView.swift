@@ -49,9 +49,7 @@ struct EventView: View {
         .task {
             await param.fetchIfNeeded(in: database)
         }
-        .autoRefresh {
-            await stat.fetchLatest(in: database)
-        }
+        .periodRefresh(provider: stat)
     }
 }
 
@@ -66,8 +64,7 @@ extension EventView {
                 }
 
                 if let level = event.level {
-                    (Text(verbatim: "LEVEL:   ") + level.descriptionText)
-                        .fontWeight(.bold)
+                    (Text(verbatim: "LEVEL:   ") + level.descriptionText).fontWeight(.bold)
                 }
             }
             .frame(height: 90)

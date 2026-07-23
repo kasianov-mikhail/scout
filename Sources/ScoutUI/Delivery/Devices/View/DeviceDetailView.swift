@@ -12,7 +12,6 @@ struct DeviceDetailView: View {
     let device: DeviceSummary
 
     @StateObject private var incidents: DeviceIncidentsProvider
-    @Environment(\.database) var database
 
     init(device: DeviceSummary, incidents: DeviceIncidentsProvider? = nil) {
         self.device = device
@@ -70,9 +69,7 @@ struct DeviceDetailView: View {
             }
         }
         .navigationTitle(en: device.modelName)
-        .autoRefresh {
-            await incidents.fetchLatest(in: database)
-        }
+        .periodRefresh(provider: incidents)
     }
 
     private var crashes: [Crash] {

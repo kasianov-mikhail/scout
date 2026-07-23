@@ -8,7 +8,7 @@
 import Foundation
 import Scout
 
-struct EventQuery: Equatable {
+struct EventQuery: Hashable {
     static let allLevels = Set(EventLevel.allCases)
 
     var levels = EventQuery.allLevels

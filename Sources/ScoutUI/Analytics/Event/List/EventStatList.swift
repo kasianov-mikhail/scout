@@ -9,25 +9,24 @@ import Scout
 import SwiftUI
 
 struct EventStatList: View {
-    let eventName: String
     let range: Range<Date>
 
-    @StateObject var provider = EventProvider()
-    @Environment(\.database) var database
+    @StateObject var provider: EventProvider
+
+    init(eventName: String, range: Range<Date>, provider: EventProvider? = nil) {
+        self.range = range
+        self._provider = StateObject(
+            wrappedValue: provider ?? EventProvider(filter: EventQuery(name: eventName, dates: range))
+        )
+    }
 
     var body: some View {
         VStack {
             EventList(provider: provider)
-                .autoRefresh {
-                    await provider.fetchLatest(for: query, in: database)
-                }
+                .periodRefresh(provider: provider)
                 .navigationTitle(en: range.label(using: rangeDateFormatter))
                 .font(.caption)
         }
-    }
-
-    var query: EventQuery {
-        EventQuery(name: eventName, dates: range)
     }
 }
 

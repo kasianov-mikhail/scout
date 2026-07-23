@@ -41,9 +41,7 @@ struct HangListView: View {
         }
         .navigationTitle(en: "Hangs")
         .message($provider.message)
-        .autoRefresh {
-            await provider.fetchLatest(in: database)
-        }
+        .periodRefresh(provider: provider)
     }
 }
 
