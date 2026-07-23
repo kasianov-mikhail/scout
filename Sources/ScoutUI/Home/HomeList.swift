@@ -81,25 +81,9 @@ struct HomeList: View {
     }
 }
 
-#Preview("Populated") {
+#Preview {
     NavigationStack {
         HomeList(alerts: [.firingSample, .armedSample], releases: .samples)
-            .navigationTitle(en: "Home")
-    }
-    .environmentObject(Tint())
-}
-
-#Preview("Skeletons") {
-    NavigationStack {
-        HomeList(alerts: nil, releases: nil)
-            .navigationTitle(en: "Home")
-    }
-    .environmentObject(Tint())
-}
-
-#Preview("Empty") {
-    NavigationStack {
-        HomeList(alerts: [], releases: [])
             .navigationTitle(en: "Home")
     }
     .environmentObject(Tint())
