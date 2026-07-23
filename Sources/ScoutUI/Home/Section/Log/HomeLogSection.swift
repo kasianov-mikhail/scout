@@ -51,30 +51,28 @@ struct HomeLogSection: View {
     }
 }
 
-#Preview {
-    @MainActor func makeLog() -> HomeLogProvider {
-        let provider = HomeLogProvider()
+#if DEBUG
+    extension HomeLogSection {
+        init(period: Period) {
+            let log = HomeLogProvider()
+            for value in Period.allCases {
+                log.period = value
+                log.result = .success(HomeLogProvider.sample(for: value))
+            }
+            log.period = period
 
-        for period in Period.allCases {
-            provider.period = period
-            provider.result = .success(HomeLogProvider.sample(for: period))
+            let devices = DevicesProvider()
+            devices.result = .success(.sample)
+
+            self.init(period: period, log: log, devices: devices, path: .constant([]))
         }
-
-        provider.period = .today
-        return provider
     }
+#endif
 
-    let devices = DevicesProvider()
-    devices.result = .success(.sample)
-
-    return NavigationStack {
+#Preview {
+    NavigationStack {
         InsetList {
-            HomeLogSection(
-                period: .today,
-                log: makeLog(),
-                devices: devices,
-                path: .constant([])
-            )
+            HomeLogSection(period: .today)
         }
     }
 }
