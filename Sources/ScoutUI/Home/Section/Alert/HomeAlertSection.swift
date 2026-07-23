@@ -75,16 +75,14 @@ struct HomeAlertSection: View {
     }
 }
 
-#if DEBUG
-    extension HomeAlertSection {
-        init(statuses: [AlertStatus]) {
-            let alerts = AlertProvider()
-            alerts.result = .success(statuses)
+extension HomeAlertSection {
+    init(statuses: [AlertStatus]) {
+        let alerts = AlertProvider()
+        alerts.result = .success(statuses)
 
-            self.init(alerts: alerts, path: .constant([]))
-        }
+        self.init(alerts: alerts, path: .constant([]))
     }
-#endif
+}
 
 #Preview {
     NavigationStack {
