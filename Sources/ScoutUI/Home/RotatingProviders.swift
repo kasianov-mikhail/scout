@@ -27,15 +27,15 @@ private struct RotatingProvidersModifier: ViewModifier {
                 }
             }
         } else {
-            content.autoRefresh(rotating: refreshers)
+            content
+                .task { await providers.fetchIfNeeded(in: database) }
+                .autoRefresh(rotating: refreshers, primesOnAppear: false)
         }
     }
 
     private var refreshers: [RefreshAction] {
-        var refreshers: [RefreshAction] = []
-        for provider in providers {
-            refreshers.append { await provider.fetchLatest(in: database) }
+        providers.map { provider in
+            { await provider.fetchLatest(in: database) }
         }
-        return refreshers
     }
 }

@@ -12,15 +12,15 @@ typealias RefreshAction = @MainActor () async -> Bool
 
 extension View {
     func autoRefresh(_ refresh: @escaping RefreshAction) -> some View {
-        modifier(AutoRefreshModifier(token: 0, refreshers: [refresh]))
+        modifier(AutoRefreshModifier(token: 0, refreshers: [refresh], primesOnAppear: true))
     }
 
     func autoRefresh(on token: some Equatable, _ refresh: @escaping RefreshAction) -> some View {
-        modifier(AutoRefreshModifier(token: token, refreshers: [refresh]))
+        modifier(AutoRefreshModifier(token: token, refreshers: [refresh], primesOnAppear: true))
     }
 
-    func autoRefresh(rotating refreshers: [RefreshAction]) -> some View {
-        modifier(AutoRefreshModifier(token: 0, refreshers: refreshers))
+    func autoRefresh(rotating refreshers: [RefreshAction], primesOnAppear: Bool = true) -> some View {
+        modifier(AutoRefreshModifier(token: 0, refreshers: refreshers, primesOnAppear: primesOnAppear))
     }
 }
 
@@ -31,6 +31,7 @@ private struct AutoRefreshModifier<Token: Equatable>: ViewModifier {
 
     let token: Token
     let refreshers: [RefreshAction]
+    let primesOnAppear: Bool
 
     func body(content: Content) -> some View {
         content.onAppear {
@@ -55,6 +56,8 @@ private struct AutoRefreshModifier<Token: Equatable>: ViewModifier {
             return
         }
 
+        let isColdStart = lastToken == nil
+
         if token == lastToken {
             do {
                 try await Task.sleep(for: .milliseconds(700))
@@ -65,9 +68,13 @@ private struct AutoRefreshModifier<Token: Equatable>: ViewModifier {
 
         lastToken = token
 
-        await withTaskGroup(of: Void.self) { group in
-            for refresh in refreshers {
-                group.addTask { _ = await refresh() }
+        // Callers that load their own initial data (primesOnAppear == false) skip the cold-start
+        // pass; every later (re)trigger — foreground return, re-appear — still refreshes everything.
+        if primesOnAppear || !isColdStart {
+            await withTaskGroup(of: Void.self) { group in
+                for refresh in refreshers {
+                    group.addTask { _ = await refresh() }
+                }
             }
         }
 
