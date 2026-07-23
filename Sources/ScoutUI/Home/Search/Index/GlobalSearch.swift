@@ -91,6 +91,21 @@ private struct GlobalSearchModifier: ViewModifier {
     }
 }
 
+@MainActor
+extension Sequence where Element == any Provider {
+    func fetchIfNeeded(in database: DatabaseReader) async {
+        for provider in self {
+            await provider.fetchIfNeeded(in: database)
+        }
+    }
+
+    func fetchIfFailed(in database: DatabaseReader) async {
+        for provider in self {
+            await provider.fetchIfFailed(in: database)
+        }
+    }
+}
+
 extension SearchFieldPlacement {
     fileprivate static var navigationBar: SearchFieldPlacement {
         #if os(iOS)

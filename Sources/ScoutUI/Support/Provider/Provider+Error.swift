@@ -13,8 +13,9 @@ extension Provider {
         result?.error
     }
 }
+
 extension Result {
-    var error: Failure? {
+    fileprivate var error: Failure? {
         guard case .failure(let error) = self else {
             return nil
         }
