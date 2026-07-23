@@ -68,6 +68,25 @@ struct FeedProviderTests {
         #expect(provider.message == nil)
     }
 
+    @Test("A cancelled reload or page load stays quiet and keeps prior records")
+    func cancellationStaysQuiet() async throws {
+        let database = DatabaseStub()
+        database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        #expect(provider.records?.count == 1)
+
+        await provider.fetch(for: EventQuery(), in: CancellingDatabase())
+        #expect(provider.records?.count == 1)
+
+        let cursor = RecordCursor { _ in throw CancellationError() }
+        await provider.fetchMore(cursor: cursor, in: database)
+
+        #expect(provider.records?.count == 1)
+        #expect(provider.message == nil)
+    }
+
     @Test("A refresh that resurrects an exhausted cursor does not let the next fetchMore duplicate records")
     func fetchMoreStaysDedupedAfterRefreshResurrectsCursor() async throws {
         let page1 = [
@@ -119,6 +138,14 @@ private final class PagingDatabase: DatabaseReader, @unchecked Sendable {
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] { [] }
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] { [] }
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { [] }
+}
+
+private final class CancellingDatabase: DatabaseReader, @unchecked Sendable {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record { throw CancellationError() }
+    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk { throw CancellationError() }
+    func series(matching query: SeriesQuery) async throws -> [MetricSeries] { throw CancellationError() }
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw CancellationError() }
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw CancellationError() }
 }
 
 private struct RefreshFailure: Error {}
