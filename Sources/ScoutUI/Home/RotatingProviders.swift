@@ -28,7 +28,7 @@ private struct RotatingProvidersModifier: ViewModifier {
                 }
             }
         } else {
-            content.periodRefresh(first: first, later: later)
+            content.loadingGate(first).periodRefresh(first: first, later: later)
         }
     }
 
