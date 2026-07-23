@@ -15,20 +15,17 @@ struct ProviderView<P: Provider, Content: View>: View {
     @ViewBuilder let content: (P.Output) -> Content
 
     var body: some View {
-        state.autoRefresh {
-            await provider.fetchLatest(in: database)
+        Group {
+            switch provider.result {
+            case nil:
+                RingIndicator().frame(maxHeight: .infinity)
+            case .success(let data):
+                content(data)
+            case .failure(let error):
+                ErrorView(description: Text(error.localizedDescription), retry: fetch)
+            }
         }
-    }
-
-    @ViewBuilder private var state: some View {
-        switch provider.result {
-        case nil:
-            RingIndicator().frame(maxHeight: .infinity)
-        case .success(let data):
-            content(data)
-        case .failure(let error):
-            ErrorView(description: Text(error.localizedDescription), retry: fetch)
-        }
+        .periodRefresh(provider: provider)
     }
 
     private func fetch() async {

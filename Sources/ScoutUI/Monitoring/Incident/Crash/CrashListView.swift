@@ -39,9 +39,7 @@ struct CrashListView: View {
         }
         .navigationTitle(en: "Crashes")
         .message($provider.message)
-        .autoRefresh {
-            await provider.fetchLatest(in: database)
-        }
+        .periodRefresh(provider: provider)
     }
 
     private func row(for group: IncidentGroup<Crash>) -> some View {

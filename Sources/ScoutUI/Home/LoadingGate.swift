@@ -15,30 +15,13 @@ extension View {
 }
 
 private struct LoadingGateModifier: ViewModifier {
-    @Environment(\.database) private var database
-
     let providers: [any Provider]
 
     func body(content: Content) -> some View {
-        Group {
-            if providers.contains(where: \.isLoading) {
-                RingIndicator().frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                content
-            }
-        }
-        .task {
-            await withTaskGroup(of: Void.self) { group in
-                for fetch in fetchers {
-                    group.addTask { await fetch() }
-                }
-            }
-        }
-    }
-
-    private var fetchers: [@MainActor () async -> Void] {
-        providers.map { provider in
-            { await provider.fetchIfNeeded(in: database) }
+        if providers.contains(where: \.isLoading) {
+            RingIndicator().frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            content
         }
     }
 }

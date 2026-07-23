@@ -11,7 +11,7 @@ import SwiftUI
 typealias ProviderResult<T> = Result<T, Error>
 
 @MainActor
-protocol Provider: ObservableObject {
+protocol Provider: ObservableObject, Periodic {
     associatedtype Output
 
     var result: ProviderResult<Output>? { get set }

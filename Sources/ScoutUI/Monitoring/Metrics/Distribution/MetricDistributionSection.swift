@@ -14,7 +14,6 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
     let formatter: KeyPath<Double, String>
 
     @StateObject var provider: MetricDistributionProvider<H>
-    @Environment(\.database) var database
 
     init(
         name: String, categories: [String], extent: ChartExtent<Period>, formatter: KeyPath<Double, String>,
@@ -43,9 +42,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
             }
         }
         .listRowSeparator(.hidden)
-        .autoRefresh {
-            await provider.fetchLatest(in: database)
-        }
+        .periodRefresh(provider: provider)
     }
 }
 

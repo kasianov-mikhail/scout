@@ -9,15 +9,16 @@ import Scout
 import SwiftUI
 
 extension View {
-    func rotatingProviders(_ providers: [any Provider]) -> some View {
-        modifier(RotatingProvidersModifier(providers: providers))
+    func rotatingProviders(first: [any Provider], later: [any Provider]) -> some View {
+        modifier(RotatingProvidersModifier(first: first, later: later))
     }
 }
 
 private struct RotatingProvidersModifier: ViewModifier {
     @Environment(\.database) var database
 
-    let providers: [any Provider]
+    let first: [any Provider]
+    let later: [any Provider]
 
     func body(content: Content) -> some View {
         if let error = providers.compactMap(\.error).first {
@@ -27,15 +28,11 @@ private struct RotatingProvidersModifier: ViewModifier {
                 }
             }
         } else {
-            content.autoRefresh(rotating: refreshers)
+            content.periodRefresh(first: first, later: later)
         }
     }
 
-    private var refreshers: [RefreshAction] {
-        var refreshers: [RefreshAction] = []
-        for provider in providers {
-            refreshers.append { await provider.fetchLatest(in: database) }
-        }
-        return refreshers
+    private var providers: [any Provider] {
+        first + later
     }
 }

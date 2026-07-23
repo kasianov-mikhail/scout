@@ -76,8 +76,15 @@ struct HomeList: View {
                 AlertListView(provider: alerts)
             }
         }
-        .rotatingProviders([sessions, activities, logs, releases, devices, alerts])
-        .loadingGate([alerts, releases])
+        .loadingGate(gate)
+        .rotatingProviders(
+            first: gate,
+            later: [sessions, activities, logs, devices]
+        )
+    }
+
+    private var gate: [any Provider] {
+        [alerts, releases]
     }
 }
 

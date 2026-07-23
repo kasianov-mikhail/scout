@@ -10,8 +10,6 @@ import Scout
 import SwiftUI
 
 struct VersionDetailView: View {
-    @Environment(\.database) var database
-
     let release: ReleaseHealth
     @StateObject var crashes: VersionIncidentProvider<Crash>
     @StateObject var hangs: VersionIncidentProvider<Hang>
@@ -86,10 +84,7 @@ struct VersionDetailView: View {
         .monospacedNavigationTitle(en: release.id)
         .message($crashes.message)
         .message($hangs.message)
-        .autoRefresh(rotating: [
-            { await crashes.fetchLatest(in: database) },
-            { await hangs.fetchLatest(in: database) },
-        ])
+        .periodRefresh(providers: [crashes, hangs])
     }
 
     private var crashRecords: [Crash] {

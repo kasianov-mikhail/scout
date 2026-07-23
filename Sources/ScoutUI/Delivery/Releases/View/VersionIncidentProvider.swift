@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element> {
+final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Periodic {
     let version: String
 
     init(version: String, records: [Element]? = nil) {

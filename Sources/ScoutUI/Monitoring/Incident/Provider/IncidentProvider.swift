@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element> {
+final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Periodic {
     var groups: [IncidentGroup<Element>]? {
         records.map(IncidentGroup.groups)
     }

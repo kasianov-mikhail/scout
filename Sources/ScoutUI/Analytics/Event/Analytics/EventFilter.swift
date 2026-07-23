@@ -63,8 +63,9 @@ private struct EventFilter: ViewModifier {
         .onChange(of: filter.text) { _ in
             search.clear()
         }
-        .autoRefresh(on: filter.criteria) {
-            await provider.fetchLatest(for: filter, in: database)
+        .foregroundTask(id: filter.criteria) {
+            await fetch()
+            await RefreshSchedule(fetch).rotate()
         }
         .onChange(of: filter.criteria) { _ in
             provider.clear()
@@ -75,6 +76,11 @@ private struct EventFilter: ViewModifier {
                 }
             }
         }
+    }
+
+    @discardableResult
+    private func fetch() async -> Bool {
+        await provider.fetchLatest(for: filter, in: database)
     }
 }
 
