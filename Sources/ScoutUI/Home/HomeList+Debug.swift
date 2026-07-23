@@ -11,30 +11,41 @@ import SwiftUI
 #if DEBUG
     extension HomeList {
         init(alerts: [AlertStatus]?, releases: [ReleaseHealth]?) {
-            self.init(
-                path: .constant([]),
-                activities: ActivityProvider(),
-                retention: RetentionProvider(),
-                sessions: StatProvider(eventName: "Session", periods: Period.summary),
-                releases: ReleaseHealthProvider(),
-                logs: HomeLogProvider(),
-                devices: DevicesProvider(),
-                alerts: AlertProvider()
-            )
-
+            let activities = ActivityProvider()
             activities.result = .success(.samples)
+
+            let sessions = StatProvider(eventName: "Session", periods: Period.summary)
             sessions.result = .success(.samples)
+
+            let retention = RetentionProvider()
             retention.result = .success(.samples)
+
+            let devices = DevicesProvider()
             devices.result = .success(.sample)
 
+            let logs = HomeLogProvider()
             for period in Period.allCases {
                 logs.period = period
                 logs.result = .success(HomeLogProvider.sample(for: period))
             }
             logs.period = .today
 
-            self.alerts.result = alerts.map { .success($0) }
-            self.releases.result = releases.map { .success($0) }
+            let alertProvider = AlertProvider()
+            alertProvider.result = alerts.map { .success($0) }
+
+            let releaseProvider = ReleaseHealthProvider()
+            releaseProvider.result = releases.map { .success($0) }
+
+            self.init(
+                path: .constant([]),
+                activities: activities,
+                retention: retention,
+                sessions: sessions,
+                releases: releaseProvider,
+                logs: logs,
+                devices: devices,
+                alerts: alertProvider
+            )
         }
     }
 #endif
