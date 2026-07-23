@@ -54,6 +54,8 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
             cursor = results.cursor
             records = try results.records.map(Element.init)
+        } catch is CancellationError {
+            // A cancelled task (e.g. the view was recreated) leaves the feed untouched so it retries.
         } catch {
             message = Message(error.localizedDescription, level: .error)
         }
@@ -64,6 +66,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
             let results = try await database.readMore(from: cursor, fields: nil)
             self.cursor = results.cursor
             records = dedup(new: records ?? [], old: try results.records.map(Element.init))
+        } catch is CancellationError {
         } catch {
             message = Message(error.localizedDescription, level: .error)
         }
