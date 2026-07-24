@@ -18,6 +18,7 @@ enum CachedMetricSeries {
             query.bucket.rawValue,
             query.byVersion ? "version" : "*",
             query.source?.rawValue ?? "*",
+            query.reduce.rawValue,
         ]
         .joined(separator: "|")
     }
