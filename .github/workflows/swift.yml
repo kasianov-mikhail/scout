@@ -190,12 +190,19 @@ jobs:
             -skipMacroValidation \
             build-for-testing
 
+      # test-without-building still loads the package graph, so it needs the
+      # same checkout directory the build used: pointed anywhere else it
+      # re-clones every dependency into the default DerivedData location, and
+      # with no committed Package.resolved and scout-db tracked by branch it can
+      # resolve a different revision than the one just built against.
       - name: Test
         run: |
           xcodebuild \
             -scheme Scout-Package \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
+            -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
+            -skipMacroValidation \
             ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
             -parallel-testing-enabled NO \
             -resultBundlePath TestResults.xcresult \
