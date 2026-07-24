@@ -206,17 +206,11 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
 }
 
 #Preview {
-    let crashes = VersionIncidentProvider<Crash>(version: "3.2.0")
-    crashes.records = .samples
-
-    let hangs = VersionIncidentProvider<Hang>(version: "3.2.0")
-    hangs.records = .samples
-
-    return NavigationStack {
+    NavigationStack {
         VersionDetailView(
             release: [ReleaseHealth].samples[0],
-            crashes: crashes,
-            hangs: hangs
+            crashes: VersionIncidentProvider<Crash>(version: "3.2.0").holding(.samples),
+            hangs: VersionIncidentProvider<Hang>(version: "3.2.0").holding(.samples)
         )
     }
     .environmentObject(Tint())

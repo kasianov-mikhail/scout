@@ -112,10 +112,7 @@ private struct RetentionHeroChart: View {
 }
 
 #Preview("RetentionHeroChartView") {
-    let provider = RetentionProvider()
-    provider.result = .success(.samples)
-
-    return NavigationStack {
-        RetentionHeroChartView(provider: provider)
+    NavigationStack {
+        RetentionHeroChartView(provider: RetentionProvider().holding(.samples))
     }
 }

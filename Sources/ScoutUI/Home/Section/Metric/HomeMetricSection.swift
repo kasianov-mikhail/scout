@@ -63,17 +63,11 @@ struct HomeMetricSection: View {
 }
 
 #Preview {
-    let activities = ActivityProvider()
-    activities.result = .success(.samples)
-
-    let sessions = StatProvider(eventName: "Session", periods: Period.summary)
-    sessions.result = .success(.samples)
-
-    return NavigationStack {
+    NavigationStack {
         InsetList {
             HomeMetricSection(
-                activities: activities,
-                sessions: sessions,
+                activities: ActivityProvider().holding(.samples),
+                sessions: StatProvider(eventName: "Session", periods: Period.summary).holding(.samples),
                 period: .today,
                 path: .constant([])
             )

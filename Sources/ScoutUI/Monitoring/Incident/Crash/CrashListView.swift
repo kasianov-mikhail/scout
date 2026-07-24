@@ -50,11 +50,8 @@ struct CrashListView: View {
 }
 
 #Preview {
-    let provider = IncidentProvider<Crash>()
-    provider.records = .samples
-
-    return NavigationStack {
-        CrashListView(provider: provider)
+    NavigationStack {
+        CrashListView(provider: IncidentProvider<Crash>().holding(.samples))
     }
 }
 

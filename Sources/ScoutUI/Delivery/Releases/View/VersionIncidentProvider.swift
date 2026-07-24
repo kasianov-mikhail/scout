@@ -23,8 +23,8 @@ final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedPr
             RecordQuery.Filter(
                 field: "app_version",
                 op: .equals,
-                value:
-                    .string(version))
+                value: .string(version)
+            )
         ])
     }
 

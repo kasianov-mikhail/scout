@@ -16,17 +16,3 @@ final class ActivityProvider: ObservableObject, Provider {
         try await database.activity(in: Calendar.utc.defaultRange)
     }
 }
-
-extension ActivityPoint: Fixture {
-    static var samples: [ActivityPoint] {
-        let end = Date().startOfDay
-        return (0..<365).map { day in
-            ActivityPoint(
-                date: end.addingDay(-day).millisecondsSince1970,
-                dau: 80 + day % 90 + (day / 7) % 20,
-                wau: 360 + day % 120 + (day / 5) % 80,
-                mau: 950 + day % 240 + (day / 11) % 160
-            )
-        }
-    }
-}

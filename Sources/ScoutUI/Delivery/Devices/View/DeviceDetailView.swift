@@ -82,10 +82,11 @@ struct DeviceDetailView: View {
 }
 
 #Preview {
-    let incidents = DeviceIncidentsProvider(deviceID: DeviceSummary.samples[0].id)
-    incidents.result = .success(DeviceIncidents(crashes: Crash.samples, hangs: Hang.samples))
-
-    return NavigationStack {
-        DeviceDetailView(device: DeviceSummary.samples[0], incidents: incidents)
+    NavigationStack {
+        DeviceDetailView(
+            device: DeviceSummary.samples[0],
+            incidents: DeviceIncidentsProvider(deviceID: DeviceSummary.samples[0].id)
+                .holding(DeviceIncidents(crashes: Crash.samples, hangs: Hang.samples))
+        )
     }
 }

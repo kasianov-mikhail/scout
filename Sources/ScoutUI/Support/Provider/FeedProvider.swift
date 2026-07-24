@@ -77,3 +77,10 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         cursor = nil
     }
 }
+
+extension FeedProvider {
+    func holding(_ records: [Element]?) -> Self {
+        self.records = records
+        return self
+    }
+}

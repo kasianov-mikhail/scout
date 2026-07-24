@@ -58,14 +58,11 @@ struct LogView: View {
 }
 
 #Preview {
-    let log = HomeLogProvider()
-    log.period = .week
-    log.result = .success(HomeLogProvider.sample(for: .week))
-
-    let devices = DevicesProvider()
-    devices.result = .success(.sample)
-
-    return NavigationStack {
-        LogView(period: .week, log: log, devices: devices)
+    NavigationStack {
+        LogView(
+            period: .week,
+            log: HomeLogProvider().holding(acrossAllPeriods: MetricSeries.samples(for: .week)),
+            devices: DevicesProvider().holding(.sample)
+        )
     }
 }

@@ -71,11 +71,8 @@ struct NetworkView: View {
 }
 
 #Preview("NetworkView") {
-    let provider = NetworkProvider()
-    provider.result = .success(.sample)
-
-    return NavigationStack {
-        NetworkView(provider: provider)
+    NavigationStack {
+        NetworkView(provider: NetworkProvider().holding(.sample))
     }
 }
 

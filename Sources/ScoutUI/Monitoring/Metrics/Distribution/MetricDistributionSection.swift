@@ -47,8 +47,11 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
 }
 
 #Preview("Timer") {
-    let provider = MetricDistributionProvider<LatencyHistogram>(name: "http_request", categories: [])
-    provider.result = .success(.sample)
+    let provider = MetricDistributionProvider<LatencyHistogram>(
+        name: "http_request",
+        categories: []
+    )
+    .holding(.sample)
 
     return NavigationStack {
         InsetList {
@@ -65,8 +68,11 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
 }
 
 #Preview("Recorder") {
-    let provider = MetricDistributionProvider<RecorderHistogram>(name: "payload_size", categories: [])
-    provider.result = .success(.sample)
+    let provider = MetricDistributionProvider<RecorderHistogram>(
+        name: "payload_size",
+        categories: []
+    )
+    .holding(.sample)
 
     return NavigationStack {
         InsetList {

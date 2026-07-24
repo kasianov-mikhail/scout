@@ -43,15 +43,16 @@ struct HomeReleaseSection: View {
 }
 
 #Preview {
-    let releases = ReleaseHealthProvider()
-    releases.result = .success(.samples)
-
-    let empty = ReleaseHealthProvider(releases: [])
-
-    return NavigationStack {
+    NavigationStack {
         InsetList {
-            HomeReleaseSection(releases: releases, path: .constant([]))
-            HomeReleaseSection(releases: empty, path: .constant([]))
+            HomeReleaseSection(
+                releases: ReleaseHealthProvider().holding(.samples),
+                path: .constant([])
+            )
+            HomeReleaseSection(
+                releases: ReleaseHealthProvider(releases: []),
+                path: .constant([])
+            )
         }
     }
 }

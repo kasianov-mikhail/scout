@@ -28,11 +28,8 @@ struct AnalyticsView: View {
 }
 
 #Preview {
-    let provider = EventProvider()
-    provider.records = .samples
-
-    return NavigationStack {
-        AnalyticsView(provider: provider)
+    NavigationStack {
+        AnalyticsView(provider: EventProvider().holding(.samples))
             .environmentObject(Tint())
     }
 }
