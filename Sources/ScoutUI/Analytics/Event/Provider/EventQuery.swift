@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Logging
 import Scout
 
 struct EventQuery: Hashable {
