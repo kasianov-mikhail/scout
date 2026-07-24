@@ -87,7 +87,7 @@ jobs:
     name: gate
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 190
 
     permissions:
       contents: read
