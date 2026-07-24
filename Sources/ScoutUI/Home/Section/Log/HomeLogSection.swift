@@ -55,8 +55,8 @@ extension HomeLogSection {
     init(period: Period) {
         self.init(
             period: period,
-            log: .init().holding(acrossAllPeriods: MetricSeries.samples(for: period)),
-            devices: .init().holding(.sample),
+            log: .init(acrossAllPeriods: MetricSeries.samples(for: period)),
+            devices: .init(.success(.sample)),
             path: .constant([])
         )
     }

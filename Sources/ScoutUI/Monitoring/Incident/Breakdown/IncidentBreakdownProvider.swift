@@ -16,9 +16,10 @@ final class IncidentBreakdownProvider: ObservableObject, Provider {
     private let deviceIDs: [UUID]
     private let sessionIDs: [UUID]
 
-    init(deviceIDs: [UUID], sessionIDs: [UUID]) {
+    init(_ result: ProviderResult<Output>? = nil, deviceIDs: [UUID], sessionIDs: [UUID]) {
         self.deviceIDs = deviceIDs
         self.sessionIDs = sessionIDs
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> IncidentBreakdown {

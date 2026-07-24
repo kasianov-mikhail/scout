@@ -51,7 +51,7 @@ struct CrashListView: View {
 
 #Preview {
     NavigationStack {
-        CrashListView(provider: .init().holding(.samples))
+        CrashListView(provider: .init(.samples))
     }
 }
 

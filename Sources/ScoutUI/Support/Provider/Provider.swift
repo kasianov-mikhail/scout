@@ -65,10 +65,3 @@ extension Provider {
         }
     }
 }
-
-extension Provider {
-    func holding(_ output: Output?) -> Self {
-        result = output.map { .success($0) }
-        return self
-    }
-}

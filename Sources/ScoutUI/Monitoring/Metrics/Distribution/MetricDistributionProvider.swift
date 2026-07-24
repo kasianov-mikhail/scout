@@ -16,9 +16,10 @@ final class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, 
     private let name: String
     private let categories: [String]
 
-    init(name: String, categories: [String]) {
+    init(_ result: ProviderResult<Output>? = nil, name: String, categories: [String]) {
         self.name = name
         self.categories = categories
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> MetricDistribution<H> {

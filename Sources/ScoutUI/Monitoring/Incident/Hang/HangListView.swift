@@ -47,7 +47,7 @@ struct HangListView: View {
 
 #Preview {
     NavigationStack {
-        HangListView(provider: .init().holding(.samples))
+        HangListView(provider: .init(.samples))
     }
     .environmentObject(Tint())
 }

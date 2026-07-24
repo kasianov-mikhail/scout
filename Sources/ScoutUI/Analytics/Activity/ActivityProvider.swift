@@ -12,6 +12,10 @@ import Scout
 final class ActivityProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ActivityPoint]>?
 
+    init(_ result: ProviderResult<Output>? = nil) {
+        self.result = result
+    }
+
     func fetch(in database: DatabaseReader) async throws -> [ActivityPoint] {
         try await database.activity(in: Calendar.utc.defaultRange)
     }

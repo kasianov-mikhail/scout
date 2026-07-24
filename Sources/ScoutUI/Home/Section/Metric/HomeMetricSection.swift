@@ -66,8 +66,8 @@ struct HomeMetricSection: View {
     NavigationStack {
         InsetList {
             HomeMetricSection(
-                activities: .init().holding(.samples),
-                sessions: .init(eventName: "Session", periods: Period.summary).holding(.samples),
+                activities: .init(.success(.samples)),
+                sessions: .init(.success(.samples), eventName: "Session", periods: Period.summary),
                 period: .today,
                 path: .constant([])
             )

@@ -15,6 +15,10 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
+    init(_ records: [Element]? = nil) {
+        self.records = records
+    }
+
     @discardableResult
     func fetchLatest(matching query: RecordQuery, in database: DatabaseReader) async -> Bool {
         do {
@@ -75,12 +79,5 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     func clear() {
         records = nil
         cursor = nil
-    }
-}
-
-extension FeedProvider {
-    func holding(_ records: [Element]?) -> Self {
-        self.records = records
-        return self
     }
 }

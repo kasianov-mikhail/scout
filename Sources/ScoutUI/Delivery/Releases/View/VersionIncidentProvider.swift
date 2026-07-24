@@ -12,10 +12,9 @@ import SwiftUI
 final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Periodic {
     let version: String
 
-    init(version: String, records: [Element]? = nil) {
+    init(_ records: [Element]? = nil, version: String) {
         self.version = version
-        super.init()
-        self.records = records
+        super.init(records)
     }
 
     private var query: RecordQuery {

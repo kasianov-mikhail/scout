@@ -76,7 +76,7 @@ struct ActivityView: View {
 #Preview("ActivityView") {
     NavigationStack {
         ActivityView(
-            activity: .init().holding([]),
+            activity: .init(.success([])),
             period: .daily
         )
     }

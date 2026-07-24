@@ -29,7 +29,7 @@ struct AnalyticsView: View {
 
 #Preview {
     NavigationStack {
-        AnalyticsView(provider: .init().holding(.samples))
+        AnalyticsView(provider: .init(.samples))
             .environmentObject(Tint())
     }
 }

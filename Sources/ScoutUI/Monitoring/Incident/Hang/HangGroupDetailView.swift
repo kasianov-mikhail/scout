@@ -80,7 +80,7 @@ struct HangGroupDetailView: View {
                 .sample("Image Layout Pass", duration: 9.8, at: Date()),
                 .sample("Image Layout Pass", duration: 4.6, at: Date().addingTimeInterval(-3600)),
             ]),
-            breakdown: .init(deviceIDs: [], sessionIDs: []).holding(.sample)
+            breakdown: .init(.success(.sample), deviceIDs: [], sessionIDs: [])
         )
     }
     .environmentObject(Tint())
