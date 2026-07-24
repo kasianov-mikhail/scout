@@ -42,7 +42,7 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
             throw error
         }
         return RecordChunk(
-            records: records.filter { $0.matches(query) },
+            records: records.filter { query.matches($0) },
             cursor: nil
         )
     }
