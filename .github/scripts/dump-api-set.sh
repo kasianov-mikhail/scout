@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dump the package's public + package API as a module-agnostic set, one
+# Dump the package's public API as a module-agnostic set, one
 # "<declKind> <qualified printed name>" per line.
 #
 # Most declarations live in `Scout` (the package's base module) and the
@@ -53,9 +53,15 @@ xcrun swift-api-digester -dump-sdk "${module_flags[@]}" -o "$dump" \
 # Qualify each declaration with its ancestor names so members don't collide
 # across types, and drop the module identity so a cross-module move is not a
 # change. Imports and synthesized accessors are noise.
+#
+# The dump also carries `package` declarations, which the digester marks
+# `isInternal`. They are unreachable outside this package, so removing one
+# cannot break an integration — skip those subtrees and compare public API
+# only.
 jq -r '
   def emit($prefix):
-    if (.declKind != null and .declKind != "Import" and .declKind != "Accessor")
+    if .isInternal == true then empty
+    elif (.declKind != null and .declKind != "Import" and .declKind != "Accessor")
     then ($prefix + (if $prefix == "" then "" else "." end) + .printedName) as $qualified
          | "\(.declKind) \($qualified)", (.children[]? | emit($qualified))
     else (.children[]? | emit($prefix)) end;
