@@ -27,6 +27,7 @@ struct BackendHealth: Identifiable {
     enum Engine {
         case cloudKit
         case server
+        case local
     }
 }
 
@@ -36,7 +37,7 @@ extension BackendHealth {
             id: backend.id,
             name: backend.displayName,
             endpoint: backend.serverInfo?.endpoint ?? backend.id,
-            engine: backend.serverInfo == nil ? .cloudKit : .server,
+            engine: .init(backend.engine),
             hasAPIKey: backend.serverInfo?.hasAPIKey ?? false,
             isSecure: backend.serverInfo?.isSecure ?? true,
             probe: backend.probeStatus
@@ -57,12 +58,25 @@ extension BackendHealth {
 }
 
 extension BackendHealth.Engine {
+    init(_ engine: Backend.Engine) {
+        switch engine {
+        case .cloudKit:
+            self = .cloudKit
+        case .server:
+            self = .server
+        case .local:
+            self = .local
+        }
+    }
+
     var label: String {
         switch self {
         case .cloudKit:
             "CloudKit"
         case .server:
             "Scout Server"
+        case .local:
+            "On Device"
         }
     }
 
@@ -72,6 +86,8 @@ extension BackendHealth.Engine {
             "icloud"
         case .server:
             "server.rack"
+        case .local:
+            "internaldrive"
         }
     }
 }

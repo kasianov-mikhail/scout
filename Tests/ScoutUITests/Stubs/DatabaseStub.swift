@@ -93,7 +93,7 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
 
         return
             seriesStorage
-            .filter { query.name == nil || $0.name == query.name }
+            .filter { query.matches(name: $0.name, category: $0.category, version: $0.version) }
             .compactMap { series in
                 let points = series.points.filter { query.range.contains(Date(millisecondsSince1970: $0.date)) }
                 guard points.count > 0 else { return nil }

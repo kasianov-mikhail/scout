@@ -81,6 +81,14 @@ package struct SeriesQuery: Sendable {
     }
 }
 
+extension SeriesQuery {
+    package func matches(name: String, category: String?, version: String?) -> Bool {
+        (self.name == nil || self.name == name)
+            && (self.category == nil || self.category == category)
+            && (!byVersion || version != nil)
+    }
+}
+
 package struct MetricSeries: Decodable, Sendable {
     package let name: String
     package let category: String?
