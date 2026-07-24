@@ -21,8 +21,6 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
         self.retentionCohorts = corpus.retention
     }
 
-    // The corpus is a fixed exhibit: host telemetry is accepted and dropped rather than mixed into the
-    // lists, which would leave real records showing up next to aggregates that never move.
     func write(record: Record) async throws {}
 
     func write(records: [Record]) async throws {}
@@ -39,19 +37,20 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        var matches = records.filter {
-            query.matches($0)
-        }
-        for sort in query.sort.reversed() {
-            matches.sort { lhs, rhs in
-                sort.ascending ? before(lhs, rhs, on: sort.field) : before(rhs, lhs, on: sort.field)
-            }
-        }
-        return RecordChunk(records: Array(matches.prefix(limit)), cursor: nil)
+        page(matching: query, limit: limit, after: 0)
     }
 
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
-        RecordChunk(records: [], cursor: nil)
+    private func page(matching query: RecordQuery, limit: Int, after offset: Int) -> RecordChunk {
+        let matches = records.filter { query.matches($0) }.sorted(by: query.ordering)
+        let page = matches.dropFirst(offset).prefix(limit)
+        let next = offset + page.count
+
+        return RecordChunk(
+            records: Array(page),
+            cursor: next < matches.count
+                ? RecordCursor { _ in self.page(matching: query, limit: limit, after: next) }
+                : nil
+        )
     }
 
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
@@ -65,9 +64,37 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         retentionCohorts.filter { range.contains($0.id) }
     }
+}
 
-    private func before(_ lhs: Record, _ rhs: Record, on field: String) -> Bool {
-        (lhs.fields[field]?.value ?? -.greatestFiniteMagnitude)
-            < (rhs.fields[field]?.value ?? -.greatestFiniteMagnitude)
+extension RecordQuery {
+    fileprivate var ordering: (Record, Record) -> Bool {
+        { lhs, rhs in
+            for key in sort {
+                let order = RecordValue.compare(lhs.fields[key.field], rhs.fields[key.field])
+                guard order != .orderedSame else { continue }
+                return key.ascending ? order == .orderedAscending : order == .orderedDescending
+            }
+            return false
+        }
+    }
+}
+
+extension RecordValue {
+    fileprivate static func compare(_ lhs: RecordValue?, _ rhs: RecordValue?) -> ComparisonResult {
+        switch (lhs, rhs) {
+        case (nil, nil):
+            return .orderedSame
+        case (nil, _):
+            return .orderedAscending
+        case (_, nil):
+            return .orderedDescending
+        case (.string(let lhs), .string(let rhs)):
+            return lhs < rhs ? .orderedAscending : lhs == rhs ? .orderedSame : .orderedDescending
+        case (let lhs?, let rhs?):
+            guard let lhs = lhs.value, let rhs = rhs.value else {
+                return .orderedSame
+            }
+            return lhs < rhs ? .orderedAscending : lhs == rhs ? .orderedSame : .orderedDescending
+        }
     }
 }

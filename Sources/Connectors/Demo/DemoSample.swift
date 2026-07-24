@@ -66,13 +66,7 @@ private struct SeriesKey: Hashable {
 
 extension DemoSample {
     fileprivate func matches(_ query: SeriesQuery) -> Bool {
-        guard query.name == nil || name == query.name else {
-            return false
-        }
-        guard query.category == nil || category == query.category else {
-            return false
-        }
-        guard !query.byVersion || version != nil else {
+        guard query.matches(name: name, category: category, version: version) else {
             return false
         }
         guard query.values == nil || query.values == (value.isInt ? .int : .double) else {
