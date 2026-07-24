@@ -15,6 +15,7 @@ public struct Backend: Sendable {
     package let checkAvailability: @Sendable () async -> Bool
     package let displayName: String
 
+    package var engine: Engine = .cloudKit
     package var serverInfo: ServerInfo? = nil
     package var probeStatus: @Sendable () async -> Status = { .unknown }
     package var accountWarning: AccountWarning = { nil }
@@ -25,6 +26,7 @@ public struct Backend: Sendable {
         database: any Database,
         checkAvailability: @escaping @Sendable () async -> Bool,
         displayName: String,
+        engine: Engine = .cloudKit,
         serverInfo: ServerInfo? = nil,
         probeStatus: @escaping @Sendable () async -> Status = { .unknown },
         accountWarning: @escaping AccountWarning = { nil },
@@ -34,10 +36,17 @@ public struct Backend: Sendable {
         self.database = database
         self.checkAvailability = checkAvailability
         self.displayName = displayName
+        self.engine = engine
         self.serverInfo = serverInfo
         self.probeStatus = probeStatus
         self.accountWarning = accountWarning
         self.onSetup = onSetup
+    }
+
+    package enum Engine: Sendable {
+        case cloudKit
+        case server
+        case local
     }
 
     package enum Status: Sendable {

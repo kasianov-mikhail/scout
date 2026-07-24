@@ -6,14 +6,13 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 import Testing
 
-@testable import NativeConnector
+@testable import Scout
 @testable import Support
 
-@Suite("ActivitySeries")
-struct ActivitySeriesTests {
+@Suite("ActivityPoint")
+struct ActivityPointTests {
     @Test("Sliding windows match a brute-force reference over a multi-week dataset")
     func matchesBruteForce() {
         let start = TestDate.reference
