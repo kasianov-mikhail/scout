@@ -90,11 +90,12 @@ jobs:
       id-token: write
 
     strategy:
-      # A failure in any leg cancels the remaining in-progress legs, including
-      # the stable iOS 18 / iOS 26 legs whose checks are required on main. Note
-      # this also lets a flake on the xcode-27 public-preview image tear down the
-      # whole run.
-      fail-fast: true
+      # Each leg reports on its own. Cancelling the siblings on the first
+      # failure saved runner minutes but let the least stable leg — the
+      # arm64-only xcode-27 public-preview image — cancel the stable iOS 18 and
+      # iOS 26 legs whose checks are required on main, turning one flake into a
+      # red PR and a full 20-minute re-run of the whole matrix.
+      fail-fast: false
       matrix:
         # Coverage is collected on one leg only: the reports differ between
         # legs by fractions of a percent, and instrumentation, xcresult
