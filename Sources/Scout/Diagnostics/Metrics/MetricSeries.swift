@@ -140,13 +140,4 @@ extension MetricValue {
             value
         }
     }
-
-    package var intValue: Int {
-        switch self {
-        case .int(let value):
-            value
-        case .double(let value):
-            Int(value.rounded())
-        }
-    }
 }

@@ -70,3 +70,20 @@ struct TelemetryExportTests {
         #expect(description.contains("timer"))
     }
 }
+
+extension Telemetry {
+    fileprivate var export: Export {
+        switch self {
+        case .counter:
+            .counter
+        case .floatingCounter:
+            .floatingCounter
+        case .meter:
+            .meter
+        case .recorder:
+            .recorder
+        case .timer:
+            .timer
+        }
+    }
+}

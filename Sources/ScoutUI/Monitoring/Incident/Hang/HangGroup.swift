@@ -9,14 +9,6 @@ import Foundation
 import Scout
 
 extension IncidentGroup where Element == Hang {
-    var maxDuration: TimeInterval {
-        records.map(\.duration).max() ?? 0
-    }
-
-    var averageDuration: TimeInterval {
-        records.map(\.duration).reduce(0, +) / Double(records.count)
-    }
-
     var severity: HangSeverity {
         peak.severity
     }

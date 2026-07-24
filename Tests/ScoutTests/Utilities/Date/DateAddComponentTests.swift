@@ -25,18 +25,6 @@ struct DateAddComponentTests {
         #expect(result.timeIntervalSince(base) == 86400 * 5)
     }
 
-    @Test("addingHour adds one hour by default")
-    func addingHourDefault() {
-        let result = base.addingHour()
-        #expect(result.timeIntervalSince(base) == 3600)
-    }
-
-    @Test("addingHour adds multiple hours")
-    func addingHourMultiple() {
-        let result = base.addingHour(3)
-        #expect(result.timeIntervalSince(base) == 3600 * 3)
-    }
-
     @Test("addingWeek adds one week by default")
     func addingWeekDefault() {
         let result = base.addingWeek()
@@ -73,12 +61,5 @@ struct DateAddComponentTests {
     func addingGeneric() {
         let result = base.adding(.minute, value: 30)
         #expect(result.timeIntervalSince(base) == 1800)
-    }
-
-    @Test("addDay mutates in place")
-    func addDayMutating() {
-        var date = base
-        date.addDay()
-        #expect(date.timeIntervalSince(base) == 86400)
     }
 }

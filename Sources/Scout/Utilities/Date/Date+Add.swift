@@ -16,10 +16,6 @@ extension Date {
         Calendar.utc.date(byAdding: .day, value: value, to: self)!
     }
 
-    func addingHour(_ value: Int = 1) -> Date {
-        Calendar.utc.date(byAdding: .hour, value: value, to: self)!
-    }
-
     package func addingWeek(_ value: Int = 1) -> Date {
         Calendar.utc.date(byAdding: .weekOfYear, value: value, to: self)!
     }
@@ -30,11 +26,5 @@ extension Date {
 
     package func addingYear(_ value: Int = 1) -> Date {
         Calendar.utc.date(byAdding: .year, value: value, to: self)!
-    }
-}
-
-extension Date {
-    mutating func addDay(_ value: Int = 1) {
-        self = addingDay(value)
     }
 }

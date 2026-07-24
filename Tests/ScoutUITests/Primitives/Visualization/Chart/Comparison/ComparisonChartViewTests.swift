@@ -10,6 +10,7 @@ import Testing
 
 @testable import Scout
 @testable import ScoutUI
+@testable import Support
 
 /// Render smoke tests: drawing the chart through `ImageRenderer` exercises
 /// the whole pipeline — pairing, the marks, and the reference overlay

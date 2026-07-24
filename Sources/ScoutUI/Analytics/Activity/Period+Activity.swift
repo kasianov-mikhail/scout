@@ -29,15 +29,4 @@ extension ActivityPeriod: ChartTimeScale {
     var rangeComponent: Calendar.Component { .month }
 
     var pointComponent: Calendar.Component { .day }
-
-    var acronym: String {
-        switch self {
-        case .daily:
-            "DAU"
-        case .weekly:
-            "WAU"
-        case .monthly:
-            "MAU"
-        }
-    }
 }
