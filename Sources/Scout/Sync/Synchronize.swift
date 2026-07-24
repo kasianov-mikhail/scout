@@ -17,9 +17,6 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
     try DateEntry.cleanup(backends: backends, in: context)
 
     try await dispatcher.performEnsuringBackground {
-        // Probe every backend at once: awaiting availability in the loop
-        // condition let a slow or timing-out backend stall delivery for all
-        // the others queued behind it.
         let availability = await withTaskGroup(of: (Int, Bool).self) { group in
             for (offset, backend) in backends.enumerated() {
                 group.addTask { (offset, await backend.checkAvailability()) }

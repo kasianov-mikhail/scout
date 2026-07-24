@@ -17,9 +17,6 @@ package class SyncableEntry: DateEntry {
 }
 
 extension SyncableEntry {
-    // The single registry of concrete entry types delivered during a sync;
-    // synchronize() iterates this instead of hardcoding the list at the call
-    // site, so a new syncable type is added in one place.
     static let deliverableTypes: [any (SyncableEntry & RecordEncodable).Type] = [
         EventEntry.self,
         SessionEntry.self,

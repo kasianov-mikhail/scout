@@ -75,7 +75,8 @@ let package = Package(
         .target(
             name: "ScoutUI",
             dependencies: [
-                "Scout"
+                "Scout",
+                .product(name: "Logging", package: "swift-log"),
             ]
         ),
         .target(

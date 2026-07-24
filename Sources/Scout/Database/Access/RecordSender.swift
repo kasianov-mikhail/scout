@@ -21,7 +21,13 @@ extension RecordSender {
 
 @MainActor
 extension RecordSender {
-    func deliver<T: SyncableEntry & RecordEncodable>(type syncable: T.Type, in context: NSManagedObjectContext)
+    func deliver(type syncable: any (SyncableEntry & RecordEncodable).Type, in context: NSManagedObjectContext)
+        async throws
+    {
+        try await deliver(pending: syncable, in: context)
+    }
+
+    private func deliver<T: SyncableEntry & RecordEncodable>(pending: T.Type, in context: NSManagedObjectContext)
         async throws
     {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
