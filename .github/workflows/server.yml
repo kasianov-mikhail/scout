@@ -10,8 +10,8 @@ name: Server
 # HTTPQueryCoding/HTTPRecordCoding wire coders, and the HostedRecord readers and
 # writers), the Core/Database record model and the RecordReader/RecordChunk/
 # RecordCursor pagination and cursor semantics they ride on, the contract tests,
-# or this workflow — or when scout-server pushes to main (repository_dispatch
-# from its Notify workflow).
+# or this workflow and the scripts it runs — or when scout-server pushes to main
+# (repository_dispatch from its Notify workflow).
 #
 # A weekly schedule runs the contract unconditionally as a safety net: the path
 # filter duplicates the knowledge of where the wire code lives, so if it ever
@@ -32,6 +32,7 @@ on:
       - "Sources/Scout/Database/**"
       - "Tests/Connectors/Hosted/**"
       - ".github/workflows/server.yml"
+      - ".github/scripts/**"
   pull_request:
   repository_dispatch:
     types: [scout-server-updated]
