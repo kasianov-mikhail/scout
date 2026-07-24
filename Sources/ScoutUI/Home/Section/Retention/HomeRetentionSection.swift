@@ -82,13 +82,16 @@ struct HomeRetentionSection: View {
 }
 
 #Preview {
-    let retention = RetentionProvider()
-    retention.result = .success(.samples)
-
-    return NavigationStack {
+    NavigationStack {
         InsetList {
-            HomeRetentionSection(retention: retention, path: .constant([]))
-            HomeRetentionSection(retention: RetentionProvider(), path: .constant([]))
+            HomeRetentionSection(
+                retention: RetentionProvider().holding(.samples),
+                path: .constant([])
+            )
+            HomeRetentionSection(
+                retention: RetentionProvider(),
+                path: .constant([])
+            )
         }
     }
 }

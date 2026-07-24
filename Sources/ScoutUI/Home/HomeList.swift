@@ -109,7 +109,7 @@ struct HomeList: View {
             retention: .samples,
             sessions: .samples,
             releases: .samples,
-            logs: HomeLogProvider.sample(for: .today),
+            logs: MetricSeries.samples(for: .today),
             devices: .sample,
             alerts: [.firingSample, .armedSample]
         )

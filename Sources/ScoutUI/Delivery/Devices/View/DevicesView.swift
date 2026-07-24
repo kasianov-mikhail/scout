@@ -63,19 +63,13 @@ struct DevicesView: View {
 }
 
 #Preview("Devices") {
-    let provider = DevicesProvider()
-    provider.result = .success(.sample)
-
-    return NavigationStack {
-        DevicesView(provider: provider)
+    NavigationStack {
+        DevicesView(provider: DevicesProvider().holding(.sample))
     }
 }
 
 #Preview("Devices — Empty") {
-    let provider = DevicesProvider()
-    provider.result = .success(.empty)
-
-    return NavigationStack {
-        DevicesView(provider: provider)
+    NavigationStack {
+        DevicesView(provider: DevicesProvider().holding(.empty))
     }
 }

@@ -75,9 +75,7 @@ extension EventList where Header == EmptyView {
 }
 
 #Preview("Empty State") {
-    let provider = EventProvider()
-    provider.records = []
-    return NavigationStack {
-        EventList(provider: provider)
+    NavigationStack {
+        EventList(provider: EventProvider().holding([]))
     }
 }

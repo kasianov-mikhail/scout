@@ -126,20 +126,14 @@ private struct AlertChip: View {
 }
 
 #Preview {
-    let provider = AlertProvider()
-    provider.result = .success([.firingSample, .armedSample])
-
-    return NavigationStack {
-        AlertListView(provider: provider)
+    NavigationStack {
+        AlertListView(provider: AlertProvider().holding([.firingSample, .armedSample]))
     }
 }
 
 #Preview("Empty") {
-    let provider = AlertProvider()
-    provider.result = .success([])
-
-    return NavigationStack {
-        AlertListView(provider: provider)
+    NavigationStack {
+        AlertListView(provider: AlertProvider().holding([]))
     }
 }
 

@@ -35,13 +35,12 @@ struct SessionInspector: View {
 }
 
 #Preview {
-    let events = EventProvider()
-    events.records = .samples
-
-    let info = SessionInfoProvider(sessionID: UUID(), deviceID: UUID())
-    info.result = .success(.sample)
-
-    return NavigationStack {
-        SessionInspector(sessionID: UUID(), deviceID: UUID(), events: events, info: info)
+    NavigationStack {
+        SessionInspector(
+            sessionID: UUID(),
+            deviceID: UUID(),
+            events: EventProvider().holding(.samples),
+            info: SessionInfoProvider(sessionID: UUID(), deviceID: UUID()).holding(.sample)
+        )
     }
 }

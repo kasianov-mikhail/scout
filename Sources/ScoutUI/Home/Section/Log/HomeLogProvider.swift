@@ -23,15 +23,10 @@ final class HomeLogProvider: ObservableObject, Provider {
         didSet { rebuildReport() }
     }
 
-    // Device visits back the "Devices" row of the report; the log section feeds
-    // them in from its sibling DevicesProvider as they arrive.
     @Published var visits: [DeviceVisit] = [] {
         didSet { rebuildReport() }
     }
 
-    // Derived from the current period's series, visits, and period once per
-    // change, so view body re-evaluations (scroll, auto-refresh) read the cached
-    // report instead of rebuilding it and its per-category passes every render.
     private(set) var report: LogReport?
 
     init() {
@@ -58,8 +53,6 @@ final class HomeLogProvider: ObservableObject, Provider {
             matching: SeriesQuery(bucket: period.logBucket, range: window)
         )
 
-        // The fetch was started under `period`; if the user switched meanwhile, dropping the
-        // completion keeps its wrong-bucket series out of the newly selected period's slot.
         guard period == self.period else {
             throw CancellationError()
         }
@@ -80,42 +73,10 @@ extension Period {
 }
 
 extension HomeLogProvider {
-    static func sample(for period: Period) -> Output {
-        let date = period.initialRange.lowerBound
-
-        func point(hour: Int, value: MetricValue) -> MetricSeriesPoint {
-            MetricSeriesPoint(
-                date: date.addingTimeInterval(TimeInterval(hour) * .hour).millisecondsSince1970,
-                value: value
-            )
+    func holding(acrossAllPeriods series: Output?) -> Self {
+        if let series {
+            results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(series)) })
         }
-
-        return [
-            MetricSeries(
-                name: EventEntry.recordType,
-                category: nil,
-                points: [point(hour: 0, value: .int(48))]
-            ),
-            MetricSeries(
-                name: CrashEntry.recordType,
-                category: nil,
-                points: [point(hour: 1, value: .int(3))]
-            ),
-            MetricSeries(
-                name: HangEntry.recordType,
-                category: nil,
-                points: [point(hour: 4, value: .int(6))]
-            ),
-            MetricSeries(
-                name: "api_calls",
-                category: Telemetry.Export.counter.rawValue,
-                points: [point(hour: 2, value: .int(140))]
-            ),
-            MetricSeries(
-                name: "cache_hit_rate",
-                category: Telemetry.Export.floatingCounter.rawValue,
-                points: [point(hour: 3, value: .double(91.5))]
-            ),
-        ]
+        return self
     }
 }

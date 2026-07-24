@@ -91,14 +91,11 @@ extension EnvironmentValues {
 }
 
 #Preview("StatView") {
-    let stat = StatProvider(eventName: "app_launch", periods: Period.allCases)
-    stat.result = .success([])
-
-    return NavigationStack {
+    NavigationStack {
         StatView(
             showList: true,
             extent: ChartExtent(period: .yesterday),
-            stat: stat
+            stat: StatProvider(eventName: "app_launch", periods: Period.allCases).holding([])
         )
         .navigationTitle(en: "App Launch")
         .environmentObject(Tint())

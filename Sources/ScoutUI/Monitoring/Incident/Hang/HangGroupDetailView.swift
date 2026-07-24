@@ -74,16 +74,13 @@ struct HangGroupDetailView: View {
 }
 
 #Preview {
-    let breakdown = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
-    breakdown.result = .success(.sample)
-
-    return NavigationStack {
+    NavigationStack {
         HangGroupDetailView(
             group: IncidentGroup(records: [
                 .sample("Image Layout Pass", duration: 9.8, at: Date()),
                 .sample("Image Layout Pass", duration: 4.6, at: Date().addingTimeInterval(-3600)),
             ]),
-            breakdown: breakdown
+            breakdown: IncidentBreakdownProvider(deviceIDs: [], sessionIDs: []).holding(.sample)
         )
     }
     .environmentObject(Tint())

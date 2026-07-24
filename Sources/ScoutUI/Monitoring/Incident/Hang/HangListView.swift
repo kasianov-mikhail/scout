@@ -46,11 +46,8 @@ struct HangListView: View {
 }
 
 #Preview {
-    let provider = IncidentProvider<Hang>()
-    provider.records = [Hang].samples
-
-    return NavigationStack {
-        HangListView(provider: provider)
+    NavigationStack {
+        HangListView(provider: IncidentProvider<Hang>().holding(.samples))
     }
     .environmentObject(Tint())
 }

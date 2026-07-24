@@ -74,10 +74,10 @@ struct ActivityView: View {
 }
 
 #Preview("ActivityView") {
-    let activity = ActivityProvider()
-    activity.result = .success([])
-
-    return NavigationStack {
-        ActivityView(activity: activity, period: .daily)
+    NavigationStack {
+        ActivityView(
+            activity: ActivityProvider().holding([]),
+            period: .daily
+        )
     }
 }

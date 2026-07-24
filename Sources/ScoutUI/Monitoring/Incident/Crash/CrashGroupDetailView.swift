@@ -89,16 +89,13 @@ struct CrashGroupDetailView: View {
 }
 
 #Preview {
-    let breakdown = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
-    breakdown.result = .success(.sample)
-
-    return NavigationStack {
+    NavigationStack {
         CrashGroupDetailView(
             group: IncidentGroup(records: [
                 .sample("NSRangeException", at: Date()),
                 .sample("NSRangeException", at: Date().addingTimeInterval(-3600)),
             ]),
-            breakdown: breakdown
+            breakdown: IncidentBreakdownProvider(deviceIDs: [], sessionIDs: []).holding(.sample)
         )
     }
     .environmentObject(Tint())
