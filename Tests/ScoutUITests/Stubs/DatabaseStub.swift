@@ -73,7 +73,7 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         defer { lock.unlock() }
         counts[query.recordType.recordType, default: 0] += 1
 
-        let records = (storage[query.recordType.recordType] ?? []).filter { $0.matches(query) }
+        let records = (storage[query.recordType.recordType] ?? []).filter { query.matches($0) }
         return RecordChunk(records: Array(records.prefix(limit)), cursor: nil)
     }
 

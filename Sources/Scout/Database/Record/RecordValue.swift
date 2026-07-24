@@ -82,3 +82,18 @@ extension RecordValue {
         }
     }
 }
+
+extension RecordValue {
+    package var value: Double? {
+        switch self {
+        case .int(let value):
+            Double(value)
+        case .double(let value):
+            value
+        case .date(let value):
+            value.timeIntervalSince1970
+        default:
+            nil
+        }
+    }
+}
