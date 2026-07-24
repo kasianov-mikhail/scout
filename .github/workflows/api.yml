@@ -85,13 +85,15 @@ jobs:
 
       # The baseline dump depends only on the base commit, which changes far
       # less often than the PR head: on a cache hit the whole baseline build
-      # is skipped.
+      # is skipped. The dump script is part of the key as well — both sides
+      # are dumped by the PR's copy of it, so a baseline cached by an older
+      # copy would be compared against a differently-shaped current set.
       - name: Cache baseline API set
         id: baseline-cache
         uses: actions/cache@v6
         with:
           path: /tmp/baseline.set
-          key: api-baseline-set-${{ github.event.pull_request.base.sha }}
+          key: api-baseline-set-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api-set.sh') }}
 
       - name: Dump baseline API
         if: steps.baseline-cache.outputs.cache-hit != 'true'
@@ -146,7 +148,7 @@ jobs:
           # sets (the sets are module-agnostic), so the split does not flag.
           removed="$(comm -23 /tmp/baseline.set /tmp/current.set || true)"
           if [ -z "$removed" ]; then
-            echo "No public or package API was removed against the base branch." >> "$GITHUB_STEP_SUMMARY"
+            echo "No public API was removed against the base branch." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           {
