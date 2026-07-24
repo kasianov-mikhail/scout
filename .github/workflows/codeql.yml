@@ -3,8 +3,7 @@ name: CodeQL
 # GitHub's CodeQL static analysis for Swift, uploading results to the
 # security-events dashboard. Analysis needs a full manual build, so this runs
 # nightly on a schedule (and on demand) rather than per-PR: tracing slows
-# compilation down severalfold, so it builds a single architecture of the Scout
-# scheme only.
+# compilation down severalfold, so it builds a single architecture.
 on:
   schedule:
     - cron: "33 2 * * *"
@@ -16,7 +15,7 @@ permissions:
 jobs:
   analyze:
     runs-on: macos-26
-    timeout-minutes: 60
+    timeout-minutes: 120
 
     permissions:
       contents: read
@@ -30,15 +29,32 @@ jobs:
           languages: swift
           build-mode: manual
 
-      # CodeQL tracing slows compilation down severalfold, so build a single
+      # CodeQL analyses only what the traced build compiles, and Scout stopped
+      # covering the rest of the package when the split removed the umbrella
+      # target — building that scheme alone left the connectors, ScoutUI and
+      # LookupIndex unanalysed while the dashboard read as clean. The scheme list
+      # comes from the manifest's library products — SwiftPM names a scheme after
+      # the product — so a newly vended one is picked up without editing this
+      # file. An empty list is an error: a scan that compiles nothing analyses
+      # nothing and still reports clean, which is the failure being fixed here.
+      #
+      # Tracing slows compilation down severalfold, so build a single
       # architecture: the generic simulator destination would otherwise build
       # both arm64 and x86_64, doubling the traced work for no analysis gain.
       - name: Build
         run: |
-          xcodebuild \
-            -scheme Scout \
-            -destination 'generic/platform=iOS Simulator' \
-            ARCHS=arm64 \
-            build
+          set -eo pipefail
+          schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
+          if [ -z "$schemes" ]; then
+            echo "::error::No library products found in the manifest."
+            exit 1
+          fi
+          for scheme in $schemes; do
+            xcodebuild \
+              -scheme "$scheme" \
+              -destination 'generic/platform=iOS Simulator' \
+              ARCHS=arm64 \
+              build
+          done
 
       - uses: github/codeql-action/analyze@v4
