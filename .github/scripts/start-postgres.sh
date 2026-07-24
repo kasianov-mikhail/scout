@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Bring up the server's default Fluent config: user scout, password scout,
 # database scout on localhost:5432.
+set -euo pipefail
 
 brew install postgresql@17
 pgbin="$(brew --prefix postgresql@17)/bin"
