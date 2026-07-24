@@ -61,7 +61,6 @@ struct DemoMetrics {
         telemetry(Self.recorders, category: Telemetry.Export.recorder.rawValue, perDay: 6) {
             .int($0.int(in: 200...9000))
         }
-        // Timers are stored in seconds and rendered as durations, so sub-second values read naturally.
         telemetry(Self.timers, category: Telemetry.Export.timer.rawValue, perDay: 6) {
             .double($0.double(in: 0.02...1.4))
         }
