@@ -10,10 +10,17 @@ on:
     types: [completed]
     branches: [main]
 
+# The dispatch authenticates with GH_PAT, so the workflow token itself needs
+# nothing beyond the default read scope — without this block it would inherit
+# whatever the repository default is, up to and including write.
+permissions:
+  contents: read
+
 jobs:
   notify:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       - name: Trigger scout-ip
