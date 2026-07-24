@@ -78,7 +78,7 @@ struct HomeAlertSection: View {
 
 extension HomeAlertSection {
     init(statuses: [AlertStatus]) {
-        self.init(alerts: AlertProvider().holding(statuses), path: .constant([]))
+        self.init(alerts: .init().holding(statuses), path: .constant([]))
     }
 }
 

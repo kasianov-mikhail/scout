@@ -209,8 +209,8 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     NavigationStack {
         VersionDetailView(
             release: [ReleaseHealth].samples[0],
-            crashes: VersionIncidentProvider<Crash>(version: "3.2.0").holding(.samples),
-            hangs: VersionIncidentProvider<Hang>(version: "3.2.0").holding(.samples)
+            crashes: .init(version: "3.2.0").holding(.samples),
+            hangs: .init(version: "3.2.0").holding(.samples)
         )
     }
     .environmentObject(Tint())
@@ -222,8 +222,8 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     return NavigationStack {
         VersionDetailView(
             release: release,
-            crashes: VersionIncidentProvider(version: release.id, records: []),
-            hangs: VersionIncidentProvider(version: release.id, records: [])
+            crashes: .init(version: release.id, records: []),
+            hangs: .init(version: release.id, records: [])
         )
     }
     .environmentObject(Tint())

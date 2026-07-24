@@ -72,7 +72,7 @@ struct NetworkView: View {
 
 #Preview("NetworkView") {
     NavigationStack {
-        NetworkView(provider: NetworkProvider().holding(.sample))
+        NetworkView(provider: .init().holding(.sample))
     }
 }
 

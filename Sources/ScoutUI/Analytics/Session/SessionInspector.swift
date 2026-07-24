@@ -39,8 +39,8 @@ struct SessionInspector: View {
         SessionInspector(
             sessionID: UUID(),
             deviceID: UUID(),
-            events: EventProvider().holding(.samples),
-            info: SessionInfoProvider(sessionID: UUID(), deviceID: UUID()).holding(.sample)
+            events: .init().holding(.samples),
+            info: .init(sessionID: UUID(), deviceID: UUID()).holding(.sample)
         )
     }
 }

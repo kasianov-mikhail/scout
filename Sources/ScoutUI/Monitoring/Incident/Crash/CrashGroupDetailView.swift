@@ -95,7 +95,7 @@ struct CrashGroupDetailView: View {
                 .sample("NSRangeException", at: Date()),
                 .sample("NSRangeException", at: Date().addingTimeInterval(-3600)),
             ]),
-            breakdown: IncidentBreakdownProvider(deviceIDs: [], sessionIDs: []).holding(.sample)
+            breakdown: .init(deviceIDs: [], sessionIDs: []).holding(.sample)
         )
     }
     .environmentObject(Tint())

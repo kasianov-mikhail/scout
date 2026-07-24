@@ -35,7 +35,7 @@ struct EventStatList: View {
         EventStatList(
             eventName: "Event",
             range: Period.week.initialRange,
-            provider: EventProvider().holding(.samples)
+            provider: .init().holding(.samples)
         )
     }
 }
