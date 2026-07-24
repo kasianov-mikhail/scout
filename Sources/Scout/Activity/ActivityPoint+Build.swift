@@ -6,15 +6,19 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
-struct ActivityVisit {
-    let date: Date
-    let user: String
+package struct ActivityVisit {
+    package let date: Date
+    package let user: String
+
+    package init(date: Date, user: String) {
+        self.date = date
+        self.user = user
+    }
 }
 
 extension ActivityPoint {
-    static func points(visits: [ActivityVisit], in range: Range<Date>) -> [ActivityPoint] {
+    package static func points(visits: [ActivityVisit], in range: Range<Date>) -> [ActivityPoint] {
         var users: [Date: Set<String>] = [:]
         for visit in visits {
             users[visit.date.startOfDay, default: []].insert(visit.user)
@@ -24,6 +28,7 @@ extension ActivityPoint {
 
         var week = UserWindow()
         var month = UserWindow()
+
         for offset in 1...7 {
             week.insert(users[firstDay.addingTimeInterval(-TimeInterval(offset) * .day)])
         }
@@ -46,7 +51,15 @@ extension ActivityPoint {
             guard mau > 0 else { continue }
 
             let dau = users[day]?.count ?? 0
-            points.append(ActivityPoint(date: day.millisecondsSince1970, dau: dau, wau: week.count, mau: mau))
+
+            points.append(
+                ActivityPoint(
+                    date: day.millisecondsSince1970,
+                    dau: dau,
+                    wau: week.count,
+                    mau: mau
+                )
+            )
         }
         return points
     }
@@ -58,16 +71,21 @@ private struct UserWindow {
     var count: Int { counts.count }
 
     mutating func insert(_ users: Set<String>?) {
-        guard let users else { return }
+        guard let users else {
+            return
+        }
         for user in users {
             counts[user, default: 0] += 1
         }
     }
 
     mutating func remove(_ users: Set<String>?) {
-        guard let users else { return }
+        guard let users else {
+            return
+        }
         for user in users where counts[user] != nil {
             let remaining = counts[user]! - 1
+
             if remaining > 0 {
                 counts[user] = remaining
             } else {

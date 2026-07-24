@@ -58,3 +58,54 @@ package protocol RecordDecodable: Sendable, Equatable, RecordEncodable {
 
     init(record: Record) throws
 }
+
+extension RecordQuery {
+    package func matches(_ record: Record) -> Bool {
+        record.recordType == recordType.recordType && filters.allSatisfy { $0.matches(record.fields) }
+    }
+}
+
+extension RecordQuery.Filter {
+    fileprivate func matches(_ fields: [String: RecordValue]) -> Bool {
+        guard let value = fields[field] else {
+            return false
+        }
+
+        switch op {
+        case .equals:
+            return value == self.value
+
+        case .notEquals:
+            return value != self.value
+
+        case .in:
+            guard case .strings(let options) = self.value, case .string(let actual) = value else {
+                return false
+            }
+            return options.contains(actual)
+
+        case .beginsWith:
+            guard case .string(let prefix) = self.value, case .string(let actual) = value else {
+                return false
+            }
+            return actual.hasPrefix(prefix)
+
+        case .greaterThan, .greaterThanOrEquals, .lessThan, .lessThanOrEquals:
+            guard let lhs = value.value, let rhs = self.value.value else {
+                return false
+            }
+            switch op {
+            case .greaterThan:
+                return lhs > rhs
+            case .greaterThanOrEquals:
+                return lhs >= rhs
+            case .lessThan:
+                return lhs < rhs
+            case .lessThanOrEquals:
+                return lhs <= rhs
+            default:
+                return false
+            }
+        }
+    }
+}
