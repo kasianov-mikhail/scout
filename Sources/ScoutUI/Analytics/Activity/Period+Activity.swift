@@ -23,7 +23,13 @@ extension Period {
     }
 }
 
-extension ActivityPeriod {
+extension ActivityPeriod: ChartTimeScale {
+    var horizonDate: Date { today }
+
+    var rangeComponent: Calendar.Component { .month }
+
+    var pointComponent: Calendar.Component { .day }
+
     var acronym: String {
         switch self {
         case .daily:
