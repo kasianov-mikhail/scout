@@ -15,9 +15,10 @@ final class SessionInfoProvider: ObservableObject, Provider {
     private let sessionID: UUID
     private let deviceID: UUID?
 
-    init(sessionID: UUID, deviceID: UUID?) {
+    init(_ result: ProviderResult<Output>? = nil, sessionID: UUID, deviceID: UUID?) {
         self.sessionID = sessionID
         self.deviceID = deviceID
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> SessionInfo {

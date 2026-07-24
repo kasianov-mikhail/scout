@@ -12,6 +12,10 @@ import Scout
 final class RetentionProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[RetentionCohort]>?
 
+    init(_ result: ProviderResult<Output>? = nil) {
+        self.result = result
+    }
+
     func fetch(in database: DatabaseReader) async throws -> [RetentionCohort] {
         try await database.retention(in: Calendar.utc.defaultRange)
     }

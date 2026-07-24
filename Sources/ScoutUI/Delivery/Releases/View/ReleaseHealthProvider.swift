@@ -12,8 +12,8 @@ import SwiftUI
 final class ReleaseHealthProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ReleaseHealth]>?
 
-    init(releases: [ReleaseHealth]? = nil) {
-        self.result = releases.map { .success($0) }
+    init(_ result: ProviderResult<Output>? = nil) {
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> [ReleaseHealth] {

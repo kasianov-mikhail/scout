@@ -13,9 +13,9 @@ import SwiftUI
 final class EventProvider: FeedProvider<Event>, Periodic {
     let filter: EventQuery
 
-    init(filter: EventQuery = EventQuery()) {
+    init(_ records: [Event]? = nil, filter: EventQuery = EventQuery()) {
         self.filter = filter
-        super.init()
+        super.init(records)
     }
 
     func fetch(for filter: EventQuery, in database: DatabaseReader) async {

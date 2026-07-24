@@ -33,6 +33,6 @@ struct ReleaseHealthView: View {
 
 #Preview {
     NavigationStack {
-        ReleaseHealthView(provider: .init().holding(.samples))
+        ReleaseHealthView(provider: .init(.success(.samples)))
     }
 }

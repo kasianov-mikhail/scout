@@ -13,6 +13,10 @@ import Scout
 final class NetworkProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<NetworkReport>?
 
+    init(_ result: ProviderResult<Output>? = nil) {
+        self.result = result
+    }
+
     func fetch(in database: DatabaseReader) async throws -> NetworkReport {
         let categories = LatencyBuckets.categories + StatusBuckets.categories
         let series = try await database.metricSeries(

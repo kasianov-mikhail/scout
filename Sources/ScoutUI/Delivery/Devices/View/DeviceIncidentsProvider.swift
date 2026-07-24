@@ -14,8 +14,9 @@ final class DeviceIncidentsProvider: ObservableObject, Provider {
 
     private let deviceID: UUID
 
-    init(deviceID: UUID) {
+    init(_ result: ProviderResult<Output>? = nil, deviceID: UUID) {
         self.deviceID = deviceID
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> DeviceIncidents {

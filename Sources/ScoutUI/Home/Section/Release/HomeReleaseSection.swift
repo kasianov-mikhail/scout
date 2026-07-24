@@ -46,11 +46,11 @@ struct HomeReleaseSection: View {
     NavigationStack {
         InsetList {
             HomeReleaseSection(
-                releases: .init().holding(.samples),
+                releases: .init(.success(.samples)),
                 path: .constant([])
             )
             HomeReleaseSection(
-                releases: .init(releases: []),
+                releases: .init(.success([])),
                 path: .constant([])
             )
         }

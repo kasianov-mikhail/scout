@@ -14,8 +14,9 @@ final class ParamProvider: ObservableObject, Provider {
 
     private let recordID: String
 
-    init(recordID: String) {
+    init(_ result: ProviderResult<Output>? = nil, recordID: String) {
         self.recordID = recordID
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {

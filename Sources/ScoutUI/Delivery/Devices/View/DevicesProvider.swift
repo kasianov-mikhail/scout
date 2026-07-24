@@ -12,6 +12,10 @@ import SwiftUI
 final class DevicesProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<DevicesReport>?
 
+    init(_ result: ProviderResult<Output>? = nil) {
+        self.result = result
+    }
+
     func fetch(in database: DatabaseReader) async throws -> DevicesReport {
         async let devices: [Record] = database.readAll(
             matching: RecordQuery(recordType: Device.self),

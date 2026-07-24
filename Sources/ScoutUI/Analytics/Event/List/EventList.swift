@@ -76,6 +76,6 @@ extension EventList where Header == EmptyView {
 
 #Preview("Empty State") {
     NavigationStack {
-        EventList(provider: .init().holding([]))
+        EventList(provider: .init([]))
     }
 }

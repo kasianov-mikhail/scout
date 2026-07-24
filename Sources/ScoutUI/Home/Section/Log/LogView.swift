@@ -61,8 +61,8 @@ struct LogView: View {
     NavigationStack {
         LogView(
             period: .week,
-            log: .init().holding(acrossAllPeriods: MetricSeries.samples(for: .week)),
-            devices: .init().holding(.sample)
+            log: .init(acrossAllPeriods: MetricSeries.samples(for: .week)),
+            devices: .init(.success(.sample))
         )
     }
 }

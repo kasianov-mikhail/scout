@@ -15,9 +15,10 @@ final class StatProvider: ObservableObject, Provider {
     let eventName: String
     let periods: [Period]
 
-    init(eventName: String, periods: [Period]) {
+    init(_ result: ProviderResult<Output>? = nil, eventName: String, periods: [Period]) {
         self.eventName = eventName
         self.periods = periods
+        self.result = result
     }
 
     func fetch(in database: DatabaseReader) async throws -> [ChartPoint<Int>] {

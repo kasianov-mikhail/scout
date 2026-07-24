@@ -86,9 +86,9 @@ extension EventView {
         deviceID: UUID()
     )
 
-    let param = ParamProvider(recordID: event.id).holding(params.sorted())
+    let param = ParamProvider(.success(params.sorted()), recordID: event.id)
 
-    let stat = StatProvider(eventName: event.name, periods: Period.allCases).holding(.samples)
+    let stat = StatProvider(.success(.samples), eventName: event.name, periods: Period.allCases)
 
     return NavigationStack {
         EventView(event: event, param: param, stat: stat)

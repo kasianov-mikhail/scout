@@ -93,10 +93,10 @@ struct HomeList: View {
             activities: .init(),
             retention: .init(),
             sessions: .init(eventName: "Session", periods: Period.summary),
-            releases: .init().holding(.samples),
+            releases: .init(.success(.samples)),
             logs: .init(),
             devices: .init(),
-            alerts: .init().holding([.firingSample, .armedSample])
+            alerts: .init(.success([.firingSample, .armedSample]))
         )
         .navigationTitle(en: "Home")
     }
@@ -107,13 +107,13 @@ struct HomeList: View {
     NavigationStack {
         HomeList(
             path: .constant([]),
-            activities: .init().holding(.samples),
-            retention: .init().holding(.samples),
-            sessions: .init(eventName: "Session", periods: Period.summary).holding(.samples),
-            releases: .init().holding(.samples),
-            logs: .init().holding(acrossAllPeriods: MetricSeries.samples(for: .today)),
-            devices: .init().holding(.sample),
-            alerts: .init().holding([.firingSample, .armedSample])
+            activities: .init(.success(.samples)),
+            retention: .init(.success(.samples)),
+            sessions: .init(.success(.samples), eventName: "Session", periods: Period.summary),
+            releases: .init(.success(.samples)),
+            logs: .init(acrossAllPeriods: MetricSeries.samples(for: .today)),
+            devices: .init(.success(.sample)),
+            alerts: .init(.success([.firingSample, .armedSample]))
         )
         .navigationTitle(en: "Home")
     }
@@ -124,13 +124,13 @@ struct HomeList: View {
     NavigationStack {
         HomeList(
             path: .constant([]),
-            activities: .init().holding([]),
-            retention: .init().holding([]),
-            sessions: .init(eventName: "Session", periods: Period.summary).holding([]),
-            releases: .init().holding([]),
-            logs: .init().holding(acrossAllPeriods: []),
-            devices: .init().holding(.empty),
-            alerts: .init().holding([])
+            activities: .init(.success([])),
+            retention: .init(.success([])),
+            sessions: .init(.success([]), eventName: "Session", periods: Period.summary),
+            releases: .init(.success([])),
+            logs: .init(acrossAllPeriods: []),
+            devices: .init(.success(.empty)),
+            alerts: .init(.success([]))
         )
         .navigationTitle(en: "Home")
     }

@@ -85,7 +85,7 @@ struct HomeRetentionSection: View {
     NavigationStack {
         InsetList {
             HomeRetentionSection(
-                retention: .init().holding(.samples),
+                retention: .init(.success(.samples)),
                 path: .constant([])
             )
             HomeRetentionSection(

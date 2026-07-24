@@ -29,8 +29,12 @@ final class HomeLogProvider: ObservableObject, Provider {
 
     private(set) var report: LogReport?
 
-    init() {
+    init(acrossAllPeriods series: Output? = nil) {
         self.period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
+        if let series {
+            results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(series)) })
+            rebuildReport()
+        }
     }
 
     var result: ProviderResult<Output>? {
@@ -69,14 +73,5 @@ extension Period {
         case .week, .month, .year:
             .day
         }
-    }
-}
-
-extension HomeLogProvider {
-    func holding(acrossAllPeriods series: Output?) -> Self {
-        if let series {
-            results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(series)) })
-        }
-        return self
     }
 }

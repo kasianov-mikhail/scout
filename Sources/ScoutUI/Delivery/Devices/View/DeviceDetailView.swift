@@ -85,8 +85,10 @@ struct DeviceDetailView: View {
     NavigationStack {
         DeviceDetailView(
             device: DeviceSummary.samples[0],
-            incidents: .init(deviceID: DeviceSummary.samples[0].id)
-                .holding(DeviceIncidents(crashes: Crash.samples, hangs: Hang.samples))
+            incidents: .init(
+                .success(DeviceIncidents(crashes: Crash.samples, hangs: Hang.samples)),
+                deviceID: DeviceSummary.samples[0].id
+            )
         )
     }
 }
