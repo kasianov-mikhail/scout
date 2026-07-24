@@ -30,6 +30,10 @@ let package = Package(
             name: "LookupIndex",
             targets: ["LookupIndex"]
         ),
+        .library(
+            name: "DemoConnector",
+            targets: ["DemoConnector"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
@@ -79,6 +83,13 @@ let package = Package(
             dependencies: [
                 "Scout"
             ]
+        ),
+        .target(
+            name: "DemoConnector",
+            dependencies: [
+                "Scout"
+            ],
+            path: "Sources/Connectors/Demo"
         ),
         .target(
             name: "Support",
@@ -136,6 +147,16 @@ let package = Package(
                 "Support",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
             ]
+        ),
+        .testTarget(
+            name: "DemoConnectorTests",
+            dependencies: [
+                "DemoConnector",
+                "ScoutUI",
+                "Scout",
+                "Support",
+            ],
+            path: "Tests/Connectors/Demo"
         ),
     ]
 )
