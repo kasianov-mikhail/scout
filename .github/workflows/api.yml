@@ -22,7 +22,7 @@ jobs:
   gate:
     name: gate
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 190
 
     permissions:
       contents: read
