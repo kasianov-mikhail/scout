@@ -89,13 +89,14 @@ struct HomeList: View {
 #Preview("Loading") {
     NavigationStack {
         HomeList(
-            activities: nil,
-            retention: nil,
-            sessions: nil,
-            releases: .samples,
-            logs: nil,
-            devices: nil,
-            alerts: [.firingSample, .armedSample]
+            path: .constant([]),
+            activities: .init(),
+            retention: .init(),
+            sessions: .init(eventName: "Session", periods: Period.summary),
+            releases: .init().holding(.samples),
+            logs: .init(),
+            devices: .init(),
+            alerts: .init().holding([.firingSample, .armedSample])
         )
         .navigationTitle(en: "Home")
     }
@@ -105,13 +106,14 @@ struct HomeList: View {
 #Preview("Full") {
     NavigationStack {
         HomeList(
-            activities: .samples,
-            retention: .samples,
-            sessions: .samples,
-            releases: .samples,
-            logs: MetricSeries.samples(for: .today),
-            devices: .sample,
-            alerts: [.firingSample, .armedSample]
+            path: .constant([]),
+            activities: .init().holding(.samples),
+            retention: .init().holding(.samples),
+            sessions: .init(eventName: "Session", periods: Period.summary).holding(.samples),
+            releases: .init().holding(.samples),
+            logs: .init().holding(acrossAllPeriods: MetricSeries.samples(for: .today)),
+            devices: .init().holding(.sample),
+            alerts: .init().holding([.firingSample, .armedSample])
         )
         .navigationTitle(en: "Home")
     }
@@ -121,13 +123,14 @@ struct HomeList: View {
 #Preview("Empty") {
     NavigationStack {
         HomeList(
-            activities: [],
-            retention: [],
-            sessions: [],
-            releases: [],
-            logs: [],
-            devices: .empty,
-            alerts: []
+            path: .constant([]),
+            activities: .init().holding([]),
+            retention: .init().holding([]),
+            sessions: .init(eventName: "Session", periods: Period.summary).holding([]),
+            releases: .init().holding([]),
+            logs: .init().holding(acrossAllPeriods: []),
+            devices: .init().holding(.empty),
+            alerts: .init().holding([])
         )
         .navigationTitle(en: "Home")
     }

@@ -113,6 +113,6 @@ private struct RetentionHeroChart: View {
 
 #Preview("RetentionHeroChartView") {
     NavigationStack {
-        RetentionHeroChartView(provider: RetentionProvider().holding(.samples))
+        RetentionHeroChartView(provider: .init().holding(.samples))
     }
 }

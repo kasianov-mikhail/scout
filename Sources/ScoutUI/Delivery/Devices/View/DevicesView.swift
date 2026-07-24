@@ -64,12 +64,12 @@ struct DevicesView: View {
 
 #Preview("Devices") {
     NavigationStack {
-        DevicesView(provider: DevicesProvider().holding(.sample))
+        DevicesView(provider: .init().holding(.sample))
     }
 }
 
 #Preview("Devices — Empty") {
     NavigationStack {
-        DevicesView(provider: DevicesProvider().holding(.empty))
+        DevicesView(provider: .init().holding(.empty))
     }
 }

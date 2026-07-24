@@ -47,7 +47,7 @@ struct HangListView: View {
 
 #Preview {
     NavigationStack {
-        HangListView(provider: IncidentProvider<Hang>().holding(.samples))
+        HangListView(provider: .init().holding(.samples))
     }
     .environmentObject(Tint())
 }

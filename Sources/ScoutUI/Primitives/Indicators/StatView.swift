@@ -95,7 +95,7 @@ extension EnvironmentValues {
         StatView(
             showList: true,
             extent: ChartExtent(period: .yesterday),
-            stat: StatProvider(eventName: "app_launch", periods: Period.allCases).holding([])
+            stat: .init(eventName: "app_launch", periods: Period.allCases).holding([])
         )
         .navigationTitle(en: "App Launch")
         .environmentObject(Tint())

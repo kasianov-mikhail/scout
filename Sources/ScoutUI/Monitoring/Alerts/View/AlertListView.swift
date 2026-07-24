@@ -127,13 +127,13 @@ private struct AlertChip: View {
 
 #Preview {
     NavigationStack {
-        AlertListView(provider: AlertProvider().holding([.firingSample, .armedSample]))
+        AlertListView(provider: .init().holding([.firingSample, .armedSample]))
     }
 }
 
 #Preview("Empty") {
     NavigationStack {
-        AlertListView(provider: AlertProvider().holding([]))
+        AlertListView(provider: .init().holding([]))
     }
 }
 
