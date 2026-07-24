@@ -87,7 +87,6 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write
 
     strategy:
       # Each leg reports on its own. Cancelling the siblings on the first
@@ -98,9 +97,10 @@ jobs:
       fail-fast: false
       matrix:
         # Coverage is collected on one leg only: the reports differ between
-        # legs by fractions of a percent, and instrumentation, xcresult
-        # conversion, and the Codecov upload cost minutes on every run. The
-        # iOS 26 leg carries it because the snapshot suites only execute there.
+        # legs by fractions of a percent, and instrumentation and the xccov
+        # report cost minutes on every run. The report goes to the step
+        # summary; nothing is uploaded anywhere. The iOS 26 leg carries it
+        # because the snapshot suites only execute there.
         include:
           # iOS 16 and 17 are not built-in runtimes on the macos-15 image, and a
           # bare -downloadPlatform iOS only fetches the newest runtime. Pin an
