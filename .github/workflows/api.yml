@@ -69,9 +69,23 @@ jobs:
       # library module the package vends without also building the test
       # targets — Scout no longer re-exports the adapters transitively now
       # that the umbrella target is gone, so each one needs its own build.
+      #
+      # The list is read from the manifest's library products, the same source
+      # dump-api-set.sh derives its module list from, so the two cannot drift
+      # apart and a newly vended library is covered without editing this file.
+      # SwiftPM names a scheme after the product, so this reads product names
+      # while the script reads the targets behind them. An empty list means the
+      # manifest could not be read; building nothing would compare an empty
+      # current set against the baseline and report every symbol as removed.
       - name: Dump current API
         run: |
-          for scheme in Scout NativeConnector HostedConnector ScoutUI LookupIndex DemoConnector; do
+          set -eo pipefail
+          schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
+          if [ -z "$schemes" ]; then
+            echo "::error::No library products found in the manifest."
+            exit 1
+          fi
+          for scheme in $schemes; do
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
@@ -111,30 +125,30 @@ jobs:
           # The baseline resolves dependencies fresh (Package.resolved is not
           # committed), so a dependency release that breaks the old code makes
           # the baseline unbuildable. Nothing to compare against then — skip.
-          # NativeConnector/HostedConnector/ScoutUI/Cache/DemoConnector may not
-          # exist as their own schemes on an older base (pre-split, or
-          # pre-umbrella-removal where Scout alone covered everything
-          # transitively); build them best-effort.
-          if ! xcodebuild \
-            -scheme Scout \
-            -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath /tmp/dd-baseline \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -skipMacroValidation \
-            -quiet \
-            build; then
-            echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
+          #
+          # The scheme list comes from the baseline's own manifest, so every
+          # scheme in it exists at that commit however far back it is, and a
+          # build that fails is a real failure rather than a product that did
+          # not exist yet. Swallowing it would drop that module from the
+          # baseline set and quietly stop reporting removals from it — and the
+          # truncated set would then be cached against this base SHA.
+          schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
+          if [ -z "$schemes" ]; then
+            echo "The baseline manifest vends no library products; nothing to compare against."
             exit 0
           fi
-          for scheme in NativeConnector HostedConnector ScoutUI LookupIndex DemoConnector; do
-            xcodebuild \
+          for scheme in $schemes; do
+            if ! xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
               -derivedDataPath /tmp/dd-baseline \
               -clonedSourcePackagesDirPath /tmp/spm \
               -skipMacroValidation \
               -quiet \
-              build || true
+              build; then
+              echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
+              exit 0
+            fi
           done
           "$GITHUB_WORKSPACE/.github/scripts/dump-api-set.sh" /tmp/dd-baseline /tmp/baseline.set
 
