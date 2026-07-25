@@ -12,8 +12,30 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scope:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    outputs:
+      code: ${{ steps.filter.outputs.code }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          filter: blob:none
+
+      - name: Detect code changes
+        id: filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: .github/scripts/detect-code-changes.sh
+
   gate:
     name: gate
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 190
 
@@ -156,7 +178,7 @@ jobs:
 
   api-gate:
     name: api-gate
-    needs: [gate, api-breakage]
+    needs: [scope, gate, api-breakage]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -164,6 +186,14 @@ jobs:
     steps:
       - name: Require the API diff to pass
         run: |
+          if [ "${{ needs.scope.result }}" != "success" ]; then
+            echo "::error::The scope job did not succeed (${{ needs.scope.result }})."
+            exit 1
+          fi
+          if [ "${{ needs.scope.outputs.code }}" != "true" ]; then
+            echo "Nothing outside the docs changed; the public API cannot have moved."
+            exit 0
+          fi
           if [ "${{ needs.gate.result }}" != "success" ]; then
             echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
             exit 1
