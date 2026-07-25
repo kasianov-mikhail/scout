@@ -6,9 +6,9 @@ summary="$(xcrun xcresulttool get test-results summary \
 passed="$(echo "$summary" | jq '.passedTests // empty' || true)"
 case "$passed" in
   '' | *[!0-9]*)
-    echo "::warning::Could not read a passedTests count from the result bundle; skipping the ran-something check."
+    echo "::error::Could not read a passedTests count from the result bundle, so there is no proof the contract suite ran anything."
     printf '%s\n' "$summary" | head -c 2000 || true
-    exit 0
+    exit 1
     ;;
 esac
 echo "Contract tests passed: $passed"
