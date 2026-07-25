@@ -1,9 +1,9 @@
 name: Docs
 
-# Builds the Scout DocC documentation and publishes it to GitHub Pages. Runs on
-# every push to main (and on demand) so the hosted docs track the shipped API;
-# the two jobs split generation (macOS, needs the Swift toolchain) from
-# deployment (ubuntu, just uploads the artifact to Pages).
+# Builds the DocC documentation and publishes it to GitHub Pages. Runs on every
+# push to main (and on demand) so the hosted docs track the shipped API; the two
+# jobs split generation (macOS, needs the Swift toolchain) from deployment
+# (ubuntu, just uploads the artifact to Pages).
 on:
   push:
     branches: [ "main" ]
@@ -26,12 +26,30 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # Every library product the package vends, not just Scout: the connectors
+      # and ScoutUI carry the setup and transport API integrators actually
+      # adopt, and documenting Scout alone left all of it unpublished. Combined
+      # documentation is what lets several targets share one archive.
+      #
+      # The targets behind those products are read from the manifest rather than
+      # listed here, so a newly vended library cannot end up built by CI and
+      # shipped to integrators while silently missing from the published docs.
       - name: Generate documentation
         run: |
+          set -eo pipefail
+          targets=()
+          while IFS= read -r target; do
+            targets+=(--target "$target")
+          done < <(swift package dump-package | jq -r '.products[] | select(.type.library) | .targets[]' | sort -u)
+          if [ "${#targets[@]}" -eq 0 ]; then
+            echo "::error::No library targets found in the manifest."
+            exit 1
+          fi
           swift package \
             --allow-writing-to-directory .docs \
             generate-documentation \
-            --target Scout \
+            "${targets[@]}" \
+            --enable-experimental-combined-documentation \
             --disable-indexing \
             --transform-for-static-hosting \
             --hosting-base-path scout \
