@@ -75,6 +75,7 @@ cohorts = RetentionCohort.build(
 
 - Calls with one or two arguments that fit within the limit stay on a single line.
 - This is the opposite of the signature rule above: declarations stay single-line no matter how many parameters they take, and only calls expand.
+- The three-argument threshold applies to `Sources`. Under `Tests`, calls stay compact on one line until they exceed the limit — expanding every `make…`/fixture call there costs readability instead of buying it.
 
 ## Array extensions
 
