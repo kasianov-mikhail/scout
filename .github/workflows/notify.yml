@@ -12,13 +12,25 @@ on:
 
 jobs:
   notify:
-    if: github.event.workflow_run.conclusion == 'success'
+    # Only upstream: a fork has no GH_PAT, so the dispatch would send a bare
+    # bearer token, take the 401 below and turn the fork's main red on every
+    # green build.
+    if: github.repository == 'kasianov-mikhail/scout' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
 
     steps:
+      # --fail-with-body turns an HTTP error into a non-zero exit while still
+      # printing GitHub's error body — without it an expired or rotated GH_PAT
+      # (401) or a renamed repository (404) left the step green and scout-ip
+      # quietly stopped receiving revisions, and with a plain --fail the log
+      # would show a bare status code instead of which of the two it was. The
+      # retries cover a transient 5xx from api.github.com, which should not
+      # redden main.
       - name: Trigger scout-ip
         run: |
-          curl -X POST \
+          curl --fail-with-body -sS \
+            --retry 3 --retry-all-errors --retry-delay 5 \
+            -X POST \
             -H "Authorization: Bearer ${{ secrets.GH_PAT }}" \
             -H "Accept: application/vnd.github+json" \
             https://api.github.com/repos/kasianov-mikhail/scout-ip/dispatches \
