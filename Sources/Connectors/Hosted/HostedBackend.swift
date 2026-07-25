@@ -15,6 +15,7 @@ extension Backend {
             database: HTTPDatabase(url: url, apiKey: apiKey),
             checkAvailability: { true },
             displayName: url.host ?? url.absoluteString,
+            engine: .server,
             serverInfo: ServerInfo(
                 endpoint: url.hostWithPort ?? url.absoluteString,
                 hasAPIKey: apiKey != nil,

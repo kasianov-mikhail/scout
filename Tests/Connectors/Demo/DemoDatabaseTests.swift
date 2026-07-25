@@ -77,7 +77,6 @@ import Testing
         #expect(try await database.metricSeries(Int.self, categories: RecorderBuckets.categories, in: range).count > 0)
     }
 
-    // Timers are seconds, so a plausible request duration has to stay far below a minute.
     @Test func timerSeriesAreRecordedInSeconds() async throws {
         let series = try await database.metricSeries(
             Double.self, category: Telemetry.Export.timer.rawValue, in: range)
@@ -101,6 +100,34 @@ import Testing
 
         #expect(series.count == 1)
         #expect(try #require(series.first).points.count > 1)
+    }
+
+    @Test func pagedReadsContinueThroughTheCursor() async throws {
+        let query = RecordQuery(
+            recordType: Session.self, sort: [.init(field: "start_date", ascending: false)])
+
+        var chunk = try await database.read(matching: query, fields: nil, limit: 25)
+        var pages = 1
+        var total = chunk.records.count
+
+        while let cursor = chunk.cursor {
+            chunk = try await database.readMore(from: cursor, fields: nil)
+            total += chunk.records.count
+            pages += 1
+        }
+
+        #expect(pages > 1)
+        #expect(try await total == records(Session.self).count)
+    }
+
+    @Test func stringFieldsSortLexicographically() async throws {
+        let query = RecordQuery(recordType: Session.self, sort: [.init(field: "app_version", ascending: true)])
+        let versions = try await database.read(matching: query, fields: nil).records.compactMap { record -> String? in
+            record["app_version"]
+        }
+
+        #expect(versions.count > 0)
+        #expect(versions == versions.sorted())
     }
 
     @Test func lookupResolvesSeededRecords() async throws {
