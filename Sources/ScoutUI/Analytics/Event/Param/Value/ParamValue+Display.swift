@@ -6,6 +6,8 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import SwiftUI
+
 extension ParamValue {
     /// Whether the value is a dictionary or an array.
     var isContainer: Bool {
@@ -49,6 +51,20 @@ extension ParamValue {
     enum Icon: Hashable {
         case symbol(String)
         case text(String)
+    }
+
+    /// The accent color of the value's kind.
+    var color: Color {
+        switch self {
+        case .string:
+            .primary
+        case .stringConvertible(let convertible):
+            convertible.color
+        case .dictionary:
+            .indigo
+        case .array:
+            .brown
+        }
     }
 }
 
@@ -94,6 +110,24 @@ extension ParamValue.Convertible {
             "link"
         case .date:
             "calendar"
+        }
+    }
+
+    /// The accent color of the scalar kind.
+    var color: Color {
+        switch self {
+        case .number:
+            .blue
+        case .boolean(true):
+            .green
+        case .boolean(false):
+            .red
+        case .uuid:
+            .purple
+        case .url:
+            .teal
+        case .date:
+            .orange
         }
     }
 }
