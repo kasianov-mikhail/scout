@@ -33,7 +33,9 @@ struct NetworkReport {
         var status: [String: [MetricSeries]] = [:]
 
         for singleSeries in series {
-            guard let category = singleSeries.category else { continue }
+            guard let category = singleSeries.category else {
+                continue
+            }
 
             if LatencyBuckets.index(of: category) != nil {
                 latency[singleSeries.name, default: []].append(singleSeries)

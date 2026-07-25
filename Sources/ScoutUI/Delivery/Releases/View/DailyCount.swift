@@ -21,7 +21,9 @@ extension DailyCount {
 
         var counts: [Date: Int] = [:]
         for record in records {
-            guard let date = record.date else { continue }
+            guard let date = record.date else {
+                continue
+            }
             counts[calendar.startOfDay(for: date), default: 0] += 1
         }
 

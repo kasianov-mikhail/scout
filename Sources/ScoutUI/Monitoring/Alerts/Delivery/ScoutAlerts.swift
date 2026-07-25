@@ -48,7 +48,9 @@
         }
 
         private static func refresh(engine: AlertEngine, backends: [Backend]) async {
-            guard let backend = backends.active else { return }
+            guard let backend = backends.active else {
+                return
+            }
             _ = try? await engine.run(in: backend.cachedDatabase)
         }
     }

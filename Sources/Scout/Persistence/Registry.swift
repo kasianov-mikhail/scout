@@ -30,7 +30,9 @@ extension UserDefaults: Registry {
     }
 
     func resolve(_ key: String) -> UUID? {
-        guard let string = string(forKey: key) else { return nil }
+        guard let string = string(forKey: key) else {
+            return nil
+        }
         return UUID(uuidString: string)
     }
 }

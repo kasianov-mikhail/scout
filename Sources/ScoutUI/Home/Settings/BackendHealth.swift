@@ -127,7 +127,9 @@ extension BackendHealth {
     }
 
     var pingSpreadLabel: String? {
-        guard let low = pings.min(), let high = pings.max() else { return nil }
+        guard let low = pings.min(), let high = pings.max() else {
+            return nil
+        }
         let average = pings.reduce(0, +) / pings.count
         return "\(low) / \(average) / \(high) ms"
     }

@@ -112,7 +112,9 @@ enum DatabaseCacheRegistry {
     private static var state: CacheState = .unresolved
 
     static func database(for backend: Backend) -> any Database {
-        guard let cache = sharedCache() else { return backend.database }
+        guard let cache = sharedCache() else {
+            return backend.database
+        }
         return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
     }
 

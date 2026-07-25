@@ -15,7 +15,9 @@ package protocol RecordValueConvertible {
 
 extension String: RecordValueConvertible {
     package init?(recordValue: RecordValue) {
-        guard case .string(let value) = recordValue else { return nil }
+        guard case .string(let value) = recordValue else {
+            return nil
+        }
         self = value
     }
 
@@ -24,7 +26,9 @@ extension String: RecordValueConvertible {
 
 extension Int: RecordValueConvertible {
     package init?(recordValue: RecordValue) {
-        guard case .int(let value) = recordValue else { return nil }
+        guard case .int(let value) = recordValue else {
+            return nil
+        }
         self = Int(value)
     }
 
@@ -33,7 +37,9 @@ extension Int: RecordValueConvertible {
 
 extension Int64: RecordValueConvertible {
     package init?(recordValue: RecordValue) {
-        guard case .int(let value) = recordValue else { return nil }
+        guard case .int(let value) = recordValue else {
+            return nil
+        }
         self = value
     }
 
@@ -42,7 +48,9 @@ extension Int64: RecordValueConvertible {
 
 extension Double: RecordValueConvertible {
     package init?(recordValue: RecordValue) {
-        guard case .double(let value) = recordValue else { return nil }
+        guard case .double(let value) = recordValue else {
+            return nil
+        }
         self = value
     }
 
@@ -51,7 +59,9 @@ extension Double: RecordValueConvertible {
 
 extension Date: RecordValueConvertible {
     package init?(recordValue: RecordValue) {
-        guard case .date(let value) = recordValue else { return nil }
+        guard case .date(let value) = recordValue else {
+            return nil
+        }
         self = value
     }
 
@@ -60,7 +70,9 @@ extension Date: RecordValueConvertible {
 
 extension Data: RecordValueConvertible {
     package init?(recordValue: RecordValue) {
-        guard case .bytes(let value) = recordValue else { return nil }
+        guard case .bytes(let value) = recordValue else {
+            return nil
+        }
         self = value
     }
 
@@ -69,7 +81,9 @@ extension Data: RecordValueConvertible {
 
 extension Array: RecordValueConvertible where Element == String {
     package init?(recordValue: RecordValue) {
-        guard case .strings(let value) = recordValue else { return nil }
+        guard case .strings(let value) = recordValue else {
+            return nil
+        }
         self = value
     }
 

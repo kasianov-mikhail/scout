@@ -15,7 +15,9 @@ struct AlertStatus: Equatable {
 
 extension AlertStatus {
     var detail: String? {
-        guard let current = reading.recent.last else { return nil }
+        guard let current = reading.recent.last else {
+            return nil
+        }
         return "\(rule.metric.format(current)) — \(rule.condition.summary(format: rule.metric.format))"
     }
 

@@ -41,9 +41,15 @@ enum CachedMetricSeries {
         var groups = SeriesGroups()
 
         for record in cached {
-            guard case .date(let date)? = record.fields["date"] else { continue }
-            guard case .string(let name)? = record.fields["name"] else { continue }
-            guard let value = metricValue(record.fields["value"]) else { continue }
+            guard case .date(let date)? = record.fields["date"] else {
+                continue
+            }
+            guard case .string(let name)? = record.fields["name"] else {
+                continue
+            }
+            guard let value = metricValue(record.fields["value"]) else {
+                continue
+            }
 
             let category: String? =
                 if case .string(let category)? = record.fields["category"] { category } else { nil }

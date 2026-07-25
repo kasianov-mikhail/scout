@@ -65,7 +65,9 @@ struct IncidentGroupExport<Element: Incident> {
     }
 
     private func row(for element: Element) -> ExportLine? {
-        guard let date = element.date else { return nil }
+        guard let date = element.date else {
+            return nil
+        }
 
         var ids: [String] = []
         if let deviceID = element.deviceID {

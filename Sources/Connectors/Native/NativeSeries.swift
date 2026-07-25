@@ -69,7 +69,9 @@ struct NativeSeries {
 
         var latest: [GroupKey: [Date: (date: Date, sample: Double)]] = [:]
         for record in records {
-            guard case .date(let date)? = record.values["date"] else { continue }
+            guard case .date(let date)? = record.values["date"] else {
+                continue
+            }
             let name: String? = record["name"]
             let category: String? = record["category"]
             guard query.name == nil || name == query.name else { continue }
@@ -182,7 +184,9 @@ struct NativeSeries {
             entity: entity, view: EntityCatalog.metricSeriesView, from: from, to: query.range.upperBound)
 
         for point in points where point.date >= from {
-            guard let (category, metric) = EntityCatalog.decodeSeriesKey(point.group) else { continue }
+            guard let (category, metric) = EntityCatalog.decodeSeriesKey(point.group) else {
+                continue
+            }
 
             guard query.name == nil || metric == query.name else { continue }
             guard query.category == nil || category == query.category else { continue }
@@ -214,7 +218,9 @@ struct NativeSeries {
         let records = try await store.read(
             entity: entity, filters: filters, fields: [dateField, "app_version", "install_id"])
         var visits = records.compactMap { record -> (date: Date, version: String?, install: String?)? in
-            guard case .date(let date)? = record.values[dateField] else { return nil }
+            guard case .date(let date)? = record.values[dateField] else {
+                return nil
+            }
             let version: String? = record["app_version"]
             let install: String? = record["install_id"]
             return (date, version, install)

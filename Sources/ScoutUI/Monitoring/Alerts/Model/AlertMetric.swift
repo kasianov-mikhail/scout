@@ -41,7 +41,9 @@ extension AlertMetric {
     }
 
     private func eventPoints(in database: DatabaseReader, range: Range<Date>) async throws -> [ChartPoint<Int>] {
-        guard case .eventCount(let name) = self else { return [] }
+        guard case .eventCount(let name) = self else {
+            return []
+        }
 
         let series = try await database.series(
             matching: SeriesQuery(name: name, bucket: .hour, range: range)

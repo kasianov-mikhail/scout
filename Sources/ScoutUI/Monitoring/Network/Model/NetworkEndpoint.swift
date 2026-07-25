@@ -24,7 +24,9 @@ struct NetworkEndpoint: Identifiable {
     }
 
     private static func method(in name: String) -> String? {
-        guard let first = name.split(separator: " ").first.map(String.init) else { return nil }
+        guard let first = name.split(separator: " ").first.map(String.init) else {
+            return nil
+        }
         return methods.contains(first) ? first : nil
     }
 

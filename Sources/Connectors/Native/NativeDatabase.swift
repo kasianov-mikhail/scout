@@ -147,8 +147,12 @@ extension NativeDatabase {
             entity: entity, filters: Self.dateFilters(dateField, in: range), fields: [dateField, idField])
 
         return records.compactMap { record -> (date: Date, id: String)? in
-            guard case .date(let date)? = record.values[dateField] else { return nil }
-            guard case .string(let id)? = record.values[idField] else { return nil }
+            guard case .date(let date)? = record.values[dateField] else {
+                return nil
+            }
+            guard case .string(let id)? = record.values[idField] else {
+                return nil
+            }
             return (date, id)
         }
     }

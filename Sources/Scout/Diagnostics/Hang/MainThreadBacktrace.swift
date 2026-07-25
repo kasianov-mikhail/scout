@@ -20,7 +20,9 @@ enum MainThreadBacktrace {
     static let maximumFrameCount = 64
 
     static func capture() -> [String] {
-        guard let mainThread = mainMachThread() else { return [] }
+        guard let mainThread = mainMachThread() else {
+            return []
+        }
 
         // Only raw return addresses are collected while the main thread is
         // suspended — no malloc, no dyld lock. If the thread is suspended
@@ -37,14 +39,18 @@ enum MainThreadBacktrace {
         guard thread_suspend(thread) == KERN_SUCCESS else { return 0 }
         defer { thread_resume(thread) }
 
-        guard let (pc, initialFP) = registerState(of: thread) else { return 0 }
+        guard let (pc, initialFP) = registerState(of: thread) else {
+            return 0
+        }
 
         buffer[0] = pc
         var count = 1
         var fp = initialFP
 
         while count < buffer.count {
-            guard fp != 0, let frame = readFrame(at: fp), frame.returnAddress != 0 else { break }
+            guard fp != 0, let frame = readFrame(at: fp), frame.returnAddress != 0 else {
+                break
+            }
             buffer[count] = frame.returnAddress
             count += 1
             fp = frame.previousFP

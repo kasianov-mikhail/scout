@@ -120,7 +120,9 @@ private struct AlertChip: View {
     }
 
     private var text: String {
-        guard let current = status.reading.recent.last else { return status.rule.metric.title }
+        guard let current = status.reading.recent.last else {
+            return status.rule.metric.title
+        }
         return "\(status.rule.metric.title) \(status.rule.metric.format(current))"
     }
 }
