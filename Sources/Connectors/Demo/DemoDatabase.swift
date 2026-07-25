@@ -71,7 +71,9 @@ extension RecordQuery {
         { lhs, rhs in
             for key in sort {
                 let order = RecordValue.compare(lhs.fields[key.field], rhs.fields[key.field])
-                guard order != .orderedSame else { continue }
+                guard order != .orderedSame else {
+                    continue
+                }
                 return key.ascending ? order == .orderedAscending : order == .orderedDescending
             }
             return false
