@@ -164,9 +164,14 @@ jobs:
   # The required status check. Always runs so it reports on every PR; passes
   # when `contract` succeeded or was not applicable (skipped on PRs that leave
   # the wire surface untouched), fails when `contract` failed or `changes` broke.
+  #
+  # `gate` is in `needs` because a failed gate skips `contract` too, and a skip
+  # is indistinguishable here from "the wire surface was untouched" — without
+  # this the gate timing out would report green on a PR that rewrote the wire
+  # format and never ran the suite.
   contract-gate:
     name: contract-gate
-    needs: [changes, contract]
+    needs: [changes, gate, contract]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -177,6 +182,14 @@ jobs:
             echo "::error::The changes job did not succeed (${{ needs.changes.result }})."
             exit 1
           fi
+          # `gate` is PR-only, so a skip is expected on push/schedule/dispatch.
+          case "${{ needs.gate.result }}" in
+            success | skipped) ;;
+            *)
+              echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
+              exit 1
+              ;;
+          esac
           result="${{ needs.contract.result }}"
           echo "contract job result: $result"
           case "$result" in
