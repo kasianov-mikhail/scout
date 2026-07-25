@@ -10,6 +10,12 @@ on:
     types: [completed]
     branches: [main]
 
+# The dispatch authenticates with GH_PAT, so the workflow token itself needs
+# nothing beyond the default read scope — without this block it would inherit
+# whatever the repository default is, up to and including write.
+permissions:
+  contents: read
+
 jobs:
   notify:
     # Only upstream: a fork has no GH_PAT, so the dispatch would send a bare
@@ -17,6 +23,7 @@ jobs:
     # green build.
     if: github.repository == 'kasianov-mikhail/scout' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 5
 
     steps:
       # --fail-with-body turns an HTTP error into a non-zero exit while still
