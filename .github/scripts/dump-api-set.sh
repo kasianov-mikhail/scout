@@ -17,7 +17,8 @@ dd="$1"
 out="$2"
 products="$dd/Build/Products/Debug-iphonesimulator"
 sdk="$(xcrun --sdk iphonesimulator --show-sdk-path)"
-ios="$(swift package dump-package | jq -r '.platforms[] | select(.platformName == "ios") | .version')"
+manifest="$(swift package dump-package)"
+ios="$(echo "$manifest" | jq -r '.platforms[] | select(.platformName == "ios") | .version')"
 
 # swift-api-digester loads modules through the Clang importer, which doesn't
 # discover a Swift package's C-target module maps on its own — point it at the
@@ -27,21 +28,29 @@ for modulemap in "$dd"/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesim
   [ -f "$modulemap" ] && cc_flags+=(-Xcc -fmodule-map-file="$modulemap")
 done
 
-# The package's own Swift library modules are the built Scout* modules and the
-# connector modules, minus the external scout-db products; CScoutHang is a C
-# target with no .swiftmodule.
+# The modules to dump are the targets the package vends as library products,
+# read from the manifest rather than spelled out here: a hardcoded list turns
+# vacuous the moment a target is renamed, which is how the module formerly
+# called Cache silently dropped out of the comparison. CScoutHang is a C target
+# with no .swiftmodule and vends no library product, and the external scout-db
+# products are not in this manifest's products at all.
 module_flags=()
-for swiftmodule in "$products"/Scout*.swiftmodule "$products"/NativeConnector.swiftmodule "$products"/HostedConnector.swiftmodule "$products"/Cache.swiftmodule; do
-  # A .swiftmodule can be either a file or a multi-arch directory, and the
-  # explicit non-Scout* globs stay literal when they don't match — so accept
-  # either kind of entry and skip anything that doesn't exist.
-  [ -e "$swiftmodule" ] || continue
-  name="$(basename "$swiftmodule" .swiftmodule)"
-  case "$name" in
-    ScoutDB | ScoutDBTesting) continue ;;
-  esac
+found=0
+while IFS= read -r name; do
+  # A .swiftmodule can be either a file or a multi-arch directory, so test for
+  # either kind of entry; a product whose scheme the workflow did not build has
+  # none at all.
+  [ -e "$products/$name.swiftmodule" ] || continue
   module_flags+=(-module "$name")
-done
+  found=$((found + 1))
+done < <(echo "$manifest" | jq -r '.products[] | select(.type.library) | .targets[]' | sort -u)
+
+# An empty dump would compare as "every symbol removed" on the current side and
+# as "nothing to compare" on the baseline side, so stop instead of guessing.
+if [ "$found" -eq 0 ]; then
+  echo "No library product modules were built into $products" >&2
+  exit 1
+fi
 
 dump="$(mktemp)"
 xcrun swift-api-digester -dump-sdk "${module_flags[@]}" -o "$dump" \
