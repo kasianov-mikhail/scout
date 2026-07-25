@@ -37,6 +37,7 @@ jobs:
             xcodebuild \
               -scheme "$scheme" \
               -destination 'generic/platform=iOS Simulator' \
+              -skipMacroValidation \
               ARCHS=arm64 \
               build
           done
