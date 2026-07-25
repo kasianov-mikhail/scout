@@ -6,7 +6,9 @@ name: Swift
 # (xcode-27), so both old-SDK breakage and new-SDK regressions surface here.
 # Coverage is collected on the iOS 26 leg only — the reports differ between legs
 # by fractions of a percent, and that leg is the one where the snapshot suites
-# run. The stable iOS 18 / iOS 26 legs are the required checks on main.
+# run. `tests-gate` is the required check on main rather than the individual
+# legs: a leg that is skipped instead of run reports a conclusion branch
+# protection accepts, so only an always-running summary job can hold the line.
 #
 # `pull_request` carries no base-branch filter on purpose. A PR stacked on
 # another PR's branch would otherwise skip this workflow entirely, and the gate
@@ -93,8 +95,8 @@ jobs:
       # Each leg reports on its own. Cancelling the siblings on the first
       # failure saved runner minutes but let the least stable leg — the
       # arm64-only xcode-27 public-preview image — cancel the stable iOS 18 and
-      # iOS 26 legs whose checks are required on main, turning one flake into a
-      # red PR and a full 20-minute re-run of the whole matrix.
+      # iOS 26 legs that `tests-gate` reports on, turning one flake into a red
+      # PR and a full 20-minute re-run of the whole matrix.
       fail-fast: false
       matrix:
         # Coverage is collected on one leg only: the reports differ between
@@ -129,9 +131,9 @@ jobs:
             ios: 26
             coverage: true
           # Public-preview image, labelled by Xcode major version rather than
-          # the OS and arm64-only. It runs alongside the stable legs and is a
-          # required check, so its failures block merges. Snapshot baselines are
-          # iOS 26 only, so those suites skip on this leg.
+          # the OS and arm64-only. It runs alongside the stable legs and feeds
+          # `tests-gate` like the rest, so its failures block merges. Snapshot
+          # baselines are iOS 26 only, so those suites skip on this leg.
           - os: xcode-27
             device: iPhone 17
             ios: 27
@@ -218,3 +220,38 @@ jobs:
             xcrun xccov view --report --only-targets TestResults.xcresult
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # The required status check for the matrix. `tests` is skipped rather than
+  # failed whenever `lint` or `gate` does not succeed, and branch protection
+  # counts a skipped required check as satisfied — so a gate that times out on
+  # a backed-up runner queue, or trips over a transient `gh api` error, would
+  # otherwise let a PR merge with the matrix never having run. This job always
+  # runs and passes only when the legs actually succeeded. Make
+  # `Swift / tests-gate` the required check, not the individual legs.
+  tests-gate:
+    name: tests-gate
+    needs: [lint, gate, tests]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Require the matrix to pass
+        run: |
+          if [ "${{ needs.lint.result }}" != "success" ]; then
+            echo "::error::Lint did not succeed (${{ needs.lint.result }})."
+            exit 1
+          fi
+          # `gate` is PR-only, so a skip is expected on a push to main.
+          case "${{ needs.gate.result }}" in
+            success | skipped) ;;
+            *)
+              echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
+              exit 1
+              ;;
+          esac
+          if [ "${{ needs.tests.result }}" != "success" ]; then
+            echo "::error::The iOS test matrix did not succeed (${{ needs.tests.result }})."
+            exit 1
+          fi
+          echo "Gate passes."

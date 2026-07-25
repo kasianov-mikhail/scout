@@ -3,6 +3,9 @@ name: API
 # No paths filter: this is a required status check, and a required check that
 # never runs blocks the merge. The labeled/unlabeled triggers let the
 # api-breaking label re-evaluate an intentional break without a new push.
+# Make `API / api-gate` the required check, not `API / api-breakage`: the diff
+# job is skipped rather than failed when the gate does not succeed, and branch
+# protection accepts a skipped check.
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
@@ -199,3 +202,27 @@ jobs:
           echo "requires a major release. If the break is intentional, add the"
           echo "api-breaking label to this PR to acknowledge it."
           exit 1
+
+  # The required status check. `api-breakage` carries a bare `needs: gate`, so a
+  # gate that fails skips it rather than failing it, and branch protection reads
+  # a skipped check as satisfied. This job always runs and passes only when the
+  # diff actually succeeded.
+  api-gate:
+    name: api-gate
+    needs: [gate, api-breakage]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - name: Require the API diff to pass
+        run: |
+          if [ "${{ needs.gate.result }}" != "success" ]; then
+            echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
+            exit 1
+          fi
+          if [ "${{ needs.api-breakage.result }}" != "success" ]; then
+            echo "::error::The API breakage check did not pass (${{ needs.api-breakage.result }})."
+            exit 1
+          fi
+          echo "Gate passes."
