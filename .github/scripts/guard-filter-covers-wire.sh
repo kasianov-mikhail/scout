@@ -21,9 +21,9 @@ check() {
   matched="$matched$hits"$'\n'
 }
 
-check HTTPDatabase 'HTTPDatabase'
-check HTTPQuery 'HTTPQuery'
-check HTTPRecord 'HTTPRecord'
+check HTTPDatabase '(struct|enum|final class|class) +HTTPDatabase\b'
+check HTTPQuery '(struct|enum|final class|class) +HTTPQuery\b'
+check HTTPRecord '(struct|enum|final class|class) +HTTPRecord\b'
 check RecordChunk '(struct|enum|final class|class) +RecordChunk\b'
 check RecordCursor '(struct|enum|final class|class) +RecordCursor\b'
 
