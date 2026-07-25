@@ -15,7 +15,9 @@ enum SystemInfo {
         var info = utsname()
         uname(&info)
         return Mirror(reflecting: info.machine).children.reduce(into: "") { identifier, element in
-            guard let scalar = element.value as? Int8, scalar != 0 else { return }
+            guard let scalar = element.value as? Int8, scalar != 0 else {
+                return
+            }
             identifier.append(Character(UnicodeScalar(UInt8(scalar))))
         }
     }

@@ -25,7 +25,9 @@ extension MarkerEntry {
     static func mark(name: String, install: InstallEntry?, appVersion: String?, in context: NSManagedObjectContext)
         throws
     {
-        guard let appVersion, let install else { return }
+        guard let appVersion, let install else {
+            return
+        }
 
         let request = NSFetchRequest<MarkerEntry>(entityName: "MarkerEntry")
         request.predicate = NSPredicate(

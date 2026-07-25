@@ -37,7 +37,9 @@ final class BackendHealthProvider: ObservableObject {
     }
 
     func refresh(id: String) async {
-        guard let probe = backends.first(where: { $0.id == id })?.probe else { return }
+        guard let probe = backends.first(where: { $0.id == id })?.probe else {
+            return
+        }
         apply(await Self.measure(id: id, probe: probe))
     }
 
@@ -56,7 +58,9 @@ final class BackendHealthProvider: ObservableObject {
     }
 
     private func apply(_ result: ProbeResult) {
-        guard let index = backends.firstIndex(where: { $0.id == result.id }) else { return }
+        guard let index = backends.firstIndex(where: { $0.id == result.id }) else {
+            return
+        }
         backends[index] = backends[index].recording(status: result.status, latency: result.latency, at: Date())
     }
 }

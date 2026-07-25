@@ -30,7 +30,9 @@ struct AlertNotifier {
 
     func deliver(_ statuses: [AlertStatus]) async {
         for status in statuses {
-            guard let message = AlertMessage(status: status) else { continue }
+            guard let message = AlertMessage(status: status) else {
+                continue
+            }
 
             let content = UNMutableNotificationContent()
             content.title = message.title

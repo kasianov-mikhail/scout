@@ -25,7 +25,9 @@ extension RetentionCohort: Fixture {
             let size = 620 + (index * 173) % 540
 
             let retention = dayOffsets.map { day -> Double? in
-                guard day <= elapsed, let target = targets[day] else { return nil }
+                guard day <= elapsed, let target = targets[day] else {
+                    return nil
+                }
                 return day == 0 ? 1 : min(target * quality, 0.95)
             }
 

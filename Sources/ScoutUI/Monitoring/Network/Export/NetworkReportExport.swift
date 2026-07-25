@@ -15,7 +15,9 @@ struct NetworkReportExport {
 
     var text: String? {
         let endpoints = report.endpoints(in: range)
-        guard endpoints.count > 0 else { return nil }
+        guard endpoints.count > 0 else {
+            return nil
+        }
 
         var lines: [ExportLine] = [
             .heading(level: 1, title), .text(summary), .blank, .heading(level: 2, "Status codes"),

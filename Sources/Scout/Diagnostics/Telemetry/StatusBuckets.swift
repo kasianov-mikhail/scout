@@ -21,8 +21,12 @@ package enum StatusBuckets {
     }
 
     static func category(in dimensions: [(String, String)]) -> String? {
-        guard let value = dimensions.first(where: { $0.0 == dimension })?.1 else { return nil }
-        guard let code = Int(value) else { return nil }
+        guard let value = dimensions.first(where: { $0.0 == dimension })?.1 else {
+            return nil
+        }
+        guard let code = Int(value) else {
+            return nil
+        }
         return category(for: code)
     }
 

@@ -18,7 +18,9 @@ extension VisitEntry {
             request.predicate = NSPredicate(format: "day == %@", date.startOfDay as NSDate)
             request.fetchLimit = 1
 
-            guard try context.fetch(request).first == nil else { return }
+            guard try context.fetch(request).first == nil else {
+                return
+            }
 
             let visit = context.insert(VisitEntry.self)
             visit.visitID = UUID()

@@ -105,7 +105,9 @@ enum RecordCacheStore {
     // Data abort the process. Destroy anything without a valid SQLite header up front so only an
     // openable (or absent) store ever reaches ModelContainer; a valid store keeps its bytes.
     private static func storeHasSQLiteHeader(at url: URL) -> Bool {
-        guard let handle = try? FileHandle(forReadingFrom: url) else { return true }
+        guard let handle = try? FileHandle(forReadingFrom: url) else {
+            return true
+        }
         defer { try? handle.close() }
         let header = (try? handle.read(upToCount: 16)) ?? Data()
         if header.isEmpty { return true }

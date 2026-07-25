@@ -26,7 +26,9 @@ extension [Segment] {
 
     func percent(of segment: Segment) -> String {
         let total = self.total
-        guard total > 0 else { return "0%" }
+        guard total > 0 else {
+            return "0%"
+        }
         return "\(Int((Double(segment.count) / Double(total) * 100).rounded()))%"
     }
 }

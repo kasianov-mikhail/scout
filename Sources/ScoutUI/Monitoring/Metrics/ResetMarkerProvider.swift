@@ -39,7 +39,9 @@ final class ResetMarkerProvider: ObservableObject, Provider {
     }
 
     func dates(in range: Range<Date>) -> [Date] {
-        guard case .success(let dates)? = result else { return [] }
+        guard case .success(let dates)? = result else {
+            return []
+        }
         return dates.filter(range.contains)
     }
 }

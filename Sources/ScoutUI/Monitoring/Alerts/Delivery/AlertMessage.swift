@@ -14,7 +14,9 @@ struct AlertMessage: Equatable {
 
 extension AlertMessage {
     init?(status: AlertStatus) {
-        guard status.outcome.shouldNotify, status.rule.notifies, let detail = status.detail else { return nil }
+        guard status.outcome.shouldNotify, status.rule.notifies, let detail = status.detail else {
+            return nil
+        }
 
         title = status.rule.metric.title
         body = detail

@@ -28,7 +28,9 @@ struct MigrationTests {
 
         for versionURL in versions {
             let old = try #require(NSManagedObjectModel(contentsOf: versionURL))
-            guard old.entityVersionHashesByName != current.entityVersionHashesByName else { continue }
+            guard old.entityVersionHashesByName != current.entityVersionHashesByName else {
+                continue
+            }
 
             let storeURL = FileManager.default.temporaryDirectory
                 .appendingPathComponent(UUID().uuidString)

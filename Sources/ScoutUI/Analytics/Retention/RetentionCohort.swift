@@ -46,7 +46,9 @@ extension RetentionCohort {
     static func stats(for cohorts: [RetentionCohort]) -> [DayStat] {
         dayOffsets.enumerated().compactMap { index, day in
             let rates = cohorts.compactMap { $0.retention[index] }
-            guard rates.count > 0 else { return nil }
+            guard rates.count > 0 else {
+                return nil
+            }
             return DayStat(
                 day: day, average: rates.reduce(0, +) / Double(rates.count), low: rates.min() ?? 0,
                 high: rates.max() ?? 0)

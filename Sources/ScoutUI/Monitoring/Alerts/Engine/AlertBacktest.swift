@@ -16,7 +16,9 @@ struct AlertBacktest: Equatable {
         let window = Self.windowBuckets
         let evaluator = AlertEvaluator()
 
-        guard values.count >= window * 2 else { return 0 }
+        guard values.count >= window * 2 else {
+            return 0
+        }
 
         var state = AlertState.armed
         var fires = 0

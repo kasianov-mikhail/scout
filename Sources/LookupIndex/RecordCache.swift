@@ -22,7 +22,9 @@ protocol RecordCaching: Actor {
 @ModelActor
 actor RecordCache<Row: CacheRow> {
     func coveredRange(for fingerprint: String) -> Range<Date>? {
-        guard let span = span(for: fingerprint), span.lowerDate < span.upperDate else { return nil }
+        guard let span = span(for: fingerprint), span.lowerDate < span.upperDate else {
+            return nil
+        }
         return span.lowerDate..<span.upperDate
     }
 
@@ -33,11 +35,15 @@ actor RecordCache<Row: CacheRow> {
             $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
         }
         let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\Row.date)])
-        guard let entries = try? modelContext.fetch(descriptor) else { return nil }
+        guard let entries = try? modelContext.fetch(descriptor) else {
+            return nil
+        }
 
         let decoder = JSONDecoder()
         let records = entries.compactMap { try? decoder.decode(CachedRecordPayload.self, from: $0.payload).record }
-        guard records.count == entries.count else { return nil }
+        guard records.count == entries.count else {
+            return nil
+        }
         return records
     }
 
@@ -46,9 +52,13 @@ actor RecordCache<Row: CacheRow> {
         var entries: [Row] = []
 
         for record in records {
-            guard case .date(let date)? = record.fields["date"] else { return }
+            guard case .date(let date)? = record.fields["date"] else {
+                return
+            }
             guard range.contains(date) else { continue }
-            guard let payload = try? encoder.encode(CachedRecordPayload(record: record)) else { return }
+            guard let payload = try? encoder.encode(CachedRecordPayload(record: record)) else {
+                return
+            }
             entries.append(Row(fingerprint: fingerprint, date: date, payload: payload))
         }
 
@@ -71,12 +81,16 @@ actor RecordCache<Row: CacheRow> {
         let predicate = #Predicate<Row> { $0.fingerprint == fingerprint }
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
-        guard let entry = try? modelContext.fetch(descriptor).first else { return nil }
+        guard let entry = try? modelContext.fetch(descriptor).first else {
+            return nil
+        }
         return try? JSONDecoder().decode(CachedRecordPayload.self, from: entry.payload).record
     }
 
     func storeLookup(_ record: Record, for fingerprint: String) {
-        guard let payload = try? JSONEncoder().encode(CachedRecordPayload(record: record)) else { return }
+        guard let payload = try? JSONEncoder().encode(CachedRecordPayload(record: record)) else {
+            return
+        }
         let predicate = #Predicate<Row> { $0.fingerprint == fingerprint }
         try? modelContext.delete(model: Row.self, where: predicate)
         modelContext.insert(Row(fingerprint: fingerprint, date: .distantPast, payload: payload))

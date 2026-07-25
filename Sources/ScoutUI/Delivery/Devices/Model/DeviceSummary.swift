@@ -38,8 +38,12 @@ extension DeviceSummary {
         }
 
         return sessionsByDevice.compactMap { deviceID, sessions -> DeviceSummary? in
-            guard let uuid = UUID(uuidString: deviceID) else { return nil }
-            guard let latest = sessions.max(by: { $0.startDate < $1.startDate }) else { return nil }
+            guard let uuid = UUID(uuidString: deviceID) else {
+                return nil
+            }
+            guard let latest = sessions.max(by: { $0.startDate < $1.startDate }) else {
+                return nil
+            }
 
             return DeviceSummary(
                 id: uuid,

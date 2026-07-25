@@ -61,7 +61,9 @@ extension IncidentBreakdown {
 
         let named = Set(segments(in: dimension).compactMap(\.value))
         return records.filter { record in
-            guard let label = label(of: record, in: dimension) else { return false }
+            guard let label = label(of: record, in: dimension) else {
+                return false
+            }
             return !named.contains(label)
         }
     }

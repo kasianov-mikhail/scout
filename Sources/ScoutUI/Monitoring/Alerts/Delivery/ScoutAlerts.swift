@@ -43,12 +43,16 @@
 
         /// Requests a background refresh, skipped while no alert rules exist.
         public static func scheduleBackgroundRefresh() {
-            guard AlertRegistry().rules.count > 0 else { return }
+            guard AlertRegistry().rules.count > 0 else {
+                return
+            }
             scheduler?.schedule()
         }
 
         private static func refresh(engine: AlertEngine, backends: [Backend]) async {
-            guard let backend = backends.active else { return }
+            guard let backend = backends.active else {
+                return
+            }
             _ = try? await engine.run(in: backend.cachedDatabase)
         }
     }

@@ -85,7 +85,9 @@ struct ServerContractTests {
         // Bounded so a server that never stops handing back a cursor fails the
         // assertion below rather than looping until the job's CI timeout.
         for _ in 0..<10 {
-            guard let cursor = chunk.cursor else { break }
+            guard let cursor = chunk.cursor else {
+                break
+            }
             chunk = try await database.readMore(from: cursor, fields: nil)
             indices += paramCounts(in: chunk.records)
         }

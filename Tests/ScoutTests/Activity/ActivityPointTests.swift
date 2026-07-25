@@ -75,7 +75,9 @@ struct ActivityPointTests {
             let dau = users[day]?.count ?? 0
             let wau = distinctUsers(ending: day, days: 7)
             let mau = distinctUsers(ending: day, days: 30)
-            guard mau > 0 else { continue }
+            guard mau > 0 else {
+                continue
+            }
             points.append(ActivityPoint(date: day.millisecondsSince1970, dau: dau, wau: wau, mau: mau))
         }
         return points.sorted { $0.date < $1.date }

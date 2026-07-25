@@ -48,7 +48,9 @@ extension ActivityPoint {
             month.remove(users[day.addingTimeInterval(-30 * .day)])
 
             let mau = month.count
-            guard mau > 0 else { continue }
+            guard mau > 0 else {
+                continue
+            }
 
             let dau = users[day]?.count ?? 0
 

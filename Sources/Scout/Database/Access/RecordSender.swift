@@ -48,7 +48,9 @@ extension RecordSender {
             }
         }
 
-        guard objects.count > 0 else { return }
+        guard objects.count > 0 else {
+            return
+        }
 
         do {
             try await database.write(records: objects.map(\.record))

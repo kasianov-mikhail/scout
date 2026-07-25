@@ -16,7 +16,9 @@ struct JustifiedLayout: Layout {
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        guard subviews.count > 0 else { return }
+        guard subviews.count > 0 else {
+            return
+        }
 
         let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
         let firstCenter = bounds.minX + (sizes.first?.width ?? 0) / 2
