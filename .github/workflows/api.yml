@@ -97,6 +97,23 @@ jobs:
           done
           .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
 
+      # The set is whatever swift-api-digester emits, so the toolchain that ran
+      # it belongs in the cache key alongside the script. Read from xcodebuild
+      # rather than the runner's ImageVersion variable, which the `env` context
+      # does not carry — it would expand to nothing and drop out of the key
+      # unnoticed.
+      - name: Identify the toolchain
+        id: toolchain
+        run: |
+          set -eo pipefail
+          id="$(xcodebuild -version | tr -d '\n' | tr ' ' '-' | tr -cd 'A-Za-z0-9.-')"
+          if [ -z "$id" ]; then
+            echo "::error::Could not read the Xcode version for the cache key."
+            exit 1
+          fi
+          echo "Toolchain: $id"
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
       # The baseline dump depends only on the base commit, which changes far
       # less often than the PR head: on a cache hit the whole baseline build
       # is skipped. The dump script is part of the key as well — both sides
@@ -107,7 +124,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /tmp/baseline.set
-          key: api-baseline-set-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api-set.sh') }}
+          key: api-baseline-set-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api-set.sh') }}-${{ steps.toolchain.outputs.id }}
 
       - name: Dump baseline API
         if: steps.baseline-cache.outputs.cache-hit != 'true'
