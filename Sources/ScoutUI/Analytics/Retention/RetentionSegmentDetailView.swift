@@ -17,7 +17,9 @@ struct RetentionSegmentDetailView: View {
     private var crashMultiplier: Double {
         let others = cohort.segments.filter { $0.name != segment.name }
         let baseline = others.map(\.crashRate).reduce(0, +) / Double(max(others.count, 1))
-        guard baseline > 0 else { return 1 }
+        guard baseline > 0 else {
+            return 1
+        }
         return segment.crashRate / baseline
     }
 

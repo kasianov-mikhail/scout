@@ -27,7 +27,9 @@ extension MetricReading {
 
 extension [Double] {
     var median: Double? {
-        guard count > 0 else { return nil }
+        guard count > 0 else {
+            return nil
+        }
 
         let sorted = sorted()
         let middle = count / 2

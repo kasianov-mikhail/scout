@@ -43,7 +43,9 @@ func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(
     let request = NSFetchRequest<Entry>(entityName: entityName)
     request.predicate = NSPredicate(format: "%K == %@", idKey, id as CVarArg)
     request.fetchLimit = 1
-    guard try context.count(for: request) == 0 else { return }
+    guard try context.count(for: request) == 0 else {
+        return
+    }
 
     let object = context.insert(Entry.self)
 

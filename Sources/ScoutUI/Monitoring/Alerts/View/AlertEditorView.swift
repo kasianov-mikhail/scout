@@ -65,7 +65,9 @@ struct AlertEditorView: View {
         }
         .task(id: draft.metric) {
             guard draft.isValid else { return }
-            guard (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else { return }
+            guard (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
+                return
+            }
 
             backtest.metric = draft.metric
             await backtest.fetchAgain(in: database)

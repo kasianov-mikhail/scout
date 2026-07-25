@@ -13,7 +13,9 @@ struct EventListExport {
     let events: [Event]
 
     var text: String? {
-        guard events.count > 0 else { return nil }
+        guard events.count > 0 else {
+            return nil
+        }
 
         var lines: [ExportLine] = [.heading(level: 1, title), .text(summary), .blank]
         lines.append(contentsOf: events.map(row))

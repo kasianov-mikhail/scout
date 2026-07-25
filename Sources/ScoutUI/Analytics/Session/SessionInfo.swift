@@ -24,7 +24,9 @@ struct SessionInfo: Equatable {
     }
 
     var duration: String? {
-        guard let startDate, let endDate, endDate >= startDate else { return nil }
+        guard let startDate, let endDate, endDate >= startDate else {
+            return nil
+        }
 
         let seconds = Int(endDate.timeIntervalSince(startDate))
         if seconds < 60 {

@@ -14,7 +14,9 @@ protocol QuantileHistogram: MetricHistogram, Equatable {
 
 extension QuantileHistogram {
     func percentile(_ quantile: Double) -> Double? {
-        guard total > 0 else { return nil }
+        guard total > 0 else {
+            return nil
+        }
 
         let target = Double(total) * quantile
         var cumulative = 0

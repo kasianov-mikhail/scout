@@ -41,7 +41,9 @@ actor RecordCache<Row: CacheRow> {
 
         let decoder = JSONDecoder()
         let records = entries.compactMap { try? decoder.decode(CachedRecordPayload.self, from: $0.payload).record }
-        guard records.count == entries.count else { return nil }
+        guard records.count == entries.count else {
+            return nil
+        }
         return records
     }
 

@@ -51,8 +51,8 @@
 
 ## `guard` statements
 
-- A `guard` stays fully inline only when its single condition contains no `=` — a shorthand binding (`guard let foo else { return }`) or a plain boolean check (`guard !x else { return }`).
-- Any condition with `=` — an assigning binding (`guard let foo = bar.buz`) or pattern matching (`guard case .x = y`) — expands the `else` block onto multiple lines (`else {` / body / `}`).
+- A `guard` stays fully inline only when its single condition is free of binding and comparison operators — a shorthand binding (`guard let foo else { return }`), a bare or negated boolean (`guard isEnabled else { return }`, `guard !x else { return }`), a boolean call (`guard name.hasPrefix(prefix) else { return nil }`), or an availability check.
+- Any condition built with an operator expands the `else` block onto multiple lines (`else {` / body / `}`): an assigning binding (`guard let foo = bar.buz`), pattern matching (`guard case .x = y`), and comparisons or boolean algebra alike (`guard points.count > 0`, `guard token == startToken`, `guard a || b`).
 - Expand the `else` block onto multiple lines as well when the `guard` has multiple conditions, or when its condition or `else` body is long or complex. Multi-condition guards still keep their conditions on a single line.
 
 ## Function and method signatures

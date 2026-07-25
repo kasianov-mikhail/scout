@@ -95,7 +95,9 @@ final class TimelineProvider: ObservableObject {
                 }
             }
 
-            guard token == startToken else { return }
+            guard token == startToken else {
+                return
+            }
 
             result = .success(rail.merged(sessions: sessions, events: events))
         } catch is CancellationError {

@@ -28,7 +28,9 @@ extension RetentionCohort {
             id: Date(millisecondsSince1970: date),
             size: size,
             retention: retained.map { count in
-                guard let count, size > 0 else { return nil }
+                guard let count, size > 0 else {
+                    return nil
+                }
                 return Double(count) / Double(size)
             }
         )

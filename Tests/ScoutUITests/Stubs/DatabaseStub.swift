@@ -96,7 +96,9 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
             .filter { query.name == nil || $0.name == query.name }
             .compactMap { series in
                 let points = series.points.filter { query.range.contains(Date(millisecondsSince1970: $0.date)) }
-                guard points.count > 0 else { return nil }
+                guard points.count > 0 else {
+                    return nil
+                }
                 return MetricSeries(
                     name: series.name, category: series.category, version: series.version, points: points)
             }

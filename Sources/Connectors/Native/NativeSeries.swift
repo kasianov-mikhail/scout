@@ -74,8 +74,12 @@ struct NativeSeries {
             }
             let name: String? = record["name"]
             let category: String? = record["category"]
-            guard query.name == nil || name == query.name else { continue }
-            guard query.category == nil || category == query.category else { continue }
+            guard query.name == nil || name == query.name else {
+                continue
+            }
+            guard query.category == nil || category == query.category else {
+                continue
+            }
             guard let name else { continue }
 
             let sample: Double
@@ -188,8 +192,12 @@ struct NativeSeries {
                 continue
             }
 
-            guard query.name == nil || metric == query.name else { continue }
-            guard query.category == nil || category == query.category else { continue }
+            guard query.name == nil || metric == query.name else {
+                continue
+            }
+            guard query.category == nil || category == query.category else {
+                continue
+            }
 
             add(
                 point.value ?? Double(point.count),
