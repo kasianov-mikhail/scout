@@ -87,12 +87,17 @@ import Testing
         #expect(values.allSatisfy { $0 > 0 && $0 < 10 }, "timer values out of range: \(values.max() ?? 0)")
     }
 
-    @Test func hourlyBucketsResolveWithinToday() async throws {
-        let today = Date().startOfDay..<Date().startOfDay.addingDay()
+    // The corpus seeds a fixed number of slots per day and clamps them to now,
+    // so a day still in progress holds only the slots that have already
+    // elapsed. Asking for today makes the multi-bucket expectation below depend
+    // on the hour the suite happens to run at, and just after midnight UTC
+    // there is a single bucket. The last full day always holds all of them.
+    @Test func hourlyBucketsResolveWithinADay() async throws {
+        let yesterday = Date().startOfDay.addingDay(-1)..<Date().startOfDay
         let series = try await database.series(
             matching: SeriesQuery(
                 name: DemoMetrics.counters[0], category: Telemetry.Export.counter.rawValue, bucket: .hour,
-                range: today))
+                range: yesterday))
 
         #expect(series.count == 1)
         #expect(try #require(series.first).points.count > 1)
