@@ -25,7 +25,7 @@ fi
 
 : "${BASE_SHA:?BASE_SHA is required on a pull_request}"
 changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
-if grep -qE '^(Sources/Connectors/Hosted/|Sources/Scout/Database/|Tests/Connectors/Hosted/|\.github/workflows/server\.yml$)' <<<"$changed"; then
+if grep -qE '^(Sources/Connectors/Hosted/|Sources/Scout/Database/|Tests/Connectors/Hosted/|\.github/workflows/server\.yml$|\.github/scripts/)' <<<"$changed"; then
   echo "backend=true" >> "$GITHUB_OUTPUT"
 else
   echo "backend=false" >> "$GITHUB_OUTPUT"
