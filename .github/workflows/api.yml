@@ -95,16 +95,16 @@ jobs:
         run: |
           baseline="${{ github.event.pull_request.base.sha }}"
           if [ -z "$baseline" ]; then
-            echo "No base revision to compare against."
-            exit 0
+            echo "::error::The pull request exposes no base revision to compare against."
+            exit 1
           fi
           echo "Comparing against base $baseline"
           git worktree add /tmp/baseline "$baseline"
           cd /tmp/baseline
           schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
           if [ -z "$schemes" ]; then
-            echo "The baseline manifest vends no library products; nothing to compare against."
-            exit 0
+            echo "::error::The baseline manifest vends no library products, so there is no API to compare against."
+            exit 1
           fi
           for scheme in $schemes; do
             if ! xcodebuild \
@@ -115,8 +115,8 @@ jobs:
               -skipMacroValidation \
               -quiet \
               build; then
-              echo "The baseline no longer builds with freshly resolved dependencies; skipping the comparison."
-              exit 0
+              echo "::error::The baseline scheme $scheme does not build, so the API comparison cannot run. Dependencies resolve fresh here, so a dependency release can break a base that once built — fix the base or pin the dependency."
+              exit 1
             fi
           done
           "$GITHUB_WORKSPACE/.github/scripts/dump-api-set.sh" /tmp/dd-baseline /tmp/baseline.set
@@ -124,7 +124,12 @@ jobs:
       - name: Compare
         run: |
           if [ ! -f /tmp/baseline.set ]; then
-            exit 0
+            echo "::error::No baseline API set was produced, so the comparison cannot run."
+            exit 1
+          fi
+          if [ ! -s /tmp/baseline.set ]; then
+            echo "::error::The baseline API set is empty, which means the dump produced nothing rather than that the base vends no API."
+            exit 1
           fi
           removed="$(comm -23 /tmp/baseline.set /tmp/current.set || true)"
           if [ -z "$removed" ]; then
