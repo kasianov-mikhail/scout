@@ -43,3 +43,15 @@ jobs:
             echo "Mark the new version as current (Xcode: File Inspector > Model Version > Current)."
             exit 1
           fi
+
+          if [ -n "$current" ]; then
+            name=$(sed -n 's:.*<string>\(.*\.xcdatamodel\)</string>.*:\1:p' \
+              "Sources/Scout/Persistence/ScoutModel.xcdatamodeld/.xccurrentversion")
+            if ! grep -qF "$name/" <<< "$added"; then
+              echo
+              echo ".xccurrentversion now points to \"$name\", which is not a model version added by this change."
+              echo "The current version can only move forward to a newly added version:"
+              echo "a store migrated to a newer model cannot be opened by an older one."
+              exit 1
+            fi
+          fi
