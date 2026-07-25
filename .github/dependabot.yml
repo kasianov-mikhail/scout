@@ -5,13 +5,6 @@ updates:
     schedule:
       interval: monthly
 
-  # This one has never opened a pull request, and that is expected rather than
-  # broken. Every Swift dependency is declared with an open-ended requirement
-  # (`from:`, or a range for swift-metrics) and no Package.resolved is committed,
-  # so resolution already lands on the newest allowed version on every build and
-  # there is no pin for Dependabot to bump. It only has something to say when a
-  # dependency ships a new major outside the declared range — which is precisely
-  # the case worth being told about, so the entry stays.
   - package-ecosystem: swift
     directory: /
     schedule:
