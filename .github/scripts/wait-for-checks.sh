@@ -4,6 +4,7 @@ set -euo pipefail
 : "${SHAS:?SHAS is required}"
 : "${CHECKS:?CHECKS is required}"
 timeout="${TIMEOUT:-10800}"
+absent_timeout="${ABSENT_TIMEOUT:-900}"
 interval="${INTERVAL:-15}"
 max_interval="${MAX_INTERVAL:-120}"
 max_failures="${MAX_FAILURES:-10}"
@@ -17,6 +18,7 @@ back_off() {
 }
 
 deadline=$(( SECONDS + timeout ))
+absent_deadline=$(( SECONDS + absent_timeout ))
 failures=0
 while :; do
   if ! runs="$(
@@ -64,6 +66,14 @@ while :; do
   if [ "${#pending[@]}" -eq 0 ]; then
     echo "All fast checks passed: ${names[*]}"
     exit 0
+  fi
+
+  if [ "$SECONDS" -ge "$absent_deadline" ]; then
+    absent="$(printf '%s\n' "${pending[@]}" | grep -F '(absent)' || true)"
+    if [ -n "$absent" ]; then
+      echo "::error::No check run appeared within ${absent_timeout}s for: $(echo $absent) — if the job was renamed, update the CHECKS list in this workflow."
+      exit 1
+    fi
   fi
 
   if [ "$SECONDS" -ge "$deadline" ]; then
