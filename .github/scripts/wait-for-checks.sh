@@ -43,7 +43,7 @@ while :; do
   pending=()
   for name in "${names[@]}"; do
     run="$(echo "$runs" | jq -c --arg n "$name" \
-      '[.[] | select(.name == $n)] | sort_by(.started_at) | last')"
+      '[.[] | select(.name == $n)] | sort_by(.started_at // "~") | last')"
     if [ -z "$run" ] || [ "$run" = "null" ]; then
       pending+=("$name(absent)")
       continue
