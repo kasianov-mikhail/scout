@@ -1,19 +1,5 @@
 name: Swift
 
-# The primary CI: lints with swift-format, then builds and tests the package
-# across a matrix of iOS versions. The matrix spans the package's minimum
-# deployment target (iOS 16) up to the latest public-preview toolchain
-# (xcode-27), so both old-SDK breakage and new-SDK regressions surface here.
-# Coverage is collected on the iOS 26 leg only — the reports differ between legs
-# by fractions of a percent, and that leg is the one where the snapshot suites
-# run. `tests-gate` is the required check on main rather than the individual
-# legs: a leg that is skipped instead of run reports a conclusion branch
-# protection accepts, so only an always-running summary job can hold the line.
-#
-# `pull_request` carries no base-branch filter on purpose. A PR stacked on
-# another PR's branch would otherwise skip this workflow entirely, and the gate
-# jobs in the sibling workflows — which wait for this workflow's `lint`
-# check-run — would hang until their timeout and fail the PR.
 on:
   push:
     branches: [ "main" ]
@@ -50,12 +36,6 @@ jobs:
             exit 1
           fi
 
-  # `needs: lint` gates the matrix on this workflow's own fast check; the other
-  # fast checks (Core Data model rules, the wire-change probe) live in sibling
-  # workflows where `needs` cannot reach them. This cheap ubuntu job waits for
-  # their check-runs on the PR and fails if either fails, so the expensive macOS
-  # matrix below never starts behind an already-red fast check. It runs only on
-  # PRs — on a push to main those sibling checks do not run.
   gate:
     name: gate
     if: github.event_name == 'pull_request'
@@ -81,8 +61,6 @@ jobs:
   tests:
     name: test-ios-${{ matrix.ios }}
     needs: [lint, gate]
-    # On a push to main `gate` is skipped (it is PR-only); require lint and let
-    # a skipped gate through, but block on a gate that actually failed.
     if: ${{ always() && needs.lint.result == 'success' && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
@@ -91,26 +69,9 @@ jobs:
       contents: read
 
     strategy:
-      # Each leg reports on its own. Cancelling the siblings on the first
-      # failure saved runner minutes but let the least stable leg — the
-      # arm64-only xcode-27 public-preview image — cancel the stable iOS 18 and
-      # iOS 26 legs that `tests-gate` reports on, turning one flake into a red
-      # PR and a full 20-minute re-run of the whole matrix.
       fail-fast: false
       matrix:
-        # Coverage is collected on one leg only: the reports differ between
-        # legs by fractions of a percent, and instrumentation and the xccov
-        # report cost minutes on every run. The report goes to the step
-        # summary; nothing is uploaded anywhere. The iOS 26 leg carries it
-        # because the snapshot suites only execute there.
         include:
-          # iOS 16 and 17 are not built-in runtimes on the macos-15 image, and a
-          # bare -downloadPlatform iOS only fetches the newest runtime. Pin an
-          # exact version so the download step pulls each older runtime
-          # explicitly. iOS 16 is the package's minimum deployment target.
-          # LookupIndexTests links SwiftData (iOS 17+), so its bundle can't load
-          # on iOS 16; skip it there. The rest of the suites carry no SwiftData
-          # and run, exercising the package's minimum deployment target.
           - os: macos-15
             device: iPhone 14
             ios: 16
@@ -130,10 +91,6 @@ jobs:
             device: iPhone 17
             ios: 26
             coverage: true
-          # Public-preview image, labelled by Xcode major version rather than
-          # the OS and arm64-only. It runs alongside the stable legs and feeds
-          # `tests-gate` like the rest, so its failures block merges. Snapshot
-          # baselines are iOS 26 only, so those suites skip on this leg.
           - os: xcode-27
             device: iPhone 17
             ios: 27
@@ -142,10 +99,6 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      # A name-only destination resolves to the newest runtime on the image,
-      # so the iOS 18 leg was silently running its tests on an iOS 26
-      # simulator. Resolve a device on the matrix major version explicitly and
-      # address it by UDID.
       - name: Prepare simulator
         id: sim
         run: |
@@ -172,10 +125,6 @@ jobs:
           fi
           echo "udid=$udid" >> "$GITHUB_OUTPUT"
 
-      # Package.resolved is not committed, so the key falls back to the
-      # manifest: any Package.swift change starts a fresh cache, and
-      # restore-keys reuse the previous checkouts for the git fetches that
-      # resolution still performs.
       - name: Cache Swift package checkouts
         uses: actions/cache@v6
         with:
@@ -193,11 +142,6 @@ jobs:
             -skipMacroValidation \
             build-for-testing
 
-      # test-without-building still loads the package graph, so it needs the
-      # same checkout directory the build used: pointed anywhere else it
-      # re-clones every dependency into the default DerivedData location, and
-      # with no committed Package.resolved and scout-db tracked by branch it can
-      # resolve a different revision than the one just built against.
       - name: Test
         run: |
           xcodebuild \
@@ -221,13 +165,6 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # The required status check for the matrix. `tests` is skipped rather than
-  # failed whenever `lint` or `gate` does not succeed, and branch protection
-  # counts a skipped required check as satisfied — so a gate that times out on
-  # a backed-up runner queue, or trips over a transient `gh api` error, would
-  # otherwise let a PR merge with the matrix never having run. This job always
-  # runs and passes only when the legs actually succeeded. Make
-  # `Swift / tests-gate` the required check, not the individual legs.
   tests-gate:
     name: tests-gate
     needs: [lint, gate, tests]
@@ -242,7 +179,6 @@ jobs:
             echo "::error::Lint did not succeed (${{ needs.lint.result }})."
             exit 1
           fi
-          # `gate` is PR-only, so a skip is expected on a push to main.
           case "${{ needs.gate.result }}" in
             success | skipped) ;;
             *)

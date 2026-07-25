@@ -1,32 +1,15 @@
 #!/usr/bin/env bash
-# Tripwire against filter drift. The Server workflow's path filter duplicates
-# the knowledge of where the wire code lives, so a future move out of the
-# watched directories would silently stop triggering `contract` while the gate
-# stays green. Symbol names outlive folder layout, so assert the wire code still
-# sits under a watched root and fail loudly (red PR) when it escapes — that is
-# the signal to widen the filter. The HTTP* coders are wire-specific, so any
-# mention pins them down; the Record pagination types are shared infra used all
-# over the app, so only their definition sites matter (their use sites
-# legitimately live outside the watched roots).
-#
-# Every pattern is asserted to match something, one at a time. Checking them as
-# a group hides rot behind whichever pattern still resolves, and because the
-# guard keys on symbol names, a rename that empties one pattern retires that
-# part of the tripwire without anyone noticing — the failure it exists to catch.
 set -euo pipefail
 
 matched=""
 missing=""
 
-# Args: <label> <extended regex>
 check() {
   local label="$1" pattern="$2" hits status
   set +e
   hits="$(grep -rlE "$pattern" Sources)"
   status=$?
   set -e
-  # grep exits 1 for "no match" and 2 or more for a real error; only the former
-  # means the symbol is gone, so anything else has to stop the job outright.
   if [ "$status" -gt 1 ]; then
     echo "::error::grep exited $status while searching for $label."
     exit 1

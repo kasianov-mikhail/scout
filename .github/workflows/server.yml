@@ -1,29 +1,5 @@
 name: Server
 
-# Contract tests against a live scout-server. The HTTP wire format
-# (HTTPQueryCoding/HTTPRecordCoding) is shared with that repository, and unit
-# tests can only verify Scout's side of it, so this workflow boots the server
-# on top of PostgreSQL and runs ServerContractTests through HTTPDatabase.
-#
-# The expensive `contract` job runs only when the wire surface changes — the
-# Hosted transport/access code that travels over it (HTTPDatabase, the
-# HTTPQueryCoding/HTTPRecordCoding wire coders, and the HostedRecord readers and
-# writers), the Core/Database record model and the RecordReader/RecordChunk/
-# RecordCursor pagination and cursor semantics they ride on, the contract tests,
-# or this workflow and the scripts it runs — or when scout-server pushes to main
-# (repository_dispatch from its Notify workflow).
-#
-# A weekly schedule runs the contract unconditionally as a safety net: the path
-# filter duplicates the knowledge of where the wire code lives, so if it ever
-# drifts and a wire change slips through with `contract` skipped, the next
-# scheduled run surfaces the break instead of letting it sit green indefinitely.
-#
-# A required status check must report on every PR, but a path-filtered job never
-# reports on PRs outside its paths, which would wedge them forever. So the PR
-# trigger is unfiltered, a lightweight `changes` job decides whether `contract`
-# runs, and an always-running `contract-gate` reports the result on every PR
-# (passing when `contract` succeeded or was not applicable). Make
-# `Server / contract-gate` the required check, not `Server / contract`.
 on:
   push:
     branches: [main]
@@ -37,7 +13,6 @@ on:
   repository_dispatch:
     types: [scout-server-updated]
   schedule:
-    # Monday 06:00 UTC — unconditional safety-net run (see header).
     - cron: "0 6 * * 1"
   workflow_dispatch:
 
@@ -49,25 +24,17 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  # Decide whether the wire surface changed. Required checks must report on
-  # every PR (see header), so this runs unconditionally and `contract` keys off
-  # its output; non-PR events always exercise the contract.
   changes:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
     steps:
-      # blob:none keeps the full-history fetch below from downloading every
-      # historical blob (snapshot PNGs included): this job only greps the
-      # working tree and diffs file names, so historical content is never
-      # needed.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           filter: blob:none
 
-      # Tripwire against filter drift — see the script header for the rationale.
       - name: Guard the filter covers the wire code
         run: .github/scripts/guard-filter-covers-wire.sh
 
@@ -78,12 +45,6 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: .github/scripts/detect-wire-changes.sh
 
-  # This workflow's own fast check is `changes` (gated below via `needs`); the
-  # other fast checks (lint, the Core Data model rules) live in sibling
-  # workflows out of `needs` reach. This cheap ubuntu job waits for their
-  # check-runs and fails if either fails, so the 30-minute contract run never
-  # starts behind an already-red fast check. It runs only on PRs — on
-  # push/schedule/dispatch those sibling checks do not run.
   gate:
     name: gate
     if: github.event_name == 'pull_request'
@@ -108,10 +69,6 @@ jobs:
 
   contract:
     needs: [changes, gate]
-    # Run when the wire surface changed and the fast checks passed. On a PR that
-    # leaves the wire surface untouched, backend is 'false' and this skips; on
-    # push/schedule/dispatch `gate` is skipped (PR-only) and backend is 'true',
-    # so a skipped gate is allowed through while a failed one blocks.
     if: >-
       ${{ always()
       && needs.changes.result == 'success'
@@ -134,13 +91,6 @@ jobs:
       - name: Start scout-server
         run: .github/scripts/start-scout-server.sh
 
-      # The contract is platform-independent, so the tests run on the macOS
-      # destination — no simulator needed. xcodebuild forwards only variables
-      # with the TEST_RUNNER_ prefix into the test process (which reads them
-      # without it), so an API key would have to be set as
-      # TEST_RUNNER_SCOUT_SERVER_API_KEY — a bare SCOUT_SERVER_API_KEY never
-      # arrives. The default server accepts unauthenticated requests, so none
-      # is set today.
       - name: Run contract tests
         env:
           TEST_RUNNER_SCOUT_SERVER_URL: http://127.0.0.1:8080
@@ -153,7 +103,6 @@ jobs:
             -resultBundlePath TestResults.xcresult \
             test
 
-      # Fail loudly when the suite skipped everything — see the script header.
       - name: Verify the contract suite ran
         run: .github/scripts/verify-contract-ran.sh
 
@@ -161,14 +110,6 @@ jobs:
         if: failure()
         run: cat scout-server/server.log
 
-  # The required status check. Always runs so it reports on every PR; passes
-  # when `contract` succeeded or was not applicable (skipped on PRs that leave
-  # the wire surface untouched), fails when `contract` failed or `changes` broke.
-  #
-  # `gate` is in `needs` because a failed gate skips `contract` too, and a skip
-  # is indistinguishable here from "the wire surface was untouched" — without
-  # this the gate timing out would report green on a PR that rewrote the wire
-  # format and never ran the suite.
   contract-gate:
     name: contract-gate
     needs: [changes, gate, contract]
@@ -182,7 +123,6 @@ jobs:
             echo "::error::The changes job did not succeed (${{ needs.changes.result }})."
             exit 1
           fi
-          # `gate` is PR-only, so a skip is expected on push/schedule/dispatch.
           case "${{ needs.gate.result }}" in
             success | skipped) ;;
             *)

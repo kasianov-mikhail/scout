@@ -1,28 +1,4 @@
 #!/usr/bin/env bash
-# Hold an expensive job until the cheap PR checks it should never outrun have
-# finished. A failing fast check — lint, the Core Data model-version rules, the
-# wire-change probe — already red-flags the PR, so there is no point spending
-# 20–30 minutes of macOS runner time on the long job behind it. This gate fails
-# the instant any awaited check concludes in failure (which skips the dependent
-# long job) and passes once they are all green (which lets it proceed).
-#
-# CHECKS holds check-run names, i.e. bare job names — "lint", "model-versions",
-# "changes" — not the "Workflow / job" label the UI shows. A pull_request run
-# attaches its check-runs to the head commit, but the merge commit is queried
-# too so the lookup is robust to either association. SHAS and CHECKS are
-# supplied by the workflow; TIMEOUT/INTERVAL fall back to sensible defaults.
-#
-# The lookup itself is best-effort on purpose. This gate exists to save runner
-# minutes, not to decide whether a PR is correct, so failing to read the API
-# must never be what turns a PR red. GITHUB_TOKEN is rate limited per repository
-# per hour and every gate job on every open PR draws on that one budget, so a
-# batch of PRs exhausts it and each poll comes back 403. A failed lookup
-# therefore backs off and retries, and a sustained run of them gives up waiting
-# and lets the expensive job start.
-#
-# The interval grows toward MAX_INTERVAL for the same reason: a long wait is the
-# congested case, which is exactly where polling hardest costs the most and buys
-# the least.
 set -euo pipefail
 
 : "${SHAS:?SHAS is required}"
@@ -43,9 +19,6 @@ back_off() {
 deadline=$(( SECONDS + timeout ))
 failures=0
 while :; do
-  # `|| exit 1` inside the loop makes one failed SHA fail the whole pipeline;
-  # without it only the last SHA's status counts and a partial answer would be
-  # read as though the missing checks simply did not exist yet.
   if ! runs="$(
     for sha in "${shas[@]}"; do
       [ -n "$sha" ] || continue
@@ -67,7 +40,6 @@ while :; do
 
   pending=()
   for name in "${names[@]}"; do
-    # Reruns leave older entries behind, so pick the most recently started run.
     run="$(echo "$runs" | jq -c --arg n "$name" \
       '[.[] | select(.name == $n)] | sort_by(.started_at) | last')"
     if [ -z "$run" ] || [ "$run" = "null" ]; then
