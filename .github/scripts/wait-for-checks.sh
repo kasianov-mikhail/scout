@@ -16,21 +16,31 @@ set -euo pipefail
 : "${SHAS:?SHAS is required}"
 : "${CHECKS:?CHECKS is required}"
 timeout="${TIMEOUT:-10800}"
-interval="${INTERVAL:-15}"
+interval="${INTERVAL:-60}"
 
 read -ra shas <<< "$SHAS"
 read -ra names <<< "$CHECKS"
 
 deadline=$(( SECONDS + timeout ))
 while :; do
-  runs="$(
+  # A shared installation token means the API can rate-limit a long wait. A lookup that fails
+  # says nothing about the checks themselves, so treat it as one more round of waiting.
+  if ! runs="$(
     for sha in "${shas[@]}"; do
       [ -n "$sha" ] || continue
       gh api --paginate \
         "repos/$GITHUB_REPOSITORY/commits/$sha/check-runs" \
         --jq '.check_runs[] | {name, status, conclusion, started_at}'
     done | jq -s '.'
-  )"
+  )"; then
+    if [ "$SECONDS" -ge "$deadline" ]; then
+      echo "::error::Timed out after ${timeout}s; the last check-run lookup failed."
+      exit 1
+    fi
+    echo "Check-run lookup failed; retrying in ${interval}s"
+    sleep "$interval"
+    continue
+  fi
 
   pending=()
   for name in "${names[@]}"; do
