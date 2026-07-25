@@ -1,11 +1,5 @@
 name: API
 
-# No paths filter: this is a required status check, and a required check that
-# never runs blocks the merge. The labeled/unlabeled triggers let the
-# api-breaking label re-evaluate an intentional break without a new push.
-# Make `API / api-gate` the required check, not `API / api-breakage`: the diff
-# job is skipped rather than failed when the gate does not succeed, and branch
-# protection accepts a skipped check.
 on:
   pull_request:
     types: [opened, synchronize, reopened, labeled, unlabeled]
@@ -18,10 +12,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # The fast PR checks (lint, the Core Data model rules, the wire-change probe)
-  # live in sibling workflows, out of `needs` reach. This cheap ubuntu job waits
-  # for their check-runs and fails if any fails, so the 30-minute macOS diff
-  # below never starts behind an already-red fast check.
   gate:
     name: gate
     runs-on: ubuntu-latest
@@ -49,9 +39,6 @@ jobs:
     timeout-minutes: 30
 
     steps:
-      # blob:none avoids downloading every historical blob (snapshot PNGs
-      # included): only HEAD is materialized at checkout, and `git worktree add`
-      # below batch-fetches just the baseline commit's blobs on demand.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
@@ -64,22 +51,6 @@ jobs:
           key: spm-${{ hashFiles('Package.swift') }}
           restore-keys: spm-
 
-      # The package does not build with plain SwiftPM (Scout.xcdatamodeld is
-      # only processed by the Xcode build system), so instead of
-      # `swift package diagnose-api-breaking-changes` we build both versions
-      # with xcodebuild and compare swift-api-digester dumps. Building each
-      # library product's own scheme (not the *-Package scheme) covers every
-      # library module the package vends without also building the test
-      # targets — Scout no longer re-exports the adapters transitively now
-      # that the umbrella target is gone, so each one needs its own build.
-      #
-      # The list is read from the manifest's library products, the same source
-      # dump-api-set.sh derives its module list from, so the two cannot drift
-      # apart and a newly vended library is covered without editing this file.
-      # SwiftPM names a scheme after the product, so this reads product names
-      # while the script reads the targets behind them. An empty list means the
-      # manifest could not be read; building nothing would compare an empty
-      # current set against the baseline and report every symbol as removed.
       - name: Dump current API
         run: |
           set -eo pipefail
@@ -100,11 +71,6 @@ jobs:
           done
           .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
 
-      # The set is whatever swift-api-digester emits, so the toolchain that ran
-      # it belongs in the cache key alongside the script. Read from xcodebuild
-      # rather than the runner's ImageVersion variable, which the `env` context
-      # does not carry — it would expand to nothing and drop out of the key
-      # unnoticed.
       - name: Identify the toolchain
         id: toolchain
         run: |
@@ -117,11 +83,6 @@ jobs:
           echo "Toolchain: $id"
           echo "id=$id" >> "$GITHUB_OUTPUT"
 
-      # The baseline dump depends only on the base commit, which changes far
-      # less often than the PR head: on a cache hit the whole baseline build
-      # is skipped. The dump script is part of the key as well — both sides
-      # are dumped by the PR's copy of it, so a baseline cached by an older
-      # copy would be compared against a differently-shaped current set.
       - name: Cache baseline API set
         id: baseline-cache
         uses: actions/cache@v6
@@ -132,8 +93,6 @@ jobs:
       - name: Dump baseline API
         if: steps.baseline-cache.outputs.cache-hit != 'true'
         run: |
-          # Compare against the PR's base (main), so the check flags only the
-          # API changes this PR introduces — not cumulative drift since release.
           baseline="${{ github.event.pull_request.base.sha }}"
           if [ -z "$baseline" ]; then
             echo "No base revision to compare against."
@@ -142,16 +101,6 @@ jobs:
           echo "Comparing against base $baseline"
           git worktree add /tmp/baseline "$baseline"
           cd /tmp/baseline
-          # The baseline resolves dependencies fresh (Package.resolved is not
-          # committed), so a dependency release that breaks the old code makes
-          # the baseline unbuildable. Nothing to compare against then — skip.
-          #
-          # The scheme list comes from the baseline's own manifest, so every
-          # scheme in it exists at that commit however far back it is, and a
-          # build that fails is a real failure rather than a product that did
-          # not exist yet. Swallowing it would drop that module from the
-          # baseline set and quietly stop reporting removals from it — and the
-          # truncated set would then be cached against this base SHA.
           schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
           if [ -z "$schemes" ]; then
             echo "The baseline manifest vends no library products; nothing to compare against."
@@ -177,9 +126,6 @@ jobs:
           if [ ! -f /tmp/baseline.set ]; then
             exit 0
           fi
-          # A symbol in the baseline set but not the current set is gone from
-          # every module — a real removal. Moves between modules stay in both
-          # sets (the sets are module-agnostic), so the split does not flag.
           removed="$(comm -23 /tmp/baseline.set /tmp/current.set || true)"
           if [ -z "$removed" ]; then
             echo "No public API was removed against the base branch." >> "$GITHUB_STEP_SUMMARY"
@@ -203,10 +149,6 @@ jobs:
           echo "api-breaking label to this PR to acknowledge it."
           exit 1
 
-  # The required status check. `api-breakage` carries a bare `needs: gate`, so a
-  # gate that fails skips it rather than failing it, and branch protection reads
-  # a skipped check as satisfied. This job always runs and passes only when the
-  # diff actually succeeded.
   api-gate:
     name: api-gate
     needs: [gate, api-breakage]

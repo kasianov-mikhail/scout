@@ -1,9 +1,5 @@
 name: CodeQL
 
-# GitHub's CodeQL static analysis for Swift, uploading results to the
-# security-events dashboard. Analysis needs a full manual build, so this runs
-# nightly on a schedule (and on demand) rather than per-PR: tracing slows
-# compilation down severalfold, so it builds a single architecture.
 on:
   schedule:
     - cron: "33 2 * * *"
@@ -29,18 +25,6 @@ jobs:
           languages: swift
           build-mode: manual
 
-      # CodeQL analyses only what the traced build compiles, and Scout stopped
-      # covering the rest of the package when the split removed the umbrella
-      # target — building that scheme alone left the connectors, ScoutUI and
-      # LookupIndex unanalysed while the dashboard read as clean. The scheme list
-      # comes from the manifest's library products — SwiftPM names a scheme after
-      # the product — so a newly vended one is picked up without editing this
-      # file. An empty list is an error: a scan that compiles nothing analyses
-      # nothing and still reports clean, which is the failure being fixed here.
-      #
-      # Tracing slows compilation down severalfold, so build a single
-      # architecture: the generic simulator destination would otherwise build
-      # both arm64 and x86_64, doubling the traced work for no analysis gain.
       - name: Build
         run: |
           set -eo pipefail

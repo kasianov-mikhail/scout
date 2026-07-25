@@ -1,38 +1,21 @@
 name: Notify
 
-# Fans a green main out to the downstream scout-ip repository. When the Swift
-# workflow completes successfully on main, this fires a repository_dispatch so
-# scout-ip can pick up the new Scout revision. It keys off workflow_run (not
-# push) so the notification only goes out once CI has actually passed.
 on:
   workflow_run:
     workflows: [Swift]
     types: [completed]
     branches: [main]
 
-# The dispatch authenticates with GH_PAT, so the workflow token itself needs
-# nothing beyond the default read scope — without this block it would inherit
-# whatever the repository default is, up to and including write.
 permissions:
   contents: read
 
 jobs:
   notify:
-    # Only upstream: a fork has no GH_PAT, so the dispatch would send a bare
-    # bearer token, take the 401 below and turn the fork's main red on every
-    # green build.
     if: github.repository == 'kasianov-mikhail/scout' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
-      # --fail-with-body turns an HTTP error into a non-zero exit while still
-      # printing GitHub's error body — without it an expired or rotated GH_PAT
-      # (401) or a renamed repository (404) left the step green and scout-ip
-      # quietly stopped receiving revisions, and with a plain --fail the log
-      # would show a bare status code instead of which of the two it was. The
-      # retries cover a transient 5xx from api.github.com, which should not
-      # redden main.
       - name: Trigger scout-ip
         run: |
           curl --fail-with-body -sS \

@@ -1,8 +1,5 @@
 name: Core Data
 
-# No paths filter: this is a required status check, and a required check that
-# never runs blocks the merge. With no model changes the diff is empty and the
-# job passes in seconds.
 on:
   pull_request:
 
@@ -15,9 +12,6 @@ jobs:
     timeout-minutes: 5
 
     steps:
-      # blob:none keeps the full-history fetch below from downloading every
-      # historical blob (snapshot PNGs included): the name-status diff only
-      # walks commit trees, so content is never needed.
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
