@@ -108,7 +108,7 @@ jobs:
 
       - name: Dump server log
         if: failure()
-        run: cat scout-server/server.log
+        run: test ! -f scout-server/server.log || cat scout-server/server.log
 
   contract-gate:
     name: contract-gate
