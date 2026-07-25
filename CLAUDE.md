@@ -2,17 +2,6 @@
 
 - When you notice recurring feedback or a new project convention that isn't captured here yet, proactively propose adding it as a rule to this file — surface it as a suggested edit for the user to approve rather than editing on your own initiative.
 
-# Git & pull requests
-
-## Pull requests
-
-- When pushing new commits to an existing PR, update its title and description to reflect the full scope of changes.
-
-## Commits
-
-- Always create commits using the repository's git `user.name`/`user.email` identity.
-- Never set the author or committer to "Claude <noreply@anthropic.com>" or any other bot identity, and do not add "Co-Authored-By" trailers.
-
 # Project structure
 
 - Keep an eye on the folder and file structure as the codebase evolves, and reorganize it when needed: when a folder accumulates too many files at one level, group related files into subfolders following the conventions already present nearby (e.g. `UI/Chart` groups files into `Model`, `Scale`, `View`, `Comparison`, `Picker`, `Range`).
