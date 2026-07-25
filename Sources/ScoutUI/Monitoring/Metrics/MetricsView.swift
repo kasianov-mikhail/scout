@@ -21,7 +21,10 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
     @StateObject private var resets: ResetMarkerProvider
 
     init(
-        group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false,
+        group: PointGroup<T>,
+        formatter: KeyPath<T, String>,
+        period: Period,
+        tracksResets: Bool = false,
         @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra
     ) {
         self.group = group
@@ -29,7 +32,8 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
         self.extra = extra
         self._extent = State(wrappedValue: ChartExtent(period: period))
         self._resets = StateObject(
-            wrappedValue: ResetMarkerProvider(name: group.name, isEnabled: tracksResets))
+            wrappedValue: ResetMarkerProvider(name: group.name, isEnabled: tracksResets)
+        )
     }
 
     var body: some View {

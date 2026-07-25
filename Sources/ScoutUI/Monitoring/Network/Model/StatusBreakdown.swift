@@ -30,7 +30,11 @@ struct StatusBreakdown: Equatable {
 
     var segments: [Segment] {
         zip(StatusBuckets.classes, zip(counts, Self.colors)).map { label, pair in
-            Segment(label: label, count: pair.0, color: pair.1)
+            Segment(
+                label: label,
+                count: pair.0,
+                color: pair.1
+            )
         }
     }
 }

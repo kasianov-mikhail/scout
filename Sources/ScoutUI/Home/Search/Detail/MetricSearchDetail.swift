@@ -15,11 +15,23 @@ struct MetricSearchDetail: View {
     var body: some View {
         switch telemetry {
         case .floatingCounter, .recorder, .meter:
-            MetricSearchContent(name: name, telemetry: telemetry, formatter: \Double.decimal)
+            MetricSearchContent(
+                name: name,
+                telemetry: telemetry,
+                formatter: \Double.decimal
+            )
         case .timer:
-            MetricSearchContent(name: name, telemetry: telemetry, formatter: \TimeInterval.duration)
+            MetricSearchContent(
+                name: name,
+                telemetry: telemetry,
+                formatter: \TimeInterval.duration
+            )
         default:
-            MetricSearchContent(name: name, telemetry: telemetry, formatter: \Int.plain)
+            MetricSearchContent(
+                name: name,
+                telemetry: telemetry,
+                formatter: \Int.plain
+            )
         }
     }
 }
@@ -45,7 +57,11 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
             if let group = groups.named(name) {
                 switch telemetry {
                 case .timer:
-                    MetricsView(group: group, formatter: formatter, period: .today) { extent in
+                    MetricsView(
+                        group: group,
+                        formatter: formatter,
+                        period: .today
+                    ) { extent in
                         MetricDistributionSection<LatencyHistogram>(
                             name: group.name,
                             categories: LatencyBuckets.categories,
@@ -54,7 +70,11 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
                         )
                     }
                 case .recorder:
-                    MetricsView(group: group, formatter: formatter, period: .today) { extent in
+                    MetricsView(
+                        group: group,
+                        formatter: formatter,
+                        period: .today
+                    ) { extent in
                         MetricDistributionSection<RecorderHistogram>(
                             name: group.name,
                             categories: RecorderBuckets.categories,
@@ -64,7 +84,11 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
                     }
                 default:
                     MetricsView(
-                        group: group, formatter: formatter, period: .today, tracksResets: telemetry.hasResets)
+                        group: group,
+                        formatter: formatter,
+                        period: .today,
+                        tracksResets: telemetry.hasResets
+                    )
                 }
             } else {
                 Placeholder(

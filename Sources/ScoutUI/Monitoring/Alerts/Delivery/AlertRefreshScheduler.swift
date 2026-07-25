@@ -11,7 +11,8 @@
 
     protocol AlertTaskScheduler: Sendable {
         func register(
-            forTaskWithIdentifier identifier: String, using queue: DispatchQueue?,
+            forTaskWithIdentifier identifier: String,
+            using queue: DispatchQueue?,
             launchHandler: @escaping @Sendable (BGTask) -> Void
         ) -> Bool
         func submit(_ taskRequest: BGTaskRequest) throws
@@ -32,7 +33,8 @@
         private let refresh: @Sendable () async -> Void
 
         init(
-            scheduler: AlertTaskScheduler = BGTaskScheduler.shared, interval: TimeInterval = 1800,
+            scheduler: AlertTaskScheduler = BGTaskScheduler.shared,
+            interval: TimeInterval = 1800,
             refresh: @escaping @Sendable () async -> Void
         ) {
             self.scheduler = scheduler

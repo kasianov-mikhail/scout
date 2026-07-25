@@ -65,7 +65,11 @@ extension Record {
 
 extension RecordQuery.Filter {
     var storeFilter: EntityStore.Filter {
-        EntityStore.Filter(field: field, op: storeMatch, value: value.storeValue)
+        EntityStore.Filter(
+            field: field,
+            op: storeMatch,
+            value: value.storeValue
+        )
     }
 
     private var storeMatch: EntityStore.Match {

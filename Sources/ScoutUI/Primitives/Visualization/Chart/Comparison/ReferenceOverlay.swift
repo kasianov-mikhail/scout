@@ -21,7 +21,13 @@ struct ReferenceOverlay<T: ChartNumeric>: View {
     let color: Color
 
     var body: some View {
-        let levels = pairs.compactMap { ReferenceLevel(pair: $0, proxy: proxy, plotFrame: plotFrame) }
+        let levels = pairs.compactMap {
+            ReferenceLevel(
+                pair: $0,
+                proxy: proxy,
+                plotFrame: plotFrame
+            )
+        }
         let gains = levels.gains
         let drops = levels.drops
 

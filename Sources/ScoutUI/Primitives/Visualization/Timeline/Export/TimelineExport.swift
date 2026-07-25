@@ -85,11 +85,21 @@ extension TimelineExport {
     }
 
     private func header(for install: Install) -> ExportLine {
-        header(level: 2, word: "Install", date: install.date.map(ExportFormat.day), id: install.installID)
+        header(
+            level: 2,
+            word: "Install",
+            date: install.date.map(ExportFormat.day),
+            id: install.installID
+        )
     }
 
     private func header(for launch: Launch) -> ExportLine {
-        header(level: 3, word: "Launch", date: launch.startDate.map(ExportFormat.minute), id: launch.launchID)
+        header(
+            level: 3,
+            word: "Launch",
+            date: launch.startDate.map(ExportFormat.minute),
+            id: launch.launchID
+        )
     }
 
     private func header(for session: Session) -> ExportLine {

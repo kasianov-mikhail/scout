@@ -76,9 +76,14 @@ extension ExportFormat {
     private static let iso8601 = Date.ISO8601FormatStyle()
     private static let dayStyle = utcStyle("\(year: .padded(4))-\(month: .twoDigits)-\(day: .twoDigits)")
     private static let timeStyle = utcStyle(
-        "\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits)")
+        "\(hour: .twoDigits(clock: .twentyFourHour, hourCycle: .zeroBased)):\(minute: .twoDigits)"
+    )
 
     private static func utcStyle(_ format: Date.FormatString) -> Date.VerbatimFormatStyle {
-        Date.VerbatimFormatStyle(format: format, timeZone: .gmt, calendar: Calendar(identifier: .gregorian))
+        Date.VerbatimFormatStyle(
+            format: format,
+            timeZone: .gmt,
+            calendar: Calendar(identifier: .gregorian)
+        )
     }
 }

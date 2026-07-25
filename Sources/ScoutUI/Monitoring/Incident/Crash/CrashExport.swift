@@ -12,7 +12,11 @@ struct CrashExport {
     let crash: Crash
 
     var text: String {
-        IncidentExport(incident: crash, kind: "Crash", detail: []).text
+        IncidentExport(
+            incident: crash,
+            kind: "Crash",
+            detail: []
+        ).text
     }
 }
 

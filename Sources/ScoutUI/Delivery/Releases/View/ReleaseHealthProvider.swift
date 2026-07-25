@@ -36,6 +36,12 @@ final class ReleaseHealthProvider: ObservableObject, Provider {
     }
 
     private func query(name: String, in range: Range<Date>) -> SeriesQuery {
-        SeriesQuery(name: name, bucket: .day, byVersion: true, source: .lifecycle, range: range)
+        SeriesQuery(
+            name: name,
+            bucket: .day,
+            byVersion: true,
+            source: .lifecycle,
+            range: range
+        )
     }
 }

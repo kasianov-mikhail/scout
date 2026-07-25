@@ -73,6 +73,10 @@ extension [PercentileTrendPoint] {
 }
 
 #Preview("PercentileTrendChart") {
-    PercentileTrendChart(trend: .sample, unit: .hour, formatter: \TimeInterval.duration)
-        .padding(.horizontal)
+    PercentileTrendChart(
+        trend: .sample,
+        unit: .hour,
+        formatter: \TimeInterval.duration
+    )
+    .padding(.horizontal)
 }

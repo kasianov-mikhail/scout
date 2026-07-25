@@ -27,7 +27,12 @@ struct ScoutLogHandler: LogHandler {
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
-                    try Scout.log(event, date: Date(), sessionID: sessionID, context: context)
+                    try Scout.log(
+                        event,
+                        date: Date(),
+                        sessionID: sessionID,
+                        context: context
+                    )
                 }
                 try await self.sync()
             } catch {

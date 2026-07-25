@@ -15,7 +15,11 @@ struct Trend {
 }
 
 extension Trend {
-    static let loading = Trend(count: nil, delta: nil, series: nil)
+    static let loading = Trend(
+        count: nil,
+        delta: nil,
+        series: nil
+    )
 
     init(points: [ChartPoint<Int>], period: some ChartTimeScale) {
         let current = points.bucket(on: period).total
@@ -23,7 +27,11 @@ extension Trend {
 
         count = current
         delta = Delta(current: current, previous: previous)
-        series = MiniChartSeries(points: points, range: period.initialRange, aggregation: .total)
+        series = MiniChartSeries(
+            points: points,
+            range: period.initialRange,
+            aggregation: .total
+        )
     }
 
     init(levels: [ChartPoint<Int>], period: some ChartTimeScale) {
@@ -32,7 +40,11 @@ extension Trend {
 
         count = current
         delta = Delta(current: current, previous: previous)
-        series = MiniChartSeries(points: levels, range: period.initialRange, aggregation: .latest)
+        series = MiniChartSeries(
+            points: levels,
+            range: period.initialRange,
+            aggregation: .latest
+        )
     }
 
     init(count: Int, previous: Int, values: [Int]) {

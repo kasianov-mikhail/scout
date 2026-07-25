@@ -66,7 +66,11 @@ struct HomeList: View {
             case .sessions:
                 statView
             case .log:
-                LogView(period: period, log: logs, devices: devices)
+                LogView(
+                    period: period,
+                    log: logs,
+                    devices: devices
+                )
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
             case .alerts:
@@ -80,9 +84,13 @@ struct HomeList: View {
     }
 
     private var statView: some View {
-        StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
-            .environment(\.chartColor, .purple)
-            .navigationTitle(en: "Sessions")
+        StatView(
+            showList: false,
+            extent: ChartExtent(period: period),
+            stat: sessions
+        )
+        .environment(\.chartColor, .purple)
+        .navigationTitle(en: "Sessions")
     }
 }
 

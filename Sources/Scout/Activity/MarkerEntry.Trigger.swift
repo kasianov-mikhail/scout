@@ -12,9 +12,17 @@ extension MarkerEntry {
         let installID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
+            let install = try context.existing(
+                InstallEntry.self,
+                key: "installID",
+                id: installID
+            )
             try MarkerEntry.mark(
-                name: MarkerEntry.installName, install: install, appVersion: Bundle.main.marketingVersion, in: context)
+                name: MarkerEntry.installName,
+                install: install,
+                appVersion: Bundle.main.marketingVersion,
+                in: context
+            )
 
             if context.hasChanges {
                 try context.save()

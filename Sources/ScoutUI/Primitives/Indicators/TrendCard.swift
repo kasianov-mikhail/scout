@@ -65,17 +65,29 @@ struct TrendCard: View {
         TrendCard(
             title: "Sessions",
             color: .purple,
-            trend: Trend(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
+            trend: Trend(
+                count: 8420,
+                previous: 7500,
+                values: [3, 5, 4, 7, 6, 9, 12]
+            )
         )
         TrendCard(
             title: "Crashes",
             color: .red,
-            trend: Trend(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
+            trend: Trend(
+                count: 87,
+                previous: 101,
+                values: [9, 7, 8, 6, 7, 5, 4]
+            )
         )
         TrendCard(
             title: "Empty",
             color: .red,
-            trend: Trend(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
+            trend: Trend(
+                count: 0,
+                previous: 0,
+                values: [0, 0, 0, 0, 0, 0, 0]
+            )
         )
         TrendCard(
             title: "Loading",

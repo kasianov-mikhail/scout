@@ -29,7 +29,13 @@ final class DeviceIncidentsProvider: ObservableObject, Provider {
     private func query(for recordType: any RecordDecodable.Type) -> RecordQuery {
         RecordQuery(
             recordType: recordType,
-            filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))],
+            filters: [
+                RecordQuery.Filter(
+                    field: "device_id",
+                    op: .equals,
+                    value: .string(deviceID.uuidString)
+                )
+            ],
             sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
     }

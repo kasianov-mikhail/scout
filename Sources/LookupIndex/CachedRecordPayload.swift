@@ -22,6 +22,11 @@ struct CachedRecordPayload: Codable {
     }
 
     var record: Record {
-        Record(recordType: recordType, recordID: recordID, fields: fields, metadata: metadata)
+        Record(
+            recordType: recordType,
+            recordID: recordID,
+            fields: fields,
+            metadata: metadata
+        )
     }
 }

@@ -10,7 +10,13 @@ import CoreData
 struct IncidentArchive<Payload: Codable & Sendable> {
     let directory: URL
     let pathExtension: String
-    let persist: @Sendable (Payload, UUID, UUID, NSManagedObjectContext) throws -> Void
+    let persist:
+        @Sendable (
+            Payload,
+            UUID,
+            UUID,
+            NSManagedObjectContext
+        ) throws -> Void
 
     func write(_ payload: Payload) {
         let encoder = JSONEncoder()
@@ -47,7 +53,12 @@ struct IncidentArchive<Payload: Codable & Sendable> {
             do {
                 let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
                 try await persistentContainer.performBackgroundTask { context in
-                    try persist(payload, id, deviceID, context)
+                    try persist(
+                        payload,
+                        id,
+                        deviceID,
+                        context
+                    )
                 }
                 try FileManager.default.removeItem(at: file)
             } catch {

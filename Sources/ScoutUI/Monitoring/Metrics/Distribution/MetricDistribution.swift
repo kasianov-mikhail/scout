@@ -48,7 +48,11 @@ struct MetricDistribution<H: QuantileHistogram>: Equatable {
             return nil
         }
 
-        return Percentiles(p50: p50, p90: p90, p99: p99)
+        return Percentiles(
+            p50: p50,
+            p90: p90,
+            p99: p99
+        )
     }
 
     func trend(in range: Range<Date>, component: Calendar.Component) -> [PercentileTrendPoint] {

@@ -28,7 +28,11 @@ struct IncidentRow<Element: Incident, Destination: View>: View {
 
             if group.count > 1 {
                 if let accent {
-                    CountBadge(count: group.count, prefix: "×", color: accent.color)
+                    CountBadge(
+                        count: group.count,
+                        prefix: "×",
+                        color: accent.color
+                    )
                 } else {
                     CountBadge(count: group.count, prefix: "×")
                 }

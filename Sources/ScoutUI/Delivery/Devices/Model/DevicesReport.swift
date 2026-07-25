@@ -20,7 +20,11 @@ struct DevicesReport {
 
 extension DevicesReport {
     init(devices: [Record], sessions: [Record], crashes: [Record]) {
-        summaries = DeviceSummary.summaries(devices: devices, sessions: sessions, crashes: crashes)
+        summaries = DeviceSummary.summaries(
+            devices: devices,
+            sessions: sessions,
+            crashes: crashes
+        )
         visits = sessions.compactMap { record in
             guard let deviceID: String = record["device_id"], let date: Date = record["start_date"] else {
                 return nil

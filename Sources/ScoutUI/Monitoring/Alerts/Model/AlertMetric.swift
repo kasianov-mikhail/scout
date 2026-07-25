@@ -22,7 +22,11 @@ extension AlertMetric {
             return MetricReading(points: try await eventPoints(in: database, range: range), period: period)
         case .crashFreeSessions:
             let (sessions, crashes) = try await lifecyclePoints(in: database, range: range)
-            return MetricReading(sessions: sessions, crashes: crashes, period: period)
+            return MetricReading(
+                sessions: sessions,
+                crashes: crashes,
+                period: period
+            )
         }
     }
 
@@ -36,7 +40,12 @@ extension AlertMetric {
 
         case .crashFreeSessions:
             let (sessions, crashes) = try await lifecyclePoints(in: database, range: range)
-            return MetricReading.stabilities(sessions: sessions, crashes: crashes, in: range, component: .hour)
+            return MetricReading.stabilities(
+                sessions: sessions,
+                crashes: crashes,
+                in: range,
+                component: .hour
+            )
         }
     }
 
@@ -44,7 +53,11 @@ extension AlertMetric {
         guard case .eventCount(let name) = self else { return [] }
 
         let series = try await database.series(
-            matching: SeriesQuery(name: name, bucket: .hour, range: range)
+            matching: SeriesQuery(
+                name: name,
+                bucket: .hour,
+                range: range
+            )
         )
         return series.flatMap { $0.chartPoints() }
     }
@@ -53,10 +66,20 @@ extension AlertMetric {
         sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>]
     ) {
         async let sessions = database.series(
-            matching: SeriesQuery(name: SessionEntry.recordType, bucket: .hour, source: .lifecycle, range: range)
+            matching: SeriesQuery(
+                name: SessionEntry.recordType,
+                bucket: .hour,
+                source: .lifecycle,
+                range: range
+            )
         )
         async let crashes = database.series(
-            matching: SeriesQuery(name: CrashEntry.recordType, bucket: .hour, source: .lifecycle, range: range)
+            matching: SeriesQuery(
+                name: CrashEntry.recordType,
+                bucket: .hour,
+                source: .lifecycle,
+                range: range
+            )
         )
 
         return (

@@ -13,7 +13,11 @@ struct HangArchive {
     private let archive: IncidentArchive<HangInfo>
 
     init(directory: URL) {
-        archive = IncidentArchive(directory: directory, pathExtension: "hang", persist: logHang)
+        archive = IncidentArchive(
+            directory: directory,
+            pathExtension: "hang",
+            persist: logHang
+        )
     }
 
     static let system = HangArchive(

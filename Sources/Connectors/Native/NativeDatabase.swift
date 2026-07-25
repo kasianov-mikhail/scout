@@ -23,7 +23,11 @@ struct NativeDatabase: Sendable {
 extension NativeDatabase: DatabaseWriter {
     func write(record: Record) async throws {
         await registration.value
-        try await store.write(Self.values(for: record), entity: record.recordType, uuid: record.recordID)
+        try await store.write(
+            Self.values(for: record),
+            entity: record.recordType,
+            uuid: record.recordID
+        )
     }
 
     func write(records: [Record]) async throws {
@@ -74,19 +78,35 @@ extension NativeDatabase: DatabaseReader {
     // re-queries the store for the following bounded slice instead of retaining
     // the whole pre-fetched tail in memory.
     private func page(
-        entity: String, filters: [EntityStore.Filter], field: String, ascending: Bool, limit: Int,
+        entity: String,
+        filters: [EntityStore.Filter],
+        field: String,
+        ascending: Bool,
+        limit: Int,
         after cursor: FieldCursor?
     ) async throws
         -> RecordChunk
     {
         let page = try await store.read(
-            entity: entity, filters: filters, orderedBy: field, descending: !ascending, limit: limit, after: cursor)
+            entity: entity,
+            filters: filters,
+            orderedBy: field,
+            descending: !ascending,
+            limit: limit,
+            after: cursor
+        )
         return RecordChunk(
             records: page.records.map(Record.init(entityRecord:)),
             cursor: page.cursor.map { next in
                 RecordCursor { _ in
                     try await self.page(
-                        entity: entity, filters: filters, field: field, ascending: ascending, limit: limit, after: next)
+                        entity: entity,
+                        filters: filters,
+                        field: field,
+                        ascending: ascending,
+                        limit: limit,
+                        after: next
+                    )
                 }
             }
         )
@@ -120,23 +140,44 @@ extension NativeDatabase {
         // back the days written before markers existed. The union dedupes, so
         // dropping the session leg once every client ships markers is safe.
         let window = lookback..<range.upperBound
-        async let markers = visits(entity: VisitEntry.recordType, dateField: "date", in: window)
-        async let sessions = visits(entity: SessionEntry.recordType, dateField: "start_date", in: window)
+        async let markers = visits(
+            entity: VisitEntry.recordType,
+            dateField: "date",
+            in: window
+        )
+        async let sessions = visits(
+            entity: SessionEntry.recordType,
+            dateField: "start_date",
+            in: window
+        )
 
         return ActivityPoint.points(visits: try await markers + sessions, in: range)
     }
 
     private func visits(entity: String, dateField: String, in window: Range<Date>) async throws -> [ActivityVisit] {
-        try await datedIDs(entity: entity, dateField: dateField, idField: "device_id", in: window)
-            .map { ActivityVisit(date: $0.date, user: $0.id) }
+        try await datedIDs(
+            entity: entity,
+            dateField: dateField,
+            idField: "device_id",
+            in: window
+        )
+        .map { ActivityVisit(date: $0.date, user: $0.id) }
     }
 }
 
 extension NativeDatabase {
     static func dateFilters(_ field: String, in range: Range<Date>) -> [EntityStore.Filter] {
         [
-            EntityStore.Filter(field: field, op: .greaterThanOrEquals, value: .date(range.lowerBound)),
-            EntityStore.Filter(field: field, op: .lessThan, value: .date(range.upperBound)),
+            EntityStore.Filter(
+                field: field,
+                op: .greaterThanOrEquals,
+                value: .date(range.lowerBound)
+            ),
+            EntityStore.Filter(
+                field: field,
+                op: .lessThan,
+                value: .date(range.upperBound)
+            ),
         ]
     }
 
@@ -144,7 +185,10 @@ extension NativeDatabase {
         -> [(date: Date, id: String)]
     {
         let records = try await store.read(
-            entity: entity, filters: Self.dateFilters(dateField, in: range), fields: [dateField, idField])
+            entity: entity,
+            filters: Self.dateFilters(dateField, in: range),
+            fields: [dateField, idField]
+        )
 
         return records.compactMap { record -> (date: Date, id: String)? in
             guard case .date(let date)? = record.values[dateField] else { return nil }
@@ -159,9 +203,17 @@ extension NativeDatabase {
         await registration.value
 
         async let installs = datedIDs(
-            entity: InstallEntry.recordType, dateField: "date", idField: "install_id", in: range)
+            entity: InstallEntry.recordType,
+            dateField: "date",
+            idField: "install_id",
+            in: range
+        )
         async let sessions = datedIDs(
-            entity: SessionEntry.recordType, dateField: "start_date", idField: "install_id", in: range)
+            entity: SessionEntry.recordType,
+            dateField: "start_date",
+            idField: "install_id",
+            in: range
+        )
 
         var installDays: [String: Date] = [:]
         for install in try await installs {
@@ -173,6 +225,11 @@ extension NativeDatabase {
             sessionDays[session.id, default: []].insert(session.date.startOfDay)
         }
 
-        return RetentionCohort.build(installDays: installDays, sessionDays: sessionDays, in: range, asOf: Date())
+        return RetentionCohort.build(
+            installDays: installDays,
+            sessionDays: sessionDays,
+            in: range,
+            asOf: Date()
+        )
     }
 }

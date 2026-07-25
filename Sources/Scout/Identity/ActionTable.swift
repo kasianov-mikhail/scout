@@ -18,7 +18,11 @@ struct ActionTable {
 
     func startListening(completion: @escaping Action) {
         for (name, action) in actions {
-            NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
+            NotificationCenter.default.addObserver(
+                forName: name,
+                object: nil,
+                queue: nil
+            ) { _ in
                 Task {
                     await run(action)
                     await run(completion)

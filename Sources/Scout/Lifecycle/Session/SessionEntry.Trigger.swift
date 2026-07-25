@@ -20,7 +20,11 @@ extension SessionEntry {
             let object = context.insert(SessionEntry.self)
             object.sessionID = sessionID
             object.date = Date()
-            object.launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
+            object.launch = try context.existing(
+                LaunchEntry.self,
+                key: "launchID",
+                id: launchID
+            )
             object.appVersion = bundle.marketingVersion
             object.buildNumber = bundle.buildNumber
             object.osVersion = SystemInfo.osVersion

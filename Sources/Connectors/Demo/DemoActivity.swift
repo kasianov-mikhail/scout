@@ -31,6 +31,10 @@ struct DemoActivity {
         }
 
         cohorts = RetentionCohort.build(
-            installDays: installDays, sessionDays: sessionDays, in: range, asOf: scenario.clock.now)
+            installDays: installDays,
+            sessionDays: sessionDays,
+            in: range,
+            asOf: scenario.clock.now
+        )
     }
 }

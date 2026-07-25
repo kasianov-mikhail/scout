@@ -29,6 +29,10 @@ struct Readout: View {
 
 extension Readout {
     init(title: String, stability: Stability) {
-        self.init(title: title, value: stability.formatted, color: stability.color)
+        self.init(
+            title: title,
+            value: stability.formatted,
+            color: stability.color
+        )
     }
 }

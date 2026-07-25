@@ -49,7 +49,13 @@ actor RecordCache<Row: CacheRow> {
             guard case .date(let date)? = record.fields["date"] else { return }
             guard range.contains(date) else { continue }
             guard let payload = try? encoder.encode(CachedRecordPayload(record: record)) else { return }
-            entries.append(Row(fingerprint: fingerprint, date: date, payload: payload))
+            entries.append(
+                Row(
+                    fingerprint: fingerprint,
+                    date: date,
+                    payload: payload
+                )
+            )
         }
 
         if let span = span(for: fingerprint), span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
@@ -58,7 +64,12 @@ actor RecordCache<Row: CacheRow> {
         } else {
             deleteAll(for: fingerprint)
             modelContext.insert(
-                CachedSpan(fingerprint: fingerprint, lowerDate: range.lowerBound, upperDate: range.upperBound))
+                CachedSpan(
+                    fingerprint: fingerprint,
+                    lowerDate: range.lowerBound,
+                    upperDate: range.upperBound
+                )
+            )
         }
 
         for entry in entries {
@@ -79,7 +90,13 @@ actor RecordCache<Row: CacheRow> {
         guard let payload = try? JSONEncoder().encode(CachedRecordPayload(record: record)) else { return }
         let predicate = #Predicate<Row> { $0.fingerprint == fingerprint }
         try? modelContext.delete(model: Row.self, where: predicate)
-        modelContext.insert(Row(fingerprint: fingerprint, date: .distantPast, payload: payload))
+        modelContext.insert(
+            Row(
+                fingerprint: fingerprint,
+                date: .distantPast,
+                payload: payload
+            )
+        )
         try? modelContext.save()
     }
 

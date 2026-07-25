@@ -59,7 +59,11 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
     }
 
     private func matches(in dimension: IncidentBreakdown.Dimension, segment: Segment) -> [Element] {
-        breakdown.records(from: records, in: dimension, matching: segment)
+        breakdown.records(
+            from: records,
+            in: dimension,
+            matching: segment
+        )
     }
 }
 

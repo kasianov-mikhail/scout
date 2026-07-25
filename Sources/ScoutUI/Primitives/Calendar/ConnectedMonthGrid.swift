@@ -27,7 +27,11 @@ struct ConnectedMonthGrid: View {
                 ForEach(Array(month.weeks.enumerated()), id: \.offset) { _, week in
                     HStack(spacing: 0) {
                         ForEach(Array(week.enumerated()), id: \.element.id) { index, day in
-                            cell(day, isFirstColumn: index == 0, isLastColumn: index == week.count - 1)
+                            cell(
+                                day,
+                                isFirstColumn: index == 0,
+                                isLastColumn: index == week.count - 1
+                            )
                         }
                     }
                 }
@@ -42,7 +46,13 @@ struct ConnectedMonthGrid: View {
             .foregroundStyle(textStyle(day, isEndpoint: isEndpoint))
             .frame(height: 40)
             .frame(maxWidth: .infinity)
-            .background { rangeBackground(day, isFirstColumn: isFirstColumn, isLastColumn: isLastColumn) }
+            .background {
+                rangeBackground(
+                    day,
+                    isFirstColumn: isFirstColumn,
+                    isLastColumn: isLastColumn
+                )
+            }
             .background {
                 if isEndpoint {
                     Circle().fill(.tint).frame(width: 40, height: 40)

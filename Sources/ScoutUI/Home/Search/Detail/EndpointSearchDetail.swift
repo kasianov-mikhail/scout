@@ -18,7 +18,11 @@ struct EndpointSearchDetail: View {
             let range = Period.today.initialRange
 
             if let endpoint = report.endpoints(in: range).first(where: { $0.name == name }) {
-                NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
+                NetworkEndpointDetailView(
+                    endpoint: endpoint,
+                    report: report,
+                    range: range
+                )
             } else {
                 Placeholder(
                     text: "No requests",

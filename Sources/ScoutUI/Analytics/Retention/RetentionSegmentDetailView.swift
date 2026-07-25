@@ -65,7 +65,8 @@ struct RetentionSegmentDetailView: View {
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
                             AxisValueLabel(
-                                rate.formatted(.retentionRate))
+                                rate.formatted(.retentionRate)
+                            )
                         }
                     }
                 }
@@ -80,8 +81,16 @@ struct RetentionSegmentDetailView: View {
             Header(title: "Stability")
 
             HStack(spacing: 24) {
-                stabilityStat(title: "Crashes", value: segment.crashRate, color: .red)
-                stabilityStat(title: "Hangs", value: segment.hangRate, color: .orange)
+                stabilityStat(
+                    title: "Crashes",
+                    value: segment.crashRate,
+                    color: .red
+                )
+                stabilityStat(
+                    title: "Hangs",
+                    value: segment.hangRate,
+                    color: .orange
+                )
             }
 
             if crashMultiplier > 1.2 {
@@ -99,8 +108,16 @@ struct RetentionSegmentDetailView: View {
 
     private var legend: some View {
         HStack(spacing: 16) {
-            RetentionLegendItem(color: .orange, dashed: false, title: segment.name)
-            RetentionLegendItem(color: Color(.systemGray4), dashed: true, title: "Cohort")
+            RetentionLegendItem(
+                color: .orange,
+                dashed: false,
+                title: segment.name
+            )
+            RetentionLegendItem(
+                color: Color(.systemGray4),
+                dashed: true,
+                title: "Cohort"
+            )
         }
     }
 

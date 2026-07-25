@@ -26,7 +26,12 @@ struct AlertBacktest: Equatable {
                 baseline: Array(values[(end - window * 2)..<(end - window)]).median ?? 0,
                 recent: Array(values[(end - window)..<end])
             )
-            let outcome = evaluator.evaluate(rule, reading: reading, state: state, now: Date(timeIntervalSince1970: 0))
+            let outcome = evaluator.evaluate(
+                rule,
+                reading: reading,
+                state: state,
+                now: Date(timeIntervalSince1970: 0)
+            )
 
             state = outcome.state
 

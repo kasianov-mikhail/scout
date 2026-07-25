@@ -71,7 +71,11 @@ struct ErrorView: View {
 
 extension ErrorView {
     init(description: String, retry: (() async -> Void)?, isRetrying: Bool = false) {
-        self.init(description: Text(verbatim: description), retry: retry, isRetrying: isRetrying)
+        self.init(
+            description: Text(verbatim: description),
+            retry: retry,
+            isRetrying: isRetrying
+        )
     }
 }
 

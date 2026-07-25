@@ -60,7 +60,8 @@ struct RetentionCohortDetailView: View {
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
                             AxisValueLabel(
-                                rate.formatted(.retentionRate))
+                                rate.formatted(.retentionRate)
+                            )
                         }
                     }
                 }
@@ -93,8 +94,16 @@ struct RetentionCohortDetailView: View {
 
     private var legend: some View {
         HStack(spacing: 16) {
-            RetentionLegendItem(color: .green, dashed: false, title: "This cohort")
-            RetentionLegendItem(color: Color(.systemGray4), dashed: true, title: "Average")
+            RetentionLegendItem(
+                color: .green,
+                dashed: false,
+                title: "This cohort"
+            )
+            RetentionLegendItem(
+                color: Color(.systemGray4),
+                dashed: true,
+                title: "Average"
+            )
         }
     }
 

@@ -125,7 +125,13 @@ enum EntityCatalog {
             ("param_count", .int),
             ("date", .timestamp),
         ],
-        views: [AggregateView(name: eventCountView, groupBy: "name", bucket: .hour)]
+        views: [
+            AggregateView(
+                name: eventCountView,
+                groupBy: "name",
+                bucket: .hour
+            )
+        ]
     )
 
     private static let session = definition(
@@ -218,7 +224,14 @@ enum EntityCatalog {
                     ("value", valueType),
                     ("date", .timestamp),
                 ],
-                views: [AggregateView(name: metricSeriesView, groupBy: metricSeriesKey, bucket: .hour, sum: "value")]
+                views: [
+                    AggregateView(
+                        name: metricSeriesView,
+                        groupBy: metricSeriesKey,
+                        bucket: .hour,
+                        sum: "value"
+                    )
+                ]
             ),
             derive: seriesKey
         )
@@ -227,14 +240,21 @@ enum EntityCatalog {
     private typealias Spec = (String, FieldType)
 
     private static func definition(
-        entity: String, fields: [Spec], trailing: [Spec] = [], envelopeDate: String = "date",
+        entity: String,
+        fields: [Spec],
+        trailing: [Spec] = [],
+        envelopeDate: String = "date",
         views: [AggregateView]? = nil
     )
         -> EntityDefinition
     {
         EntityDefinition(
-            entity: entity, version: 1, fields: slotted(fields + metadata + trailing), envelopeDate: envelopeDate,
-            views: views)
+            entity: entity,
+            version: 1,
+            fields: slotted(fields + metadata + trailing),
+            envelopeDate: envelopeDate,
+            views: views
+        )
     }
 
     private static let metadata: [Spec] = [
@@ -255,7 +275,17 @@ enum EntityCatalog {
             let index = next[pool, default: 0]
             next[pool] = index + 1
             return FieldDefinition(
-                name: name, type: type, storage: .slot(pool, String(format: "%@_%02d", pool.rawValue, index)))
+                name: name,
+                type: type,
+                storage: .slot(
+                    pool,
+                    String(
+                        format: "%@_%02d",
+                        pool.rawValue,
+                        index
+                    )
+                )
+            )
         }
     }
 

@@ -38,11 +38,19 @@ struct MetricsList: View {
     @State private var scope: Scope = .int
 
     var body: some View {
-        SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
-            .padding()
+        SegmentStrip(
+            selection: $period,
+            distribution: .justified,
+            title: \.shortTitle
+        )
+        .padding()
 
-        SegmentStrip(selection: $scope, distribution: .justified, title: \.rawValue)
-            .padding(.horizontal)
+        SegmentStrip(
+            selection: $scope,
+            distribution: .justified,
+            title: \.rawValue
+        )
+        .padding(.horizontal)
 
         switch scope {
         case .int:

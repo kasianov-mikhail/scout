@@ -17,7 +17,14 @@ extension TelemetryPersisting {
         let label = self.label
         let sessionID = session.current
         persistMetrics { context in
-            try saveMetrics(label, date: Date(), category: category, value: value, sessionID: sessionID, context)
+            try saveMetrics(
+                label,
+                date: Date(),
+                category: category,
+                value: value,
+                sessionID: sessionID,
+                context
+            )
         }
     }
 
@@ -27,11 +34,21 @@ extension TelemetryPersisting {
         persistMetrics { context in
             let date = Date()
             try saveMetrics(
-                label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, sessionID: sessionID,
-                context)
+                label,
+                date: date,
+                category: Telemetry.Export.timer.rawValue,
+                value: seconds,
+                sessionID: sessionID,
+                context
+            )
             try saveMetrics(
-                label, date: date, category: LatencyBuckets.category(for: seconds), value: 1, sessionID: sessionID,
-                context)
+                label,
+                date: date,
+                category: LatencyBuckets.category(for: seconds),
+                value: 1,
+                sessionID: sessionID,
+                context
+            )
         }
     }
 
@@ -45,11 +62,21 @@ extension TelemetryPersisting {
         persistMetrics { context in
             let date = Date()
             try saveMetrics(
-                label, date: date, category: Telemetry.Export.recorder.rawValue, value: value, sessionID: sessionID,
-                context)
+                label,
+                date: date,
+                category: Telemetry.Export.recorder.rawValue,
+                value: value,
+                sessionID: sessionID,
+                context
+            )
             try saveMetrics(
-                label, date: date, category: RecorderBuckets.category(for: value), value: 1, sessionID: sessionID,
-                context)
+                label,
+                date: date,
+                category: RecorderBuckets.category(for: value),
+                value: 1,
+                sessionID: sessionID,
+                context
+            )
         }
     }
 
@@ -69,7 +96,12 @@ extension TelemetryPersisting {
 }
 
 func saveMetrics<T: MetricScalar>(
-    _ name: String, date: Date, category: String, value: T, sessionID: UUID, _ context: NSManagedObjectContext
+    _ name: String,
+    date: Date,
+    category: String,
+    value: T,
+    sessionID: UUID,
+    _ context: NSManagedObjectContext
 ) throws {
     let metrics = context.insert(T.Object.self)
 
@@ -77,7 +109,11 @@ func saveMetrics<T: MetricScalar>(
     metrics.telemetry = category
     metrics.date = date
     metrics.name = name
-    metrics.session = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
+    metrics.session = try context.existing(
+        SessionEntry.self,
+        key: "sessionID",
+        id: sessionID
+    )
 
     try context.save()
 }

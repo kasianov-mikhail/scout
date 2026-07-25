@@ -95,7 +95,12 @@ extension AlertDraft {
     }
 
     var rule: AlertRule {
-        AlertRule(metric: metric, condition: condition, holdBuckets: hold.buckets, notifies: notifies)
+        AlertRule(
+            metric: metric,
+            condition: condition,
+            holdBuckets: hold.buckets,
+            notifies: notifies
+        )
     }
 
     var isValid: Bool {

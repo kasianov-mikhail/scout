@@ -21,7 +21,11 @@ extension Hang: Fixture {
 
         return Hang(
             name: name,
-            fingerprint: CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value,
+            fingerprint: CrashFingerprint(
+                name: name,
+                reason: nil,
+                stackTrace: stackTrace
+            ).value,
             reason: reason,
             stackTrace: stackTrace,
             duration: 6.4,
@@ -37,7 +41,11 @@ extension Hang: Fixture {
     static func sample(_ name: String, duration: TimeInterval, at date: Date, sessionID: UUID? = nil) -> Hang {
         Hang(
             name: name,
-            fingerprint: CrashFingerprint(name: name, reason: nil, stackTrace: []).value,
+            fingerprint: CrashFingerprint(
+                name: name,
+                reason: nil,
+                stackTrace: []
+            ).value,
             reason: nil,
             stackTrace: [],
             duration: duration,

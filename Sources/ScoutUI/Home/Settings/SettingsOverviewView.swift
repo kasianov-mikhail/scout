@@ -31,7 +31,11 @@ struct SettingsOverviewView: View {
                 Row {
                     BackendRow(backend: backend, isActive: backend.id == activeID)
                 } destination: {
-                    BackendDetailView(provider: provider, id: backend.id, activeID: $activeID)
+                    BackendDetailView(
+                        provider: provider,
+                        id: backend.id,
+                        activeID: $activeID
+                    )
                 }
             }
 

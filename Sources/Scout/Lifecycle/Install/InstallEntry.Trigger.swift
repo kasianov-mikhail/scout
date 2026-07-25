@@ -24,7 +24,11 @@ extension InstallEntry {
             let install = context.insert(InstallEntry.self)
             install.installID = installID
             install.date = Date()
-            install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
+            install.device = try context.existing(
+                DeviceEntry.self,
+                key: "deviceID",
+                id: deviceID
+            )
             try context.save()
         }
     }

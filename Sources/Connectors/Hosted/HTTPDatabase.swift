@@ -26,9 +26,19 @@ extension HTTPDatabase {
     func ping() async throws {
         let query = RecordQuery(
             recordType: Event.self,
-            filters: [RecordQuery.Filter(field: "name", op: .equals, value: .string(""))]
+            filters: [
+                RecordQuery.Filter(
+                    field: "name",
+                    op: .equals,
+                    value: .string("")
+                )
+            ]
         )
-        _ = try await read(matching: query, fields: nil, limit: 1)
+        _ = try await read(
+            matching: query,
+            fields: nil,
+            limit: 1
+        )
     }
 }
 

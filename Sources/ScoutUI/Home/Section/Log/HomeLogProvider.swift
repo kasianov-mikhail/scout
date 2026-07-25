@@ -47,7 +47,11 @@ final class HomeLogProvider: ObservableObject, Provider {
             report = nil
             return
         }
-        report = LogReport(series: series, visits: visits, period: period)
+        report = LogReport(
+            series: series,
+            visits: visits,
+            period: period
+        )
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {

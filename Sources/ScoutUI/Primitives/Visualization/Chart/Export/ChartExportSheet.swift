@@ -140,7 +140,11 @@ struct ChartExportSheet<ChartContent: View>: View {
         guard let data = ChartExportRenderer.data(for: exportView, format: options.format, scale: displayScale) else {
             return nil
         }
-        let file = ChartExportFile(data: data, name: title, format: options.format)
+        let file = ChartExportFile(
+            data: data,
+            name: title,
+            format: options.format
+        )
         return try? file.write()
     }
 

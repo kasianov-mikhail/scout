@@ -21,16 +21,36 @@ struct DeviceDetailView: View {
     var body: some View {
         InsetList {
             FlowLayout(spacing: 6) {
-                InfoChip(systemImage: device.symbol, text: device.modelName, color: .blue)
-                InfoChip(systemImage: "gearshape", text: device.osVersion, color: .indigo)
-                InfoChip(systemImage: "clock", text: "seen \(device.lastSeen.relativeString)", color: .teal)
+                InfoChip(
+                    systemImage: device.symbol,
+                    text: device.modelName,
+                    color: .blue
+                )
+                InfoChip(
+                    systemImage: "gearshape",
+                    text: device.osVersion,
+                    color: .indigo
+                )
+                InfoChip(
+                    systemImage: "clock",
+                    text: "seen \(device.lastSeen.relativeString)",
+                    color: .teal
+                )
             }
             .listRowSeparator(.hidden)
             .padding(.vertical)
 
             HStack(spacing: 28) {
-                Readout(title: "Sessions", value: device.sessions.plain, color: .primary)
-                Readout(title: "Crashes", value: device.crashes.plain, color: device.crashes > 0 ? .red : .primary)
+                Readout(
+                    title: "Sessions",
+                    value: device.sessions.plain,
+                    color: .primary
+                )
+                Readout(
+                    title: "Crashes",
+                    value: device.crashes.plain,
+                    color: device.crashes > 0 ? .red : .primary
+                )
                 Spacer()
             }
 

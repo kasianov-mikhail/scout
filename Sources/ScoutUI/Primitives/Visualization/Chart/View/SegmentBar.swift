@@ -21,7 +21,11 @@ struct Segment: Identifiable, Equatable {
     let kind: Kind
 
     init(label: String, count: Int, color: Color) {
-        self.init(count: count, color: color, kind: .value(label))
+        self.init(
+            count: count,
+            color: color,
+            kind: .value(label)
+        )
     }
 
     init(count: Int, color: Color, kind: Kind) {
@@ -69,7 +73,14 @@ extension [Segment] {
         var otherCount = first { $0.kind == .other }?.count ?? 0
 
         func candidate() -> [Segment] {
-            otherCount > 0 ? named + [Segment(count: otherCount, color: .gray, kind: .other)] : named
+            otherCount > 0
+                ? named + [
+                    Segment(
+                        count: otherCount,
+                        color: .gray,
+                        kind: .other
+                    )
+                ] : named
         }
 
         while named.count > 1 {

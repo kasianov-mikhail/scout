@@ -47,8 +47,12 @@ struct NetworkEndpointDetailView: View {
 
             if let trend = distribution?.trend(in: range, component: unit), trend.count > 0 {
                 Header(title: "P99 trend")
-                PercentileTrendChart(trend: trend, unit: unit, formatter: \TimeInterval.duration)
-                    .listRowSeparator(.hidden)
+                PercentileTrendChart(
+                    trend: trend,
+                    unit: unit,
+                    formatter: \TimeInterval.duration
+                )
+                .listRowSeparator(.hidden)
             }
 
             if let breakdown = statuses?.summary(in: range), breakdown.total > 0 {
@@ -67,6 +71,10 @@ struct NetworkEndpointDetailView: View {
     let endpoint = report.endpoints(in: range)[2]
 
     NavigationStack {
-        NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
+        NetworkEndpointDetailView(
+            endpoint: endpoint,
+            report: report,
+            range: range
+        )
     }
 }

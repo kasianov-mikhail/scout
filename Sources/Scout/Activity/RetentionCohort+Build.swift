@@ -27,7 +27,10 @@ extension RetentionCohort {
     /// - Returns: one cohort per install week in `range`, sorted by week ascending.
     ///
     package static func build(
-        installDays: [String: Date], sessionDays: [String: Set<Date>], in range: Range<Date>, asOf: Date
+        installDays: [String: Date],
+        sessionDays: [String: Set<Date>],
+        in range: Range<Date>,
+        asOf: Date
     )
         -> [RetentionCohort]
     {
@@ -43,7 +46,11 @@ extension RetentionCohort {
 
             let active = sessionDays[install] ?? []
             for (index, offset) in dayOffsets.enumerated() {
-                let target = calendar.date(byAdding: .day, value: offset, to: installDay)!
+                let target = calendar.date(
+                    byAdding: .day,
+                    value: offset,
+                    to: installDay
+                )!
                 if active.contains(target) {
                     counts[week, default: [:]][index, default: 0] += 1
                 }
@@ -54,7 +61,11 @@ extension RetentionCohort {
             let cohortCounts = counts[week] ?? [:]
 
             let retained = dayOffsets.enumerated().map { index, offset -> Int? in
-                let matured = calendar.date(byAdding: .day, value: 7 + offset, to: week)!
+                let matured = calendar.date(
+                    byAdding: .day,
+                    value: 7 + offset,
+                    to: week
+                )!
                 guard matured < asOf else {
                     return nil
                 }

@@ -35,7 +35,11 @@ final class AlertEngine {
                 state: registry.state(for: rule),
                 now: now
             )
-            return AlertStatus(rule: rule, outcome: outcome, reading: reading)
+            return AlertStatus(
+                rule: rule,
+                outcome: outcome,
+                reading: reading
+            )
         }
     }
 

@@ -21,7 +21,11 @@ extension Crash: Fixture {
 
         return Crash(
             name: name,
-            fingerprint: CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value,
+            fingerprint: CrashFingerprint(
+                name: name,
+                reason: reason,
+                stackTrace: stackTrace
+            ).value,
             reason: reason,
             stackTrace: stackTrace,
             date: Date(),
@@ -36,7 +40,11 @@ extension Crash: Fixture {
     static func sample(_ name: String, at date: Date, sessionID: UUID? = nil) -> Crash {
         Crash(
             name: name,
-            fingerprint: CrashFingerprint(name: name, reason: nil, stackTrace: []).value,
+            fingerprint: CrashFingerprint(
+                name: name,
+                reason: nil,
+                stackTrace: []
+            ).value,
             reason: nil,
             stackTrace: [],
             date: date,

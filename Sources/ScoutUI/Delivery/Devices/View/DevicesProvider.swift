@@ -32,6 +32,10 @@ final class DevicesProvider: ObservableObject, Provider {
             fields: ["device_id"]
         )
 
-        return try await DevicesReport(devices: devices, sessions: sessions, crashes: crashes)
+        return try await DevicesReport(
+            devices: devices,
+            sessions: sessions,
+            crashes: crashes
+        )
     }
 }

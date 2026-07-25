@@ -36,6 +36,12 @@ extension Rail {
         let sessions = self.installs.flatMap { $0.launches.flatMap { $0.sessions.map(\.session) } }
         let events = self.installs.flatMap { $0.launches.flatMap { $0.sessions.flatMap(\.events) } }
         let crashes = self.installs.flatMap { $0.launches.flatMap { $0.sessions.flatMap(\.crashes) } }
-        return (installs, launches, sessions, events, crashes)
+        return (
+            installs,
+            launches,
+            sessions,
+            events,
+            crashes
+        )
     }
 }

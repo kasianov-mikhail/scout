@@ -14,7 +14,11 @@ package struct CrashFingerprint {
     package let value: String
 
     package init(name: String, reason: String?, stackTrace: [String]) {
-        let signature = Self.signature(name: name, reason: reason, stackTrace: stackTrace)
+        let signature = Self.signature(
+            name: name,
+            reason: reason,
+            stackTrace: stackTrace
+        )
         value = SHA256.hash(data: Data(signature.utf8)).map { String(format: "%02x", $0) }.joined()
     }
 }

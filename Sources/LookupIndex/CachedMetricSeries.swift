@@ -49,7 +49,11 @@ enum CachedMetricSeries {
                 if case .string(let category)? = record.fields["category"] { category } else { nil }
             let version: String? =
                 if case .string(let version)? = record.fields["app_version"] { version } else { nil }
-            let key = SeriesKey(name: name, category: category, version: version)
+            let key = SeriesKey(
+                name: name,
+                category: category,
+                version: version
+            )
             groups.append(MetricSeriesPoint(date: date.millisecondsSince1970, value: value), to: key)
         }
 

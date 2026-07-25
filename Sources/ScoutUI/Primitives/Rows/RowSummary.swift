@@ -32,24 +32,38 @@ struct RowSummary: View {
             HStack {
                 Text(verbatim: "Loaded")
                 Spacer()
-                RowSummary(series: MiniChartSeries(values: [2, 4, 3, 7, 6, 11, 16]), count: 49, color: .red)
+                RowSummary(
+                    series: MiniChartSeries(values: [2, 4, 3, 7, 6, 11, 16]),
+                    count: 49,
+                    color: .red
+                )
             }
             HStack {
                 Text(verbatim: "Wide count")
                 Spacer()
-                RowSummary(series: MiniChartSeries(values: [3, 1, 4, 1, 5, 9, 2]), count: 19_989, color: .green)
+                RowSummary(
+                    series: MiniChartSeries(values: [3, 1, 4, 1, 5, 9, 2]),
+                    count: 19_989,
+                    color: .green
+                )
             }
             HStack {
                 Text(verbatim: "Loading")
                 Spacer()
-                RowSummary(series: nil, count: nil, color: .purple)
+                RowSummary(
+                    series: nil,
+                    count: nil,
+                    color: .purple
+                )
             }
             HStack {
                 Text(verbatim: "Empty")
                 Spacer()
                 RowSummary(
-                    series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), count: 0,
-                    color: .blue)
+                    series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)),
+                    count: 0,
+                    color: .blue
+                )
             }
         }
     }

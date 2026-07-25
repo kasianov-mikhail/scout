@@ -121,7 +121,12 @@ enum MainThreadBacktrace {
 
         let result = withUnsafeMutablePointer(to: &state) { pointer in
             pointer.withMemoryRebound(to: natural_t.self, capacity: Int(count)) { rebound in
-                thread_get_state(thread, thread_state_flavor_t(ARM_THREAD_STATE64), rebound, &count)
+                thread_get_state(
+                    thread,
+                    thread_state_flavor_t(ARM_THREAD_STATE64),
+                    rebound,
+                    &count
+                )
             }
         }
 
@@ -135,7 +140,12 @@ enum MainThreadBacktrace {
 
         let result = withUnsafeMutablePointer(to: &state) { pointer in
             pointer.withMemoryRebound(to: natural_t.self, capacity: Int(count)) { rebound in
-                thread_get_state(thread, thread_state_flavor_t(x86_THREAD_STATE64), rebound, &count)
+                thread_get_state(
+                    thread,
+                    thread_state_flavor_t(x86_THREAD_STATE64),
+                    rebound,
+                    &count
+                )
             }
         }
 

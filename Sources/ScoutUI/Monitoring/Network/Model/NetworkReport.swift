@@ -89,7 +89,11 @@ struct NetworkReport {
     }
 
     func requestsPerMinute(in range: Range<Date>, until now: Date = .now) -> Int {
-        requestsPerMinute(endpoints(in: range), in: range, until: now)
+        requestsPerMinute(
+            endpoints(in: range),
+            in: range,
+            until: now
+        )
     }
 
     func requestsPerMinute(_ endpoints: [NetworkEndpoint], in range: Range<Date>, until now: Date = .now) -> Int {

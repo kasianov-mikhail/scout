@@ -47,7 +47,11 @@ enum ChartExportRenderer {
             var box = CGRect(origin: .zero, size: size)
 
             guard let consumer = CGDataConsumer(data: pdf as CFMutableData),
-                let context = CGContext(consumer: consumer, mediaBox: &box, nil)
+                let context = CGContext(
+                    consumer: consumer,
+                    mediaBox: &box,
+                    nil
+                )
             else {
                 return
             }

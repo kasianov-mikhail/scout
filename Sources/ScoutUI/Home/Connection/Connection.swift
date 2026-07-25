@@ -24,7 +24,12 @@ extension Connection {
     }
 
     func refreshingStatus() async -> Connection {
-        Connection(id: id, name: name, status: await probe(), probe: probe)
+        Connection(
+            id: id,
+            name: name,
+            status: await probe(),
+            probe: probe
+        )
     }
 }
 
@@ -49,9 +54,24 @@ extension [Connection] {
 extension Connection: Fixture {
     static var samples: [Connection] {
         [
-            Connection(id: "https://api.scout.app", name: "Production", status: .reachable, probe: { .reachable }),
-            Connection(id: "https://staging.scout.app", name: "Staging", status: .unknown, probe: { .unknown }),
-            Connection(id: "http://localhost:8080", name: "Local", status: .unreachable, probe: { .unreachable }),
+            Connection(
+                id: "https://api.scout.app",
+                name: "Production",
+                status: .reachable,
+                probe: { .reachable }
+            ),
+            Connection(
+                id: "https://staging.scout.app",
+                name: "Staging",
+                status: .unknown,
+                probe: { .unknown }
+            ),
+            Connection(
+                id: "http://localhost:8080",
+                name: "Local",
+                status: .unreachable,
+                probe: { .unreachable }
+            ),
         ]
     }
 }

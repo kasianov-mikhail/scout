@@ -31,7 +31,11 @@ extension VersionEntry {
             version.date = Date()
             version.appVersion = appVersion
             version.buildNumber = buildNumber
-            version.launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
+            version.launch = try context.existing(
+                LaunchEntry.self,
+                key: "launchID",
+                id: launchID
+            )
             try context.save()
         }
     }

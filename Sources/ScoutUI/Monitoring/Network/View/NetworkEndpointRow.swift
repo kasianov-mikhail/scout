@@ -42,7 +42,11 @@ struct NetworkEndpointRow: View {
             }
             .frame(height: 70)
         } destination: {
-            NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
+            NetworkEndpointDetailView(
+                endpoint: endpoint,
+                report: report,
+                range: range
+            )
         }
     }
 }
@@ -54,7 +58,11 @@ struct NetworkEndpointRow: View {
     NavigationStack {
         InsetList {
             ForEach(report.endpoints(in: range)) { endpoint in
-                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
+                NetworkEndpointRow(
+                    endpoint: endpoint,
+                    report: report,
+                    range: range
+                )
             }
         }
     }

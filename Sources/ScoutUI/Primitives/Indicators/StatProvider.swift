@@ -23,7 +23,11 @@ final class StatProvider: ObservableObject, Provider {
 
     func fetch(in database: DatabaseReader) async throws -> [ChartPoint<Int>] {
         let series = try await database.series(
-            matching: SeriesQuery(name: eventName, bucket: .hour, range: Calendar.utc.defaultRange)
+            matching: SeriesQuery(
+                name: eventName,
+                bucket: .hour,
+                range: Calendar.utc.defaultRange
+            )
         )
         return series.flatMap { $0.chartPoints() }
     }

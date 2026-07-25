@@ -12,7 +12,11 @@ struct LogReport {
     private let trends: [LogCategory: Trend]
 
     init(series: [MetricSeries], visits: [DeviceVisit], period: Period) {
-        trends = Self.trends(series: series, visits: visits, period: period)
+        trends = Self.trends(
+            series: series,
+            visits: visits,
+            period: period
+        )
     }
 
     func trend(for category: LogCategory) -> Trend {
@@ -42,7 +46,9 @@ struct LogReport {
 
         return [
             .events: Trend(
-                points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType }, period: period),
+                points: span.points { $0 != CrashEntry.recordType && $0 != HangEntry.recordType },
+                period: period
+            ),
             .crashes: Trend(points: span.points { $0 == CrashEntry.recordType }, period: period),
             .hangs: Trend(points: span.points { $0 == HangEntry.recordType }, period: period),
             .network: Trend(points: span.points(inCategories: Set(StatusBuckets.categories)), period: period),

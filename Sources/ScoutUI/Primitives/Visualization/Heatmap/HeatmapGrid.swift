@@ -34,7 +34,13 @@ struct HeatmapGrid {
 
     func maxBlockCount(hours: Int) -> Int {
         (0..<7).flatMap { day in
-            (0..<24 / hours).map { blockCount(day: day, block: $0, hours: hours) }
+            (0..<24 / hours).map {
+                blockCount(
+                    day: day,
+                    block: $0,
+                    hours: hours
+                )
+            }
         }
         .max() ?? 0
     }

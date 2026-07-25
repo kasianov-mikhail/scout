@@ -10,7 +10,11 @@ import Scout
 
 extension HTTPDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: defaultRecordPageSize)
+        try await read(
+            matching: query,
+            fields: fields,
+            limit: defaultRecordPageSize
+        )
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
@@ -18,7 +22,11 @@ extension HTTPDatabase: DatabaseReader {
     }
 
     private func run(query: HTTPQuery) async throws -> RecordChunk {
-        let response = try await send(query, to: "api/v1/records/query", into: HTTPQueryResponse.self)
+        let response = try await send(
+            query,
+            to: "api/v1/records/query",
+            into: HTTPQueryResponse.self
+        )
         return RecordChunk(
             records: response.records.map { $0.toRecord() },
             cursor: response.cursor.map { token in
@@ -33,7 +41,11 @@ extension HTTPDatabase: DatabaseReader {
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         let endpoint = recordEndpoint(recordName: recordName, fields: fields)
-        return try await get(from: endpoint, reason: "Malformed record URL", as: HTTPRecord.self).toRecord()
+        return try await get(
+            from: endpoint,
+            reason: "Malformed record URL",
+            as: HTTPRecord.self
+        ).toRecord()
     }
 
     private func get<T: Decodable>(from endpoint: URL?, reason: String, as type: T.Type) async throws -> T {
@@ -56,8 +68,12 @@ extension HTTPDatabase: DatabaseReader {
     }
 
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
-        try await get(from: seriesEndpoint(for: query), reason: "Malformed metrics URL", as: MetricSeriesResponse.self)
-            .series
+        try await get(
+            from: seriesEndpoint(for: query),
+            reason: "Malformed metrics URL",
+            as: MetricSeriesResponse.self
+        )
+        .series
     }
 
     func seriesEndpoint(for query: SeriesQuery) -> URL? {
@@ -102,7 +118,11 @@ extension HTTPDatabase: DatabaseReader {
         let from = range.lowerBound.millisecondsSince1970
         let to = range.upperBound.millisecondsSince1970
         let endpoint = URL(string: "api/v1/metrics/active-users?from=\(from)&to=\(to)", relativeTo: url)
-        return try await get(from: endpoint, reason: "Malformed metrics URL", as: ActivityResponse.self).series
+        return try await get(
+            from: endpoint,
+            reason: "Malformed metrics URL",
+            as: ActivityResponse.self
+        ).series
     }
 
     private struct ActivityResponse: Decodable {
@@ -113,9 +133,17 @@ extension HTTPDatabase: DatabaseReader {
         let from = range.lowerBound.millisecondsSince1970
         let to = range.upperBound.millisecondsSince1970
         let endpoint = URL(string: "api/v1/metrics/retention?from=\(from)&to=\(to)", relativeTo: url)
-        let response = try await get(from: endpoint, reason: "Malformed metrics URL", as: RetentionResponse.self)
+        let response = try await get(
+            from: endpoint,
+            reason: "Malformed metrics URL",
+            as: RetentionResponse.self
+        )
         return response.cohorts.map {
-            RetentionCohort(date: $0.date, size: $0.size, retained: $0.retained)
+            RetentionCohort(
+                date: $0.date,
+                size: $0.size,
+                retained: $0.retained
+            )
         }
     }
 

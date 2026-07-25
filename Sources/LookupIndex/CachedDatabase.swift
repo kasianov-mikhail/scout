@@ -23,7 +23,11 @@ struct CachedDatabase: Database {
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        try await base.read(matching: query, fields: fields, limit: limit)
+        try await base.read(
+            matching: query,
+            fields: fields,
+            limit: limit
+        )
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
@@ -55,7 +59,11 @@ struct CachedDatabase: Database {
         }
 
         let fingerprint = CachedMetricSeries.fingerprint(scope: scope, query: query)
-        var cachedUpper = await cachedUpper(for: fingerprint, in: query.range, frozenUpper: frozenUpper)
+        var cachedUpper = await cachedUpper(
+            for: fingerprint,
+            in: query.range,
+            frozenUpper: frozenUpper
+        )
 
         var cached: [Record] = []
         if cachedUpper > query.range.lowerBound {
@@ -74,7 +82,11 @@ struct CachedDatabase: Database {
 
             if cachedUpper < frozenUpper {
                 let records = CachedMetricSeries.records(from: fetched)
-                await cache.store(records, for: fingerprint, covering: cachedUpper..<frozenUpper)
+                await cache.store(
+                    records,
+                    for: fingerprint,
+                    covering: cachedUpper..<frozenUpper
+                )
             }
         }
         return CachedMetricSeries.series(cached: cached, fetched: fetched)
@@ -113,7 +125,11 @@ enum DatabaseCacheRegistry {
 
     static func database(for backend: Backend) -> any Database {
         guard let cache = sharedCache() else { return backend.database }
-        return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
+        return CachedDatabase(
+            base: backend.database,
+            scope: backend.id,
+            cache: cache
+        )
     }
 
     private static func sharedCache() -> (any RecordCaching)? {

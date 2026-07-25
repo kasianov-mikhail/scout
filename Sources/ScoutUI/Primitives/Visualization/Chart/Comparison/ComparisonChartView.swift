@@ -88,7 +88,12 @@ struct ComparisonChartView<T: ChartNumeric>: View {
         )
 
         Text(verbatim: "Empty State").font(.headline)
-        ComparisonChartView(segment: .empty, reference: .empty, timing: extent, color: .blue)
+        ComparisonChartView(
+            segment: .empty,
+            reference: .empty,
+            timing: extent,
+            color: .blue
+        )
     }
     .padding()
 }

@@ -33,7 +33,13 @@ private struct ForegroundTaskModifier: ViewModifier {
         .onDisappear {
             isVisible = false
         }
-        .task(id: Trigger(phase: scenePhase, isVisible: isVisible, token: token)) {
+        .task(
+            id: Trigger(
+                phase: scenePhase,
+                isVisible: isVisible,
+                token: token
+            )
+        ) {
             if isVisible, scenePhase == .active {
                 await action()
             }

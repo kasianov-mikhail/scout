@@ -68,9 +68,21 @@ struct DemoScenario {
         var random = DemoRandom(seed: 0x5C0_17_DE_A11)
 
         let versions = [
-            AppVersion(version: "2.1.0", build: "210", releasedDaysAgo: 64),
-            AppVersion(version: "2.2.0", build: "220", releasedDaysAgo: 35),
-            AppVersion(version: "2.3.0", build: "230", releasedDaysAgo: 12),
+            AppVersion(
+                version: "2.1.0",
+                build: "210",
+                releasedDaysAgo: 64
+            ),
+            AppVersion(
+                version: "2.2.0",
+                build: "220",
+                releasedDaysAgo: 35
+            ),
+            AppVersion(
+                version: "2.3.0",
+                build: "230",
+                releasedDaysAgo: 12
+            ),
         ]
         self.versions = versions
 
@@ -101,7 +113,11 @@ struct DemoScenario {
 
             let install = InstallInfo(
                 id: random.uuid(),
-                device: DeviceInfo(id: random.uuid(), model: model.0, os: model.1),
+                device: DeviceInfo(
+                    id: random.uuid(),
+                    model: model.0,
+                    os: model.1
+                ),
                 date: clock.momentDaysAgo(installDaysAgo),
                 version: activeVersion(daysAgo: installDaysAgo),
                 locale: locales[index % locales.count],

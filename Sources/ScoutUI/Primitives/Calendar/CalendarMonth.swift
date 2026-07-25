@@ -55,10 +55,18 @@ struct CalendarMonth {
             return Day(
                 date: date,
                 number: calendar.component(.day, from: date),
-                isCurrentMonth: calendar.isDate(date, equalTo: month, toGranularity: .month)
+                isCurrentMonth: calendar.isDate(
+                    date,
+                    equalTo: month,
+                    toGranularity: .month
+                )
             )
         }
-        return stride(from: 0, to: days.count, by: 7).map { Array(days[$0..<$0 + 7]) }
+        return stride(
+            from: 0,
+            to: days.count,
+            by: 7
+        ).map { Array(days[$0..<$0 + 7]) }
     }
 
     func isToday(_ day: Day) -> Bool { day.date == Date().startOfDay }

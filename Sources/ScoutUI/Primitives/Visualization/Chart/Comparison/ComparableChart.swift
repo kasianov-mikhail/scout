@@ -25,8 +25,12 @@ struct ComparableChart<T: ChartNumeric, S: ChartTimeScale>: View {
                 color: color
             )
         } else {
-            ChartView(segment: segment, timing: extent, markers: markers)
-                .foregroundStyle(color)
+            ChartView(
+                segment: segment,
+                timing: extent,
+                markers: markers
+            )
+            .foregroundStyle(color)
         }
     }
 }

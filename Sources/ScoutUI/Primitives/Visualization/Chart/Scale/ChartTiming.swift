@@ -37,7 +37,11 @@ extension ChartTiming {
         }
         let starts = segment.map { binRange(of: $0.date, unit: unit).lowerBound }.sorted()
         let step = max(1, (starts.count + 3) / 4)
-        return stride(from: 0, to: starts.count, by: step).map { starts[$0] }
+        return stride(
+            from: 0,
+            to: starts.count,
+            by: step
+        ).map { starts[$0] }
     }
 }
 

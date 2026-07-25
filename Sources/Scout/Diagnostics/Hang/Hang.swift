@@ -21,8 +21,17 @@ package struct Hang {
     package let sessionID: UUID?
 
     package init(
-        name: String, fingerprint: String, reason: String?, stackTrace: [String], duration: TimeInterval, date: Date?,
-        id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?
+        name: String,
+        fingerprint: String,
+        reason: String?,
+        stackTrace: [String],
+        duration: TimeInterval,
+        date: Date?,
+        id: String,
+        deviceID: UUID?,
+        installID: UUID?,
+        launchID: UUID?,
+        sessionID: UUID?
     ) {
         self.name = name
         self.fingerprint = fingerprint
@@ -78,7 +87,12 @@ extension Hang: RecordDecodable {
         }
         // Stored fingerprints from older builds hashed the reason, which embeds
         // the per-occurrence duration — recompute so legacy records group too.
-        fingerprint = CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value
+        fingerprint =
+            CrashFingerprint(
+                name: name,
+                reason: nil,
+                stackTrace: stackTrace
+            ).value
     }
 }
 

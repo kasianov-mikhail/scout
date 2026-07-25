@@ -9,7 +9,12 @@ import Scout
 import SwiftUI
 
 extension EdgeInsets {
-    static let sideInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+    static let sideInsets = EdgeInsets(
+        top: 0,
+        leading: 16,
+        bottom: 0,
+        trailing: 16
+    )
 }
 
 struct InsetList<Content: View>: View {

@@ -22,7 +22,12 @@ extension HasSession where Self: IncidentEntry {
 
         record["name"] = name
         record["fingerprint"] =
-            fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
+            fingerprint
+            ?? CrashFingerprint(
+                name: name ?? "",
+                reason: reason,
+                stackTrace: decodedStackTrace
+            ).value
         record["reason"] = reason
         record["stack_trace"] = stackTrace
         record["date"] = date

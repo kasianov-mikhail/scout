@@ -18,7 +18,8 @@ struct VersionDetailView: View {
     @State private var showAllHangs = false
 
     init(
-        release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil,
+        release: ReleaseHealth,
+        crashes: VersionIncidentProvider<Crash>? = nil,
         hangs: VersionIncidentProvider<Hang>? = nil
     ) {
         self.release = release
@@ -47,13 +48,21 @@ struct VersionDetailView: View {
             .padding(.bottom, 4)
             .listRowSeparator(.hidden, edges: .top)
 
-            IncidentTrendSection(title: "Crashes", records: crashRecords, color: .red) {
+            IncidentTrendSection(
+                title: "Crashes",
+                records: crashRecords,
+                color: .red
+            ) {
                 if crashRecords.count > 0 {
                     AllButton { showAllCrashes = true }
                 }
             }
 
-            IncidentTrendSection(title: "Hangs", records: hangRecords, color: .orange) {
+            IncidentTrendSection(
+                title: "Hangs",
+                records: hangRecords,
+                color: .orange
+            ) {
                 if hangRecords.count > 0 {
                     AllButton { showAllHangs = true }
                 }

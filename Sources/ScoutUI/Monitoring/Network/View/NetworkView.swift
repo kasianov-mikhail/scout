@@ -37,16 +37,32 @@ struct NetworkView: View {
 
         return InsetList {
             HStack(spacing: 28) {
-                Readout(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
-                Readout(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
-                Readout(title: "Req/min", value: report.requestsPerMinute(endpoints, in: range).plain, color: .primary)
+                Readout(
+                    title: "P99",
+                    value: report.percentiles(in: range)?.p99.duration ?? "—",
+                    color: .orange
+                )
+                Readout(
+                    title: "Success",
+                    value: successRate?.formatted ?? "—",
+                    color: successRate?.color ?? .primary
+                )
+                Readout(
+                    title: "Req/min",
+                    value: report.requestsPerMinute(endpoints, in: range).plain,
+                    color: .primary
+                )
                 Spacer()
             }
 
             if trend.count > 0 {
                 Header(title: "Latency P99")
-                PercentileTrendChart(trend: trend, unit: .hour, formatter: \TimeInterval.duration)
-                    .listRowSeparator(.hidden)
+                PercentileTrendChart(
+                    trend: trend,
+                    unit: .hour,
+                    formatter: \TimeInterval.duration
+                )
+                .listRowSeparator(.hidden)
             }
 
             Header(title: "Status codes")

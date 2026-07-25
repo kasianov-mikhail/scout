@@ -13,7 +13,11 @@ func log(_ event: LogEvent, date: Date, sessionID: UUID, context: NSManagedObjec
 
     object.eventID = UUID()
     object.date = date
-    object.session = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
+    object.session = try context.existing(
+        SessionEntry.self,
+        key: "sessionID",
+        id: sessionID
+    )
     object.level = event.level.rawValue
     object.name = event.message.description
 

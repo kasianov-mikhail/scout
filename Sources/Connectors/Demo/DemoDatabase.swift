@@ -35,7 +35,11 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
     }
 
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: .max)
+        try await read(
+            matching: query,
+            fields: fields,
+            limit: .max
+        )
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
@@ -44,7 +48,17 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
         }
         for sort in query.sort.reversed() {
             matches.sort { lhs, rhs in
-                sort.ascending ? before(lhs, rhs, on: sort.field) : before(rhs, lhs, on: sort.field)
+                sort.ascending
+                    ? before(
+                        lhs,
+                        rhs,
+                        on: sort.field
+                    )
+                    : before(
+                        rhs,
+                        lhs,
+                        on: sort.field
+                    )
             }
         }
         return RecordChunk(records: Array(matches.prefix(limit)), cursor: nil)

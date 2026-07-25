@@ -76,13 +76,25 @@ enum RecordCacheStore {
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         let url = directory.appending(path: "RecordCache.store")
         if #available(iOS 18, macOS 15, *) {
-            return cache(IndexedCachedRecord.self, at: url, defaults: .standard)
+            return cache(
+                IndexedCachedRecord.self,
+                at: url,
+                defaults: .standard
+            )
         }
-        return cache(CachedRecord.self, at: url, defaults: .standard)
+        return cache(
+            CachedRecord.self,
+            at: url,
+            defaults: .standard
+        )
     }
 
     static func cache<Row: CacheRow>(_ row: Row.Type, at url: URL, defaults: UserDefaults) -> RecordCache<Row>? {
-        container(for: row, at: url, defaults: defaults).map { RecordCache<Row>(modelContainer: $0) }
+        container(
+            for: row,
+            at: url,
+            defaults: defaults
+        ).map { RecordCache<Row>(modelContainer: $0) }
     }
 
     // The cache is disposable: any schema mismatch destroys the store instead of migrating.

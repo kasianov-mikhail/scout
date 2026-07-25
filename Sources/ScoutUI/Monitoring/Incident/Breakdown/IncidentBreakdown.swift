@@ -16,7 +16,9 @@ struct IncidentBreakdown: Equatable {
     let versionsBySession: [UUID: String]
 
     init(
-        devices: [Segment], osVersions: [Segment], modelsByDevice: [UUID: String] = [:],
+        devices: [Segment],
+        osVersions: [Segment],
+        modelsByDevice: [UUID: String] = [:],
         versionsBySession: [UUID: String] = [:]
     ) {
         self.devices = devices
@@ -32,12 +34,22 @@ extension IncidentBreakdown {
         let ranked = counts.sorted { $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key }
 
         var segments = zip(ranked.prefix(top), colors).map { pair, color in
-            Segment(label: pair.key, count: pair.value, color: color)
+            Segment(
+                label: pair.key,
+                count: pair.value,
+                color: color
+            )
         }
 
         let other = ranked.count > top ? ranked[top...].reduce(0) { $0 + $1.value } : 0
         if other > 0 {
-            segments.append(Segment(count: other, color: .gray, kind: .other))
+            segments.append(
+                Segment(
+                    count: other,
+                    color: .gray,
+                    kind: .other
+                )
+            )
         }
 
         return segments
@@ -92,10 +104,12 @@ extension IncidentBreakdown {
                 from: Array(repeating: "iPhone15,3", count: 5) + Array(repeating: "iPhone14,2", count: 3)
                     + Array(repeating: "iPhone13,2", count: 2) + [
                         "iPad13,1"
-                    ]),
+                    ]
+            ),
             osVersions: segments(
                 from: Array(repeating: "iOS 17.4", count: 6) + Array(repeating: "iOS 17.3", count: 3)
-                    + Array(repeating: "iOS 16.7", count: 2))
+                    + Array(repeating: "iOS 16.7", count: 2)
+            )
         )
     }
 }

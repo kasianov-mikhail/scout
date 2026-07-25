@@ -20,8 +20,16 @@ package struct Crash {
     package let sessionID: UUID?
 
     package init(
-        name: String, fingerprint: String, reason: String?, stackTrace: [String], date: Date?, id: String,
-        deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?
+        name: String,
+        fingerprint: String,
+        reason: String?,
+        stackTrace: [String],
+        date: Date?,
+        id: String,
+        deviceID: UUID?,
+        installID: UUID?,
+        launchID: UUID?,
+        sessionID: UUID?
     ) {
         self.name = name
         self.fingerprint = fingerprint
@@ -74,7 +82,12 @@ extension Crash: RecordDecodable {
             stackTrace = []
         }
         fingerprint =
-            record["fingerprint"] ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
+            record["fingerprint"]
+            ?? CrashFingerprint(
+                name: name,
+                reason: reason,
+                stackTrace: stackTrace
+            ).value
     }
 }
 

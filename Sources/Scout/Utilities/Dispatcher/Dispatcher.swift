@@ -25,7 +25,9 @@ extension Dispatcher {
             try await perform { @MainActor in
                 let work = Task(operation: work)
                 let task = UIApplication.shared.beginBackgroundTask(
-                    withName: "scout.sync", expirationHandler: work.cancel)
+                    withName: "scout.sync",
+                    expirationHandler: work.cancel
+                )
 
                 defer { UIApplication.shared.endBackgroundTask(task) }
 

@@ -24,7 +24,11 @@ struct NativeSeries {
             try await collectInt(into: &intTotals, store: store)
         }
         if query.values != .int && collectsDoubleMetrics {
-            try await collectMetrics(entity: DoubleMetricsEntry.recordType, into: &doubleTotals, store: store)
+            try await collectMetrics(
+                entity: DoubleMetricsEntry.recordType,
+                into: &doubleTotals,
+                store: store
+            )
         }
 
         var series: [MetricSeries] = []
@@ -61,11 +65,22 @@ struct NativeSeries {
         -> [MetricSeries]
     {
         let filters = [
-            EntityStore.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
-            EntityStore.Filter(field: "date", op: .lessThan, value: .date(query.range.upperBound)),
+            EntityStore.Filter(
+                field: "date",
+                op: .greaterThanOrEquals,
+                value: .date(from)
+            ),
+            EntityStore.Filter(
+                field: "date",
+                op: .lessThan,
+                value: .date(query.range.upperBound)
+            ),
         ]
         let records = try await store.read(
-            entity: entity, filters: filters, fields: ["date", "value", "name", "category"])
+            entity: entity,
+            filters: filters,
+            fields: ["date", "value", "name", "category"]
+        )
 
         var latest: [GroupKey: [Date: (date: Date, sample: Double)]] = [:]
         for record in records {
@@ -83,7 +98,11 @@ struct NativeSeries {
             default: continue
             }
 
-            let key = GroupKey(name: name, category: category.flatMap { $0.isEmpty ? nil : $0 }, version: nil)
+            let key = GroupKey(
+                name: name,
+                category: category.flatMap { $0.isEmpty ? nil : $0 },
+                version: nil
+            )
             let bucket = bucketStart(of: date)
             if let existing = latest[key]?[bucket], existing.date >= date { continue }
             latest[key, default: [:]][bucket] = (date, sample)
@@ -94,7 +113,12 @@ struct NativeSeries {
                 buckets
                 .sorted { $0.key < $1.key }
                 .map { MetricSeriesPoint(date: $0.key.millisecondsSince1970, value: value($0.value.sample)) }
-            return MetricSeries(name: key.name, category: key.category, version: key.version, points: points)
+            return MetricSeries(
+                name: key.name,
+                category: key.category,
+                version: key.version,
+                points: points
+            )
         }
     }
 
@@ -122,13 +146,25 @@ struct NativeSeries {
     private func collectInt(into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
         switch query.source {
         case .event:
-            try await collectEvents(name: query.name, into: &totals, store: store)
+            try await collectEvents(
+                name: query.name,
+                into: &totals,
+                store: store
+            )
         case .lifecycle:
             if let source = query.name.flatMap(Self.lifecycle(named:)) {
-                try await collectCounts(of: source, into: &totals, store: store)
+                try await collectCounts(
+                    of: source,
+                    into: &totals,
+                    store: store
+                )
             }
         case .metric:
-            try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+            try await collectMetrics(
+                entity: IntMetricsEntry.recordType,
+                into: &totals,
+                store: store
+            )
         case nil:
             try await collectGuessed(into: &totals, store: store)
         }
@@ -137,19 +173,51 @@ struct NativeSeries {
     private func collectGuessed(into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
         switch (query.name, query.category) {
         case (nil, nil):
-            try await collectEvents(name: nil, into: &totals, store: store)
-            try await collectCounts(of: .crashes, into: &totals, store: store)
-            try await collectCounts(of: .hangs, into: &totals, store: store)
-            try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+            try await collectEvents(
+                name: nil,
+                into: &totals,
+                store: store
+            )
+            try await collectCounts(
+                of: .crashes,
+                into: &totals,
+                store: store
+            )
+            try await collectCounts(
+                of: .hangs,
+                into: &totals,
+                store: store
+            )
+            try await collectMetrics(
+                entity: IntMetricsEntry.recordType,
+                into: &totals,
+                store: store
+            )
         case (let name?, nil):
             if let source = Self.lifecycle(named: name) {
-                try await collectCounts(of: source, into: &totals, store: store)
+                try await collectCounts(
+                    of: source,
+                    into: &totals,
+                    store: store
+                )
             } else {
-                try await collectEvents(name: name, into: &totals, store: store)
-                try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+                try await collectEvents(
+                    name: name,
+                    into: &totals,
+                    store: store
+                )
+                try await collectMetrics(
+                    entity: IntMetricsEntry.recordType,
+                    into: &totals,
+                    store: store
+                )
             }
         default:
-            try await collectMetrics(entity: IntMetricsEntry.recordType, into: &totals, store: store)
+            try await collectMetrics(
+                entity: IntMetricsEntry.recordType,
+                into: &totals,
+                store: store
+            )
         }
     }
 
@@ -168,10 +236,21 @@ struct NativeSeries {
         async throws
     {
         let points = try await store.series(
-            entity: EventEntry.recordType, view: EntityCatalog.eventCountView, from: from, to: query.range.upperBound)
+            entity: EventEntry.recordType,
+            view: EntityCatalog.eventCountView,
+            from: from,
+            to: query.range.upperBound
+        )
 
         for point in points where point.date >= from && (name == nil || point.group == name) {
-            add(Double(point.count), name: point.group, category: nil, version: nil, date: point.date, to: &totals)
+            add(
+                Double(point.count),
+                name: point.group,
+                category: nil,
+                version: nil,
+                date: point.date,
+                to: &totals
+            )
         }
     }
 
@@ -179,7 +258,11 @@ struct NativeSeries {
         async throws
     {
         let points = try await store.series(
-            entity: entity, view: EntityCatalog.metricSeriesView, from: from, to: query.range.upperBound)
+            entity: entity,
+            view: EntityCatalog.metricSeriesView,
+            from: from,
+            to: query.range.upperBound
+        )
 
         for point in points where point.date >= from {
             guard let (category, metric) = EntityCatalog.decodeSeriesKey(point.group) else { continue }
@@ -205,19 +288,38 @@ struct NativeSeries {
     private func collectCounts(of source: Source, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
         async throws
     {
-        let (entity, dateField, name) = Self.layout(of: source)
+        let (
+            entity,
+            dateField,
+            name
+        ) = Self.layout(of: source)
         let filters = [
-            EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(from)),
-            EntityStore.Filter(field: dateField, op: .lessThan, value: .date(query.range.upperBound)),
+            EntityStore.Filter(
+                field: dateField,
+                op: .greaterThanOrEquals,
+                value: .date(from)
+            ),
+            EntityStore.Filter(
+                field: dateField,
+                op: .lessThan,
+                value: .date(query.range.upperBound)
+            ),
         ]
 
         let records = try await store.read(
-            entity: entity, filters: filters, fields: [dateField, "app_version", "install_id"])
+            entity: entity,
+            filters: filters,
+            fields: [dateField, "app_version", "install_id"]
+        )
         var visits = records.compactMap { record -> (date: Date, version: String?, install: String?)? in
             guard case .date(let date)? = record.values[dateField] else { return nil }
             let version: String? = record["app_version"]
             let install: String? = record["install_id"]
-            return (date, version, install)
+            return (
+                date,
+                version,
+                install
+            )
         }
 
         if source == .firstCrashes {
@@ -258,10 +360,18 @@ struct NativeSeries {
     }
 
     private func add(
-        _ value: Double, name: String, category: String?, version: String?, date: Date,
+        _ value: Double,
+        name: String,
+        category: String?,
+        version: String?,
+        date: Date,
         to totals: inout [GroupKey: [Date: Double]]
     ) {
-        let key = GroupKey(name: name, category: category, version: version)
+        let key = GroupKey(
+            name: name,
+            category: category,
+            version: version
+        )
         totals[key, default: [:]][bucketStart(of: date), default: 0] += value
     }
 
@@ -271,7 +381,12 @@ struct NativeSeries {
             .filter { $0.value != 0 }
             .sorted { $0.key < $1.key }
             .map { MetricSeriesPoint(date: $0.key.millisecondsSince1970, value: value($0.value)) }
-        return MetricSeries(name: key.name, category: key.category, version: key.version, points: points)
+        return MetricSeries(
+            name: key.name,
+            category: key.category,
+            version: key.version,
+            points: points
+        )
     }
 
     private struct GroupKey: Hashable {

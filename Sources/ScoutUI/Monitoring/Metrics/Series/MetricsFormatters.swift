@@ -88,7 +88,11 @@ extension TimeInterval {
         if self < .hour {
             let seconds = Int(rounded())
             if seconds < Int(.hour) {
-                return String(format: "%d min %d s", seconds / Int(.minute), seconds % Int(.minute))
+                return String(
+                    format: "%d min %d s",
+                    seconds / Int(.minute),
+                    seconds % Int(.minute)
+                )
             }
         }
         if self < .day {

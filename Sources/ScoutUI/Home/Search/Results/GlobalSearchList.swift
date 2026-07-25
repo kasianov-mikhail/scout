@@ -35,10 +35,26 @@ struct GlobalSearchList: View {
 #Preview {
     let index = GlobalSearchIndex(
         series: [
-            MetricSeries(name: "session_start", category: nil, points: []),
-            MetricSeries(name: "session_end", category: nil, points: []),
-            MetricSeries(name: "session_duration", category: Telemetry.Export.timer.rawValue, points: []),
-            MetricSeries(name: "GET /v1/sessions", category: StatusBuckets.categories[0], points: []),
+            MetricSeries(
+                name: "session_start",
+                category: nil,
+                points: []
+            ),
+            MetricSeries(
+                name: "session_end",
+                category: nil,
+                points: []
+            ),
+            MetricSeries(
+                name: "session_duration",
+                category: Telemetry.Export.timer.rawValue,
+                points: []
+            ),
+            MetricSeries(
+                name: "GET /v1/sessions",
+                category: StatusBuckets.categories[0],
+                points: []
+            ),
         ],
         devices: .samples,
         releases: .samples,

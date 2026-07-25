@@ -23,7 +23,11 @@ extension VisitEntry {
             let visit = context.insert(VisitEntry.self)
             visit.visitID = UUID()
             visit.date = date
-            visit.launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
+            visit.launch = try context.existing(
+                LaunchEntry.self,
+                key: "launchID",
+                id: launchID
+            )
             try context.save()
         }
     }

@@ -21,15 +21,26 @@ extension MetricReading {
 
     init(sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], period: some ChartTimeScale) {
         let previous = Self.stabilities(
-            sessions: sessions, crashes: crashes, in: period.previousRange, component: period.pointComponent)
+            sessions: sessions,
+            crashes: crashes,
+            in: period.previousRange,
+            component: period.pointComponent
+        )
         let current = Self.stabilities(
-            sessions: sessions, crashes: crashes, in: period.initialRange, component: period.pointComponent)
+            sessions: sessions,
+            crashes: crashes,
+            in: period.initialRange,
+            component: period.pointComponent
+        )
 
         self.init(baseline: previous.median ?? 0, recent: current)
     }
 
     static func stabilities(
-        sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], in range: Range<Date>, component: Calendar.Component
+        sessions: [ChartPoint<Int>],
+        crashes: [ChartPoint<Int>],
+        in range: Range<Date>,
+        component: Calendar.Component
     ) -> [Double] {
         zip(
             sessions.bucket(in: range, component: component).reversed(),

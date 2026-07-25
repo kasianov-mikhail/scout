@@ -25,7 +25,11 @@ struct ChartExportButton<ChartContent: View>: View {
         }
         .sheet(isPresented: $isExporting) {
             NavigationStack {
-                ChartExportSheet(title: title, rangeLabel: rangeLabel, chart: chart)
+                ChartExportSheet(
+                    title: title,
+                    rangeLabel: rangeLabel,
+                    chart: chart
+                )
             }
         }
     }

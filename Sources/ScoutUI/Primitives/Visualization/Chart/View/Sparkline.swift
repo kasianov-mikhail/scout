@@ -22,7 +22,13 @@ struct Sparkline: View {
         let last = Double(max(values.count - 1, 1))
         let xGridlines =
             gridlinesAtPoints
-            ? Array(stride(from: 0, through: last, by: 1))
+            ? Array(
+                stride(
+                    from: 0,
+                    through: last,
+                    by: 1
+                )
+            )
             : (0...3).map { last * Double($0) / 3 }
 
         Chart(Array(values.enumerated()), id: \.offset) { index, value in

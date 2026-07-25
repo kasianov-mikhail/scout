@@ -18,14 +18,19 @@ struct HangGroupDetailView: View {
         self.group = group
         self._breakdown = StateObject(
             wrappedValue: breakdown
-                ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+                ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs)
+        )
     }
 
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 16) {
-                    Readout(title: "Duration", value: group.durationText, color: group.severity.color)
+                    Readout(
+                        title: "Duration",
+                        value: group.durationText,
+                        color: group.severity.color
+                    )
                     Readout(title: "Occurrences", value: "\(group.count)")
                     Readout(title: "Devices", value: "\(group.affectedDevices)")
                     Readout(title: "Sessions", value: "\(group.affectedSessions)")
@@ -40,7 +45,11 @@ struct HangGroupDetailView: View {
             .padding(.bottom)
 
             if let value = try? breakdown.result?.get() {
-                IncidentBreakdownSection(breakdown: value, records: group.records, row: occurrenceRow)
+                IncidentBreakdownSection(
+                    breakdown: value,
+                    records: group.records,
+                    row: occurrenceRow
+                )
             }
 
             Header(title: "Occurrences")

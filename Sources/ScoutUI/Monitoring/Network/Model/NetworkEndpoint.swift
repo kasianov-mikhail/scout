@@ -50,10 +50,35 @@ struct NetworkEndpoint: Identifiable {
 
 extension NetworkEndpoint: Fixture {
     static let samples = [
-        NetworkEndpoint(name: "GET /v1/events", requests: 8_420, successRate: 0.998, p99: 0.21),
-        NetworkEndpoint(name: "POST /v1/metrics", requests: 5_210, successRate: 0.991, p99: 0.62),
-        NetworkEndpoint(name: "GET /v1/releases", requests: 3_140, successRate: 0.972, p99: 1.9),
-        NetworkEndpoint(name: "POST /v1/crash", requests: 1_180, successRate: 0.883, p99: 4.4),
-        NetworkEndpoint(name: "GET /health", requests: 640, successRate: 1.0, p99: 0.04),
+        NetworkEndpoint(
+            name: "GET /v1/events",
+            requests: 8_420,
+            successRate: 0.998,
+            p99: 0.21
+        ),
+        NetworkEndpoint(
+            name: "POST /v1/metrics",
+            requests: 5_210,
+            successRate: 0.991,
+            p99: 0.62
+        ),
+        NetworkEndpoint(
+            name: "GET /v1/releases",
+            requests: 3_140,
+            successRate: 0.972,
+            p99: 1.9
+        ),
+        NetworkEndpoint(
+            name: "POST /v1/crash",
+            requests: 1_180,
+            successRate: 0.883,
+            p99: 4.4
+        ),
+        NetworkEndpoint(
+            name: "GET /health",
+            requests: 640,
+            successRate: 1.0,
+            p99: 0.04
+        ),
     ]
 }

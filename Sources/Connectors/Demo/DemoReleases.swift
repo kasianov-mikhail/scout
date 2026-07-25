@@ -15,16 +15,32 @@ struct DemoReleases {
         var samples: [DemoSample] = []
 
         samples += scenario.sessions.map {
-            DemoSample(name: SessionEntry.recordType, version: $0.version.version, date: $0.start)
+            DemoSample(
+                name: SessionEntry.recordType,
+                version: $0.version.version,
+                date: $0.start
+            )
         }
         samples += incidents.crashes.map {
-            DemoSample(name: CrashEntry.recordType, version: $0.version, date: $0.date)
+            DemoSample(
+                name: CrashEntry.recordType,
+                version: $0.version,
+                date: $0.date
+            )
         }
         samples += incidents.hangs.map {
-            DemoSample(name: HangEntry.recordType, version: $0.version, date: $0.date)
+            DemoSample(
+                name: HangEntry.recordType,
+                version: $0.version,
+                date: $0.date
+            )
         }
         samples += scenario.adoption.map {
-            DemoSample(name: VersionEntry.recordType, version: $0.version, date: $0.date)
+            DemoSample(
+                name: VersionEntry.recordType,
+                version: $0.version,
+                date: $0.date
+            )
         }
         samples += DemoReleases.crashedInstalls(incidents.crashes)
 
@@ -37,7 +53,11 @@ struct DemoReleases {
             guard seen.insert("\(crash.installID)-\(crash.version)").inserted else {
                 return nil
             }
-            return DemoSample(name: MarkerEntry.crashName, version: crash.version, date: crash.date)
+            return DemoSample(
+                name: MarkerEntry.crashName,
+                version: crash.version,
+                date: crash.date
+            )
         }
     }
 }

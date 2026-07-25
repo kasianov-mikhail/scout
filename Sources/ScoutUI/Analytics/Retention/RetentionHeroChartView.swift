@@ -71,7 +71,8 @@ private struct RetentionHeroChart: View {
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
                             AxisValueLabel(
-                                rate.formatted(.retentionRate))
+                                rate.formatted(.retentionRate)
+                            )
                         }
                     }
                 }

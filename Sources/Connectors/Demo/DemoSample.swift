@@ -27,7 +27,11 @@ struct DemoSample {
 extension [DemoSample] {
     func series(matching query: SeriesQuery) -> [MetricSeries] {
         let groups = Dictionary(grouping: filter { $0.matches(query) }) {
-            SeriesKey(name: $0.name, category: $0.category, version: query.byVersion ? $0.version : nil)
+            SeriesKey(
+                name: $0.name,
+                category: $0.category,
+                version: query.byVersion ? $0.version : nil
+            )
         }
 
         return groups.compactMap { key, samples in
@@ -35,7 +39,12 @@ extension [DemoSample] {
             guard points.count > 0 else {
                 return nil
             }
-            return MetricSeries(name: key.name, category: key.category, version: key.version, points: points)
+            return MetricSeries(
+                name: key.name,
+                category: key.category,
+                version: key.version,
+                points: points
+            )
         }
     }
 

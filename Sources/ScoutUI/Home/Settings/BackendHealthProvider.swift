@@ -52,7 +52,11 @@ final class BackendHealthProvider: ObservableObject {
         let start = clock.now
         let status = await probe()
         let elapsed = start.duration(to: clock.now)
-        return ProbeResult(id: id, status: status, latency: status == .reachable ? elapsed.milliseconds : nil)
+        return ProbeResult(
+            id: id,
+            status: status,
+            latency: status == .reachable ? elapsed.milliseconds : nil
+        )
     }
 
     private func apply(_ result: ProbeResult) {

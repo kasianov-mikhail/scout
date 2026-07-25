@@ -15,19 +15,41 @@ struct SessionHeader: View {
         VStack(alignment: .leading, spacing: 12) {
             FlowLayout(spacing: 6) {
                 if let model = info.model.map(DeviceModel.init) {
-                    InfoChip(systemImage: model.symbol, text: model.name, color: .blue)
+                    InfoChip(
+                        systemImage: model.symbol,
+                        text: model.name,
+                        color: .blue
+                    )
                 }
                 if let osVersion = info.osVersion {
-                    InfoChip(systemImage: "gearshape", text: osVersion, color: .indigo)
+                    InfoChip(
+                        systemImage: "gearshape",
+                        text: osVersion,
+                        color: .indigo
+                    )
                 }
                 if let locale = info.locale {
-                    InfoChip(systemImage: "globe", text: locale, color: .teal, monospaced: true)
+                    InfoChip(
+                        systemImage: "globe",
+                        text: locale,
+                        color: .teal,
+                        monospaced: true
+                    )
                 }
                 if let channel = info.channel {
-                    InfoChip(systemImage: info.channelIcon, text: channel, color: info.channelColor)
+                    InfoChip(
+                        systemImage: info.channelIcon,
+                        text: channel,
+                        color: info.channelColor
+                    )
                 }
                 if let version = info.version {
-                    InfoChip(systemImage: "tag", text: version, color: .green, monospaced: true)
+                    InfoChip(
+                        systemImage: "tag",
+                        text: version,
+                        color: .green,
+                        monospaced: true
+                    )
                 }
             }
 

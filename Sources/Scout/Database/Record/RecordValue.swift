@@ -38,7 +38,8 @@ extension RecordValue: Codable {
             self = .strings(value)
         } else {
             throw DecodingError.dataCorrupted(
-                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown field value type"))
+                DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unknown field value type")
+            )
         }
     }
 

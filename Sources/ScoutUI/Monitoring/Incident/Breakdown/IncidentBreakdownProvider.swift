@@ -50,7 +50,11 @@ final class IncidentBreakdownProvider: ObservableObject, Provider {
             ]
         )
         let records: [Record] = try await database.readAll(matching: query, fields: ["device_id", "model"])
-        return dictionary(from: records, key: "device_id", value: "model")
+        return dictionary(
+            from: records,
+            key: "device_id",
+            value: "model"
+        )
     }
 
     private func osVersions(in database: DatabaseReader) async throws -> [UUID: String] {
@@ -74,7 +78,11 @@ final class IncidentBreakdownProvider: ObservableObject, Provider {
             fields: ["session_id", "os_version"]
         )
 
-        return dictionary(from: records, key: "session_id", value: "os_version")
+        return dictionary(
+            from: records,
+            key: "session_id",
+            value: "os_version"
+        )
     }
 
     private func dictionary(from records: [Record], key: String, value: String) -> [UUID: String] {

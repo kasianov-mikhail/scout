@@ -21,7 +21,11 @@ protocol IncidentInfo {
 
 extension CrashInfo: IncidentInfo {
     var fingerprint: String {
-        CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
+        CrashFingerprint(
+            name: name,
+            reason: reason,
+            stackTrace: stackTrace
+        ).value
     }
 }
 
@@ -29,19 +33,33 @@ extension HangInfo: IncidentInfo {
     // A hang's reason embeds the per-occurrence duration, which would make
     // every fingerprint unique — identity comes from the name and stack alone.
     var fingerprint: String {
-        CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value
+        CrashFingerprint(
+            name: name,
+            reason: nil,
+            stackTrace: stackTrace
+        ).value
     }
 }
 
 func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(
-    _ info: Info, id: UUID, deviceID: UUID, entityName: String, idKey: String, markerName: String,
-    context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void
+    _ info: Info,
+    id: UUID,
+    deviceID: UUID,
+    entityName: String,
+    idKey: String,
+    markerName: String,
+    context: NSManagedObjectContext,
+    configure: (Entry, SessionEntry) -> Void
 ) throws {
     // The id doubles as the archive file's UUID, so a flush interrupted
     // between the save and the file removal doesn't insert a duplicate
     // on the next launch.
     let request = NSFetchRequest<Entry>(entityName: entityName)
-    request.predicate = NSPredicate(format: "%K == %@", idKey, id as CVarArg)
+    request.predicate = NSPredicate(
+        format: "%K == %@",
+        idKey,
+        id as CVarArg
+    )
     request.fetchLimit = 1
     guard try context.count(for: request) == 0 else { return }
 

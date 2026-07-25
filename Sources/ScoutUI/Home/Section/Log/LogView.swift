@@ -24,7 +24,11 @@ struct LogView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
-                SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
+                SegmentStrip(
+                    selection: $period,
+                    distribution: .justified,
+                    title: \.shortTitle
+                )
 
                 LazyVGrid(columns: columns, spacing: 36) {
                     ForEach(LogCategory.allCases) { category in

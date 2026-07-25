@@ -31,22 +31,35 @@ struct MetricDistributionView: View {
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(Color.gray)
 
-            PercentileTrendChart(trend: trend, unit: unit, formatter: formatter)
+            PercentileTrendChart(
+                trend: trend,
+                unit: unit,
+                formatter: formatter
+            )
         }
     }
 }
 
 extension Percentiles {
     static var sample: Percentiles {
-        Percentiles(p50: 0.081, p90: 0.42, p99: 3.8)
+        Percentiles(
+            p50: 0.081,
+            p90: 0.42,
+            p99: 3.8
+        )
     }
 }
 
 #Preview("MetricDistributionView") {
     NavigationStack {
         ScrollView {
-            MetricDistributionView(percentiles: .sample, trend: .sample, unit: .hour, formatter: \TimeInterval.duration)
-                .padding(.horizontal)
+            MetricDistributionView(
+                percentiles: .sample,
+                trend: .sample,
+                unit: .hour,
+                formatter: \TimeInterval.duration
+            )
+            .padding(.horizontal)
         }
         .monospacedNavigationTitle(en: "http_request")
     }

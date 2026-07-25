@@ -64,7 +64,11 @@ struct DemoIncidents {
         ]
 
         let crashProne = Set(
-            stride(from: 0, to: scenario.installs.count, by: 60).map { scenario.installs[$0].id }
+            stride(
+                from: 0,
+                to: scenario.installs.count,
+                by: 60
+            ).map { scenario.installs[$0].id }
         )
 
         for session in scenario.sessions {
@@ -91,7 +95,13 @@ struct DemoIncidents {
 
                 record["app_version"] = session.version.version
                 records.append(record)
-                crashes.append(Point(date: date, version: session.version.version, installID: session.install.id))
+                crashes.append(
+                    Point(
+                        date: date,
+                        version: session.version.version,
+                        installID: session.install.id
+                    )
+                )
             }
 
             if random.double(in: 0...1) < 0.012 {
@@ -116,7 +126,13 @@ struct DemoIncidents {
 
                 record["app_version"] = session.version.version
                 records.append(record)
-                hangs.append(Point(date: date, version: session.version.version, installID: session.install.id))
+                hangs.append(
+                    Point(
+                        date: date,
+                        version: session.version.version,
+                        installID: session.install.id
+                    )
+                )
             }
         }
 

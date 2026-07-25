@@ -35,7 +35,11 @@ struct HeatmapView: View {
                         .foregroundStyle(.secondary)
                         .frame(width: 30, alignment: .leading)
                     ForEach(0..<24 / hours, id: \.self) { block in
-                        cell(day: day, block: block, maxBlock: maxBlock)
+                        cell(
+                            day: day,
+                            block: block,
+                            maxBlock: maxBlock
+                        )
                     }
                 }
             }
@@ -44,7 +48,11 @@ struct HeatmapView: View {
     }
 
     private func cell(day: Int, block: Int, maxBlock: Int) -> some View {
-        let count = grid.blockCount(day: day, block: block, hours: hours)
+        let count = grid.blockCount(
+            day: day,
+            block: block,
+            hours: hours
+        )
         let intensity = maxBlock > 0 ? Double(count) / Double(maxBlock) : 0
         return RoundedRectangle(cornerRadius: 6)
             .fill(count > 0 ? color.opacity(0.12 + 0.88 * intensity) : Color(.systemGray5))

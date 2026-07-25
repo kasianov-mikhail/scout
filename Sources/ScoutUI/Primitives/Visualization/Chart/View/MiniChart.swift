@@ -25,10 +25,20 @@ struct MiniChart: View {
     var body: some View {
         Group {
             if let series {
-                Sparkline(series: series, color: color, lineWidth: 1.5, showsGridlines: false)
+                Sparkline(
+                    series: series,
+                    color: color,
+                    lineWidth: 1.5,
+                    showsGridlines: false
+                )
             } else {
-                Sparkline(series: .placeholder, color: Color(.systemGray3), lineWidth: 1.5, showsGridlines: false)
-                    .redacted(reason: .placeholder)
+                Sparkline(
+                    series: .placeholder,
+                    color: Color(.systemGray3),
+                    lineWidth: 1.5,
+                    showsGridlines: false
+                )
+                .redacted(reason: .placeholder)
             }
         }
         .frame(width: Self.size.width, height: Self.size.height)
@@ -52,7 +62,8 @@ struct MiniChart: View {
                 Text(verbatim: "Empty")
                 Spacer()
                 MiniChart(
-                    series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), color: .red
+                    series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)),
+                    color: .red
                 )
             }
         }

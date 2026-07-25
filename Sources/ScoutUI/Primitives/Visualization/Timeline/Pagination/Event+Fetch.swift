@@ -21,9 +21,21 @@ extension Event {
     }
 
     private static func filters(ids: [String], name: String?) -> [RecordQuery.Filter] {
-        var filters = [RecordQuery.Filter(field: "session_id", op: .in, value: .strings(ids))]
+        var filters = [
+            RecordQuery.Filter(
+                field: "session_id",
+                op: .in,
+                value: .strings(ids)
+            )
+        ]
         if let name {
-            filters.append(RecordQuery.Filter(field: "name", op: .equals, value: .string(name)))
+            filters.append(
+                RecordQuery.Filter(
+                    field: "name",
+                    op: .equals,
+                    value: .string(name)
+                )
+            )
         }
         return filters
     }

@@ -10,7 +10,11 @@ import Scout
 
 extension Rail {
     init(
-        device: Device, installs: [Install], launches: [Launch], sessions: [Session] = [], events: [Event] = [],
+        device: Device,
+        installs: [Install],
+        launches: [Launch],
+        sessions: [Session] = [],
+        events: [Event] = [],
         crashes: [Crash] = []
     ) {
         let installs = Dictionary(grouping: installs, by: \.deviceID)

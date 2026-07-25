@@ -16,7 +16,11 @@ extension LaunchEntry {
             let launch = context.insert(LaunchEntry.self)
             launch.launchID = launchID
             launch.date = Date()
-            launch.install = try context.existing(InstallEntry.self, key: "installID", id: installID)
+            launch.install = try context.existing(
+                InstallEntry.self,
+                key: "installID",
+                id: installID
+            )
             try context.save()
         }
     }

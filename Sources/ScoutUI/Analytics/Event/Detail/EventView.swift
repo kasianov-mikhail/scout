@@ -88,10 +88,18 @@ extension EventView {
 
     let param = ParamProvider(.success(params.sorted()), recordID: event.id)
 
-    let stat = StatProvider(.success(.samples), eventName: event.name, periods: Period.allCases)
+    let stat = StatProvider(
+        .success(.samples),
+        eventName: event.name,
+        periods: Period.allCases
+    )
 
     return NavigationStack {
-        EventView(event: event, param: param, stat: stat)
+        EventView(
+            event: event,
+            param: param,
+            stat: stat
+        )
     }
     .environmentObject(Tint())
 }

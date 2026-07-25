@@ -35,7 +35,19 @@ extension TimelineSegment {
 
         self.color = kind.color
         self.isActive = active
-        self.topRadius = (active && !connected(prev, row, on: kind)) ? 4 : 0
-        self.bottomRadius = (active && !connected(next, row, on: kind)) ? 4 : 0
+        self.topRadius =
+            (active
+                && !connected(
+                    prev,
+                    row,
+                    on: kind
+                )) ? 4 : 0
+        self.bottomRadius =
+            (active
+                && !connected(
+                    next,
+                    row,
+                    on: kind
+                )) ? 4 : 0
     }
 }

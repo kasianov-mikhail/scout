@@ -13,7 +13,11 @@ struct CrashArchive {
     private let archive: IncidentArchive<CrashInfo>
 
     init(directory: URL) {
-        archive = IncidentArchive(directory: directory, pathExtension: "crash", persist: logCrash)
+        archive = IncidentArchive(
+            directory: directory,
+            pathExtension: "crash",
+            persist: logCrash
+        )
     }
 
     static let system = CrashArchive(

@@ -21,7 +21,12 @@ struct TimelineRow: View {
         VStack(spacing: 0) {
             HStack(spacing: 4) {
                 ForEach(LegendKind.allCases, id: \.self) { kind in
-                    TimelineSegment(kind: kind, row: row, prev: prev, next: next)
+                    TimelineSegment(
+                        kind: kind,
+                        row: row,
+                        prev: prev,
+                        next: next
+                    )
                 }
 
                 Text(row.name)

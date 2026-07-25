@@ -10,7 +10,13 @@ import SwiftUI
 
 extension View {
     func eventFilter(_ filter: Binding<EventQuery>, provider: EventProvider, search: EventProvider) -> some View {
-        modifier(EventFilter(filter: filter, provider: provider, search: search))
+        modifier(
+            EventFilter(
+                filter: filter,
+                provider: provider,
+                search: search
+            )
+        )
     }
 }
 

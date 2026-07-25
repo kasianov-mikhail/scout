@@ -34,11 +34,33 @@ struct InfoChip: View {
 
 #Preview {
     FlowLayout(spacing: 6) {
-        InfoChip(systemImage: "iphone", text: "iPhone16,1", color: .blue)
-        InfoChip(systemImage: "gearshape", text: "iOS 17.4", color: .indigo)
-        InfoChip(systemImage: "globe", text: "en-US", color: .teal, monospaced: true)
-        InfoChip(systemImage: "airplane", text: "TestFlight", color: .orange)
-        InfoChip(systemImage: "tag", text: "v2.3.1 (412)", color: .green, monospaced: true)
+        InfoChip(
+            systemImage: "iphone",
+            text: "iPhone16,1",
+            color: .blue
+        )
+        InfoChip(
+            systemImage: "gearshape",
+            text: "iOS 17.4",
+            color: .indigo
+        )
+        InfoChip(
+            systemImage: "globe",
+            text: "en-US",
+            color: .teal,
+            monospaced: true
+        )
+        InfoChip(
+            systemImage: "airplane",
+            text: "TestFlight",
+            color: .orange
+        )
+        InfoChip(
+            systemImage: "tag",
+            text: "v2.3.1 (412)",
+            color: .green,
+            monospaced: true
+        )
     }
     .padding()
 }
