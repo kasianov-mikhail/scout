@@ -54,7 +54,7 @@ struct AlertRowPlaceholder: View {
             MiniChart(series: nil, color: .gray)
         }
         .redacted(reason: .placeholder)
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 }
 

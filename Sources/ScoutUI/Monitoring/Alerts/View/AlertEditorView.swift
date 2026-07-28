@@ -45,7 +45,7 @@ struct AlertEditorView: View {
             Toggle(isOn: $draft.notifies) {
                 Text(verbatim: "Notify on this device")
             }
-            .trailingRowSeparator()
+            .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
 
             backtestRow
         }
@@ -96,7 +96,7 @@ struct AlertEditorView: View {
             }
         }
         .buttonStyle(.plain)
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 
     private var eventNameRow: some View {
@@ -104,7 +104,7 @@ struct AlertEditorView: View {
             Text(verbatim: "Event name")
         }
         .autocorrectionDisabled()
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 
     private var valueRow: some View {
@@ -124,7 +124,7 @@ struct AlertEditorView: View {
             }
             .labelsHidden()
         }
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 
     @ViewBuilder private var backtestRow: some View {
