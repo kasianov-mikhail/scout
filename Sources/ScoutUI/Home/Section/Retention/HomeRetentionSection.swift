@@ -28,7 +28,12 @@ struct HomeRetentionSection: View {
         switch retention.result {
         case .success(let cohorts) where cohorts.count > 0:
             let stats = RetentionCohort.stats(for: cohorts)
-            let series = MiniChartSeries(values: stats.map { Int(($0.average * 100).rounded()) })
+
+            let series = MiniChartSeries(
+                values: stats.map {
+                    Int(($0.average * 100).rounded())
+                }
+            )
 
             HomeRetentionRow(series: series) { path.append(.retention) }
 
