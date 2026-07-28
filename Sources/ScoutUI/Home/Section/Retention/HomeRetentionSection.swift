@@ -61,6 +61,7 @@ struct HomeRetentionSection: View {
                 .foregroundStyle(.gray)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
+                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
         default:
             HomeRetentionRow(series: .placeholder) {}
@@ -73,7 +74,7 @@ struct HomeRetentionSection: View {
                         Text(verbatim: "Day \(day)")
                             .font(.subheadline)
                         Spacer()
-                        Text(verbatim: "—")
+                        Text(verbatim: "     ")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.green)
                     }
