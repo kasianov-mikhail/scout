@@ -61,7 +61,6 @@ struct HomeRetentionSection: View {
                 .foregroundStyle(.gray)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 20)
-                .listRowSeparator(.hidden, edges: .bottom)
 
         default:
             HomeRetentionRow(series: .placeholder) {}
@@ -91,6 +90,10 @@ struct HomeRetentionSection: View {
         InsetList {
             HomeRetentionSection(
                 retention: .init(.success(.samples)),
+                path: .constant([])
+            )
+            HomeRetentionSection(
+                retention: .init(.success([])),
                 path: .constant([])
             )
             HomeRetentionSection(
