@@ -12,13 +12,19 @@ import SwiftUI
 struct RowSummary: View {
     static let countWidth: CGFloat = 80
 
-    let series: MiniChartSeries?
+    let series: MiniChartSeries
     let count: Int?
     let color: Color
 
     var body: some View {
         HStack(spacing: 8) {
-            MiniChart(series: series, color: color)
+            Sparkline(
+                series: series,
+                color: color,
+                lineWidth: 1.5,
+                showsGridlines: false
+            )
+            .frame(width: 56, height: 22)
             RedactedText(count: count)
                 .foregroundColor(.primary)
                 .frame(minWidth: Self.countWidth, alignment: .trailing)
@@ -32,24 +38,37 @@ struct RowSummary: View {
             HStack {
                 Text(verbatim: "Loaded")
                 Spacer()
-                RowSummary(series: MiniChartSeries(values: [2, 4, 3, 7, 6, 11, 16]), count: 49, color: .red)
+                RowSummary(
+                    series: MiniChartSeries(values: [2, 4, 3, 7, 6, 11, 16]),
+                    count: 49,
+                    color: .red
+                )
             }
             HStack {
                 Text(verbatim: "Wide count")
                 Spacer()
-                RowSummary(series: MiniChartSeries(values: [3, 1, 4, 1, 5, 9, 2]), count: 19_989, color: .green)
+                RowSummary(
+                    series: MiniChartSeries(values: [3, 1, 4, 1, 5, 9, 2]),
+                    count: 19_989,
+                    color: .green
+                )
             }
             HStack {
                 Text(verbatim: "Loading")
                 Spacer()
-                RowSummary(series: nil, count: nil, color: .purple)
+                RowSummary(
+                    series: .empty,
+                    count: nil,
+                    color: .purple
+                )
             }
             HStack {
                 Text(verbatim: "Empty")
                 Spacer()
                 RowSummary(
                     series: MiniChartSeries(values: Array(repeating: 0, count: MiniChartSeries.sliceCount)), count: 0,
-                    color: .blue)
+                    color: .blue
+                )
             }
         }
     }

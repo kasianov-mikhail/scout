@@ -21,10 +21,13 @@ struct ReleaseRow: View {
 
             Spacer()
 
-            MiniChart(
+            Sparkline(
                 series: MiniChartSeries(values: release.trend),
-                color: release.freeSessions.color
+                color: release.freeSessions.color,
+                lineWidth: 1.5,
+                showsGridlines: false
             )
+            .frame(width: 56, height: 22)
 
             ReleasePercent(text: release.freeSessions.formatted)
         } destination: {

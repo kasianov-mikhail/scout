@@ -63,8 +63,7 @@ struct HomeRetentionSection: View {
                 .padding(.vertical, 20)
 
         default:
-            HomeRetentionRow(series: .placeholder) {}
-                .redacted(reason: .placeholder)
+            HomeRetentionRow(series: .empty) {}
 
             ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
                 Button {

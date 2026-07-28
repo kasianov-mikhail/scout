@@ -19,7 +19,7 @@ struct Sparkline: View {
     var body: some View {
         let values = series.isEmpty ? [] : series.values
         let scale = SparklineScale(values: values)
-        let last = Double(max(values.count - 1, 1))
+        let last = Double(max(series.values.count - 1, 1))
         let xGridlines =
             gridlinesAtPoints
             ? Array(stride(from: 0, through: last, by: 1))

@@ -30,7 +30,8 @@ struct StatRow<Destination: View>: View {
             Spacer()
 
             RowSummary(
-                series: points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) },
+                series: points.map { MiniChartSeries(points: $0, range: period.initialRange, aggregation: .total) }
+                    ?? .empty,
                 count: points?.bucket(on: period).total,
                 color: color
             )
