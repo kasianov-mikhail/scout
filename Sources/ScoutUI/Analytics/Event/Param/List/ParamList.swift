@@ -59,7 +59,7 @@ struct ParamRow: View {
 
                     Redacted(length: 8).opacity(0.5)
                 }
-                .trailingRowSeparator()
+                .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
             }
         }
         .lineLimit(1)

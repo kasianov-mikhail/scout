@@ -66,7 +66,7 @@ struct AlertRowPlaceholder: View {
             .frame(width: 56, height: 22)
         }
         .redacted(reason: .placeholder)
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 }
 

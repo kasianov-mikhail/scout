@@ -75,7 +75,7 @@ struct ReleaseRowPlaceholder: View {
             ReleasePercent(text: "100.00%")
         }
         .redacted(reason: .placeholder)
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 }
 

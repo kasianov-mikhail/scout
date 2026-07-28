@@ -25,7 +25,7 @@ struct Row<Content: View, Destination: View>: View {
             }
             .opacity(0)
         }
-        .trailingRowSeparator()
+        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 }
 
