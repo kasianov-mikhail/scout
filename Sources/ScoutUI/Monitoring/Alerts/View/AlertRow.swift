@@ -28,7 +28,13 @@ struct AlertRow: View {
             }
 
             Spacer()
-            MiniChart(series: status.series, color: status.outcome.state.color)
+            Sparkline(
+                series: status.series,
+                color: status.outcome.state.color,
+                lineWidth: 1.5,
+                showsGridlines: false
+            )
+            .frame(width: 56, height: 22)
         }
         .frame(height: 68)
     }
@@ -51,7 +57,13 @@ struct AlertRowPlaceholder: View {
 
             Spacer()
 
-            MiniChart(series: nil, color: .gray)
+            Sparkline(
+                series: .empty,
+                color: .gray,
+                lineWidth: 1.5,
+                showsGridlines: false
+            )
+            .frame(width: 56, height: 22)
         }
         .redacted(reason: .placeholder)
         .trailingRowSeparator()

@@ -9,33 +9,18 @@
 import Foundation
 import Scout
 
-/// The points of a Home row's period compressed into a fixed number of
-/// equal time slices, ready to be drawn as an inline mini-chart.
-///
 struct MiniChartSeries {
-    /// Number of slices a mini-chart compresses its period into.
     static let sliceCount = 7
 
-    /// One aggregated value per slice, oldest first.
     let values: [Int]
 }
 
 extension MiniChartSeries {
-    /// How the points of one slice collapse into its single value.
     enum Aggregation {
-        /// Sum of all counts — for additive series like event totals.
         case total
-
-        /// Count of the newest point — for level series like active users.
         case latest
     }
 
-    /// Splits `range` into `sliceCount` equal time slices and aggregates
-    /// the points that fall into each one.
-    ///
-    /// Points outside `range` are ignored; a point exactly on a slice
-    /// boundary belongs to the later slice.
-    ///
     init(points: [ChartPoint<Int>], range: Range<Date>, aggregation: Aggregation) {
         let step = range.upperBound.timeIntervalSince(range.lowerBound) / Double(Self.sliceCount)
 
@@ -63,15 +48,8 @@ extension MiniChartSeries {
 }
 
 extension MiniChartSeries {
-    /// A gentle wave drawn under redaction while the real series loads.
-    static let placeholder = MiniChartSeries(values: [3, 5, 4, 6, 5, 7, 6])
+    static let empty = MiniChartSeries(values: Array(repeating: .zero, count: sliceCount))
 
-    /// No slices at all: a chart with nothing but its gridlines.
-    static let empty = MiniChartSeries(values: [])
-
-    /// Whether the series has anything to draw: a series whose every slice
-    /// sits at zero carries no shape and is drawn as `empty`.
-    ///
     var isEmpty: Bool {
         values.allSatisfy { $0 == .zero }
     }
