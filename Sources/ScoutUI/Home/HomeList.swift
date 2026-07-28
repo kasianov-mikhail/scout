@@ -74,7 +74,7 @@ struct HomeList: View {
             }
         }
         .rotatingProviders(
-            first: [alerts, releases],
+            first: [alerts, releases, retention],
             later: [sessions, activities, logs, devices]
         )
     }
