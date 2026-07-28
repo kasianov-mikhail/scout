@@ -9,8 +9,6 @@ import Scout
 import SwiftUI
 
 struct HomeRetentionSection: View {
-    @Environment(\.database) var database
-
     @ObservedObject var retention: RetentionProvider
 
     @Binding var path: [HomeDestination]
@@ -20,9 +18,6 @@ struct HomeRetentionSection: View {
             if let cohorts = try? retention.result?.get(), cohorts.count > 0 {
                 AllButton { path.append(.retention) }
             }
-        }
-        .task {
-            await retention.fetchIfNeeded(in: database)
         }
 
         switch retention.result {
