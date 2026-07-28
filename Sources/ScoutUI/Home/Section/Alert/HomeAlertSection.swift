@@ -43,7 +43,7 @@ struct HomeAlertSection: View {
 
         switch alerts.result {
         case .success(let statuses) where statuses.allHealthy:
-            placeholderText("All healthy", color: .green)
+            placeholderText("All healthy").foregroundStyle(.green)
 
         case .success(let statuses) where statuses.count > 0:
             ForEach(statuses.prefix(2), id: \.rule) { status in
@@ -54,7 +54,7 @@ struct HomeAlertSection: View {
             Button {
                 isEditorPresented = true
             } label: {
-                placeholderText("New rule", color: .blue)
+                placeholderText("New rule").foregroundStyle(.blue)
             }
             .buttonStyle(.plain)
 
@@ -65,11 +65,9 @@ struct HomeAlertSection: View {
         }
     }
 
-    private func placeholderText(_ text: String, color: Color) -> some View {
+    private func placeholderText(_ text: String) -> some View {
         Text(verbatim: text)
             .font(.body)
-            .fontWeight(.medium)
-            .foregroundStyle(color.opacity(0.7))
             .frame(height: 44)
             .frame(maxWidth: .infinity)
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }

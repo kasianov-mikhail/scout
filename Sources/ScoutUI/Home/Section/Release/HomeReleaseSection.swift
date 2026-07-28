@@ -29,8 +29,7 @@ struct HomeReleaseSection: View {
         case .success:
             Text(verbatim: "No results")
                 .font(.body)
-                .fontWeight(.medium)
-                .foregroundStyle(.gray.opacity(0.7))
+                .foregroundStyle(.gray)
                 .frame(maxWidth: .infinity)
                 .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
