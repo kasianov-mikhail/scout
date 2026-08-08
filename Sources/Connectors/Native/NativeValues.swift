@@ -63,12 +63,19 @@ extension Record {
     }
 }
 
-extension RecordQuery.Filter {
-    var storeFilter: EntityStore.Filter {
-        EntityStore.Filter(field: field, op: storeMatch, value: value.storeValue)
+extension QueryBuilder {
+    func filter(_ filter: RecordQuery.Filter) -> QueryBuilder {
+        self.filter(filter.field, filter.storeMatch, filter.value.storeValue)
     }
 
-    private var storeMatch: EntityStore.Match {
+    func filter(_ field: String, in range: Range<Date>) -> QueryBuilder {
+        filter(field, .greaterThanOrEquals, .date(range.lowerBound))
+            .filter(field, .lessThan, .date(range.upperBound))
+    }
+}
+
+extension RecordQuery.Filter {
+    fileprivate var storeMatch: ScoutDB.Operator {
         switch op {
         case .equals:
             .equals

@@ -22,8 +22,7 @@ struct NativeDatabase: Sendable {
 
 extension NativeDatabase: DatabaseWriter {
     func write(record: Record) async throws {
-        await registration.value
-        try await store.write(Self.values(for: record), entity: record.recordType, uuid: record.recordID)
+        try await write(records: [record])
     }
 
     func write(records: [Record]) async throws {
@@ -44,25 +43,32 @@ extension NativeDatabase: DatabaseWriter {
 extension NativeDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         await registration.value
-        let records = try await store.read(
-            entity: query.recordType.recordType,
-            filters: query.filters.map(\.storeFilter),
-            sort: query.sort.map { EntityStore.Sort(field: $0.field, ascending: $0.ascending) },
-            fields: fields.map { keys in keys.filter { $0 != "uuid" } }
+        let entity = query.recordType.recordType
+        let sort = query.sort.first
+
+        // A keyset page orders by one field, and the store has no unbounded read
+        // to fall back on, so a query without a sort still walks in the order of
+        // the entity's own timestamp.
+        let records = try await builder(entity: entity, filters: query.filters).records(
+            orderedBy: sort?.field ?? EntityCatalog.dateField(for: entity),
+            ascending: sort?.ascending ?? false
         )
+
         return RecordChunk(records: records.map(Record.init(entityRecord:)), cursor: nil)
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         await registration.value
+        let entity = query.recordType.recordType
+
         // The keyset pager orders by a single field, so a query without a sort
         // has no page order to follow — fall back to the full read.
         guard let sort = query.sort.first else {
             return try await read(matching: query, fields: fields)
         }
         return try await page(
-            entity: query.recordType.recordType,
-            filters: query.filters.map(\.storeFilter),
+            entity: entity,
+            filters: query.filters,
             field: sort.field,
             ascending: sort.ascending,
             limit: limit,
@@ -74,13 +80,15 @@ extension NativeDatabase: DatabaseReader {
     // re-queries the store for the following bounded slice instead of retaining
     // the whole pre-fetched tail in memory.
     private func page(
-        entity: String, filters: [EntityStore.Filter], field: String, ascending: Bool, limit: Int,
+        entity: String, filters: [RecordQuery.Filter], field: String, ascending: Bool, limit: Int,
         after cursor: FieldCursor?
     ) async throws
         -> RecordChunk
     {
-        let page = try await store.read(
-            entity: entity, filters: filters, orderedBy: field, descending: !ascending, limit: limit, after: cursor)
+        let page = try await builder(entity: entity, filters: filters)
+            .sort(field, ascending ? .forward : .reverse)
+            .page(size: limit, after: cursor)
+
         return RecordChunk(
             records: page.records.map(Record.init(entityRecord:)),
             cursor: page.cursor.map { next in
@@ -90,6 +98,10 @@ extension NativeDatabase: DatabaseReader {
                 }
             }
         )
+    }
+
+    private func builder(entity: String, filters: [RecordQuery.Filter]) -> QueryBuilder {
+        filters.reduce(store.query(entity)) { $0.filter($1) }
     }
 }
 
@@ -133,18 +145,10 @@ extension NativeDatabase {
 }
 
 extension NativeDatabase {
-    static func dateFilters(_ field: String, in range: Range<Date>) -> [EntityStore.Filter] {
-        [
-            EntityStore.Filter(field: field, op: .greaterThanOrEquals, value: .date(range.lowerBound)),
-            EntityStore.Filter(field: field, op: .lessThan, value: .date(range.upperBound)),
-        ]
-    }
-
     func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws
         -> [(date: Date, id: String)]
     {
-        let records = try await store.read(
-            entity: entity, filters: Self.dateFilters(dateField, in: range), fields: [dateField, idField])
+        let records = try await store.records(entity: entity, dateField: dateField, in: range)
 
         return records.compactMap { record -> (date: Date, id: String)? in
             guard case .date(let date)? = record.values[dateField] else {

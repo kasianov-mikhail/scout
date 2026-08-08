@@ -19,13 +19,8 @@ struct NativeSeriesTests {
     let database: NativeDatabase
     let range = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
 
-    init() async throws {
-        let cloud = ScoutDBTesting.InMemoryDatabase()
-        let registry = SchemaRegistry(database: cloud)
-        for definition in EntityCatalog.definitions {
-            try await registry.register(definition)
-        }
-        database = NativeDatabase(store: EntityStore(database: cloud, registry: registry))
+    init() {
+        database = .inMemory()
     }
 
     @Test("Event counts come back as hour-bucket series")

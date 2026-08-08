@@ -9,53 +9,118 @@ import Foundation
 import Scout
 import ScoutDB
 
-// A scout-db `EntityDefinition` paired with the derivations scout applies on
-// write. Derived fields live here because they compute over scout's `Record`,
-// which the wire-format `EntityDefinition` cannot express.
+// One entity as scout declares it: the fields it writes, the aggregates it
+// reads back as series, and the derivations it applies on write. Derived fields
+// live here because they compute over scout's `Record`, which a schema
+// declaration cannot express.
 struct CatalogEntry {
-    let definition: EntityDefinition
+    let entity: String
+    let fields: [Field]
+    let aggregates: [Aggregate]
     let derive: @Sendable (Record) -> [String: ScoutDB.RecordValue]
 
+    struct Field {
+        let name: String
+        let type: FieldType
+    }
+
+    enum Aggregate {
+        case count(by: String, at: String)
+        case sum(String, by: String, at: String)
+    }
+
     init(
-        _ definition: EntityDefinition,
+        entity: String, fields: [Field], aggregates: [Aggregate] = [],
         derive: @escaping @Sendable (Record) -> [String: ScoutDB.RecordValue] = { _ in [:] }
     ) {
-        self.definition = definition
+        self.entity = entity
+        self.fields = fields + Self.metadata
+        self.aggregates = aggregates
         self.derive = derive
+    }
+
+    // Every entity carries the same tail of bucket stamps and identifiers, so
+    // it is appended once here rather than repeated in every declaration.
+    private static let metadata: [Field] = [
+        Field(name: "hour", type: .timestamp),
+        Field(name: "day", type: .timestamp),
+        Field(name: "week", type: .timestamp),
+        Field(name: "month", type: .timestamp),
+        Field(name: "device_id", type: .string),
+        Field(name: "install_id", type: .string),
+        Field(name: "launch_id", type: .string),
+        Field(name: "version", type: .int),
+    ]
+}
+
+extension CatalogEntry {
+    // Fields are declared `.ungrouped` so a creation builds no vector of its
+    // own: every aggregate scout reads is named below, dated by the record's
+    // own timestamp rather than by the hour the write lands in.
+    func declaration(on store: EntityStore) -> SchemaBuilder {
+        var builder = store.schema(entity)
+
+        for field in fields {
+            builder = builder.field(field.name, field.type, .ungrouped)
+        }
+        for aggregate in aggregates {
+            switch aggregate {
+            case .count(let group, let date):
+                builder = builder.count(by: group, at: date)
+            case .sum(let field, let group, let date):
+                builder = builder.sum(field, by: group, at: date)
+            }
+        }
+
+        return builder
+    }
+
+    // A published schema the declaration already matches is left alone: only a
+    // drift in the field list is worth a new version, and aggregates join
+    // rather than replace, so republishing an unchanged one buys nothing.
+    func matches(_ schema: EntitySchema) -> Bool {
+        guard schema.fields.count == fields.count else {
+            return false
+        }
+        return zip(schema.fields, fields).allSatisfy {
+            $0.name == $1.name && $0.type == $1.type
+        }
     }
 }
 
-// Slot assignment follows declaration order, so the field lists below are part
-// of the stored-data contract: never reorder or retype existing fields — append
-// new ones in a new schema version instead.
 enum EntityCatalog {
-    static let eventCountView = "count"
-    static let metricSeriesView = "series"
     static let metricSeriesKey = "series_key"
 
     static let entries: [CatalogEntry] = [
-        CatalogEntry(event), CatalogEntry(session), CatalogEntry(visit), CatalogEntry(launch),
-        CatalogEntry(install), CatalogEntry(device), CatalogEntry(version), CatalogEntry(crash), CatalogEntry(hang),
+        event, session, visit, launch, install, device, version, crash, hang,
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
 
-    static var definitions: [EntityDefinition] {
-        entries.map(\.definition)
-    }
-
-    static func definition(for entity: String) -> EntityDefinition? {
-        entries.first { $0.definition.entity == entity }?.definition
+    static func entry(for entity: String) -> CatalogEntry? {
+        entries.first { $0.entity == entity }
     }
 
     // The writer applies every entity's declared derivations uniformly, so a new
     // computed field is a per-entity `derive` closure here rather than a special
     // case wired into the shared write path.
     static func derivedValues(for record: Record) -> [String: ScoutDB.RecordValue] {
-        entries.first { $0.definition.entity == record.recordType }?.derive(record) ?? [:]
+        entry(for: record.recordType)?.derive(record) ?? [:]
     }
 
-    // Metric series are grouped by a single grid key, so the category and name
+    // A keyset page orders by one field, and a read without a sort of its own
+    // still has to walk in some order — the entity's own timestamp is the one
+    // every record carries.
+    static func dateField(for entity: String) -> String {
+        switch entity {
+        case SessionEntry.recordType, LaunchEntry.recordType:
+            "start_date"
+        default:
+            "date"
+        }
+    }
+
+    // Metric series are grouped by a single vector key, so the category and name
     // are packed into one field on write and split on read. Each component is
     // backslash-escaped so a "|" (or "\") inside a category or name can't be
     // mistaken for the separator and scatter points across the wrong series.
@@ -115,166 +180,108 @@ enum EntityCatalog {
         return result
     }
 
-    private static let event = definition(
+    private static let event = CatalogEntry(
         entity: EventEntry.recordType,
         fields: [
-            ("name", .text),
-            ("level", .string),
-            ("session_id", .string),
-            ("params", .bytes),
-            ("param_count", .int),
-            ("date", .timestamp),
+            .init(name: "name", type: .text),
+            .init(name: "level", type: .string),
+            .init(name: "session_id", type: .string),
+            .init(name: "params", type: .bytes),
+            .init(name: "param_count", type: .int),
+            .init(name: "date", type: .timestamp),
         ],
-        views: [AggregateView(name: eventCountView, groupBy: "name", bucket: .hour)]
+        aggregates: [.count(by: "name", at: "date")]
     )
 
-    private static let session = definition(
+    private static let session = CatalogEntry(
         entity: SessionEntry.recordType,
         fields: [
-            ("start_date", .timestamp),
-            ("end_date", .timestamp),
-            ("session_id", .string),
-            ("app_version", .string),
-        ],
-        trailing: [
-            ("build_number", .string),
-            ("os_version", .string),
-            ("locale", .string),
-            ("channel", .string),
-        ],
-        envelopeDate: "start_date"
+            .init(name: "start_date", type: .timestamp),
+            .init(name: "end_date", type: .timestamp),
+            .init(name: "session_id", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "build_number", type: .string),
+            .init(name: "os_version", type: .string),
+            .init(name: "locale", type: .string),
+            .init(name: "channel", type: .string),
+        ]
     )
 
-    private static let visit = definition(
+    private static let visit = CatalogEntry(
         entity: VisitEntry.recordType,
-        fields: [("date", .timestamp)]
+        fields: [.init(name: "date", type: .timestamp)]
     )
 
-    private static let launch = definition(
+    private static let launch = CatalogEntry(
         entity: LaunchEntry.recordType,
         fields: [
-            ("start_date", .timestamp),
-            ("end_date", .timestamp),
-        ],
-        envelopeDate: "start_date"
+            .init(name: "start_date", type: .timestamp),
+            .init(name: "end_date", type: .timestamp),
+        ]
     )
 
-    private static let install = definition(
+    private static let install = CatalogEntry(
         entity: InstallEntry.recordType,
-        fields: [("date", .timestamp)]
+        fields: [.init(name: "date", type: .timestamp)]
     )
 
-    private static let device = definition(
+    private static let device = CatalogEntry(
         entity: DeviceEntry.recordType,
-        fields: [("date", .timestamp)],
-        trailing: [("model", .string)]
+        fields: [
+            .init(name: "date", type: .timestamp),
+            .init(name: "model", type: .string),
+        ]
     )
 
-    private static let version = definition(
+    private static let version = CatalogEntry(
         entity: VersionEntry.recordType,
         fields: [
-            ("date", .timestamp),
-            ("app_version", .string),
-            ("build_number", .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "app_version", type: .string),
+            .init(name: "build_number", type: .string),
         ]
     )
 
-    private static let crash = definition(
+    private static let crash = CatalogEntry(
         entity: CrashEntry.recordType,
         fields: [
-            ("name", .text),
-            ("fingerprint", .string),
-            ("reason", .string),
-            ("stack_trace", .bytes),
-            ("session_id", .string),
-            ("app_version", .string),
-            ("date", .timestamp),
+            .init(name: "name", type: .text),
+            .init(name: "fingerprint", type: .string),
+            .init(name: "reason", type: .string),
+            .init(name: "stack_trace", type: .bytes),
+            .init(name: "session_id", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
         ]
     )
 
-    private static let hang = definition(
+    private static let hang = CatalogEntry(
         entity: HangEntry.recordType,
         fields: [
-            ("name", .text),
-            ("fingerprint", .string),
-            ("reason", .string),
-            ("stack_trace", .bytes),
-            ("duration", .double),
-            ("session_id", .string),
-            ("app_version", .string),
-            ("date", .timestamp),
+            .init(name: "name", type: .text),
+            .init(name: "fingerprint", type: .string),
+            .init(name: "reason", type: .string),
+            .init(name: "stack_trace", type: .bytes),
+            .init(name: "duration", type: .double),
+            .init(name: "session_id", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
         ]
     )
 
     private static func metric(entity: String, valueType: FieldType) -> CatalogEntry {
         CatalogEntry(
-            definition(
-                entity: entity,
-                fields: [
-                    ("name", .text),
-                    ("category", .string),
-                    ("session_id", .string),
-                    (metricSeriesKey, .string),
-                    ("value", valueType),
-                    ("date", .timestamp),
-                ],
-                views: [AggregateView(name: metricSeriesView, groupBy: metricSeriesKey, bucket: .hour, sum: "value")]
-            ),
+            entity: entity,
+            fields: [
+                .init(name: "name", type: .text),
+                .init(name: "category", type: .string),
+                .init(name: "session_id", type: .string),
+                .init(name: metricSeriesKey, type: .string),
+                .init(name: "value", type: valueType),
+                .init(name: "date", type: .timestamp),
+            ],
+            aggregates: [.sum("value", by: metricSeriesKey, at: "date")],
             derive: seriesKey
         )
-    }
-
-    private typealias Spec = (String, FieldType)
-
-    private static func definition(
-        entity: String, fields: [Spec], trailing: [Spec] = [], envelopeDate: String = "date",
-        views: [AggregateView]? = nil
-    )
-        -> EntityDefinition
-    {
-        EntityDefinition(
-            entity: entity, version: 1, fields: slotted(fields + metadata + trailing), envelopeDate: envelopeDate,
-            views: views)
-    }
-
-    private static let metadata: [Spec] = [
-        ("hour", .timestamp),
-        ("day", .timestamp),
-        ("week", .timestamp),
-        ("month", .timestamp),
-        ("device_id", .string),
-        ("install_id", .string),
-        ("launch_id", .string),
-        ("version", .int),
-    ]
-
-    private static func slotted(_ specs: [Spec]) -> [FieldDefinition] {
-        var next: [Pool: Int] = [:]
-        return specs.map { name, type in
-            let pool = pool(for: type)
-            let index = next[pool, default: 0]
-            next[pool] = index + 1
-            return FieldDefinition(
-                name: name, type: type, storage: .slot(pool, String(format: "%@_%02d", pool.rawValue, index)))
-        }
-    }
-
-    private static func pool(for type: FieldType) -> Pool {
-        switch type {
-        case .string:
-            .string
-        case .text:
-            .text
-        case .int:
-            .int
-        case .double:
-            .double
-        case .timestamp:
-            .timestamp
-        case .bytes:
-            .bytes
-        default:
-            fatalError("Unsupported field type \(type)")
-        }
     }
 }

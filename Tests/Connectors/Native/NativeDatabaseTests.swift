@@ -18,13 +18,8 @@ import Testing
 struct NativeDatabaseTests {
     let database: NativeDatabase
 
-    init() async throws {
-        let cloud = ScoutDBTesting.InMemoryDatabase()
-        let registry = SchemaRegistry(database: cloud)
-        for definition in EntityCatalog.definitions {
-            try await registry.register(definition)
-        }
-        database = NativeDatabase(store: EntityStore(database: cloud, registry: registry))
+    init() {
+        database = .inMemory()
     }
 
     @Test("Event records round-trip through the store")
@@ -218,61 +213,55 @@ func makeMetricRecord(id: String, name: String, value: Int64) -> Record {
 
 @Suite("Schema bootstrap healing")
 struct SchemaBootstrapTests {
-    // Simulates the schema an older app published: Device@1 without `model`.
-    private func publishStaleDeviceSchema(to cloud: ScoutDBTesting.InMemoryDatabase) async throws {
-        let current = try #require(EntityCatalog.definition(for: DeviceEntry.recordType))
-        let stale = EntityDefinition(
-            entity: current.entity,
-            version: current.version,
-            fields: current.fields.filter { $0.name != "model" },
-            envelopeDate: current.envelopeDate,
-            unique: current.unique,
-            views: current.views
-        )
-        try await SchemaRegistry(database: cloud).publish(stale)
+    let cloud = ScoutDBTesting.InMemoryDatabase()
+    let registry: SchemaRegistry
+    let store: EntityStore
+
+    init() {
+        registry = SchemaRegistry(database: cloud)
+        store = EntityStore(database: cloud, registry: registry)
     }
 
-    @Test("A stale published Device schema without model blocks reads until the local schema is registered")
-    func staleSchemaHealing() async throws {
-        let cloud = ScoutDBTesting.InMemoryDatabase()
-        try await publishStaleDeviceSchema(to: cloud)
+    // Built the way Backend.cloudKit builds it — with a registration task the
+    // reads and writes await — and never handed a setup() call.
+    private var database: NativeDatabase {
+        NativeDatabase(
+            store: store,
+            registration: Task { await EntityCatalog.publish(into: store, registry: registry) }
+        )
+    }
 
-        // A fresh launch: a new registry over the same CloudKit, before bootstrap.
-        let registry = SchemaRegistry(database: cloud)
-        let database = NativeDatabase(store: EntityStore(database: cloud, registry: registry))
+    // Simulates the schema an older app published: Device without `model`.
+    private func publishStaleDeviceSchema() async throws {
+        let entry = try #require(EntityCatalog.entry(for: DeviceEntry.recordType))
 
-        let query = RecordQuery(recordType: Device.self)
-
-        await #expect(throws: SchemaError.self) {
-            _ = try await database.read(matching: query, fields: ["device_id", "model"])
+        var stale = store.schema(entry.entity)
+        for field in entry.fields where field.name != "model" {
+            stale = stale.field(field.name, field.type, .ungrouped)
         }
+        try await stale.create()
+    }
 
-        await EntityCatalog.register(into: registry)
+    @Test("A stale published Device schema without model heals into one that carries it")
+    func staleSchemaHealing() async throws {
+        try await publishStaleDeviceSchema()
 
+        let database = database
         try await database.write(record: makeDeviceRecord(id: "d-1", model: "iPhone16,1"))
-        let chunk = try await database.read(matching: query, fields: ["device_id", "model"])
+
+        let chunk = try await database.read(
+            matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
         #expect(chunk.records.first?["model"] == "iPhone16,1")
 
-        // Reconcile republishes the local schema so later launches preload it clean.
-        await EntityCatalog.reconcile(registry: SchemaRegistry(database: cloud), database: cloud)
-        let republished = try await SchemaRegistry(database: cloud).definition(for: DeviceEntry.recordType)
-        #expect(republished.fields.contains { $0.name == "model" })
+        let healed = try await registry.schema(for: DeviceEntry.recordType)
+        #expect(healed.fields.contains { $0.name == "model" })
     }
 
-    @Test("A backend self-registers its schema, so reads work without setup()")
-    func selfRegistration() async throws {
-        let cloud = ScoutDBTesting.InMemoryDatabase()
-        try await publishStaleDeviceSchema(to: cloud)
-
-        // Build the backend the way Backend.cloudKit does — with a registration task —
-        // but never call setup(). The read must still resolve `model`.
-        let registry = SchemaRegistry(database: cloud)
-        let database = NativeDatabase(
-            store: EntityStore(database: cloud, registry: registry),
-            registration: Task { await EntityCatalog.register(into: registry) }
-        )
-
+    @Test("A schema nothing ever published is created on the first write")
+    func firstLaunchPublishes() async throws {
+        let database = database
         try await database.write(record: makeDeviceRecord(id: "d-1", model: "iPhone16,1"))
+
         let chunk = try await database.read(
             matching: RecordQuery(recordType: Device.self), fields: ["device_id", "model"])
         #expect(chunk.records.first?["model"] == "iPhone16,1")

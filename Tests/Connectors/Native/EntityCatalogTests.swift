@@ -7,6 +7,7 @@
 
 import Foundation
 import ScoutDB
+import ScoutDBTesting
 import Testing
 
 @testable import NativeConnector
@@ -14,11 +15,32 @@ import Testing
 
 @Suite("EntityCatalog")
 struct EntityCatalogTests {
-    @Test("Every definition passes scout-db validation")
-    func validation() throws {
-        for definition in EntityCatalog.definitions {
-            try definition.validate()
+    @Test("Every declaration publishes, so every one of them validates")
+    func validation() async throws {
+        let database = InMemoryDatabase()
+        let registry = SchemaRegistry(database: database)
+        let store = EntityStore(database: database, registry: registry)
+
+        for entry in EntityCatalog.entries {
+            try await entry.publish(into: store, registry: registry)
         }
+        for entry in EntityCatalog.entries {
+            let schema = try await registry.schema(for: entry.entity)
+            #expect(entry.matches(schema))
+        }
+    }
+
+    @Test("Republishing an unchanged declaration leaves the schema where it is")
+    func idempotentPublish() async throws {
+        let database = InMemoryDatabase()
+        let registry = SchemaRegistry(database: database)
+        let store = EntityStore(database: database, registry: registry)
+        let entry = try #require(EntityCatalog.entry(for: EventEntry.recordType))
+
+        try await entry.publish(into: store, registry: registry)
+        try await entry.publish(into: store, registry: registry)
+
+        #expect(entry.matches(try await registry.schema(for: entry.entity)))
     }
 
     @Test("Definitions exist for every syncable record type")
@@ -36,7 +58,7 @@ struct EntityCatalogTests {
             DoubleMetricsEntry.recordType,
         ]
         for entity in entities {
-            #expect(EntityCatalog.definition(for: entity) != nil)
+            #expect(EntityCatalog.entry(for: entity) != nil)
         }
     }
 
@@ -53,9 +75,9 @@ struct EntityCatalogTests {
         ]
 
         for (entity, keys) in requests {
-            let definition = try #require(EntityCatalog.definition(for: entity))
-            let fields = Set(definition.fields.map(\.name))
-            // The uuid field lives in the Item envelope rather than a slot.
+            let entry = try #require(EntityCatalog.entry(for: entity))
+            let fields = Set(entry.fields.map(\.name))
+            // The uuid field lives in the record envelope rather than a slot.
             for key in keys where key != "uuid" {
                 #expect(fields.contains(key), "\(entity) is missing \(key)")
             }
