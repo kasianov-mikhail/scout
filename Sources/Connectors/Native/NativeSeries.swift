@@ -60,12 +60,7 @@ struct NativeSeries {
     private func collectLast(entity: String, store: EntityStore, value: (Double) -> MetricValue) async throws
         -> [MetricSeries]
     {
-        let filters = [
-            EntityStore.Filter(field: "date", op: .greaterThanOrEquals, value: .date(from)),
-            EntityStore.Filter(field: "date", op: .lessThan, value: .date(query.range.upperBound)),
-        ]
-        let records = try await store.read(
-            entity: entity, filters: filters, fields: ["date", "value", "name", "category"])
+        let records = try await store.records(entity: entity, dateField: "date", in: window)
 
         var latest: [GroupKey: [Date: (date: Date, sample: Double)]] = [:]
         for record in records {
@@ -106,6 +101,10 @@ struct NativeSeries {
 
     private var from: Date {
         bucketStart(of: query.range.lowerBound)
+    }
+
+    private var window: Range<Date> {
+        from..<query.range.upperBound
     }
 
     private func bucketStart(of date: Date) -> Date {
@@ -173,21 +172,21 @@ struct NativeSeries {
     private func collectEvents(name: String?, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
         async throws
     {
-        let points = try await store.series(
-            entity: EventEntry.recordType, view: EntityCatalog.eventCountView, from: from, to: query.range.upperBound)
+        let points = try await store.query(EventEntry.recordType)
+            .series(metric: .sum, group: "name", in: window)
 
-        for point in points where point.date >= from && (name == nil || point.group == name) {
-            add(Double(point.count), name: point.group, category: nil, version: nil, date: point.date, to: &totals)
+        for point in points where name == nil || point.group == name {
+            add(point.value, name: point.group, category: nil, version: nil, date: point.date, to: &totals)
         }
     }
 
     private func collectMetrics(entity: String, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
         async throws
     {
-        let points = try await store.series(
-            entity: entity, view: EntityCatalog.metricSeriesView, from: from, to: query.range.upperBound)
+        let points = try await store.query(entity)
+            .series("value", metric: .sum, group: EntityCatalog.metricSeriesKey, in: window)
 
-        for point in points where point.date >= from {
+        for point in points {
             guard let (category, metric) = EntityCatalog.decodeSeriesKey(point.group) else {
                 continue
             }
@@ -200,7 +199,7 @@ struct NativeSeries {
             }
 
             add(
-                point.value ?? Double(point.count),
+                point.value,
                 name: metric,
                 category: category.isEmpty ? nil : category,
                 version: nil,
@@ -218,13 +217,8 @@ struct NativeSeries {
         async throws
     {
         let (entity, dateField, name) = Self.layout(of: source)
-        let filters = [
-            EntityStore.Filter(field: dateField, op: .greaterThanOrEquals, value: .date(from)),
-            EntityStore.Filter(field: dateField, op: .lessThan, value: .date(query.range.upperBound)),
-        ]
+        let records = try await store.records(entity: entity, dateField: dateField, in: window)
 
-        let records = try await store.read(
-            entity: entity, filters: filters, fields: [dateField, "app_version", "install_id"])
         var visits = records.compactMap { record -> (date: Date, version: String?, install: String?)? in
             guard case .date(let date)? = record.values[dateField] else {
                 return nil

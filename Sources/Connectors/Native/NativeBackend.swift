@@ -10,16 +10,16 @@ import Scout
 import ScoutDB
 
 extension Backend {
-    /// A CloudKit backend that stores records through scout-db's frozen Item/GridItem
+    /// A CloudKit backend that stores records through scout-db's frozen Entity/Vector
     /// schema.
     ///
     /// Raw records are delivered to every entity; chart aggregates are maintained by
-    /// scout-db views on write, so no client-side matrix upload happens.
+    /// scout-db vectors on write, so no client-side matrix upload happens.
     ///
     public static func cloudKit(container: CKContainer) -> Backend {
         let registry = SchemaRegistry(database: container.publicCloudDatabase)
         let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
-        let registration = Task { await EntityCatalog.register(into: registry) }
+        let registration = Task { await EntityCatalog.publish(into: store, registry: registry) }
 
         return Backend(
             id: container.containerIdentifier ?? "cloudKit",
@@ -50,11 +50,6 @@ extension Backend {
                 @unknown default:
                     return .couldNotDetermine
                 }
-            },
-            onSetup: {
-                Task {
-                    await EntityCatalog.reconcile(registry: registry, database: container.publicCloudDatabase)
-                }
             }
         )
     }
@@ -76,28 +71,27 @@ extension CKAccountStatus {
 }
 
 extension EntityCatalog {
-    static func register(into registry: SchemaRegistry) async {
-        for definition in definitions {
-            try? await registry.register(definition)
+    // The store resolves a schema by reading its published descriptor, so
+    // nothing can be written until one exists. Publishing runs once per launch
+    // ahead of the first write, and costs a read per entity — the same read the
+    // write would pay anyway — plus a write only where the declaration drifted.
+    static func publish(into store: EntityStore, registry: SchemaRegistry) async {
+        for entry in entries {
+            try? await entry.publish(into: store, registry: registry)
         }
     }
+}
 
-    static func reconcile(registry: SchemaRegistry, database: any CloudDatabase) async {
-        // Read the published schema through a throwaway registry so preload never
-        // overwrites the authoritative local definitions already in `registry`.
-        let mirror = SchemaRegistry(database: database)
-        _ = try? await mirror.preload()
-        let remote = await mirror.definitions()
+extension CatalogEntry {
+    func publish(into store: EntityStore, registry: SchemaRegistry) async throws {
+        let declaration = declaration(on: store)
 
-        for definition in definitions {
-            let published = remote.first { $0.entity == definition.entity }
-
-            if let published, published.version > definition.version {
-                continue
-            }
-            if published != definition {
-                try? await registry.publish(definition)
-            }
+        guard let published = try? await registry.schema(for: entity) else {
+            return try await declaration.create()
         }
+        guard !matches(published) else {
+            return
+        }
+        try await declaration.update()
     }
 }
