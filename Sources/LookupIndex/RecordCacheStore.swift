@@ -122,7 +122,7 @@ enum RecordCacheStore {
 
     private static func openContainer<Row: CacheRow>(for row: Row.Type, at url: URL) -> ModelContainer? {
         let schema = Schema([Row.self, CachedSpan.self])
-        let configuration = ModelConfiguration(schema: schema, url: url)
+        let configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
         return try? ModelContainer(for: schema, configurations: [configuration])
     }
 }
