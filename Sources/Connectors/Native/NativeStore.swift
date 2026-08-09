@@ -11,14 +11,9 @@ enum NativeStore {
     private static let lock = NSLock()
     nonisolated(unsafe) private static var stores: [String: NativeDatabase] = [:]
 
-    /// The store this container already has, or the one `make` builds for it.
-    ///
-    /// A backend is a value a caller may build wherever it is needed, a view
-    /// body included, and a store of its own per call brings a schema cache of
-    /// its own with it: every rebuild reads the catalog back from the server
-    /// and publishes what it does not find. One store per container is what
-    /// keeps that a launch's worth of requests rather than a body's.
-    ///
+    // A store of its own per backend brings a schema cache of its own with it,
+    // so a caller building backends in a view body republishes the catalog on
+    // every rebuild.
     static func shared(id: String, make: () -> NativeDatabase) -> NativeDatabase {
         lock.lock()
         defer { lock.unlock() }
