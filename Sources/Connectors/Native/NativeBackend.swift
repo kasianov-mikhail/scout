@@ -17,13 +17,19 @@ extension Backend {
     /// scout-db vectors on write, so no client-side matrix upload happens.
     ///
     public static func cloudKit(container: CKContainer) -> Backend {
-        let registry = SchemaRegistry(database: container.publicCloudDatabase)
-        let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
-        let registration = Task { await EntityCatalog.publish(into: store, registry: registry) }
+        let id = container.containerIdentifier ?? "cloudKit"
+
+        let database = NativeStore.shared(id: id) {
+            let registry = SchemaRegistry(database: container.publicCloudDatabase)
+            let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
+            let registration = Task { await EntityCatalog.publish(into: store, registry: registry) }
+
+            return NativeDatabase(store: store, registration: registration)
+        }
 
         return Backend(
-            id: container.containerIdentifier ?? "cloudKit",
-            database: NativeDatabase(store: store, registration: registration),
+            id: id,
+            database: database,
             checkAvailability: {
                 (try? await container.accountStatus()) == .available
             },
