@@ -76,9 +76,7 @@ extension CKContainer {
         let registry = SchemaRegistry(database: publicCloudDatabase)
         let store = EntityStore(database: publicCloudDatabase, registry: registry)
 
-        for entry in CatalogEntry.entries {
-            try? await entry.publish(into: store, registry: registry)
-        }
+        await CatalogEntry.publishAll(into: store, registry: registry)
 
         return store
     }
@@ -96,19 +94,5 @@ extension CKAccountStatus {
         @unknown default:
             .unreachable
         }
-    }
-}
-
-extension CatalogEntry {
-    func publish(into store: EntityStore, registry: SchemaRegistry) async throws {
-        let declaration = declaration(on: store)
-
-        guard let published = try? await registry.schema(for: entity) else {
-            return try await declaration.create()
-        }
-        guard !matches(published) else {
-            return
-        }
-        try await declaration.update()
     }
 }
