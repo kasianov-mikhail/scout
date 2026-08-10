@@ -60,21 +60,7 @@ jobs:
       - name: Dump current API
         run: |
           set -eo pipefail
-          schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
-          if [ -z "$schemes" ]; then
-            echo "::error::No library products found in the manifest."
-            exit 1
-          fi
-          for scheme in $schemes; do
-            xcodebuild \
-              -scheme "$scheme" \
-              -destination 'generic/platform=iOS Simulator' \
-              -derivedDataPath /tmp/dd-current \
-              -clonedSourcePackagesDirPath /tmp/spm \
-              -skipMacroValidation \
-              -quiet \
-              build
-          done
+          .github/scripts/build-library-schemes.sh /tmp/dd-current
           .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
 
       - name: Identify the toolchain
@@ -106,7 +92,7 @@ jobs:
         uses: actions/cache@v6
         with:
           path: /tmp/baseline.set
-          key: api-baseline-set-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api-set.sh') }}-${{ steps.toolchain.outputs.id }}
+          key: api-baseline-set-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api-set.sh', '.github/scripts/build-library-schemes.sh') }}-${{ steps.toolchain.outputs.id }}
 
       - name: Dump baseline API
         if: steps.baseline-ack.outputs.acknowledged != 'true' && steps.baseline-cache.outputs.cache-hit != 'true'
@@ -119,24 +105,10 @@ jobs:
           echo "Comparing against base $baseline"
           git worktree add /tmp/baseline "$baseline"
           cd /tmp/baseline
-          schemes="$(swift package dump-package | jq -r '.products[] | select(.type.library) | .name')"
-          if [ -z "$schemes" ]; then
-            echo "::error::The baseline manifest vends no library products, so there is no API to compare against."
+          if ! "$GITHUB_WORKSPACE/.github/scripts/build-library-schemes.sh" /tmp/dd-baseline; then
+            echo "::error::The baseline does not build, so the API comparison cannot run. Dependencies resolve fresh here, so a dependency release can break a base that once built — fix the base or pin the dependency. Where the PR is itself that fix, add the api-baseline-unbuildable label to say the base cannot answer."
             exit 1
           fi
-          for scheme in $schemes; do
-            if ! xcodebuild \
-              -scheme "$scheme" \
-              -destination 'generic/platform=iOS Simulator' \
-              -derivedDataPath /tmp/dd-baseline \
-              -clonedSourcePackagesDirPath /tmp/spm \
-              -skipMacroValidation \
-              -quiet \
-              build; then
-              echo "::error::The baseline scheme $scheme does not build, so the API comparison cannot run. Dependencies resolve fresh here, so a dependency release can break a base that once built — fix the base or pin the dependency. Where the PR is itself that fix, add the api-baseline-unbuildable label to say the base cannot answer."
-              exit 1
-            fi
-          done
           "$GITHUB_WORKSPACE/.github/scripts/dump-api-set.sh" /tmp/dd-baseline /tmp/baseline.set
 
       - name: Compare
