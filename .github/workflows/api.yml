@@ -42,6 +42,7 @@ jobs:
     permissions:
       contents: read
       checks: read
+      actions: read
 
     steps:
       - uses: actions/checkout@v7
