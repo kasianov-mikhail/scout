@@ -12,6 +12,15 @@ import SwiftData
 protocol CacheRow: PersistentModel {
     static var schemaVersion: Int { get }
 
+    // SwiftData turns a predicate key path into a column name by matching it against the metadata
+    // the `@Model` macro generates for the concrete class. A key path spelled on a generic
+    // parameter is a different key path and never matches, so an optimized build traps inside
+    // SwiftData rather than running the query. Every row type therefore builds its own predicates
+    // and sort order, where its type is concrete.
+    static func predicate(fingerprint: String) -> Predicate<Self>
+    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<Self>
+    static var dateSort: SortDescriptor<Self> { get }
+
     var fingerprint: String { get }
     var date: Date { get }
     var payload: Data { get }
@@ -23,6 +32,22 @@ protocol CacheRow: PersistentModel {
 @Model
 final class CachedRecord: CacheRow {
     static let schemaVersion = 2
+
+    static func predicate(fingerprint: String) -> Predicate<CachedRecord> {
+        #Predicate { $0.fingerprint == fingerprint }
+    }
+
+    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<CachedRecord> {
+        let lower = range.lowerBound
+        let upper = range.upperBound
+        return #Predicate {
+            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
+        }
+    }
+
+    static var dateSort: SortDescriptor<CachedRecord> {
+        SortDescriptor(\.date)
+    }
 
     var fingerprint: String
     var date: Date
@@ -41,6 +66,22 @@ final class IndexedCachedRecord: CacheRow {
     #Index<IndexedCachedRecord>([\.fingerprint, \.date])
 
     static let schemaVersion = 3
+
+    static func predicate(fingerprint: String) -> Predicate<IndexedCachedRecord> {
+        #Predicate { $0.fingerprint == fingerprint }
+    }
+
+    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<IndexedCachedRecord> {
+        let lower = range.lowerBound
+        let upper = range.upperBound
+        return #Predicate {
+            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
+        }
+    }
+
+    static var dateSort: SortDescriptor<IndexedCachedRecord> {
+        SortDescriptor(\.date)
+    }
 
     var fingerprint: String
     var date: Date

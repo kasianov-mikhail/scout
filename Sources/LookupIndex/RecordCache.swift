@@ -29,12 +29,8 @@ actor RecordCache<Row: CacheRow> {
     }
 
     func records(for fingerprint: String, in range: Range<Date>) -> [Record]? {
-        let lower = range.lowerBound
-        let upper = range.upperBound
-        let predicate = #Predicate<Row> {
-            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
-        }
-        let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\Row.date)])
+        let descriptor = FetchDescriptor(
+            predicate: Row.predicate(fingerprint: fingerprint, in: range), sortBy: [Row.dateSort])
         guard let entries = try? modelContext.fetch(descriptor) else {
             return nil
         }
@@ -78,8 +74,7 @@ actor RecordCache<Row: CacheRow> {
     }
 
     func lookupRecord(for fingerprint: String) -> Record? {
-        let predicate = #Predicate<Row> { $0.fingerprint == fingerprint }
-        var descriptor = FetchDescriptor(predicate: predicate)
+        var descriptor = FetchDescriptor(predicate: Row.predicate(fingerprint: fingerprint))
         descriptor.fetchLimit = 1
         guard let entry = try? modelContext.fetch(descriptor).first else {
             return nil
@@ -91,8 +86,7 @@ actor RecordCache<Row: CacheRow> {
         guard let payload = try? JSONEncoder().encode(CachedRecordPayload(record: record)) else {
             return
         }
-        let predicate = #Predicate<Row> { $0.fingerprint == fingerprint }
-        try? modelContext.delete(model: Row.self, where: predicate)
+        try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint))
         modelContext.insert(Row(fingerprint: fingerprint, date: .distantPast, payload: payload))
         try? modelContext.save()
     }
@@ -105,17 +99,11 @@ actor RecordCache<Row: CacheRow> {
     }
 
     private func deleteRecords(for fingerprint: String, in range: Range<Date>) {
-        let lower = range.lowerBound
-        let upper = range.upperBound
-        let predicate = #Predicate<Row> {
-            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
-        }
-        try? modelContext.delete(model: Row.self, where: predicate)
+        try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint, in: range))
     }
 
     private func deleteAll(for fingerprint: String) {
-        let recordPredicate = #Predicate<Row> { $0.fingerprint == fingerprint }
-        try? modelContext.delete(model: Row.self, where: recordPredicate)
+        try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint))
 
         let spanPredicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
         try? modelContext.delete(model: CachedSpan.self, where: spanPredicate)
