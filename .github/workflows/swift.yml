@@ -91,7 +91,7 @@ jobs:
       && needs.lint.result == 'success'
       && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    timeout-minutes: 40
 
     permissions:
       contents: read
@@ -164,6 +164,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout-Package \
+            -configuration Debug \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
@@ -174,6 +175,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout-Package \
+            -configuration Debug \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage ${{ matrix.coverage && 'YES' || 'NO' }} \
@@ -181,6 +183,35 @@ jobs:
             ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
             -parallel-testing-enabled NO \
             -resultBundlePath TestResults.xcresult \
+            test-without-building
+
+      # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
+      # other release-only failures never show up in the Debug pass above.
+      - name: Build (Release)
+        run: |
+          xcodebuild \
+            -scheme Scout-Package \
+            -configuration Release \
+            ENABLE_TESTABILITY=YES \
+            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
+            -clonedSourcePackagesDirPath /tmp/spm \
+            -enableCodeCoverage NO \
+            -skipMacroValidation \
+            build-for-testing
+
+      - name: Test (Release)
+        run: |
+          xcodebuild \
+            -scheme Scout-Package \
+            -configuration Release \
+            ENABLE_TESTABILITY=YES \
+            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
+            -clonedSourcePackagesDirPath /tmp/spm \
+            -enableCodeCoverage NO \
+            -skipMacroValidation \
+            ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
+            -parallel-testing-enabled NO \
+            -resultBundlePath TestResults-Release.xcresult \
             test-without-building
 
       - name: Report coverage
