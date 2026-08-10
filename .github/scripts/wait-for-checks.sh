@@ -17,6 +17,20 @@ back_off() {
   interval=$(( interval * 2 > max_interval ? max_interval : interval * 2 ))
 }
 
+# A run that has not been given a runner yet has no jobs, and a job that does not exist has no
+# check run, so a missing check is indistinguishable from a renamed one until the queue drains.
+undispatched_runs() {
+  for sha in "${shas[@]}"; do
+    [ -n "$sha" ] || continue
+    gh api --paginate \
+      "repos/$GITHUB_REPOSITORY/actions/runs?head_sha=$sha&per_page=100" \
+      --jq '.workflow_runs[]
+        | select(.status == "queued" or .status == "pending"
+          or .status == "waiting" or .status == "requested")
+        | .name' || return 1
+  done
+}
+
 deadline=$(( SECONDS + timeout ))
 absent_deadline=$(( SECONDS + absent_timeout ))
 failures=0
@@ -71,8 +85,13 @@ while :; do
   if [ "$SECONDS" -ge "$absent_deadline" ]; then
     absent="$(printf '%s\n' "${pending[@]}" | grep -F '(absent)' || true)"
     if [ -n "$absent" ]; then
-      echo "::error::No check run appeared within ${absent_timeout}s for: $(echo $absent) — if the job was renamed, update the CHECKS list in this workflow."
-      exit 1
+      if waiting="$(undispatched_runs)" && [ -n "$waiting" ]; then
+        echo "Still waiting for a runner: $(echo $waiting). A check run cannot appear before the run it belongs to starts, so the absence is not counted yet."
+        absent_deadline=$(( SECONDS + absent_timeout ))
+      else
+        echo "::error::No check run appeared within ${absent_timeout}s for: $(echo $absent) — if the job was renamed, update the CHECKS list in this workflow."
+        exit 1
+      fi
     fi
   fi
 
