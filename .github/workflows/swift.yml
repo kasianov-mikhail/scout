@@ -83,7 +83,7 @@ jobs:
         run: .github/scripts/wait-for-checks.sh
 
   tests:
-    name: test-ios-${{ matrix.ios }}
+    name: test-ios-${{ matrix.ios }} (${{ matrix.configuration }})
     needs: [scope, lint, gate]
     if: >-
       ${{ always()
@@ -99,25 +99,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
+        # other release-only failures never show up in a Debug-only run.
+        configuration: [Debug, Release]
+        ios: [16, 17, 18, 26, 27]
         include:
-          - os: macos-15
+          - ios: 16
+            os: macos-15
             device: iPhone 14
-            ios: 16
             runtime: "16.4"
             skipTesting: LookupIndexTests
-          - os: macos-15
+          - ios: 17
+            os: macos-15
             device: iPhone 15
-            ios: 17
             runtime: "17.5"
-          - os: macos-15
+          - ios: 18
+            os: macos-15
             device: iPhone 16
-            ios: 18
-          - os: macos-26
+          - ios: 26
+            os: macos-26
             device: iPhone 17
-            ios: 26
-          - os: xcode-27
+          - ios: 27
+            os: xcode-27
             device: iPhone 17
-            ios: 27
 
     steps:
       - uses: actions/checkout@v7
@@ -159,7 +163,8 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout-Package \
-            -configuration Debug \
+            -configuration ${{ matrix.configuration }} \
+            ENABLE_TESTABILITY=YES \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage NO \
@@ -170,7 +175,8 @@ jobs:
         run: |
           xcodebuild \
             -scheme Scout-Package \
-            -configuration Debug \
+            -configuration ${{ matrix.configuration }} \
+            ENABLE_TESTABILITY=YES \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
             -enableCodeCoverage NO \
@@ -178,35 +184,6 @@ jobs:
             ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
             -parallel-testing-enabled NO \
             -resultBundlePath TestResults.xcresult \
-            test-without-building
-
-      # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
-      # other release-only failures never show up in the Debug pass above.
-      - name: Build (Release)
-        run: |
-          xcodebuild \
-            -scheme Scout-Package \
-            -configuration Release \
-            ENABLE_TESTABILITY=YES \
-            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -enableCodeCoverage NO \
-            -skipMacroValidation \
-            build-for-testing
-
-      - name: Test (Release)
-        run: |
-          xcodebuild \
-            -scheme Scout-Package \
-            -configuration Release \
-            ENABLE_TESTABILITY=YES \
-            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -enableCodeCoverage NO \
-            -skipMacroValidation \
-            ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
-            -parallel-testing-enabled NO \
-            -resultBundlePath TestResults-Release.xcresult \
             test-without-building
 
   tests-gate:
