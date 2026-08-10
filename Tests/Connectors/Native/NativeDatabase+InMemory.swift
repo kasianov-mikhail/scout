@@ -19,9 +19,17 @@ extension NativeDatabase {
         let registry = SchemaRegistry(database: cloud)
         let store = EntityStore(database: cloud, registry: registry)
 
-        return NativeDatabase(
-            store: store,
-            registration: Task { await EntityCatalog.publish(into: store, registry: registry) }
-        )
+        let registration = Task { await publishCatalog(into: store, registry: registry) }
+
+        return NativeDatabase {
+            await registration.value
+            return store
+        }
+    }
+
+    static func publishCatalog(into store: EntityStore, registry: SchemaRegistry) async {
+        for entry in CatalogEntry.entries {
+            try? await entry.publish(into: store, registry: registry)
+        }
     }
 }

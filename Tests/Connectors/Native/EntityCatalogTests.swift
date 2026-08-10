@@ -21,10 +21,10 @@ struct EntityCatalogTests {
         let registry = SchemaRegistry(database: database)
         let store = EntityStore(database: database, registry: registry)
 
-        for entry in EntityCatalog.entries {
+        for entry in CatalogEntry.entries {
             try await entry.publish(into: store, registry: registry)
         }
-        for entry in EntityCatalog.entries {
+        for entry in CatalogEntry.entries {
             let schema = try await registry.schema(for: entry.entity)
             #expect(entry.matches(schema))
         }
@@ -35,7 +35,7 @@ struct EntityCatalogTests {
         let database = InMemoryDatabase()
         let registry = SchemaRegistry(database: database)
         let store = EntityStore(database: database, registry: registry)
-        let entry = try #require(EntityCatalog.entry(for: EventEntry.recordType))
+        let entry = try #require(CatalogEntry.entries.first { $0.entity == EventEntry.recordType })
 
         try await entry.publish(into: store, registry: registry)
         try await entry.publish(into: store, registry: registry)
@@ -58,7 +58,7 @@ struct EntityCatalogTests {
             DoubleMetricsEntry.recordType,
         ]
         for entity in entities {
-            #expect(EntityCatalog.entry(for: entity) != nil)
+            #expect(CatalogEntry.entries.first { $0.entity == entity } != nil)
         }
     }
 
@@ -75,7 +75,7 @@ struct EntityCatalogTests {
         ]
 
         for (entity, keys) in requests {
-            let entry = try #require(EntityCatalog.entry(for: entity))
+            let entry = try #require(CatalogEntry.entries.first { $0.entity == entity })
             let fields = Set(entry.fields.map(\.name))
             // The uuid field lives in the record envelope rather than a slot.
             for key in keys where key != "uuid" {

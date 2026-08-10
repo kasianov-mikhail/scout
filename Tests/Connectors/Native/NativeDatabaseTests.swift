@@ -222,18 +222,20 @@ struct SchemaBootstrapTests {
         store = EntityStore(database: cloud, registry: registry)
     }
 
-    // Built the way Backend.cloudKit builds it — with a registration task the
-    // reads and writes await — and never handed a setup() call.
+    // Built the way Backend.cloudKit builds it — the catalog is published
+    // before the store is handed to a read or a write.
     private var database: NativeDatabase {
-        NativeDatabase(
-            store: store,
-            registration: Task { await EntityCatalog.publish(into: store, registry: registry) }
-        )
+        let registration = Task { await NativeDatabase.publishCatalog(into: store, registry: registry) }
+
+        return NativeDatabase {
+            await registration.value
+            return store
+        }
     }
 
     // Simulates the schema an older app published: Device without `model`.
     private func publishStaleDeviceSchema() async throws {
-        let entry = try #require(EntityCatalog.entry(for: DeviceEntry.recordType))
+        let entry = try #require(CatalogEntry.entries.first { $0.entity == DeviceEntry.recordType })
 
         var stale = store.schema(entry.entity)
         for field in entry.fields where field.name != "model" {
