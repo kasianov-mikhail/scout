@@ -197,22 +197,18 @@ jobs:
     timeout-minutes: 2
 
     steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
       - name: Require the API diff to pass
         run: |
-          if [ "${{ needs.scope.result }}" != "success" ]; then
-            echo "::error::The scope job did not succeed (${{ needs.scope.result }})."
-            exit 1
-          fi
+          .github/scripts/require-results.sh "The scope job|${{ needs.scope.result }}"
           if [ "${{ needs.scope.outputs.code }}" != "true" ]; then
             echo "Nothing outside the docs changed; the public API cannot have moved."
             exit 0
           fi
-          if [ "${{ needs.gate.result }}" != "success" ]; then
-            echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
-            exit 1
-          fi
-          if [ "${{ needs.api-breakage.result }}" != "success" ]; then
-            echo "::error::The API breakage check did not pass (${{ needs.api-breakage.result }})."
-            exit 1
-          fi
+          .github/scripts/require-results.sh \
+            "The fast-check gate|${{ needs.gate.result }}" \
+            "The API breakage check|${{ needs.api-breakage.result }}"
           echo "Gate passes."

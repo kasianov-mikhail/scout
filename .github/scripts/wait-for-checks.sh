@@ -5,6 +5,7 @@ set -euo pipefail
 : "${CHECKS:?CHECKS is required}"
 timeout="${TIMEOUT:-10800}"
 absent_timeout="${ABSENT_TIMEOUT:-900}"
+cancelled_timeout="${CANCELLED_TIMEOUT:-900}"
 interval="${INTERVAL:-15}"
 max_interval="${MAX_INTERVAL:-120}"
 max_failures="${MAX_FAILURES:-10}"
@@ -19,6 +20,7 @@ back_off() {
 
 deadline=$(( SECONDS + timeout ))
 absent_deadline=$(( SECONDS + absent_timeout ))
+cancelled_deadline=0
 failures=0
 while :; do
   if ! runs="$(
@@ -41,6 +43,7 @@ while :; do
   failures=0
 
   pending=()
+  cancelled=()
   for name in "${names[@]}"; do
     run="$(echo "$runs" | jq -c --arg n "$name" \
       '[.[] | select(.name == $n)] | sort_by(.started_at // "~") | last')"
@@ -56,6 +59,10 @@ while :; do
     fi
     case "$conclusion" in
       success | skipped | neutral) ;;
+      cancelled | stale)
+        cancelled+=("$name")
+        pending+=("$name(cancelled)")
+        ;;
       *)
         echo "::error::Fast check '$name' concluded '$conclusion'; skipping the long job."
         exit 1
@@ -66,6 +73,16 @@ while :; do
   if [ "${#pending[@]}" -eq 0 ]; then
     echo "All fast checks passed: ${names[*]}"
     exit 0
+  fi
+
+  if [ "${#cancelled[@]}" -eq 0 ]; then
+    cancelled_deadline=0
+  elif [ "$cancelled_deadline" -eq 0 ]; then
+    cancelled_deadline=$(( SECONDS + cancelled_timeout ))
+    echo "::warning::Cancelled, not failed: ${cancelled[*]}. A cancellation carries no verdict, so this gate waits ${cancelled_timeout}s for a re-run to post a fresh check instead of turning the pull request red."
+  elif [ "$SECONDS" -ge "$cancelled_deadline" ]; then
+    echo "::error::Still cancelled after ${cancelled_timeout}s: ${cancelled[*]}. Nothing re-ran them, so no verdict can arrive — re-run the cancelled workflow. This is the runner, not the code under test."
+    exit 1
   fi
 
   if [ "$SECONDS" -ge "$absent_deadline" ]; then

@@ -207,29 +207,19 @@ jobs:
     timeout-minutes: 2
 
     steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
       - name: Require the matrix to pass
         run: |
-          if [ "${{ needs.scope.result }}" != "success" ]; then
-            echo "::error::The scope job did not succeed (${{ needs.scope.result }})."
-            exit 1
-          fi
+          .github/scripts/require-results.sh "The scope job|${{ needs.scope.result }}"
           if [ "${{ needs.scope.outputs.code }}" != "true" ]; then
             echo "Nothing outside the docs changed; the iOS matrix has nothing to build."
             exit 0
           fi
-          if [ "${{ needs.lint.result }}" != "success" ]; then
-            echo "::error::Lint did not succeed (${{ needs.lint.result }})."
-            exit 1
-          fi
-          case "${{ needs.gate.result }}" in
-            success | skipped) ;;
-            *)
-              echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
-              exit 1
-              ;;
-          esac
-          if [ "${{ needs.tests.result }}" != "success" ]; then
-            echo "::error::The iOS test matrix did not succeed (${{ needs.tests.result }})."
-            exit 1
-          fi
+          .github/scripts/require-results.sh \
+            "Lint|${{ needs.lint.result }}" \
+            "The fast-check gate|${{ needs.gate.result }}|success,skipped" \
+            "The iOS test matrix|${{ needs.tests.result }}"
           echo "Gate passes."
