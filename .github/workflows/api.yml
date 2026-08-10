@@ -13,24 +13,7 @@ concurrency:
 
 jobs:
   scope:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    outputs:
-      code: ${{ steps.filter.outputs.code }}
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-          filter: blob:none
-
-      - name: Detect code changes
-        id: filter
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: .github/scripts/detect-code-changes.sh
+    uses: ./.github/workflows/scope.yml
 
   gate:
     name: gate
