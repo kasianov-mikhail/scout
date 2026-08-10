@@ -167,7 +167,6 @@ jobs:
             ENABLE_TESTABILITY=YES \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
-            -enableCodeCoverage NO \
             -skipMacroValidation \
             build-for-testing
 
@@ -179,11 +178,9 @@ jobs:
             ENABLE_TESTABILITY=YES \
             -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
             -clonedSourcePackagesDirPath /tmp/spm \
-            -enableCodeCoverage NO \
             -skipMacroValidation \
             ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
             -parallel-testing-enabled NO \
-            -resultBundlePath TestResults.xcresult \
             test-without-building
 
   tests-gate:
