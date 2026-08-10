@@ -117,27 +117,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
       - name: Require the contract to pass (or be N/A)
         run: |
-          if [ "${{ needs.changes.result }}" != "success" ]; then
-            echo "::error::The changes job did not succeed (${{ needs.changes.result }})."
-            exit 1
-          fi
-          case "${{ needs.gate.result }}" in
-            success | skipped) ;;
-            *)
-              echo "::error::The fast-check gate did not pass (${{ needs.gate.result }})."
-              exit 1
-              ;;
-          esac
-          result="${{ needs.contract.result }}"
-          echo "contract job result: $result"
-          case "$result" in
-            success | skipped)
-              echo "Gate passes."
-              ;;
-            *)
-              echo "::error::The contract check did not pass (result: $result)."
-              exit 1
-              ;;
-          esac
+          .github/scripts/require-results.sh \
+            "The changes job|${{ needs.changes.result }}" \
+            "The fast-check gate|${{ needs.gate.result }}|success,skipped" \
+            "The contract check|${{ needs.contract.result }}|success,skipped"
+          echo "Gate passes."
