@@ -9,6 +9,8 @@ import CloudKit
 import Scout
 import ScoutDB
 
+private let stores = LazyTable<EntityStore>()
+
 extension Backend {
     /// A CloudKit backend that stores records through scout-db's frozen Entity/Vector
     /// schema.
@@ -16,14 +18,28 @@ extension Backend {
     /// Raw records are delivered to every entity; chart aggregates are maintained by
     /// scout-db vectors on write, so no client-side matrix upload happens.
     ///
-    public static func cloudKit(container: CKContainer) -> Backend {
-        let registry = SchemaRegistry(database: container.publicCloudDatabase)
-        let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
-        let registration = Task { await EntityCatalog.publish(into: store, registry: registry) }
+    /// - Throws: An error when the container carries no identifier, which is
+    ///   what a default container resolves to in an app without an iCloud
+    ///   container entitlement.
+    ///
+    struct UnidentifiedContainerError: LocalizedError {
+        let errorDescription: String? = "The CloudKit container carries no identifier"
+    }
+
+    public static func cloudKit(container: CKContainer) throws -> Backend {
+        guard let id = container.containerIdentifier else {
+            throw UnidentifiedContainerError()
+        }
+
+        let database = NativeDatabase {
+            await stores.value(id: id) {
+                await container.publishedStore()
+            }
+        }
 
         return Backend(
-            id: container.containerIdentifier ?? "cloudKit",
-            database: NativeDatabase(store: store, registration: registration),
+            id: id,
+            database: database,
             checkAvailability: {
                 (try? await container.accountStatus()) == .available
             },
@@ -38,20 +54,33 @@ extension Backend {
             accountWarning: {
                 switch try await container.accountStatus() {
                 case .available:
-                    return nil
+                    nil
                 case .noAccount:
-                    return .noAccount
+                    .noAccount
                 case .restricted:
-                    return .restricted
+                    .restricted
                 case .temporarilyUnavailable:
-                    return .temporarilyUnavailable
+                    .temporarilyUnavailable
                 case .couldNotDetermine:
-                    return .couldNotDetermine
+                    .couldNotDetermine
                 @unknown default:
-                    return .couldNotDetermine
+                    .couldNotDetermine
                 }
             }
         )
+    }
+}
+
+extension CKContainer {
+    fileprivate func publishedStore() async -> EntityStore {
+        let registry = SchemaRegistry(database: publicCloudDatabase)
+        let store = EntityStore(database: publicCloudDatabase, registry: registry)
+
+        for entry in CatalogEntry.entries {
+            try? await entry.publish(into: store, registry: registry)
+        }
+
+        return store
     }
 }
 
@@ -66,18 +95,6 @@ extension CKAccountStatus {
             .unreachable
         @unknown default:
             .unreachable
-        }
-    }
-}
-
-extension EntityCatalog {
-    // The store resolves a schema by reading its published descriptor, so
-    // nothing can be written until one exists. Publishing runs once per launch
-    // ahead of the first write, and costs a read per entity — the same read the
-    // write would pay anyway — plus a write only where the declaration drifted.
-    static func publish(into store: EntityStore, registry: SchemaRegistry) async {
-        for entry in entries {
-            try? await entry.publish(into: store, registry: registry)
         }
     }
 }
