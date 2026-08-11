@@ -26,11 +26,21 @@
     }
 
     extension Snapshotting where Value: SwiftUI.View, Format == UIImage {
-        static func scout(width: CGFloat = 393, height: CGFloat, style: UIUserInterfaceStyle = .light) -> Snapshotting {
-            let traits = UITraitCollection(traitsFrom: [
+        static func scout(
+            width: CGFloat = 393, height: CGFloat, style: UIUserInterfaceStyle = .light,
+            contentSize: UIContentSizeCategory? = nil
+        ) -> Snapshotting {
+            // Left unset by default so the baselines recorded before this parameter
+            // existed keep matching — an explicit `.large` is not byte-identical to
+            // the unspecified category they were rendered with.
+            var collections = [
                 UITraitCollection(userInterfaceStyle: style),
                 UITraitCollection(displayScale: 2),
-            ])
+            ]
+            if let contentSize {
+                collections.append(UITraitCollection(preferredContentSizeCategory: contentSize))
+            }
+            let traits = UITraitCollection(traitsFrom: collections)
             return .image(perceptualPrecision: 0.98, layout: .fixed(width: width, height: height), traits: traits)
         }
     }
