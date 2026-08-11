@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CoreData
 import Foundation
 import Logging
 
@@ -27,6 +28,7 @@ struct ScoutLogHandler: LogHandler {
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
+                    context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
                     try Scout.log(event, date: Date(), sessionID: sessionID, context: context)
                 }
                 try await self.sync()
