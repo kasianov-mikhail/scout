@@ -8,13 +8,10 @@
 import Foundation
 
 enum SetupError: LocalizedError {
-    case alreadySetup
     case noBackends
 
     var errorDescription: String? {
         switch self {
-        case .alreadySetup:
-            "Scout is already setup"
         case .noBackends:
             "Scout requires at least one backend"
         }
@@ -22,8 +19,6 @@ enum SetupError: LocalizedError {
 
     var recoverySuggestion: String? {
         switch self {
-        case .alreadySetup:
-            "Review the code to ensure setup is called only once"
         case .noBackends:
             "Pass a .cloudKit or .server backend to setup"
         }

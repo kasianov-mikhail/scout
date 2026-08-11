@@ -9,8 +9,6 @@ import Foundation
 import Logging
 import Metrics
 
-@MainActor private var isSetup = false
-
 /// Initializes Scout's global infrastructure against one or more backends.
 ///
 /// Every raw record is synced to every backend. Aggregates are maintained
@@ -19,14 +17,12 @@ import Metrics
 ///
 /// - Parameter backends: The backends to sync to, in any combination of
 ///   CloudKit containers and Scout servers.
-/// - Throws: An error if initialization fails or if called more than once.
-/// - Important: Call from the main actor during app startup.
+/// - Throws: An error if initialization fails.
+/// - Important: Call from the main actor during app startup, exactly once —
+///   `swift-log` and `swift-metrics` both trap on a second bootstrap.
 ///
 @MainActor
 public func setup(backends: [Backend]) async throws {
-    guard !isSetup else {
-        throw SetupError.alreadySetup
-    }
     guard !backends.isEmpty else {
         throw SetupError.noBackends
     }
@@ -60,8 +56,6 @@ public func setup(backends: [Backend]) async throws {
     MetricsSystem.bootstrap(
         TelemetryFactory(sync: sync, session: session)
     )
-
-    isSetup = true
 
     Task {
         do {
