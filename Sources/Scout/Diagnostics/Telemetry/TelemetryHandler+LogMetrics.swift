@@ -58,6 +58,7 @@ extension TelemetryPersisting {
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
+                    context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
                     try save(context)
                 }
                 try await sync()

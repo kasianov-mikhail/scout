@@ -20,12 +20,6 @@ let persistentContainer: NSPersistentContainer = {
 }()
 
 extension NSManagedObjectModel {
-    // Loading ScoutModel.momd more than once registers a duplicate
-    // NSEntityDescription per NSManagedObject subclass, and the resulting
-    // ambiguous class→entity resolution races under parallel test runs —
-    // intermittently escalating a constraint-conflict save into a fatal
-    // "Unable to recover from optimistic locking failure". Every container
-    // must share this single instance.
     nonisolated(unsafe) static let scout: NSManagedObjectModel = {
         guard let modelURL = Bundle.module.url(forResource: "ScoutModel", withExtension: "momd") else {
             fatalError("Failed to find data model")
@@ -55,12 +49,6 @@ extension NSPersistentContainer {
             throw captured
         }
 
-        // With the default NSErrorMergePolicy a uniqueness-constraint collision
-        // fails the whole save() and leaves the offending insert pending, so on
-        // the long-lived viewContext every later save() throws too. Merging by
-        // property dedupes the colliding row instead — the reason the
-        // constraints exist — and keeps a batched save (e.g. plan inserting many
-        // DeliveryEntry rows at once) from being rejected over a single duplicate.
         viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
     }
 }
