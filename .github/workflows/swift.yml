@@ -65,13 +65,40 @@ jobs:
           CHECKS: model-versions changes
         run: .github/scripts/wait-for-checks.sh
 
+  matrix:
+    needs: scope
+    if: needs.scope.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    outputs:
+      legs: ${{ steps.legs.outputs.legs }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          filter: blob:none
+
+      - name: Narrow the iOS matrix
+        id: legs
+        # Temporarily narrowed to iOS 26 Debug; drop the arguments to restore the full matrix from
+        # .github/matrix/ios.json. Until then that full matrix keeps running nightly in
+        # .github/workflows/nightly.yml, which reports when every leg is green again.
+        # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
+        # other release-only failures never show up in a Debug-only run.
+        run: |
+          legs="$(.github/scripts/ios-matrix.sh --ios 26 --configuration Debug)"
+          echo "$legs"
+          echo "legs=$legs" >> "$GITHUB_OUTPUT"
+
   tests:
     name: test-ios-${{ matrix.ios }} (${{ matrix.configuration }})
-    needs: [scope, lint, gate]
+    needs: [scope, lint, gate, matrix]
     if: >-
       ${{ always()
       && needs.scope.outputs.code == 'true'
       && needs.lint.result == 'success'
+      && needs.matrix.result == 'success'
       && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
@@ -81,97 +108,22 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        # Temporarily narrowed to iOS 26 Debug; uncomment the lines below to restore the full matrix.
-        # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
-        # other release-only failures never show up in a Debug-only run.
-        # configuration: [Debug, Release]
-        # ios: [16, 17, 18, 26, 27]
-        configuration: [Debug]
-        ios: [26]
-        include:
-          # - ios: 16
-          #   os: macos-15
-          #   device: iPhone 14
-          #   runtime: "16.4"
-          #   skipTesting: LookupIndexTests
-          # - ios: 17
-          #   os: macos-15
-          #   device: iPhone 15
-          #   runtime: "17.5"
-          # - ios: 18
-          #   os: macos-15
-          #   device: iPhone 16
-          - ios: 26
-            os: macos-26
-            device: iPhone 17
-          # - ios: 27
-          #   os: xcode-27
-          #   device: iPhone 17
+      matrix: ${{ fromJSON(needs.matrix.outputs.legs) }}
 
     steps:
       - uses: actions/checkout@v7
 
-      - name: Prepare simulator
-        id: sim
-        run: |
-          if ! xcrun simctl list runtimes | grep -q "^iOS ${{ matrix.ios }}\."; then
-            if [ -n "${{ matrix.runtime }}" ]; then
-              xcodebuild -downloadPlatform iOS -buildVersion "${{ matrix.runtime }}"
-            else
-              xcodebuild -downloadPlatform iOS
-            fi
-          fi
-          runtime=$(xcrun simctl list runtimes --json \
-            | jq -r '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ matrix.ios }}."))) | .identifier' \
-            | tail -1)
-          if [ -z "$runtime" ]; then
-            echo "No iOS ${{ matrix.ios }} simulator runtime is available."
-            xcrun simctl list runtimes
-            exit 1
-          fi
-          udid=$(xcrun simctl list devices available --json \
-            | jq -r --arg rt "$runtime" '.devices[$rt][]? | select(.name == "${{ matrix.device }}") | .udid' \
-            | head -1)
-          if [ -z "$udid" ]; then
-            udid=$(xcrun simctl create "${{ matrix.device }}" "${{ matrix.device }}" "$runtime")
-          fi
-          echo "udid=$udid" >> "$GITHUB_OUTPUT"
-
-      - name: Cache Swift package checkouts
-        uses: actions/cache@v6
+      - uses: ./.github/actions/ios-tests
         with:
-          path: /tmp/spm
-          key: spm-${{ hashFiles('Package.swift') }}
-          restore-keys: spm-
-
-      - name: Build
-        run: |
-          xcodebuild \
-            -scheme Scout-Package \
-            -configuration ${{ matrix.configuration }} \
-            ENABLE_TESTABILITY=YES \
-            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -skipMacroValidation \
-            build-for-testing
-
-      - name: Test
-        run: |
-          xcodebuild \
-            -scheme Scout-Package \
-            -configuration ${{ matrix.configuration }} \
-            ENABLE_TESTABILITY=YES \
-            -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
-            -clonedSourcePackagesDirPath /tmp/spm \
-            -skipMacroValidation \
-            ${{ matrix.skipTesting && format('-skip-testing:{0}', matrix.skipTesting) || '' }} \
-            -parallel-testing-enabled NO \
-            test-without-building
+          ios: ${{ matrix.ios }}
+          configuration: ${{ matrix.configuration }}
+          device: ${{ matrix.device }}
+          runtime: ${{ matrix.runtime }}
+          skip-testing: ${{ matrix.skipTesting }}
 
   tests-gate:
     name: tests-gate
-    needs: [scope, lint, gate, tests]
+    needs: [scope, lint, gate, matrix, tests]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -191,5 +143,6 @@ jobs:
           .github/scripts/require-results.sh \
             "Lint|${{ needs.lint.result }}" \
             "The fast-check gate|${{ needs.gate.result }}|success,skipped" \
+            "The matrix job|${{ needs.matrix.result }}" \
             "The iOS test matrix|${{ needs.tests.result }}"
           echo "Gate passes."
