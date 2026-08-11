@@ -40,7 +40,7 @@ let package = Package(
         .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0"..<"3.0.0"),
         .package(
             url: "https://github.com/kasianov-mikhail/scout-db.git",
-            revision: "6e3c2d88be9527289d0c027f264922e0df999247"
+            revision: "a52aa3e590d79c946c9dadfdb0ceb68ef561ee06"
         ),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.0"),
     ],
