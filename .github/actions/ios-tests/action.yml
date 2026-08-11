@@ -1,0 +1,85 @@
+name: iOS tests
+description: Boots a simulator runtime and runs the Scout test bundle on it.
+
+inputs:
+  ios:
+    description: Major iOS version to test against.
+    required: true
+  configuration:
+    description: Xcode build configuration to build and test.
+    required: true
+  device:
+    description: Simulator device model to boot.
+    required: true
+  runtime:
+    description: Exact runtime version to download when the runner ships without one.
+    required: false
+    default: ""
+  skip-testing:
+    description: Test target to skip on this leg.
+    required: false
+    default: ""
+
+runs:
+  using: composite
+
+  steps:
+    - name: Prepare simulator
+      id: sim
+      shell: bash
+      run: |
+        if ! xcrun simctl list runtimes | grep -q "^iOS ${{ inputs.ios }}\."; then
+          if [ -n "${{ inputs.runtime }}" ]; then
+            xcodebuild -downloadPlatform iOS -buildVersion "${{ inputs.runtime }}"
+          else
+            xcodebuild -downloadPlatform iOS
+          fi
+        fi
+        runtime=$(xcrun simctl list runtimes --json \
+          | jq -r '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ inputs.ios }}."))) | .identifier' \
+          | tail -1)
+        if [ -z "$runtime" ]; then
+          echo "No iOS ${{ inputs.ios }} simulator runtime is available."
+          xcrun simctl list runtimes
+          exit 1
+        fi
+        udid=$(xcrun simctl list devices available --json \
+          | jq -r --arg rt "$runtime" '.devices[$rt][]? | select(.name == "${{ inputs.device }}") | .udid' \
+          | head -1)
+        if [ -z "$udid" ]; then
+          udid=$(xcrun simctl create "${{ inputs.device }}" "${{ inputs.device }}" "$runtime")
+        fi
+        echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+    - name: Cache Swift package checkouts
+      uses: actions/cache@v6
+      with:
+        path: /tmp/spm
+        key: spm-${{ hashFiles('Package.swift') }}
+        restore-keys: spm-
+
+    - name: Build
+      shell: bash
+      run: |
+        xcodebuild \
+          -scheme Scout-Package \
+          -configuration ${{ inputs.configuration }} \
+          ENABLE_TESTABILITY=YES \
+          -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
+          -clonedSourcePackagesDirPath /tmp/spm \
+          -skipMacroValidation \
+          build-for-testing
+
+    - name: Test
+      shell: bash
+      run: |
+        xcodebuild \
+          -scheme Scout-Package \
+          -configuration ${{ inputs.configuration }} \
+          ENABLE_TESTABILITY=YES \
+          -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
+          -clonedSourcePackagesDirPath /tmp/spm \
+          -skipMacroValidation \
+          ${{ inputs.skip-testing && format('-skip-testing:{0}', inputs.skip-testing) || '' }} \
+          -parallel-testing-enabled NO \
+          test-without-building
