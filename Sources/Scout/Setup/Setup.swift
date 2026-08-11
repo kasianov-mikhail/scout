@@ -62,4 +62,12 @@ public func setup(backends: [Backend]) async throws {
     )
 
     isSetup = true
+
+    Task {
+        do {
+            try await sync()
+        } catch {
+            print("Failed to run the first sync: \(error)")
+        }
+    }
 }
