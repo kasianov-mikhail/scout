@@ -15,6 +15,9 @@ import Metrics
 /// backend-side — by scout-db views on CloudKit and by native aggregation
 /// on Scout servers — so clients upload raw records only.
 ///
+/// Passing no backends turns Scout off: nothing is bootstrapped, recorded,
+/// or synced, and logs keep going wherever they went before.
+///
 /// - Parameter backends: The backends to sync to, in any combination of
 ///   CloudKit containers and Scout servers.
 /// - Throws: An error if initialization fails.
@@ -23,8 +26,8 @@ import Metrics
 ///
 @MainActor
 public func setup(backends: [Backend]) async throws {
-    guard !backends.isEmpty else {
-        throw SetupError.noBackends
+    guard backends.count > 0 else {
+        return
     }
 
     for backend in backends {
