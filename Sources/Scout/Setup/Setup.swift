@@ -30,7 +30,7 @@ public func setup(backends: [Backend]) async throws {
         return
     }
 
-    let runtime = try await Runtime(backends: backends)
+    let runtime = Runtime(backends: backends)
 
     LoggingSystem.bootstrap {
         ScoutLogHandler(runtime: runtime, label: $0)
@@ -38,4 +38,6 @@ public func setup(backends: [Backend]) async throws {
     MetricsSystem.bootstrap(
         TelemetryFactory(runtime: runtime)
     )
+
+    try await runtime.start()
 }
