@@ -15,17 +15,18 @@ extension TelemetryPersisting {
 
     func logMetrics(category: String, value: some MetricScalar) {
         let label = self.label
+        let date = Date()
         let sessionID = runtime.session.current
         persistMetrics { context in
-            try saveMetrics(label, date: Date(), category: category, value: value, sessionID: sessionID, context)
+            try saveMetrics(label, date: date, category: category, value: value, sessionID: sessionID, context)
         }
     }
 
     func logTimer(seconds: TimeInterval) {
         let label = self.label
+        let date = Date()
         let sessionID = runtime.session.current
         persistMetrics { context in
-            let date = Date()
             try saveMetrics(
                 label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, sessionID: sessionID,
                 context)
@@ -41,9 +42,9 @@ extension TelemetryPersisting {
 
     func logRecorder(value: Double) {
         let label = self.label
+        let date = Date()
         let sessionID = runtime.session.current
         persistMetrics { context in
-            let date = Date()
             try saveMetrics(
                 label, date: date, category: Telemetry.Export.recorder.rawValue, value: value, sessionID: sessionID,
                 context)

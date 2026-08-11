@@ -23,12 +23,13 @@ struct ScoutLogHandler: LogHandler {
     }
 
     func log(event: LogEvent) {
+        let date = Date()
         let sessionID = runtime.session.current
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
                     context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
-                    try Scout.log(event, date: Date(), sessionID: sessionID, context: context)
+                    try Scout.log(event, date: date, sessionID: sessionID, context: context)
                 }
                 try await self.runtime.sync()
             } catch {
