@@ -40,6 +40,16 @@ extension NSManagedObjectContext {
         }
     }
 
+    func linkedSession(_ identity: Identity.Snapshot, date: Date) throws -> SessionEntry {
+        try linkedSession(
+            deviceID: identity.device,
+            installID: identity.install,
+            launchID: identity.launch,
+            sessionID: identity.session,
+            date: date
+        )
+    }
+
     private func fetchOrCreate<T: NSManagedObject>(_ type: T.Type, key: String, id: UUID, configure: (T) -> Void) throws
         -> T
     {

@@ -14,8 +14,7 @@ extension SessionEntry {
         var bundle: Bundle = .main
 
         func execute(in context: NSManagedObjectContext) throws {
-            let sessionID = UUID()
-            session.current = sessionID
+            let sessionID = session.current
 
             let object = context.insert(SessionEntry.self)
             object.sessionID = sessionID

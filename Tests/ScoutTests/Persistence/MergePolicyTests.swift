@@ -60,15 +60,9 @@ struct MergePolicyTests {
         defer { try? FileManager.default.removeItem(at: directory) }
         let container = try makeContainer(in: directory)
 
-        let sessionID = UUID()
+        let identity = Identity.stub.snapshot
         try await container.performBackgroundTask { @Sendable context in
-            _ = try context.linkedSession(
-                deviceID: UUID(),
-                installID: UUID(),
-                launchID: UUID(),
-                sessionID: sessionID,
-                date: Date()
-            )
+            _ = try context.linkedSession(identity, date: Date())
             try context.save()
         }
 
@@ -85,7 +79,7 @@ struct MergePolicyTests {
                                 date: Date(),
                                 category: Telemetry.Export.counter.rawValue,
                                 value: value,
-                                sessionID: sessionID,
+                                identity: identity,
                                 context
                             )
                         }
@@ -100,7 +94,8 @@ struct MergePolicyTests {
                         try await container.performBackgroundTask { context in
                             context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 
-                            let session = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
+                            let session = try context.existing(
+                                SessionEntry.self, key: "sessionID", id: identity.session)
                             session?.endDate = Date()
                             try context.save()
                         }

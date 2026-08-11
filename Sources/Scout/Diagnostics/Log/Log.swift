@@ -8,12 +8,12 @@
 import CoreData
 import Logging
 
-func log(_ event: LogEvent, date: Date, sessionID: UUID, context: NSManagedObjectContext) throws {
+func log(_ event: LogEvent, date: Date, identity: Identity.Snapshot, context: NSManagedObjectContext) throws {
     let object = context.insert(EventEntry.self)
 
     object.eventID = UUID()
     object.date = date
-    object.session = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
+    object.session = try context.linkedSession(identity, date: date)
     object.level = event.level.rawValue
     object.name = event.message.description
 
