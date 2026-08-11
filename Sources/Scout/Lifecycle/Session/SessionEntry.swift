@@ -28,6 +28,10 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
     override var references: Set<DateEntry> {
         Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics))
     }
+
+    override var isPurgeable: Bool {
+        endDate != nil
+    }
 }
 
 extension SessionEntry: RecordEncodable {

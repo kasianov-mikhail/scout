@@ -21,6 +21,10 @@ package final class LaunchEntry: SyncableEntry, HasInstall {
     override var references: Set<DateEntry> {
         Set(Array(sessions) + Array(versions) + Array(visits))
     }
+
+    override var isPurgeable: Bool {
+        endDate != nil
+    }
 }
 
 extension LaunchEntry: RecordEncodable {
