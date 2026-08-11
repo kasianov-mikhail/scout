@@ -8,37 +8,41 @@
 import Foundation
 
 struct Runtime: Sendable {
-    let session: Protected<UUID>
+    let identity: Identity
     let sync: Synchronize
+
+    var session: Protected<UUID> {
+        identity.session
+    }
 }
 
 extension Runtime {
     @MainActor
-    init(backends: [Backend]) async throws {
+    init(backends: [Backend]) {
         for backend in backends {
             backend.onSetup()
         }
-
-        let session = Protected(UUID())
 
         let identity = Identity(
             install: UserDefaults.standard.ensure("scout_install_id"),
             launch: UUID(),
             device: KeychainStorage.standard.ensure("scout_device_id"),
-            session: session
+            session: Protected(UUID())
         )
-
-        try await identity.bootstrap()
 
         let dispatcher = Coalescer()
 
-        @Sendable func sync() async throws {
-            try await synchronize(backends: backends, dispatcher: dispatcher)
-        }
+        self.init(
+            identity: identity,
+            sync: { try await synchronize(backends: backends, dispatcher: dispatcher) }
+        )
+    }
+
+    @MainActor
+    func start() async throws {
+        try await identity.bootstrap()
 
         identity.table.startListening(completion: sync)
-
-        self.init(session: session, sync: sync)
 
         Task {
             do {
