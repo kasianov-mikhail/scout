@@ -29,6 +29,20 @@ struct LaunchEntryRecoveryTests {
         #expect(launch.endDate == date)
     }
 
+    @Test("Queues a closed launch for delivery again")
+    func requeuesClosed() throws {
+        let launch = LaunchEntry.stub(date: date, in: context)
+        launch.launchID = UUID()
+
+        let delivery = launch.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+
+        try context.save()
+        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+
+        #expect(delivery.isPending)
+        #expect(delivery.attempts == 0)
+    }
+
     @Test("Does not close launches from current launch")
     func skipsCurrent() throws {
         let launch = LaunchEntry.stub(date: date, in: context)

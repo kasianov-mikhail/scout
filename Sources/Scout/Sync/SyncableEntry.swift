@@ -14,6 +14,13 @@ package class SyncableEntry: DateEntry {
     func delivery(for backendID: String) -> DeliveryEntry? {
         deliveries.first { $0.backendID == backendID }
     }
+
+    func requeue() {
+        for delivery in deliveries {
+            delivery.isPending = true
+            delivery.attempts = 0
+        }
+    }
 }
 
 extension SyncableEntry {

@@ -17,6 +17,7 @@ extension LaunchEntry {
 
             for launch in try context.fetch(request) {
                 launch.endDate = launch.inferred
+                launch.requeue()
             }
 
             if context.hasChanges {
