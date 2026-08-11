@@ -10,8 +10,7 @@ import Foundation
 import Logging
 
 struct ScoutLogHandler: LogHandler {
-    let sync: Synchronize
-    let session: Protected<UUID>
+    let runtime: Runtime
     let label: String
 
     var metadata: Logger.Metadata = [:]
@@ -24,14 +23,14 @@ struct ScoutLogHandler: LogHandler {
     }
 
     func log(event: LogEvent) {
-        let sessionID = session.current
+        let sessionID = runtime.session.current
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
                     context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
                     try Scout.log(event, date: Date(), sessionID: sessionID, context: context)
                 }
-                try await self.sync()
+                try await self.runtime.sync()
             } catch {
                 print("Failed to save log: \(error)")
             }

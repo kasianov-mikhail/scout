@@ -15,7 +15,7 @@ extension TelemetryPersisting {
 
     func logMetrics(category: String, value: some MetricScalar) {
         let label = self.label
-        let sessionID = session.current
+        let sessionID = runtime.session.current
         persistMetrics { context in
             try saveMetrics(label, date: Date(), category: category, value: value, sessionID: sessionID, context)
         }
@@ -23,7 +23,7 @@ extension TelemetryPersisting {
 
     func logTimer(seconds: TimeInterval) {
         let label = self.label
-        let sessionID = session.current
+        let sessionID = runtime.session.current
         persistMetrics { context in
             let date = Date()
             try saveMetrics(
@@ -41,7 +41,7 @@ extension TelemetryPersisting {
 
     func logRecorder(value: Double) {
         let label = self.label
-        let sessionID = session.current
+        let sessionID = runtime.session.current
         persistMetrics { context in
             let date = Date()
             try saveMetrics(
@@ -54,7 +54,7 @@ extension TelemetryPersisting {
     }
 
     private func persistMetrics(_ save: @escaping @Sendable (NSManagedObjectContext) throws -> Void) {
-        let sync = self.sync
+        let sync = runtime.sync
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in
