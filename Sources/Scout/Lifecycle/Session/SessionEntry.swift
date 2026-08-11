@@ -29,8 +29,6 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
         Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics))
     }
 
-    // An open session is still being written to: `Complete` looks it up by
-    // launch to stamp `endDate`, and fails outright once it is gone.
     override var isPurgeable: Bool {
         endDate != nil
     }

@@ -8,7 +8,7 @@
 import CoreData
 
 extension SyncableEntry {
-    static func purgeDelivered(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws {
+    static func purge(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws {
         guard backendIDs.count > 0 else {
             return
         }
