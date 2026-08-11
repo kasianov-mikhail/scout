@@ -39,4 +39,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
         }
         try Task.checkCancellation()
     }
+
+    try SyncableEntry.purgeDelivered(to: Set(backends.map(\.id)), in: context)
+    try context.save()
 }
