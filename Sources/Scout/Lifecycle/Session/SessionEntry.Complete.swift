@@ -23,6 +23,7 @@ extension SessionEntry {
 
             if session.endDate == nil {
                 session.endDate = Date()
+                session.requeue()
                 try context.save()
             }
         }

@@ -17,6 +17,7 @@ extension SessionEntry {
 
             for session in try context.fetch(request) {
                 session.endDate = session.inferred
+                session.requeue()
             }
 
             if context.hasChanges {

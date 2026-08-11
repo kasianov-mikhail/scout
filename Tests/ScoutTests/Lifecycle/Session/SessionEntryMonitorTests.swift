@@ -62,6 +62,20 @@ struct SessionEntryMonitorTests {
         #expect(session.endDate == firstEndDate)
     }
 
+    @Test("complete queues the closed session for delivery again")
+    func completeRequeuesDelivery() throws {
+        LaunchEntry.stub(date: Date(), in: context)
+        try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
+
+        let session = try #require(try context.fetchAll(SessionEntry.self).first)
+        let delivery = session.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+
+        try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
+
+        #expect(delivery.isPending)
+        #expect(delivery.attempts == 0)
+    }
+
     @Test("complete throws notFound when no session exists for the current launch")
     func completeWithoutSessionThrows() throws {
         #expect(throws: LifecycleError.notFound) {
