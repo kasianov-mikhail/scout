@@ -10,7 +10,9 @@ import Foundation
 struct Runtime: Sendable {
     let session: Protected<UUID>
     let sync: Synchronize
+}
 
+extension Runtime {
     @MainActor
     init(backends: [Backend]) async throws {
         for backend in backends {
@@ -36,8 +38,7 @@ struct Runtime: Sendable {
 
         identity.table.startListening(completion: sync)
 
-        self.session = session
-        self.sync = sync
+        self.init(session: session, sync: sync)
 
         Task {
             do {

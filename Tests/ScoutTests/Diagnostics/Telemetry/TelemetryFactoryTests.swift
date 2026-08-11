@@ -10,9 +10,10 @@ import Metrics
 import Testing
 
 @testable import Scout
+@testable import Support
 
 struct TelemetryFactoryTests {
-    let factory = TelemetryFactory(sync: {}, session: Protected(UUID()))
+    let factory = TelemetryFactory(runtime: .stub)
 
     @Test("makeCounter returns TelemetryHandler")
     func makeCounter() {

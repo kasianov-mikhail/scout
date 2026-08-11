@@ -10,21 +10,18 @@ import Metrics
 
 protocol TelemetryPersisting {
     var label: String { get }
-    var sync: Synchronize { get }
-    var session: Protected<UUID> { get }
+    var runtime: Runtime { get }
 }
 
 final class TelemetryHandler: NSObject, TelemetryPersisting {
     let label: String
     let dimensions: [(String, String)]
-    let sync: Synchronize
-    let session: Protected<UUID>
+    let runtime: Runtime
 
-    init(label: String, dimensions: [(String, String)], sync: @escaping Synchronize, session: Protected<UUID>) {
+    init(label: String, dimensions: [(String, String)], runtime: Runtime) {
         self.label = label
         self.dimensions = dimensions
-        self.sync = sync
-        self.session = session
+        self.runtime = runtime
     }
 
     func reset() {
@@ -66,14 +63,12 @@ extension TelemetryHandler: RecorderHandler {
 
 final class GaugeHandler: NSObject, TelemetryPersisting {
     let label: String
-    let sync: Synchronize
-    let session: Protected<UUID>
+    let runtime: Runtime
     let value = Protected<Double>(0)
 
-    init(label: String, sync: @escaping Synchronize, session: Protected<UUID>) {
+    init(label: String, runtime: Runtime) {
         self.label = label
-        self.sync = sync
-        self.session = session
+        self.runtime = runtime
     }
 }
 

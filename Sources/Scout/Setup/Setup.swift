@@ -33,9 +33,9 @@ public func setup(backends: [Backend]) async throws {
     let runtime = try await Runtime(backends: backends)
 
     LoggingSystem.bootstrap {
-        ScoutLogHandler(sync: runtime.sync, session: runtime.session, label: $0)
+        ScoutLogHandler(runtime: runtime, label: $0)
     }
     MetricsSystem.bootstrap(
-        TelemetryFactory(sync: runtime.sync, session: runtime.session)
+        TelemetryFactory(runtime: runtime)
     )
 }

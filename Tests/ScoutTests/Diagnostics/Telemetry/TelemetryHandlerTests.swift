@@ -10,18 +10,19 @@ import Metrics
 import Testing
 
 @testable import Scout
+@testable import Support
 
 struct TelemetryHandlerTests {
     @Test("TelemetryHandler stores label")
     func storesLabel() {
-        let handler = TelemetryHandler(label: "test_label", dimensions: [], sync: {}, session: Protected(UUID()))
+        let handler = TelemetryHandler(label: "test_label", dimensions: [], runtime: .stub)
         #expect(handler.label == "test_label")
     }
 
     @Test("TelemetryHandler stores dimensions")
     func storesDimensions() {
         let dims = [("key1", "value1"), ("key2", "value2")]
-        let handler = TelemetryHandler(label: "test", dimensions: dims, sync: {}, session: Protected(UUID()))
+        let handler = TelemetryHandler(label: "test", dimensions: dims, runtime: .stub)
         #expect(handler.dimensions.count == 2)
         #expect(handler.dimensions[0].0 == "key1")
         #expect(handler.dimensions[1].1 == "value2")
