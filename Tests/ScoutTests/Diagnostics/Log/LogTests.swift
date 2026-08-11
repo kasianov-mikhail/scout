@@ -29,7 +29,7 @@ private func makeEvent(
     try log(
         makeEvent("Test Event", metadata: ["key": .string("value")]),
         date: date,
-        sessionID: UUID(),
+        identity: Identity.stub.snapshot,
         context: context
     )
 
@@ -58,7 +58,8 @@ private func makeEvent(
         "tags": .array([.string("a"), .string("b"), .string("c")])
     ]
 
-    try log(makeEvent("Array Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
+    try log(
+        makeEvent("Array Event", metadata: metadata), date: Date(), identity: Identity.stub.snapshot, context: context)
 
     let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
@@ -74,7 +75,8 @@ private func makeEvent(
         "user": .dictionary(["name": .string("Alice"), "role": .string("admin")])
     ]
 
-    try log(makeEvent("Dict Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
+    try log(
+        makeEvent("Dict Event", metadata: metadata), date: Date(), identity: Identity.stub.snapshot, context: context)
 
     let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
@@ -92,7 +94,8 @@ private func makeEvent(
         "map": .dictionary(["key": .string("val")]),
     ]
 
-    try log(makeEvent("Mixed Event", metadata: metadata), date: Date(), sessionID: UUID(), context: context)
+    try log(
+        makeEvent("Mixed Event", metadata: metadata), date: Date(), identity: Identity.stub.snapshot, context: context)
 
     let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
@@ -102,4 +105,31 @@ private func makeEvent(
     #expect(params["list"] == "x, 42")
     #expect(params["map"] == "key: val")
     #expect(events.first?.paramCount == 3)
+}
+
+@MainActor
+@Test("An event logged before the session record exists materializes the chain") func testLogLinksSession() throws {
+    let context = NSManagedObjectContext.inMemoryContext()
+    let identity = Identity.stub.snapshot
+
+    try log(makeEvent("Early Event"), date: Date(), identity: identity, context: context)
+
+    let event = try #require(try context.fetchAll(EventEntry.self).first)
+    let session = try #require(event.session)
+
+    #expect(session.sessionID == identity.session)
+    #expect(session.launch?.launchID == identity.launch)
+    #expect(session.launch?.install?.installID == identity.install)
+    #expect(session.launch?.install?.device?.deviceID == identity.device)
+}
+
+@MainActor
+@Test("A second event joins the session the first one created") func testLogReusesSession() throws {
+    let context = NSManagedObjectContext.inMemoryContext()
+    let identity = Identity.stub.snapshot
+
+    try log(makeEvent("First"), date: Date(), identity: identity, context: context)
+    try log(makeEvent("Second"), date: Date(), identity: identity, context: context)
+
+    #expect(try context.fetchAll(SessionEntry.self).count == 1)
 }

@@ -20,7 +20,8 @@ struct SaveMetricsTests {
 
     @Test("Persists an IntMetricsEntry with correct fields")
     func persistsIntMetrics() throws {
-        try saveMetrics("api_calls", date: date, category: "counter", value: 5, sessionID: UUID(), context)
+        try saveMetrics(
+            "api_calls", date: date, category: "counter", value: 5, identity: Identity.stub.snapshot, context)
 
         let results = try context.fetchAll(IntMetricsEntry.self)
 
@@ -35,7 +36,8 @@ struct SaveMetricsTests {
 
     @Test("Persists a DoubleMetricsEntry with correct fields")
     func persistsDoubleMetrics() throws {
-        try saveMetrics("response_time", date: date, category: "timer", value: 1.5, sessionID: UUID(), context)
+        try saveMetrics(
+            "response_time", date: date, category: "timer", value: 1.5, identity: Identity.stub.snapshot, context)
 
         let results = try context.fetchAll(DoubleMetricsEntry.self)
 
@@ -49,7 +51,7 @@ struct SaveMetricsTests {
 
     @Test("Saves to the context")
     func savesToContext() throws {
-        try saveMetrics("metric", date: date, category: "counter", value: 1, sessionID: UUID(), context)
+        try saveMetrics("metric", date: date, category: "counter", value: 1, identity: Identity.stub.snapshot, context)
 
         #expect(!context.hasChanges)
     }

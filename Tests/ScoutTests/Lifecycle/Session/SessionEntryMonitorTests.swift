@@ -82,4 +82,12 @@ struct SessionEntryMonitorTests {
             try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
         }
     }
+
+    @Test("trigger records the session identifier it was handed")
+    func triggerAdoptsCurrentSession() throws {
+        try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
+
+        let session = try #require(try context.fetchAll(SessionEntry.self).first)
+        #expect(session.sessionID == identity.session.current)
+    }
 }
