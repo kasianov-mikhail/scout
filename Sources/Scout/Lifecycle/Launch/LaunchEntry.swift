@@ -21,6 +21,12 @@ package final class LaunchEntry: SyncableEntry, HasInstall {
     override var references: Set<DateEntry> {
         Set(Array(sessions) + Array(versions) + Array(visits))
     }
+
+    // The running launch has no `endDate` yet; `Recovery` stamps it on the
+    // next start, so it has to outlive the delivery that carried it.
+    override var isPurgeable: Bool {
+        endDate != nil
+    }
 }
 
 extension LaunchEntry: RecordEncodable {

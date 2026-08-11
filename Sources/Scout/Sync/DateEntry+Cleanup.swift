@@ -21,6 +21,8 @@ extension DateEntry {
             context.delete(object)
         }
 
+        try SyncableEntry.purgeDelivered(to: backendIDs, in: context)
+
         try context.save()
     }
 }

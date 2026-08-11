@@ -30,7 +30,7 @@ struct DateEntryCleanupTests {
     @Test("Deletes synced launches older than 7 days")
     func deletesSyncedOldLaunch() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        LaunchEntry.stub(date: old, synced: true, in: context)
+        LaunchEntry.stub(date: old, synced: true, endDate: old, in: context)
         try context.save()
 
         try DateEntry.cleanup(backends: [], in: context)
@@ -89,6 +89,56 @@ struct DateEntryCleanupTests {
         try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
 
         #expect(try context.fetchAll(EventEntry.self).count == 1)
+    }
+
+    @Test("Deletes an event delivered to every backend before it ages out")
+    func deletesDeliveredEvent() throws {
+        let recent = Date(timeIntervalSinceNow: -60)
+        let event = EventEntry.stub(name: "delivered", date: recent, in: context)
+        event.seedDelivery(pending: false, for: "cloud", in: context)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(EventEntry.self).isEmpty)
+    }
+
+    @Test("Keeps an event still owed to a second backend")
+    func keepsEventOwedElsewhere() throws {
+        let recent = Date(timeIntervalSinceNow: -60)
+        let event = EventEntry.stub(name: "half", date: recent, in: context)
+        event.seedDelivery(pending: false, for: "cloud", in: context)
+        event.seedDelivery(pending: true, for: "server", in: context)
+        try context.save()
+
+        let backends = [makeBackend(id: "cloud"), makeBackend(id: "server")]
+        try DateEntry.cleanup(backends: backends, in: context)
+
+        #expect(try context.fetchAll(EventEntry.self).count == 1)
+    }
+
+    @Test("Keeps a delivered session while it is still open")
+    func keepsOpenSession() throws {
+        let recent = Date(timeIntervalSinceNow: -60)
+        let session = SessionEntry.stub(date: recent, in: context)
+        session.seedDelivery(pending: false, for: "cloud", in: context)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(SessionEntry.self).count == 1)
+    }
+
+    @Test("Deletes a delivered session once it is closed")
+    func deletesClosedSession() throws {
+        let recent = Date(timeIntervalSinceNow: -60)
+        let session = SessionEntry.stub(date: recent, endDate: recent, in: context)
+        session.seedDelivery(pending: false, for: "cloud", in: context)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
     }
 
     @Test("Deletes local-only objects older than 7 days")
