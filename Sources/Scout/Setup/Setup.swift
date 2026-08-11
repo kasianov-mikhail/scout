@@ -30,41 +30,12 @@ public func setup(backends: [Backend]) async throws {
         return
     }
 
-    for backend in backends {
-        backend.onSetup()
-    }
-
-    let session = Protected(UUID())
-
-    let identity = Identity(
-        install: UserDefaults.standard.ensure("scout_install_id"),
-        launch: UUID(),
-        device: KeychainStorage.standard.ensure("scout_device_id"),
-        session: session
-    )
-
-    try await identity.bootstrap()
-
-    let dispatcher = Coalescer()
-
-    @Sendable func sync() async throws {
-        try await synchronize(backends: backends, dispatcher: dispatcher)
-    }
-
-    identity.table.startListening(completion: sync)
+    let runtime = try await Runtime(backends: backends)
 
     LoggingSystem.bootstrap {
-        ScoutLogHandler(sync: sync, session: session, label: $0)
+        ScoutLogHandler(sync: runtime.sync, session: runtime.session, label: $0)
     }
     MetricsSystem.bootstrap(
-        TelemetryFactory(sync: sync, session: session)
+        TelemetryFactory(sync: runtime.sync, session: runtime.session)
     )
-
-    Task {
-        do {
-            try await sync()
-        } catch {
-            print("Failed to run the first sync: \(error)")
-        }
-    }
 }
