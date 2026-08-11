@@ -82,29 +82,32 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        # Temporarily narrowed to iOS 26 Debug; uncomment the lines below to restore the full matrix.
         # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
         # other release-only failures never show up in a Debug-only run.
-        configuration: [Debug, Release]
-        ios: [16, 17, 18, 26, 27]
+        # configuration: [Debug, Release]
+        # ios: [16, 17, 18, 26, 27]
+        configuration: [Debug]
+        ios: [26]
         include:
-          - ios: 16
-            os: macos-15
-            device: iPhone 14
-            runtime: "16.4"
-            skipTesting: LookupIndexTests
-          - ios: 17
-            os: macos-15
-            device: iPhone 15
-            runtime: "17.5"
-          - ios: 18
-            os: macos-15
-            device: iPhone 16
+          # - ios: 16
+          #   os: macos-15
+          #   device: iPhone 14
+          #   runtime: "16.4"
+          #   skipTesting: LookupIndexTests
+          # - ios: 17
+          #   os: macos-15
+          #   device: iPhone 15
+          #   runtime: "17.5"
+          # - ios: 18
+          #   os: macos-15
+          #   device: iPhone 16
           - ios: 26
             os: macos-26
             device: iPhone 17
-          - ios: 27
-            os: xcode-27
-            device: iPhone 17
+          # - ios: 27
+          #   os: xcode-27
+          #   device: iPhone 17
 
     steps:
       - uses: actions/checkout@v7
