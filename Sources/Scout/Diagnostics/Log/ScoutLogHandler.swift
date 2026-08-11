@@ -31,7 +31,7 @@ struct ScoutLogHandler: LogHandler {
                 }
                 try await self.sync()
             } catch {
-                print(error.localizedDescription)
+                print("Failed to save log: \(error)")
             }
         }
     }

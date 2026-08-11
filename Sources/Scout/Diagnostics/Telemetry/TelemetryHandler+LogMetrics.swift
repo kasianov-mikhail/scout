@@ -62,7 +62,7 @@ extension TelemetryPersisting {
                 }
                 try await sync()
             } catch {
-                print("Failed to save metrics: \(error.localizedDescription)")
+                print("Failed to save metrics: \(error)")
             }
         }
     }

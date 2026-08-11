@@ -32,7 +32,7 @@ private func run(_ action: ActionTable.Action) async {
     do {
         try await action()
     } catch {
-        print(error.localizedDescription)
+        print("Failed to run action: \(error)")
     }
 }
 

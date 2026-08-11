@@ -51,7 +51,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
                 }
                 try FileManager.default.removeItem(at: file)
             } catch {
-                print("Failed to process \(pathExtension): \(error.localizedDescription)")
+                print("Failed to process \(pathExtension): \(error)")
             }
         }
     }
