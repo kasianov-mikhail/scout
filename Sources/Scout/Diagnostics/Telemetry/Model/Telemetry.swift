@@ -17,3 +17,7 @@ package enum Telemetry {
     case recorder(Double)
     case timer(Double)
 }
+
+package enum ResetMarker {
+    package static let category = "counter_reset"
+}
