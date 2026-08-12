@@ -14,7 +14,7 @@ import Foundation
 /// ``ScoutMetricsFactory``:
 ///
 /// ```swift
-/// let scout = Runtime(backends: [.cloudKit(container)])
+/// let scout = Runtime(backends: [try Backend.cloudKit(container: container)])
 ///
 /// LoggingSystem.bootstrap {
 ///     ScoutLogHandler(label: $0, runtime: scout)
