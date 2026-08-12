@@ -15,29 +15,31 @@ import Metrics
 /// backend-side — by scout-db views on CloudKit and by native aggregation
 /// on Scout servers — so clients upload raw records only.
 ///
-/// Passing no backends turns Scout off: nothing is bootstrapped, recorded,
-/// or synced, and logs keep going wherever they went before.
+/// This is the one-line path, and it claims both logging and metrics for
+/// Scout alone. Build a ``Runtime`` and bootstrap ``ScoutLogHandler``
+/// and ``ScoutMetricsFactory`` yourself to multiplex Scout with handlers of
+/// your own — a console handler while debugging, say, or an existing
+/// logging stack.
+///
+/// Passing no backends turns Scout off: nothing is recorded or synced, and
+/// logs keep going wherever they went before.
 ///
 /// - Parameter backends: The backends to sync to, in any combination of
 ///   CloudKit containers and Scout servers.
-/// - Throws: An error if initialization fails.
+/// - Throws: Nothing. The signature is kept so existing call sites keep
+///   compiling while they move to the handlers.
 /// - Important: Call from the main actor during app startup, exactly once —
 ///   `swift-log` and `swift-metrics` both trap on a second bootstrap.
 ///
+@available(*, deprecated, message: "Bootstrap ScoutLogHandler and ScoutMetricsFactory instead")
 @MainActor
 public func setup(backends: [Backend]) async throws {
-    guard backends.count > 0 else {
-        return
-    }
-
     let runtime = Runtime(backends: backends)
 
     LoggingSystem.bootstrap {
-        ScoutLogHandler(runtime: runtime, label: $0)
+        ScoutLogHandler(label: $0, runtime: runtime)
     }
     MetricsSystem.bootstrap(
-        TelemetryFactory(runtime: runtime)
+        ScoutMetricsFactory(runtime: runtime)
     )
-
-    try await runtime.start()
 }

@@ -12,8 +12,8 @@ import Testing
 @testable import Scout
 @testable import Support
 
-struct TelemetryFactoryTests {
-    let factory = TelemetryFactory(runtime: .stub)
+struct ScoutMetricsFactoryTests {
+    let factory = ScoutMetricsFactory(runtime: .stub)
 
     @Test("makeCounter returns TelemetryHandler")
     func makeCounter() {

@@ -10,5 +10,5 @@ import Foundation
 @testable import Scout
 
 extension Runtime {
-    static let stub = Runtime(identity: .stub, sync: {})
+    static let stub = Runtime(backends: [makeBackend(id: "stub")], identity: .stub, sync: {})
 }
