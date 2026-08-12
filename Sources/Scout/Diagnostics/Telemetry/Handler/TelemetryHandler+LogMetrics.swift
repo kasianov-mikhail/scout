@@ -14,6 +14,10 @@ extension TelemetryPersisting {
     }
 
     func logMetrics(category: String, value: some MetricScalar) {
+        guard runtime.isEnabled else {
+            return
+        }
+
         let label = self.label
         let date = Date()
         let identity = runtime.identity.snapshot
@@ -23,6 +27,10 @@ extension TelemetryPersisting {
     }
 
     func logTimer(seconds: TimeInterval) {
+        guard runtime.isEnabled else {
+            return
+        }
+
         let label = self.label
         let date = Date()
         let identity = runtime.identity.snapshot
@@ -41,6 +49,10 @@ extension TelemetryPersisting {
     }
 
     func logRecorder(value: Double) {
+        guard runtime.isEnabled else {
+            return
+        }
+
         let label = self.label
         let date = Date()
         let identity = runtime.identity.snapshot
@@ -56,6 +68,7 @@ extension TelemetryPersisting {
 
     private func persistMetrics(_ save: @escaping @Sendable (NSManagedObjectContext) throws -> Void) {
         let sync = runtime.sync
+
         Task {
             do {
                 try await persistentContainer.performBackgroundTask { context in

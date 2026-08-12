@@ -18,9 +18,9 @@ struct SetupPage: View {
                     number: 1,
                     label: "Initialize Scout in your app",
                     code: """
-                        try await setup(backends: [
-                            .cloudKit(container: .default())
-                        ])
+                        LoggingSystem.bootstrap {
+                            ScoutLogHandler(label: $0, runtime: scout)
+                        }
                         """
                 )
                 Step(
