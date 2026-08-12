@@ -13,6 +13,10 @@ protocol Command: Sendable {
 
 extension NSPersistentContainer {
     func run(_ commands: any Command...) async throws {
+        try await run(commands)
+    }
+
+    func run(_ commands: [any Command]) async throws {
         try await performBackgroundTask { context in
             context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
 
