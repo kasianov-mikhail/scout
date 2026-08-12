@@ -1,5 +1,11 @@
 # Installation
 
+## Table of Contents
+- [Requirements](#requirements)
+- [Add the Package](#add-the-package)
+- [Enable CloudKit](#enable-cloudkit)
+- [Upload Your Database Schema](#upload-your-database-schema)
+
 ## Requirements
 
 - iOS 16.0+
@@ -20,16 +26,28 @@ Or add it to your `Package.swift`:
 .package(url: "https://github.com/kasianov-mikhail/scout.git", from: "3.3.0")
 ```
 
-Then add `Scout` as a dependency for your target:
+Then add the products your target needs. `Scout` carries the runtime and the handlers; the backend it syncs to comes from a connector, so a CloudKit setup takes `NativeConnector` too:
 
 ```swift
 .target(
     name: "YourTarget",
     dependencies: [
-        .product(name: "Scout", package: "scout")
+        .product(name: "Scout", package: "scout"),
+        .product(name: "NativeConnector", package: "scout"),
     ]
 )
 ```
+
+The package publishes these products:
+
+| Product | What it adds |
+|-|-|
+| `Scout` | The runtime, the log handler, the metrics factory, and crash reporting |
+| `NativeConnector` | `Backend.cloudKit(container:)`, syncing to your CloudKit container |
+| `HostedConnector` | `Backend.server(url:apiKey:)`, syncing to a [Scout server](https://github.com/kasianov-mikhail/scout-server) |
+| `ScoutUI` | The in-app dashboard — see the [Dashboard Guide](DASHBOARD.md) |
+| `LookupIndex` | A SwiftData record cache for the dashboard, enabled with `LookupIndex.enable()` on iOS 17+ |
+| `DemoConnector` | `Backend.demo()`, an offline backend preloaded with fabricated data for previews and screenshots |
 
 ## Enable CloudKit
 
@@ -46,4 +64,4 @@ The CloudKit backend stores everything through [scout-db](https://github.com/kas
 3. Go to the "Schema" section and use "Import Schema" to upload the schema file.
 4. Click "Deploy to Production" to apply the schema.
 
-Once CloudKit is enabled and the schema is uploaded, see the [Usage Guide](USAGE.md) for configuring `setup`, adding [Scout server](https://github.com/kasianov-mikhail/scout-server) backends, and writing logs and metrics.
+Once CloudKit is enabled and the schema is uploaded, see the [Usage Guide](USAGE.md) for creating the runtime, adding [Scout server](https://github.com/kasianov-mikhail/scout-server) backends, and writing logs and metrics.

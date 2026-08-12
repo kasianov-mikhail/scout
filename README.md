@@ -79,6 +79,8 @@ To add the package and set up CloudKit, see the [Installation Guide](docs/INSTAL
 
 The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports right inside your development builds — browse charts, drill into event lists and crash details, and track activity over time without leaving the app.
 
+It ships as a separate `ScoutUI` product, so you decide which builds carry it. See the [Dashboard Guide](docs/DASHBOARD.md) for linking it, presenting it, and keeping it out of the App Store build.
+
 <img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
 
 ## Roadmap
