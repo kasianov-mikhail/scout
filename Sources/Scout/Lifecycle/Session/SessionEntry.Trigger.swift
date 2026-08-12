@@ -16,9 +16,14 @@ extension SessionEntry {
         func execute(in context: NSManagedObjectContext) throws {
             let sessionID = session.current
 
-            let object = context.insert(SessionEntry.self)
-            object.sessionID = sessionID
-            object.date = Date()
+            let existing = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
+            let object = existing ?? context.insert(SessionEntry.self)
+
+            if existing == nil {
+                object.sessionID = sessionID
+                object.date = Date()
+            }
+
             object.launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
             object.appVersion = bundle.marketingVersion
             object.buildNumber = bundle.buildNumber

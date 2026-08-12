@@ -48,4 +48,16 @@ struct InstallEntryMonitorTests {
         #expect(installs.count == 2)
         #expect(installs.contains { $0.installID == identity.install })
     }
+
+    @Test("trigger links the device onto an install an earlier record created")
+    func triggerLinksExistingInstall() throws {
+        _ = try context.linkedSession(identity.snapshot, date: Date())
+        try context.save()
+
+        try InstallEntry.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
+
+        let installs = try context.fetchAll(InstallEntry.self)
+        #expect(installs.count == 1)
+        #expect(installs.first?.device?.deviceID == identity.device)
+    }
 }

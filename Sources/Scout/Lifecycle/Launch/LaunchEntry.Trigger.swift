@@ -13,9 +13,14 @@ extension LaunchEntry {
         let installID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let launch = context.insert(LaunchEntry.self)
-            launch.launchID = launchID
-            launch.date = Date()
+            let existing = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
+            let launch = existing ?? context.insert(LaunchEntry.self)
+
+            if existing == nil {
+                launch.launchID = launchID
+                launch.date = Date()
+            }
+
             launch.install = try context.existing(InstallEntry.self, key: "installID", id: installID)
             try context.save()
         }

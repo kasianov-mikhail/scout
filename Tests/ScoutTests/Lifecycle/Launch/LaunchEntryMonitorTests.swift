@@ -36,4 +36,16 @@ struct LaunchEntryMonitorTests {
         let launches = try context.fetchAll(LaunchEntry.self)
         #expect(launches.first?.endDate == nil)
     }
+
+    @Test("trigger fills in the launch an earlier record created")
+    func triggerFillsExistingLaunch() throws {
+        _ = try context.linkedSession(identity.snapshot, date: Date())
+        try context.save()
+
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install).execute(in: context)
+
+        let launches = try context.fetchAll(LaunchEntry.self)
+        #expect(launches.count == 1)
+        #expect(launches.first?.install?.installID == identity.install)
+    }
 }

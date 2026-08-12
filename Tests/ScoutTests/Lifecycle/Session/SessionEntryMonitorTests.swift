@@ -90,4 +90,29 @@ struct SessionEntryMonitorTests {
         let session = try #require(try context.fetchAll(SessionEntry.self).first)
         #expect(session.sessionID == identity.session.current)
     }
+
+    @Test("trigger fills in the session an earlier record created")
+    func triggerFillsExistingSession() throws {
+        let snapshot = identity.snapshot
+        _ = try context.linkedSession(snapshot, date: Date())
+        try context.save()
+
+        try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
+
+        let sessions = try context.fetchAll(SessionEntry.self)
+        #expect(sessions.count == 1)
+        #expect(sessions.first?.sessionID == snapshot.session)
+        #expect(sessions.first?.appVersion == Bundle.main.marketingVersion)
+    }
+
+    @Test("rotation opens a session under a fresh identifier")
+    func rotationOpensNewSession() throws {
+        let session = Protected(UUID())
+        let first = session.current
+
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+
+        #expect(session.current != first)
+        #expect(try context.fetchAll(SessionEntry.self).map(\.sessionID) == [session.current])
+    }
 }

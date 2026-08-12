@@ -12,19 +12,21 @@ extension DeviceEntry {
         let deviceID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let request = NSFetchRequest<DeviceEntry>(entityName: "DeviceEntry")
-            request.predicate = NSPredicate(format: "deviceID == %@", deviceID as CVarArg)
-            request.fetchLimit = 1
+            let existing = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
+            let device = existing ?? context.insert(DeviceEntry.self)
 
-            guard try context.fetch(request).isEmpty else {
-                return
+            if existing == nil {
+                device.deviceID = deviceID
+                device.date = Date()
             }
 
-            let device = context.insert(DeviceEntry.self)
-            device.deviceID = deviceID
-            device.date = Date()
-            device.model = SystemInfo.deviceModel
-            try context.save()
+            if device.model == nil {
+                device.model = SystemInfo.deviceModel
+            }
+
+            if context.hasChanges {
+                try context.save()
+            }
         }
     }
 }

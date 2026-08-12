@@ -33,4 +33,16 @@ struct DeviceEntryMonitorTests {
 
         #expect(try context.fetchAll(DeviceEntry.self).count == 1)
     }
+
+    @Test("trigger stamps the model onto a device an earlier record created")
+    func triggerStampsExistingDevice() throws {
+        _ = try context.linkedSession(identity.snapshot, date: Date())
+        try context.save()
+
+        try DeviceEntry.Trigger(deviceID: identity.device).execute(in: context)
+
+        let devices = try context.fetchAll(DeviceEntry.self)
+        #expect(devices.count == 1)
+        #expect(devices.first?.model == SystemInfo.deviceModel)
+    }
 }
