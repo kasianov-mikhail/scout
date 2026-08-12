@@ -17,19 +17,26 @@ extension Identity {
         await CrashArchive.system.flush(deviceID: device)
         await HangArchive.system.flush(deviceID: device)
 
-        try await persistentContainer.run(
-            SessionEntry.Recovery(launchID: launch),
-            LaunchEntry.Recovery(launchID: launch)
-        )
+        try await persistentContainer.run(recoveryCommands)
+        try await persistentContainer.run(startupCommands())
+    }
 
-        try await persistentContainer.run(
+    private var recoveryCommands: [any Command] {
+        [
+            SessionEntry.Recovery(launchID: launch),
+            LaunchEntry.Recovery(launchID: launch),
+        ]
+    }
+
+    func startupCommands(bundle: Bundle = .main) -> [any Command] {
+        [
             DeviceEntry.Trigger(deviceID: device),
             InstallEntry.Trigger(installID: install, deviceID: device),
-            VersionEntry.Trigger(installID: install, launchID: launch),
             LaunchEntry.Trigger(launchID: launch, installID: install),
-            SessionEntry.Trigger(session: session, launchID: launch),
+            VersionEntry.Trigger(installID: install, launchID: launch, bundle: bundle),
+            SessionEntry.Trigger(session: session, launchID: launch, bundle: bundle),
             VisitEntry.Trigger(launchID: launch),
-            MarkerEntry.Trigger(installID: install)
-        )
+            MarkerEntry.Trigger(installID: install),
+        ]
     }
 }
