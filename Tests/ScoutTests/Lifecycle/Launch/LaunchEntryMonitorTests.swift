@@ -48,4 +48,17 @@ struct LaunchEntryMonitorTests {
         #expect(launches.count == 1)
         #expect(launches.first?.install?.installID == identity.install)
     }
+
+    @Test("trigger queues a delivered launch again after linking the install")
+    func triggerRequeuesLinkedLaunch() throws {
+        InstallEntry.stub(date: Date(), in: context)
+        let launch = LaunchEntry.stub(date: Date(), in: context)
+        let delivery = launch.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+        try context.save()
+
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install).execute(in: context)
+
+        #expect(delivery.isPending)
+        #expect(delivery.attempts == 0)
+    }
 }

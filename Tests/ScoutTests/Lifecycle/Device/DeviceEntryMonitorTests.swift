@@ -45,4 +45,29 @@ struct DeviceEntryMonitorTests {
         #expect(devices.count == 1)
         #expect(devices.first?.model == SystemInfo.deviceModel)
     }
+
+    @Test("trigger queues a delivered device again after stamping the model")
+    func triggerRequeuesStampedDevice() throws {
+        let device = DeviceEntry.stub(date: Date(), in: context)
+        let delivery = device.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+        try context.save()
+
+        try DeviceEntry.Trigger(deviceID: identity.device).execute(in: context)
+
+        #expect(delivery.isPending)
+        #expect(delivery.attempts == 0)
+    }
+
+    @Test("trigger leaves the delivery alone when the device is already stamped")
+    func triggerKeepsDeliveryForStampedDevice() throws {
+        let device = DeviceEntry.stub(date: Date(), in: context)
+        device.model = SystemInfo.deviceModel
+        let delivery = device.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+        try context.save()
+
+        try DeviceEntry.Trigger(deviceID: identity.device).execute(in: context)
+
+        #expect(delivery.isPending == false)
+        #expect(delivery.attempts == 3)
+    }
 }

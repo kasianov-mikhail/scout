@@ -115,4 +115,17 @@ struct SessionEntryMonitorTests {
         #expect(session.current != first)
         #expect(try context.fetchAll(SessionEntry.self).map(\.sessionID) == [session.current])
     }
+
+    @Test("trigger queues a delivered session again after stamping it")
+    func triggerRequeuesStampedSession() throws {
+        let launch = LaunchEntry.stub(date: Date(), in: context)
+        let session = SessionEntry.stub(date: Date(), launch: launch, in: context)
+        let delivery = session.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+        try context.save()
+
+        try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
+
+        #expect(delivery.isPending)
+        #expect(delivery.attempts == 0)
+    }
 }
