@@ -24,6 +24,10 @@ extension DeviceEntry {
                 device.model = SystemInfo.deviceModel
             }
 
+            if device.hasChanges {
+                device.requeue()
+            }
+
             if context.hasChanges {
                 try context.save()
             }

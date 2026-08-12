@@ -25,6 +25,10 @@ extension InstallEntry {
                 install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
             }
 
+            if install.hasChanges {
+                install.requeue()
+            }
+
             if context.hasChanges {
                 try context.save()
             }

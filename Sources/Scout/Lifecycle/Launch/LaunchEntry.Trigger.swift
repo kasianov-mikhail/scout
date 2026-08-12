@@ -22,6 +22,11 @@ extension LaunchEntry {
             }
 
             launch.install = try context.existing(InstallEntry.self, key: "installID", id: installID)
+
+            if launch.hasChanges {
+                launch.requeue()
+            }
+
             try context.save()
         }
     }

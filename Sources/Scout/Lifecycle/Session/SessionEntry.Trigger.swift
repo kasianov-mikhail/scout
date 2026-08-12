@@ -30,6 +30,11 @@ extension SessionEntry {
             object.osVersion = SystemInfo.osVersion
             object.locale = SystemInfo.locale
             object.channel = SystemInfo.channel
+
+            if object.hasChanges {
+                object.requeue()
+            }
+
             try context.save()
         }
     }

@@ -60,4 +60,30 @@ struct InstallEntryMonitorTests {
         #expect(installs.count == 1)
         #expect(installs.first?.device?.deviceID == identity.device)
     }
+
+    @Test("trigger queues a delivered install again after linking the device")
+    func triggerRequeuesLinkedInstall() throws {
+        DeviceEntry.stub(date: Date(), in: context)
+        let install = InstallEntry.stub(date: Date(), in: context)
+        let delivery = install.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+        try context.save()
+
+        try InstallEntry.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
+
+        #expect(delivery.isPending)
+        #expect(delivery.attempts == 0)
+    }
+
+    @Test("trigger leaves the delivery alone when the install is already linked")
+    func triggerKeepsDeliveryForLinkedInstall() throws {
+        let device = DeviceEntry.stub(date: Date(), in: context)
+        let install = InstallEntry.stub(date: Date(), device: device, in: context)
+        let delivery = install.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
+        try context.save()
+
+        try InstallEntry.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
+
+        #expect(delivery.isPending == false)
+        #expect(delivery.attempts == 3)
+    }
 }
