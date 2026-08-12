@@ -13,19 +13,21 @@ extension InstallEntry {
         let deviceID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let request = NSFetchRequest<InstallEntry>(entityName: "InstallEntry")
-            request.predicate = NSPredicate(format: "installID == %@", installID as CVarArg)
-            request.fetchLimit = 1
+            let existing = try context.existing(InstallEntry.self, key: "installID", id: installID)
+            let install = existing ?? context.insert(InstallEntry.self)
 
-            guard try context.fetch(request).isEmpty else {
-                return
+            if existing == nil {
+                install.installID = installID
+                install.date = Date()
             }
 
-            let install = context.insert(InstallEntry.self)
-            install.installID = installID
-            install.date = Date()
-            install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
-            try context.save()
+            if install.device == nil {
+                install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
+            }
+
+            if context.hasChanges {
+                try context.save()
+            }
         }
     }
 }
