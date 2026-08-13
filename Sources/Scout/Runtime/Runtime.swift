@@ -51,9 +51,12 @@ extension Runtime {
     ///
     /// - Parameter backends: The backends to sync to, in any combination of CloudKit
     ///   containers and Scout servers. An empty list turns Scout off: nothing is
-    ///   recorded or synced.
+    ///   recorded or synced. A store that fails to load turns Scout off the same
+    ///   way — the error is printed, and the host app keeps running without it.
     ///
     public init(backends: [Backend]) {
+        let backends = persistentContainer.isStoreLoaded ? backends : []
+
         let registry = MirroredRegistry(store: KeychainStorage.standard, mirror: UserDefaults.standard)
 
         let identity = Identity(

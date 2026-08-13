@@ -24,6 +24,15 @@ struct PersistenceLoadTests {
         container.persistentStoreDescriptions = [description]
 
         try container.loadStore()
+
+        #expect(container.isStoreLoaded)
+    }
+
+    @Test("A container whose store never loaded reports it")
+    func unloadedStoreIsReported() {
+        let container = NSPersistentContainer(name: "TestModel", managedObjectModel: model)
+
+        #expect(!container.isStoreLoaded)
     }
 
     @Test("loadStores throws when loadPersistentStores reports an error")
@@ -43,5 +52,7 @@ struct PersistenceLoadTests {
             #expect(error.domain == expectedError.domain)
             #expect(error.code == expectedError.code)
         }
+
+        #expect(!container.isStoreLoaded)
     }
 }

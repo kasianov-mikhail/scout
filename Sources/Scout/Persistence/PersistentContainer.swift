@@ -12,12 +12,18 @@ let persistentContainer: NSPersistentContainer = {
 
     do {
         try container.loadStore()
-    } catch let error as NSError {
-        fatalError("Error loading Core Data store: \(error) | \(error.userInfo)")
+    } catch {
+        print("Failed to load the Scout store: \(error)")
     }
 
     return container
 }()
+
+extension NSPersistentContainer {
+    var isStoreLoaded: Bool {
+        persistentStoreCoordinator.persistentStores.count > 0
+    }
+}
 
 extension NSManagedObjectModel {
     nonisolated(unsafe) static let scout: NSManagedObjectModel = {
