@@ -225,10 +225,10 @@ struct SchemaBootstrapTests {
     // Built the way Backend.cloudKit builds it — the catalog is published
     // before the store is handed to a read or a write.
     private var database: NativeDatabase {
-        let registration = Task { await CatalogEntry.publishAll(into: store, registry: registry) }
+        let registration = Task { try await CatalogEntry.publishAll(into: store, registry: registry) }
 
         return NativeDatabase {
-            await registration.value
+            try await registration.value
             return store
         }
     }

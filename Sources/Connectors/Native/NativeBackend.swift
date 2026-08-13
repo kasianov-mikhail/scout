@@ -32,8 +32,8 @@ extension Backend {
         }
 
         let database = NativeDatabase {
-            await stores.value(id: id) {
-                await container.publishedStore()
+            try await stores.value(id: id) {
+                try await container.publishedStore()
             }
         }
 
@@ -75,11 +75,11 @@ extension Backend {
 }
 
 extension CKContainer {
-    fileprivate func publishedStore() async -> EntityStore {
+    fileprivate func publishedStore() async throws -> EntityStore {
         let registry = SchemaRegistry(database: publicCloudDatabase)
         let store = EntityStore(database: publicCloudDatabase, registry: registry)
 
-        await CatalogEntry.publishAll(into: store, registry: registry)
+        try await CatalogEntry.publishAll(into: store, registry: registry)
 
         return store
     }
