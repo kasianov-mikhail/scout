@@ -27,8 +27,12 @@ package class DateEntry: NSManagedObject {
         true
     }
 
+    var latest: Date? {
+        datePrimitive
+    }
+
     var inferred: Date? {
-        (references.map(\.datePrimitive) + [datePrimitive]).compactMap(\.self).max()
+        (references.map(\.latest) + [latest]).compactMap(\.self).max()
     }
 
     var date: Date? {

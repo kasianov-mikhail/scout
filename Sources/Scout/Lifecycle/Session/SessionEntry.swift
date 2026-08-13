@@ -29,6 +29,13 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
         Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics))
     }
 
+    // A session spans an interval, so the launch that owns it only ends once the
+    // session does — inferring a launch end from session start dates would close
+    // the launch before its own sessions.
+    override var latest: Date? {
+        endDate ?? datePrimitive
+    }
+
     override var isPurgeable: Bool {
         endDate != nil
     }

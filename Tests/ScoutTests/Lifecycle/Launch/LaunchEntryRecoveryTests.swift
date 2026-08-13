@@ -81,4 +81,35 @@ struct LaunchEntryRecoveryTests {
 
         #expect(launch.endDate == latest)
     }
+
+    @Test("Outlives the sessions it owns")
+    func endDateFromSessionEnd() throws {
+        let launch = LaunchEntry.stub(date: date, in: context)
+        launch.launchID = UUID()
+
+        let endDate = date.addingTimeInterval(300)
+        SessionEntry.stub(date: date.addingTimeInterval(10), endDate: endDate, launch: launch, in: context)
+
+        try context.save()
+        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+
+        #expect(launch.endDate == endDate)
+    }
+
+    @Test("Closes at the last session to end, not the last to start")
+    func endDateFromLatestSessionEnd() throws {
+        let launch = LaunchEntry.stub(date: date, in: context)
+        launch.launchID = UUID()
+
+        let endDate = date.addingTimeInterval(300)
+        let early = SessionEntry.stub(date: date, endDate: endDate, launch: launch, in: context)
+        early.sessionID = UUID()
+
+        SessionEntry.stub(date: date.addingTimeInterval(120), endDate: nil, launch: launch, in: context)
+
+        try context.save()
+        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+
+        #expect(launch.endDate == endDate)
+    }
 }
