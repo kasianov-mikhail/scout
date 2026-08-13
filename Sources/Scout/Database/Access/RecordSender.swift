@@ -8,6 +8,12 @@
 import CoreData
 
 struct RecordSender: Sendable {
+    // A rejected batch names no culprit, so it is halved and resent until the
+    // offending records stand alone and only they are charged. This caps the sends
+    // one pass spends on that search, so a backend rejecting everything can't turn
+    // a backlog into thousands of requests.
+    static let maxProbes = 32
+
     let id: String
     let database: any Database
     let isTransientError: @Sendable (any Error) -> Bool
@@ -40,38 +46,70 @@ extension RecordSender {
             DeliveryEntry.maxAttempts
         )
 
-        var objects: [T] = []
-        var deliveries: [DeliveryEntry] = []
-
-        for object in try context.fetch(request) {
-            if let delivery = object.delivery(for: id), delivery.isPending {
-                objects.append(object)
-                deliveries.append(delivery)
-            }
-        }
+        let objects = try context.fetch(request).filter { $0.delivery(for: id)?.isPending == true }
 
         guard objects.count > 0 else {
             return
         }
 
-        let records = objects.map(\.record)
-
         do {
-            try await database.write(records: records)
-            for (index, delivery) in deliveries.enumerated() where objects[index].record == records[index] {
-                delivery.isPending = false
-            }
+            try await send(objects)
         } catch {
-            // Only a rejection consumes the attempt budget: transient failures
-            // (offline, throttling, cancellation) must not burn the queue while
-            // the backend is unreachable.
-            if !(error is CancellationError) && !isTransientError(error) {
-                deliveries.forEach { $0.attempts += 1 }
-                try context.save()
-            }
+            try save(context)
             throw error
         }
 
-        try context.save()
+        try save(context)
+    }
+
+    private func send<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
+        var batches = [objects]
+        var probes = Self.maxProbes
+        var rejection: (any Error)?
+
+        while probes > 0, let batch = batches.popLast() {
+            probes -= 1
+
+            do {
+                try await write(batch)
+            } catch {
+                // Only a rejection consumes the attempt budget: transient failures
+                // (offline, throttling, cancellation) must not burn the queue while
+                // the backend is unreachable.
+                guard !(error is CancellationError), !isTransientError(error) else {
+                    throw error
+                }
+
+                rejection = error
+
+                if batch.count > 1 {
+                    let half = batch.count / 2
+                    batches.append(Array(batch[half...]))
+                    batches.append(Array(batch[..<half]))
+                } else {
+                    batch[0].delivery(for: id)?.attempts += 1
+                }
+            }
+        }
+
+        if let rejection {
+            throw rejection
+        }
+    }
+
+    private func write<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
+        let records = objects.map(\.record)
+
+        try await database.write(records: records)
+
+        for (object, record) in zip(objects, records) where object.record == record {
+            object.delivery(for: id)?.isPending = false
+        }
+    }
+
+    private func save(_ context: NSManagedObjectContext) throws {
+        if context.hasChanges {
+            try context.save()
+        }
     }
 }
