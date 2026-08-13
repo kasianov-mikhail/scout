@@ -22,7 +22,8 @@ struct SessionEntryTests {
         let launch = LaunchEntry.stub(date: week, in: context)
         let session = SessionEntry.stub(date: week, launch: launch, in: context)
 
-        LaunchEntry.stub(date: week, in: context)
+        let other = LaunchEntry.stub(date: week, in: context)
+        other.launchID = UUID()
 
         try context.save()
 

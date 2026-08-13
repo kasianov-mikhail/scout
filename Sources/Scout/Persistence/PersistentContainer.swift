@@ -41,6 +41,11 @@ extension NSPersistentContainer {
 
 extension NSPersistentContainer {
     func loadStore() throws {
+        let dedupe = MigrationDedupe(model: managedObjectModel)
+        for description in persistentStoreDescriptions {
+            try dedupe.prepare(description)
+        }
+
         var captured: Error?
         loadPersistentStores { _, error in
             captured = error
@@ -49,6 +54,6 @@ extension NSPersistentContainer {
             throw captured
         }
 
-        viewContext.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        viewContext.mergePolicy = NSMergePolicy.scout
     }
 }

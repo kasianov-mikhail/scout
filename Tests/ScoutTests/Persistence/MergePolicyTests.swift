@@ -31,7 +31,7 @@ struct MergePolicyTests {
         // -[NSManagedObjectContext _processPendingUpdates:]. A private-queue
         // context confines every mutation to performAndWait instead.
         let context = container.newBackgroundContext()
-        context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+        context.mergePolicy = NSMergePolicy.scout
 
         let eventID = UUID()
         let events = try context.performAndWait {
@@ -73,7 +73,7 @@ struct MergePolicyTests {
                 group.addTask {
                     do {
                         try await container.performBackgroundTask { context in
-                            context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+                            context.mergePolicy = NSMergePolicy.scout
                             try saveMetrics(
                                 "counter",
                                 date: Date(),
@@ -92,7 +92,7 @@ struct MergePolicyTests {
                 group.addTask {
                     do {
                         try await container.performBackgroundTask { context in
-                            context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+                            context.mergePolicy = NSMergePolicy.scout
 
                             let session = try context.existing(
                                 SessionEntry.self, key: "sessionID", id: identity.session)
@@ -113,6 +113,92 @@ struct MergePolicyTests {
             let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
             let sessions = try context.fetch(request)
             #expect(sessions.first?.metrics.count == 20)
+        }
+    }
+
+    /// The fetch-then-insert in `linkedSession` races across background
+    /// contexts (telemetry, logs, incidents all write concurrently), so this
+    /// hammers it from many tasks and expects the uniqueness constraints to
+    /// collapse the colliding inserts to a single row per lifecycle entity.
+    ///
+    @Test("Racing linkedSession writes collapse to one row per lifecycle entity")
+    func concurrentLinkedSessionDedupes() async throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let container = try makeContainer(in: directory)
+
+        let identity = Identity.stub.snapshot
+        let failures = Protected<[String]>([])
+
+        await withTaskGroup(of: Void.self) { group in
+            for _ in 1...20 {
+                group.addTask {
+                    do {
+                        try await container.performBackgroundTask { context in
+                            context.mergePolicy = NSMergePolicy.scout
+                            _ = try context.linkedSession(identity, date: Date())
+                            try context.save()
+                        }
+                    } catch {
+                        failures.mutate { $0.append(error.localizedDescription) }
+                    }
+                }
+            }
+        }
+
+        #expect(failures.current.count == 0)
+
+        let context = container.newBackgroundContext()
+        try context.performAndWait {
+            for entity in ["DeviceEntry", "InstallEntry", "LaunchEntry", "SessionEntry"] {
+                let request = NSFetchRequest<NSManagedObject>(entityName: entity)
+                let count = try context.count(for: request)
+                #expect(count == 1, "\(entity) deduplicated")
+            }
+        }
+    }
+
+    /// The worst interleaving behind the empty-overwrites-filled bug.
+    ///
+    /// A bare `linkedSession` row and a filled session for the same ID are
+    /// both in flight before either saves. The constraint merge must keep the
+    /// filled attributes instead of blanking them with the bare insert's nils.
+    ///
+    @Test("A bare duplicate insert keeps the filled session fields")
+    func bareDuplicateKeepsFilledFields() throws {
+        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        defer { try? FileManager.default.removeItem(at: directory) }
+        let container = try makeContainer(in: directory)
+
+        let identity = Identity.stub.snapshot
+
+        let filler = container.newBackgroundContext()
+        filler.mergePolicy = NSMergePolicy.scout
+        let racer = container.newBackgroundContext()
+        racer.mergePolicy = NSMergePolicy.scout
+
+        try filler.performAndWait {
+            let session = try filler.linkedSession(identity, date: Date())
+            session.appVersion = "1.2.3"
+            session.osVersion = "26.0"
+        }
+        try racer.performAndWait {
+            _ = try racer.linkedSession(identity, date: Date())
+        }
+        try filler.performAndWait {
+            try filler.save()
+        }
+        try racer.performAndWait {
+            try racer.save()
+        }
+
+        let context = container.newBackgroundContext()
+        try context.performAndWait {
+            let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
+            let sessions = try context.fetch(request)
+            #expect(sessions.count == 1)
+            #expect(sessions.first?.appVersion == "1.2.3")
+            #expect(sessions.first?.osVersion == "26.0")
         }
     }
 
