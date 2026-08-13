@@ -4,6 +4,7 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
+//
 
 import CScoutHang
 import Foundation
@@ -17,8 +18,6 @@ import MachO
 /// invalid address instead of trapping.
 ///
 enum MainThreadBacktrace {
-    static let maximumFrameCount = 64
-
     static func capture() -> [String] {
         guard let mainThread = mainMachThread() else {
             return []
@@ -28,13 +27,13 @@ enum MainThreadBacktrace {
         // suspended — no malloc, no dyld lock. If the thread is suspended
         // mid-hang while holding one of those locks, symbolicating here would
         // deadlock this thread forever. So resume first, then symbolicate.
-        var buffer = [UInt64](repeating: 0, count: maximumFrameCount)
+        var buffer = [UInt64](repeating: 0, count: StackWalker.maximumFrameCount)
         let count = buffer.withUnsafeMutableBufferPointer { captureAddresses(of: mainThread, into: $0) }
         guard count > 0 else {
             return []
         }
 
-        return buffer.prefix(count).enumerated().map(symbolicate)
+        return buffer.prefix(count).enumerated().map(StackWalker.symbolicate)
     }
 
     private static func captureAddresses(of thread: thread_t, into buffer: UnsafeMutableBufferPointer<UInt64>) -> Int {
@@ -43,24 +42,11 @@ enum MainThreadBacktrace {
         }
         defer { thread_resume(thread) }
 
-        guard let (pc, initialFP) = registerState(of: thread) else {
+        guard let (pc, fp) = registerState(of: thread) else {
             return 0
         }
 
-        buffer[0] = pc
-        var count = 1
-        var fp = initialFP
-
-        while count < buffer.count {
-            guard fp != 0, let frame = readFrame(at: fp), frame.returnAddress != 0 else {
-                break
-            }
-            buffer[count] = frame.returnAddress
-            count += 1
-            fp = frame.previousFP
-        }
-
-        return count
+        return StackWalker.walk(pc: pc, fp: fp, into: buffer)
     }
 
     // task_threads returns threads in creation order and the main thread is
@@ -81,46 +67,6 @@ enum MainThreadBacktrace {
         }
 
         return threadCount > 0 ? threadList[0] : nil
-    }
-
-    private struct Frame {
-        let previousFP: UInt64
-        let returnAddress: UInt64
-    }
-
-    private static func readFrame(at fp: UInt64) -> Frame? {
-        var pair: (previousFP: UInt64, returnAddress: UInt64) = (0, 0)
-        var readCount: vm_size_t = 0
-
-        let result = withUnsafeMutableBytes(of: &pair) { rawBuffer in
-            vm_read_overwrite(
-                mach_task_self_,
-                vm_address_t(fp),
-                vm_size_t(MemoryLayout<UInt64>.size * 2),
-                vm_address_t(UInt(bitPattern: rawBuffer.baseAddress)),
-                &readCount
-            )
-        }
-
-        guard result == KERN_SUCCESS, readCount == vm_size_t(MemoryLayout<UInt64>.size * 2) else {
-            return nil
-        }
-
-        return Frame(previousFP: pair.previousFP, returnAddress: pair.returnAddress)
-    }
-
-    private static func symbolicate(index: Int, address: UInt64) -> String {
-        var info = Dl_info()
-
-        guard let pointer = UnsafeRawPointer(bitPattern: UInt(address)), dladdr(pointer, &info) != 0 else {
-            return "\(index)   ???                  0x\(String(address, radix: 16))"
-        }
-
-        let image = info.dli_fname.map { String(cString: $0).components(separatedBy: "/").last ?? "???" } ?? "???"
-        let symbol = info.dli_sname.map { String(cString: $0) } ?? "0x\(String(address, radix: 16))"
-        let offset = info.dli_saddr.map { address - UInt64(UInt(bitPattern: $0)) } ?? 0
-
-        return "\(index)   \(image)   0x\(String(address, radix: 16)) \(symbol) + \(offset)"
     }
 }
 
