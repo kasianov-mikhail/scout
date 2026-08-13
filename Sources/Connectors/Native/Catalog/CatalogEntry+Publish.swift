@@ -23,7 +23,7 @@ extension CatalogEntry {
     func publish(into store: EntityStore, registry: SchemaRegistry) async throws {
         let declaration = declaration(on: store)
 
-        guard let published = try? await registry.schema(for: entity) else {
+        guard let published = try await registry.publishedSchema(for: entity) else {
             return try await declaration.create()
         }
         guard !matches(published) else {
