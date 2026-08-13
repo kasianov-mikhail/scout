@@ -69,18 +69,22 @@ struct CoalescerTests {
     func testCoalescesPendingWork() async throws {
         let dispatcher = Coalescer()
         let box = Box([Int]())
+        let started = AsyncStream.makeStream(of: Void.self)
+        let release = AsyncStream.makeStream(of: Void.self)
 
         let first = Task {
             try await dispatcher.perform {
                 box.value.append(1)
-                try? await Task.sleep(for: .milliseconds(100))
+                started.continuation.yield()
+                // Hold the first run open until the test has piled up both submissions.
+                for await _ in release.stream { break }
             }
         }
 
-        // Let the first work item start, then pile up two submissions behind it.
-        try? await Task.sleep(for: .milliseconds(20))
+        for await _ in started.stream { break }
         try await dispatcher.perform { box.value.append(2) }
         try await dispatcher.perform { box.value.append(3) }
+        release.continuation.yield()
         try await first.value
 
         #expect(box.value == [1, 3])
