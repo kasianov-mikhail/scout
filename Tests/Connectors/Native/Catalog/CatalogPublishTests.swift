@@ -26,7 +26,7 @@ struct CatalogPublishTests {
 
     @Test("Every declared entity ends up published as declared")
     func publishesEveryEntity() async throws {
-        await CatalogEntry.publishAll(into: store, registry: registry)
+        try await CatalogEntry.publishAll(into: store, registry: registry)
 
         for entry in CatalogEntry.entries {
             let published = try await registry.schema(for: entry.entity)
@@ -35,10 +35,23 @@ struct CatalogPublishTests {
     }
 
     @Test("Entities reconcile together rather than one after another")
-    func publishesConcurrently() async {
-        await CatalogEntry.publishAll(into: store, registry: registry)
+    func publishesConcurrently() async throws {
+        try await CatalogEntry.publishAll(into: store, registry: registry)
 
         #expect(await probe.peak > 1, "the catalog was published one entity at a time")
+    }
+
+    @Test("An outage surfaces instead of reading as a blank slate to re-create over")
+    func outagePropagates() async {
+        let outage = Outage()
+        let registry = SchemaRegistry(database: outage)
+        let store = EntityStore(database: outage, registry: registry)
+
+        await #expect(throws: CKError.self) {
+            try await CatalogEntry.publishAll(into: store, registry: registry)
+        }
+
+        #expect(await outage.saves == 0, "a failed schema fetch was answered with a create")
     }
 
     @Test("A transient fetch failure never republishes over a live schema")
@@ -48,7 +61,7 @@ struct CatalogPublishTests {
             .field("legacy", .string)
             .create()
 
-        let outage = Outage(database: probe)
+        let outage = FetchOutage(database: probe)
         let registry = SchemaRegistry(database: outage)
         let store = EntityStore(database: outage, registry: registry)
 
@@ -61,10 +74,39 @@ struct CatalogPublishTests {
     }
 }
 
+private actor Outage: CloudDatabase {
+    private(set) var saves = 0
+
+    func records(matching query: CKQuery, resultsLimit: Int) async throws -> QueryPage {
+        throw CKError(.networkUnavailable)
+    }
+
+    func records(continuingMatchFrom cursor: QueryCursor, resultsLimit: Int) async throws -> QueryPage {
+        throw CKError(.networkUnavailable)
+    }
+
+    func modifyRecords(saving: [CKRecord], deleting: [CKRecord.ID]) async throws {
+        saves += 1
+        throw CKError(.networkUnavailable)
+    }
+
+    func saveIfUnchanged(_ records: [CKRecord]) async throws -> [(CKRecord.ID, Result<CKRecord, any Error>)] {
+        throw CKError(.networkUnavailable)
+    }
+
+    func fetchRecord(id: CKRecord.ID) async throws -> CKRecord? {
+        throw CKError(.networkUnavailable)
+    }
+
+    func fetchRecords(ids: [CKRecord.ID]) async throws -> [CKRecord] {
+        throw CKError(.networkUnavailable)
+    }
+}
+
 /// Forwards to another database while every record fetch fails like a network
 /// drop, so a wrongly attempted write still lands where a test can see it.
 ///
-private struct Outage: CloudDatabase {
+private struct FetchOutage: CloudDatabase {
     let database: any CloudDatabase
 
     func records(matching query: CKQuery, resultsLimit: Int) async throws -> QueryPage {

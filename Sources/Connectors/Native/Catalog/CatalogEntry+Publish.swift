@@ -10,13 +10,14 @@ import Scout
 import ScoutDB
 
 extension CatalogEntry {
-    static func publishAll(into store: EntityStore, registry: SchemaRegistry) async {
-        await withTaskGroup(of: Void.self) { group in
+    static func publishAll(into store: EntityStore, registry: SchemaRegistry) async throws {
+        try await withThrowingTaskGroup(of: Void.self) { group in
             for entry in entries {
                 group.addTask {
-                    try? await entry.publish(into: store, registry: registry)
+                    try await entry.publish(into: store, registry: registry)
                 }
             }
+            try await group.waitForAll()
         }
     }
 

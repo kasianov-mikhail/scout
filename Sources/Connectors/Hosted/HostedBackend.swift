@@ -29,6 +29,9 @@ extension Backend {
                     return .failed(error)
                 }
             },
+            isTransientError: { error in
+                error is URLError || (error as? HTTPDatabaseError)?.isTransient == true
+            },
             onSetup: {
                 if apiKey != nil, url.scheme?.lowercased() != "https" {
                     print(

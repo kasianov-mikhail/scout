@@ -39,6 +39,10 @@ struct HTTPDatabaseError: LocalizedError {
     var errorDescription: String? {
         "Scout server returned \(status)\(reason.map { ": \($0)" } ?? "")"
     }
+
+    var isTransient: Bool {
+        status == 429 || status >= 500
+    }
 }
 
 extension HTTPDatabase {

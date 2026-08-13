@@ -29,8 +29,8 @@ struct LazyTableTests {
         let first = InMemoryDatabase()
         let second = InMemoryDatabase()
 
-        _ = await stores.value(id: "iCloud.Scout") { store(over: first) }
-        let shared = await stores.value(id: "iCloud.Scout") { store(over: second) }
+        _ = try await stores.value(id: "iCloud.Scout") { store(over: first) }
+        let shared = try await stores.value(id: "iCloud.Scout") { store(over: second) }
 
         try await publish(through: shared)
 
@@ -43,8 +43,8 @@ struct LazyTableTests {
         let first = InMemoryDatabase()
         let second = InMemoryDatabase()
 
-        let one = await stores.value(id: "iCloud.Scout") { store(over: first) }
-        let other = await stores.value(id: "iCloud.Other") { store(over: second) }
+        let one = try await stores.value(id: "iCloud.Scout") { store(over: first) }
+        let other = try await stores.value(id: "iCloud.Other") { store(over: second) }
 
         try await publish(through: one)
         try await publish(through: other)
@@ -57,12 +57,28 @@ struct LazyTableTests {
     func waitsForPreparation() async throws {
         let database = InMemoryDatabase()
 
-        _ = await stores.value(id: "iCloud.Scout") {
+        _ = try await stores.value(id: "iCloud.Scout") {
             let prepared = store(over: database)
-            try? await publish(through: prepared)
+            try await publish(through: prepared)
 
             return prepared
         }
+
+        #expect(database.records.count == 1)
+    }
+
+    @Test("A make that fails is not kept, so the next call starts over")
+    func retriesAfterFailure() async throws {
+        struct Fault: Error {}
+
+        await #expect(throws: Fault.self) {
+            try await stores.value(id: "iCloud.Scout") { throw Fault() }
+        }
+
+        let database = InMemoryDatabase()
+        let recovered = try await stores.value(id: "iCloud.Scout") { store(over: database) }
+
+        try await publish(through: recovered)
 
         #expect(database.records.count == 1)
     }

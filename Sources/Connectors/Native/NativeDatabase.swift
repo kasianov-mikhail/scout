@@ -10,7 +10,7 @@ import Scout
 import ScoutDB
 
 struct NativeDatabase: Sendable {
-    let resolve: @Sendable () async -> EntityStore
+    let resolve: @Sendable () async throws -> EntityStore
 }
 
 extension NativeDatabase: DatabaseWriter {
@@ -19,7 +19,7 @@ extension NativeDatabase: DatabaseWriter {
     }
 
     func write(records: [Record]) async throws {
-        let store = await resolve()
+        let store = try await resolve()
         for (entity, group) in Dictionary(grouping: records, by: \.recordType) {
             let batch = group.map { EntityWrite(values: Self.values(for: $0), uuid: $0.recordID) }
             try await store.write(batch, entity: entity)
@@ -35,7 +35,7 @@ extension NativeDatabase: DatabaseWriter {
 
 extension NativeDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        let store = await resolve()
+        let store = try await resolve()
         let entity = query.recordType.recordType
         let sort = query.sort.first
 
@@ -75,13 +75,13 @@ extension NativeDatabase {
 
 extension NativeDatabase {
     func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
-        try await NativeSeries(query: query).series(store: await resolve())
+        try await NativeSeries(query: query).series(store: resolve())
     }
 }
 
 extension NativeDatabase {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
-        let store = await resolve()
+        let store = try await resolve()
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
         let window = lookback..<range.upperBound
 
@@ -102,7 +102,7 @@ extension NativeDatabase {
 
 extension NativeDatabase {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
-        let store = await resolve()
+        let store = try await resolve()
 
         async let installs = store.datedIDs(
             entity: InstallEntry.recordType,

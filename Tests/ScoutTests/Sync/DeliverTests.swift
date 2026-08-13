@@ -172,6 +172,55 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 1)
     }
 
+    @Test("Transient write failures don't consume the attempt budget")
+    func transientFailuresPreserveAttempts() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        let flakyServer = Backend(
+            id: "server",
+            database: server,
+            checkAvailability: { true },
+            displayName: "server",
+            isTransientError: { $0 is URLError }
+        )
+
+        // The availability check passes, but every real send fails on connectivity
+        // for far longer than the attempt budget would allow...
+        for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
+            server.writeErrors.append(URLError(.notConnectedToInternet))
+            await #expect(throws: (any Error).self) {
+                try await deliver(EventEntry.self, to: flakyServer)
+            }
+        }
+
+        // ...yet not one attempt is spent, so the record is still deliverable.
+        #expect(event.delivery(for: "server")?.attempts == 0)
+        #expect(event.delivery(for: "server")?.isPending == true)
+        #expect(server.records.count(of: "Event") == 0)
+
+        // Connectivity returns and the record delivers on the first real send.
+        try await deliver(EventEntry.self, to: flakyServer)
+        #expect(event.delivery(for: "server")?.isDelivered == true)
+        #expect(server.records.count(of: "Event") == 1)
+    }
+
+    @Test("A cancelled send doesn't consume the attempt budget")
+    func cancellationPreservesAttempts() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        server.writeErrors.append(CancellationError())
+        await #expect(throws: (any Error).self) {
+            try await deliver(EventEntry.self, to: serverBackend)
+        }
+
+        #expect(event.delivery(for: "server")?.attempts == 0)
+        #expect(event.delivery(for: "server")?.isPending == true)
+    }
+
     @Test("A record is retried the full attempt budget before being abandoned")
     func fullAttemptBudget() async throws {
         let event = EventEntry.stub(name: "login", in: context)
@@ -198,6 +247,35 @@ struct DeliverTests {
         // Once abandoned, no further write is attempted.
         try await deliver(EventEntry.self, to: serverBackend)
         #expect(server.records.count(of: "Event") == 0)
+    }
+
+    @Test("A requeue during the send survives the delivery pass")
+    func requeueDuringSendStaysPending() async throws {
+        let session = SessionEntry.stub(date: Date(), in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+
+        // The session ends while its record is in flight: the completion fills in
+        // the end date and requeues the row mid-send.
+        cloud.beforeWrite = { @MainActor in
+            session.endDate = Date()
+            session.requeue()
+        }
+
+        try await deliver(SessionEntry.self, to: cloudBackend)
+        cloud.beforeWrite = nil
+
+        // The send delivered a stale record, so the row must stay pending...
+        #expect(session.delivery(for: "cloud")?.isPending == true)
+
+        // ...and the next pass delivers the completed session.
+        try await deliver(SessionEntry.self, to: cloudBackend)
+
+        #expect(session.delivery(for: "cloud")?.isDelivered == true)
+        #expect(cloud.records.count(of: "Session") == 2)
+
+        let delivered = try #require(cloud.records.last { $0.recordType == "Session" })
+        #expect(delivered["end_date"] as Date? != nil)
     }
 
     @Test("A backend added after the first sync still receives one-shot records")

@@ -8,16 +8,21 @@
 import Foundation
 
 actor LazyTable<Value: Sendable> {
-    private var entries: [String: Task<Value, Never>] = [:]
+    private var entries: [String: Task<Value, any Error>] = [:]
 
-    func value(id: String, make: @escaping @Sendable () async -> Value) async -> Value {
-        if let entry = entries[id] {
-            return await entry.value
-        }
-
-        let entry = Task { await make() }
+    func value(id: String, make: @escaping @Sendable () async throws -> Value) async throws -> Value {
+        let entry = entries[id] ?? Task { try await make() }
         entries[id] = entry
 
-        return await entry.value
+        do {
+            return try await entry.value
+        } catch {
+            // Only the failed task is evicted: a concurrent caller may have
+            // already installed a fresh attempt under the same id.
+            if entries[id] == entry {
+                entries[id] = nil
+            }
+            throw error
+        }
     }
 }
