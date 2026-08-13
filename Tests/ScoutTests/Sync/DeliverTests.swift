@@ -200,6 +200,35 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 0)
     }
 
+    @Test("A requeue during the send survives the delivery pass")
+    func requeueDuringSendStaysPending() async throws {
+        let session = SessionEntry.stub(date: Date(), in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+
+        // The session ends while its record is in flight: the completion fills in
+        // the end date and requeues the row mid-send.
+        cloud.beforeWrite = { @MainActor in
+            session.endDate = Date()
+            session.requeue()
+        }
+
+        try await deliver(SessionEntry.self, to: cloudBackend)
+        cloud.beforeWrite = nil
+
+        // The send delivered a stale record, so the row must stay pending...
+        #expect(session.delivery(for: "cloud")?.isPending == true)
+
+        // ...and the next pass delivers the completed session.
+        try await deliver(SessionEntry.self, to: cloudBackend)
+
+        #expect(session.delivery(for: "cloud")?.isDelivered == true)
+        #expect(cloud.records.count(of: "Session") == 2)
+
+        let delivered = try #require(cloud.records.last { $0.recordType == "Session" })
+        #expect(delivered["end_date"] as Date? != nil)
+    }
+
     @Test("A backend added after the first sync still receives one-shot records")
     func lateAddedBackendReceivesOneShots() async throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)

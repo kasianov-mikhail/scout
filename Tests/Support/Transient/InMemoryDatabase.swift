@@ -13,6 +13,7 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
     var records: [Record] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
+    var beforeWrite: (() async -> Void)?
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         guard let record = records.first(where: { $0.recordID == recordName }) else {
@@ -30,6 +31,7 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
     }
 
     func write(records: [Record]) async throws {
+        await beforeWrite?()
         if let error = writeErrors.popLast() ?? errors.popLast() {
             throw error
         } else {

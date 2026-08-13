@@ -7,7 +7,7 @@
 
 import Foundation
 
-package struct Record: Sendable {
+package struct Record: Equatable, Sendable {
     package let recordType: String
     package let recordID: String
 
