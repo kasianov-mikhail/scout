@@ -52,9 +52,13 @@ extension RecordSender {
             return
         }
 
+        let records = objects.map(\.record)
+
         do {
-            try await database.write(records: objects.map(\.record))
-            deliveries.forEach { $0.isPending = false }
+            try await database.write(records: records)
+            for (index, delivery) in deliveries.enumerated() where objects[index].record == records[index] {
+                delivery.isPending = false
+            }
         } catch {
             deliveries.forEach { $0.attempts += 1 }
             try context.save()
