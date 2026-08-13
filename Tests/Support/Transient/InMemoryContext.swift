@@ -19,10 +19,13 @@ extension NSManagedObjectContext {
         description.type = NSInMemoryStoreType
 
         container.persistentStoreDescriptions = [description]
-        container.loadPersistentStores { _, error in
-            if let error {
-                fatalError("Failed to load store: \(error)")
-            }
+
+        // Load through the production path so the view context carries the same
+        // merge configuration the delivery engine depends on.
+        do {
+            try container.loadStore()
+        } catch {
+            fatalError("Failed to load store: \(error)")
         }
 
         return container.viewContext
