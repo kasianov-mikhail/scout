@@ -70,7 +70,8 @@ struct LaunchEntryRecoveryTests {
         let launch = LaunchEntry.stub(date: date, in: context)
         launch.launchID = UUID()
 
-        SessionEntry.stub(date: date.addingTimeInterval(10), launch: launch, in: context)
+        let early = SessionEntry.stub(date: date.addingTimeInterval(10), launch: launch, in: context)
+        early.sessionID = UUID()
 
         let latest = date.addingTimeInterval(300)
         SessionEntry.stub(date: latest, launch: launch, in: context)

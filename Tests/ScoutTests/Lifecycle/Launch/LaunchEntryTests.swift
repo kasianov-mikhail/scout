@@ -22,8 +22,12 @@ struct LaunchEntryTests {
         let launch = LaunchEntry.stub(date: week, in: context)
 
         SessionEntry.stub(date: week, launch: launch, in: context)
-        SessionEntry.stub(date: week.addingHour(), launch: launch, in: context)
-        SessionEntry.stub(date: week, in: context)
+
+        let second = SessionEntry.stub(date: week.addingHour(), launch: launch, in: context)
+        second.sessionID = UUID()
+
+        let unlinked = SessionEntry.stub(date: week, in: context)
+        unlinked.sessionID = UUID()
 
         try context.save()
 

@@ -18,7 +18,7 @@ extension NSPersistentContainer {
 
     func run(_ commands: [any Command]) async throws {
         try await performBackgroundTask { context in
-            context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+            context.mergePolicy = NSMergePolicy.scout
 
             for command in commands {
                 try command.execute(in: context)

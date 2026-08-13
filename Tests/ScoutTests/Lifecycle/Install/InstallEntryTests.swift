@@ -26,6 +26,7 @@ struct InstallEntryTests {
         VersionEntry.stub(date: week.addingHour(), appVersion: "2.0", launch: launch, in: context)
 
         let otherLaunch = LaunchEntry.stub(date: week, in: context)
+        otherLaunch.launchID = UUID()
         VersionEntry.stub(date: week, appVersion: "3.0", launch: otherLaunch, in: context)
 
         try context.save()

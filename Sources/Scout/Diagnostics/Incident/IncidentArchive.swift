@@ -47,7 +47,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
             do {
                 let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
                 try await persistentContainer.performBackgroundTask { context in
-                    context.mergePolicy = NSMergePolicy.mergeByPropertyObjectTrump
+                    context.mergePolicy = NSMergePolicy.scout
                     try persist(payload, id, deviceID, context)
                 }
                 try FileManager.default.removeItem(at: file)

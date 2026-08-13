@@ -22,8 +22,12 @@ struct DeviceEntryTests {
         let device = DeviceEntry.stub(date: week, in: context)
 
         InstallEntry.stub(date: week, device: device, in: context)
-        InstallEntry.stub(date: week.addingHour(), device: device, in: context)
-        InstallEntry.stub(date: week, in: context)
+
+        let second = InstallEntry.stub(date: week.addingHour(), device: device, in: context)
+        second.installID = UUID()
+
+        let unlinked = InstallEntry.stub(date: week, in: context)
+        unlinked.installID = UUID()
 
         try context.save()
 
