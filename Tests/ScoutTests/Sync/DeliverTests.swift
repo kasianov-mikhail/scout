@@ -278,6 +278,72 @@ struct DeliverTests {
         #expect(delivered["end_date"] as Date? != nil)
     }
 
+    @Test("A requeue on a background context during the send survives the delivery pass")
+    func backgroundRequeueDuringSendStaysPending() async throws {
+        let session = SessionEntry.stub(date: Date(), in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+
+        let background = context.backgroundSibling()
+        let sessionID = session.objectID
+
+        // The session ends mid-send the way it really does — on a background
+        // context, not the one the delivery engine holds.
+        cloud.beforeWrite = {
+            try? await background.perform {
+                let session = try #require(background.object(with: sessionID) as? SessionEntry)
+                session.endDate = Date()
+                session.requeue()
+                try background.save()
+            }
+        }
+
+        try await deliver(SessionEntry.self, to: cloudBackend)
+        cloud.beforeWrite = nil
+
+        // The send delivered a stale record, so the row must stay pending...
+        #expect(session.delivery(for: "cloud")?.isPending == true)
+
+        // ...and the next pass delivers the completed session.
+        try await deliver(SessionEntry.self, to: cloudBackend)
+
+        #expect(session.delivery(for: "cloud")?.isDelivered == true)
+        #expect(cloud.records.count(of: "Session") == 2)
+
+        let delivered = try #require(cloud.records.last { $0.recordType == "Session" })
+        #expect(delivered["end_date"] as Date? != nil)
+    }
+
+    @Test("A requeue on a background context after delivery is picked up by the next pass")
+    func backgroundRequeueAfterDeliveryIsResent() async throws {
+        let session = SessionEntry.stub(date: Date(), in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+
+        try await deliver(SessionEntry.self, to: cloudBackend)
+        #expect(session.delivery(for: "cloud")?.isDelivered == true)
+
+        let background = context.backgroundSibling()
+        let sessionID = session.objectID
+
+        // The session completes on a background context once the row is already
+        // delivered, so only the requeue can bring it back.
+        try await background.perform {
+            let session = try #require(background.object(with: sessionID) as? SessionEntry)
+            session.endDate = Date()
+            session.requeue()
+            try background.save()
+        }
+
+        try await deliver(SessionEntry.self, to: cloudBackend)
+
+        #expect(session.delivery(for: "cloud")?.isDelivered == true)
+        #expect(cloud.records.count(of: "Session") == 2)
+
+        let delivered = try #require(cloud.records.last { $0.recordType == "Session" })
+        #expect(delivered["end_date"] as Date? != nil)
+    }
+
     @Test("A backend added after the first sync still receives one-shot records")
     func lateAddedBackendReceivesOneShots() async throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
