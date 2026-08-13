@@ -249,6 +249,55 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 0)
     }
 
+    @Test("A rejected record burns its own budget, not the whole batch")
+    func rejectionIsolatedToRecord() async throws {
+        let healthy = (0..<7).map { EventEntry.stub(name: "healthy-\($0)", in: context) }
+        let poison = EventEntry.stub(name: "poison", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        // The server refuses one malformed record and accepts everything else.
+        server.reject = { $0["name"] as String? == "poison" }
+
+        await #expect(throws: (any Error).self) {
+            try await deliver(EventEntry.self, to: serverBackend)
+        }
+
+        // The records it was batched with are delivered in the same pass...
+        #expect(server.records.count(of: "Event") == 7)
+        #expect(healthy.allSatisfy { $0.delivery(for: "server")?.isDelivered == true })
+
+        // ...and only the rejected one pays for the rejection.
+        #expect(poison.delivery(for: "server")?.attempts == 1)
+        #expect(poison.delivery(for: "server")?.isPending == true)
+    }
+
+    @Test("A backend rejecting everything stays within the probe budget")
+    func wholesaleRejectionStaysBounded() async throws {
+        for index in 0..<64 {
+            EventEntry.stub(name: "event-\(index)", in: context)
+        }
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        server.reject = { _ in true }
+
+        await #expect(throws: (any Error).self) {
+            try await deliver(EventEntry.self, to: serverBackend)
+        }
+
+        // Singling out the culprits costs sends, so one pass is capped instead of
+        // fanning a backlog out into a request per record...
+        #expect(server.writeCount <= RecordSender.maxProbes)
+        #expect(server.records.count(of: "Event") == 0)
+
+        // ...while still making progress: whatever it did single out is charged.
+        let charged = try context.fetchAll(EventEntry.self).filter {
+            ($0.delivery(for: "server")?.attempts ?? 0) > 0
+        }
+        #expect(charged.count > 0)
+    }
+
     @Test("A requeue during the send survives the delivery pass")
     func requeueDuringSendStaysPending() async throws {
         let session = SessionEntry.stub(date: Date(), in: context)

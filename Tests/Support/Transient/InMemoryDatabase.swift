@@ -9,11 +9,21 @@ import Foundation
 
 @testable import Scout
 
+struct RejectedRecordError: Error {
+    let recordID: String
+}
+
 final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var records: [Record] = []
     var errors: [Error] = []
     var writeErrors: [Error] = []
     var beforeWrite: (() async -> Void)?
+
+    /// Rejects a batch carrying any matching record, the way a backend refuses a
+    /// single malformed one while accepting everything sent alongside it.
+    var reject: ((Record) -> Bool)?
+
+    private(set) var writeCount = 0
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         guard let record = records.first(where: { $0.recordID == recordName }) else {
@@ -32,11 +42,16 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
 
     func write(records: [Record]) async throws {
         await beforeWrite?()
+        writeCount += 1
+
         if let error = writeErrors.popLast() ?? errors.popLast() {
             throw error
-        } else {
-            self.records += records
         }
+        if let reject, let rejected = records.first(where: reject) {
+            throw RejectedRecordError(recordID: rejected.recordID)
+        }
+
+        self.records += records
     }
 
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
