@@ -53,6 +53,25 @@ struct CatalogPublishTests {
 
         #expect(await outage.saves == 0, "a failed schema fetch was answered with a create")
     }
+
+    @Test("A transient fetch failure never republishes over a live schema")
+    func transientFailureLeavesSchemaAlone() async throws {
+        let entry = try #require(CatalogEntry.entries.first)
+        try await store.schema(entry.entity)
+            .field("legacy", .string)
+            .create()
+
+        let outage = FetchOutage(database: probe)
+        let registry = SchemaRegistry(database: outage)
+        let store = EntityStore(database: outage, registry: registry)
+
+        await #expect(throws: CKError.self) {
+            try await entry.publish(into: store, registry: registry)
+        }
+
+        let published = try await SchemaRegistry(database: probe).schema(for: entry.entity)
+        #expect(published.fields.map(\.name) == ["legacy"])
+    }
 }
 
 private actor Outage: CloudDatabase {
@@ -81,6 +100,37 @@ private actor Outage: CloudDatabase {
 
     func fetchRecords(ids: [CKRecord.ID]) async throws -> [CKRecord] {
         throw CKError(.networkUnavailable)
+    }
+}
+
+/// Forwards to another database while every record fetch fails like a network
+/// drop, so a wrongly attempted write still lands where a test can see it.
+///
+private struct FetchOutage: CloudDatabase {
+    let database: any CloudDatabase
+
+    func records(matching query: CKQuery, resultsLimit: Int) async throws -> QueryPage {
+        try await database.records(matching: query, resultsLimit: resultsLimit)
+    }
+
+    func records(continuingMatchFrom cursor: QueryCursor, resultsLimit: Int) async throws -> QueryPage {
+        try await database.records(continuingMatchFrom: cursor, resultsLimit: resultsLimit)
+    }
+
+    func modifyRecords(saving: [CKRecord], deleting: [CKRecord.ID]) async throws {
+        try await database.modifyRecords(saving: saving, deleting: deleting)
+    }
+
+    func saveIfUnchanged(_ records: [CKRecord]) async throws -> [(CKRecord.ID, Result<CKRecord, any Error>)] {
+        try await database.saveIfUnchanged(records)
+    }
+
+    func fetchRecord(id: CKRecord.ID) async throws -> CKRecord? {
+        throw CKError(.networkUnavailable)
+    }
+
+    func fetchRecords(ids: [CKRecord.ID]) async throws -> [CKRecord] {
+        try await database.fetchRecords(ids: ids)
     }
 }
 
