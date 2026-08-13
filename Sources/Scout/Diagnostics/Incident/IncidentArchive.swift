@@ -12,7 +12,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
     let pathExtension: String
     let persist: @Sendable (Payload, UUID, UUID, NSManagedObjectContext) throws -> Void
 
-    func write(_ payload: Payload, id: UUID = UUID()) {
+    func write(_ payload: Payload) {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
 
@@ -22,7 +22,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
 
         try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
 
-        let fileName = "\(id.uuidString).\(pathExtension)"
+        let fileName = "\(UUID().uuidString).\(pathExtension)"
         let fileURL = directory.appendingPathComponent(fileName)
 
         try? data.write(to: fileURL, options: .atomic)
