@@ -54,10 +54,12 @@ extension Runtime {
     ///   recorded or synced.
     ///
     public init(backends: [Backend]) {
+        let registry = MirroredRegistry(store: KeychainStorage.standard, mirror: UserDefaults.standard)
+
         let identity = Identity(
             install: UserDefaults.standard.ensure("scout_install_id"),
             launch: UUID(),
-            device: KeychainStorage.standard.ensure("scout_device_id"),
+            device: registry.ensure("scout_device_id"),
             session: Protected(UUID())
         )
 
