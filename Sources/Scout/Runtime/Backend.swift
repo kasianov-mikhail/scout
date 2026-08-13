@@ -19,6 +19,7 @@ public struct Backend: Sendable {
     package var serverInfo: ServerInfo? = nil
     package var probeStatus: @Sendable () async -> Status = { .unknown }
     package var accountWarning: AccountWarning = { nil }
+    package var isTransientError: @Sendable (any Error) -> Bool = { _ in false }
     package var onSetup: @MainActor @Sendable () -> Void = {}
 
     package init(
@@ -30,6 +31,7 @@ public struct Backend: Sendable {
         serverInfo: ServerInfo? = nil,
         probeStatus: @escaping @Sendable () async -> Status = { .unknown },
         accountWarning: @escaping AccountWarning = { nil },
+        isTransientError: @escaping @Sendable (any Error) -> Bool = { _ in false },
         onSetup: @escaping @MainActor @Sendable () -> Void = {}
     ) {
         self.id = id
@@ -40,6 +42,7 @@ public struct Backend: Sendable {
         self.serverInfo = serverInfo
         self.probeStatus = probeStatus
         self.accountWarning = accountWarning
+        self.isTransientError = isTransientError
         self.onSetup = onSetup
     }
 

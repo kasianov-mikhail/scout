@@ -10,12 +10,14 @@ import CoreData
 struct RecordSender: Sendable {
     let id: String
     let database: any Database
+    let isTransientError: @Sendable (any Error) -> Bool
 }
 
 extension RecordSender {
     init(backend: Backend) {
         self.id = backend.id
         self.database = backend.database
+        self.isTransientError = backend.isTransientError
     }
 }
 
@@ -60,8 +62,13 @@ extension RecordSender {
                 delivery.isPending = false
             }
         } catch {
-            deliveries.forEach { $0.attempts += 1 }
-            try context.save()
+            // Only a rejection consumes the attempt budget: transient failures
+            // (offline, throttling, cancellation) must not burn the queue while
+            // the backend is unreachable.
+            if !(error is CancellationError) && !isTransientError(error) {
+                deliveries.forEach { $0.attempts += 1 }
+                try context.save()
+            }
             throw error
         }
 
