@@ -18,13 +18,29 @@ struct CrashInfo: Codable {
     let appVersion: String?
 
     init(name: String, reason: String?, stackTrace: [String], identity: Identity) {
+        self.init(
+            name: name,
+            reason: reason,
+            stackTrace: stackTrace,
+            date: Date(),
+            installID: identity.install,
+            launchID: identity.launch,
+            sessionID: identity.session.raw,
+            appVersion: Bundle.main.marketingVersion
+        )
+    }
+
+    init(
+        name: String, reason: String?, stackTrace: [String], date: Date, installID: UUID, launchID: UUID,
+        sessionID: UUID, appVersion: String?
+    ) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
-        self.date = Date()
-        self.installID = identity.install
-        self.launchID = identity.launch
-        self.sessionID = identity.session.raw
-        self.appVersion = Bundle.main.marketingVersion
+        self.date = date
+        self.installID = installID
+        self.launchID = launchID
+        self.sessionID = sessionID
+        self.appVersion = appVersion
     }
 }
