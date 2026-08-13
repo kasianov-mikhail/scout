@@ -12,18 +12,15 @@ private let watchdogQueue = DispatchQueue(label: "scout.hang.watchdog")
 private nonisolated(unsafe) var isInstalled = false
 
 // Touched only from closures scheduled on `watchdogQueue`, which is serial —
-// that queue is the sole synchronization for these, not the `unsafe` opt-out.
-private nonisolated(unsafe) var pingDate = Date()
-private nonisolated(unsafe) var reportedWarning = false
-private nonisolated(unsafe) var reportedCritical = false
+// that queue is the sole synchronization for this, not the `unsafe` opt-out.
+private nonisolated(unsafe) var monitor = HangMonitor(now: uptime)
 
-private let pingInterval: TimeInterval = 1
-
-// In the spirit of MetricKit's hang buckets: a first report once the main
-// thread has been unresponsive for 3s, and a more severe one at 8s — around
-// where the system watchdog would otherwise kill the app.
-private let warningThreshold: TimeInterval = 3
-private let criticalThreshold: TimeInterval = 8
+// Wall-clock time counts a backgrounded process and a corrected clock as time
+// the main thread spent unresponsive; uptime stops while the device sleeps and
+// never jumps.
+private var uptime: TimeInterval {
+    ProcessInfo.processInfo.systemUptime
+}
 
 // Installs a watchdog that detects an unresponsive main thread and captures
 // its stack trace before the system watchdog can kill the app.
@@ -38,38 +35,28 @@ func installHangHandler(identity: Identity) {
 private func schedulePing() {
     DispatchQueue.main.async {
         watchdogQueue.async {
-            pingDate = Date()
-            reportedWarning = false
-            reportedCritical = false
+            monitor.ping(at: uptime)
         }
-        watchdogQueue.asyncAfter(deadline: .now() + pingInterval) {
+        watchdogQueue.asyncAfter(deadline: .now() + HangMonitor.pingInterval) {
             schedulePing()
         }
     }
 }
 
 private func scheduleCheck(identity: Identity) {
-    watchdogQueue.asyncAfter(deadline: .now() + pingInterval) {
-        checkForHang(identity: identity)
+    watchdogQueue.asyncAfter(deadline: .now() + HangMonitor.pingInterval) {
+        if let duration = monitor.check(at: uptime) {
+            reportHang(duration: duration, identity: identity)
+        }
         scheduleCheck(identity: identity)
     }
 }
 
-private func checkForHang(identity: Identity) {
-    let elapsed = Date().timeIntervalSince(pingDate)
-
-    if elapsed >= criticalThreshold, !reportedCritical {
-        reportedCritical = true
-        reportHang(duration: elapsed, identity: identity)
-    } else if elapsed >= warningThreshold, !reportedWarning {
-        reportedWarning = true
-        reportHang(duration: elapsed, identity: identity)
-    }
-}
-
 private func reportHang(duration: TimeInterval, identity: Identity) {
+    let isCritical = duration >= HangMonitor.criticalThreshold
+
     let hang = HangInfo(
-        name: duration >= criticalThreshold ? "Watchdog Termination Imminent" : "Main Thread Blocked",
+        name: isCritical ? "Watchdog Termination Imminent" : "Main Thread Blocked",
         reason: "Main thread unresponsive for \(String(format: "%.1f", duration))s",
         stackTrace: MainThreadBacktrace.capture(),
         duration: duration,
