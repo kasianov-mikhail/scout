@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CScoutHang
 import Foundation
 
 private nonisolated(unsafe) var previousExceptionHandler: NSUncaughtExceptionHandler?
@@ -29,7 +30,7 @@ func installExceptionHandler(identity: Identity) {
             CrashArchive.system.write(crash)
         }
 
-        restorePreviousSignalHandler(SIGABRT)
+        scout_crash_restore(SIGABRT)
         previousExceptionHandler?(exception)
     }
 }
