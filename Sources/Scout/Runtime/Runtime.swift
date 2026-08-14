@@ -91,8 +91,10 @@ extension Runtime {
 
     @MainActor
     func start() async throws {
-        for backend in backends {
-            backend.onSetup()
+        for case let .server(info) in backends.map(\.engine) {
+            if let warning = info.setupWarning {
+                print(warning)
+            }
         }
 
         try await identity.bootstrap()

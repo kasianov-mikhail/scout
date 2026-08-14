@@ -15,11 +15,12 @@ extension Backend {
             database: HTTPDatabase(url: url, apiKey: apiKey),
             checkAvailability: { true },
             displayName: url.host ?? url.absoluteString,
-            engine: .server,
-            serverInfo: ServerInfo(
-                endpoint: url.hostWithPort ?? url.absoluteString,
-                hasAPIKey: apiKey != nil,
-                isSecure: url.scheme?.lowercased() == "https"
+            engine: .server(
+                ServerInfo(
+                    endpoint: url.hostWithPort ?? url.absoluteString,
+                    hasAPIKey: apiKey != nil,
+                    isSecure: url.scheme?.lowercased() == "https"
+                )
             ),
             probeStatus: {
                 do {
@@ -31,13 +32,6 @@ extension Backend {
             },
             isTransientError: { error in
                 error is URLError || (error as? HTTPDatabaseError)?.isTransient == true
-            },
-            onSetup: {
-                if apiKey != nil, url.scheme?.lowercased() != "https" {
-                    print(
-                        "[Scout] The API key for '\(url)' will be sent over a non-HTTPS connection in cleartext. Use an https:// URL."
-                    )
-                }
             }
         )
     }

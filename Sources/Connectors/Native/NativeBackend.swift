@@ -44,6 +44,7 @@ extension Backend {
                 (try? await container.accountStatus()) == .available
             },
             displayName: "iCloud",
+            engine: .cloudKit,
             probeStatus: {
                 do {
                     return try await container.accountStatus().backendStatus

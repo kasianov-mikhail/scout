@@ -33,13 +33,18 @@ struct BackendHealth: Identifiable {
 
 extension BackendHealth {
     init(backend: Backend) {
+        var info: Backend.ServerInfo?
+        if case let .server(server) = backend.engine {
+            info = server
+        }
+
         self.init(
             id: backend.id,
             name: backend.displayName,
-            endpoint: backend.serverInfo?.endpoint ?? backend.id,
+            endpoint: info?.endpoint ?? backend.id,
             engine: .init(backend.engine),
-            hasAPIKey: backend.serverInfo?.hasAPIKey ?? false,
-            isSecure: backend.serverInfo?.isSecure ?? true,
+            hasAPIKey: info?.hasAPIKey ?? false,
+            isSecure: info?.isSecure ?? true,
             probe: backend.probeStatus
         )
     }
