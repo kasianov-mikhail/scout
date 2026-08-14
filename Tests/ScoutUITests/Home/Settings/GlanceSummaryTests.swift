@@ -31,7 +31,7 @@ struct GlanceSummaryTests {
         let summary = GlanceSummary(backends: [
             makeHealth(id: "a", status: .reachable),
             makeHealth(id: "b", status: .unreachable),
-            makeHealth(id: "c", status: .unknown),
+            makeHealth(id: "c"),
         ])
 
         #expect(!summary.allOperational)

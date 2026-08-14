@@ -9,13 +9,13 @@ import Scout
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ warning: @escaping AccountWarning) -> some View {
+    func iCloudWarning(_ warning: AccountWarning?) -> some View {
         modifier(ICloudWarningModifier(warning: warning))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
-    let warning: AccountWarning
+    let warning: AccountWarning?
 
     @State private var isAlertPresented = false
     @State private var title: String?
@@ -52,6 +52,9 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 
     private func verify() async {
+        guard let warning else {
+            return
+        }
         do {
             let status = try await warning()
             title = status?.title

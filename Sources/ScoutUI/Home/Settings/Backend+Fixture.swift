@@ -24,8 +24,7 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 checkAvailability: { true },
                 displayName: "Staging",
-                engine: .cloudKit,
-                probeStatus: { .unknown }
+                engine: .cloudKit
             ),
             Backend(
                 id: "http://localhost:8080",

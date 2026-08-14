@@ -38,7 +38,7 @@ struct BackendHealthProviderTests {
     }
 
     @Test("Refreshing a single backend leaves the others untouched")
-    func refreshesSingleBackend() async {
+    func refreshesSingleBackend() async throws {
         let provider = BackendHealthProvider(healths: [
             makeHealth(id: "up", probe: { .reachable }),
             makeHealth(id: "idle"),
@@ -46,9 +46,12 @@ struct BackendHealthProviderTests {
 
         await provider.refresh(id: "up")
 
-        #expect(provider.backends.first { $0.id == "up" }?.status == .reachable)
-        #expect(provider.backends.first { $0.id == "idle" }?.status == .unknown)
-        #expect(provider.backends.first { $0.id == "idle" }?.lastChecked == nil)
+        let up = try #require(provider.backends.first { $0.id == "up" })
+        let idle = try #require(provider.backends.first { $0.id == "idle" })
+
+        #expect(up.status == .reachable)
+        #expect(idle.status == nil)
+        #expect(idle.lastChecked == nil)
     }
 
     @Test("Refreshing an unknown id is a no-op")
@@ -58,7 +61,7 @@ struct BackendHealthProviderTests {
         await provider.refresh(id: "missing")
 
         #expect(provider.backends.count == 1)
-        #expect(provider.backends[0].status == .unknown)
+        #expect(provider.backends[0].status == nil)
     }
 
     @Test("Initializing from backends maps each one")
@@ -69,6 +72,6 @@ struct BackendHealthProviderTests {
         ])
 
         #expect(provider.backends.count == 2)
-        #expect(provider.backends.allSatisfy { $0.status == .unknown })
+        #expect(provider.backends.allSatisfy { $0.status == nil })
     }
 }

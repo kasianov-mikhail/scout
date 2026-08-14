@@ -11,20 +11,20 @@ import Scout
 struct Connection: Identifiable, Sendable {
     let id: String
     let name: String
-    let status: Backend.Status
-    var probe: @Sendable () async -> Backend.Status = { .unknown }
+    let status: Backend.Status?
+    var probe: StatusProbe?
 }
 
 extension Connection {
     init(backend: Backend) {
         self.id = backend.id
         self.name = backend.displayName
-        self.status = .unknown
+        self.status = nil
         self.probe = backend.probeStatus
     }
 
     func refreshingStatus() async -> Connection {
-        Connection(id: id, name: name, status: await probe(), probe: probe)
+        Connection(id: id, name: name, status: await probe?(), probe: probe)
     }
 }
 
@@ -50,7 +50,7 @@ extension Connection: Fixture {
     static var samples: [Connection] {
         [
             Connection(id: "https://api.scout.app", name: "Production", status: .reachable, probe: { .reachable }),
-            Connection(id: "https://staging.scout.app", name: "Staging", status: .unknown, probe: { .unknown }),
+            Connection(id: "https://staging.scout.app", name: "Staging", status: nil),
             Connection(id: "http://localhost:8080", name: "Local", status: .unreachable, probe: { .unreachable }),
         ]
     }

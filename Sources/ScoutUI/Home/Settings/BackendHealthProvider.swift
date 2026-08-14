@@ -24,8 +24,10 @@ final class BackendHealthProvider: ObservableObject {
     func refreshAll() async {
         await withTaskGroup(of: ProbeResult.self) { group in
             for health in backends {
+                guard let probe = health.probe else {
+                    continue
+                }
                 let id = health.id
-                let probe = health.probe
                 group.addTask {
                     await Self.measure(id: id, probe: probe)
                 }
@@ -49,7 +51,7 @@ final class BackendHealthProvider: ObservableObject {
         let latency: Int?
     }
 
-    private static func measure(id: String, probe: @Sendable () async -> Backend.Status) async -> ProbeResult {
+    private static func measure(id: String, probe: StatusProbe) async -> ProbeResult {
         let clock = ContinuousClock()
         let start = clock.now
         let status = await probe()

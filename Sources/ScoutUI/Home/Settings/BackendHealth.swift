@@ -18,11 +18,11 @@ struct BackendHealth: Identifiable {
     let engine: Engine
     var hasAPIKey = false
     var isSecure = true
-    var status: Backend.Status = .unknown
+    var status: Backend.Status?
     var latency: Int? = nil
     var lastChecked: Date? = nil
     var pings: [Int] = []
-    var probe: @Sendable () async -> Backend.Status = { .unknown }
+    var probe: StatusProbe?
 
     enum Engine {
         case cloudKit
@@ -97,7 +97,7 @@ extension BackendHealth.Engine {
     }
 }
 
-extension Backend.Status {
+extension Backend.Status? {
     var healthLabel: String {
         switch self {
         case .reachable:
@@ -106,7 +106,7 @@ extension Backend.Status {
             "Read-Only"
         case .unreachable, .failed:
             "Unreachable"
-        case .unknown:
+        case nil:
             "Checking"
         }
     }
@@ -119,7 +119,7 @@ extension Backend.Status {
             .orange
         case .unreachable, .failed:
             .red
-        case .unknown:
+        case nil:
             .gray
         }
     }
@@ -132,7 +132,7 @@ extension Backend.Status {
             "exclamationmark.triangle.fill"
         case .unreachable, .failed:
             "xmark.octagon.fill"
-        case .unknown:
+        case nil:
             "questionmark.circle.fill"
         }
     }
@@ -192,9 +192,7 @@ extension BackendHealth: Fixture {
                 id: "https://staging.scout.app",
                 name: "Staging",
                 endpoint: "staging.scout.app",
-                engine: .server,
-                status: .unknown,
-                probe: { .unknown }
+                engine: .server
             ),
             BackendHealth(
                 id: "http://localhost:8080",

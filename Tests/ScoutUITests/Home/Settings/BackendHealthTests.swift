@@ -25,7 +25,7 @@ struct BackendHealthTests {
         #expect(health.endpoint == "localhost:8080")
         #expect(health.hasAPIKey)
         #expect(!health.isSecure)
-        #expect(health.status == .unknown)
+        #expect(health.status == nil)
         #expect(health.pings.count == 0)
     }
 
@@ -90,9 +90,7 @@ struct BackendHealthTests {
     }
 }
 
-typealias StatusProbe = @Sendable () async -> Backend.Status
-
-func makeHealth(id: String = "backend", status: Backend.Status = .unknown, probe: @escaping StatusProbe = { .unknown })
+func makeHealth(id: String = "backend", status: Backend.Status? = nil, probe: StatusProbe? = nil)
     -> BackendHealth
 {
     BackendHealth(id: id, name: id, endpoint: id, engine: .server, status: status, probe: probe)
