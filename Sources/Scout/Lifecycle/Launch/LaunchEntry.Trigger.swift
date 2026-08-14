@@ -13,21 +13,9 @@ extension LaunchEntry {
         let installID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let existing = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
-            let launch = existing ?? context.insert(LaunchEntry.self)
-
-            if existing == nil {
-                launch.launchID = launchID
-                launch.date = Date()
+            try context.upsert(LaunchEntry.self, key: "launchID", id: launchID) { launch in
+                launch.install = try context.existing(InstallEntry.self, key: "installID", id: installID)
             }
-
-            launch.install = try context.existing(InstallEntry.self, key: "installID", id: installID)
-
-            if launch.hasChanges {
-                launch.requeue()
-            }
-
-            try context.save()
         }
     }
 }

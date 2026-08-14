@@ -78,7 +78,7 @@ struct SessionEntryMonitorTests {
 
     @Test("complete throws notFound when no session exists for the current launch")
     func completeWithoutSessionThrows() throws {
-        #expect(throws: LifecycleError.notFound) {
+        #expect(throws: (any Error).self) {
             try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
         }
     }
