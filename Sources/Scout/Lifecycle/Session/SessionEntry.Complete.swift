@@ -18,7 +18,7 @@ extension SessionEntry {
             request.fetchLimit = 1
 
             guard let session = try context.fetch(request).first else {
-                throw LifecycleError.notFound
+                throw LifecycleError()
             }
 
             if session.endDate == nil {
@@ -28,4 +28,8 @@ extension SessionEntry {
             }
         }
     }
+}
+
+private struct LifecycleError: LocalizedError {
+    let errorDescription: String? = "LifecycleError not found in the context"
 }

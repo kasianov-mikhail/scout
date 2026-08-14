@@ -13,24 +13,10 @@ extension InstallEntry {
         let deviceID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let existing = try context.existing(InstallEntry.self, key: "installID", id: installID)
-            let install = existing ?? context.insert(InstallEntry.self)
-
-            if existing == nil {
-                install.installID = installID
-                install.date = Date()
-            }
-
-            if install.device == nil {
-                install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
-            }
-
-            if install.hasChanges {
-                install.requeue()
-            }
-
-            if context.hasChanges {
-                try context.save()
+            try context.upsert(InstallEntry.self, key: "installID", id: installID) { install in
+                if install.device == nil {
+                    install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
+                }
             }
         }
     }

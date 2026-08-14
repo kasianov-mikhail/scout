@@ -14,28 +14,14 @@ extension SessionEntry {
         var bundle: Bundle = .main
 
         func execute(in context: NSManagedObjectContext) throws {
-            let sessionID = session.current
-
-            let existing = try context.existing(SessionEntry.self, key: "sessionID", id: sessionID)
-            let object = existing ?? context.insert(SessionEntry.self)
-
-            if existing == nil {
-                object.sessionID = sessionID
-                object.date = Date()
+            try context.upsert(SessionEntry.self, key: "sessionID", id: session.current) { object in
+                object.launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
+                object.appVersion = bundle.marketingVersion
+                object.buildNumber = bundle.buildNumber
+                object.osVersion = SystemInfo.osVersion
+                object.locale = SystemInfo.locale
+                object.channel = SystemInfo.channel
             }
-
-            object.launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
-            object.appVersion = bundle.marketingVersion
-            object.buildNumber = bundle.buildNumber
-            object.osVersion = SystemInfo.osVersion
-            object.locale = SystemInfo.locale
-            object.channel = SystemInfo.channel
-
-            if object.hasChanges {
-                object.requeue()
-            }
-
-            try context.save()
         }
     }
 }

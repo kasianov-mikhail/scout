@@ -50,6 +50,22 @@ extension NSManagedObjectContext {
         )
     }
 
+    func upsert<T: SyncableEntry>(_ type: T.Type, key: String, id: UUID, update: (T) throws -> Void) throws {
+        let object = try fetchOrCreate(type, key: key, id: id) {
+            $0.setValue(id, forKey: key)
+            $0.date = Date()
+        }
+
+        try update(object)
+
+        if object.hasChanges {
+            object.requeue()
+        }
+        if hasChanges {
+            try save()
+        }
+    }
+
     private func fetchOrCreate<T: NSManagedObject>(_ type: T.Type, key: String, id: UUID, configure: (T) -> Void) throws
         -> T
     {
