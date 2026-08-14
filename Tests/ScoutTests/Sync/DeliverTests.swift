@@ -51,6 +51,26 @@ struct DeliverTests {
         try await RecordSender(backend: backend).deliver(type: type, in: context)
     }
 
+    /// End a session and requeue it on a private-queue sibling, the way the real
+    /// end-of-session write lands on a background context rather than on the one
+    /// the delivery engine holds.
+    ///
+    /// The work stays synchronous on purpose: before the iOS 26 SDK, `perform` is
+    /// a plain nonisolated `async` method, so awaiting it from this main-actor
+    /// suite sends the context and the closure across isolation and fails to
+    /// compile there.
+    ///
+    func endSessionInBackground(_ sessionID: NSManagedObjectID) throws {
+        let background = context.backgroundSibling()
+
+        try background.performAndWait {
+            let session = try #require(background.object(with: sessionID) as? SessionEntry)
+            session.endDate = Date()
+            session.requeue()
+            try background.save()
+        }
+    }
+
     @Test("Events go raw to every backend")
     func eventsFanOut() async throws {
         EventEntry.stub(name: "login", in: context)
@@ -333,18 +353,12 @@ struct DeliverTests {
         try context.save()
         try SyncableEntry.plan(backends: [cloudBackend], in: context)
 
-        let background = context.backgroundSibling()
         let sessionID = session.objectID
 
         // The session ends mid-send the way it really does — on a background
         // context, not the one the delivery engine holds.
-        cloud.beforeWrite = {
-            try? await background.perform {
-                let session = try #require(background.object(with: sessionID) as? SessionEntry)
-                session.endDate = Date()
-                session.requeue()
-                try background.save()
-            }
+        cloud.beforeWrite = { @MainActor in
+            try? self.endSessionInBackground(sessionID)
         }
 
         try await deliver(SessionEntry.self, to: cloudBackend)
@@ -372,17 +386,9 @@ struct DeliverTests {
         try await deliver(SessionEntry.self, to: cloudBackend)
         #expect(session.delivery(for: "cloud")?.isDelivered == true)
 
-        let background = context.backgroundSibling()
-        let sessionID = session.objectID
-
         // The session completes on a background context once the row is already
         // delivered, so only the requeue can bring it back.
-        try await background.perform {
-            let session = try #require(background.object(with: sessionID) as? SessionEntry)
-            session.endDate = Date()
-            session.requeue()
-            try background.save()
-        }
+        try endSessionInBackground(session.objectID)
 
         try await deliver(SessionEntry.self, to: cloudBackend)
 
