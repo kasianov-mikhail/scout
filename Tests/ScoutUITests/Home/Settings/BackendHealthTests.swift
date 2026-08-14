@@ -21,10 +21,14 @@ struct BackendHealthTests {
         let backend = Backend.server(url: URL(string: "http://localhost:8080")!, apiKey: "secret")
         let health = BackendHealth(backend: backend)
 
-        #expect(health.engine == .server)
+        guard case let .server(info) = health.engine else {
+            Issue.record("Expected a server engine")
+            return
+        }
+
         #expect(health.endpoint == "localhost:8080")
-        #expect(health.hasAPIKey)
-        #expect(!health.isSecure)
+        #expect(info.hasAPIKey)
+        #expect(!info.isSecure)
         #expect(health.status == nil)
         #expect(health.pings.count == 0)
     }
@@ -34,8 +38,13 @@ struct BackendHealthTests {
         let backend = Backend.server(url: URL(string: "https://api.scout.app")!, apiKey: nil)
         let health = BackendHealth(backend: backend)
 
-        #expect(health.isSecure)
-        #expect(!health.hasAPIKey)
+        guard case let .server(info) = health.engine else {
+            Issue.record("Expected a server engine")
+            return
+        }
+
+        #expect(info.isSecure)
+        #expect(!info.hasAPIKey)
         #expect(health.endpoint == "api.scout.app")
     }
 
@@ -43,7 +52,7 @@ struct BackendHealthTests {
     func mapsCloudKitBackend() {
         let health = BackendHealth(backend: makeBackend(id: "iCloud.com.example"))
 
-        #expect(health.engine == .cloudKit)
+        #expect(health.engine.label == "CloudKit")
         #expect(health.endpoint == "iCloud.com.example")
     }
 
@@ -93,5 +102,5 @@ struct BackendHealthTests {
 func makeHealth(id: String = "backend", status: Backend.Status? = nil, probe: StatusProbe? = nil)
     -> BackendHealth
 {
-    BackendHealth(id: id, name: id, endpoint: id, engine: .server, status: status, probe: probe)
+    BackendHealth(id: id, name: id, engine: .local, status: status, probe: probe)
 }
