@@ -31,14 +31,6 @@ public struct Runtime: Sendable {
     let backends: [Backend]
     let identity: Identity
     let sync: Synchronize
-
-    var session: Protected<UUID> {
-        identity.session
-    }
-
-    var isEnabled: Bool {
-        backends.count > 0
-    }
 }
 
 extension Runtime {
@@ -74,7 +66,7 @@ extension Runtime {
             sync: { try await synchronize(backends: backends, dispatcher: dispatcher) }
         )
 
-        guard isEnabled else {
+        guard backends.count > 0 else {
             return
         }
 

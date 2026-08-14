@@ -14,7 +14,7 @@ extension TelemetryPersisting {
     }
 
     func logMetrics(category: String, value: some MetricScalar) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
@@ -27,7 +27,7 @@ extension TelemetryPersisting {
     }
 
     func logTimer(seconds: TimeInterval) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
@@ -49,7 +49,7 @@ extension TelemetryPersisting {
     }
 
     func logRecorder(value: Double) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
