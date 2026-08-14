@@ -26,7 +26,8 @@ struct DeliverTests {
             id: "cloud",
             database: cloud,
             checkAvailability: { true },
-            displayName: "cloud"
+            displayName: "cloud",
+            engine: .cloudKit
         )
     }
 
@@ -35,7 +36,8 @@ struct DeliverTests {
             id: "server",
             database: server,
             checkAvailability: { true },
-            displayName: "server"
+            displayName: "server",
+            engine: .cloudKit
         )
     }
 
@@ -173,7 +175,8 @@ struct DeliverTests {
             id: "server",
             database: server,
             checkAvailability: { false },
-            displayName: "server"
+            displayName: "server",
+            engine: .cloudKit
         )
 
         // Many sync passes fire while the backend is unreachable...
@@ -203,6 +206,7 @@ struct DeliverTests {
             database: server,
             checkAvailability: { true },
             displayName: "server",
+            engine: .cloudKit,
             isTransientError: { $0 is URLError }
         )
 

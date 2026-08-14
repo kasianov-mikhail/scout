@@ -7,48 +7,43 @@
 
 import Foundation
 
-package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
-
 public struct Backend: Sendable {
     package let id: String
     package let database: any Database
     package let checkAvailability: @Sendable () async -> Bool
     package let displayName: String
-
-    package var engine: Engine = .cloudKit
-    package var serverInfo: ServerInfo? = nil
-    package var probeStatus: @Sendable () async -> Status = { .unknown }
-    package var accountWarning: AccountWarning = { nil }
-    package var isTransientError: @Sendable (any Error) -> Bool = { _ in false }
-    package var onSetup: @MainActor @Sendable () -> Void = {}
+    package let engine: Engine
+    package let probeStatus: @Sendable () async -> Status
+    package let accountWarning: AccountWarning
+    package let isTransientError: @Sendable (any Error) -> Bool
 
     package init(
         id: String,
         database: any Database,
         checkAvailability: @escaping @Sendable () async -> Bool,
         displayName: String,
-        engine: Engine = .cloudKit,
-        serverInfo: ServerInfo? = nil,
+        engine: Engine,
         probeStatus: @escaping @Sendable () async -> Status = { .unknown },
         accountWarning: @escaping AccountWarning = { nil },
-        isTransientError: @escaping @Sendable (any Error) -> Bool = { _ in false },
-        onSetup: @escaping @MainActor @Sendable () -> Void = {}
+        isTransientError: @escaping @Sendable (any Error) -> Bool = { _ in false }
     ) {
         self.id = id
         self.database = database
         self.checkAvailability = checkAvailability
         self.displayName = displayName
         self.engine = engine
-        self.serverInfo = serverInfo
         self.probeStatus = probeStatus
         self.accountWarning = accountWarning
         self.isTransientError = isTransientError
-        self.onSetup = onSetup
     }
+}
 
+package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
+
+extension Backend {
     package enum Engine: Sendable {
         case cloudKit
-        case server
+        case server(ServerInfo)
         case local
     }
 
@@ -65,18 +60,6 @@ public struct Backend: Sendable {
         case restricted
         case couldNotDetermine
         case temporarilyUnavailable
-    }
-
-    package struct ServerInfo: Sendable {
-        package let endpoint: String
-        package let hasAPIKey: Bool
-        package let isSecure: Bool
-
-        package init(endpoint: String, hasAPIKey: Bool, isSecure: Bool) {
-            self.endpoint = endpoint
-            self.hasAPIKey = hasAPIKey
-            self.isSecure = isSecure
-        }
     }
 }
 
