@@ -16,7 +16,7 @@ extension Backend {
             checkAvailability: { true },
             displayName: url.host ?? url.absoluteString,
             engine: .server(
-                ServerInfo(
+                .init(
                     endpoint: url.hostWithPort ?? url.absoluteString,
                     hasAPIKey: apiKey != nil,
                     isSecure: url.scheme?.lowercased() == "https"

@@ -5,6 +5,10 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+package typealias StatusProbe = @Sendable () async -> Backend.Status
+
+package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
+
 public struct Backend: Sendable {
     package let id: String
     package let database: any Database
@@ -16,8 +20,7 @@ public struct Backend: Sendable {
 
     package init(
         id: String, database: any Database, checkAvailability: @escaping @Sendable () async -> Bool,
-        displayName: String, engine: Engine, probeStatus: StatusProbe? = nil,
-        accountWarning: AccountWarning? = nil
+        displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, accountWarning: AccountWarning? = nil
     ) {
         self.id = id
         self.database = database
@@ -26,42 +29,5 @@ public struct Backend: Sendable {
         self.engine = engine
         self.probeStatus = probeStatus
         self.accountWarning = accountWarning
-    }
-
-    package enum Engine: Sendable {
-        case cloudKit
-        case server(ServerInfo)
-        case local
-    }
-}
-
-package typealias StatusProbe = @Sendable () async -> Backend.Status
-
-extension Backend {
-    package enum Status: Sendable, Equatable {
-        case reachable
-        case readOnly
-        case unreachable
-        case failed(any Error & Sendable)
-
-        static package func == (lhs: Self, rhs: Self) -> Bool {
-            switch (lhs, rhs) {
-            case (.reachable, .reachable), (.readOnly, .readOnly), (.unreachable, .unreachable):
-                true
-            default:
-                false
-            }
-        }
-    }
-}
-
-package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
-
-extension Backend {
-    package enum AccountStatus: Sendable {
-        case noAccount
-        case restricted
-        case couldNotDetermine
-        case temporarilyUnavailable
     }
 }
