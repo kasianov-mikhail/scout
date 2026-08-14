@@ -201,21 +201,12 @@ struct DeliverTests {
         try context.save()
         try SyncableEntry.plan(backends: [serverBackend], in: context)
 
-        let flakyServer = Backend(
-            id: "server",
-            database: server,
-            checkAvailability: { true },
-            displayName: "server",
-            engine: .cloudKit,
-            isTransientError: { $0 is URLError }
-        )
-
         // The availability check passes, but every real send fails on connectivity
         // for far longer than the attempt budget would allow...
         for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
-            server.writeErrors.append(URLError(.notConnectedToInternet))
+            server.writeErrors.append(TransientTestError())
             await #expect(throws: (any Error).self) {
-                try await deliver(EventEntry.self, to: flakyServer)
+                try await deliver(EventEntry.self, to: serverBackend)
             }
         }
 
@@ -225,7 +216,7 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 0)
 
         // Connectivity returns and the record delivers on the first real send.
-        try await deliver(EventEntry.self, to: flakyServer)
+        try await deliver(EventEntry.self, to: serverBackend)
         #expect(event.delivery(for: "server")?.isDelivered == true)
         #expect(server.records.count(of: "Event") == 1)
     }
@@ -312,7 +303,7 @@ struct DeliverTests {
 
         // Singling out the culprits costs sends, so one pass is capped instead of
         // fanning a backlog out into a request per record...
-        #expect(server.writeCount <= RecordSender.maxProbes)
+        #expect(server.writeCount <= 32)
         #expect(server.records.count(of: "Event") == 0)
 
         // ...while still making progress: whatever it did single out is charged.

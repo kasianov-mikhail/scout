@@ -45,14 +45,7 @@ extension DatabaseReader {
     }
 }
 
-extension DatabaseWriter {
-    // Records are written in batches no larger than this; the backends cap a single
-    // save/modify request at 400 records.
-    package static var maxBatchSize: Int { 400 }
-}
-
 package struct RecordNotFoundError: LocalizedError {
     package let errorDescription: String? = "No record found for the requested identifier"
-
     package init() {}
 }

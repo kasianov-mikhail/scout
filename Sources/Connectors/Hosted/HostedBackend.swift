@@ -29,9 +29,6 @@ extension Backend {
                 } catch {
                     return .failed(error)
                 }
-            },
-            isTransientError: { error in
-                error is URLError || (error as? HTTPDatabaseError)?.isTransient == true
             }
         )
     }

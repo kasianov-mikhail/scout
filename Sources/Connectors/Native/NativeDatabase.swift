@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CloudKit
 import Foundation
 import Scout
 import ScoutDB
@@ -133,5 +134,17 @@ extension NativeDatabase {
             in: range,
             asOf: Date()
         )
+    }
+}
+
+extension CKError: TransientFailure {
+    package var isTransient: Bool {
+        switch code {
+        case .networkUnavailable, .networkFailure, .serviceUnavailable, .requestRateLimited, .zoneBusy,
+            .accountTemporarilyUnavailable, .operationCancelled:
+            true
+        default:
+            retryAfterSeconds != nil
+        }
     }
 }

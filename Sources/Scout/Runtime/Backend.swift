@@ -5,8 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
-
 public struct Backend: Sendable {
     package let id: String
     package let database: any Database
@@ -15,17 +13,11 @@ public struct Backend: Sendable {
     package let engine: Engine
     package let probeStatus: @Sendable () async -> Status
     package let accountWarning: AccountWarning
-    package let isTransientError: @Sendable (any Error) -> Bool
 
     package init(
-        id: String,
-        database: any Database,
-        checkAvailability: @escaping @Sendable () async -> Bool,
-        displayName: String,
-        engine: Engine,
-        probeStatus: @escaping @Sendable () async -> Status = { .unknown },
-        accountWarning: @escaping AccountWarning = { nil },
-        isTransientError: @escaping @Sendable (any Error) -> Bool = { _ in false }
+        id: String, database: any Database, checkAvailability: @escaping @Sendable () async -> Bool,
+        displayName: String, engine: Engine, probeStatus: @escaping @Sendable () async -> Status = { .unknown },
+        accountWarning: @escaping AccountWarning = { nil }
     ) {
         self.id = id
         self.database = database
@@ -34,7 +26,6 @@ public struct Backend: Sendable {
         self.engine = engine
         self.probeStatus = probeStatus
         self.accountWarning = accountWarning
-        self.isTransientError = isTransientError
     }
 }
 
@@ -68,8 +59,6 @@ extension Backend.Status: Equatable {
         switch (lhs, rhs) {
         case (.reachable, .reachable), (.readOnly, .readOnly), (.unreachable, .unreachable), (.unknown, .unknown):
             true
-        case let (.failed(lhsError), .failed(rhsError)):
-            lhsError as NSError == rhsError as NSError
         default:
             false
         }
