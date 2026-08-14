@@ -14,39 +14,29 @@ struct BackendHealth: Identifiable {
 
     let id: String
     let name: String
-    let endpoint: String
-    let engine: Engine
-    var hasAPIKey = false
-    var isSecure = true
+    let engine: Backend.Engine
     var status: Backend.Status?
     var latency: Int? = nil
     var lastChecked: Date? = nil
     var pings: [Int] = []
     var probe: StatusProbe?
-
-    enum Engine {
-        case cloudKit
-        case server
-        case local
-    }
 }
 
 extension BackendHealth {
     init(backend: Backend) {
-        var info: Backend.Engine.ServerInfo?
-        if case let .server(server) = backend.engine {
-            info = server
-        }
-
         self.init(
             id: backend.id,
             name: backend.displayName,
-            endpoint: info?.endpoint ?? backend.id,
-            engine: .init(backend.engine),
-            hasAPIKey: info?.hasAPIKey ?? false,
-            isSecure: info?.isSecure ?? true,
+            engine: backend.engine,
             probe: backend.probeStatus
         )
+    }
+
+    var endpoint: String {
+        guard case let .server(info) = engine else {
+            return id
+        }
+        return info.endpoint
     }
 
     func recording(status: Backend.Status, latency: Int?, at date: Date) -> BackendHealth {
@@ -62,18 +52,7 @@ extension BackendHealth {
     }
 }
 
-extension BackendHealth.Engine {
-    init(_ engine: Backend.Engine) {
-        switch engine {
-        case .cloudKit:
-            self = .cloudKit
-        case .server:
-            self = .server
-        case .local:
-            self = .local
-        }
-    }
-
+extension Backend.Engine {
     var label: String {
         switch self {
         case .cloudKit:
@@ -82,17 +61,6 @@ extension BackendHealth.Engine {
             "Scout Server"
         case .local:
             "On Device"
-        }
-    }
-
-    var icon: String {
-        switch self {
-        case .cloudKit:
-            "icloud"
-        case .server:
-            "server.rack"
-        case .local:
-            "internaldrive"
         }
     }
 }
@@ -162,9 +130,9 @@ extension BackendHealth: Fixture {
             BackendHealth(
                 id: "https://api.scout.app",
                 name: "Production",
-                endpoint: "api.scout.app",
-                engine: .server,
-                hasAPIKey: true,
+                engine: .server(
+                    .init(endpoint: "api.scout.app", hasAPIKey: true, isSecure: true)
+                ),
                 status: .reachable,
                 latency: 148,
                 lastChecked: Date(timeIntervalSinceNow: -12),
@@ -177,7 +145,6 @@ extension BackendHealth: Fixture {
             BackendHealth(
                 id: "iCloud.com.example.scout",
                 name: "iCloud",
-                endpoint: "iCloud.com.example.scout",
                 engine: .cloudKit,
                 status: .reachable,
                 latency: 264,
@@ -191,15 +158,16 @@ extension BackendHealth: Fixture {
             BackendHealth(
                 id: "https://staging.scout.app",
                 name: "Staging",
-                endpoint: "staging.scout.app",
-                engine: .server
+                engine: .server(
+                    .init(endpoint: "staging.scout.app", hasAPIKey: false, isSecure: true)
+                )
             ),
             BackendHealth(
                 id: "http://localhost:8080",
                 name: "Local",
-                endpoint: "localhost:8080",
-                engine: .server,
-                isSecure: false,
+                engine: .server(
+                    .init(endpoint: "localhost:8080", hasAPIKey: false, isSecure: false)
+                ),
                 status: .unreachable,
                 lastChecked: Date(timeIntervalSinceNow: -340),
                 probe: { .unreachable }
