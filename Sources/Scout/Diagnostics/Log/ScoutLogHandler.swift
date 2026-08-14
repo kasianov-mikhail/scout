@@ -53,7 +53,7 @@ public struct ScoutLogHandler: LogHandler {
     }
 
     public func log(event: LogEvent) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
