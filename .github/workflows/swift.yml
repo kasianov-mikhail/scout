@@ -79,15 +79,10 @@ jobs:
         with:
           filter: blob:none
 
-      - name: Narrow the iOS matrix
+      - name: Read the iOS matrix
         id: legs
-        # Temporarily narrowed to iOS 26 Debug; drop the arguments to restore the full matrix from
-        # .github/matrix/ios.json. Until then that full matrix keeps running nightly in
-        # .github/workflows/nightly.yml, which reports when every leg is green again.
-        # Optimized builds specialize generics and fold key paths, so SwiftData predicate traps and
-        # other release-only failures never show up in a Debug-only run.
         run: |
-          legs="$(.github/scripts/ios-matrix.sh --ios 26 --configuration Debug)"
+          legs="$(.github/scripts/ios-matrix.sh)"
           echo "$legs"
           echo "legs=$legs" >> "$GITHUB_OUTPUT"
 
