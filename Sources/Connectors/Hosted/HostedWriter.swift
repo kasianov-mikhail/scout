@@ -14,7 +14,7 @@ extension HTTPDatabase: DatabaseWriter {
     }
 
     func write(records: [Record]) async throws {
-        for chunk in records.chunked(into: Self.maxBatchSize) {
+        for chunk in records.chunked(into: 400) {
             let request = HTTPWriteRequest(records: chunk.map(HTTPRecord.init))
             try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
         }

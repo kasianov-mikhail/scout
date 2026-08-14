@@ -67,9 +67,6 @@ extension Backend {
                 @unknown default:
                     .couldNotDetermine
                 }
-            },
-            isTransientError: { error in
-                (error as? CKError)?.isTransient == true
             }
         )
     }
@@ -83,18 +80,6 @@ extension CKContainer {
         try await CatalogEntry.publishAll(into: store, registry: registry)
 
         return store
-    }
-}
-
-extension CKError {
-    var isTransient: Bool {
-        switch code {
-        case .networkUnavailable, .networkFailure, .serviceUnavailable, .requestRateLimited, .zoneBusy,
-            .accountTemporarilyUnavailable, .operationCancelled:
-            true
-        default:
-            retryAfterSeconds != nil
-        }
     }
 }
 

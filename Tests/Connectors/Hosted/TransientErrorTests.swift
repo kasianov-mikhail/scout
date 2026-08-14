@@ -13,26 +13,24 @@ import Testing
 
 @Suite("Hosted transient error classification")
 struct TransientErrorTests {
-    let backend = Backend.server(url: URL(string: "https://example.com")!, apiKey: nil)
-
     @Test("Connectivity failures are transient")
     func urlErrorsAreTransient() {
-        #expect(backend.isTransientError(URLError(.notConnectedToInternet)))
-        #expect(backend.isTransientError(URLError(.timedOut)))
-        #expect(backend.isTransientError(URLError(.networkConnectionLost)))
+        #expect(URLError(.notConnectedToInternet).isTransient)
+        #expect(URLError(.timedOut).isTransient)
+        #expect(URLError(.networkConnectionLost).isTransient)
     }
 
     @Test("Server-side outages and throttling are transient")
     func serverOutagesAreTransient() {
-        #expect(backend.isTransientError(HTTPDatabaseError(status: 500, reason: nil)))
-        #expect(backend.isTransientError(HTTPDatabaseError(status: 503, reason: nil)))
-        #expect(backend.isTransientError(HTTPDatabaseError(status: 429, reason: nil)))
+        #expect(HTTPDatabaseError(status: 500, reason: nil).isTransient)
+        #expect(HTTPDatabaseError(status: 503, reason: nil).isTransient)
+        #expect(HTTPDatabaseError(status: 429, reason: nil).isTransient)
     }
 
     @Test("Rejections count against the attempt budget")
     func rejectionsAreNotTransient() {
-        #expect(!backend.isTransientError(HTTPDatabaseError(status: 400, reason: "bad record")))
-        #expect(!backend.isTransientError(HTTPDatabaseError(status: 422, reason: nil)))
-        #expect(!backend.isTransientError(NSError(domain: "Test", code: 1)))
+        #expect(!HTTPDatabaseError(status: 400, reason: "bad record").isTransient)
+        #expect(!HTTPDatabaseError(status: 422, reason: nil).isTransient)
+        #expect(!((NSError(domain: "Test", code: 1) as any Error) is any TransientFailure))
     }
 }
