@@ -11,13 +11,13 @@ public struct Backend: Sendable {
     package let checkAvailability: @Sendable () async -> Bool
     package let displayName: String
     package let engine: Engine
-    package let probeStatus: @Sendable () async -> Status
-    package let accountWarning: AccountWarning
+    package let probeStatus: StatusProbe?
+    package let accountWarning: AccountWarning?
 
     package init(
         id: String, database: any Database, checkAvailability: @escaping @Sendable () async -> Bool,
-        displayName: String, engine: Engine, probeStatus: @escaping @Sendable () async -> Status = { .unknown },
-        accountWarning: @escaping AccountWarning = { nil }
+        displayName: String, engine: Engine, probeStatus: StatusProbe? = nil,
+        accountWarning: AccountWarning? = nil
     ) {
         self.id = id
         self.database = database
@@ -27,40 +27,41 @@ public struct Backend: Sendable {
         self.probeStatus = probeStatus
         self.accountWarning = accountWarning
     }
-}
 
-package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
-
-extension Backend {
     package enum Engine: Sendable {
         case cloudKit
         case server(ServerInfo)
         case local
     }
+}
 
-    package enum Status: Sendable {
+package typealias StatusProbe = @Sendable () async -> Backend.Status
+
+extension Backend {
+    package enum Status: Sendable, Equatable {
         case reachable
         case readOnly
         case unreachable
         case failed(any Error & Sendable)
-        case unknown
-    }
 
+        static package func == (lhs: Self, rhs: Self) -> Bool {
+            switch (lhs, rhs) {
+            case (.reachable, .reachable), (.readOnly, .readOnly), (.unreachable, .unreachable):
+                true
+            default:
+                false
+            }
+        }
+    }
+}
+
+package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
+
+extension Backend {
     package enum AccountStatus: Sendable {
         case noAccount
         case restricted
         case couldNotDetermine
         case temporarilyUnavailable
-    }
-}
-
-extension Backend.Status: Equatable {
-    static package func == (lhs: Self, rhs: Self) -> Bool {
-        switch (lhs, rhs) {
-        case (.reachable, .reachable), (.readOnly, .readOnly), (.unreachable, .unreachable), (.unknown, .unknown):
-            true
-        default:
-            false
-        }
     }
 }
