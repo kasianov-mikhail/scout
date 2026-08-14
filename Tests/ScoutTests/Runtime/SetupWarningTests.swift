@@ -13,7 +13,7 @@ import Testing
 struct SetupWarningTests {
     @Test("An API key over plain HTTP is called out")
     func plainHTTPWithKeyWarns() throws {
-        let info = Backend.ServerInfo(endpoint: "localhost:8080", hasAPIKey: true, isSecure: false)
+        let info = Backend.Engine.ServerInfo(endpoint: "localhost:8080", hasAPIKey: true, isSecure: false)
         let warning = try #require(info.setupWarning)
 
         #expect(warning.contains("localhost:8080"))
@@ -21,14 +21,14 @@ struct SetupWarningTests {
 
     @Test("HTTPS carries the key safely")
     func secureTransportIsSilent() {
-        let info = Backend.ServerInfo(endpoint: "api.scout.app", hasAPIKey: true, isSecure: true)
+        let info = Backend.Engine.ServerInfo(endpoint: "api.scout.app", hasAPIKey: true, isSecure: true)
 
         #expect(info.setupWarning == nil)
     }
 
     @Test("A keyless connection has nothing to leak")
     func missingKeyIsSilent() {
-        let info = Backend.ServerInfo(endpoint: "localhost:8080", hasAPIKey: false, isSecure: false)
+        let info = Backend.Engine.ServerInfo(endpoint: "localhost:8080", hasAPIKey: false, isSecure: false)
 
         #expect(info.setupWarning == nil)
     }

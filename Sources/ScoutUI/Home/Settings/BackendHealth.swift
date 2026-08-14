@@ -33,7 +33,7 @@ struct BackendHealth: Identifiable {
 
 extension BackendHealth {
     init(backend: Backend) {
-        var info: Backend.ServerInfo?
+        var info: Backend.Engine.ServerInfo?
         if case let .server(server) = backend.engine {
             info = server
         }
