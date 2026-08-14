@@ -33,7 +33,7 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
                 let recordSender = RecordSender(backend: backend)
 
                 for type in SyncableEntry.deliverableTypes {
-                    group.addTask { try? await recordSender.deliver(type: type, in: context) }
+                    group.addTask { try? await recordSender.deliver(type, in: context) }
                 }
             }
         }

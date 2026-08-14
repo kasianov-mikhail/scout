@@ -24,6 +24,10 @@ package protocol TransientFailure: Error {
 }
 
 @MainActor extension RecordSender {
+    func deliver(_ type: any (SyncableEntry & RecordEncodable).Type, in context: NSManagedObjectContext) async throws {
+        try await deliver(type: type, in: context)
+    }
+
     func deliver<T: SyncableEntry & RecordEncodable>(type: T.Type, in context: NSManagedObjectContext) async throws {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
 
