@@ -74,12 +74,12 @@ struct BackendDetailView: View {
                 }
             }
 
-            if backend.engine == .server {
+            if case let .server(info) = backend.engine {
                 Header(title: "Connection")
 
-                DetailValueRow(title: "API Key", value: backend.hasAPIKey ? "Configured" : "Not set")
+                DetailValueRow(title: "API Key", value: info.hasAPIKey ? "Configured" : "Not set")
                 DetailValueRow(title: "Timeout", value: "10 s")
-                DetailValueRow(title: "Transport", value: backend.isSecure ? "HTTPS" : "HTTP")
+                DetailValueRow(title: "Transport", value: info.isSecure ? "HTTPS" : "HTTP")
             }
 
             Header(title: "Actions")
