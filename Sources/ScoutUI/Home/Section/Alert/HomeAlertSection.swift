@@ -39,6 +39,7 @@ struct HomeAlertSection: View {
             NavigationStack {
                 AlertEditorView(provider: alerts)
             }
+            .opaquePresentation()
         }
 
         switch alerts.result {
