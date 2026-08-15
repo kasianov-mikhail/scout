@@ -20,10 +20,7 @@ package struct Hang {
     package let launchID: UUID?
     package let sessionID: UUID?
 
-    package init(
-        name: String, fingerprint: String, reason: String?, stackTrace: [String], duration: TimeInterval, date: Date?,
-        id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?
-    ) {
+    package init(name: String, fingerprint: String, reason: String?, stackTrace: [String], duration: TimeInterval, date: Date?, id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?) {
         self.name = name
         self.fingerprint = fingerprint
         self.reason = reason
