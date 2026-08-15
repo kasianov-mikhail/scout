@@ -27,44 +27,39 @@ struct ActivityView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)
-                .padding(.top)
+        ProviderView(provider: activity) { data in
+            let points = data.points(on: extent.period)
+            let segment = extent.segment(from: points)
+            let canCompare = extent.canCompare(points: points, segment: segment)
 
-            ProviderView(provider: activity) { data in
-                RangeControl(extent: $extent)
-                    .padding(.vertical)
-
-                InsetList {
-                    let points = data.points(on: extent.period)
-                    let segment = extent.segment(from: points)
-                    let canCompare = extent.canCompare(points: points, segment: segment)
-
-                    ComparableChart(
-                        segment: segment,
-                        points: points,
-                        extent: extent,
-                        color: .green,
-                        isComparing: isComparing
-                    )
+            InsetList {
+                PeriodPicker(extent: $extent, periods: ActivityPeriod.allCases)
                     .listRowSeparator(.hidden)
-                    .padding(.bottom)
 
-                    ComparisonToggle(isOn: $isComparing).disabled(!canCompare)
-                }
-                .scrollDisabled(true)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        ChartExportButton(
-                            title: "Active Users",
-                            rangeLabel: extent.domain.label(using: rangeDateFormatter)
-                        ) {
-                            ChartView(
-                                segment: extent.segment(from: data.points(on: extent.period)),
-                                timing: extent
-                            )
+                RangeControl(extent: $extent)
+                    .padding(.bottom)
+                    .listRowSeparator(.hidden)
+
+                ComparableChart(
+                    segment: segment,
+                    points: points,
+                    extent: extent,
+                    color: .green,
+                    isComparing: isComparing
+                )
+                .listRowSeparator(.hidden)
+                .padding(.bottom)
+
+                ComparisonToggle(isOn: $isComparing).disabled(!canCompare)
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    ChartExportButton(
+                        title: "Active Users",
+                        rangeLabel: extent.domain.label(using: rangeDateFormatter)
+                    ) {
+                        ChartView(segment: segment, timing: extent)
                             .foregroundStyle(.green)
-                        }
                     }
                 }
             }
