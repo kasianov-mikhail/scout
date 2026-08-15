@@ -96,4 +96,12 @@ extension RecordValue {
             nil
         }
     }
+
+    var string: String? {
+        if case .string(let value) = self { value } else { nil }
+    }
+
+    var strings: [String]? {
+        if case .strings(let value) = self { value } else { nil }
+    }
 }
