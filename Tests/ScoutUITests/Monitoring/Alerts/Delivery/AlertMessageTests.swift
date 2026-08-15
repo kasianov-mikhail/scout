@@ -93,10 +93,7 @@ struct AlertMessageTests {
         #expect(AlertMessage(status: status) == nil)
     }
 
-    private func makeStatus(
-        metric: AlertMetric, condition: AlertCondition, recent: [Double], shouldNotify: Bool = true,
-        notifies: Bool = true
-    ) -> AlertStatus {
+    private func makeStatus(metric: AlertMetric, condition: AlertCondition, recent: [Double], shouldNotify: Bool = true, notifies: Bool = true) -> AlertStatus {
         AlertStatus(
             rule: AlertRule(metric: metric, condition: condition, notifies: notifies),
             outcome: AlertOutcome(state: .firing(since: Date(timeIntervalSince1970: 0)), shouldNotify: shouldNotify),

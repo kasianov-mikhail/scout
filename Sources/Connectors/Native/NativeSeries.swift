@@ -57,9 +57,7 @@ struct NativeSeries {
             .sorted { ($0.name, $0.category ?? "", $0.version ?? "") < ($1.name, $1.category ?? "", $1.version ?? "") }
     }
 
-    private func collectLast(entity: String, store: EntityStore, value: (Double) -> MetricValue) async throws
-        -> [MetricSeries]
-    {
+    private func collectLast(entity: String, store: EntityStore, value: (Double) -> MetricValue) async throws -> [MetricSeries] {
         let records = try await store.records(entity: entity, dateField: "date", in: window)
 
         var latest: [GroupKey: [Date: (date: Date, sample: Double)]] = [:]
@@ -169,9 +167,7 @@ struct NativeSeries {
         }
     }
 
-    private func collectEvents(name: String?, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
-        async throws
-    {
+    private func collectEvents(name: String?, into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
         let points = try await store.query(EventEntry.recordType)
             .series(metric: .sum, group: "name", in: window)
 
@@ -180,9 +176,7 @@ struct NativeSeries {
         }
     }
 
-    private func collectMetrics(entity: String, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
-        async throws
-    {
+    private func collectMetrics(entity: String, into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
         let points = try await store.query(entity)
             .series("value", metric: .sum, group: EntityCatalog.metricSeriesKey, in: window)
 
@@ -213,9 +207,7 @@ struct NativeSeries {
         case sessions, crashes, hangs, installs, firstCrashes
     }
 
-    private func collectCounts(of source: Source, into totals: inout [GroupKey: [Date: Double]], store: EntityStore)
-        async throws
-    {
+    private func collectCounts(of source: Source, into totals: inout [GroupKey: [Date: Double]], store: EntityStore) async throws {
         let (entity, dateField, name) = Self.layout(of: source)
         let records = try await store.records(entity: entity, dateField: dateField, in: window)
 
@@ -265,10 +257,7 @@ struct NativeSeries {
         }
     }
 
-    private func add(
-        _ value: Double, name: String, category: String?, version: String?, date: Date,
-        to totals: inout [GroupKey: [Date: Double]]
-    ) {
+    private func add(_ value: Double, name: String, category: String?, version: String?, date: Date, to totals: inout [GroupKey: [Date: Double]]) {
         let key = GroupKey(name: name, category: category, version: version)
         totals[key, default: [:]][bucketStart(of: date), default: 0] += value
     }

@@ -11,13 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Session {
-    @discardableResult static func stub(
-        sessionID: UUID = UUID(),
-        launchID: UUID? = nil,
-        installID: UUID? = nil,
-        startDate: Date? = Date(),
-        endDate: Date? = nil
-    ) -> Session {
+    @discardableResult static func stub(sessionID: UUID = UUID(), launchID: UUID? = nil, installID: UUID? = nil, startDate: Date? = Date(), endDate: Date? = nil) -> Session {
         Session(
             startDate: startDate,
             endDate: endDate,

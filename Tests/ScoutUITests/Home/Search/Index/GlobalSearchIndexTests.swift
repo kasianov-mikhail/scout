@@ -12,10 +12,7 @@ import Testing
 @testable import ScoutUI
 
 struct GlobalSearchIndexTests {
-    private func makeIndex(
-        series: [MetricSeries] = [], devices: [DeviceSummary] = [], releases: [ReleaseHealth] = [],
-        crashes: [IncidentGroup<Crash>] = [], hangs: [IncidentGroup<Hang>] = []
-    ) -> GlobalSearchIndex {
+    private func makeIndex(series: [MetricSeries] = [], devices: [DeviceSummary] = [], releases: [ReleaseHealth] = [], crashes: [IncidentGroup<Crash>] = [], hangs: [IncidentGroup<Hang>] = []) -> GlobalSearchIndex {
         GlobalSearchIndex(series: series, devices: devices, releases: releases, crashes: crashes, hangs: hangs)!
     }
 

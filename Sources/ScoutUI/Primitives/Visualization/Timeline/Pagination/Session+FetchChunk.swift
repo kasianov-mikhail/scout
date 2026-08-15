@@ -9,9 +9,7 @@ import Foundation
 import Scout
 
 extension Session {
-    static func fetchChunk(installIDs: [UUID], anchor: Date?, ascending: Bool, limit: Int, in database: DatabaseReader)
-        async throws -> RecordChunk
-    {
+    static func fetchChunk(installIDs: [UUID], anchor: Date?, ascending: Bool, limit: Int, in database: DatabaseReader) async throws -> RecordChunk {
         var filters = [
             RecordQuery.Filter(field: "install_id", op: .in, value: .strings(installIDs.map(\.uuidString)))
         ]

@@ -95,10 +95,7 @@ struct DemoMetrics {
         self.samples = samples
     }
 
-    private static func histogram(
-        name: String, categories: [String], center ratio: Double, scale: Double, clock: DemoClock,
-        random: inout DemoRandom
-    ) -> [DemoSample] {
+    private static func histogram(name: String, categories: [String], center ratio: Double, scale: Double, clock: DemoClock, random: inout DemoRandom) -> [DemoSample] {
         var samples: [DemoSample] = []
         let center = Double(categories.count) * ratio
 

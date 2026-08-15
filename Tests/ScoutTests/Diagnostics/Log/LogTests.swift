@@ -12,9 +12,7 @@ import Testing
 @testable import Scout
 @testable import Support
 
-private func makeEvent(
-    _ message: String, level: Logger.Level = .info, metadata: Logger.Metadata? = nil
-) -> LogEvent {
+private func makeEvent(_ message: String, level: Logger.Level = .info, metadata: Logger.Metadata? = nil) -> LogEvent {
     LogEvent(
         level: level, message: "\(message)", metadata: metadata,
         source: nil, file: #file, function: #function, line: #line

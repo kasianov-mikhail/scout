@@ -22,9 +22,7 @@ extension MarkerEntry {
         }
     }
 
-    static func mark(name: String, install: InstallEntry?, appVersion: String?, in context: NSManagedObjectContext)
-        throws
-    {
+    static func mark(name: String, install: InstallEntry?, appVersion: String?, in context: NSManagedObjectContext) throws {
         guard let appVersion, let install else {
             return
         }

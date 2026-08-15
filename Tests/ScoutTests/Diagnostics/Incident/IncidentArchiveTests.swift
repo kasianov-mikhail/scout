@@ -129,20 +129,11 @@ struct IncidentArchiveTests {
         )
     }
 
-    private func makeCrash(
-        name: String = "TestException",
-        reason: String? = "Test reason",
-        stackTrace: [String] = ["frame1", "frame2"]
-    ) -> CrashInfo {
+    private func makeCrash(name: String = "TestException", reason: String? = "Test reason", stackTrace: [String] = ["frame1", "frame2"]) -> CrashInfo {
         CrashInfo(name: name, reason: reason, stackTrace: stackTrace, identity: .stub)
     }
 
-    private func makeHang(
-        name: String = "Main Thread Blocked",
-        reason: String? = "Main thread unresponsive for 4.2s",
-        stackTrace: [String] = ["frame1", "frame2"],
-        duration: TimeInterval = 4.2
-    ) -> HangInfo {
+    private func makeHang(name: String = "Main Thread Blocked", reason: String? = "Main thread unresponsive for 4.2s", stackTrace: [String] = ["frame1", "frame2"], duration: TimeInterval = 4.2) -> HangInfo {
         HangInfo(name: name, reason: reason, stackTrace: stackTrace, duration: duration, identity: .stub)
     }
 
@@ -156,9 +147,7 @@ struct IncidentArchiveTests {
 private final class TemporaryFileManager: FileManager {
     let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
 
-    override func urls(for directory: FileManager.SearchPathDirectory, in domainMask: FileManager.SearchPathDomainMask)
-        -> [URL]
-    {
+    override func urls(for directory: FileManager.SearchPathDirectory, in domainMask: FileManager.SearchPathDomainMask) -> [URL] {
         [root]
     }
 

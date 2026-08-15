@@ -9,10 +9,7 @@ import Foundation
 import Scout
 
 extension Session: Fixture {
-    static func sample(
-        minutesAgo: Double = 0, sessionID: UUID = UUID(), launchID: UUID = UUID(), installID: UUID = UUID(),
-        ongoing: Bool = false
-    ) -> Session {
+    static func sample(minutesAgo: Double = 0, sessionID: UUID = UUID(), launchID: UUID = UUID(), installID: UUID = UUID(), ongoing: Bool = false) -> Session {
         let startDate = Date(timeIntervalSinceNow: -minutesAgo * 60)
         return Session(
             startDate: startDate,

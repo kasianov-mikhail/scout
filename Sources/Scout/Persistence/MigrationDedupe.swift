@@ -68,11 +68,7 @@ struct MigrationDedupe {
         }
     }
 
-    private static func merge(
-        _ duplicate: NSManagedObject,
-        into survivor: NSManagedObject,
-        in context: NSManagedObjectContext
-    ) {
+    private static func merge(_ duplicate: NSManagedObject, into survivor: NSManagedObject, in context: NSManagedObjectContext) {
         for name in survivor.entity.attributesByName.keys where survivor.value(forKey: name) == nil {
             if let value = duplicate.value(forKey: name) {
                 survivor.setValue(value, forKey: name)

@@ -176,10 +176,7 @@ extension Record {
         return record
     }
 
-    static func sessionStub(
-        sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil,
-        deviceID: UUID? = nil
-    ) -> Record {
+    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil, deviceID: UUID? = nil) -> Record {
         var record = Session(
             startDate: startDate,
             endDate: nil,

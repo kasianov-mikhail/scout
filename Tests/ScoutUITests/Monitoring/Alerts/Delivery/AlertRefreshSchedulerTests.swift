@@ -54,10 +54,7 @@
             return submittedStorage
         }
 
-        func register(
-            forTaskWithIdentifier identifier: String, using queue: DispatchQueue?,
-            launchHandler: @escaping @Sendable (BGTask) -> Void
-        ) -> Bool {
+        func register(forTaskWithIdentifier identifier: String, using queue: DispatchQueue?, launchHandler: @escaping @Sendable (BGTask) -> Void) -> Bool {
             lock.lock()
             defer { lock.unlock() }
             registeredStorage.append(identifier)
