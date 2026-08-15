@@ -11,11 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Install {
-    @discardableResult static func stub(
-        installID: UUID = UUID(),
-        deviceID: UUID? = nil,
-        date: Date? = Date()
-    ) -> Install {
+    @discardableResult static func stub(installID: UUID = UUID(), deviceID: UUID? = nil, date: Date? = Date()) -> Install {
         Install(
             date: date,
             id: UUID().uuidString,

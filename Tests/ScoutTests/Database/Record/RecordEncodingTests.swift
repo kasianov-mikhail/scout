@@ -130,9 +130,7 @@ struct RecordEncodingTests {
 }
 
 extension IntMetricsEntry {
-    @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext)
-        -> IntMetricsEntry
-    {
+    @discardableResult static func stub(name: String, telemetry: String, value: Int, in context: NSManagedObjectContext) -> IntMetricsEntry {
         let entity = NSEntityDescription.entity(forEntityName: "IntMetricsEntry", in: context)!
         let metric = IntMetricsEntry(entity: entity, insertInto: context)
 
@@ -146,9 +144,7 @@ extension IntMetricsEntry {
 }
 
 extension DoubleMetricsEntry {
-    @discardableResult static func stub(
-        name: String, telemetry: String, value: Double, in context: NSManagedObjectContext
-    ) -> DoubleMetricsEntry {
+    @discardableResult static func stub(name: String, telemetry: String, value: Double, in context: NSManagedObjectContext) -> DoubleMetricsEntry {
         let entity = NSEntityDescription.entity(forEntityName: "DoubleMetricsEntry", in: context)!
         let metric = DoubleMetricsEntry(entity: entity, insertInto: context)
 

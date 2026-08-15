@@ -15,10 +15,7 @@ struct GlobalSearchIndex {
     let crashes: [IncidentGroup<Crash>]
     let hangs: [IncidentGroup<Hang>]
 
-    init?(
-        series: [MetricSeries]?, devices: [DeviceSummary]?, releases: [ReleaseHealth]?,
-        crashes: [IncidentGroup<Crash>]?, hangs: [IncidentGroup<Hang>]?
-    ) {
+    init?(series: [MetricSeries]?, devices: [DeviceSummary]?, releases: [ReleaseHealth]?, crashes: [IncidentGroup<Crash>]?, hangs: [IncidentGroup<Hang>]?) {
         guard let series, let devices, let releases, let crashes, let hangs else {
             return nil
         }

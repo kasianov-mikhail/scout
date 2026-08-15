@@ -10,12 +10,7 @@ import CoreData
 @testable import Scout
 
 extension InstallEntry {
-    @discardableResult static func stub(
-        date: Date,
-        synced: Bool = false,
-        device: DeviceEntry? = nil,
-        in context: NSManagedObjectContext
-    ) -> InstallEntry {
+    @discardableResult static func stub(date: Date, synced: Bool = false, device: DeviceEntry? = nil, in context: NSManagedObjectContext) -> InstallEntry {
         let install = context.insert(InstallEntry.self)
 
         install.installID = Identity.stub.install

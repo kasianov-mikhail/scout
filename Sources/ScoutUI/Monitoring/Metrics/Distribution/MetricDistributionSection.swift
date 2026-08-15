@@ -15,10 +15,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
 
     @StateObject var provider: MetricDistributionProvider<H>
 
-    init(
-        name: String, categories: [String], extent: ChartExtent<Period>, formatter: KeyPath<Double, String>,
-        provider: MetricDistributionProvider<H>? = nil
-    ) {
+    init(name: String, categories: [String], extent: ChartExtent<Period>, formatter: KeyPath<Double, String>, provider: MetricDistributionProvider<H>? = nil) {
         self.extent = extent
         self.formatter = formatter
         self._provider = StateObject(

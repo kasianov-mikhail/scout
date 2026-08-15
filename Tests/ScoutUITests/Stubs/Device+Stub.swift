@@ -11,10 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Device {
-    @discardableResult static func stub(
-        deviceID: UUID = UUID(),
-        date: Date? = Date()
-    ) -> Device {
+    @discardableResult static func stub(deviceID: UUID = UUID(), date: Date? = Date()) -> Device {
         Device(
             date: date,
             id: UUID().uuidString,

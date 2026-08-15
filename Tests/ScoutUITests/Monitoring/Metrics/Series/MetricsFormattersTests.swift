@@ -24,8 +24,8 @@ struct MetricsFormattersTests {
             (172_800.0, "2 d"),
             (5_184_000.0, "2 mo"),
             (47_304_000.0, "1.5 y"),
-        ]) func testDuration(seconds: TimeInterval, expected: String)
-    {
+        ])
+    func testDuration(seconds: TimeInterval, expected: String) {
         #expect(seconds.duration == expected)
     }
 
@@ -36,8 +36,8 @@ struct MetricsFormattersTests {
             (119.5, "2 min 0 s"),
             (60.4, "1 min 0 s"),
             (89.5, "1 min 30 s"),
-        ]) func testDurationSecondsCarry(seconds: TimeInterval, expected: String)
-    {
+        ])
+    func testDurationSecondsCarry(seconds: TimeInterval, expected: String) {
         #expect(seconds.duration == expected)
     }
 
@@ -50,8 +50,8 @@ struct MetricsFormattersTests {
             (3599.7, "1 h"),
             (86_399.0, "1 d"),
             (2_591_999.0, "1 mo"),
-        ]) func testDurationUnitPromotion(seconds: TimeInterval, expected: String)
-    {
+        ])
+    func testDurationUnitPromotion(seconds: TimeInterval, expected: String) {
         #expect(seconds.duration == expected)
     }
 }

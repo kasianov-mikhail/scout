@@ -99,8 +99,6 @@ struct BackendHealthTests {
     }
 }
 
-func makeHealth(id: String = "backend", status: Backend.Status? = nil, probe: StatusProbe? = nil)
-    -> BackendHealth
-{
+func makeHealth(id: String = "backend", status: Backend.Status? = nil, probe: StatusProbe? = nil) -> BackendHealth {
     BackendHealth(id: id, name: id, engine: .local, status: status, probe: probe)
 }

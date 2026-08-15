@@ -83,10 +83,7 @@ extension TelemetryPersisting {
     }
 }
 
-func saveMetrics<T: MetricScalar>(
-    _ name: String, date: Date, category: String, value: T, identity: Identity.Snapshot,
-    _ context: NSManagedObjectContext
-) throws {
+func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, value: T, identity: Identity.Snapshot, _ context: NSManagedObjectContext) throws {
     let metrics = context.insert(T.Object.self)
 
     metrics.value = value

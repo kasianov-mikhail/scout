@@ -33,10 +33,7 @@ extension HangInfo: IncidentInfo {
     }
 }
 
-func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(
-    _ info: Info, id: UUID, deviceID: UUID, entityName: String, idKey: String, markerName: String,
-    context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void
-) throws {
+func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(_ info: Info, id: UUID, deviceID: UUID, entityName: String, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
     // The id doubles as the archive file's UUID, so a flush interrupted
     // between the save and the file removal doesn't insert a duplicate
     // on the next launch.

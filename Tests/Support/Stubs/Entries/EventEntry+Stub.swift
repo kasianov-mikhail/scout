@@ -10,14 +10,7 @@ import CoreData
 @testable import Scout
 
 extension EventEntry {
-    @discardableResult static func stub(
-        name: String,
-        date: Date = Date(),
-        synced: Bool = false,
-        level: EventLevel = .info,
-        session: SessionEntry? = nil,
-        in context: NSManagedObjectContext
-    ) -> EventEntry {
+    @discardableResult static func stub(name: String, date: Date = Date(), synced: Bool = false, level: EventLevel = .info, session: SessionEntry? = nil, in context: NSManagedObjectContext) -> EventEntry {
         let event = context.insert(EventEntry.self)
 
         event.name = name

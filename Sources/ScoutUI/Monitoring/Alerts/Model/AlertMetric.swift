@@ -51,9 +51,7 @@ extension AlertMetric {
         return series.flatMap { $0.chartPoints() }
     }
 
-    private func lifecyclePoints(in database: DatabaseReader, range: Range<Date>) async throws -> (
-        sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>]
-    ) {
+    private func lifecyclePoints(in database: DatabaseReader, range: Range<Date>) async throws -> (sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>]) {
         async let sessions = database.series(
             matching: SeriesQuery(name: SessionEntry.recordType, bucket: .hour, source: .lifecycle, range: range)
         )

@@ -11,17 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Crash {
-    @discardableResult static func stub(
-        name: String = "crash",
-        fingerprint: String? = nil,
-        reason: String? = nil,
-        stackTrace: [String] = [],
-        deviceID: UUID? = nil,
-        sessionID: UUID? = nil,
-        launchID: UUID? = nil,
-        installID: UUID? = nil,
-        date: Date? = Date()
-    ) -> Crash {
+    @discardableResult static func stub(name: String = "crash", fingerprint: String? = nil, reason: String? = nil, stackTrace: [String] = [], deviceID: UUID? = nil, sessionID: UUID? = nil, launchID: UUID? = nil, installID: UUID? = nil, date: Date? = Date()) -> Crash {
         Crash(
             name: name,
             fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value,

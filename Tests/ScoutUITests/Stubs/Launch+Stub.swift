@@ -11,12 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Launch {
-    @discardableResult static func stub(
-        launchID: UUID = UUID(),
-        installID: UUID? = nil,
-        startDate: Date? = Date(),
-        endDate: Date? = nil
-    ) -> Launch {
+    @discardableResult static func stub(launchID: UUID = UUID(), installID: UUID? = nil, startDate: Date? = Date(), endDate: Date? = nil) -> Launch {
         Launch(
             startDate: startDate,
             endDate: endDate,

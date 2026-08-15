@@ -11,13 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Event {
-    @discardableResult static func stub(
-        name: String = "event",
-        sessionID: UUID? = nil,
-        installID: UUID? = nil,
-        deviceID: UUID? = nil,
-        date: Date? = Date()
-    ) -> Event {
+    @discardableResult static func stub(name: String = "event", sessionID: UUID? = nil, installID: UUID? = nil, deviceID: UUID? = nil, date: Date? = Date()) -> Event {
         Event(
             name: name,
             level: nil,

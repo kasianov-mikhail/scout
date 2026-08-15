@@ -142,9 +142,7 @@ struct HomeLogProviderTests {
         #expect(try provider.result?.get() != nil)
     }
 
-    private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: MetricValue)
-        -> MetricSeries
-    {
+    private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: MetricValue) -> MetricSeries {
         MetricSeries(
             name: name,
             category: category,

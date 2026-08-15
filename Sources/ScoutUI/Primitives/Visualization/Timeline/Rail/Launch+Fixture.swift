@@ -9,9 +9,7 @@ import Foundation
 import Scout
 
 extension Launch: Fixture {
-    static func sample(minutesAgo: Double = 0, launchID: UUID = UUID(), installID: UUID = UUID(), ongoing: Bool = false)
-        -> Launch
-    {
+    static func sample(minutesAgo: Double = 0, launchID: UUID = UUID(), installID: UUID = UUID(), ongoing: Bool = false) -> Launch {
         let startDate = Date(timeIntervalSinceNow: -minutesAgo * 60)
         return Launch(
             startDate: startDate,

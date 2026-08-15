@@ -16,11 +16,7 @@ final class AlertProvider: ObservableObject, Provider {
     private let notifier: AlertNotifier?
     private let engine: AlertEngine
 
-    init(
-        _ result: ProviderResult<Output>? = nil,
-        registry: AlertRegistry = AlertRegistry(),
-        notifier: AlertNotifier? = nil
-    ) {
+    init(_ result: ProviderResult<Output>? = nil, registry: AlertRegistry = AlertRegistry(), notifier: AlertNotifier? = nil) {
         self.registry = registry
         self.notifier = notifier
         self.engine = AlertEngine(registry: registry, notifier: notifier)

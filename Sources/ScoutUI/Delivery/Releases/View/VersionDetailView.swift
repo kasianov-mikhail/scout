@@ -17,10 +17,7 @@ struct VersionDetailView: View {
     @State private var showAllCrashes = false
     @State private var showAllHangs = false
 
-    init(
-        release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil,
-        hangs: VersionIncidentProvider<Hang>? = nil
-    ) {
+    init(release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil, hangs: VersionIncidentProvider<Hang>? = nil) {
         self.release = release
         self._crashes = StateObject(wrappedValue: crashes ?? VersionIncidentProvider(version: release.id))
         self._hangs = StateObject(wrappedValue: hangs ?? VersionIncidentProvider(version: release.id))
