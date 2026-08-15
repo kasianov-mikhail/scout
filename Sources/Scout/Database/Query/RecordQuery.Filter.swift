@@ -36,41 +36,37 @@ extension RecordQuery.Filter {
             return false
         }
 
-        switch op {
+        return switch op {
         case .equals:
-            return value == self.value
+            value == self.value
 
         case .notEquals:
-            return value != self.value
+            value != self.value
 
         case .in:
-            guard case .strings(let options) = self.value, case .string(let actual) = value else {
-                return false
-            }
-            return options.contains(actual)
+            match(value.string, self.value.strings) { $1.contains($0) }
 
         case .beginsWith:
-            guard case .string(let prefix) = self.value, case .string(let actual) = value else {
-                return false
-            }
-            return actual.hasPrefix(prefix)
+            match(value.string, self.value.string) { $0.hasPrefix($1) }
 
-        case .greaterThan, .greaterThanOrEquals, .lessThan, .lessThanOrEquals:
-            guard let lhs = value.value, let rhs = self.value.value else {
-                return false
-            }
-            switch op {
-            case .greaterThan:
-                return lhs > rhs
-            case .greaterThanOrEquals:
-                return lhs >= rhs
-            case .lessThan:
-                return lhs < rhs
-            case .lessThanOrEquals:
-                return lhs <= rhs
-            default:
-                return false
-            }
+        case .greaterThan:
+            match(value.value, self.value.value, using: >)
+
+        case .greaterThanOrEquals:
+            match(value.value, self.value.value, using: >=)
+
+        case .lessThan:
+            match(value.value, self.value.value, using: <)
+
+        case .lessThanOrEquals:
+            match(value.value, self.value.value, using: <=)
         }
+    }
+
+    private func match<T, U>(_ lhs: T?, _ rhs: U?, using isMatch: (T, U) -> Bool) -> Bool {
+        guard let lhs, let rhs else {
+            return false
+        }
+        return isMatch(lhs, rhs)
     }
 }
