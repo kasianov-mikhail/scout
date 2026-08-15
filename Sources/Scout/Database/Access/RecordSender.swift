@@ -40,6 +40,7 @@ package protocol TransientFailure: Error {
             id,
             DeliveryEntry.maxAttempts
         )
+        request.relationshipKeyPathsForPrefetching = ["deliveries"]
 
         let objects = try context.fetch(request).filter {
             $0.delivery(for: id)?.isPending == true

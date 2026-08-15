@@ -15,6 +15,7 @@ extension DateEntry {
 
         let request = NSFetchRequest<DateEntry>(entityName: "DateEntry")
         request.predicate = NSPredicate(format: "datePrimitive < %@", cutoff as NSDate)
+        request.fetchBatchSize = 200
 
         for object in try context.fetch(request)
         where object.isPurgeable && object.references.count == 0 && !retained.contains(object.objectID) {
