@@ -18,10 +18,7 @@ public struct Backend: Sendable {
     package let probeStatus: StatusProbe?
     package let accountWarning: AccountWarning?
 
-    package init(
-        id: String, database: any Database, checkAvailability: @escaping @Sendable () async -> Bool,
-        displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, accountWarning: AccountWarning? = nil
-    ) {
+    package init(id: String, database: any Database, checkAvailability: @escaping @Sendable () async -> Bool, displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, accountWarning: AccountWarning? = nil) {
         self.id = id
         self.database = database
         self.checkAvailability = checkAvailability

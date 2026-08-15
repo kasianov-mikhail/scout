@@ -8,9 +8,7 @@
 import Foundation
 
 extension RetentionCohort {
-    package static func build(
-        installDays: [String: Date], sessionDays: [String: Set<Date>], in range: Range<Date>, asOf: Date
-    ) -> [RetentionCohort] {
+    package static func build(installDays: [String: Date], sessionDays: [String: Set<Date>], in range: Range<Date>, asOf: Date) -> [RetentionCohort] {
         var sizes: [Date: Int] = [:]
         var counts: [Date: [Int: Int]] = [:]
 

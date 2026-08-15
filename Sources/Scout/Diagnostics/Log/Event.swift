@@ -18,10 +18,7 @@ package struct Event: Identifiable {
     package let sessionID: UUID?
     package let deviceID: UUID?
 
-    package init(
-        name: String, level: EventLevel?, date: Date?, paramCount: Int?, uuid: UUID?, id: String, installID: UUID?,
-        sessionID: UUID?, deviceID: UUID?
-    ) {
+    package init(name: String, level: EventLevel?, date: Date?, paramCount: Int?, uuid: UUID?, id: String, installID: UUID?, sessionID: UUID?, deviceID: UUID?) {
         self.name = name
         self.level = level
         self.date = date
