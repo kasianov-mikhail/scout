@@ -44,33 +44,42 @@ extension RecordQuery.Filter {
             return value != self.value
 
         case .in:
-            guard case .strings(let options) = self.value, case .string(let actual) = value else {
+            guard case .strings(let options) = self.value else {
                 return false
             }
-            return options.contains(actual)
+            return match(value, using: options.contains)
 
         case .beginsWith:
-            guard case .string(let prefix) = self.value, case .string(let actual) = value else {
+            guard case .string(let prefix) = self.value else {
                 return false
             }
-            return actual.hasPrefix(prefix)
+            return match(value) { $0.hasPrefix(prefix) }
 
-        case .greaterThan, .greaterThanOrEquals, .lessThan, .lessThanOrEquals:
-            guard let lhs = value.value, let rhs = self.value.value else {
-                return false
-            }
-            switch op {
-            case .greaterThan:
-                return lhs > rhs
-            case .greaterThanOrEquals:
-                return lhs >= rhs
-            case .lessThan:
-                return lhs < rhs
-            case .lessThanOrEquals:
-                return lhs <= rhs
-            default:
-                return false
-            }
+        case .greaterThan:
+            return compare(value, using: >)
+
+        case .greaterThanOrEquals:
+            return compare(value, using: >=)
+
+        case .lessThan:
+            return compare(value, using: <)
+
+        case .lessThanOrEquals:
+            return compare(value, using: <=)
         }
+    }
+
+    private func match(_ value: RecordValue, using isMatch: (String) -> Bool) -> Bool {
+        guard case .string(let actual) = value else {
+            return false
+        }
+        return isMatch(actual)
+    }
+
+    private func compare(_ value: RecordValue, using areInIncreasingOrder: (Double, Double) -> Bool) -> Bool {
+        guard let lhs = value.value, let rhs = self.value.value else {
+            return false
+        }
+        return areInIncreasingOrder(lhs, rhs)
     }
 }
