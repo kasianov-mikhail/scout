@@ -28,3 +28,9 @@ struct CrashInfo: Codable {
         self.appVersion = Bundle.main.marketingVersion
     }
 }
+
+extension IncidentArchive<CrashInfo> {
+    static var crash: Self {
+        IncidentArchive(folder: "Crashes", pathExtension: "crash", persist: logCrash)
+    }
+}

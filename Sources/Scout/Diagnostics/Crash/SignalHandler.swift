@@ -35,7 +35,7 @@ func installSignalHandler(identity: Identity) {
                     stackTrace: Thread.callStackSymbols,
                     identity: identity
                 )
-                CrashArchive.system.write(crash)
+                IncidentArchive.crash.write(crash)
             }
 
             restorePreviousSignalHandler(sig)

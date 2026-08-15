@@ -26,7 +26,7 @@ func installExceptionHandler(identity: Identity) {
                 stackTrace: exception.callStackSymbols,
                 identity: identity
             )
-            CrashArchive.system.write(crash)
+            IncidentArchive.crash.write(crash)
         }
 
         restorePreviousSignalHandler(SIGABRT)
