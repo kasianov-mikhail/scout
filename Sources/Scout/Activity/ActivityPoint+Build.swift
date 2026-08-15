@@ -85,14 +85,11 @@ private struct UserWindow {
         guard let users else {
             return
         }
-        for user in users where counts[user] != nil {
-            let remaining = counts[user]! - 1
-
-            if remaining > 0 {
-                counts[user] = remaining
-            } else {
-                counts[user] = nil
+        for user in users {
+            guard let count = counts[user] else {
+                continue
             }
+            counts[user] = count > 1 ? count - 1 : nil
         }
     }
 }
