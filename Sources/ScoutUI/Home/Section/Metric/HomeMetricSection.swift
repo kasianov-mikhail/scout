@@ -22,7 +22,7 @@ struct HomeMetricSection: View {
                 path.append(.activity)
             } label: {
                 TrendCard(
-                    title: "Users",
+                    title: period.activityPeriod.rawValue,
                     color: .green,
                     trend: activityTrend
                 )
@@ -44,14 +44,11 @@ struct HomeMetricSection: View {
         .listRowSeparator(.hidden, edges: .bottom)
     }
 
-    private var activityTrend: Trend? {
-        guard let activityPeriod = period.activityPeriod else {
-            return nil
-        }
+    private var activityTrend: Trend {
         guard let points = try? activities.result?.get() else {
             return .loading
         }
-        return Trend(levels: points.points(on: activityPeriod), period: period)
+        return Trend(levels: points.points(on: period.activityPeriod), period: period)
     }
 
     private var sessionTrend: Trend {
@@ -67,7 +64,7 @@ struct HomeMetricSection: View {
         InsetList {
             HomeMetricSection(
                 activities: .init(.success(.samples)),
-                sessions: .init(.success(.samples), eventName: "Session", periods: Period.summary),
+                sessions: .init(.success(.samples), eventName: "Session"),
                 period: .today,
                 path: .constant([])
             )

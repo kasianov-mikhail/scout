@@ -8,32 +8,31 @@
 import Scout
 import SwiftUI
 
-struct PeriodPicker<T: PickerCompatible & ChartTimeScale & CaseIterable>: View {
+struct PeriodPicker<T: ChartTimeScale & CaseIterable>: View {
     @Binding var extent: ChartExtent<T>
 
-    let periods: [T]
+    let title: (T) -> String
 
     var body: some View {
         SegmentStrip(
             selection: $extent.period,
-            values: periods,
             distribution: .justified,
-            title: title
+            title: marked
         )
     }
 
-    private func title(period: T) -> String {
-        var title = period.shortTitle
+    private func marked(period: T) -> String {
+        var marked = title(period)
         if period == extent.period && extent.isRightEnabled {
-            title += "*"
+            marked += "*"
         }
-        return title
+        return marked
     }
 }
 
 #Preview {
     PeriodPicker(
         extent: .constant(ChartExtent(period: Period.today)),
-        periods: Period.allCases
+        title: \.shortTitle
     )
 }

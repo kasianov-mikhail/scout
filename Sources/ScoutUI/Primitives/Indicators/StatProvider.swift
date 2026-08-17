@@ -13,11 +13,9 @@ final class StatProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[ChartPoint<Int>]>?
 
     let eventName: String
-    let periods: [Period]
 
-    init(_ result: ProviderResult<Output>? = nil, eventName: String, periods: [Period]) {
+    init(_ result: ProviderResult<Output>? = nil, eventName: String) {
         self.eventName = eventName
-        self.periods = periods
         self.result = result
     }
 

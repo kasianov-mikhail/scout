@@ -52,7 +52,7 @@ struct StatRow<Destination: View>: View {
             StatRow(
                 color: .blue,
                 period: .today,
-                stat: StatProvider(eventName: "event_name", periods: Period.allCases)
+                stat: StatProvider(eventName: "event_name")
             ) {
                 Text(verbatim: "Detail")
             }
