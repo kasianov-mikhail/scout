@@ -97,7 +97,7 @@ cohorts = RetentionCohort.build(
 
 ## Provider naming
 
-- A view with a single `@StateObject` provider names it `provider` (e.g. `@StateObject var provider = StatProvider(eventName: "Session", periods: Period.summary)`), regardless of the concrete provider type.
+- A view with a single `@StateObject` provider names it `provider` (e.g. `@StateObject var provider = StatProvider(eventName: "Session")`), regardless of the concrete provider type.
 - A view with more than one `@StateObject` provider gives each a descriptive name reflecting what it represents (e.g. `activities`, `sessions`, `crashes`, `releases`, `logs`).
 
 ## Sample data

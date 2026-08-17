@@ -9,8 +9,6 @@ import Foundation
 import Scout
 
 enum Period: String, CaseIterable, Identifiable {
-    static let summary = [Period.week, .month, .year]
-
     case today
     case yesterday
     case week
@@ -33,6 +31,21 @@ extension Period {
             "30 days"
         case .year:
             "365 days"
+        }
+    }
+
+    var shortTitle: String {
+        switch self {
+        case .today:
+            "T"
+        case .yesterday:
+            "Y"
+        case .week:
+            "7"
+        case .month:
+            "30"
+        case .year:
+            "365"
         }
     }
 }

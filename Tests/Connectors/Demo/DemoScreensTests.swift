@@ -59,12 +59,12 @@ import Testing
     }
 
     @Test func homeSessionStatLightsUp() async throws {
-        let points = try await StatProvider(eventName: SessionEntry.recordType, periods: [.year]).fetch(in: database)
+        let points = try await StatProvider(eventName: SessionEntry.recordType).fetch(in: database)
         #expect(points.count > 0)
     }
 
     @Test func eventStatLightsUp() async throws {
-        let points = try await StatProvider(eventName: "Search_Performed", periods: [.year]).fetch(in: database)
+        let points = try await StatProvider(eventName: "Search_Performed").fetch(in: database)
         #expect(points.count > 0)
     }
 
