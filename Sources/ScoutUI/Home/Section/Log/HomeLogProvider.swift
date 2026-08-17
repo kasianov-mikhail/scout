@@ -27,7 +27,7 @@ final class HomeLogProvider: ObservableObject, Provider {
         didSet { rebuildReport() }
     }
 
-    private(set) var report: LogReport?
+    private(set) var report: [LogCategory: Trend]?
 
     init(acrossAllPeriods series: Output? = nil) {
         self.period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
@@ -47,7 +47,7 @@ final class HomeLogProvider: ObservableObject, Provider {
             report = nil
             return
         }
-        report = LogReport(series: series, visits: visits, period: period)
+        report = LogSeries(series: series, visits: visits, period: period).report
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {
