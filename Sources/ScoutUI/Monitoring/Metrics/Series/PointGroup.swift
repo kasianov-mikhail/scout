@@ -14,14 +14,31 @@ struct PointGroup<T: ChartNumeric>: PointSeries, Identifiable {
     let id = UUID()
 }
 
-extension PointGroup: Comparable {
-    static func < (lhs: PointGroup<T>, rhs: PointGroup<T>) -> Bool {
-        lhs.points.total > rhs.points.total
-    }
+protocol PointSeries {
+    associatedtype T: ChartNumeric
+
+    var name: String { get }
+    var points: [ChartPoint<T>] { get }
 }
 
-extension [MetricSeries] {
-    func pointGroups<T: ChartNumeric>() -> [PointGroup<T>] {
-        map { PointGroup(name: $0.name, points: $0.chartPoints()) }
+extension Collection where Element: PointSeries {
+    func total(in range: Range<Date>) -> [Element] {
+        filter {
+            $0.points.total(in: range) > .zero
+        }
+        .sorted {
+            $0.points.total(in: range) > $1.points.total(in: range)
+        }
+    }
+
+    func latest(in range: Range<Date>) -> [Element] {
+        // A gauge reads zero or below just as meaningfully as it reads high, so any
+        // element carrying a point survives and ranks on its newest value.
+        filter { group in
+            group.points.contains { range.contains($0.date) }
+        }
+        .sorted {
+            $0.points.latest(in: range) > $1.points.latest(in: range)
+        }
     }
 }
