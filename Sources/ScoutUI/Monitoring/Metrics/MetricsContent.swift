@@ -97,7 +97,7 @@ struct MetricsContent<T: ChartNumeric>: View {
         case .total:
             group.points.total
         case .latest:
-            group.points.latest(in: period.initialRange) ?? .zero
+            group.points.latest(in: period.initialRange)
         }
     }
 }

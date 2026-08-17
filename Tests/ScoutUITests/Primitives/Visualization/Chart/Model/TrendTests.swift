@@ -17,7 +17,7 @@ struct TrendTests {
 
     @Test("Additive points sum into the count and compare against the previous day")
     func additive() throws {
-        let trend = Trend(
+        let trend = Trend.total(
             points: [
                 makePoint(day: 7, hour: 1, count: 8),
                 makePoint(day: 7, hour: 2, count: 4),
@@ -33,7 +33,7 @@ struct TrendTests {
 
     @Test("Additive points with an empty previous day carry no delta")
     func additiveWithoutPrevious() {
-        let trend = Trend(points: [makePoint(day: 7, hour: 1, count: 8)], period: scale)
+        let trend = Trend.total(points: [makePoint(day: 7, hour: 1, count: 8)], period: scale)
 
         #expect(trend.count == 8)
         #expect(trend.delta == nil)
@@ -41,13 +41,13 @@ struct TrendTests {
 
     @Test("Levels are sampled, not summed, and compared level to level")
     func levels() throws {
-        let trend = Trend(
-            levels: [
-                makePoint(day: 7, hour: 0, count: 100),
-                makePoint(day: 7, hour: 5, count: 120),
-                makePoint(day: 6, hour: 3, count: 90),
+        let trend = Trend.latest(
+            points: [
+                makeActivity(day: -1, level: 120),
+                makeActivity(day: -2, level: 100),
+                makeActivity(day: -8, level: 90),
             ],
-            period: scale
+            period: .week
         )
 
         #expect(trend.count == 120)
@@ -56,7 +56,7 @@ struct TrendTests {
 
     @Test("Levels outside the window read as a zero level, not as loading")
     func levelsOutsideWindow() {
-        let trend = Trend(levels: [makePoint(day: 1, hour: 0, count: 100)], period: scale)
+        let trend = Trend.latest(points: [makeActivity(day: -20, level: 100)], period: .week)
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
@@ -64,7 +64,7 @@ struct TrendTests {
 
     @Test("An empty level series reads as a zero level, not as loading")
     func emptyLevels() throws {
-        let trend = Trend(levels: [], period: scale)
+        let trend = Trend.latest(points: [], period: .week)
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
@@ -89,6 +89,15 @@ struct TrendTests {
 
     private func makePoint(day: Int, hour: Int, count: Int) -> ChartPoint<Int> {
         ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), count: count)
+    }
+
+    private func makeActivity(day: Int, level: Int) -> ActivityPoint {
+        ActivityPoint(
+            date: Date().startOfDay.addingDay(day).millisecondsSince1970,
+            dau: 0,
+            wau: level,
+            mau: 0
+        )
     }
 }
 

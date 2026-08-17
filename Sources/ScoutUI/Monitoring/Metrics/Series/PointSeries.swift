@@ -50,7 +50,7 @@ extension Collection where Element: PointSeries & Comparable {
             return
                 elements
                 .filter { $0.points.count > 0 }
-                .map { ($0, $0.points.latest(in: period.initialRange) ?? .zero) }
+                .map { ($0, $0.points.latest(in: period.initialRange)) }
                 .sorted { $0.1 > $1.1 }
                 .map(\.0)
         }

@@ -48,14 +48,14 @@ struct HomeMetricSection: View {
         guard let points = try? activities.result?.get() else {
             return .loading
         }
-        return Trend(levels: points.points(on: period.activityPeriod), period: period)
+        return .latest(points: points, period: period)
     }
 
     private var sessionTrend: Trend {
         guard let points = try? sessions.result?.get() else {
             return .loading
         }
-        return Trend(points: points, period: period)
+        return .total(points: points, period: period)
     }
 }
 
