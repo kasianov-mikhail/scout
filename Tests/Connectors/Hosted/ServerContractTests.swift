@@ -353,10 +353,15 @@ struct ServerContractTests {
         return record
     }
 
+    // A real SessionEntry carries both ids, and the two aggregations read
+    // different ones: the active-user series counts devices, retention counts
+    // installs. The contract records reuse one id for both, so a session
+    // written here reaches either.
     private func makeSession(installID: String, startDate: Date) -> Record {
         var record = Record(recordType: "Session", recordID: "contract-\(UUID().uuidString)")
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
+        record["device_id"] = installID
         record["start_date"] = startDate
         return record
     }
