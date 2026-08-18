@@ -29,18 +29,22 @@ struct ConnectionSwitcherTests {
         #expect(connections.count == 2)
         #expect(connections[0].id == primary.absoluteString)
         #expect(connections[0].name == "a.scout.app")
-        #expect(connections.allSatisfy { $0.status == .unknown })
+        #expect(connections.allSatisfy { $0.status == nil })
     }
 
     @Test("Refresh records each connection's probed status by id")
-    func refreshRecordsProbedStatus() async {
+    func refreshRecordsProbedStatus() async throws {
         let connections = [
-            Connection(id: primary.absoluteString, name: "a.scout.app", status: .unknown, probe: { .reachable }),
-            Connection(id: secondary.absoluteString, name: "b.scout.app", status: .unknown, probe: { .unreachable }),
+            Connection(id: primary.absoluteString, name: "a.scout.app", status: nil, probe: { .reachable }),
+            Connection(id: secondary.absoluteString, name: "b.scout.app", status: nil, probe: { .unreachable }),
         ]
 
         let refreshed = await connections.refreshingStatuses()
-        #expect(refreshed.first { $0.id == primary.absoluteString }?.status == .reachable)
-        #expect(refreshed.first { $0.id == secondary.absoluteString }?.status == .unreachable)
+
+        let first = try #require(refreshed.first { $0.id == primary.absoluteString })
+        let second = try #require(refreshed.first { $0.id == secondary.absoluteString })
+
+        #expect(first.status == .reachable)
+        #expect(second.status == .unreachable)
     }
 }

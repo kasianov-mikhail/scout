@@ -46,8 +46,7 @@
 
 ## Function and method signatures
 
-- Function/method **signatures** (declarations) should be written on a single line, even with many parameters or default values — do not wrap parameters onto separate lines.
-- Exception: when a single-line signature would exceed the 120-character `lineLength` limit in `.swift-format` (a CI lint gate, so the limit wins), let `swift-format` wrap it; don't fight the formatter.
+- Function/method **signatures** (declarations) are always written on a single line, however many parameters or default values they carry — never wrap parameters onto separate lines. `.swift-format` sets `lineLength` high enough that no signature is wrapped for length.
 - This applies to declarations only, not to call sites — see below.
 
 ## Function and initializer calls
@@ -63,7 +62,7 @@ cohorts = RetentionCohort.build(
 )
 ```
 
-- Never pack several arguments onto one wrapped line, even when they fit within the 120-character limit:
+- Never pack several arguments onto one wrapped line, however short they are:
 
 ```swift
 cohorts = RetentionCohort.build(
@@ -72,7 +71,7 @@ cohorts = RetentionCohort.build(
 )
 ```
 
-- Signatures are the exception: a declaration too long for one line is wrapped by `swift-format` as it sees fit, packed lines included.
+- Signatures are the exception: a declaration stays on one line no matter how long it grows.
 
 ## Array extensions
 
@@ -80,7 +79,7 @@ cohorts = RetentionCohort.build(
 
 ## `ViewModifier` types
 
-- A `ViewModifier` type is always `private`, exposed only through a `View` extension method (e.g. `func rotatingProviders(_ providers: [any Provider]) -> some View`). The file is named after that method, not the modifier type, and drops the `Modifier` suffix (e.g. `RotatingProviders.swift`, not `RotatingProvidersModifier.swift`).
+- A `ViewModifier` type is always `private`, exposed only through a `View` extension method (e.g. `func refreshingProviders(first: [any Provider], later: [any Provider]) -> some View`). The file is named after that method, not the modifier type, and drops the `Modifier` suffix (e.g. `RefreshingProviders.swift`, not `RefreshingProvidersModifier.swift`).
 
 # Design
 
@@ -98,7 +97,7 @@ cohorts = RetentionCohort.build(
 
 ## Provider naming
 
-- A view with a single `@StateObject` provider names it `provider` (e.g. `@StateObject var provider = StatProvider(eventName: "Session", periods: Period.summary)`), regardless of the concrete provider type.
+- A view with a single `@StateObject` provider names it `provider` (e.g. `@StateObject var provider = StatProvider(eventName: "Session")`), regardless of the concrete provider type.
 - A view with more than one `@StateObject` provider gives each a descriptive name reflecting what it represents (e.g. `activities`, `sessions`, `crashes`, `releases`, `logs`).
 
 ## Sample data
@@ -126,5 +125,5 @@ cohorts = RetentionCohort.build(
 ## Server contract
 
 - scout and scout-server (`kasianov-mikhail/scout-server`) share an HTTP wire-format contract, so changes to the two repos are often interrelated: a change to request/response shapes, field names, the queryable-field set, or endpoints on the scout side (the `Core/Database/Backend` layer — `HTTPQueryCoding`, `HTTPRecordCoding`, `HTTPDatabase`) usually needs a matching change in scout-server, and vice versa.
-- They are separate repos, so a contract change normally ships as a PR in each — call out the companion PR in both descriptions.
+- They are separate repos, so a contract change normally ships as a PR in each — link the matching PR in the other repo from both descriptions.
 - `ServerContractTests` (run by the `Server` workflow in `.github/workflows/server.yml`, which boots a real scout-server) guards the wire format, so extend and run it when you touch either side rather than assuming the contract still holds.

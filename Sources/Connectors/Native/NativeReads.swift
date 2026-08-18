@@ -29,10 +29,7 @@ extension QueryBuilder {
 }
 
 extension EntityStore {
-    func page(
-        entity: String, filters: [RecordQuery.Filter], field: String, ascending: Bool, limit: Int,
-        after cursor: FieldCursor?
-    ) async throws -> RecordChunk {
+    func page(entity: String, filters: [RecordQuery.Filter], field: String, ascending: Bool, limit: Int, after cursor: FieldCursor?) async throws -> RecordChunk {
         let page = try await filters.reduce(query(entity)) { $0.filter($1) }
             .sort(field, ascending ? .forward : .reverse)
             .page(size: limit, after: cursor)
@@ -72,9 +69,7 @@ extension EntityStore {
         }
     }
 
-    func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws
-        -> [(date: Date, id: String)]
-    {
+    func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws -> [(date: Date, id: String)] {
         let records = try await records(
             entity: entity,
             dateField: dateField,

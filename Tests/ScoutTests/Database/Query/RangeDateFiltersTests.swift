@@ -9,9 +9,8 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import ScoutUI
 
-struct RangePredicateTests {
+struct RangeDateFiltersTests {
     @Test("Date range produces half-open bounds") func dateFilters() {
         let start = Date(timeIntervalSinceReferenceDate: 0)
         let end = Date(timeIntervalSinceReferenceDate: 86400)

@@ -11,12 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Version {
-    @discardableResult static func stub(
-        appVersion: String? = "1.0",
-        buildNumber: String? = "1",
-        launchID: UUID? = nil,
-        date: Date? = Date()
-    ) -> Version {
+    @discardableResult static func stub(appVersion: String? = "1.0", buildNumber: String? = "1", launchID: UUID? = nil, date: Date? = Date()) -> Version {
         Version(
             appVersion: appVersion,
             buildNumber: buildNumber,

@@ -20,10 +20,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
 
     @StateObject private var resets: ResetMarkerProvider
 
-    init(
-        group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false,
-        @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra
-    ) {
+    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false, @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra) {
         self.group = group
         self.formatter = formatter
         self.extra = extra
@@ -60,7 +57,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
                 formattedMarks
             }
             .listRowSeparator(.hidden)
-            .periodRefresh(provider: resets)
+            .fetchTask([resets])
             .padding(.bottom)
 
             ComparisonToggle(isOn: $isComparing).disabled(!canCompare)

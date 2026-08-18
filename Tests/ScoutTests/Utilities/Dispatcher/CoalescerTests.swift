@@ -28,9 +28,9 @@ struct CoalescerTests {
     func testErrorPropagates() async {
         let dispatcher = Coalescer()
 
-        await #expect(throws: LifecycleError.notFound) {
+        await #expect(throws: CoalescerTestError()) {
             try await dispatcher.perform {
-                throw LifecycleError.notFound
+                throw CoalescerTestError()
             }
         }
     }
@@ -41,7 +41,7 @@ struct CoalescerTests {
         let box = Box(false)
 
         _ = try? await dispatcher.perform {
-            throw LifecycleError.notFound
+            throw CoalescerTestError()
         }
 
         try await dispatcher.perform {
@@ -98,7 +98,7 @@ struct CoalescerTests {
         let first = Task {
             try await dispatcher.perform {
                 try? await Task.sleep(for: .milliseconds(100))
-                throw LifecycleError.notFound
+                throw CoalescerTestError()
             }
         }
 
@@ -110,3 +110,5 @@ struct CoalescerTests {
         #expect(box.value)
     }
 }
+
+private struct CoalescerTestError: Error, Equatable {}

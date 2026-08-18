@@ -30,3 +30,9 @@ struct HangInfo: Codable {
         self.appVersion = Bundle.main.marketingVersion
     }
 }
+
+extension IncidentArchive<HangInfo> {
+    static var hang: Self {
+        IncidentArchive(folder: "Hangs", pathExtension: "hang", persist: logHang)
+    }
+}

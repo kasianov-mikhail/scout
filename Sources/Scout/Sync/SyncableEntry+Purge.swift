@@ -20,7 +20,7 @@ extension SyncableEntry {
             backendIDs.count
         )
 
-        for object in try context.fetch(request) where object.isPurgeable && object.references.count == 0 {
+        for object in try context.fetch(request) where object.isDeletable {
             context.delete(object)
         }
     }

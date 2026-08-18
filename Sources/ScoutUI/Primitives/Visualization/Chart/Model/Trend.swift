@@ -17,24 +17,31 @@ struct Trend {
 extension Trend {
     static let loading = Trend(count: nil, delta: nil, series: nil)
 
-    init(points: [ChartPoint<Int>], period: some ChartTimeScale) {
-        let current = points.bucket(on: period).total
-        let previous = points.bucket(in: period.previousRange, component: period.pointComponent).total
+    static func latest(points: [ActivityPoint], period: Period) -> Trend {
+        let levels = points.points(on: period.activityPeriod)
+        let current = levels.latest(in: period.initialRange)
+        let previous = levels.latest(in: period.previousRange)
 
-        count = current
-        delta = Delta(current: current, previous: previous)
-        series = MiniChartSeries(points: points, range: period.initialRange, aggregation: .total)
+        return Trend(
+            count: current,
+            delta: Delta(current: current, previous: previous),
+            series: MiniChartSeries(points: levels, range: period.initialRange, aggregation: .latest)
+        )
     }
 
-    init(levels: [ChartPoint<Int>], period: some ChartTimeScale) {
-        let current = levels.latest(in: period.initialRange) ?? 0
-        let previous = levels.latest(in: period.previousRange) ?? 0
+    static func total(points: [ChartPoint<Int>], period: some ChartTimeScale) -> Trend {
+        let current = points.total(in: period.initialRange)
+        let previous = points.total(in: period.previousRange)
 
-        count = current
-        delta = Delta(current: current, previous: previous)
-        series = MiniChartSeries(points: levels, range: period.initialRange, aggregation: .latest)
+        return Trend(
+            count: current,
+            delta: Delta(current: current, previous: previous),
+            series: MiniChartSeries(points: points, range: period.initialRange, aggregation: .total)
+        )
     }
+}
 
+extension Trend {
     init(count: Int, previous: Int, values: [Int]) {
         self.count = count
         delta = Delta(current: count, previous: previous)

@@ -186,11 +186,21 @@ struct CachedDatabaseTests {
 
         let first = DatabaseCacheRegistry.database(
             for: Backend(
-                id: "https://example.com", database: stale, checkAvailability: { true }, displayName: "example")
+                id: "https://example.com",
+                database: stale,
+                checkAvailability: { true },
+                displayName: "example",
+                engine: .cloudKit
+            )
         )
         let second = DatabaseCacheRegistry.database(
             for: Backend(
-                id: "https://example.com", database: rotated, checkAvailability: { true }, displayName: "example")
+                id: "https://example.com",
+                database: rotated,
+                checkAvailability: { true },
+                displayName: "example",
+                engine: .cloudKit
+            )
         )
 
         #expect(spyBase(of: first) === stale)

@@ -26,7 +26,8 @@ struct DeliverTests {
             id: "cloud",
             database: cloud,
             checkAvailability: { true },
-            displayName: "cloud"
+            displayName: "cloud",
+            engine: .cloudKit
         )
     }
 
@@ -35,7 +36,8 @@ struct DeliverTests {
             id: "server",
             database: server,
             checkAvailability: { true },
-            displayName: "server"
+            displayName: "server",
+            engine: .cloudKit
         )
     }
 
@@ -49,6 +51,26 @@ struct DeliverTests {
     func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
         guard await backend.checkAvailability() else { return }
         try await RecordSender(backend: backend).deliver(type: type, in: context)
+    }
+
+    /// End a session and requeue it on a private-queue sibling, the way the real
+    /// end-of-session write lands on a background context rather than on the one
+    /// the delivery engine holds.
+    ///
+    /// The work stays synchronous on purpose: before the iOS 26 SDK, `perform` is
+    /// a plain nonisolated `async` method, so awaiting it from this main-actor
+    /// suite sends the context and the closure across isolation and fails to
+    /// compile there.
+    ///
+    func endSessionInBackground(_ sessionID: NSManagedObjectID) throws {
+        let background = context.backgroundSibling()
+
+        try background.performAndWait {
+            let session = try #require(background.object(with: sessionID) as? SessionEntry)
+            session.endDate = Date()
+            session.requeue()
+            try background.save()
+        }
     }
 
     @Test("Events go raw to every backend")
@@ -153,7 +175,8 @@ struct DeliverTests {
             id: "server",
             database: server,
             checkAvailability: { false },
-            displayName: "server"
+            displayName: "server",
+            engine: .cloudKit
         )
 
         // Many sync passes fire while the backend is unreachable...
@@ -178,20 +201,12 @@ struct DeliverTests {
         try context.save()
         try SyncableEntry.plan(backends: [serverBackend], in: context)
 
-        let flakyServer = Backend(
-            id: "server",
-            database: server,
-            checkAvailability: { true },
-            displayName: "server",
-            isTransientError: { $0 is URLError }
-        )
-
         // The availability check passes, but every real send fails on connectivity
         // for far longer than the attempt budget would allow...
         for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
-            server.writeErrors.append(URLError(.notConnectedToInternet))
+            server.writeErrors.append(TransientTestError())
             await #expect(throws: (any Error).self) {
-                try await deliver(EventEntry.self, to: flakyServer)
+                try await deliver(EventEntry.self, to: serverBackend)
             }
         }
 
@@ -201,7 +216,7 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 0)
 
         // Connectivity returns and the record delivers on the first real send.
-        try await deliver(EventEntry.self, to: flakyServer)
+        try await deliver(EventEntry.self, to: serverBackend)
         #expect(event.delivery(for: "server")?.isDelivered == true)
         #expect(server.records.count(of: "Event") == 1)
     }
@@ -288,7 +303,7 @@ struct DeliverTests {
 
         // Singling out the culprits costs sends, so one pass is capped instead of
         // fanning a backlog out into a request per record...
-        #expect(server.writeCount <= RecordSender.maxProbes)
+        #expect(server.writeCount <= 32)
         #expect(server.records.count(of: "Event") == 0)
 
         // ...while still making progress: whatever it did single out is charged.
@@ -333,18 +348,12 @@ struct DeliverTests {
         try context.save()
         try SyncableEntry.plan(backends: [cloudBackend], in: context)
 
-        let background = context.backgroundSibling()
         let sessionID = session.objectID
 
         // The session ends mid-send the way it really does — on a background
         // context, not the one the delivery engine holds.
-        cloud.beforeWrite = {
-            try? await background.perform {
-                let session = try #require(background.object(with: sessionID) as? SessionEntry)
-                session.endDate = Date()
-                session.requeue()
-                try background.save()
-            }
+        cloud.beforeWrite = { @MainActor in
+            try? self.endSessionInBackground(sessionID)
         }
 
         try await deliver(SessionEntry.self, to: cloudBackend)
@@ -372,17 +381,9 @@ struct DeliverTests {
         try await deliver(SessionEntry.self, to: cloudBackend)
         #expect(session.delivery(for: "cloud")?.isDelivered == true)
 
-        let background = context.backgroundSibling()
-        let sessionID = session.objectID
-
         // The session completes on a background context once the row is already
         // delivered, so only the requeue can bring it back.
-        try await background.perform {
-            let session = try #require(background.object(with: sessionID) as? SessionEntry)
-            session.endDate = Date()
-            session.requeue()
-            try background.save()
-        }
+        try endSessionInBackground(session.objectID)
 
         try await deliver(SessionEntry.self, to: cloudBackend)
 

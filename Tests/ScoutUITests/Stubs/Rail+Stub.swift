@@ -12,13 +12,7 @@ import Foundation
 @testable import Support
 
 extension Rail {
-    @discardableResult static func stub(
-        deviceID: UUID = UUID(),
-        installID: UUID = UUID(),
-        launchID: UUID = UUID(),
-        sessionID: UUID = UUID(),
-        baseDate: Date = Date()
-    ) -> Rail {
+    @discardableResult static func stub(deviceID: UUID = UUID(), installID: UUID = UUID(), launchID: UUID = UUID(), sessionID: UUID = UUID(), baseDate: Date = Date()) -> Rail {
         Rail(
             device: .stub(deviceID: deviceID, date: baseDate),
             installs: [.stub(installID: installID, deviceID: deviceID, date: baseDate)],

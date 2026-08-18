@@ -40,9 +40,9 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
 
     var body: some View {
         ProviderView(provider: provider) { data in
-            let groups: [PointGroup<T>] = data.pointGroups()
+            let groups: [PointGroup<T>] = data.map { PointGroup(name: $0.name, points: $0.chartPoints()) }
 
-            if let group = groups.named(name) {
+            if let group = groups.first(where: { $0.name == name }) {
                 switch telemetry {
                 case .timer:
                     MetricsView(group: group, formatter: formatter, period: .today) { extent in

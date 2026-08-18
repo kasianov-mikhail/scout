@@ -24,8 +24,8 @@ struct MetricsContent<T: ChartNumeric>: View {
 
     var body: some View {
         ProviderView(provider: provider) { data in
-            let groups: [PointGroup<T>] = data.pointGroups()
-            let ranked = groups.ranked(on: period, by: summary)
+            let groups: [PointGroup<T>] = data.map { PointGroup(name: $0.name, points: $0.chartPoints()) }
+            let ranked = ranked(groups)
 
             if ranked.isEmpty {
                 Placeholder(
@@ -40,9 +40,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                         Row {
                             row(group: group)
                         } destination: {
-                            if let named = groups.named(group.name) {
-                                destination(group: named)
-                            }
+                            destination(group: group)
                         }
                     }
                 }
@@ -80,7 +78,7 @@ struct MetricsContent<T: ChartNumeric>: View {
         HStack {
             Text(group.name)
             Spacer()
-            Text(summary(of: group)[keyPath: formatter])
+            Text(summary(of: group.points)[keyPath: formatter])
         }
         .monospaced()
         .italic()
@@ -88,16 +86,21 @@ struct MetricsContent<T: ChartNumeric>: View {
         .lineLimit(1)
     }
 
-    private var summary: SeriesSummary {
-        telemetry == .meter ? .latest : .total
+    private func ranked(_ groups: [PointGroup<T>]) -> [PointGroup<T>] {
+        switch telemetry {
+        case .meter:
+            groups.latest(in: period.initialRange)
+        default:
+            groups.total(in: period.initialRange)
+        }
     }
 
-    private func summary(of group: PointGroup<T>) -> T {
-        switch summary {
-        case .total:
-            group.points.total
-        case .latest:
-            group.points.latest(in: period.initialRange) ?? .zero
+    private func summary(of points: [ChartPoint<T>]) -> T {
+        switch telemetry {
+        case .meter:
+            points.latest(in: period.initialRange)
+        default:
+            points.total(in: period.initialRange)
         }
     }
 }

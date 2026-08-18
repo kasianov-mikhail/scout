@@ -23,7 +23,7 @@ struct StatView: View {
             let canCompare = extent.canCompare(points: points, segment: segment)
 
             InsetList {
-                PeriodPicker(extent: $extent, periods: stat.periods)
+                PeriodPicker(extent: $extent, title: \.shortTitle)
                     .listRowSeparator(.hidden)
 
                 RangeControl(extent: $extent)
@@ -95,7 +95,7 @@ extension EnvironmentValues {
         StatView(
             showList: true,
             extent: ChartExtent(period: .yesterday),
-            stat: .init(.success([]), eventName: "app_launch", periods: Period.allCases)
+            stat: .init(.success([]), eventName: "app_launch")
         )
         .navigationTitle(en: "App Launch")
         .environmentObject(Tint())

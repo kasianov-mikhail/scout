@@ -28,9 +28,7 @@ extension MetricReading {
         self.init(baseline: previous.median ?? 0, recent: current)
     }
 
-    static func stabilities(
-        sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], in range: Range<Date>, component: Calendar.Component
-    ) -> [Double] {
+    static func stabilities(sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], in range: Range<Date>, component: Calendar.Component) -> [Double] {
         zip(
             sessions.bucket(in: range, component: component).reversed(),
             crashes.bucket(in: range, component: component).reversed()

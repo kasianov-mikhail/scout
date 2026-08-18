@@ -8,9 +8,7 @@
 import Foundation
 
 extension DatabaseReader {
-    package func metricSeries<T: MetricScalar>(
-        _ valueType: T.Type, category: String, reduce: SeriesQuery.Reduce = .sum, in range: Range<Date>
-    ) async throws -> [MetricSeries] {
+    package func metricSeries<T: MetricScalar>(_ valueType: T.Type, category: String, reduce: SeriesQuery.Reduce = .sum, in range: Range<Date>) async throws -> [MetricSeries] {
         try await series(
             matching: SeriesQuery(
                 category: category,
@@ -22,9 +20,7 @@ extension DatabaseReader {
         )
     }
 
-    package func metricSeries<T: MetricScalar>(
-        _ valueType: T.Type, categories: [String], in range: Range<Date>
-    ) async throws -> [MetricSeries] {
+    package func metricSeries<T: MetricScalar>(_ valueType: T.Type, categories: [String], in range: Range<Date>) async throws -> [MetricSeries] {
         try await withThrowingTaskGroup(of: [MetricSeries].self) { group in
             for category in categories {
                 group.addTask {
@@ -66,10 +62,7 @@ package struct SeriesQuery: Sendable {
     package var reduce: Reduce = .sum
     package var range: Range<Date>
 
-    package init(
-        name: String? = nil, category: String? = nil, values: Values? = nil, bucket: Bucket = .day,
-        byVersion: Bool = false, source: Source? = nil, reduce: Reduce = .sum, range: Range<Date>
-    ) {
+    package init(name: String? = nil, category: String? = nil, values: Values? = nil, bucket: Bucket = .day, byVersion: Bool = false, source: Source? = nil, reduce: Reduce = .sum, range: Range<Date>) {
         self.name = name
         self.category = category
         self.values = values

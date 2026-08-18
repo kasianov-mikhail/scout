@@ -14,9 +14,9 @@ struct CachedDatabase: Database {
     let scope: String
     let cache: any RecordCaching
 
-    // Series buckets are cut at week starts, and late uploads from offline devices can
-    // still mutate recently closed weeks, so only weeks that ended over a week ago are frozen.
-    var settledCutoff: @Sendable () -> Date = { Date().startOfWeek.addingWeek(-1) }
+    var settledCutoff: @Sendable () -> Date = {
+        Date().startOfWeek.addingWeek(-1)
+    }
 
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
         try await base.read(matching: query, fields: fields)

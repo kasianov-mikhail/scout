@@ -8,6 +8,11 @@
 import Foundation
 import Scout
 
+protocol ChartSeries: HasCount {
+    var date: Date { get }
+    init(date: Date, count: Count)
+}
+
 protocol HasCount {
     associatedtype Count: AdditiveArithmetic
     var count: Count { get }
@@ -19,37 +24,15 @@ extension Collection where Element: HasCount {
     }
 }
 
-protocol ChartSeries: HasCount {
-    var date: Date { get }
-
-    init(date: Date, count: Count)
-}
-
 extension Collection where Element: ChartSeries {
-    func bucket(on period: some ChartTimeScale) -> [Element] {
-        bucket(in: period.initialRange, component: period.pointComponent)
+    func total(in range: Range<Date>) -> Element.Count {
+        filter { range.contains($0.date) }
+            .total
     }
 
-    func latest(in range: Range<Date>) -> Element.Count? {
+    func latest(in range: Range<Date>) -> Element.Count {
         filter { range.contains($0.date) }
             .max { $0.date < $1.date }?
-            .count
-    }
-
-    func bucket(in range: Range<Date>, component: Calendar.Component) -> [Element] {
-        var result: [Element] = []
-        var date = range.upperBound
-
-        while date > range.lowerBound {
-            let i = -result.count - 1
-            let newDate = range.upperBound.adding(component, value: i)
-            let points = filter {
-                newDate..<date ~= $0.date
-            }
-            result.append(Element(date: newDate, count: points.total))
-            date = newDate
-        }
-
-        return result
+            .count ?? .zero
     }
 }

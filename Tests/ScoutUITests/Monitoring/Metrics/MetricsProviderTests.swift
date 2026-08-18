@@ -39,7 +39,7 @@ struct MetricsProviderTests {
         await provider.fetchIfNeeded(in: database)
         let series = try #require(try provider.result?.get())
 
-        let groups: [PointGroup<Int>] = series.pointGroups()
+        let groups: [PointGroup<Int>] = series.map { PointGroup(name: $0.name, points: $0.chartPoints()) }
         #expect(Set(groups.map(\.name)) == ["api_calls", "errors"])
 
         let calls = try #require(groups.first { $0.name == "api_calls" })

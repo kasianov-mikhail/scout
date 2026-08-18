@@ -8,45 +8,43 @@
 import CoreData
 
 struct RecordSender: Sendable {
-    // A rejected batch names no culprit, so it is halved and resent until the
-    // offending records stand alone and only they are charged. This caps the sends
-    // one pass spends on that search, so a backend rejecting everything can't turn
-    // a backlog into thousands of requests.
-    static let maxProbes = 32
-
     let id: String
     let database: any Database
-    let isTransientError: @Sendable (any Error) -> Bool
 }
 
 extension RecordSender {
     init(backend: Backend) {
         self.id = backend.id
         self.database = backend.database
-        self.isTransientError = backend.isTransientError
     }
 }
 
-@MainActor
-extension RecordSender {
-    func deliver(type syncable: any (SyncableEntry & RecordEncodable).Type, in context: NSManagedObjectContext)
-        async throws
-    {
-        try await deliver(pending: syncable, in: context)
+package protocol TransientFailure: Error {
+    var isTransient: Bool { get }
+}
+
+@MainActor extension RecordSender {
+    func deliver(_ type: any (SyncableEntry & RecordEncodable).Type, in context: NSManagedObjectContext) async throws {
+        try await deliver(type: type, in: context)
     }
 
-    private func deliver<T: SyncableEntry & RecordEncodable>(pending: T.Type, in context: NSManagedObjectContext)
-        async throws
-    {
+    func deliver<T: SyncableEntry & RecordEncodable>(type: T.Type, in context: NSManagedObjectContext) async throws {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
+
         request.predicate = NSPredicate(
-            format:
-                "SUBQUERY(deliveries, $d, $d.backendID == %@ AND $d.isPending == YES AND $d.attempts < %d).@count > 0",
+            format: """
+                SUBQUERY(deliveries, $d, \
+                $d.backendID == %@ AND $d.isPending == YES AND $d.attempts < %d\
+                ).@count > 0
+                """,
             id,
             DeliveryEntry.maxAttempts
         )
+        request.relationshipKeyPathsForPrefetching = ["deliveries"]
 
-        let objects = try context.fetch(request).filter { $0.delivery(for: id)?.isPending == true }
+        let objects = try context.fetch(request).filter {
+            $0.delivery(for: id)?.isPending == true
+        }
 
         guard objects.count > 0 else {
             return
@@ -55,16 +53,20 @@ extension RecordSender {
         do {
             try await send(objects)
         } catch {
-            try save(context)
+            if context.hasChanges {
+                try context.save()
+            }
             throw error
         }
 
-        try save(context)
+        if context.hasChanges {
+            try context.save()
+        }
     }
 
     private func send<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
         var batches = [objects]
-        var probes = Self.maxProbes
+        var probes = 32
         var rejection: (any Error)?
 
         while probes > 0, let batch = batches.popLast() {
@@ -72,14 +74,11 @@ extension RecordSender {
 
             do {
                 try await write(batch)
+            } catch let error as CancellationError {
+                throw error
+            } catch let error as any TransientFailure where error.isTransient {
+                throw error
             } catch {
-                // Only a rejection consumes the attempt budget: transient failures
-                // (offline, throttling, cancellation) must not burn the queue while
-                // the backend is unreachable.
-                guard !(error is CancellationError), !isTransientError(error) else {
-                    throw error
-                }
-
                 rejection = error
 
                 if batch.count > 1 {
@@ -104,12 +103,6 @@ extension RecordSender {
 
         for (object, record) in zip(objects, records) where object.record == record {
             object.delivery(for: id)?.isPending = false
-        }
-    }
-
-    private func save(_ context: NSManagedObjectContext) throws {
-        if context.hasChanges {
-            try context.save()
         }
     }
 }

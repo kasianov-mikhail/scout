@@ -16,6 +16,7 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 checkAvailability: { true },
                 displayName: "Production",
+                engine: .cloudKit,
                 probeStatus: { .reachable }
             ),
             Backend(
@@ -23,13 +24,14 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 checkAvailability: { true },
                 displayName: "Staging",
-                probeStatus: { .unknown }
+                engine: .cloudKit
             ),
             Backend(
                 id: "http://localhost:8080",
                 database: DefaultDatabase(),
                 checkAvailability: { false },
                 displayName: "Local",
+                engine: .cloudKit,
                 probeStatus: { .unreachable }
             ),
         ]

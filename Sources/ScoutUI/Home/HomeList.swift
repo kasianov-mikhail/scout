@@ -15,7 +15,7 @@ struct HomeList: View {
 
     @StateObject var activities = ActivityProvider()
     @StateObject var retention = RetentionProvider()
-    @StateObject var sessions = StatProvider(eventName: "Session", periods: Period.summary)
+    @StateObject var sessions = StatProvider(eventName: "Session")
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
     @StateObject var devices = DevicesProvider()
@@ -73,7 +73,7 @@ struct HomeList: View {
                 AlertListView(provider: alerts)
             }
         }
-        .rotatingProviders(
+        .refreshingProviders(
             first: [alerts, releases, retention],
             later: [sessions, activities, logs, devices]
         )
@@ -92,7 +92,7 @@ struct HomeList: View {
             path: .constant([]),
             activities: .init(),
             retention: .init(),
-            sessions: .init(eventName: "Session", periods: Period.summary),
+            sessions: .init(eventName: "Session"),
             releases: .init(.success(.samples)),
             logs: .init(),
             devices: .init(),
@@ -109,7 +109,7 @@ struct HomeList: View {
             path: .constant([]),
             activities: .init(.success(.samples)),
             retention: .init(.success(.samples)),
-            sessions: .init(.success(.samples), eventName: "Session", periods: Period.summary),
+            sessions: .init(.success(.samples), eventName: "Session"),
             releases: .init(.success(.samples)),
             logs: .init(acrossAllPeriods: MetricSeries.samples(for: .today)),
             devices: .init(.success(.sample)),
@@ -126,7 +126,7 @@ struct HomeList: View {
             path: .constant([]),
             activities: .init(.success([])),
             retention: .init(.success([])),
-            sessions: .init(.success([]), eventName: "Session", periods: Period.summary),
+            sessions: .init(.success([]), eventName: "Session"),
             releases: .init(.success([])),
             logs: .init(acrossAllPeriods: []),
             devices: .init(.success(.empty)),

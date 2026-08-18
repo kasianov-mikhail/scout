@@ -8,9 +8,16 @@
 import CoreData
 
 struct IncidentArchive<Payload: Codable & Sendable> {
-    let directory: URL
+    typealias Persist = @Sendable (Payload, UUID, UUID, NSManagedObjectContext) throws -> Void
+
+    let folder: String
     let pathExtension: String
-    let persist: @Sendable (Payload, UUID, UUID, NSManagedObjectContext) throws -> Void
+    let persist: Persist
+    var fileManager: FileManager = .default
+
+    var directory: URL {
+        fileManager.scoutDirectory(folder)
+    }
 
     func write(_ payload: Payload, id: UUID = UUID()) {
         let encoder = JSONEncoder()
@@ -20,7 +27,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
             return
         }
 
-        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
 
         let fileName = "\(id.uuidString).\(pathExtension)"
         let fileURL = directory.appendingPathComponent(fileName)
@@ -29,8 +36,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
     }
 
     func flush(deviceID: UUID) async {
-        guard let files = try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
-        else {
+        guard let files = try? fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
             return
         }
 
@@ -38,9 +44,13 @@ struct IncidentArchive<Payload: Codable & Sendable> {
         decoder.dateDecodingStrategy = .iso8601
 
         for file in files where file.pathExtension == pathExtension {
-            guard let data = try? Data(contentsOf: file), let payload = try? decoder.decode(Payload.self, from: data)
-            else {
-                try? FileManager.default.removeItem(at: file)
+            guard let data = try? Data(contentsOf: file) else {
+                try? fileManager.removeItem(at: file)
+                continue
+            }
+
+            guard let payload = try? decoder.decode(Payload.self, from: data) else {
+                try? fileManager.removeItem(at: file)
                 continue
             }
 
@@ -50,10 +60,18 @@ struct IncidentArchive<Payload: Codable & Sendable> {
                     context.mergePolicy = NSMergePolicy.scout
                     try persist(payload, id, deviceID, context)
                 }
-                try FileManager.default.removeItem(at: file)
+                try fileManager.removeItem(at: file)
             } catch {
                 print("Failed to process \(pathExtension): \(error)")
             }
         }
+    }
+}
+
+extension FileManager {
+    fileprivate func scoutDirectory(_ folder: String) -> URL {
+        urls(for: .applicationSupportDirectory, in: .userDomainMask)
+            .first!
+            .appendingPathComponent("Scout/\(folder)", isDirectory: true)
     }
 }

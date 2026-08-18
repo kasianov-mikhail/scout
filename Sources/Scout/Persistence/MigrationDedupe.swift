@@ -40,9 +40,11 @@ struct MigrationDedupe {
         let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         context.persistentStoreCoordinator = coordinator
 
+        let keys = Self.uniqueKeys.filter { source.entitiesByName[$0.entity] != nil }
+
         try context.performAndWait {
-            for (entity, key) in Self.uniqueKeys where source.entitiesByName[entity] != nil {
-                try dedupe(entityName: entity, key: key, in: context)
+            for (entity, key) in keys {
+                try Self.dedupe(entityName: entity, key: key, in: context)
             }
             if context.hasChanges {
                 try context.save()
@@ -50,7 +52,7 @@ struct MigrationDedupe {
         }
     }
 
-    private func dedupe(entityName: String, key: String, in context: NSManagedObjectContext) throws {
+    private static func dedupe(entityName: String, key: String, in context: NSManagedObjectContext) throws {
         let request = NSFetchRequest<NSManagedObject>(entityName: entityName)
         request.sortDescriptors = [NSSortDescriptor(key: DateEntry.datePrimitiveKey, ascending: true)]
 
@@ -66,8 +68,7 @@ struct MigrationDedupe {
         }
     }
 
-    private func merge(_ duplicate: NSManagedObject, into survivor: NSManagedObject, in context: NSManagedObjectContext)
-    {
+    private static func merge(_ duplicate: NSManagedObject, into survivor: NSManagedObject, in context: NSManagedObjectContext) {
         for name in survivor.entity.attributesByName.keys where survivor.value(forKey: name) == nil {
             if let value = duplicate.value(forKey: name) {
                 survivor.setValue(value, forKey: name)

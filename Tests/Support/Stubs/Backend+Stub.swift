@@ -15,6 +15,7 @@ func makeBackend(id: String) -> Backend {
         id: id,
         database: InMemoryDatabase(),
         checkAvailability: { true },
-        displayName: id
+        displayName: id,
+        engine: .cloudKit
     )
 }

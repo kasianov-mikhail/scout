@@ -14,7 +14,7 @@ extension TelemetryPersisting {
     }
 
     func logMetrics(category: String, value: some MetricScalar) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
@@ -27,7 +27,7 @@ extension TelemetryPersisting {
     }
 
     func logTimer(seconds: TimeInterval) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
@@ -49,7 +49,7 @@ extension TelemetryPersisting {
     }
 
     func logRecorder(value: Double) {
-        guard runtime.isEnabled else {
+        guard runtime.backends.count > 0 else {
             return
         }
 
@@ -83,10 +83,7 @@ extension TelemetryPersisting {
     }
 }
 
-func saveMetrics<T: MetricScalar>(
-    _ name: String, date: Date, category: String, value: T, identity: Identity.Snapshot,
-    _ context: NSManagedObjectContext
-) throws {
+func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, value: T, identity: Identity.Snapshot, _ context: NSManagedObjectContext) throws {
     let metrics = context.insert(T.Object.self)
 
     metrics.value = value

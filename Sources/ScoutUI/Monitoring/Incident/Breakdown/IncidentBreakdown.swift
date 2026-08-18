@@ -15,10 +15,7 @@ struct IncidentBreakdown: Equatable {
     let modelsByDevice: [UUID: String]
     let versionsBySession: [UUID: String]
 
-    init(
-        devices: [Segment], osVersions: [Segment], modelsByDevice: [UUID: String] = [:],
-        versionsBySession: [UUID: String] = [:]
-    ) {
+    init(devices: [Segment], osVersions: [Segment], modelsByDevice: [UUID: String] = [:], versionsBySession: [UUID: String] = [:]) {
         self.devices = devices
         self.osVersions = osVersions
         self.modelsByDevice = modelsByDevice
@@ -52,9 +49,7 @@ extension IncidentBreakdown {
         case osVersions
     }
 
-    func records<Element: SessionContext>(from records: [Element], in dimension: Dimension, matching segment: Segment)
-        -> [Element]
-    {
+    func records<Element: SessionContext>(from records: [Element], in dimension: Dimension, matching segment: Segment) -> [Element] {
         guard segment.kind == .other else {
             return records.filter { label(of: $0, in: dimension) == segment.value }
         }

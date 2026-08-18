@@ -9,12 +9,12 @@ import Scout
 import SwiftUI
 
 extension View {
-    func rotatingProviders(first: [any Provider], later: [any Provider]) -> some View {
-        modifier(RotatingProvidersModifier(first: first, later: later))
+    func refreshingProviders(first: [any Provider], later: [any Provider]) -> some View {
+        modifier(RefreshingProvidersModifier(first: first, later: later))
     }
 }
 
-private struct RotatingProvidersModifier: ViewModifier {
+private struct RefreshingProvidersModifier: ViewModifier {
     @Environment(\.database) var database
 
     let first: [any Provider]
@@ -28,7 +28,7 @@ private struct RotatingProvidersModifier: ViewModifier {
                 }
             }
         } else {
-            content.loadingGate(first).periodRefresh(first: first, later: later)
+            content.loadingGate(first).fetchTask(first: first, later: later)
         }
     }
 

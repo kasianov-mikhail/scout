@@ -11,18 +11,7 @@ import Foundation
 @testable import ScoutUI
 
 extension Hang {
-    @discardableResult static func stub(
-        name: String = "hang",
-        fingerprint: String? = nil,
-        reason: String? = nil,
-        stackTrace: [String] = [],
-        duration: TimeInterval = 4,
-        deviceID: UUID? = nil,
-        sessionID: UUID? = nil,
-        launchID: UUID? = nil,
-        installID: UUID? = nil,
-        date: Date? = Date()
-    ) -> Hang {
+    @discardableResult static func stub(name: String = "hang", fingerprint: String? = nil, reason: String? = nil, stackTrace: [String] = [], duration: TimeInterval = 4, deviceID: UUID? = nil, sessionID: UUID? = nil, launchID: UUID? = nil, installID: UUID? = nil, date: Date? = Date()) -> Hang {
         Hang(
             name: name,
             fingerprint: fingerprint ?? CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value,

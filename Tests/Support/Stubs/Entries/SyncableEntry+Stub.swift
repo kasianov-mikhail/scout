@@ -11,9 +11,7 @@ import CoreData
 
 extension SyncableEntry {
     @discardableResult
-    func seedDelivery(
-        pending: Bool = true, attempts: Int16 = 0, for backendID: String, in context: NSManagedObjectContext
-    ) -> DeliveryEntry {
+    func seedDelivery(pending: Bool = true, attempts: Int16 = 0, for backendID: String, in context: NSManagedObjectContext) -> DeliveryEntry {
         let entity = NSEntityDescription.entity(forEntityName: "DeliveryEntry", in: context)!
         let row = delivery(for: backendID) ?? DeliveryEntry(entity: entity, insertInto: context)
         row.backendID = backendID

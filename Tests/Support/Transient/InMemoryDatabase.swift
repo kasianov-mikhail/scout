@@ -13,6 +13,11 @@ struct RejectedRecordError: Error {
     let recordID: String
 }
 
+/// A connectivity-style failure: delivery must not charge an attempt for it.
+struct TransientTestError: TransientFailure {
+    let isTransient = true
+}
+
 final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var records: [Record] = []
     var errors: [Error] = []

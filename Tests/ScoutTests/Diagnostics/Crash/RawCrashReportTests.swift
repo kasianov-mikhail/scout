@@ -125,18 +125,16 @@ struct RawCrashReportTests {
 
     @Test("the archive converts a raw report into a decodable crash file")
     func archiveConvertsRawReport() throws {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        defer { try? FileManager.default.removeItem(at: tempDir) }
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let fileManager = TemporaryFileManager()
+        let archive = crashArchive(fileManager)
+        try fileManager.createDirectory(at: archive.directory, withIntermediateDirectories: true)
 
         let stem = UUID()
-        try writeRawReport(to: tempDir.appendingPathComponent("\(stem.uuidString).rawcrash"), signal: SIGABRT)
+        try writeRawReport(to: archive.directory.appendingPathComponent("\(stem.uuidString).rawcrash"), signal: SIGABRT)
 
-        let archive = CrashArchive(directory: tempDir)
         archive.convertRawReports()
 
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
+        let files = try fileManager.storedFiles("Crashes")
         #expect(files.count == 1)
 
         let file = try #require(files.first)
@@ -155,18 +153,25 @@ struct RawCrashReportTests {
 
     @Test("a corrupt raw report is removed without producing a crash file")
     func corruptRawReportIsRemoved() throws {
-        let tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        defer { try? FileManager.default.removeItem(at: tempDir) }
-        try FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+        let fileManager = TemporaryFileManager()
+        let archive = crashArchive(fileManager)
+        try fileManager.createDirectory(at: archive.directory, withIntermediateDirectories: true)
 
-        let url = tempDir.appendingPathComponent("\(UUID().uuidString).rawcrash")
+        let url = archive.directory.appendingPathComponent("\(UUID().uuidString).rawcrash")
         try Data([0xDE, 0xAD, 0xBE, 0xEF]).write(to: url)
 
-        let archive = CrashArchive(directory: tempDir)
         archive.convertRawReports()
 
-        let files = try FileManager.default.contentsOfDirectory(at: tempDir, includingPropertiesForKeys: nil)
+        let files = try fileManager.storedFiles("Crashes")
         #expect(files.count == 0)
+    }
+
+    private func crashArchive(_ fileManager: FileManager) -> IncidentArchive<CrashInfo> {
+        IncidentArchive(
+            folder: "Crashes",
+            pathExtension: "crash",
+            persist: logCrash,
+            fileManager: fileManager
+        )
     }
 }

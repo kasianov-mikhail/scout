@@ -18,8 +18,15 @@ struct SetupPage: View {
                     number: 1,
                     label: "Initialize Scout in your app",
                     code: """
+                        let scout = Runtime(
+                            backends: [backend]
+                        )
+
                         LoggingSystem.bootstrap {
-                            ScoutLogHandler(label: $0, runtime: scout)
+                            ScoutLogHandler(
+                                label: $0,
+                                runtime: scout
+                            )
                         }
                         """
                 )
@@ -43,10 +50,6 @@ struct SetupPage: View {
         let label: String
         let code: String
 
-        private var lineCount: Int {
-            code.filter { $0 == "\n" }.count + 1
-        }
-
         var body: some View {
             VStack(alignment: .leading, spacing: 8) {
                 HStack(spacing: 10) {
@@ -60,8 +63,7 @@ struct SetupPage: View {
                         .fontWeight(.medium)
                 }
                 Text(code.swiftSyntax)
-                    .lineLimit(lineCount)
-                    .minimumScaleFactor(0.6)
+                    .fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .codeChipStyle()
                     .padding(.leading, 32)

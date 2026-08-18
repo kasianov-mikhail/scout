@@ -14,9 +14,7 @@ struct DailyCount: Equatable {
 }
 
 extension DailyCount {
-    static func series(
-        from records: [some Incident], days: Int = 14, calendar: Calendar = .current, endingOn today: Date = Date()
-    ) -> [DailyCount] {
+    static func series(from records: [some Incident], days: Int = 14, calendar: Calendar = .current, endingOn today: Date = Date()) -> [DailyCount] {
         let start = calendar.startOfDay(for: today)
 
         var counts: [Date: Int] = [:]

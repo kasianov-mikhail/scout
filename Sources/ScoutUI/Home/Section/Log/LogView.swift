@@ -34,7 +34,7 @@ struct LogView: View {
                             TrendCard(
                                 title: category.title,
                                 color: category.color,
-                                trend: log.report?.trend(for: category) ?? .loading
+                                trend: log.report?[category] ?? .loading
                             )
                         }
                         .buttonStyle(.plain)

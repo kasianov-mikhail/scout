@@ -62,5 +62,5 @@ private func reportHang(duration: TimeInterval, identity: Identity) {
         duration: duration,
         identity: identity
     )
-    HangArchive.system.write(hang)
+    IncidentArchive.hang.write(hang)
 }

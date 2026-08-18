@@ -11,7 +11,7 @@ import Testing
 @testable import Scout
 @testable import ScoutUI
 
-struct LogReportTests {
+struct LogSeriesTests {
     let today = Date().startOfDay
 
     @Test("Events count everything that is neither a crash nor a hang")
@@ -25,9 +25,9 @@ struct LogReportTests {
             ]
         )
 
-        #expect(report.trend(for: .events).count == 7)
-        #expect(report.trend(for: .crashes).count == 2)
-        #expect(report.trend(for: .hangs).count == 1)
+        #expect(report[.events]?.count == 7)
+        #expect(report[.crashes]?.count == 2)
+        #expect(report[.hangs]?.count == 1)
     }
 
     @Test("Network counts the status buckets and leaves the latency histogram alone")
@@ -40,7 +40,7 @@ struct LogReportTests {
             ]
         )
 
-        #expect(report.trend(for: .network).count == 6)
+        #expect(report[.network]?.count == 6)
     }
 
     @Test("Metrics count distinct reporting series across value flavors")
@@ -53,7 +53,7 @@ struct LogReportTests {
             ]
         )
 
-        #expect(report.trend(for: .metrics).count == 2)
+        #expect(report[.metrics]?.count == 2)
     }
 
     @Test("Devices count the distinct devices seen in the period")
@@ -68,7 +68,7 @@ struct LogReportTests {
             ]
         )
 
-        #expect(report.trend(for: .devices).count == 2)
+        #expect(report[.devices]?.count == 2)
     }
 
     @Test("Every category draws a sparkline with one value per slice")
@@ -79,17 +79,18 @@ struct LogReportTests {
         )
 
         for category in LogCategory.allCases {
-            let series = try #require(report.trend(for: category).series)
+            let series = try #require(report[category]?.series)
             #expect(series.values.count == MiniChartSeries.sliceCount)
         }
     }
 
-    private func makeReport(series: [MetricSeries] = [], visits: [DeviceVisit] = []) -> LogReport {
-        LogReport(
+    private func makeReport(series: [MetricSeries] = [], visits: [DeviceVisit] = []) -> [LogCategory: Trend] {
+        LogSeries(
             series: series,
             visits: visits,
             period: .today
         )
+        .report
     }
 
     private func makeSeries(name: String, category: String? = nil, value: MetricValue) -> MetricSeries {

@@ -22,7 +22,6 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
     }
 
     func write(record: Record) async throws {}
-
     func write(records: [Record]) async throws {}
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
