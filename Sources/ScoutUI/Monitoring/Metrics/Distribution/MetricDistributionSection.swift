@@ -39,7 +39,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
             }
         }
         .listRowSeparator(.hidden)
-        .periodRefresh(provider: provider)
+        .fetchTask([provider])
     }
 }
 

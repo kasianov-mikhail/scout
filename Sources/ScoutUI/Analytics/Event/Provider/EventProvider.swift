@@ -10,7 +10,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class EventProvider: FeedProvider<Event>, Periodic {
+final class EventProvider: FeedProvider<Event>, Refreshable {
     let filter: EventQuery
 
     init(_ records: [Event]? = nil, filter: EventQuery = EventQuery()) {
@@ -27,8 +27,7 @@ final class EventProvider: FeedProvider<Event>, Periodic {
         await fetchLatest(matching: query(for: filter), in: database)
     }
 
-    @discardableResult
-    func fetchLatest(in database: DatabaseReader) async -> Bool {
+    func fetchLatest(in database: DatabaseReader) async {
         await fetchLatest(for: filter, in: database)
     }
 

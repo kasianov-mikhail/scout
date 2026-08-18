@@ -11,7 +11,7 @@ import SwiftUI
 typealias ProviderResult<T> = Result<T, Error>
 
 @MainActor
-protocol Provider: ObservableObject, Periodic {
+protocol Provider: ObservableObject, Refreshable {
     associatedtype Output
 
     var result: ProviderResult<Output>? { get set }
@@ -47,21 +47,18 @@ extension Provider {
         await fetchAgain(in: database)
     }
 
-    @discardableResult
-    func fetchLatest(in database: DatabaseReader) async -> Bool {
+    func fetchLatest(in database: DatabaseReader) async {
         if ProcessInfo.processInfo.isPreview {
-            return true
+            return
         }
         do {
             result = .success(try await fetch(in: database))
-            return true
         } catch is CancellationError {
-            return true
+            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
         } catch {
             if result == nil {
                 result = .failure(error)
             }
-            return false
         }
     }
 }

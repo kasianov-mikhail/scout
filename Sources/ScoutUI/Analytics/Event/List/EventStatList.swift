@@ -23,7 +23,7 @@ struct EventStatList: View {
     var body: some View {
         VStack {
             EventList(provider: provider)
-                .periodRefresh(provider: provider)
+                .fetchTask([provider])
                 .navigationTitle(en: range.label(using: rangeDateFormatter))
                 .font(.caption)
         }

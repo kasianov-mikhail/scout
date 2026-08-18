@@ -25,7 +25,7 @@ struct ProviderView<P: Provider, Content: View>: View {
                 ErrorView(description: Text(error.localizedDescription), retry: fetch)
             }
         }
-        .periodRefresh(provider: provider)
+        .fetchTask([provider])
     }
 
     private func fetch() async {

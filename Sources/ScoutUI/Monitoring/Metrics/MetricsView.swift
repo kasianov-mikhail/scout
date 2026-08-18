@@ -57,7 +57,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
                 formattedMarks
             }
             .listRowSeparator(.hidden)
-            .periodRefresh(provider: resets)
+            .fetchTask([resets])
             .padding(.bottom)
 
             ComparisonToggle(isOn: $isComparing).disabled(!canCompare)

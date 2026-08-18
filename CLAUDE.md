@@ -79,7 +79,7 @@ cohorts = RetentionCohort.build(
 
 ## `ViewModifier` types
 
-- A `ViewModifier` type is always `private`, exposed only through a `View` extension method (e.g. `func rotatingProviders(_ providers: [any Provider]) -> some View`). The file is named after that method, not the modifier type, and drops the `Modifier` suffix (e.g. `RotatingProviders.swift`, not `RotatingProvidersModifier.swift`).
+- A `ViewModifier` type is always `private`, exposed only through a `View` extension method (e.g. `func refreshingProviders(first: [any Provider], later: [any Provider]) -> some View`). The file is named after that method, not the modifier type, and drops the `Modifier` suffix (e.g. `RefreshingProviders.swift`, not `RefreshingProvidersModifier.swift`).
 
 # Design
 
