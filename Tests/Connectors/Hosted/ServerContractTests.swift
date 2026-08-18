@@ -353,10 +353,6 @@ struct ServerContractTests {
         return record
     }
 
-    // A real SessionEntry carries both ids, and the two aggregations read
-    // different ones: the active-user series counts devices, retention counts
-    // installs. Only the install id is worth pinning from a test, so the
-    // device gets its own.
     private func makeSession(installID: String, startDate: Date) -> Record {
         var record = Record(recordType: "Session", recordID: "contract-\(UUID().uuidString)")
         record["session_id"] = UUID().uuidString
