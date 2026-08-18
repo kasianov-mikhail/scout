@@ -37,9 +37,6 @@ struct AlertListView: View {
             .task {
                 await provider.fetchIfNeeded(in: database)
             }
-            .refreshable {
-                await provider.fetchAgain(in: database)
-            }
     }
 
     @ViewBuilder private var content: some View {
