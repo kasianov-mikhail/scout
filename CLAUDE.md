@@ -125,5 +125,5 @@ cohorts = RetentionCohort.build(
 ## Server contract
 
 - scout and scout-server (`kasianov-mikhail/scout-server`) share an HTTP wire-format contract, so changes to the two repos are often interrelated: a change to request/response shapes, field names, the queryable-field set, or endpoints on the scout side (the `Core/Database/Backend` layer — `HTTPQueryCoding`, `HTTPRecordCoding`, `HTTPDatabase`) usually needs a matching change in scout-server, and vice versa.
-- They are separate repos, so a contract change normally ships as a PR in each — call out the companion PR in both descriptions.
+- They are separate repos, so a contract change normally ships as a PR in each — link the matching PR in the other repo from both descriptions.
 - `ServerContractTests` (run by the `Server` workflow in `.github/workflows/server.yml`, which boots a real scout-server) guards the wire format, so extend and run it when you touch either side rather than assuming the contract still holds.
