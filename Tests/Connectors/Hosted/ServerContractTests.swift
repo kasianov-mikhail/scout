@@ -107,7 +107,7 @@ struct ServerContractTests {
         let series = try await database.activity(in: day..<day.addingDay())
         let point = try #require(series.first { $0.date == Int64((day.timeIntervalSince1970 * 1000).rounded()) })
 
-        // The server forward-marks the install as active that day across all
+        // The server forward-marks the device as active that day across all
         // three windows; shared data may push the counts higher.
         #expect(point.dau >= 1)
         #expect(point.wau >= 1)
@@ -355,13 +355,13 @@ struct ServerContractTests {
 
     // A real SessionEntry carries both ids, and the two aggregations read
     // different ones: the active-user series counts devices, retention counts
-    // installs. The contract records reuse one id for both, so a session
-    // written here reaches either.
+    // installs. Only the install id is worth pinning from a test, so the
+    // device gets its own.
     private func makeSession(installID: String, startDate: Date) -> Record {
         var record = Record(recordType: "Session", recordID: "contract-\(UUID().uuidString)")
         record["session_id"] = UUID().uuidString
         record["install_id"] = installID
-        record["device_id"] = installID
+        record["device_id"] = UUID().uuidString
         record["start_date"] = startDate
         return record
     }
