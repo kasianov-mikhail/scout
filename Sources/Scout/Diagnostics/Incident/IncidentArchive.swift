@@ -15,11 +15,11 @@ struct IncidentArchive<Payload: Codable & Sendable> {
     let persist: Persist
     var fileManager: FileManager = .default
 
-    private var directory: URL {
+    var directory: URL {
         fileManager.scoutDirectory(folder)
     }
 
-    func write(_ payload: Payload) {
+    func write(_ payload: Payload, id: UUID = UUID()) {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
 
@@ -29,7 +29,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
 
         try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
 
-        let fileName = "\(UUID().uuidString).\(pathExtension)"
+        let fileName = "\(id.uuidString).\(pathExtension)"
         let fileURL = directory.appendingPathComponent(fileName)
 
         try? data.write(to: fileURL, options: .atomic)

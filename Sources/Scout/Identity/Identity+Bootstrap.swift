@@ -14,7 +14,9 @@ extension Identity {
         installSignalHandler(identity: self)
         installHangHandler(identity: self)
 
-        await IncidentArchive.crash.flush(deviceID: device)
+        let crashes = IncidentArchive.crash
+        crashes.convertRawReports()
+        await crashes.flush(deviceID: device)
         await IncidentArchive.hang.flush(deviceID: device)
 
         try await persistentContainer.run(recoveryCommands)
