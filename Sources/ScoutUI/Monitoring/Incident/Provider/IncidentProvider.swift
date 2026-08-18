@@ -9,13 +9,12 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Periodic {
+final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Refreshable {
     var groups: [IncidentGroup<Element>]? {
         records.map(IncidentGroup.groups)
     }
 
-    @discardableResult
-    func fetchLatest(in database: DatabaseReader) async -> Bool {
+    func fetchLatest(in database: DatabaseReader) async {
         await fetchLatest(matching: Element.query(), in: database)
     }
 }

@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Periodic {
+final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Refreshable {
     let version: String
 
     init(_ records: [Element]? = nil, version: String) {
@@ -27,8 +27,7 @@ final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedPr
         ])
     }
 
-    @discardableResult
-    func fetchLatest(in database: DatabaseReader) async -> Bool {
+    func fetchLatest(in database: DatabaseReader) async {
         await fetchAll(matching: query, in: database)
     }
 }

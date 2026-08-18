@@ -73,7 +73,7 @@ struct HomeList: View {
                 AlertListView(provider: alerts)
             }
         }
-        .rotatingProviders(
+        .refreshingProviders(
             first: [alerts, releases, retention],
             later: [sessions, activities, logs, devices]
         )

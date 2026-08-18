@@ -49,7 +49,7 @@ struct EventView: View {
         .task {
             await param.fetchIfNeeded(in: database)
         }
-        .periodRefresh(provider: stat)
+        .fetchTask([stat])
     }
 }
 

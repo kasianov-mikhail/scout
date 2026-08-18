@@ -28,7 +28,7 @@ struct SessionInspector: View {
                 SessionHeader(info: info)
             }
         }
-        .periodRefresh(providers: [events, info])
+        .fetchTask([events, info])
         .navigationTitle(en: "Session")
         .largeNavigationTitle()
     }
