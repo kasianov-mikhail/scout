@@ -31,6 +31,10 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
         await fetchLatest(for: filter, in: database)
     }
 
+    func fetchAgain(in database: DatabaseReader) async {
+        await fetch(for: filter, in: database)
+    }
+
     private func query(for filter: EventQuery) -> RecordQuery {
         RecordQuery(
             recordType: Event.self,

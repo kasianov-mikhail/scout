@@ -39,7 +39,7 @@ struct CrashListView: View {
         }
         .navigationTitle(en: "Crashes")
         .message($provider.message)
-        .fetchTask([provider])
+        .refreshes([provider])
     }
 
     private func row(for group: IncidentGroup<Crash>) -> some View {

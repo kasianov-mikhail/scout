@@ -28,7 +28,10 @@ private struct RefreshingProvidersModifier: ViewModifier {
                 }
             }
         } else {
-            content.loadingGate(first).fetchTask(first: first, later: later)
+            content
+                .loadingGate(first)
+                .fetchTask(first: first, later: later)
+                .refreshOnPull(providers)
         }
     }
 
