@@ -15,14 +15,22 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
+    // Bumped by `clear()` so a response that was in flight when the feed was cleared
+    // (a pull racing a filter change) cannot merge stale records or its cursor back in.
+    private var generation = 0
+
     init(_ records: [Element]? = nil) {
         self.records = records
     }
 
     @discardableResult
     func fetchLatest(matching query: RecordQuery, in database: DatabaseReader) async -> Bool {
+        let generation = generation
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
+            guard generation == self.generation else {
+                return true
+            }
             if cursor == nil {
                 cursor = results.cursor
             }
@@ -40,8 +48,13 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
 
     @discardableResult
     func fetchAll(matching query: RecordQuery, in database: DatabaseReader) async -> Bool {
+        let generation = generation
         do {
-            records = try await database.readAll(matching: query, fields: Element.desiredKeys)
+            let results: [Element] = try await database.readAll(matching: query, fields: Element.desiredKeys)
+            guard generation == self.generation else {
+                return true
+            }
+            records = results
             return true
         } catch is CancellationError {
             return true
@@ -54,8 +67,12 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     func fetchAgain(matching query: RecordQuery, in database: DatabaseReader) async {
+        let generation = generation
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
+            guard generation == self.generation else {
+                return
+            }
             cursor = results.cursor
             records = try results.records.map(Element.init)
         } catch is CancellationError {
@@ -66,8 +83,12 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async {
+        let generation = generation
         do {
             let results = try await database.readMore(from: cursor, fields: nil)
+            guard generation == self.generation else {
+                return
+            }
             self.cursor = results.cursor
             records = dedup(new: records ?? [], old: try results.records.map(Element.init))
         } catch is CancellationError {
@@ -77,6 +98,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     func clear() {
+        generation += 1
         records = nil
         cursor = nil
     }

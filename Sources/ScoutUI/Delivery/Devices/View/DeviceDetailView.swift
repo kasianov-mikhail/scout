@@ -69,7 +69,7 @@ struct DeviceDetailView: View {
             }
         }
         .navigationTitle(en: device.modelName)
-        .fetchTask([incidents])
+        .refreshes([incidents])
     }
 
     private var crashes: [Crash] {

@@ -17,4 +17,8 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
     func fetchLatest(in database: DatabaseReader) async {
         await fetchLatest(matching: Element.query(), in: database)
     }
+
+    func fetchAgain(in database: DatabaseReader) async {
+        await fetchAgain(matching: Element.query(), in: database)
+    }
 }

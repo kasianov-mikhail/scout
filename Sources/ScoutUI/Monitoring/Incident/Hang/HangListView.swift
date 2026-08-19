@@ -41,7 +41,7 @@ struct HangListView: View {
         }
         .navigationTitle(en: "Hangs")
         .message($provider.message)
-        .fetchTask([provider])
+        .refreshes([provider])
     }
 }
 

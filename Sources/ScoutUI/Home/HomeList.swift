@@ -56,6 +56,10 @@ struct HomeList: View {
             )
         }
         .scrollContentBackground(.hidden)
+        .refreshingProviders(
+            first: [alerts, releases, retention],
+            later: [sessions, activities, logs, devices]
+        )
         .globalSearch()
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
@@ -73,10 +77,6 @@ struct HomeList: View {
                 AlertListView(provider: alerts)
             }
         }
-        .refreshingProviders(
-            first: [alerts, releases, retention],
-            later: [sessions, activities, logs, devices]
-        )
     }
 
     private var statView: some View {
