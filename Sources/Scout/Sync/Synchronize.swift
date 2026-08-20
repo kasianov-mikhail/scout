@@ -33,7 +33,17 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
                 let recordSender = RecordSender(backend: backend)
 
                 for type in SyncableEntry.deliverableTypes {
-                    group.addTask { try? await recordSender.deliver(type, in: context) }
+                    group.addTask {
+                        do {
+                            try await recordSender.deliver(type, in: context)
+                        } catch is CancellationError {
+                            // A cancelled pass leaves the records pending for the next one.
+                        } catch let error as any TransientFailure where error.isTransient {
+                            // Offline or throttled: the next pass retries the same records.
+                        } catch {
+                            print("Failed to deliver \(type) to backend \(recordSender.id): \(error)")
+                        }
+                    }
                 }
             }
         }
