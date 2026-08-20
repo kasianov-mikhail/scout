@@ -59,12 +59,14 @@ final class AlertEngine {
     @discardableResult
     func run(in database: DatabaseReader) async throws -> [AlertStatus] {
         let statuses = try await statuses(in: database)
+        let undelivered = await notifier?.deliver(statuses) ?? []
 
-        for status in statuses {
+        // A notification the system refused is not recorded as sent, so the next run
+        // evaluates from the same state and gets another chance to notify.
+        for status in statuses where !undelivered.contains(status.rule) {
             try registry.remember(status.outcome.state, for: status.rule)
         }
 
-        await notifier?.deliver(statuses)
         return statuses
     }
 }

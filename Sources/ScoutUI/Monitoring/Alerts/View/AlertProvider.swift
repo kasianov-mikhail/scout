@@ -12,6 +12,10 @@ import SwiftUI
 final class AlertProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[AlertStatus]>?
 
+    /// Whether the system currently refuses notifications for the host app, so the
+    /// views can say that firing rules won't reach this device.
+    @Published private(set) var notificationsOff = false
+
     private let registry: AlertRegistry
     private let notifier: AlertNotifier?
     private let engine: AlertEngine
@@ -31,9 +35,18 @@ final class AlertProvider: ObservableObject, Provider {
             if rules.count == 0, let notifier {
                 _ = await notifier.requestAuthorization()
             }
+
+            await refreshNotificationStatus()
         } catch {
             result = .failure(error)
         }
+    }
+
+    func refreshNotificationStatus() async {
+        guard let notifier else {
+            return
+        }
+        notificationsOff = await !notifier.deliversNotifications()
     }
 
     func remove(_ rule: AlertRule) {
