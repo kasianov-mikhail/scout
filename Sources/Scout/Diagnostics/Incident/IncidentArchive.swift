@@ -44,12 +44,20 @@ struct IncidentArchive<Payload: Codable & Sendable> {
         decoder.dateDecodingStrategy = .iso8601
 
         for file in files where file.pathExtension == pathExtension {
-            guard let data = try? Data(contentsOf: file) else {
+            let data: Data
+            do {
+                data = try Data(contentsOf: file)
+            } catch {
+                print("Failed to read \(file.lastPathComponent), removing it: \(error)")
                 try? fileManager.removeItem(at: file)
                 continue
             }
 
-            guard let payload = try? decoder.decode(Payload.self, from: data) else {
+            let payload: Payload
+            do {
+                payload = try decoder.decode(Payload.self, from: data)
+            } catch {
+                print("Failed to decode \(file.lastPathComponent), removing it: \(error)")
                 try? fileManager.removeItem(at: file)
                 continue
             }
