@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+import UserNotifications
 
 @testable import ScoutUI
 
@@ -27,6 +28,46 @@ struct AlertNotifierTests {
         #expect(request.content.title == "Crash-free sessions")
         #expect(request.content.body == "90.00% — below 99.50%")
         #expect(request.trigger == nil)
+    }
+
+    @Test("A refused notification is reported as undelivered")
+    func refusedDelivery() async {
+        let center = NotificationCenterStub()
+        center.addError = NSError(domain: UNErrorDomain, code: 1)
+
+        let notifier = AlertNotifier(center: center)
+        let status = makeStatus(shouldNotify: true)
+        let undelivered = await notifier.deliver([status])
+
+        #expect(undelivered == [status.rule])
+        #expect(center.requests.count == 0)
+    }
+
+    @Test("A delivered notification leaves nothing undelivered")
+    func acceptedDelivery() async {
+        let center = NotificationCenterStub()
+        let notifier = AlertNotifier(center: center)
+
+        let undelivered = await notifier.deliver([makeStatus(shouldNotify: true)])
+
+        #expect(undelivered.isEmpty)
+        #expect(center.requests.count == 1)
+    }
+
+    @Test(
+        "Only an authorized center delivers notifications",
+        arguments: [
+            (UNAuthorizationStatus.authorized, true),
+            (.provisional, true),
+            (.ephemeral, true),
+            (.denied, false),
+            (.notDetermined, false),
+        ])
+    func deliversNotifications(status: UNAuthorizationStatus, delivers: Bool) async {
+        let center = NotificationCenterStub()
+        center.status = status
+
+        #expect(await AlertNotifier(center: center).deliversNotifications() == delivers)
     }
 
     @Test("Authorization passes the center's grant through")
