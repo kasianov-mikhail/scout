@@ -23,39 +23,54 @@ struct AlertProviderTests {
 
         let center = NotificationCenterStub()
         let registry = AlertRegistry(defaults: defaults)
-        registry.rules = [errorRule]
+        try registry.save([errorRule])
         let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
 
         let statuses = try await provider.fetch(in: database)
 
         #expect(statuses[0].outcome.shouldNotify)
         #expect(center.requests.count == 0)
-        #expect(registry.state(for: errorRule) == .armed)
+        #expect(try registry.state(for: errorRule) == .armed)
     }
 
     @Test("Adding the first rule requests notification authorization once")
-    func firstRuleAuthorization() async {
+    func firstRuleAuthorization() async throws {
         let center = NotificationCenterStub()
-        let provider = makeProvider(rules: [], center: center)
+        let registry = AlertRegistry(defaults: defaults)
+        let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
 
         await provider.add(errorRule)
 
         #expect(center.authorizationRequests == 1)
-        #expect(provider.rules == [errorRule])
+        #expect(try registry.rules() == [errorRule])
 
         await provider.add(crashFreeRule)
 
         #expect(center.authorizationRequests == 1)
-        #expect(provider.rules.count == 2)
+        #expect(try registry.rules().count == 2)
     }
 
     @Test("Removing a rule leaves the others in place")
-    func remove() async {
-        let provider = makeProvider(rules: [errorRule, crashFreeRule])
+    func remove() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule, crashFreeRule])
+        let provider = AlertProvider(registry: registry)
 
         provider.remove(errorRule)
 
-        #expect(provider.rules == [crashFreeRule])
+        #expect(try registry.rules() == [crashFreeRule])
+    }
+
+    @Test("Adding a rule over an unreadable store fails instead of overwriting it")
+    func addOverUnreadableStore() async {
+        let blob = Data("garbage".utf8)
+        defaults.set(blob, forKey: "scout_alert_rules")
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults))
+
+        await provider.add(errorRule)
+
+        #expect(provider.error is AlertRegistry.UnreadableStoreError)
+        #expect(defaults.data(forKey: "scout_alert_rules") == blob)
     }
 
     private var errorRule: AlertRule {
@@ -75,12 +90,6 @@ struct AlertProviderTests {
 
     private var errorCounts: [(hoursAgo: Int, count: Int)] {
         (25...48).map { (hoursAgo: $0, count: 4) } + [(hoursAgo: 1, count: 20)]
-    }
-
-    private func makeProvider(rules: [AlertRule], center: NotificationCenterStub? = nil) -> AlertProvider {
-        let registry = AlertRegistry(defaults: defaults)
-        registry.rules = rules
-        return AlertProvider(registry: registry, notifier: center.map { AlertNotifier(center: $0) })
     }
 
     private func makeSeries(name: String, counts: [(hoursAgo: Int, count: Int)]) -> MetricSeries {

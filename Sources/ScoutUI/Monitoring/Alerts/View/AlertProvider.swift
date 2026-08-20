@@ -23,21 +23,27 @@ final class AlertProvider: ObservableObject, Provider {
         self.result = result
     }
 
-    var rules: [AlertRule] {
-        registry.rules
-    }
-
     func add(_ rule: AlertRule) async {
-        let isFirst = registry.rules.count == 0
-        registry.rules.append(rule)
+        do {
+            let rules = try registry.rules()
+            try registry.save(rules + [rule])
 
-        if isFirst, let notifier {
-            _ = await notifier.requestAuthorization()
+            if rules.count == 0, let notifier {
+                _ = await notifier.requestAuthorization()
+            }
+        } catch {
+            result = .failure(error)
         }
     }
 
     func remove(_ rule: AlertRule) {
-        registry.rules.removeAll { $0 == rule }
+        do {
+            var rules = try registry.rules()
+            rules.removeAll { $0 == rule }
+            try registry.save(rules)
+        } catch {
+            result = .failure(error)
+        }
     }
 
     func fetch(in database: DatabaseReader) async throws -> [AlertStatus] {

@@ -43,7 +43,8 @@
 
         /// Requests a background refresh, skipped while no alert rules exist.
         public static func scheduleBackgroundRefresh() {
-            guard AlertRegistry().rules.count > 0 else {
+            let rules = (try? AlertRegistry().rules()) ?? []
+            guard rules.count > 0 else {
                 return
             }
             scheduler?.schedule()

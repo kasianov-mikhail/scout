@@ -23,16 +23,17 @@ final class AlertEngine {
 
     func statuses(in database: DatabaseReader) async throws -> [AlertStatus] {
         let now = Date()
-        let readings = try await readings(for: Set(registry.rules.map(\.metric)), in: database)
+        let rules = try registry.rules()
+        let readings = try await readings(for: Set(rules.map(\.metric)), in: database)
 
-        return registry.rules.compactMap { rule in
+        return try rules.compactMap { rule in
             guard let reading = readings[rule.metric] else {
                 return nil
             }
             let outcome = evaluator.evaluate(
                 rule,
                 reading: reading,
-                state: registry.state(for: rule),
+                state: try registry.state(for: rule),
                 now: now
             )
             return AlertStatus(rule: rule, outcome: outcome, reading: reading)
@@ -60,7 +61,7 @@ final class AlertEngine {
         let statuses = try await statuses(in: database)
 
         for status in statuses {
-            registry.remember(status.outcome.state, for: status.rule)
+            try registry.remember(status.outcome.state, for: status.rule)
         }
 
         await notifier?.deliver(statuses)

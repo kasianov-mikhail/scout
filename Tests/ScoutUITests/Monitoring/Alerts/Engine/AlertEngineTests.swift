@@ -21,7 +21,7 @@ struct AlertEngineTests {
         let database = DatabaseStub()
         database.add(series: makeSeries(name: "Error", counts: errorCounts))
 
-        let engine = makeEngine(rules: [errorRule])
+        let engine = try makeEngine(rules: [errorRule])
 
         let first = try await engine.run(in: database)
 
@@ -43,7 +43,7 @@ struct AlertEngineTests {
             makeSeries(name: CrashEntry.recordType, counts: [(hoursAgo: 1, count: 1), (hoursAgo: 2, count: 1)])
         )
 
-        let engine = makeEngine(rules: [crashFreeRule])
+        let engine = try makeEngine(rules: [crashFreeRule])
         let statuses = try await engine.run(in: database)
 
         #expect(statuses[0].outcome.shouldNotify)
@@ -55,7 +55,7 @@ struct AlertEngineTests {
         database.add(series: makeSeries(name: "Error", counts: errorCounts))
 
         let center = NotificationCenterStub()
-        let engine = makeEngine(rules: [errorRule], center: center)
+        let engine = try makeEngine(rules: [errorRule], center: center)
 
         _ = try await engine.run(in: database)
 
@@ -85,7 +85,7 @@ struct AlertEngineTests {
         let database = DatabaseStub()
         database.add(series: makeSeries(name: SessionEntry.recordType, counts: [(hoursAgo: 1, count: 10)]))
 
-        let engine = makeEngine(rules: [crashFreeRule])
+        let engine = try makeEngine(rules: [crashFreeRule])
         let statuses = try await engine.run(in: database)
 
         #expect(statuses[0].outcome == AlertOutcome(state: .armed, shouldNotify: false))
@@ -110,9 +110,9 @@ struct AlertEngineTests {
         (25...48).map { (hoursAgo: $0, count: 4) } + [(hoursAgo: 1, count: 20)]
     }
 
-    private func makeEngine(rules: [AlertRule], center: NotificationCenterStub? = nil) -> AlertEngine {
+    private func makeEngine(rules: [AlertRule], center: NotificationCenterStub? = nil) throws -> AlertEngine {
         let registry = AlertRegistry(defaults: defaults)
-        registry.rules = rules
+        try registry.save(rules)
         return AlertEngine(registry: registry, notifier: center.map { AlertNotifier(center: $0) })
     }
 
