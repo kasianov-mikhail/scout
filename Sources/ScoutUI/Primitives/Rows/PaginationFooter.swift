@@ -8,19 +8,51 @@
 import Scout
 import SwiftUI
 
-/// A list footer that loads the next page when it appears.
-///
 struct PaginationFooter: View {
-    let action: () async -> Void
+    let action: () async -> Bool
+
+    // Counts the pages this footer has loaded. Bumping it re-runs the task so the
+    // next page loads while the footer stays visible; leaving it alone after a
+    // failure keeps the error in place instead of re-requesting on every redraw.
+    @State private var page = 0
+    @State private var hasFailed = false
 
     var body: some View {
-        RingIndicator(size: 22)
-            .task {
-                await action()
-            }
-            .id(UUID())
+        content
             .frame(height: 68)
             .frame(maxWidth: .infinity)
             .listRowSeparator(.hidden, edges: .bottom)
+    }
+
+    @ViewBuilder private var content: some View {
+        if hasFailed {
+            ErrorRow(description: "Couldn't load more", retry: load)
+        } else {
+            RingIndicator(size: 22)
+                .task(id: page) {
+                    await load()
+                }
+        }
+    }
+
+    private func load() async {
+        if await action() {
+            hasFailed = false
+            page += 1
+        } else {
+            hasFailed = true
+        }
+    }
+}
+
+#Preview("Loading") {
+    InsetList {
+        PaginationFooter { true }
+    }
+}
+
+#Preview("Failed") {
+    InsetList {
+        PaginationFooter { false }
     }
 }

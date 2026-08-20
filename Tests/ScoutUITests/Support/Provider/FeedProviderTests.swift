@@ -95,6 +95,27 @@ struct FeedProviderTests {
         #expect(provider.error != nil)
     }
 
+    @Test("A failed page load reports the failure and keeps the loaded records")
+    func fetchMoreReportsFailure() async throws {
+        let page1 = [Record.eventStub(name: "a", sessionID: UUID(), date: Date())]
+        let database = PagingDatabase(page1: page1, page2: [])
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let cursor = try #require(provider.cursor)
+
+        let failing = RecordCursor { _ in throw RefreshFailure() }
+        let loaded = await provider.fetchMore(cursor: failing, in: database)
+
+        #expect(loaded == false)
+        #expect(provider.records?.count == 1)
+        #expect(provider.message != nil)
+
+        let reloaded = await provider.fetchMore(cursor: cursor, in: database)
+
+        #expect(reloaded)
+    }
+
     @Test("A cancelled reload or page load stays quiet and keeps prior records")
     func cancellationStaysQuiet() async throws {
         let database = DatabaseStub()
@@ -108,8 +129,9 @@ struct FeedProviderTests {
         #expect(provider.records?.count == 1)
 
         let cursor = RecordCursor { _ in throw CancellationError() }
-        await provider.fetchMore(cursor: cursor, in: database)
+        let loaded = await provider.fetchMore(cursor: cursor, in: database)
 
+        #expect(loaded)
         #expect(provider.records?.count == 1)
         #expect(provider.message == nil)
     }
