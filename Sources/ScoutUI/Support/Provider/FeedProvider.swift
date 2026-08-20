@@ -15,6 +15,10 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
+    // Set when a load fails while the feed is still empty, so the owning view can
+    // render a full error state instead of an indefinite loading indicator.
+    @Published private(set) var error: Error?
+
     // Bumped by `clear()` so a response that was in flight when the feed was cleared
     // (a pull racing a filter change) cannot merge stale records or its cursor back in.
     private var generation = 0
@@ -35,11 +39,13 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
                 cursor = results.cursor
             }
             records = dedup(new: try results.records.map(Element.init), old: records ?? [])
+            error = nil
             return true
         } catch is CancellationError {
             return true
         } catch {
             if records == nil {
+                self.error = error
                 message = Message(error.localizedDescription, level: .error)
             }
             return false
@@ -55,11 +61,13 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
                 return true
             }
             records = results
+            error = nil
             return true
         } catch is CancellationError {
             return true
         } catch {
             if records == nil {
+                self.error = error
                 message = Message(error.localizedDescription, level: .error)
             }
             return false
@@ -75,9 +83,13 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
             }
             cursor = results.cursor
             records = try results.records.map(Element.init)
+            error = nil
         } catch is CancellationError {
             // A cancelled task (e.g. the view was recreated) leaves the feed untouched so it retries.
         } catch {
+            if records == nil {
+                self.error = error
+            }
             message = Message(error.localizedDescription, level: .error)
         }
     }
@@ -101,5 +113,6 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         generation += 1
         records = nil
         cursor = nil
+        error = nil
     }
 }
