@@ -11,6 +11,7 @@ import SwiftUI
 struct DeviceDetailView: View {
     let device: DeviceSummary
 
+    @Environment(\.database) private var database
     @StateObject private var incidents: DeviceIncidentsProvider
 
     init(device: DeviceSummary, incidents: DeviceIncidentsProvider? = nil) {
@@ -32,6 +33,13 @@ struct DeviceDetailView: View {
                 Readout(title: "Sessions", value: device.sessions.plain, color: .primary)
                 Readout(title: "Crashes", value: device.crashes.plain, color: device.crashes > 0 ? .red : .primary)
                 Spacer()
+            }
+
+            if let error = incidents.error {
+                Header(title: "Incidents")
+                ErrorRow(description: error.localizedDescription) {
+                    await incidents.fetchAgain(in: database)
+                }
             }
 
             if crashes.count > 0 {
