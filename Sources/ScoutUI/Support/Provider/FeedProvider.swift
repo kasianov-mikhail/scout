@@ -94,18 +94,22 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         }
     }
 
-    func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async {
+    @discardableResult
+    func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async -> Bool {
         let generation = generation
         do {
             let results = try await database.readMore(from: cursor, fields: nil)
             guard generation == self.generation else {
-                return
+                return true
             }
             self.cursor = results.cursor
             records = dedup(new: records ?? [], old: try results.records.map(Element.init))
+            return true
         } catch is CancellationError {
+            return true
         } catch {
             message = Message(error.localizedDescription, level: .error)
+            return false
         }
     }
 
