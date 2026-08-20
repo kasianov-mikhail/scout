@@ -35,6 +35,10 @@ struct HangListView: View {
                     }
                     .animation(nil, value: groups)
                 }
+            } else if let error = provider.error {
+                ErrorView(description: error.localizedDescription) {
+                    await provider.fetchAgain(in: database)
+                }
             } else {
                 RingIndicator().frame(maxHeight: .infinity)
             }
