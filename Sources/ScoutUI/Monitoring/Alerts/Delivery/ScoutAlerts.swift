@@ -37,7 +37,9 @@
                 await refresh(engine: engine, backends: backends)
             }
 
-            refresher.register()
+            if !refresher.register() {
+                print("Failed to register the alert background refresh; list \(taskIdentifier) in BGTaskSchedulerPermittedIdentifiers and register before the app finishes launching")
+            }
             scheduler = refresher
         }
 

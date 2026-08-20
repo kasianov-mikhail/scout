@@ -49,7 +49,11 @@
         func schedule() {
             let request = BGAppRefreshTaskRequest(identifier: Self.taskIdentifier)
             request.earliestBeginDate = Date(timeIntervalSinceNow: interval)
-            try? scheduler.submit(request)
+            do {
+                try scheduler.submit(request)
+            } catch {
+                print("Failed to schedule the alert background refresh: \(error)")
+            }
         }
     }
 #endif
