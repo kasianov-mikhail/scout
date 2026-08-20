@@ -23,16 +23,17 @@ struct IncidentArchive<Payload: Codable & Sendable> {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
 
-        guard let data = try? encoder.encode(payload) else {
-            return
+        do {
+            let data = try encoder.encode(payload)
+            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+
+            let fileName = "\(UUID().uuidString).\(pathExtension)"
+            let fileURL = directory.appendingPathComponent(fileName)
+
+            try data.write(to: fileURL, options: .atomic)
+        } catch {
+            print("Failed to archive \(pathExtension): \(error)")
         }
-
-        try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-
-        let fileName = "\(UUID().uuidString).\(pathExtension)"
-        let fileURL = directory.appendingPathComponent(fileName)
-
-        try? data.write(to: fileURL, options: .atomic)
     }
 
     func flush(deviceID: UUID) async {
