@@ -47,6 +47,10 @@ struct AlertEditorView: View {
             }
             .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
 
+            if draft.notifies, provider.notificationsOff {
+                NotificationsOffRow()
+            }
+
             backtestRow
         }
         .navigationTitle(en: "New Rule")
@@ -62,6 +66,9 @@ struct AlertEditorView: View {
                 }
                 .disabled(!draft.isValid)
             }
+        }
+        .task {
+            await provider.refreshNotificationStatus()
         }
         .task(id: draft.metric) {
             guard draft.isValid else { return }

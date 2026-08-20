@@ -35,7 +35,11 @@ struct AlertListView: View {
                 .opaquePresentation()
             }
             .task {
+                await provider.refreshNotificationStatus()
                 await provider.fetchIfNeeded(in: database)
+            }
+            .onReceive(NotificationCenter.default.publisher(for: AppLifecycle.willEnterForeground)) { _ in
+                Task { await provider.refreshNotificationStatus() }
             }
             .refreshOnPull([provider])
     }
@@ -45,6 +49,10 @@ struct AlertListView: View {
         case .success(let statuses) where statuses.count > 0:
             InsetList {
                 chips(statuses)
+
+                if provider.notificationsOff, statuses.contains(where: \.rule.notifies) {
+                    NotificationsOffRow()
+                }
 
                 Header(title: "Rules") {
                     if statuses.firingCount > 0 {

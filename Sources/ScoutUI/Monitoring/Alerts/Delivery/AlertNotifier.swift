@@ -10,12 +10,17 @@ import UserNotifications
 protocol AlertNotificationCenter: Sendable {
     func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
     func add(_ request: UNNotificationRequest) async throws
+    func authorizationStatus() async -> UNAuthorizationStatus
 }
 
 // UNUserNotificationCenter is documented thread-safe but not annotated Sendable in the SDK.
 extension UNUserNotificationCenter: @retroactive @unchecked Sendable {}
 
-extension UNUserNotificationCenter: AlertNotificationCenter {}
+extension UNUserNotificationCenter: AlertNotificationCenter {
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        await notificationSettings().authorizationStatus
+    }
+}
 
 struct AlertNotifier {
     let center: AlertNotificationCenter
@@ -28,7 +33,21 @@ struct AlertNotifier {
         (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
     }
 
-    func deliver(_ statuses: [AlertStatus]) async {
+    func deliversNotifications() async -> Bool {
+        switch await center.authorizationStatus() {
+        case .authorized, .provisional, .ephemeral:
+            true
+        default:
+            false
+        }
+    }
+
+    /// Posts a notification for every status that asks for one, and reports the
+    /// rules whose notification the system refused.
+    @discardableResult
+    func deliver(_ statuses: [AlertStatus]) async -> Set<AlertRule> {
+        var undelivered: Set<AlertRule> = []
+
         for status in statuses {
             guard let message = AlertMessage(status: status) else {
                 continue
@@ -44,7 +63,14 @@ struct AlertNotifier {
                 content: content,
                 trigger: nil
             )
-            try? await center.add(request)
+
+            do {
+                try await center.add(request)
+            } catch {
+                undelivered.insert(status.rule)
+            }
         }
+
+        return undelivered
     }
 }

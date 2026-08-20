@@ -61,6 +61,23 @@ struct AlertProviderTests {
         #expect(try registry.rules() == [crashFreeRule])
     }
 
+    @Test("A denied center makes the provider report that notifications are off")
+    func notificationsOffWhenDenied() async {
+        let center = NotificationCenterStub()
+        center.status = .denied
+        center.granted = false
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+
+        await provider.add(errorRule)
+
+        #expect(provider.notificationsOff)
+
+        center.status = .authorized
+        await provider.refreshNotificationStatus()
+
+        #expect(!provider.notificationsOff)
+    }
+
     @Test("Adding a rule over an unreadable store fails instead of overwriting it")
     func addOverUnreadableStore() async {
         let blob = Data("garbage".utf8)

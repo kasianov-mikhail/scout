@@ -15,6 +15,8 @@ final class NotificationCenterStub: AlertNotificationCenter, @unchecked Sendable
     private var grantedStorage = true
     private var authorizationStorage = 0
     private var requestStorage: [UNNotificationRequest] = []
+    private var statusStorage = UNAuthorizationStatus.authorized
+    private var addErrorStorage: (any Error)?
 
     var granted: Bool {
         get {
@@ -26,6 +28,32 @@ final class NotificationCenterStub: AlertNotificationCenter, @unchecked Sendable
             lock.lock()
             defer { lock.unlock() }
             grantedStorage = newValue
+        }
+    }
+
+    var status: UNAuthorizationStatus {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return statusStorage
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            statusStorage = newValue
+        }
+    }
+
+    var addError: (any Error)? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return addErrorStorage
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            addErrorStorage = newValue
         }
     }
 
@@ -46,7 +74,14 @@ final class NotificationCenterStub: AlertNotificationCenter, @unchecked Sendable
     }
 
     func add(_ request: UNNotificationRequest) async throws {
+        if let addError {
+            throw addError
+        }
         record(request)
+    }
+
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        status
     }
 
     private func recordAuthorization() -> Bool {
