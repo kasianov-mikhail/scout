@@ -14,6 +14,7 @@ extension EventView {
 
         let count: Int
 
+        @Environment(\.database) private var database
         @ObservedObject var param: ParamProvider
         @Binding var isParamPresented: Bool
 
@@ -30,6 +31,10 @@ extension EventView {
             if let items {
                 ForEach(items.prefix(Self.previewLimit)) { item in
                     ParamRow(item: item)
+                }
+            } else if let error = param.error {
+                ErrorRow(description: error.localizedDescription) {
+                    await param.fetchAgain(in: database)
                 }
             } else {
                 ForEach(0..<min(Self.previewLimit, count), id: \.self) { _ in
