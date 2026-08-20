@@ -17,6 +17,7 @@ struct ChartExportSheet<ChartContent: View>: View {
 
     @State private var options = ChartExportOptions()
     @State private var fileURL: URL?
+    @State private var message: Message?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.displayScale) private var displayScale
@@ -86,6 +87,7 @@ struct ChartExportSheet<ChartContent: View>: View {
         .task(id: options) {
             fileURL = exportURL()
         }
+        .message($message)
         .navigationTitle(en: "Export Image")
         .inlineNavigationTitle()
         .toolbar {
@@ -138,10 +140,16 @@ struct ChartExportSheet<ChartContent: View>: View {
 
     private func exportURL() -> URL? {
         guard let data = ChartExportRenderer.data(for: exportView, format: options.format, scale: displayScale) else {
+            message = Message("Couldn't render the chart image", level: .error)
             return nil
         }
         let file = ChartExportFile(data: data, name: title, format: options.format)
-        return try? file.write()
+        do {
+            return try file.write()
+        } catch {
+            message = Message(error.localizedDescription, level: .error)
+            return nil
+        }
     }
 
     private var exportView: some View {
