@@ -86,7 +86,12 @@ package protocol TransientFailure: Error {
                     batches.append(Array(batch[half...]))
                     batches.append(Array(batch[..<half]))
                 } else {
-                    batch[0].delivery(for: id)?.attempts += 1
+                    let delivery = batch[0].delivery(for: id)
+                    delivery?.attempts += 1
+
+                    if let delivery, delivery.attempts >= DeliveryEntry.maxAttempts {
+                        print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
+                    }
                 }
             }
         }
