@@ -14,16 +14,25 @@ struct AnalyticsView: View {
     @StateObject var provider = EventProvider()
     @StateObject var search = EventProvider()
 
+    @Environment(\.database) private var database
+
     var body: some View {
-        EventList(provider: activeProvider)
+        EventList(provider: activeProvider, retry: retry)
             .eventFilter($filter, provider: provider, search: search)
             .navigationTitle(en: "Events")
             .resetsTint()
-            .message($provider.message)
     }
 
     private var activeProvider: EventProvider {
         filter.text.isEmpty ? provider : search
+    }
+
+    private func retry() async {
+        if filter.text.isEmpty {
+            await provider.fetchLatest(for: filter, in: database)
+        } else {
+            await search.fetch(for: filter, in: database)
+        }
     }
 }
 

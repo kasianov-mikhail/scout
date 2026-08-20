@@ -66,6 +66,33 @@ struct FeedProviderTests {
         #expect(succeeded == false)
         #expect(provider.records?.count == 1)
         #expect(provider.message == nil)
+        #expect(provider.error == nil)
+    }
+
+    @Test("A failed first load surfaces an error state until a load succeeds")
+    func firstLoadFailureSetsError() async throws {
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: FailingDatabase())
+
+        #expect(provider.records == nil)
+        #expect(provider.error != nil)
+        #expect(provider.message != nil)
+
+        let database = DatabaseStub()
+        database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
+        await provider.fetchLatest(for: EventQuery(), in: database)
+
+        #expect(provider.error == nil)
+        #expect(provider.records?.count == 1)
+    }
+
+    @Test("A failed reload of an empty feed surfaces the error state")
+    func reloadFailureOnEmptyFeedSetsError() async throws {
+        let provider = EventProvider()
+        await provider.fetch(for: EventQuery(), in: FailingDatabase())
+
+        #expect(provider.records == nil)
+        #expect(provider.error != nil)
     }
 
     @Test("A cancelled reload or page load stays quiet and keeps prior records")
