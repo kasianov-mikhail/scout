@@ -9,42 +9,57 @@ import Foundation
 
 @MainActor
 final class AlertRegistry {
+    struct UnreadableStoreError: LocalizedError {
+        let key: String
+        let underlying: any Error
+
+        var errorDescription: String? {
+            "The stored alert data under \"\(key)\" can't be read: \(underlying.localizedDescription)"
+        }
+    }
+
     private let defaults: UserDefaults
 
     init(defaults: UserDefaults = .standard) {
         self.defaults = defaults
     }
 
-    var rules: [AlertRule] {
-        get {
-            decode([AlertRule].self, forKey: "scout_alert_rules") ?? []
-        }
-        set {
-            encode(newValue, forKey: "scout_alert_rules")
-            states = states.filter { newValue.contains($0.key) }
-        }
+    func rules() throws -> [AlertRule] {
+        try decode([AlertRule].self, forKey: "scout_alert_rules") ?? []
     }
 
-    func state(for rule: AlertRule) -> AlertState {
-        states[rule] ?? .armed
+    func save(_ rules: [AlertRule]) throws {
+        let states = try states()
+        try encode(rules, forKey: "scout_alert_rules")
+        try encode(states.filter { rules.contains($0.key) }, forKey: "scout_alert_states")
     }
 
-    func remember(_ state: AlertState, for rule: AlertRule) {
-        var updated = states
+    func state(for rule: AlertRule) throws -> AlertState {
+        try states()[rule] ?? .armed
+    }
+
+    func remember(_ state: AlertState, for rule: AlertRule) throws {
+        var updated = try states()
         updated[rule] = state
-        states = updated
+        try encode(updated, forKey: "scout_alert_states")
     }
 
-    private var states: [AlertRule: AlertState] {
-        get { decode([AlertRule: AlertState].self, forKey: "scout_alert_states") ?? [:] }
-        set { encode(newValue, forKey: "scout_alert_states") }
+    private func states() throws -> [AlertRule: AlertState] {
+        try decode([AlertRule: AlertState].self, forKey: "scout_alert_states") ?? [:]
     }
 
-    private func decode<T: Decodable>(_ type: T.Type, forKey key: String) -> T? {
-        defaults.data(forKey: key).flatMap { try? JSONDecoder().decode(type, from: $0) }
+    private func decode<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T? {
+        guard let data = defaults.data(forKey: key) else {
+            return nil
+        }
+        do {
+            return try JSONDecoder().decode(type, from: data)
+        } catch {
+            throw UnreadableStoreError(key: key, underlying: error)
+        }
     }
 
-    private func encode(_ value: some Encodable, forKey key: String) {
-        defaults.set(try? JSONEncoder().encode(value), forKey: key)
+    private func encode(_ value: some Encodable, forKey key: String) throws {
+        defaults.set(try JSONEncoder().encode(value), forKey: key)
     }
 }
