@@ -86,6 +86,22 @@ struct FeedProviderTests {
         #expect(provider.records?.count == 1)
     }
 
+    @Test("A failed first load leaves an incident feed without groups and with an error")
+    func incidentFirstLoadFailureSetsError() async throws {
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchLatest(in: FailingDatabase())
+
+        #expect(provider.groups == nil)
+        #expect(provider.error != nil)
+
+        let database = DatabaseStub()
+        database.add(Crash.stub(fingerprint: "A").record)
+        await provider.fetchAgain(in: database)
+
+        #expect(provider.groups?.count == 1)
+        #expect(provider.error == nil)
+    }
+
     @Test("A failed reload of an empty feed surfaces the error state")
     func reloadFailureOnEmptyFeedSetsError() async throws {
         let provider = EventProvider()
