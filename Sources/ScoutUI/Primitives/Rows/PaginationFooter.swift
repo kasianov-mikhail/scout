@@ -47,7 +47,12 @@ struct PaginationFooter: View {
 
 #Preview("Loading") {
     InsetList {
-        PaginationFooter { true }
+        // A page that never arrives: an action that returned right away would re-arm
+        // the task on every success and spin the preview.
+        PaginationFooter {
+            try? await Task.sleep(for: .seconds(60))
+            return true
+        }
     }
 }
 
