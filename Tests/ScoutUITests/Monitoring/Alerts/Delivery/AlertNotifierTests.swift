@@ -55,19 +55,19 @@ struct AlertNotifierTests {
     }
 
     @Test(
-        "Only an authorized center delivers notifications",
+        "Only a denied center refuses notifications",
         arguments: [
-            (UNAuthorizationStatus.authorized, true),
-            (.provisional, true),
-            (.ephemeral, true),
-            (.denied, false),
+            (UNAuthorizationStatus.denied, true),
+            (.authorized, false),
+            (.provisional, false),
+            (.ephemeral, false),
             (.notDetermined, false),
         ])
-    func deliversNotifications(status: UNAuthorizationStatus, delivers: Bool) async {
+    func refusesNotifications(status: UNAuthorizationStatus, refuses: Bool) async {
         let center = NotificationCenterStub()
         center.status = status
 
-        #expect(await AlertNotifier(center: center).deliversNotifications() == delivers)
+        #expect(await AlertNotifier(center: center).refusesNotifications() == refuses)
     }
 
     @Test("Authorization passes the center's grant through")

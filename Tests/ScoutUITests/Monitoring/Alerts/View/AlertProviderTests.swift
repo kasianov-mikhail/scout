@@ -78,6 +78,17 @@ struct AlertProviderTests {
         #expect(!provider.notificationsOff)
     }
 
+    @Test("A center that has not been asked yet doesn't claim notifications are off")
+    func notificationsOnWhenNotDetermined() async {
+        let center = NotificationCenterStub()
+        center.status = .notDetermined
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+
+        await provider.refreshNotificationStatus()
+
+        #expect(!provider.notificationsOff)
+    }
+
     @Test("Adding a rule over an unreadable store fails instead of overwriting it")
     func addOverUnreadableStore() async {
         let blob = Data("garbage".utf8)

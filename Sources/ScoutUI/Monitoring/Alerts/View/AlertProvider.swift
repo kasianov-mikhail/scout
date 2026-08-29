@@ -46,7 +46,7 @@ final class AlertProvider: ObservableObject, Provider {
         guard let notifier else {
             return
         }
-        notificationsOff = await !notifier.deliversNotifications()
+        notificationsOff = await notifier.refusesNotifications()
     }
 
     func remove(_ rule: AlertRule) {

@@ -33,13 +33,10 @@ struct AlertNotifier {
         (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
     }
 
-    func deliversNotifications() async -> Bool {
-        switch await center.authorizationStatus() {
-        case .authorized, .provisional, .ephemeral:
-            true
-        default:
-            false
-        }
+    // Only an explicit denial is a refusal: a status the user has not been asked
+    // about yet still turns into a prompt when the first notifying rule is saved.
+    func refusesNotifications() async -> Bool {
+        await center.authorizationStatus() == .denied
     }
 
     /// Posts a notification for every status that asks for one, and reports the
