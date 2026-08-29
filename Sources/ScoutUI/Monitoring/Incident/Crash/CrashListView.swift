@@ -1,5 +1,5 @@
 //
-// Copyright 2026 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -9,46 +9,21 @@ import Scout
 import SwiftUI
 
 struct CrashListView: View {
-    @Environment(\.database) var database
     @StateObject var provider = IncidentProvider<Crash>()
 
     var body: some View {
-        Group {
-            if let groups = provider.groups {
-                if groups.isEmpty {
-                    Placeholder(
-                        text: "No crashes",
-                        systemImage: "checkmark.shield",
-                        description: "No crash reports have been recorded"
-                    )
-                } else {
-                    InsetList {
-                        ForEach(groups, content: row)
-
-                        if let cursor = provider.cursor {
-                            PaginationFooter {
-                                await provider.fetchMore(cursor: cursor, in: database)
-                            }
-                        }
-                    }
-                    .animation(nil, value: groups)
-                }
-            } else if let error = provider.error {
-                ErrorView(description: error.localizedDescription) {
-                    await provider.fetchAgain(in: database)
-                }
-            } else {
-                RingIndicator().frame(maxHeight: .infinity)
+        IncidentList(
+            provider: provider,
+            title: "Crashes",
+            placeholder: Placeholder(
+                text: "No crashes",
+                systemImage: "checkmark.shield",
+                description: "No crash reports have been recorded"
+            )
+        ) { group in
+            IncidentRow(group: group) { group in
+                CrashGroupDetailView(group: group)
             }
-        }
-        .navigationTitle(en: "Crashes")
-        .message($provider.message)
-        .refreshes([provider])
-    }
-
-    private func row(for group: IncidentGroup<Crash>) -> some View {
-        IncidentRow(group: group) { group in
-            CrashGroupDetailView(group: group)
         }
     }
 }

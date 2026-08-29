@@ -1,5 +1,5 @@
 //
-// Copyright 2026 Mikhail Kasianov
+// Copyright 2025 Mikhail Kasianov
 //
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
@@ -9,43 +9,20 @@ import Scout
 import SwiftUI
 
 struct HangListView: View {
-    @Environment(\.database) var database
     @StateObject var provider = IncidentProvider<Hang>()
 
     var body: some View {
-        Group {
-            if let groups = provider.groups {
-                if groups.isEmpty {
-                    Placeholder(
-                        text: "No hangs",
-                        systemImage: "checkmark.shield",
-                        description: "No unresponsive main thread has been recorded"
-                    )
-                } else {
-                    InsetList {
-                        ForEach(groups) { group in
-                            HangRow(group: group)
-                        }
-
-                        if let cursor = provider.cursor {
-                            PaginationFooter {
-                                await provider.fetchMore(cursor: cursor, in: database)
-                            }
-                        }
-                    }
-                    .animation(nil, value: groups)
-                }
-            } else if let error = provider.error {
-                ErrorView(description: error.localizedDescription) {
-                    await provider.fetchAgain(in: database)
-                }
-            } else {
-                RingIndicator().frame(maxHeight: .infinity)
-            }
+        IncidentList(
+            provider: provider,
+            title: "Hangs",
+            placeholder: Placeholder(
+                text: "No hangs",
+                systemImage: "checkmark.shield",
+                description: "No unresponsive main thread has been recorded"
+            )
+        ) { group in
+            HangRow(group: group)
         }
-        .navigationTitle(en: "Hangs")
-        .message($provider.message)
-        .refreshes([provider])
     }
 }
 
