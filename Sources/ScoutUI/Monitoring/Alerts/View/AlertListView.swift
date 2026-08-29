@@ -35,12 +35,9 @@ struct AlertListView: View {
                 .opaquePresentation()
             }
             .task {
-                await provider.refreshNotificationStatus()
                 await provider.fetchIfNeeded(in: database)
             }
-            .onReceive(NotificationCenter.default.publisher(for: AppLifecycle.willEnterForeground)) { _ in
-                Task { await provider.refreshNotificationStatus() }
-            }
+            .refreshingNotificationStatus(of: provider)
             .refreshOnPull([provider])
     }
 

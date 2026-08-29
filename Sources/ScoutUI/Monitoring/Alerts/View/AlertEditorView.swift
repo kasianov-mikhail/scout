@@ -67,9 +67,7 @@ struct AlertEditorView: View {
                 .disabled(!draft.isValid)
             }
         }
-        .task {
-            await provider.refreshNotificationStatus()
-        }
+        .refreshingNotificationStatus(of: provider)
         .task(id: draft.metric) {
             guard draft.isValid else { return }
             guard (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
