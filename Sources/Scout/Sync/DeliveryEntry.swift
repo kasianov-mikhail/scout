@@ -19,13 +19,15 @@ final class DeliveryEntry: NSManagedObject {
     static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<
         NSManagedObjectID
     > {
-        let request = NSFetchRequest<DeliveryEntry>(entityName: "DeliveryEntry")
+        let request = NSFetchRequest<NSDictionary>(entityName: "DeliveryEntry")
+        request.resultType = .dictionaryResultType
+        request.propertiesToFetch = ["object"]
         request.predicate = NSPredicate(
             format: "backendID IN %@ AND isPending == YES AND attempts < %d",
             backendIDs,
             DeliveryEntry.maxAttempts
         )
 
-        return Set(try context.fetch(request).map(\.object.objectID))
+        return Set(try context.fetch(request).compactMap { $0["object"] as? NSManagedObjectID })
     }
 }
