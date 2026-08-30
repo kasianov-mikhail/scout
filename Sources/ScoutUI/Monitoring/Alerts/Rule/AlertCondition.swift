@@ -31,11 +31,11 @@ extension AlertCondition {
             return false
         }
 
-        switch comparison {
+        return switch comparison {
         case .below:
-            return value < reference
+            value < reference
         case .above:
-            return value > reference
+            value > reference
         }
     }
 }

@@ -25,7 +25,7 @@ struct SeriesSpan {
     private func points(matching isIncluded: (MetricSeries) -> Bool) -> [ChartPoint<Int>] {
         series
             .filter(isIncluded)
-            .flatMap { $0.chartPoints() as [ChartPoint<Int>] }
+            .flatMap { $0.chartPoints() }
             .filter { range.contains($0.date) }
     }
 

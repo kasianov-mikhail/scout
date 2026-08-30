@@ -18,50 +18,79 @@ extension AlertMetric {
         let range = period.previousRange.lowerBound..<period.initialRange.upperBound
 
         switch self {
-        case .eventCount:
-            return MetricReading(points: try await eventPoints(in: database, range: range), period: period)
+        case .eventCount(let name):
+            let series = try await database.eventSeries(named: name, in: range)
+
+            return MetricReading(
+                points: series.flatMap { $0.chartPoints() },
+                period: period
+            )
+
         case .crashFreeSessions:
-            let (sessions, crashes) = try await lifecyclePoints(in: database, range: range)
-            return MetricReading(sessions: sessions, crashes: crashes, period: period)
+            async let sessions = database.sessionSeries(in: range)
+            async let crashes = database.crashSeries(in: range)
+
+            return try await MetricReading(
+                sessions: sessions.flatMap { $0.chartPoints() },
+                crashes: crashes.flatMap { $0.chartPoints() },
+                period: period
+            )
         }
     }
 
     func values(in database: DatabaseReader, range: Range<Date>) async throws -> [Double] {
         switch self {
-        case .eventCount:
-            return try await eventPoints(in: database, range: range)
+        case .eventCount(let name):
+            return try await database.eventSeries(named: name, in: range)
+                .flatMap { $0.chartPoints() as [ChartPoint<Int>] }
                 .bucket(in: range, component: .hour)
                 .reversed()
                 .map { Double($0.count) }
 
         case .crashFreeSessions:
-            let (sessions, crashes) = try await lifecyclePoints(in: database, range: range)
-            return MetricReading.stabilities(sessions: sessions, crashes: crashes, in: range, component: .hour)
+            async let sessions = database.sessionSeries(in: range)
+            async let crashes = database.crashSeries(in: range)
+
+            return try await stabilityValues(
+                sessions: sessions.flatMap { $0.chartPoints() },
+                crashes: crashes.flatMap { $0.chartPoints() },
+                in: range,
+                component: .hour
+            )
         }
     }
+}
 
-    private func eventPoints(in database: DatabaseReader, range: Range<Date>) async throws -> [ChartPoint<Int>] {
-        guard case .eventCount(let name) = self else {
-            return []
-        }
-
-        let series = try await database.series(
-            matching: SeriesQuery(name: name, bucket: .hour, range: range)
+extension DatabaseReader {
+    fileprivate func eventSeries(named name: String, in range: Range<Date>) async throws -> [MetricSeries] {
+        try await series(
+            matching: SeriesQuery(
+                name: name,
+                bucket: .hour,
+                range: range
+            )
         )
-        return series.flatMap { $0.chartPoints() }
     }
 
-    private func lifecyclePoints(in database: DatabaseReader, range: Range<Date>) async throws -> (sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>]) {
-        async let sessions = database.series(
-            matching: SeriesQuery(name: SessionEntry.recordType, bucket: .hour, source: .lifecycle, range: range)
+    fileprivate func sessionSeries(in range: Range<Date>) async throws -> [MetricSeries] {
+        try await series(
+            matching: SeriesQuery(
+                name: SessionEntry.recordType,
+                bucket: .hour,
+                source: .lifecycle,
+                range: range
+            )
         )
-        async let crashes = database.series(
-            matching: SeriesQuery(name: CrashEntry.recordType, bucket: .hour, source: .lifecycle, range: range)
-        )
+    }
 
-        return (
-            sessions: try await sessions.flatMap { $0.chartPoints() },
-            crashes: try await crashes.flatMap { $0.chartPoints() }
+    fileprivate func crashSeries(in range: Range<Date>) async throws -> [MetricSeries] {
+        try await series(
+            matching: SeriesQuery(
+                name: CrashEntry.recordType,
+                bucket: .hour,
+                source: .lifecycle,
+                range: range
+            )
         )
     }
 }
