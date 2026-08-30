@@ -10,7 +10,7 @@ import SwiftUI
 
 @MainActor
 final class AlertBacktestProvider: ObservableObject, Provider {
-    @Published var result: ProviderResult<AlertBacktest>?
+    @Published var result: ProviderResult<[Double]>?
 
     var metric: AlertMetric
 
@@ -18,9 +18,12 @@ final class AlertBacktestProvider: ObservableObject, Provider {
         self.metric = metric
     }
 
-    func fetch(in database: DatabaseReader) async throws -> AlertBacktest {
+    func fetch(in database: DatabaseReader) async throws -> [Double] {
         let horizon = Date().startOfHour
-        let values = try await metric.values(in: database, range: horizon.addingDay(-9)..<horizon)
-        return AlertBacktest(values: values)
+
+        return try await metric.values(
+            in: database,
+            range: horizon.addingDay(-9)..<horizon
+        )
     }
 }
