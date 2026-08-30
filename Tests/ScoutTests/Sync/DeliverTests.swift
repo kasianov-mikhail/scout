@@ -221,6 +221,32 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 1)
     }
 
+    @Test("Running out of background time doesn't consume the attempt budget")
+    func backgroundTimeExhaustionPreservesAttempts() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        // Every pass is aborted client-side before the request goes out, for far
+        // longer than the attempt budget would allow...
+        for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
+            server.writeErrors.append(InsufficientBackgroundTimeError())
+            await #expect(throws: (any Error).self) {
+                try await deliver(EventEntry.self, to: serverBackend)
+            }
+        }
+
+        // ...yet not one attempt is spent, so the record is still deliverable.
+        #expect(event.delivery(for: "server")?.attempts == 0)
+        #expect(event.delivery(for: "server")?.isPending == true)
+        #expect(server.records.count(of: "Event") == 0)
+
+        // The next pass runs with a full window and the record delivers.
+        try await deliver(EventEntry.self, to: serverBackend)
+        #expect(event.delivery(for: "server")?.isDelivered == true)
+        #expect(server.records.count(of: "Event") == 1)
+    }
+
     @Test("A cancelled send doesn't consume the attempt budget")
     func cancellationPreservesAttempts() async throws {
         let event = EventEntry.stub(name: "login", in: context)
