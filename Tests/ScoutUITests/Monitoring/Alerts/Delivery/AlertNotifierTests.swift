@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+import UserNotifications
 
 @testable import ScoutUI
 
@@ -29,15 +30,52 @@ struct AlertNotifierTests {
         #expect(request.trigger == nil)
     }
 
-    @Test("Authorization passes the center's grant through")
-    func authorization() async {
+    @Test("A refused notification is reported as undelivered")
+    func refusedDelivery() async {
         let center = NotificationCenterStub()
-        center.granted = false
+        center.addError = NSError(domain: UNErrorDomain, code: 1)
 
         let notifier = AlertNotifier(center: center)
-        let granted = await notifier.requestAuthorization()
+        let status = makeStatus(shouldNotify: true)
+        let undelivered = await notifier.deliver([status])
 
-        #expect(!granted)
+        #expect(undelivered.map(\.rule) == [status.rule])
+        #expect(center.requests.count == 0)
+    }
+
+    @Test("A delivered notification leaves nothing undelivered")
+    func acceptedDelivery() async {
+        let center = NotificationCenterStub()
+        let notifier = AlertNotifier(center: center)
+
+        let undelivered = await notifier.deliver([makeStatus(shouldNotify: true)])
+
+        #expect(undelivered.count == 0)
+        #expect(center.requests.count == 1)
+    }
+
+    @Test(
+        "Only a denied center refuses notifications",
+        arguments: [
+            (UNAuthorizationStatus.denied, true),
+            (.authorized, false),
+            (.provisional, false),
+            (.ephemeral, false),
+            (.notDetermined, false),
+        ])
+    func refusesNotifications(status: UNAuthorizationStatus, refuses: Bool) async {
+        let center = NotificationCenterStub()
+        center.status = status
+
+        #expect(await AlertNotifier(center: center).refusesNotifications() == refuses)
+    }
+
+    @Test("Requesting authorization asks the center once")
+    func authorization() async {
+        let center = NotificationCenterStub()
+
+        await AlertNotifier(center: center).requestAuthorization()
+
         #expect(center.authorizationRequests == 1)
     }
 

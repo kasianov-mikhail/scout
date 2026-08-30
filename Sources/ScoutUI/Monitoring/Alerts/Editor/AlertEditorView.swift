@@ -47,6 +47,10 @@ struct AlertEditorView: View {
             }
             .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
 
+            if draft.notifies, provider.notificationsDenied {
+                NotificationsDeniedRow()
+            }
+
             backtestRow
         }
         .navigationTitle(en: "New Rule")

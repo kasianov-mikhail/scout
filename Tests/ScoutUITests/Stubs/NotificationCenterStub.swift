@@ -12,20 +12,48 @@ import UserNotifications
 
 final class NotificationCenterStub: AlertNotificationCenter, @unchecked Sendable {
     private let lock = NSLock()
-    private var grantedStorage = true
     private var authorizationStorage = 0
     private var requestStorage: [UNNotificationRequest] = []
+    private var statusStorage = UNAuthorizationStatus.authorized
+    private var grantStorage = true
+    private var addErrorStorage: (any Error)?
 
-    var granted: Bool {
+    var status: UNAuthorizationStatus {
         get {
             lock.lock()
             defer { lock.unlock() }
-            return grantedStorage
+            return statusStorage
         }
         set {
             lock.lock()
             defer { lock.unlock() }
-            grantedStorage = newValue
+            statusStorage = newValue
+        }
+    }
+
+    var grant: Bool {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return grantStorage
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            grantStorage = newValue
+        }
+    }
+
+    var addError: (any Error)? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return addErrorStorage
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            addErrorStorage = newValue
         }
     }
 
@@ -43,17 +71,25 @@ final class NotificationCenterStub: AlertNotificationCenter, @unchecked Sendable
 
     func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool {
         recordAuthorization()
+        return grant
     }
 
     func add(_ request: UNNotificationRequest) async throws {
+        if let addError {
+            throw addError
+        }
         record(request)
     }
 
-    private func recordAuthorization() -> Bool {
+    func authorizationStatus() async -> UNAuthorizationStatus {
+        status
+    }
+
+    private func recordAuthorization() {
         lock.lock()
         defer { lock.unlock() }
         authorizationStorage += 1
-        return grantedStorage
+        statusStorage = grantStorage ? .authorized : .denied
     }
 
     private func record(_ request: UNNotificationRequest) {

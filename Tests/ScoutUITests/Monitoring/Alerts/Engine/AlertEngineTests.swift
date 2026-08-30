@@ -7,6 +7,7 @@
 
 import Foundation
 import Testing
+import UserNotifications
 
 @testable import Scout
 @testable import ScoutUI
@@ -64,6 +65,26 @@ struct AlertEngineTests {
 
         _ = try await engine.run(in: database)
 
+        #expect(center.requests.count == 1)
+    }
+
+    @Test("A refused notification is retried on the next run")
+    func refusedNotificationRetries() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "Error", counts: errorCounts))
+
+        let center = NotificationCenterStub()
+        center.addError = NSError(domain: UNErrorDomain, code: 1)
+        let engine = try makeEngine(rules: [errorRule], center: center)
+
+        _ = try await engine.run(in: database)
+
+        #expect(center.requests.count == 0)
+
+        center.addError = nil
+        let second = try await engine.run(in: database)
+
+        #expect(second[0].outcome.shouldNotify)
         #expect(center.requests.count == 1)
     }
 

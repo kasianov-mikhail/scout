@@ -37,6 +37,7 @@ struct AlertListView: View {
             .task {
                 await provider.fetchIfNeeded(in: database)
             }
+            .notificationStatus(of: provider)
             .refreshOnPull([provider])
     }
 
@@ -45,6 +46,10 @@ struct AlertListView: View {
         case .success(let statuses) where statuses.count > 0:
             InsetList {
                 chips(statuses)
+
+                if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
+                    NotificationsDeniedRow()
+                }
 
                 Header(title: "Rules") {
                     if statuses.firingCount > 0 {

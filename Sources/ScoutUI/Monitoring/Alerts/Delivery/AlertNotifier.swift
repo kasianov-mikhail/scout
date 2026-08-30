@@ -7,16 +7,6 @@
 
 import UserNotifications
 
-protocol AlertNotificationCenter: Sendable {
-    func requestAuthorization(options: UNAuthorizationOptions) async throws -> Bool
-    func add(_ request: UNNotificationRequest) async throws
-}
-
-// UNUserNotificationCenter is documented thread-safe but not annotated Sendable in the SDK.
-extension UNUserNotificationCenter: @retroactive @unchecked Sendable {}
-
-extension UNUserNotificationCenter: AlertNotificationCenter {}
-
 struct AlertNotifier {
     let center: AlertNotificationCenter
 
@@ -24,11 +14,22 @@ struct AlertNotifier {
         self.center = center
     }
 
-    func requestAuthorization() async -> Bool {
-        (try? await center.requestAuthorization(options: [.alert, .sound, .badge])) ?? false
+    func needsAuthorization() async -> Bool {
+        await center.authorizationStatus() == .notDetermined
     }
 
-    func deliver(_ statuses: [AlertStatus]) async {
+    func requestAuthorization() async {
+        _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
+    }
+
+    func refusesNotifications() async -> Bool {
+        await center.authorizationStatus() == .denied
+    }
+
+    @discardableResult
+    func deliver(_ statuses: [AlertStatus]) async -> [AlertStatus] {
+        var undelivered: [AlertStatus] = []
+
         for status in statuses {
             guard let message = AlertMessage(status: status) else {
                 continue
@@ -44,7 +45,14 @@ struct AlertNotifier {
                 content: content,
                 trigger: nil
             )
-            try? await center.add(request)
+
+            do {
+                try await center.add(request)
+            } catch {
+                undelivered.append(status)
+            }
         }
+
+        return undelivered
     }
 }

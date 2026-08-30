@@ -12,27 +12,37 @@ import SwiftUI
 final class AlertProvider: ObservableObject, Provider {
     @Published var result: ProviderResult<[AlertStatus]>?
 
+    @Published private(set) var notificationsDenied = false
+
     private let registry: AlertRegistry
     private let notifier: AlertNotifier?
-    private let engine: AlertEngine
 
     init(_ result: ProviderResult<Output>? = nil, registry: AlertRegistry = AlertRegistry(), notifier: AlertNotifier? = nil) {
         self.registry = registry
         self.notifier = notifier
-        self.engine = AlertEngine(registry: registry, notifier: notifier)
         self.result = result
     }
 
     func add(_ rule: AlertRule) async {
         do {
             let rules = try registry.rules()
+
+            guard !rules.contains(rule) else { return }
+
             try registry.save(rules + [rule])
 
-            if rules.count == 0, let notifier {
-                _ = await notifier.requestAuthorization()
+            if let notifier, await notifier.needsAuthorization() {
+                await notifier.requestAuthorization()
+                await refreshNotificationStatus()
             }
         } catch {
             result = .failure(error)
+        }
+    }
+
+    func refreshNotificationStatus() async {
+        if let notifier {
+            notificationsDenied = await notifier.refusesNotifications()
         }
     }
 
@@ -47,6 +57,6 @@ final class AlertProvider: ObservableObject, Provider {
     }
 
     func fetch(in database: DatabaseReader) async throws -> [AlertStatus] {
-        try await engine.statuses(in: database)
+        try await AlertEngine(registry: registry, notifier: notifier).statuses(in: database)
     }
 }
