@@ -64,7 +64,10 @@ final class AlertEngine {
             try registry.remember(status.outcome.state, for: status.rule)
         }
 
-        await notifier?.deliver(statuses)
+        for status in await notifier?.deliver(statuses) ?? [] {
+            try registry.remember(.armed, for: status.rule)
+        }
+
         return statuses
     }
 }

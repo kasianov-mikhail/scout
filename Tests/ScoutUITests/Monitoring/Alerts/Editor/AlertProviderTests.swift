@@ -36,6 +36,7 @@ struct AlertProviderTests {
     @Test("Adding the first rule requests notification authorization once")
     func firstRuleAuthorization() async throws {
         let center = NotificationCenterStub()
+        center.status = .notDetermined
         let registry = AlertRegistry(defaults: defaults)
         let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
 
@@ -50,6 +51,31 @@ struct AlertProviderTests {
         #expect(try registry.rules().count == 2)
     }
 
+    @Test("A refused prompt makes the provider report that notifications are denied")
+    func refusedPrompt() async {
+        let center = NotificationCenterStub()
+        center.status = .notDetermined
+        center.grant = false
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+
+        await provider.add(errorRule)
+
+        #expect(provider.notificationsDenied)
+    }
+
+    @Test("A rule added while authorization is still undetermined asks again")
+    func undeterminedAuthorization() async throws {
+        let center = NotificationCenterStub()
+        center.status = .notDetermined
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
+
+        await provider.add(crashFreeRule)
+
+        #expect(center.authorizationRequests == 1)
+    }
+
     @Test("Removing a rule leaves the others in place")
     func remove() async throws {
         let registry = AlertRegistry(defaults: defaults)
@@ -59,6 +85,33 @@ struct AlertProviderTests {
         provider.remove(errorRule)
 
         #expect(try registry.rules() == [crashFreeRule])
+    }
+
+    @Test("A denied center makes the provider report that notifications are denied")
+    func notificationsDeniedWhenDenied() async {
+        let center = NotificationCenterStub()
+        center.status = .denied
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+
+        await provider.refreshNotificationStatus()
+
+        #expect(provider.notificationsDenied)
+
+        center.status = .authorized
+        await provider.refreshNotificationStatus()
+
+        #expect(!provider.notificationsDenied)
+    }
+
+    @Test("A center that has not been asked yet doesn't claim notifications are denied")
+    func notificationsNotDeniedWhenNotDetermined() async {
+        let center = NotificationCenterStub()
+        center.status = .notDetermined
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+
+        await provider.refreshNotificationStatus()
+
+        #expect(!provider.notificationsDenied)
     }
 
     @Test("Adding a rule over an unreadable store fails instead of overwriting it")
