@@ -64,8 +64,7 @@ struct AlertEditorView: View {
             }
         }
         .task(id: draft.metric) {
-            guard draft.isValid else { return }
-            guard (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
+            guard draft.isValid, (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
                 return
             }
 
@@ -128,9 +127,9 @@ struct AlertEditorView: View {
     }
 
     @ViewBuilder private var backtestRow: some View {
-        if draft.isValid, case .success(let test) = backtest.result {
+        if draft.isValid, case .success(let values) = backtest.result {
             Label {
-                Text(verbatim: test.summary(for: draft.rule))
+                Text(verbatim: draft.rule.backtestSummary(over: values))
             } icon: {
                 Image(systemName: "clock.arrow.circlepath")
             }
