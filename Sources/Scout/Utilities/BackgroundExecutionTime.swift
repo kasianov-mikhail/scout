@@ -27,3 +27,11 @@ struct InsufficientBackgroundTimeError: LocalizedError {
     let helpAnchor: String? = "https://developer.apple.com/documentation/uikit/uiapplication/backgroundtimeremaining"
     let recoverySuggestion: String? = "Try again later."
 }
+
+// The window closed before the request went out, so no backend ever saw the
+// records: charging them an attempt would abandon data nothing rejected.
+extension InsufficientBackgroundTimeError: TransientFailure {
+    var isTransient: Bool {
+        true
+    }
+}
