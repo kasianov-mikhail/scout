@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Scout
 import SwiftUI
 
 extension View {
@@ -17,13 +16,14 @@ extension View {
 private struct NotificationStatusModifier: ViewModifier {
     let provider: AlertProvider
 
-    func body(content: Content) -> some View {
-        content.task {
-            await provider.refreshNotificationStatus()
+    @Environment(\.scenePhase) private var scenePhase
 
-            for await _ in NotificationCenter.default.notifications(named: AppLifecycle.willEnterForeground) {
-                await provider.refreshNotificationStatus()
+    func body(content: Content) -> some View {
+        content.task(id: scenePhase) {
+            guard scenePhase == .active else {
+                return
             }
+            await provider.refreshNotificationStatus()
         }
     }
 }
