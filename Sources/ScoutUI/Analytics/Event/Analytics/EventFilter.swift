@@ -57,26 +57,20 @@ private struct EventFilter: ViewModifier {
                     for: nil
                 )
             #endif
-
-            Task {
-                search.clear()
-                await search.fetch(for: filter, in: database)
-            }
         }
-        .onChange(of: filter.text) { _ in
+        .task(id: filter) {
+            guard !filter.text.isEmpty, (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
+                return
+            }
+
             search.clear()
+            await search.fetch(for: filter, in: database)
         }
         .task(id: filter.criteria) {
             await provider.fetchLatest(for: filter, in: database)
         }
         .onChange(of: filter.criteria) { _ in
             provider.clear()
-            if !filter.text.isEmpty {
-                Task {
-                    search.clear()
-                    await search.fetch(for: filter, in: database)
-                }
-            }
         }
     }
 }
