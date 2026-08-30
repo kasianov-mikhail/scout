@@ -34,6 +34,17 @@ struct DailyCountTests {
         #expect(series.dropLast(2).allSatisfy { $0.count == 0 })
     }
 
+    @Test("The default series buckets days in UTC") func testUTCByDefault() {
+        let today = Calendar.utc.startOfDay(for: Date())
+        let lateEvening = today.addingTimeInterval(23 * 3600 + 30 * 60)
+
+        let series = DailyCount.series(from: [Crash.stub(date: lateEvening)], endingOn: lateEvening)
+
+        #expect(series.allSatisfy { $0.date == Calendar.utc.startOfDay(for: $0.date) })
+        #expect(series.last?.date == today)
+        #expect(series.last?.count == 1)
+    }
+
     @Test("Records outside the window and nil dates are ignored") func testOutOfWindow() {
         let today = calendar.startOfDay(for: Date())
         let old = calendar.date(byAdding: .day, value: -30, to: today)!
