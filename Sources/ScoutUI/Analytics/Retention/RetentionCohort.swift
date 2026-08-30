@@ -18,6 +18,8 @@ extension RetentionCohort {
 let cohortDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US")
+    formatter.calendar = .utc
+    formatter.timeZone = Calendar.utc.timeZone
     formatter.dateFormat = "MMM d"
     return formatter
 }()

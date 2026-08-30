@@ -11,6 +11,8 @@ import Scout
 let rangeDateFormatter: DateFormatter = {
     let formatter = DateFormatter()
     formatter.locale = Locale(identifier: "en_US")
+    formatter.calendar = .utc
+    formatter.timeZone = Calendar.utc.timeZone
     formatter.dateStyle = .medium
     return formatter
 }()
