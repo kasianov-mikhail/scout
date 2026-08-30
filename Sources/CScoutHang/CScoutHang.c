@@ -34,9 +34,9 @@ static struct {
 static int scout_previous_count = 0;
 static atomic_flag scout_crash_claimed = ATOMIC_FLAG_INIT;
 
-bool scout_crash_install(const int *signals, int count, scout_crash_handler handler) {
+void scout_crash_install(const int *signals, int count, scout_crash_handler handler) {
     if (count > SCOUT_CRASH_MAX_SIGNALS) {
-        return false;
+        return;
     }
 
     for (int i = 0; i < count; i++) {
@@ -51,8 +51,6 @@ bool scout_crash_install(const int *signals, int count, scout_crash_handler hand
             scout_previous_count++;
         }
     }
-
-    return true;
 }
 
 void scout_crash_restore(int sig) {

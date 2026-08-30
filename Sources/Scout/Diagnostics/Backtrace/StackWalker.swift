@@ -65,11 +65,15 @@ enum StackWalker {
         return Frame(previousFP: pair.previousFP, returnAddress: pair.returnAddress)
     }
 
+    static func unknownFrame(index: Int, address: UInt64) -> String {
+        "\(index)   ???                  0x\(String(address, radix: 16))"
+    }
+
     static func symbolicate(index: Int, address: UInt64) -> String {
         var info = Dl_info()
 
         guard let pointer = UnsafeRawPointer(bitPattern: UInt(address)), dladdr(pointer, &info) != 0 else {
-            return "\(index)   ???                  0x\(String(address, radix: 16))"
+            return unknownFrame(index: index, address: address)
         }
 
         let image = info.dli_fname.map { String(cString: $0).components(separatedBy: "/").last ?? "???" } ?? "???"

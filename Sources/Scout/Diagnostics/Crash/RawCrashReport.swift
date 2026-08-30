@@ -92,7 +92,7 @@ struct RawCrashReport {
         return addresses.enumerated().map { index, address in
             guard let image = images.first(where: { address >= $0.base && address < $0.base + $0.size })
             else {
-                return "\(index)   ???                  0x\(String(address, radix: 16))"
+                return StackWalker.unknownFrame(index: index, address: address)
             }
 
             let offset = address - image.base
@@ -162,10 +162,7 @@ enum RawCrashFormat {
 
     // Runs inside the signal handler: nothing here may allocate or lock,
     // only plain memory reads and write(2).
-    static func write(
-        fd: Int32, signal: Int32, time: Int64, session: uuid_t, frames: UnsafeBufferPointer<UInt64>,
-        trailer: UnsafeRawBufferPointer
-    ) {
+    static func write(fd: Int32, signal: Int32, time: Int64, session: uuid_t, frames: UnsafeBufferPointer<UInt64>, trailer: UnsafeRawBufferPointer) {
         writeValue(magic, to: fd)
         writeValue(version, to: fd)
         writeValue(signal, to: fd)

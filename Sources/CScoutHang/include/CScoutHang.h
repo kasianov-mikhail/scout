@@ -28,7 +28,7 @@ uint64_t scout_arm_thread_state64_fp(arm_thread_state64_t state);
 // written once at install, and every function here is async-signal-safe.
 typedef void (*scout_crash_handler)(int, siginfo_t *_Nullable, void *_Nullable);
 
-bool scout_crash_install(const int *_Nonnull signals, int count, scout_crash_handler _Nonnull handler);
+void scout_crash_install(const int *_Nonnull signals, int count, scout_crash_handler _Nonnull handler);
 void scout_crash_restore(int sig);
 bool scout_crash_claim(void);
 void scout_crash_registers(void *_Nullable context, uint64_t *_Nonnull pc, uint64_t *_Nonnull fp);

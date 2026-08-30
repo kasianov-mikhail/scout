@@ -30,10 +30,7 @@ struct CrashInfo: Codable {
         )
     }
 
-    init(
-        name: String, reason: String?, stackTrace: [String], date: Date, installID: UUID, launchID: UUID,
-        sessionID: UUID, appVersion: String?
-    ) {
+    init(name: String, reason: String?, stackTrace: [String], date: Date, installID: UUID, launchID: UUID, sessionID: UUID, appVersion: String?) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace

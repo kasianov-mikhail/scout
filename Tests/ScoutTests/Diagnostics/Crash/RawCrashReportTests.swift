@@ -16,10 +16,15 @@ import Testing
 struct RawCrashReportTests {
     let identity = Identity.stub
 
-    func writeRawReport(
-        to url: URL, signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000],
-        images: [RawCrashReport.Image] = []
-    ) throws {
+    func rawReportData(signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000], images: [RawCrashReport.Image] = []) throws -> Data {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).rawcrash")
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        try writeRawReport(to: url, signal: signal, addresses: addresses, images: images)
+        return try Data(contentsOf: url)
+    }
+
+    func writeRawReport(to url: URL, signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000], images: [RawCrashReport.Image] = []) throws {
         let trailer = RawCrashFormat.trailer(identity: identity, appVersion: "1.2.3", images: images)
 
         FileManager.default.createFile(atPath: url.path, contents: nil)
@@ -43,14 +48,8 @@ struct RawCrashReportTests {
 
     @Test("the handler's file round-trips through the parser")
     func roundTrip() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(UUID().uuidString).rawcrash")
-        defer { try? FileManager.default.removeItem(at: url) }
-
         let images = [RawCrashReport.Image(name: "Fake.dylib", base: 0x1000, size: 0x4000)]
-        try writeRawReport(to: url, addresses: [0x1010, 0x2020, 0x3030], images: images)
-
-        let data = try Data(contentsOf: url)
+        let data = try rawReportData(addresses: [0x1010, 0x2020, 0x3030], images: images)
         let report = try #require(RawCrashReport(data: data))
 
         #expect(report.signal == SIGSEGV)
@@ -69,12 +68,7 @@ struct RawCrashReportTests {
 
     @Test("truncated data is rejected instead of trapping")
     func truncatedData() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(UUID().uuidString).rawcrash")
-        defer { try? FileManager.default.removeItem(at: url) }
-
-        try writeRawReport(to: url)
-        let data = try Data(contentsOf: url)
+        let data = try rawReportData()
 
         for length in 0..<data.count {
             #expect(RawCrashReport(data: data.prefix(length)) == nil)
@@ -83,14 +77,8 @@ struct RawCrashReportTests {
 
     @Test("an address in an image that is no longer loaded keeps its offset")
     func unloadedImageKeepsOffset() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(UUID().uuidString).rawcrash")
-        defer { try? FileManager.default.removeItem(at: url) }
-
         let images = [RawCrashReport.Image(name: "Gone.dylib", base: 0x1000, size: 0x4000)]
-        try writeRawReport(to: url, addresses: [0x1010, 0xDEAD_0000], images: images)
-
-        let data = try Data(contentsOf: url)
+        let data = try rawReportData(addresses: [0x1010, 0xDEAD_0000], images: images)
         let report = try #require(RawCrashReport(data: data))
         let crash = report.crashInfo()
 
@@ -104,17 +92,11 @@ struct RawCrashReportTests {
 
     @Test("an address rebased into a loaded image gets symbolicated")
     func loadedImageIsSymbolicated() throws {
-        let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("\(UUID().uuidString).rawcrash")
-        defer { try? FileManager.default.removeItem(at: url) }
-
         // Pretend the crashed process had every image slid up by 0x10000:
         // rebasing must land back on the real image for dladdr to work.
         let current = try #require(RawCrashReport.Image.loaded().first)
         let slid = RawCrashReport.Image(name: current.name, base: current.base + 0x10000, size: current.size)
-        try writeRawReport(to: url, addresses: [slid.base + 0x100], images: [slid])
-
-        let data = try Data(contentsOf: url)
+        let data = try rawReportData(addresses: [slid.base + 0x100], images: [slid])
         let report = try #require(RawCrashReport(data: data))
         let crash = report.crashInfo()
 

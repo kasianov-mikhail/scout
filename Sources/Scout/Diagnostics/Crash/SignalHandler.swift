@@ -41,7 +41,7 @@ func installSignalHandler(identity: Identity) {
 
     let signals = fatalSignals.map(\.signal)
     signals.withUnsafeBufferPointer { buffer in
-        _ = scout_crash_install(buffer.baseAddress!, Int32(buffer.count), handleFatalSignal)
+        scout_crash_install(buffer.baseAddress!, Int32(buffer.count), handleFatalSignal)
     }
 }
 
@@ -66,9 +66,7 @@ private func prepareRawReport(identity: Identity) {
     reportSession = identity.session
 }
 
-private func handleFatalSignal(
-    _ sig: Int32, _ info: UnsafeMutablePointer<siginfo_t>?, _ context: UnsafeMutableRawPointer?
-) {
+private func handleFatalSignal(_ sig: Int32, _ info: UnsafeMutablePointer<siginfo_t>?, _ context: UnsafeMutableRawPointer?) {
     writeRawReport(signal: sig, context: context)
 
     scout_crash_restore(sig)
