@@ -169,6 +169,8 @@ private struct IncidentTrendChart<Element: Incident>: View {
             }
         }
         .frame(height: 170)
+        .environment(\.calendar, .utc)
+        .environment(\.timeZone, Calendar.utc.timeZone)
         .listRowSeparator(.hidden)
     }
 }
