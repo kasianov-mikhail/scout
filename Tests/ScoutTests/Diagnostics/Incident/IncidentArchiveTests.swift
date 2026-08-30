@@ -143,20 +143,3 @@ struct IncidentArchiveTests {
         return try decoder.decode(type, from: Data(contentsOf: file))
     }
 }
-
-private final class TemporaryFileManager: FileManager {
-    let root = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
-
-    override func urls(for directory: FileManager.SearchPathDirectory, in domainMask: FileManager.SearchPathDomainMask) -> [URL] {
-        [root]
-    }
-
-    func storedFiles(_ folder: String) throws -> [URL] {
-        let directory = root.appendingPathComponent("Scout/\(folder)", isDirectory: true)
-        return try FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
-    }
-
-    deinit {
-        try? FileManager.default.removeItem(at: root)
-    }
-}
