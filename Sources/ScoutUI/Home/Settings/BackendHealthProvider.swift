@@ -10,7 +10,7 @@ import Foundation
 import Scout
 
 @MainActor
-final class BackendHealthProvider: ObservableObject {
+final class BackendHealthProvider: ObservableObject, Refreshable {
     @Published private(set) var backends: [BackendHealth]
 
     init(backends: [Backend]) {
@@ -36,6 +36,14 @@ final class BackendHealthProvider: ObservableObject {
                 apply(result)
             }
         }
+    }
+
+    func fetchLatest(in database: DatabaseReader) async {
+        await refreshAll()
+    }
+
+    func fetchAgain(in database: DatabaseReader) async {
+        await refreshAll()
     }
 
     func refresh(id: String) async {

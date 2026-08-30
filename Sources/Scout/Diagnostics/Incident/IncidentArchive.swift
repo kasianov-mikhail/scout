@@ -23,16 +23,17 @@ struct IncidentArchive<Payload: Codable & Sendable> {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
 
-        guard let data = try? encoder.encode(payload) else {
-            return
+        do {
+            let data = try encoder.encode(payload)
+            try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+
+            let fileName = "\(id.uuidString).\(pathExtension)"
+            let fileURL = directory.appendingPathComponent(fileName)
+
+            try data.write(to: fileURL, options: .atomic)
+        } catch {
+            print("Failed to archive \(pathExtension): \(error)")
         }
-
-        try? fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
-
-        let fileName = "\(id.uuidString).\(pathExtension)"
-        let fileURL = directory.appendingPathComponent(fileName)
-
-        try? data.write(to: fileURL, options: .atomic)
     }
 
     func flush(deviceID: UUID) async {
@@ -44,12 +45,20 @@ struct IncidentArchive<Payload: Codable & Sendable> {
         decoder.dateDecodingStrategy = .iso8601
 
         for file in files where file.pathExtension == pathExtension {
-            guard let data = try? Data(contentsOf: file) else {
+            let data: Data
+            do {
+                data = try Data(contentsOf: file)
+            } catch {
+                print("Failed to read \(file.lastPathComponent), removing it: \(error)")
                 try? fileManager.removeItem(at: file)
                 continue
             }
 
-            guard let payload = try? decoder.decode(Payload.self, from: data) else {
+            let payload: Payload
+            do {
+                payload = try decoder.decode(Payload.self, from: data)
+            } catch {
+                print("Failed to decode \(file.lastPathComponent), removing it: \(error)")
                 try? fileManager.removeItem(at: file)
                 continue
             }

@@ -81,7 +81,7 @@ struct VersionDetailView: View {
         .monospacedNavigationTitle(en: release.id)
         .message($crashes.message)
         .message($hangs.message)
-        .fetchTask([crashes, hangs])
+        .refreshes([crashes, hangs])
     }
 
     private var crashRecords: [Crash] {

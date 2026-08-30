@@ -37,13 +37,16 @@
                 await refresh(engine: engine, backends: backends)
             }
 
-            refresher.register()
+            if !refresher.register() {
+                print("Failed to register the alert background refresh; list \(taskIdentifier) in BGTaskSchedulerPermittedIdentifiers and register before the app finishes launching")
+            }
             scheduler = refresher
         }
 
         /// Requests a background refresh, skipped while no alert rules exist.
         public static func scheduleBackgroundRefresh() {
-            guard AlertRegistry().rules.count > 0 else {
+            let rules = (try? AlertRegistry().rules()) ?? []
+            guard rules.count > 0 else {
                 return
             }
             scheduler?.schedule()

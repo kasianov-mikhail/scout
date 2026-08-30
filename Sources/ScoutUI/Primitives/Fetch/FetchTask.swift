@@ -11,6 +11,7 @@ import SwiftUI
 @MainActor
 protocol Refreshable {
     func fetchLatest(in database: DatabaseReader) async
+    func fetchAgain(in database: DatabaseReader) async
 }
 
 extension View {
@@ -31,24 +32,35 @@ private struct FetchTaskModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content.task {
-            await actions(for: first).fetch()
-            await actions(for: later).fetch()
-        }
-    }
-
-    private func actions(for providers: [any Refreshable]) -> [FetchAction] {
-        providers.map { provider in
-            { await provider.fetchLatest(in: database) }
+            await first.fetchLatest(in: database)
+            await later.fetchLatest(in: database)
         }
     }
 }
 
-private typealias FetchAction = @MainActor () async -> Void
+extension [any Refreshable] {
+    @MainActor
+    func fetchLatest(in database: DatabaseReader) async {
+        await fetch { provider in
+            await provider.fetchLatest(in: database)
+        }
+    }
 
-extension [FetchAction] {
-    fileprivate func fetch() async {
+    @MainActor
+    func fetchAgain(in database: DatabaseReader) async {
+        await fetch { provider in
+            await provider.fetchAgain(in: database)
+        }
+    }
+
+    @MainActor
+    private func fetch(_ operation: @escaping @MainActor (any Refreshable) async -> Void) async {
+        let actions: [@MainActor () async -> Void] = map { provider in
+            { await operation(provider) }
+        }
+
         await withTaskGroup(of: Void.self) { group in
-            for action in self {
+            for action in actions {
                 group.addTask {
                     await action()
                 }

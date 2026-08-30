@@ -45,9 +45,7 @@ struct SettingsOverviewView: View {
         }
         .navigationTitle(en: "Settings")
         .dismissable()
-        .task {
-            await provider.refreshAll()
-        }
+        .refreshes([provider])
     }
 }
 

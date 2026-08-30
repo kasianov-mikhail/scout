@@ -49,6 +49,7 @@ struct LogView: View {
             await log.fetchIfNeeded(in: database)
         }
         .onChange(of: visits) { log.visits = $0 }
+        .refreshOnPull([log])
         .navigationTitle(en: "Log")
     }
 

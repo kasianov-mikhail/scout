@@ -66,6 +66,70 @@ struct FeedProviderTests {
         #expect(succeeded == false)
         #expect(provider.records?.count == 1)
         #expect(provider.message == nil)
+        #expect(provider.error == nil)
+    }
+
+    @Test("A failed first load surfaces an error state until a load succeeds")
+    func firstLoadFailureSetsError() async throws {
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: FailingDatabase())
+
+        #expect(provider.records == nil)
+        #expect(provider.error != nil)
+        #expect(provider.message != nil)
+
+        let database = DatabaseStub()
+        database.add(Record.eventStub(name: "login", sessionID: UUID(), date: Date()))
+        await provider.fetchLatest(for: EventQuery(), in: database)
+
+        #expect(provider.error == nil)
+        #expect(provider.records?.count == 1)
+    }
+
+    @Test("A failed first load leaves an incident feed without groups and with an error")
+    func incidentFirstLoadFailureSetsError() async throws {
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchLatest(in: FailingDatabase())
+
+        #expect(provider.groups == nil)
+        #expect(provider.error != nil)
+
+        let database = DatabaseStub()
+        database.add(Crash.stub(fingerprint: "A").record)
+        await provider.fetchAgain(in: database)
+
+        #expect(provider.groups?.count == 1)
+        #expect(provider.error == nil)
+    }
+
+    @Test("A failed reload of an empty feed surfaces the error state")
+    func reloadFailureOnEmptyFeedSetsError() async throws {
+        let provider = EventProvider()
+        await provider.fetch(for: EventQuery(), in: FailingDatabase())
+
+        #expect(provider.records == nil)
+        #expect(provider.error != nil)
+    }
+
+    @Test("A failed page load reports the failure and keeps the loaded records")
+    func fetchMoreReportsFailure() async throws {
+        let page1 = [Record.eventStub(name: "a", sessionID: UUID(), date: Date())]
+        let database = PagingDatabase(page1: page1, page2: [])
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let cursor = try #require(provider.cursor)
+
+        let failing = RecordCursor { _ in throw RefreshFailure() }
+        let loaded = await provider.fetchMore(cursor: failing, in: database)
+
+        #expect(loaded == false)
+        #expect(provider.records?.count == 1)
+        #expect(provider.message != nil)
+
+        let reloaded = await provider.fetchMore(cursor: cursor, in: database)
+
+        #expect(reloaded)
     }
 
     @Test("A cancelled reload or page load stays quiet and keeps prior records")
@@ -81,8 +145,9 @@ struct FeedProviderTests {
         #expect(provider.records?.count == 1)
 
         let cursor = RecordCursor { _ in throw CancellationError() }
-        await provider.fetchMore(cursor: cursor, in: database)
+        let loaded = await provider.fetchMore(cursor: cursor, in: database)
 
+        #expect(loaded)
         #expect(provider.records?.count == 1)
         #expect(provider.message == nil)
     }

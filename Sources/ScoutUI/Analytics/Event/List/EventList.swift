@@ -13,26 +13,40 @@ struct EventList<Header: View>: View {
 
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
+    var retry: (() async -> Void)? = nil
     @ViewBuilder let header: () -> Header
 
     var body: some View {
-        if let events = provider.records {
-            if events.isEmpty {
-                Placeholder(
-                    text: "No results",
-                    systemImage: "list.bullet",
-                    description: "Events will appear here once your app starts logging",
-                    code: "logger.info(\"button_tapped\")"
-                )
-            } else {
-                InsetList {
-                    header()
-                    rows(for: events)
+        Group {
+            if let events = provider.records {
+                if events.isEmpty {
+                    Placeholder(
+                        text: "No results",
+                        systemImage: "list.bullet",
+                        description: "Events will appear here once your app starts logging",
+                        code: "logger.info(\"button_tapped\")"
+                    )
+                } else {
+                    InsetList {
+                        header()
+                        rows(for: events)
+                    }
+                    .animation(nil, value: UUID())
                 }
-                .animation(nil, value: UUID())
+            } else if let error = provider.error {
+                ErrorView(description: error.localizedDescription, retry: retryLoad)
+            } else {
+                RingIndicator().frame(maxHeight: .infinity)
             }
+        }
+        .message($provider.message)
+    }
+
+    private func retryLoad() async {
+        if let retry {
+            await retry()
         } else {
-            RingIndicator().frame(maxHeight: .infinity)
+            await provider.fetchAgain(in: database)
         }
     }
 
@@ -69,8 +83,8 @@ struct EventList<Header: View>: View {
 }
 
 extension EventList where Header == EmptyView {
-    init(provider: EventProvider) {
-        self.init(provider: provider) { EmptyView() }
+    init(provider: EventProvider, retry: (() async -> Void)? = nil) {
+        self.init(provider: provider, retry: retry) { EmptyView() }
     }
 }
 

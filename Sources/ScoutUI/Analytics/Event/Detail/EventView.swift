@@ -11,7 +11,6 @@ import SwiftUI
 struct EventView: View {
     let event: Event
 
-    @Environment(\.database) var database
     @StateObject var param: ParamProvider
     @StateObject var stat: StatProvider
     @State private var isParamPresented = false
@@ -46,10 +45,7 @@ struct EventView: View {
                 ParamList(items: items)
             }
         }
-        .task {
-            await param.fetchIfNeeded(in: database)
-        }
-        .fetchTask([stat])
+        .refreshes([stat, param])
     }
 }
 
