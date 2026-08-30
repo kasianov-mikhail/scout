@@ -13,10 +13,13 @@ typealias Synchronize = @MainActor () async throws -> Void
 func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Void {
     let context = persistentContainer.viewContext
 
-    try SyncableEntry.plan(backends: backends, in: context)
-    try DateEntry.cleanup(backends: backends, in: context)
-
     try await dispatcher.performEnsuringBackground {
+        try await persistentContainer.performBackgroundTask { context in
+            context.mergePolicy = NSMergePolicy.scout
+            try SyncableEntry.plan(backends: backends, in: context)
+            try DateEntry.cleanup(backends: backends, in: context)
+        }
+
         let availability = await withTaskGroup(of: (Int, Bool).self) { group in
             for (offset, backend) in backends.enumerated() {
                 group.addTask { (offset, await backend.checkAvailability()) }
@@ -48,8 +51,11 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
             }
         }
         try Task.checkCancellation()
-    }
 
-    try SyncableEntry.purge(to: Set(backends.map(\.id)), in: context)
-    try context.save()
+        try await persistentContainer.performBackgroundTask { context in
+            context.mergePolicy = NSMergePolicy.scout
+            try SyncableEntry.purge(to: Set(backends.map(\.id)), in: context)
+            try context.save()
+        }
+    }
 }
