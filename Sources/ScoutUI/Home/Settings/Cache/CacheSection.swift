@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import Scout
 import SwiftUI
 
 struct CacheSection: View {
@@ -13,8 +14,8 @@ struct CacheSection: View {
 
     @State private var isClearing = false
 
-    init(bytes: Int64) {
-        _cache = StateObject(wrappedValue: CacheStatus(bytes: bytes))
+    init(storage: CacheStorage) {
+        _cache = StateObject(wrappedValue: CacheStatus(storage: storage))
     }
 
     var body: some View {
@@ -44,14 +45,9 @@ struct CacheSection: View {
     }
 }
 
-#Preview("Populated") {
+#Preview {
     InsetList {
-        CacheSection(bytes: 12_582_912)
-    }
-}
-
-#Preview("Empty") {
-    InsetList {
-        CacheSection(bytes: 0)
+        CacheSection(storage: CacheStorage(size: { 12_582_912 }, clear: {}))
+        CacheSection(storage: CacheStorage(size: { 0 }, clear: {}))
     }
 }

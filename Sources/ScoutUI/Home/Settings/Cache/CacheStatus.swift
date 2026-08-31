@@ -7,13 +7,17 @@
 //
 
 import Foundation
+import Scout
 
 @MainActor
 final class CacheStatus: ObservableObject {
     @Published private(set) var bytes: Int64
 
-    init(bytes: Int64) {
-        self.bytes = bytes
+    private let storage: CacheStorage
+
+    init(storage: CacheStorage) {
+        self.storage = storage
+        bytes = storage.size()
     }
 
     var isEmpty: Bool {
@@ -25,6 +29,7 @@ final class CacheStatus: ObservableObject {
     }
 
     func clear() {
-        bytes = 0
+        storage.clear()
+        bytes = storage.size()
     }
 }

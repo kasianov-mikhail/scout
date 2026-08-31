@@ -18,11 +18,27 @@ enum RecordCacheRegistry {
 
     private static var state: CacheState = .unresolved
 
+    static var provider: @MainActor @Sendable (Backend) -> (any Database)? {
+        { database(for: $0) }
+    }
+
     static func database(for backend: Backend) -> any Database {
         guard let cache = sharedCache() else {
             return backend.database
         }
         return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
+    }
+
+    static var storage: CacheStorage {
+        CacheStorage(
+            size: {
+                RecordCacheStore.size
+            },
+            clear: {
+                RecordCacheStore.clear()
+                state = .unresolved
+            }
+        )
     }
 
     private static func sharedCache() -> (any RecordCaching)? {

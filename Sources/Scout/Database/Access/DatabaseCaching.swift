@@ -13,16 +13,21 @@ extension Backend {
     }
 }
 
-// The record cache lives in the Cache module (it links SwiftData, iOS 17+),
-// which Scout must not depend on. Cache.enable() installs the provider here;
-// until it does, backends resolve to their uncached database.
-@MainActor
-package enum DatabaseCaching {
+@MainActor package enum DatabaseCaching {
     package static var provider: (@MainActor @Sendable (Backend) -> (any Database)?)?
+    package static var storage: CacheStorage?
 }
 
-// Record types whose lookups the cache is allowed to persist. Sourced here so the
-// Cache module need not reach the record entry types directly.
+package struct CacheStorage {
+    package let size: @MainActor () -> Int64
+    package let clear: @MainActor () -> Void
+
+    package init(size: @escaping @MainActor () -> Int64, clear: @escaping @MainActor () -> Void) {
+        self.size = size
+        self.clear = clear
+    }
+}
+
 package enum CachedLookupTypes {
     package static let all: Set<String> = [EventEntry.recordType]
 }
