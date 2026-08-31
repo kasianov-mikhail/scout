@@ -25,8 +25,8 @@ struct CacheStatusTests {
         var size: Int64 = 4_096
         var clears = 0
         let storage = CacheStorage(
-            size: { size },
-            clear: {
+            bytes: { size },
+            removeAll: {
                 clears += 1
                 size = 0
             }
@@ -58,11 +58,14 @@ struct CacheStatusTests {
 
     @Test("A larger cache reads differently from a smaller one")
     func labelsScaleWithSize() {
-        #expect(CacheStatus(storage: makeStorage(size: 12_582_912)).sizeLabel != CacheStatus(storage: makeStorage(size: 12_288)).sizeLabel)
+        let large = CacheStatus(storage: makeStorage(size: 12_582_912))
+        let small = CacheStatus(storage: makeStorage(size: 12_288))
+
+        #expect(large.sizeLabel != small.sizeLabel)
     }
 }
 
 @MainActor
 private func makeStorage(size: Int64) -> CacheStorage {
-    CacheStorage(size: { size }, clear: {})
+    CacheStorage(bytes: { size }, removeAll: {})
 }

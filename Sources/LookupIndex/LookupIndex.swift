@@ -19,12 +19,37 @@ public enum LookupIndex {
     ///
     /// Call this once during app startup. Without it, `Scout` resolves every
     /// backend to its uncached database. On systems earlier than iOS 17 /
-    /// macOS 14 the call is a no-op and backends stay uncached.
+    /// macOS 14 — or when the cache store cannot be opened — the call is a
+    /// no-op and backends stay uncached.
     ///
     @MainActor public static func enable() {
-        if #available(iOS 17, macOS 14, *) {
-            DatabaseCaching.provider = RecordCacheRegistry.provider
-            DatabaseCaching.storage = RecordCacheRegistry.storage
+        guard #available(iOS 17, macOS 14, *) else {
+            return
+        }
+
+        let location = RecordCacheLocation()
+        resolveCache(at: location)
+
+        CachedDatabase.storage = CacheStorage(
+            bytes: { location.size },
+            removeAll: {
+                location.retire()
+                resolveCache(at: location)
+            }
+        )
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @MainActor private static func resolveCache(at location: RecordCacheLocation) {
+        do {
+            if #available(iOS 18, macOS 15, *) {
+                CachedDatabase.cache = try RecordCache<IndexedCachedRecord>(location: location)
+            } else {
+                CachedDatabase.cache = try RecordCache<CachedRecord>(location: location)
+            }
+        } catch {
+            CachedDatabase.cache = nil
+            print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")
         }
     }
 }

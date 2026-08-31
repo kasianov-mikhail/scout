@@ -17,7 +17,7 @@ final class CacheStatus: ObservableObject {
 
     init(storage: CacheStorage) {
         self.storage = storage
-        bytes = storage.size()
+        bytes = storage.bytes()
     }
 
     var isEmpty: Bool {
@@ -29,7 +29,7 @@ final class CacheStatus: ObservableObject {
     }
 
     func clear() {
-        storage.clear()
-        bytes = storage.size()
+        storage.removeAll()
+        bytes = storage.bytes()
     }
 }

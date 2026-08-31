@@ -6,22 +6,21 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
-struct CachedRecordPayload: Codable {
+package struct CachedRecordPayload: Codable {
     let recordType: String
     let recordID: String
     let fields: [String: RecordValue]
     let metadata: Data?
 
-    init(record: Record) {
+    package init(record: Record) {
         self.recordType = record.recordType
         self.recordID = record.recordID
         self.fields = record.fields
         self.metadata = record.metadata
     }
 
-    var record: Record {
+    package var record: Record {
         Record(recordType: recordType, recordID: recordID, fields: fields, metadata: metadata)
     }
 }

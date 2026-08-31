@@ -44,7 +44,7 @@ private struct ConnectionToolbar: ViewModifier {
                     SettingsOverviewView(
                         backends: backends,
                         activeID: $activeID,
-                        cache: DatabaseCaching.storage
+                        cache: CachedDatabase.storage
                     )
                 }
                 .opaquePresentation()

@@ -47,7 +47,7 @@ struct CacheSection: View {
 
 #Preview {
     InsetList {
-        CacheSection(storage: CacheStorage(size: { 12_582_912 }, clear: {}))
-        CacheSection(storage: CacheStorage(size: { 0 }, clear: {}))
+        CacheSection(storage: .sample)
+        CacheSection(storage: .sample(bytes: 0))
     }
 }

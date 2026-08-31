@@ -10,8 +10,6 @@ import SwiftData
 
 @available(iOS 17, macOS 14, *)
 protocol RecordCacheRow: PersistentModel {
-    static var schemaVersion: Int { get }
-
     static func predicate(fingerprint: String) -> Predicate<Self>
     static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<Self>
 
@@ -27,8 +25,6 @@ protocol RecordCacheRow: PersistentModel {
 @available(iOS 17, macOS 14, *)
 @Model
 final class CachedRecord: RecordCacheRow {
-    static let schemaVersion = 2
-
     static func predicate(fingerprint: String) -> Predicate<CachedRecord> {
         #Predicate { $0.fingerprint == fingerprint }
     }
@@ -60,8 +56,6 @@ final class CachedRecord: RecordCacheRow {
 @Model
 final class IndexedCachedRecord: RecordCacheRow {
     #Index<IndexedCachedRecord>([\.fingerprint, \.date])
-
-    static let schemaVersion = 3
 
     static func predicate(fingerprint: String) -> Predicate<IndexedCachedRecord> {
         #Predicate { $0.fingerprint == fingerprint }

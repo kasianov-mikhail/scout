@@ -92,7 +92,7 @@ private struct BackendRow: View {
             backends: [],
             activeID: $activeID,
             provider: BackendHealthProvider(healths: .samples),
-            cache: CacheStorage(size: { 12_582_912 }, clear: {})
+            cache: .sample
         )
     }
 }
@@ -105,7 +105,7 @@ private struct BackendRow: View {
             backends: [],
             activeID: $activeID,
             provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2))),
-            cache: CacheStorage(size: { 0 }, clear: {})
+            cache: .sample(bytes: 0)
         )
     }
 }
