@@ -11,6 +11,21 @@ import UserNotifications
 
 @testable import ScoutUI
 
+// `ephemeral` is an App Clip status that UserNotifications marks unavailable on
+// macOS, and the contract job builds this target for macOS.
+private let authorizationStatuses: [(UNAuthorizationStatus, Bool)] = {
+    var statuses: [(UNAuthorizationStatus, Bool)] = [
+        (.denied, true),
+        (.authorized, false),
+        (.provisional, false),
+        (.notDetermined, false),
+    ]
+    #if !os(macOS)
+        statuses.append((.ephemeral, false))
+    #endif
+    return statuses
+}()
+
 struct AlertNotifierTests {
     @Test("Only notifying statuses become notifications")
     func delivers() async throws {
@@ -54,15 +69,7 @@ struct AlertNotifierTests {
         #expect(center.requests.count == 1)
     }
 
-    @Test(
-        "Only a denied center refuses notifications",
-        arguments: [
-            (UNAuthorizationStatus.denied, true),
-            (.authorized, false),
-            (.provisional, false),
-            (.ephemeral, false),
-            (.notDetermined, false),
-        ])
+    @Test("Only a denied center refuses notifications", arguments: authorizationStatuses)
     func refusesNotifications(status: UNAuthorizationStatus, refuses: Bool) async {
         let center = NotificationCenterStub()
         center.status = status
