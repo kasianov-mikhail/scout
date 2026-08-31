@@ -29,16 +29,18 @@ struct AlertEditorView: View {
             Header(title: "Condition")
             PillRow(
                 options: AlertDraft.Kind.allCases,
-                selection: $draft.kind
-            ) { $0.label }
+                selection: $draft.kind,
+                label: \.label
+            )
 
             valueRow
 
             Header(title: "For at least")
             PillRow(
                 options: AlertDraft.Hold.allCases,
-                selection: $draft.hold
-            ) { $0.label }
+                selection: $draft.hold,
+                label: \.label
+            )
 
             Header(title: "Delivery")
 

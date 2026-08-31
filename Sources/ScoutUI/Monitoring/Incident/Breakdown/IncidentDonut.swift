@@ -126,9 +126,11 @@ struct IncidentDonut<Destination: View>: View {
 #Preview("Devices") {
     if #available(iOS 17.0, macOS 14.0, *) {
         NavigationStack {
-            IncidentDonut(segments: IncidentBreakdown.sample.devices, caption: "devices") { segment in
-                segment.count
-            } destination: { segment in
+            IncidentDonut(
+                segments: IncidentBreakdown.sample.devices,
+                caption: "devices",
+                drillDownCount: \.count
+            ) { segment in
                 Text(verbatim: segment.label)
             }
             .padding()
@@ -139,9 +141,11 @@ struct IncidentDonut<Destination: View>: View {
 #Preview("OS Versions") {
     if #available(iOS 17.0, macOS 14.0, *) {
         NavigationStack {
-            IncidentDonut(segments: IncidentBreakdown.sample.osVersions, caption: "sessions") { segment in
-                segment.count
-            } destination: { segment in
+            IncidentDonut(
+                segments: IncidentBreakdown.sample.osVersions,
+                caption: "sessions",
+                drillDownCount: \.count
+            ) { segment in
                 Text(verbatim: segment.label)
             }
             .padding()

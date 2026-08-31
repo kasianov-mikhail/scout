@@ -21,7 +21,7 @@ extension HTTPRecord {
         fields = record.fields
     }
 
-    func toRecord() -> Record {
+    var record: Record {
         Record(recordType: recordType, recordID: recordID, fields: fields)
     }
 }

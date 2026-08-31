@@ -20,7 +20,7 @@ extension HTTPDatabase: DatabaseReader {
     private func run(query: HTTPQuery) async throws -> RecordChunk {
         let response = try await send(query, to: "api/v1/records/query", into: HTTPQueryResponse.self)
         return RecordChunk(
-            records: response.records.map { $0.toRecord() },
+            records: response.records.map(\.record),
             cursor: response.cursor.map { token in
                 RecordCursor { _ in
                     var next = HTTPQuery()
@@ -33,7 +33,7 @@ extension HTTPDatabase: DatabaseReader {
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         let endpoint = recordEndpoint(recordName: recordName, fields: fields)
-        return try await get(from: endpoint, reason: "Malformed record URL", as: HTTPRecord.self).toRecord()
+        return try await get(from: endpoint, reason: "Malformed record URL", as: HTTPRecord.self).record
     }
 
     private func get<T: Decodable>(from endpoint: URL?, reason: String, as type: T.Type) async throws -> T {

@@ -38,7 +38,7 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
     private func query(for filter: EventQuery) -> RecordQuery {
         RecordQuery(
             recordType: Event.self,
-            filters: filter.buildFilters(),
+            filters: filter.filters,
             sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
     }
