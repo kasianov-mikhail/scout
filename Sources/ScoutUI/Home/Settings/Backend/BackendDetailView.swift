@@ -114,21 +114,6 @@ struct BackendDetailView: View {
     }
 }
 
-struct DetailValueRow: View {
-    let title: String
-    let value: String
-
-    var body: some View {
-        HStack {
-            Text(verbatim: title)
-            Spacer()
-            Text(verbatim: value)
-                .font(.body.monospacedDigit())
-                .foregroundStyle(.secondary)
-        }
-    }
-}
-
 struct PingSparkline: View {
     let pings: [Int]
 

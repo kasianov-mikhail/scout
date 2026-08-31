@@ -56,7 +56,7 @@
             guard let backend = backends.active else {
                 return
             }
-            _ = try? await engine.run(in: backend.cachedDatabase)
+            _ = try? await engine.run(in: CachedDatabase(backend: backend) ?? backend.database)
         }
     }
 #endif

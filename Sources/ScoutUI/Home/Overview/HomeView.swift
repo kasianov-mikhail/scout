@@ -23,6 +23,11 @@ struct HomeView: View {
         backends.active(id: activeID)
     }
 
+    @MainActor private var database: any Database {
+        guard let backend else { return DefaultDatabase() }
+        return CachedDatabase(backend: backend) ?? backend.database
+    }
+
     private var active: Binding<String> {
         Binding {
             backend?.id ?? ""
@@ -53,7 +58,7 @@ struct HomeView: View {
         .imageScale(.medium)
         .dynamicTypeSize(.large)
         .tint(tint.value)
-        .environment(\.database, backend?.cachedDatabase ?? DefaultDatabase())
+        .environment(\.database, database)
         .environmentObject(tint)
     }
 }

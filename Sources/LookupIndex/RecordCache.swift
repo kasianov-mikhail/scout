@@ -10,19 +10,14 @@ import Scout
 import SwiftData
 
 @available(iOS 17, macOS 14, *)
-protocol RecordCaching: Actor {
-    func coveredRange(for fingerprint: String) -> Range<Date>?
-    func records(for fingerprint: String, in range: Range<Date>) -> [Record]?
-    func store(_ records: [Record], for fingerprint: String, covering range: Range<Date>)
-    func lookupRecord(for fingerprint: String) -> Record?
-    func storeLookup(_ record: Record, for fingerprint: String)
-}
-
-@available(iOS 17, macOS 14, *)
 @ModelActor
 actor RecordCache<Row: RecordCacheRow> {
     func coveredRange(for fingerprint: String) -> Range<Date>? {
-        guard let span = span(for: fingerprint), span.lowerDate < span.upperDate else {
+        let predicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1
+
+        guard let span = try? modelContext.fetch(descriptor).first, span.lowerDate < span.upperDate else {
             return nil
         }
         return span.lowerDate..<span.upperDate
@@ -30,13 +25,16 @@ actor RecordCache<Row: RecordCacheRow> {
 
     func records(for fingerprint: String, in range: Range<Date>) -> [Record]? {
         let descriptor = FetchDescriptor(
-            predicate: Row.predicate(fingerprint: fingerprint, in: range), sortBy: [Row.dateSort])
+            predicate: Row.predicate(fingerprint: fingerprint, in: range),
+            sortBy: [Row.dateSort]
+        )
         guard let entries = try? modelContext.fetch(descriptor) else {
             return nil
         }
 
-        let decoder = JSONDecoder()
-        let records = entries.compactMap { try? decoder.decode(CachedRecordPayload.self, from: $0.payload).record }
+        let records = entries.compactMap {
+            try? JSONDecoder().decode(CachedRecordPayload.self, from: $0.payload).record
+        }
         guard records.count == entries.count else {
             return nil
         }
@@ -51,20 +49,33 @@ actor RecordCache<Row: RecordCacheRow> {
             guard case .date(let date)? = record.fields["date"] else {
                 return
             }
-            guard range.contains(date) else { continue }
+            guard range.contains(date) else {
+                continue
+            }
             guard let payload = try? encoder.encode(CachedRecordPayload(record: record)) else {
                 return
             }
             entries.append(Row(fingerprint: fingerprint, date: date, payload: payload))
         }
 
-        if let span = span(for: fingerprint), span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
-            deleteRecords(for: fingerprint, in: range)
+        let predicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1
+
+        if let span = try? modelContext.fetch(descriptor).first, span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
+            try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint, in: range))
             span.upperDate = max(span.upperDate, range.upperBound)
         } else {
-            deleteAll(for: fingerprint)
+            try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint))
+            try? modelContext.delete(model: CachedSpan.self, where: predicate)
+
             modelContext.insert(
-                CachedSpan(fingerprint: fingerprint, lowerDate: range.lowerBound, upperDate: range.upperBound))
+                CachedSpan(
+                    fingerprint: fingerprint,
+                    lowerDate: range.lowerBound,
+                    upperDate: range.upperBound
+                )
+            )
         }
 
         for entry in entries {
@@ -76,6 +87,7 @@ actor RecordCache<Row: RecordCacheRow> {
     func lookupRecord(for fingerprint: String) -> Record? {
         var descriptor = FetchDescriptor(predicate: Row.predicate(fingerprint: fingerprint))
         descriptor.fetchLimit = 1
+
         guard let entry = try? modelContext.fetch(descriptor).first else {
             return nil
         }
@@ -86,27 +98,37 @@ actor RecordCache<Row: RecordCacheRow> {
         guard let payload = try? JSONEncoder().encode(CachedRecordPayload(record: record)) else {
             return
         }
-        try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint))
-        modelContext.insert(Row(fingerprint: fingerprint, date: .distantPast, payload: payload))
+
+        try? modelContext.delete(
+            model: Row.self,
+            where: Row.predicate(fingerprint: fingerprint)
+        )
+
+        modelContext.insert(
+            Row(
+                fingerprint: fingerprint,
+                date: .distantPast,
+                payload: payload
+            )
+        )
+
         try? modelContext.save()
     }
 
-    private func span(for fingerprint: String) -> CachedSpan? {
-        let predicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
-        var descriptor = FetchDescriptor(predicate: predicate)
-        descriptor.fetchLimit = 1
-        return try? modelContext.fetch(descriptor).first
+    func bytes() -> Int64 {
+        var descriptor = FetchDescriptor<Row>()
+        descriptor.propertiesToFetch = Row.byteProperties
+
+        guard let entries = try? modelContext.fetch(descriptor) else {
+            return 0
+        }
+        return entries.reduce(0) { $0 + Int64($1.bytes) }
     }
 
-    private func deleteRecords(for fingerprint: String, in range: Range<Date>) {
-        try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint, in: range))
-    }
-
-    private func deleteAll(for fingerprint: String) {
-        try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint))
-
-        let spanPredicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
-        try? modelContext.delete(model: CachedSpan.self, where: spanPredicate)
+    func removeAll() {
+        try? modelContext.delete(model: Row.self)
+        try? modelContext.delete(model: CachedSpan.self)
+        try? modelContext.save()
     }
 }
 

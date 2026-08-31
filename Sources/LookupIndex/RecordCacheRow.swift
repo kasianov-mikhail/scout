@@ -10,30 +10,21 @@ import SwiftData
 
 @available(iOS 17, macOS 14, *)
 protocol RecordCacheRow: PersistentModel {
-    static var schemaVersion: Int { get }
-
-    static func predicate(fingerprint: String) -> Predicate<Self>
-    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<Self>
-
-    static var dateSort: SortDescriptor<Self> { get }
-
     var fingerprint: String { get }
     var date: Date { get }
     var payload: Data { get }
+    var bytes: Int { get }
 
     init(fingerprint: String, date: Date, payload: Data)
 }
 
 @available(iOS 17, macOS 14, *)
-@Model
-final class CachedRecord: RecordCacheRow {
-    static let schemaVersion = 2
-
-    static func predicate(fingerprint: String) -> Predicate<CachedRecord> {
+extension RecordCacheRow {
+    static func predicate(fingerprint: String) -> Predicate<Self> {
         #Predicate { $0.fingerprint == fingerprint }
     }
 
-    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<CachedRecord> {
+    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<Self> {
         let lower = range.lowerBound
         let upper = range.upperBound
         return #Predicate {
@@ -41,18 +32,28 @@ final class CachedRecord: RecordCacheRow {
         }
     }
 
-    static var dateSort: SortDescriptor<CachedRecord> {
+    static var dateSort: SortDescriptor<Self> {
         SortDescriptor(\.date)
     }
 
+    static var byteProperties: [PartialKeyPath<Self>] {
+        [\.bytes]
+    }
+}
+
+@available(iOS 17, macOS 14, *)
+@Model
+final class CachedRecord: RecordCacheRow {
     var fingerprint: String
     var date: Date
     var payload: Data
+    var bytes: Int
 
     init(fingerprint: String, date: Date, payload: Data) {
         self.fingerprint = fingerprint
         self.date = date
         self.payload = payload
+        self.bytes = payload.count
     }
 }
 
@@ -61,32 +62,16 @@ final class CachedRecord: RecordCacheRow {
 final class IndexedCachedRecord: RecordCacheRow {
     #Index<IndexedCachedRecord>([\.fingerprint, \.date])
 
-    static let schemaVersion = 3
-
-    static func predicate(fingerprint: String) -> Predicate<IndexedCachedRecord> {
-        #Predicate { $0.fingerprint == fingerprint }
-    }
-
-    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<IndexedCachedRecord> {
-        let lower = range.lowerBound
-        let upper = range.upperBound
-        return #Predicate {
-            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
-        }
-    }
-
-    static var dateSort: SortDescriptor<IndexedCachedRecord> {
-        SortDescriptor(\.date)
-    }
-
     var fingerprint: String
     var date: Date
     var payload: Data
+    var bytes: Int
 
     init(fingerprint: String, date: Date, payload: Data) {
         self.fingerprint = fingerprint
         self.date = date
         self.payload = payload
+        self.bytes = payload.count
     }
 }
 

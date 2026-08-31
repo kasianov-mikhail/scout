@@ -179,28 +179,30 @@ struct CachedDatabaseTests {
 
     @available(iOS 17, macOS 14, *)
     @Test("A backend recreated with a rotated key resolves to the current database")
-    @MainActor
     func rotatingKeyRebindsDatabase() throws {
         let stale = SpyDatabase()
         let rotated = SpyDatabase()
 
-        let first = RecordCacheRegistry.database(
-            for: Backend(
+        let cache = try makeRecordCache(CachedRecord.self)
+        let first = CachedDatabase(
+            backend: Backend(
                 id: "https://example.com",
                 database: stale,
                 checkAvailability: { true },
                 displayName: "example",
                 engine: .cloudKit
-            )
+            ),
+            cache: cache
         )
-        let second = RecordCacheRegistry.database(
-            for: Backend(
+        let second = CachedDatabase(
+            backend: Backend(
                 id: "https://example.com",
                 database: rotated,
                 checkAvailability: { true },
                 displayName: "example",
                 engine: .cloudKit
-            )
+            ),
+            cache: cache
         )
 
         #expect(spyBase(of: first) === stale)
