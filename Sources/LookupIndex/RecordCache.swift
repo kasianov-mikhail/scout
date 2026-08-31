@@ -114,22 +114,6 @@ actor RecordCache<Row: RecordCacheRow> {
 
         try? modelContext.save()
     }
-
-    func bytes() -> Int64 {
-        var descriptor = FetchDescriptor<Row>()
-        descriptor.propertiesToFetch = Row.byteProperties
-
-        guard let entries = try? modelContext.fetch(descriptor) else {
-            return 0
-        }
-        return entries.reduce(0) { $0 + Int64($1.bytes) }
-    }
-
-    func removeAll() {
-        try? modelContext.delete(model: Row.self)
-        try? modelContext.delete(model: CachedSpan.self)
-        try? modelContext.save()
-    }
 }
 
 @available(iOS 17, macOS 14, *)

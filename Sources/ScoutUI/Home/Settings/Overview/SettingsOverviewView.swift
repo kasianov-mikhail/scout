@@ -13,9 +13,9 @@ struct SettingsOverviewView: View {
     @Binding var activeID: String
     @StateObject var provider: BackendHealthProvider
 
-    let cache: (any CacheStorage)?
+    let cache: CacheStorage?
 
-    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil, cache: (any CacheStorage)? = nil) {
+    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil, cache: CacheStorage? = nil) {
         self._activeID = activeID
         self._provider = StateObject(wrappedValue: provider ?? BackendHealthProvider(backends: backends))
         self.cache = cache

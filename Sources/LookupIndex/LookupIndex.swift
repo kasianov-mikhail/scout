@@ -26,13 +26,29 @@ public enum LookupIndex {
         guard #available(iOS 17, macOS 14, *) else {
             return
         }
+
+        let location = RecordCacheLocation()
+        resolveCache(at: location)
+
+        CachedDatabase.storage = CacheStorage(
+            bytes: { location.size },
+            removeAll: {
+                location.retire()
+                resolveCache(at: location)
+            }
+        )
+    }
+
+    @available(iOS 17, macOS 14, *)
+    @MainActor private static func resolveCache(at location: RecordCacheLocation) {
         do {
             if #available(iOS 18, macOS 15, *) {
-                CachedDatabase.cache = try RecordCache<IndexedCachedRecord>()
+                CachedDatabase.cache = try RecordCache<IndexedCachedRecord>(location: location)
             } else {
-                CachedDatabase.cache = try RecordCache<CachedRecord>()
+                CachedDatabase.cache = try RecordCache<CachedRecord>(location: location)
             }
         } catch {
+            CachedDatabase.cache = nil
             print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")
         }
     }

@@ -82,6 +82,7 @@ package struct CachedDatabase: Database {
 
 @MainActor extension CachedDatabase {
     package static var cache: (any RecordCaching)?
+    package static var storage: CacheStorage?
 
     package init?(backend: Backend) {
         guard let cache = Self.cache else {

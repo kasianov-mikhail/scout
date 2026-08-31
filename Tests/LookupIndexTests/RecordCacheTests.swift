@@ -138,32 +138,4 @@ struct RecordCacheTests {
         #expect(inRange.map(\.recordID) == Array(records.prefix(2)).map(\.recordID))
         #expect(await cache.coveredRange(for: "fp") == date(0)..<date(600))
     }
-
-    @available(iOS 17, macOS 14, *)
-    @Test("The byte count follows what the payloads weigh")
-    func countsStoredBytes() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
-        let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 100)
-        #expect(await cache.bytes() == 0)
-
-        let records = (0..<10).map { makeRecord(date: range.lowerBound.addingTimeInterval(Double($0))) }
-        await cache.store(records, for: "fingerprint", covering: range)
-
-        #expect(await cache.bytes() > 0)
-    }
-
-    @available(iOS 17, macOS 14, *)
-    @Test("Removing everything empties the cache and its byte count")
-    func removesEverything() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
-        let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 100)
-        let records = (0..<10).map { makeRecord(date: range.lowerBound.addingTimeInterval(Double($0))) }
-        await cache.store(records, for: "fingerprint", covering: range)
-
-        await cache.removeAll()
-
-        #expect(await cache.bytes() == 0)
-        #expect(await cache.coveredRange(for: "fingerprint") == nil)
-        #expect(await cache.records(for: "fingerprint", in: range)?.isEmpty ?? true)
-    }
 }

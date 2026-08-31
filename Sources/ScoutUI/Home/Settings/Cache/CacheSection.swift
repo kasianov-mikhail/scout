@@ -14,7 +14,7 @@ struct CacheSection: View {
 
     @State private var isClearing = false
 
-    init(storage: any CacheStorage) {
+    init(storage: CacheStorage) {
         _cache = StateObject(wrappedValue: CacheStatus(storage: storage))
     }
 
@@ -29,14 +29,13 @@ struct CacheSection: View {
             Text(verbatim: "Clear Cache")
         }
         .disabled(cache.isEmpty)
-        .task { await cache.load() }
         .confirmationDialog(
             Text(verbatim: "Clear the cached data?"),
             isPresented: $isClearing,
             titleVisibility: .visible
         ) {
             Button(role: .destructive) {
-                Task { await cache.clear() }
+                cache.clear()
             } label: {
                 Text(verbatim: "Clear Cache")
             }

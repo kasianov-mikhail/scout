@@ -11,14 +11,14 @@ import SwiftData
 
 @available(iOS 17, macOS 14, *)
 extension RecordCache {
-    init(directory: URL = URL.applicationSupportDirectory.appending(path: "Scout", directoryHint: .isDirectory), manager: FileManager = .default) throws {
-        try manager.createDirectory(at: directory, withIntermediateDirectories: true)
+    init(location: RecordCacheLocation = RecordCacheLocation()) throws {
+        try location.manager.createDirectory(at: location.directory, withIntermediateDirectories: true)
 
-        let storeName = "RecordCache"
-        let url = directory.appending(path: "\(storeName).store")
+        let url = location.storeURL
+        location.sweepRetired()
 
         do {
-            if manager.fileExists(atPath: url.path) {
+            if location.manager.fileExists(atPath: url.path) {
                 _ = try NSPersistentStoreCoordinator.metadataForPersistentStore(
                     type: .sqlite,
                     at: url,
@@ -26,15 +26,12 @@ extension RecordCache {
                 )
             }
         } catch {
-            for name in try manager.contentsOfDirectory(atPath: directory.path) where name.hasPrefix(storeName) {
-                try manager.removeItem(at: directory.appending(path: name))
-            }
+            location.destroyStore()
         }
 
         let schema = Schema([Row.self, CachedSpan.self])
-        let config = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
-        let container = try ModelContainer(for: schema, configurations: [config])
+        let configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
 
-        self.init(modelContainer: container)
+        self.init(modelContainer: try ModelContainer(for: schema, configurations: [configuration]))
     }
 }

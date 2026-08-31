@@ -13,7 +13,6 @@ protocol RecordCacheRow: PersistentModel {
     var fingerprint: String { get }
     var date: Date { get }
     var payload: Data { get }
-    var bytes: Int { get }
 
     init(fingerprint: String, date: Date, payload: Data)
 }
@@ -35,10 +34,6 @@ extension RecordCacheRow {
     static var dateSort: SortDescriptor<Self> {
         SortDescriptor(\.date)
     }
-
-    static var byteProperties: [PartialKeyPath<Self>] {
-        [\.bytes]
-    }
 }
 
 @available(iOS 17, macOS 14, *)
@@ -47,13 +42,11 @@ final class CachedRecord: RecordCacheRow {
     var fingerprint: String
     var date: Date
     var payload: Data
-    var bytes: Int
 
     init(fingerprint: String, date: Date, payload: Data) {
         self.fingerprint = fingerprint
         self.date = date
         self.payload = payload
-        self.bytes = payload.count
     }
 }
 
@@ -65,13 +58,11 @@ final class IndexedCachedRecord: RecordCacheRow {
     var fingerprint: String
     var date: Date
     var payload: Data
-    var bytes: Int
 
     init(fingerprint: String, date: Date, payload: Data) {
         self.fingerprint = fingerprint
         self.date = date
         self.payload = payload
-        self.bytes = payload.count
     }
 }
 
