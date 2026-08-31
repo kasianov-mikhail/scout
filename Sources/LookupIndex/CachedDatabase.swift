@@ -34,7 +34,7 @@ struct CachedDatabase: Database {
             return record
         }
         let record = try await base.lookup(recordName: recordName, fields: fields)
-        if cachedLookupTypes.contains(record.recordType) {
+        if CachedLookupTypes.all.contains(record.recordType) {
             await cache.storeLookup(record, for: fingerprint)
         }
         return record
@@ -95,39 +95,5 @@ struct CachedDatabase: Database {
 
     func write(records: [Record]) async throws {
         try await base.write(records: records)
-    }
-}
-
-private let cachedLookupTypes = CachedLookupTypes.all
-
-@available(iOS 17, macOS 14, *)
-@MainActor
-enum DatabaseCacheRegistry {
-    private enum CacheState {
-        case unresolved
-        case unavailable
-        case ready(any RecordCaching)
-    }
-
-    private static var state: CacheState = .unresolved
-
-    static func database(for backend: Backend) -> any Database {
-        guard let cache = sharedCache() else {
-            return backend.database
-        }
-        return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
-    }
-
-    private static func sharedCache() -> (any RecordCaching)? {
-        switch state {
-        case .unresolved:
-            let created = RecordCacheStore.cache()
-            state = created.map(CacheState.ready) ?? .unavailable
-            return created
-        case .unavailable:
-            return nil
-        case .ready(let cache):
-            return cache
-        }
     }
 }
