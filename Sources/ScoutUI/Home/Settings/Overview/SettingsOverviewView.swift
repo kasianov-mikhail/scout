@@ -13,9 +13,12 @@ struct SettingsOverviewView: View {
     @Binding var activeID: String
     @StateObject var provider: BackendHealthProvider
 
-    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil) {
+    let cacheBytes: Int64?
+
+    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil, cacheBytes: Int64? = nil) {
         _activeID = activeID
         _provider = StateObject(wrappedValue: provider ?? BackendHealthProvider(backends: backends))
+        self.cacheBytes = cacheBytes
     }
 
     var body: some View {
@@ -33,6 +36,10 @@ struct SettingsOverviewView: View {
                 } destination: {
                     BackendDetailView(provider: provider, id: backend.id, activeID: $activeID)
                 }
+            }
+
+            if let cacheBytes {
+                CacheSection(bytes: cacheBytes)
             }
 
             Header(title: "Diagnostics")
@@ -84,7 +91,8 @@ private struct BackendRow: View {
         SettingsOverviewView(
             backends: [],
             activeID: $activeID,
-            provider: BackendHealthProvider(healths: .samples)
+            provider: BackendHealthProvider(healths: .samples),
+            cacheBytes: 12_582_912
         )
     }
 }
@@ -96,7 +104,8 @@ private struct BackendRow: View {
         SettingsOverviewView(
             backends: [],
             activeID: $activeID,
-            provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2)))
+            provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2))),
+            cacheBytes: 0
         )
     }
 }
