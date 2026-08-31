@@ -23,7 +23,7 @@ struct CachedDatabaseTests {
     }
 
     @available(iOS 17, macOS 14, *)
-    func makeDatabase<Row: CacheRow>(base: SpyDatabase, row: Row.Type) throws -> CachedDatabase {
+    func makeDatabase<Row: RecordCacheRow>(base: SpyDatabase, row: Row.Type) throws -> CachedDatabase {
         let frozen = cutoff
 
         return CachedDatabase(
@@ -184,7 +184,7 @@ struct CachedDatabaseTests {
         let stale = SpyDatabase()
         let rotated = SpyDatabase()
 
-        let first = DatabaseCacheRegistry.database(
+        let first = RecordCacheRegistry.database(
             for: Backend(
                 id: "https://example.com",
                 database: stale,
@@ -193,7 +193,7 @@ struct CachedDatabaseTests {
                 engine: .cloudKit
             )
         )
-        let second = DatabaseCacheRegistry.database(
+        let second = RecordCacheRegistry.database(
             for: Backend(
                 id: "https://example.com",
                 database: rotated,

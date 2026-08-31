@@ -9,106 +9,6 @@ import Foundation
 import SwiftData
 
 @available(iOS 17, macOS 14, *)
-protocol CacheRow: PersistentModel {
-    static var schemaVersion: Int { get }
-
-    // SwiftData turns a predicate key path into a column name by matching it against the metadata
-    // the `@Model` macro generates for the concrete class. A key path spelled on a generic
-    // parameter is a different key path and never matches, so an optimized build traps inside
-    // SwiftData rather than running the query. Every row type therefore builds its own predicates
-    // and sort order, where its type is concrete.
-    static func predicate(fingerprint: String) -> Predicate<Self>
-    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<Self>
-    static var dateSort: SortDescriptor<Self> { get }
-
-    var fingerprint: String { get }
-    var date: Date { get }
-    var payload: Data { get }
-
-    init(fingerprint: String, date: Date, payload: Data)
-}
-
-@available(iOS 17, macOS 14, *)
-@Model
-final class CachedRecord: CacheRow {
-    static let schemaVersion = 2
-
-    static func predicate(fingerprint: String) -> Predicate<CachedRecord> {
-        #Predicate { $0.fingerprint == fingerprint }
-    }
-
-    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<CachedRecord> {
-        let lower = range.lowerBound
-        let upper = range.upperBound
-        return #Predicate {
-            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
-        }
-    }
-
-    static var dateSort: SortDescriptor<CachedRecord> {
-        SortDescriptor(\.date)
-    }
-
-    var fingerprint: String
-    var date: Date
-    var payload: Data
-
-    init(fingerprint: String, date: Date, payload: Data) {
-        self.fingerprint = fingerprint
-        self.date = date
-        self.payload = payload
-    }
-}
-
-@available(iOS 18, macOS 15, *)
-@Model
-final class IndexedCachedRecord: CacheRow {
-    #Index<IndexedCachedRecord>([\.fingerprint, \.date])
-
-    static let schemaVersion = 3
-
-    static func predicate(fingerprint: String) -> Predicate<IndexedCachedRecord> {
-        #Predicate { $0.fingerprint == fingerprint }
-    }
-
-    static func predicate(fingerprint: String, in range: Range<Date>) -> Predicate<IndexedCachedRecord> {
-        let lower = range.lowerBound
-        let upper = range.upperBound
-        return #Predicate {
-            $0.fingerprint == fingerprint && $0.date >= lower && $0.date < upper
-        }
-    }
-
-    static var dateSort: SortDescriptor<IndexedCachedRecord> {
-        SortDescriptor(\.date)
-    }
-
-    var fingerprint: String
-    var date: Date
-    var payload: Data
-
-    init(fingerprint: String, date: Date, payload: Data) {
-        self.fingerprint = fingerprint
-        self.date = date
-        self.payload = payload
-    }
-}
-
-@available(iOS 17, macOS 14, *)
-@Model
-final class CachedSpan {
-    var fingerprint: String
-    var lowerDate: Date
-    var upperDate: Date
-
-    init(fingerprint: String, lowerDate: Date, upperDate: Date) {
-        self.fingerprint = fingerprint
-        self.lowerDate = lowerDate
-        self.upperDate = upperDate
-    }
-}
-
-@available(iOS 17, macOS 14, *)
 enum RecordCacheStore {
     private static let versionKey = "scout_record_cache_schema_version"
 
@@ -122,12 +22,12 @@ enum RecordCacheStore {
         return cache(CachedRecord.self, at: url, defaults: .standard)
     }
 
-    static func cache<Row: CacheRow>(_ row: Row.Type, at url: URL, defaults: UserDefaults) -> RecordCache<Row>? {
+    static func cache<Row: RecordCacheRow>(_ row: Row.Type, at url: URL, defaults: UserDefaults) -> RecordCache<Row>? {
         container(for: row, at: url, defaults: defaults).map { RecordCache<Row>(modelContainer: $0) }
     }
 
     // The cache is disposable: any schema mismatch destroys the store instead of migrating.
-    static func container<Row: CacheRow>(for row: Row.Type, at url: URL, defaults: UserDefaults) -> ModelContainer? {
+    static func container<Row: RecordCacheRow>(for row: Row.Type, at url: URL, defaults: UserDefaults) -> ModelContainer? {
         if defaults.integer(forKey: versionKey) != Row.schemaVersion || !storeHasSQLiteHeader(at: url) {
             destroyStore(at: url)
         }
@@ -161,7 +61,7 @@ enum RecordCacheStore {
         }
     }
 
-    private static func openContainer<Row: CacheRow>(for row: Row.Type, at url: URL) -> ModelContainer? {
+    private static func openContainer<Row: RecordCacheRow>(for row: Row.Type, at url: URL) -> ModelContainer? {
         let schema = Schema([Row.self, CachedSpan.self])
         let configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
         return try? ModelContainer(for: schema, configurations: [configuration])

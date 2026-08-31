@@ -24,7 +24,7 @@ public enum LookupIndex {
     @MainActor public static func enable() {
         DatabaseCaching.provider = { backend in
             guard #available(iOS 17, macOS 14, *) else { return nil }
-            return DatabaseCacheRegistry.database(for: backend)
+            return RecordCacheRegistry.database(for: backend)
         }
     }
 }
