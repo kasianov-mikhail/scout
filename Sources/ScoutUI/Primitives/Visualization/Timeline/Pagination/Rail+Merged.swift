@@ -31,11 +31,14 @@ extension Rail {
     )
 
     fileprivate var flattened: Flattened {
-        let installs = self.installs.map(\.install)
-        let launches = self.installs.flatMap { $0.launches.map(\.launch) }
-        let sessions = self.installs.flatMap { $0.launches.flatMap { $0.sessions.map(\.session) } }
-        let events = self.installs.flatMap { $0.launches.flatMap { $0.sessions.flatMap(\.events) } }
-        let crashes = self.installs.flatMap { $0.launches.flatMap { $0.sessions.flatMap(\.crashes) } }
-        return (installs, launches, sessions, events, crashes)
+        let launches = installs.flatMap(\.launches)
+        let sessions = launches.flatMap(\.sessions)
+        return (
+            installs: installs.map(\.install),
+            launches: launches.map(\.launch),
+            sessions: sessions.map(\.session),
+            events: sessions.flatMap(\.events),
+            crashes: sessions.flatMap(\.crashes)
+        )
     }
 }

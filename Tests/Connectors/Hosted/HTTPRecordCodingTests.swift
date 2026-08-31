@@ -26,7 +26,7 @@ struct HTTPRecordCodingTests {
 
         let wire = HTTPRecord(record: record)
         let data = try JSONEncoder().encode(wire)
-        let restored = try JSONDecoder().decode(HTTPRecord.self, from: data).toRecord()
+        let restored = try JSONDecoder().decode(HTTPRecord.self, from: data).record
 
         #expect(restored.recordType == "Event")
         #expect(restored.recordID == "record-1")

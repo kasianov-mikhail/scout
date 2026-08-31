@@ -13,34 +13,34 @@ import Testing
 
 struct EventQueryTests {
     @Test("Empty query produces no filters") func emptyQuery() {
-        #expect(EventQuery().buildFilters().isEmpty)
+        #expect(EventQuery().filters.isEmpty)
     }
 
     @Test("Filter by levels") func levels() {
-        let filters = EventQuery(levels: [.error, .critical]).buildFilters()
+        let filters = EventQuery(levels: [.error, .critical]).filters
 
         #expect(filters.contains { $0.field == "level" && $0.op == .in })
     }
 
     @Test("All levels produces no level filter") func allLevels() {
-        #expect(EventQuery(levels: Set(EventLevel.allCases)).buildFilters().isEmpty)
+        #expect(EventQuery(levels: Set(EventLevel.allCases)).filters.isEmpty)
     }
 
     @Test("Filter by text") func text() {
-        let filters = EventQuery(text: "Search").buildFilters()
+        let filters = EventQuery(text: "Search").filters
 
         #expect(filters.contains(RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("Search"))))
     }
 
     @Test("Filter by name") func name() {
-        let filters = EventQuery(name: "Login").buildFilters()
+        let filters = EventQuery(name: "Login").filters
 
         #expect(filters.contains(RecordQuery.Filter(field: "name", op: .equals, value: .string("Login"))))
     }
 
     @Test("Filter by session") func session() {
         let sessionID = UUID()
-        let filters = EventQuery(sessionID: sessionID).buildFilters()
+        let filters = EventQuery(sessionID: sessionID).filters
 
         #expect(
             filters.contains(RecordQuery.Filter(field: "session_id", op: .equals, value: .string(sessionID.uuidString)))
@@ -48,12 +48,12 @@ struct EventQueryTests {
     }
 
     @Test("No session produces no session filter") func noSession() {
-        #expect(EventQuery().buildFilters().contains { $0.field == "session_id" } == false)
+        #expect(EventQuery().filters.contains { $0.field == "session_id" } == false)
     }
 
     @Test("Filter by device") func device() {
         let deviceID = UUID()
-        let filters = EventQuery(deviceID: deviceID).buildFilters()
+        let filters = EventQuery(deviceID: deviceID).filters
 
         #expect(
             filters.contains(RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))))
@@ -62,7 +62,7 @@ struct EventQueryTests {
     @Test("Filter by date range") func dates() {
         let start = Date(timeIntervalSinceReferenceDate: 0)
         let end = Date(timeIntervalSinceReferenceDate: 86400)
-        let filters = EventQuery(dates: start..<end).buildFilters()
+        let filters = EventQuery(dates: start..<end).filters
 
         #expect(filters.contains(RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(start))))
         #expect(filters.contains(RecordQuery.Filter(field: "date", op: .lessThan, value: .date(end))))
@@ -76,7 +76,7 @@ struct EventQueryTests {
     }
 
     @Test("Multiple filters combine") func combined() {
-        let filters = EventQuery(levels: [.error], text: "Search", name: "Login").buildFilters()
+        let filters = EventQuery(levels: [.error], text: "Search", name: "Login").filters
 
         #expect(filters.contains { $0.field == "level" && $0.op == .in })
         #expect(filters.contains(RecordQuery.Filter(field: "name", op: .beginsWith, value: .string("Search"))))

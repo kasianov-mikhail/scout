@@ -73,6 +73,20 @@ cohorts = RetentionCohort.build(
 
 - Signatures are the exception: a declaration stays on one line no matter how long it grows.
 
+## Key paths instead of closures
+
+- A closure whose whole body is a property access on its argument is written as a key path: `map(\.name)`, never `map { $0.name }` or `map { point in point.name }`. The same holds for `compactMap`, `flatMap`, `filter`, `forEach`, `first(where:)`, `contains(where:)`, `allSatisfy`, `count(where:)`, `removeAll(where:)`, and `Dictionary(grouping:by:)`.
+- Nested properties go into one key path rather than a chain of maps: `map(\.value.doubleValue)`, not `.map(\.value).map(\.doubleValue)`; `map(\.install.installID)`, not `map { $0.install.installID }`.
+- Flatten nested closures into a chain of key-path calls: `installs.flatMap(\.launches).map(\.launch)`, not `installs.flatMap { $0.launches.map(\.launch) }`.
+- This applies to any parameter of function type `(T) -> U`, not just sequence operations — pass `label: \.label` instead of a trailing `{ $0.label }` closure, moving the argument out of trailing position when needed. `@ViewBuilder` parameters stay closures.
+- A key path can't express negation, comparison, a call, or anything using both `$0` and `$1`, so `filter { !$0.isEmpty }`, `sorted { $0.date < $1.date }` and `reduce(0) { $0 + $1.count }` stay closures.
+
+## Parameterless methods vs computed properties
+
+- A parameterless method that only projects or derives a value — no side effects, no state mutation, not throwing, not `async`, and cheap — is a computed property named as a noun: `var record: Record`, not `func toRecord() -> Record`; `var filters: [RecordQuery.Filter]`, not `func buildFilters() -> [RecordQuery.Filter]`. Besides matching the Swift API Design Guidelines, this is what makes the key-path form above available at call sites (`records.map(\.record)`).
+- Keep it a method when it has side effects or mutates state (`RecordCacheStore.cache()` creates directories, `DatabaseCacheRegistry.sharedCache()` updates a static cache, `ChartExportSheet.exportURL()` writes a file and posts a `Message`), when it throws or is `async`, when it is generic (Swift has no generic computed properties — `chartPoints<T>()`), or when it is expensive enough that a property would misrepresent the cost (`RawCrashReport.crashInfo()` symbolicates the stack trace).
+- `View` extension modifiers stay methods regardless of parameter count (`func dismissable() -> some View`) — see the `ViewModifier` rule below.
+
 ## Array extensions
 
 - Prefer `extension [Type] { ... }` over `extension Array where Element == Type { ... }` when extending a concrete element type — matches existing usage across the codebase (e.g. `Connection.swift`, `PointGroup.swift`, `ReferenceLevel.swift`).
