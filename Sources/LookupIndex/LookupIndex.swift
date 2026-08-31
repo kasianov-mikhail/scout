@@ -22,9 +22,9 @@ public enum LookupIndex {
     /// macOS 14 the call is a no-op and backends stay uncached.
     ///
     @MainActor public static func enable() {
-        DatabaseCaching.provider = { backend in
-            guard #available(iOS 17, macOS 14, *) else { return nil }
-            return RecordCacheRegistry.database(for: backend)
+        if #available(iOS 17, macOS 14, *) {
+            DatabaseCaching.provider = RecordCacheRegistry.provider
+            DatabaseCaching.storage = RecordCacheRegistry.storage
         }
     }
 }

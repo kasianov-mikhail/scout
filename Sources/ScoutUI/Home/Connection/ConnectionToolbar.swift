@@ -41,7 +41,11 @@ private struct ConnectionToolbar: ViewModifier {
             }
             .sheet(isPresented: $isSettingsPresented) {
                 NavigationStack {
-                    SettingsOverviewView(backends: backends, activeID: $activeID)
+                    SettingsOverviewView(
+                        backends: backends,
+                        activeID: $activeID,
+                        cache: DatabaseCaching.storage
+                    )
                 }
                 .opaquePresentation()
             }
