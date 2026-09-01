@@ -2,7 +2,7 @@ name: Notify
 
 on:
   workflow_run:
-    workflows: [Swift]
+    workflows: [CI]
     types: [completed]
     branches: [main]
 
