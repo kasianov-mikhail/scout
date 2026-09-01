@@ -17,24 +17,19 @@ struct CachedDatabaseTests {
     let cutoff = Date(timeIntervalSince1970: 3_000_000)
     let upper = Date(timeIntervalSince1970: 4_000_000)
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     func makeDatabase(base: SpyDatabase) throws -> CachedDatabase {
-        try makeDatabase(base: base, row: CachedRecord.self)
-    }
-
-    @available(iOS 17, macOS 14, *)
-    func makeDatabase<Row: RecordCacheRow>(base: SpyDatabase, row: Row.Type) throws -> CachedDatabase {
         let frozen = cutoff
 
         return CachedDatabase(
             base: base,
             scope: "test",
-            cache: try makeRecordCache(row),
+            cache: try makeRecordCache(),
             settledCutoff: { frozen }
         )
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Record queries pass through unchanged")
     func passesThroughOtherQueries() async throws {
         let base = SpyDatabase()
@@ -52,7 +47,7 @@ struct CachedDatabaseTests {
         #expect(base.queries.first?.filters == query.filters)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("A repeated series request only fetches the live remainder")
     func seriesFetchesRemainderOnly() async throws {
         let base = SpyDatabase()
@@ -80,7 +75,7 @@ struct CachedDatabaseTests {
         #expect(second.first?.points.map(\.value) == [.int(4), .int(7)])
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Series caches are split by scalar type and category")
     func seriesSeparatesFingerprints() async throws {
         let base = SpyDatabase()
@@ -99,7 +94,7 @@ struct CachedDatabaseTests {
         #expect(base.seriesRanges == [lower..<upper, lower..<upper])
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Version-grouped series round-trip through the cache")
     func cachesVersionGroups() async throws {
         let base = SpyDatabase()
@@ -124,30 +119,6 @@ struct CachedDatabaseTests {
     }
 
     @available(iOS 18, macOS 15, *)
-    @Test("A repeated series request hits the indexed cache")
-    func seriesRoundTripsThroughIndexedRows() async throws {
-        let base = SpyDatabase()
-        let database = try makeDatabase(base: base, row: IndexedCachedRecord.self)
-        base.series = [
-            MetricSeries(
-                name: "2xx",
-                category: "http_status",
-                points: [
-                    MetricSeriesPoint(date: 1_000_000_000, value: .int(4)),
-                    MetricSeriesPoint(date: 3_500_000_000, value: .int(7)),
-                ]
-            )
-        ]
-
-        let first = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
-        let second = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
-
-        #expect(base.seriesRanges == [lower..<upper, cutoff..<upper])
-        #expect(second.first?.points.map(\.date) == first.first?.points.map(\.date))
-        #expect(second.first?.points.map(\.value) == [.int(4), .int(7)])
-    }
-
-    @available(iOS 17, macOS 14, *)
     @Test("An event lookup is served from the cache after the first fetch")
     func cachesEventLookup() async throws {
         let base = SpyDatabase()
@@ -164,7 +135,7 @@ struct CachedDatabaseTests {
         #expect(base.lookups == ["event-1"])
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Lookups of mutable record types are not cached")
     func skipsMutableLookup() async throws {
         let base = SpyDatabase()
@@ -177,13 +148,13 @@ struct CachedDatabaseTests {
         #expect(base.lookups == ["session-1", "session-1"])
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("A backend recreated with a rotated key resolves to the current database")
     func rotatingKeyRebindsDatabase() throws {
         let stale = SpyDatabase()
         let rotated = SpyDatabase()
 
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
         let first = CachedDatabase(
             backend: Backend(
                 id: "https://example.com",
@@ -209,7 +180,7 @@ struct CachedDatabaseTests {
         #expect(spyBase(of: second) === rotated)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     private func spyBase(of database: any Database) -> SpyDatabase? {
         if let cached = database as? CachedDatabase {
             return cached.base as? SpyDatabase
@@ -217,7 +188,7 @@ struct CachedDatabaseTests {
         return database as? SpyDatabase
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Lookups with different field sets are cached separately")
     func separatesLookupFields() async throws {
         let base = SpyDatabase()

@@ -12,12 +12,11 @@ import Testing
 @testable import LookupIndex
 @testable import Scout
 
-@available(iOS 17, macOS 14, *)
-func makeRecordCache<Row: RecordCacheRow>(_ row: Row.Type) throws -> RecordCache<Row> {
-    let schema = Schema([Row.self, CachedSpan.self])
-    let configuration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-    let container = try ModelContainer(for: schema, configurations: [configuration])
-    return RecordCache<Row>(modelContainer: container)
+@available(iOS 18, macOS 15, *)
+func makeRecordCache() throws -> RecordCache {
+    let configuration = ModelConfiguration(schema: RecordCache.schema, isStoredInMemoryOnly: true)
+    let container = try ModelContainer(for: RecordCache.schema, configurations: [configuration])
+    return RecordCache(modelContainer: container)
 }
 
 struct RecordCacheTests {
@@ -33,10 +32,10 @@ struct RecordCacheTests {
         Date(timeIntervalSince1970: interval)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Stored records round-trip through the cache")
     func roundTrip() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
         let records = [makeRecord(date: date(100)), makeRecord(date: date(200))]
 
         await cache.store(records, for: "fp", covering: date(0)..<date(300))
@@ -47,10 +46,10 @@ struct RecordCacheTests {
         #expect(await cache.coveredRange(for: "fp") == date(0)..<date(300))
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Contiguous stores extend the covered span")
     func extendsSpan() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
 
         await cache.store([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(300))
         await cache.store([makeRecord(date: date(400))], for: "fp", covering: date(300)..<date(600))
@@ -61,10 +60,10 @@ struct RecordCacheTests {
         #expect(cached.count == 2)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("A disjoint store replaces the previous span")
     func replacesDisjointSpan() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
 
         await cache.store([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(300))
         await cache.store([makeRecord(date: date(700))], for: "fp", covering: date(600)..<date(900))
@@ -76,10 +75,10 @@ struct RecordCacheTests {
         #expect(cached.first?.fields["date"] == .date(date(700)))
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Overlapping stores do not duplicate records")
     func deduplicatesOverlap() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
         let record = makeRecord(date: date(100))
 
         await cache.store([record], for: "fp", covering: date(0)..<date(300))
@@ -89,10 +88,10 @@ struct RecordCacheTests {
         #expect(cached.count == 1)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Fingerprints are isolated from each other")
     func isolatesFingerprints() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
 
         await cache.store([makeRecord(date: date(100))], for: "a", covering: date(0)..<date(300))
 
@@ -102,10 +101,10 @@ struct RecordCacheTests {
         #expect(cached.count == 0)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("A record without a date aborts the store")
     func abortsWithoutDate() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
         let record = Record(recordType: "MetricSeriesPoint", recordID: UUID().uuidString)
 
         await cache.store([record], for: "fp", covering: date(0)..<date(300))
@@ -113,10 +112,10 @@ struct RecordCacheTests {
         #expect(await cache.coveredRange(for: "fp") == nil)
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @Test("Records outside the covered range are skipped")
     func skipsOutOfRange() async throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        let cache = try makeRecordCache()
         let records = [makeRecord(date: date(100)), makeRecord(date: date(500))]
 
         await cache.store(records, for: "fp", covering: date(0)..<date(300))
@@ -127,9 +126,9 @@ struct RecordCacheTests {
     }
 
     @available(iOS 18, macOS 15, *)
-    @Test("Indexed records round-trip through range predicates")
-    func indexedRoundTrip() async throws {
-        let cache = try makeRecordCache(IndexedCachedRecord.self)
+    @Test("Range predicates return only the requested prefix")
+    func filtersByRange() async throws {
+        let cache = try makeRecordCache()
         let records = [makeRecord(date: date(100)), makeRecord(date: date(200)), makeRecord(date: date(500))]
 
         await cache.store(records, for: "fp", covering: date(0)..<date(600))

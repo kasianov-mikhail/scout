@@ -11,6 +11,7 @@ import Foundation
 struct RecordCacheLocation: @unchecked Sendable {
     private static let generationKey = "scout_record_cache_generation"
     private let storeName = "RecordCache"
+    private let schemaVersion = 2
     private let storeSuffixes = ["", "-shm", "-wal"]
 
     let directory: URL
@@ -25,8 +26,8 @@ struct RecordCacheLocation: @unchecked Sendable {
 
     var storeURL: URL {
         let generation = defaults.integer(forKey: Self.generationKey)
-        let name = generation > 0 ? "\(storeName)-\(generation).store" : "\(storeName).store"
-        return directory.appending(path: name)
+        let name = "\(storeName)-v\(schemaVersion)" + (generation > 0 ? "-\(generation)" : "")
+        return directory.appending(path: "\(name).store")
     }
 
     var size: Int64 {
