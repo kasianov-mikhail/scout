@@ -32,8 +32,9 @@ actor RecordCache {
             return nil
         }
 
+        let decoder = JSONDecoder()
         let records = entries.compactMap {
-            try? JSONDecoder().decode(CachedRecordPayload.self, from: $0.payload).record
+            try? decoder.decode(Record.self, from: $0.payload)
         }
         guard records.count == entries.count else {
             return nil
@@ -52,7 +53,7 @@ actor RecordCache {
             guard range.contains(date) else {
                 continue
             }
-            guard let payload = try? encoder.encode(CachedRecordPayload(record: record)) else {
+            guard let payload = try? encoder.encode(record) else {
                 return
             }
             entries.append(CachedRecord(fingerprint: fingerprint, date: date, payload: payload))
@@ -91,11 +92,11 @@ actor RecordCache {
         guard let entry = try? modelContext.fetch(descriptor).first else {
             return nil
         }
-        return try? JSONDecoder().decode(CachedRecordPayload.self, from: entry.payload).record
+        return try? JSONDecoder().decode(Record.self, from: entry.payload)
     }
 
     func storeLookup(_ record: Record, for fingerprint: String) {
-        guard let payload = try? JSONEncoder().encode(CachedRecordPayload(record: record)) else {
+        guard let payload = try? JSONEncoder().encode(record) else {
             return
         }
 

@@ -8,20 +8,6 @@
 import Foundation
 
 enum CachedMetricSeries {
-    static func fingerprint(scope: String, query: SeriesQuery) -> String {
-        [
-            scope, "series",
-            query.name ?? "*",
-            query.category ?? "*",
-            query.values?.rawValue ?? "*",
-            query.bucket.rawValue,
-            query.byVersion ? "version" : "*",
-            query.source?.rawValue ?? "*",
-            query.reduce.rawValue,
-        ]
-        .joined(separator: "|")
-    }
-
     static func records(from series: [MetricSeries]) -> [Record] {
         series.flatMap { series in
             series.points.map { point in
