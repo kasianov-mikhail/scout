@@ -45,36 +45,9 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: .github/scripts/detect-wire-changes.sh
 
-  gate:
-    name: gate
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 190
-
-    permissions:
-      contents: read
-      checks: read
-      actions: read
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          filter: blob:none
-
-      - name: Wait for the fast cross-workflow checks
-        env:
-          GH_TOKEN: ${{ github.token }}
-          SHAS: ${{ github.event.pull_request.head.sha }} ${{ github.sha }}
-          CHECKS: lint model-versions
-        run: .github/scripts/wait-for-checks.sh
-
   contract:
-    needs: [changes, gate]
-    if: >-
-      ${{ always()
-      && needs.changes.result == 'success'
-      && needs.changes.outputs.backend == 'true'
-      && (needs.gate.result == 'success' || needs.gate.result == 'skipped') }}
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: macos-26
     timeout-minutes: 30
 
@@ -113,7 +86,7 @@ jobs:
 
   contract-gate:
     name: contract-gate
-    needs: [changes, gate, contract]
+    needs: [changes, contract]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -126,6 +99,5 @@ jobs:
         run: |
           .github/scripts/require-results.sh \
             "The changes job|${{ needs.changes.result }}" \
-            "The fast-check gate|${{ needs.gate.result }}|success,skipped" \
             "The contract check|${{ needs.contract.result }}|success,skipped"
           echo "Gate passes."

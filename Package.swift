@@ -140,7 +140,7 @@ let package = Package(
                 "Scout",
             ]
             // LookupIndex autolinks SwiftData (iOS 17+), so this bundle can't load
-            // on the iOS 16 simulator; the `swift.yml` iOS 16 leg skips it entirely.
+            // on the iOS 16 simulator; the `ci.yml` iOS 16 leg skips it entirely.
         ),
         .testTarget(
             name: "ScoutSnapshotTests",
