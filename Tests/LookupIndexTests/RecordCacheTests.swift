@@ -6,17 +6,24 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import SwiftData
 import Testing
 
 @testable import LookupIndex
 @testable import Scout
 
+func makeRecordCacheLocation(manager: FileManager = .default) throws -> RecordCacheLocation {
+    let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
+    try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    return RecordCacheLocation(
+        directory: directory,
+        defaults: UserDefaults(suiteName: "RecordCacheTests-\(UUID().uuidString)")!,
+        manager: manager
+    )
+}
+
 @available(iOS 18, macOS 15, *)
 func makeRecordCache() throws -> RecordCache {
-    let configuration = ModelConfiguration(schema: RecordCache.schema, isStoredInMemoryOnly: true)
-    let container = try ModelContainer(for: RecordCache.schema, configurations: [configuration])
-    return RecordCache(modelContainer: container)
+    try RecordCache(location: makeRecordCacheLocation())
 }
 
 struct RecordCacheTests {
@@ -123,6 +130,34 @@ struct RecordCacheTests {
         let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(900)))
         #expect(cached.count == 1)
         #expect(cached.first?.fields["date"] == .date(date(100)))
+    }
+
+    @available(iOS 18, macOS 15, *)
+    @Test("Clearing forgets every span and record")
+    func clears() async throws {
+        let cache = try makeRecordCache()
+
+        await cache.store([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(300))
+        await cache.removeAll()
+
+        #expect(await cache.coveredRange(for: "fp") == nil)
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(300)))
+        #expect(cached.count == 0)
+        #expect(await cache.size == 0)
+    }
+
+    @available(iOS 18, macOS 15, *)
+    @Test("The size sums the stored payloads")
+    func sumsPayloadSizes() async throws {
+        let cache = try makeRecordCache()
+        let records = [makeRecord(date: date(100)), makeRecord(date: date(200), name: "A longer series name")]
+        let expected = try records.map { try JSONEncoder().encode($0).count }.reduce(0, +)
+
+        #expect(await cache.size == 0)
+
+        await cache.store(records, for: "fp", covering: date(0)..<date(300))
+
+        #expect(await cache.size == Int64(expected))
     }
 
     @available(iOS 18, macOS 15, *)

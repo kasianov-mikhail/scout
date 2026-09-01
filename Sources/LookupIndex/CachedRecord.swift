@@ -25,17 +25,15 @@ final class CachedRecord {
         }
     }
 
-    static var dateSort: SortDescriptor<CachedRecord> {
-        SortDescriptor(\.date)
-    }
-
     var fingerprint: String
     var date: Date
     var payload: Data
+    var size: Int
 
     init(fingerprint: String, date: Date, payload: Data) {
         self.fingerprint = fingerprint
         self.date = date
         self.payload = payload
+        size = payload.count
     }
 }

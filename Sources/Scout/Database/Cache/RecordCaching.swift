@@ -7,7 +7,12 @@
 
 import Foundation
 
-package protocol RecordCaching: Actor {
+package protocol CacheClearing: Actor {
+    var size: Int64 { get }
+    func removeAll()
+}
+
+package protocol RecordCaching: CacheClearing {
     func coveredRange(for fingerprint: String) -> Range<Date>?
     func records(for fingerprint: String, in range: Range<Date>) -> [Record]?
     func store(_ records: [Record], for fingerprint: String, covering range: Range<Date>)

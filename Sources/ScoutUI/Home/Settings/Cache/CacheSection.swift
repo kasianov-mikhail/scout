@@ -14,14 +14,15 @@ struct CacheSection: View {
 
     @State private var isClearing = false
 
-    init(storage: CacheStorage) {
-        _cache = StateObject(wrappedValue: CacheStatus(storage: storage))
+    init(cache: any CacheClearing) {
+        _cache = StateObject(wrappedValue: CacheStatus(cache: cache))
     }
 
     var body: some View {
         Header(title: "Cache")
 
         DetailValueRow(title: "Cached Data", value: cache.sizeLabel)
+            .task { await cache.refresh() }
 
         Button(role: .destructive) {
             isClearing = true
@@ -35,7 +36,7 @@ struct CacheSection: View {
             titleVisibility: .visible
         ) {
             Button(role: .destructive) {
-                cache.clear()
+                Task { await cache.clear() }
             } label: {
                 Text(verbatim: "Clear Cache")
             }
@@ -47,7 +48,7 @@ struct CacheSection: View {
 
 #Preview {
     InsetList {
-        CacheSection(storage: .sample)
-        CacheSection(storage: .sample(bytes: 0))
+        CacheSection(cache: CacheSample())
+        CacheSection(cache: CacheSample(size: 0))
     }
 }
