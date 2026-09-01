@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import SwiftData
 import Testing
 
 @testable import LookupIndex
@@ -146,46 +145,6 @@ struct CachedDatabaseTests {
         _ = try await database.lookup(recordName: "session-1", fields: nil)
 
         #expect(base.lookups == ["session-1", "session-1"])
-    }
-
-    @available(iOS 18, macOS 15, *)
-    @Test("A backend recreated with a rotated key resolves to the current database")
-    func rotatingKeyRebindsDatabase() throws {
-        let stale = SpyDatabase()
-        let rotated = SpyDatabase()
-
-        let cache = try makeRecordCache()
-        let first = CachedDatabase(
-            backend: Backend(
-                id: "https://example.com",
-                database: stale,
-                checkAvailability: { true },
-                displayName: "example",
-                engine: .cloudKit
-            ),
-            cache: cache
-        )
-        let second = CachedDatabase(
-            backend: Backend(
-                id: "https://example.com",
-                database: rotated,
-                checkAvailability: { true },
-                displayName: "example",
-                engine: .cloudKit
-            ),
-            cache: cache
-        )
-
-        #expect(spyBase(of: first) === stale)
-        #expect(spyBase(of: second) === rotated)
-    }
-
-    @available(iOS 18, macOS 15, *)
-    private func spyBase(of database: any Database) -> SpyDatabase? {
-        if let cached = database as? CachedDatabase {
-            return cached.base as? SpyDatabase
-        }
-        return database as? SpyDatabase
     }
 
     @available(iOS 18, macOS 15, *)

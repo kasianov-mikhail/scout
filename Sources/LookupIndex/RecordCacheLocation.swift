@@ -25,26 +25,21 @@ struct RecordCacheLocation: @unchecked Sendable {
     }
 
     var storeURL: URL {
-        let generation = defaults.integer(forKey: Self.generationKey)
-        let name = "\(storeName)-v\(schemaVersion)" + (generation > 0 ? "-\(generation)" : "")
-        return directory.appending(path: "\(name).store")
+        storeURL(generation: generation)
     }
 
-    var size: Int64 {
-        storeSuffixes.reduce(0) { total, suffix in
-            let attributes = try? manager.attributesOfItem(atPath: storeURL.path + suffix)
-            return total + ((attributes?[.size] as? Int64) ?? 0)
-        }
+    var nextStoreURL: URL {
+        storeURL(generation: generation + 1)
     }
 
     func retire() {
-        destroyStore()
-        defaults.set(defaults.integer(forKey: Self.generationKey) + 1, forKey: Self.generationKey)
+        destroyStore(at: storeURL)
+        defaults.set(generation + 1, forKey: Self.generationKey)
     }
 
-    func destroyStore() {
+    func destroyStore(at url: URL) {
         for suffix in storeSuffixes {
-            try? manager.removeItem(atPath: storeURL.path + suffix)
+            try? manager.removeItem(atPath: url.path + suffix)
         }
     }
 
@@ -55,5 +50,14 @@ struct RecordCacheLocation: @unchecked Sendable {
         for name in names where name.hasPrefix(storeName) && !name.hasPrefix(current) {
             try? manager.removeItem(at: directory.appending(path: name))
         }
+    }
+
+    private var generation: Int {
+        defaults.integer(forKey: Self.generationKey)
+    }
+
+    private func storeURL(generation: Int) -> URL {
+        let name = "\(storeName)-v\(schemaVersion)" + (generation > 0 ? "-\(generation)" : "")
+        return directory.appending(path: "\(name).store")
     }
 }

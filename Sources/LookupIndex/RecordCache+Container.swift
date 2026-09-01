@@ -11,12 +11,8 @@ import SwiftData
 
 @available(iOS 18, macOS 15, *)
 extension RecordCache {
-    static let schema = Schema([CachedRecord.self, CachedSpan.self])
-
-    init(location: RecordCacheLocation = RecordCacheLocation()) throws {
+    static func container(at url: URL, in location: RecordCacheLocation) throws -> ModelContainer {
         try location.manager.createDirectory(at: location.directory, withIntermediateDirectories: true)
-
-        let url = location.storeURL
         location.sweepRetired()
 
         do {
@@ -28,11 +24,10 @@ extension RecordCache {
                 )
             }
         } catch {
-            location.destroyStore()
+            location.destroyStore(at: url)
         }
 
-        let configuration = ModelConfiguration(schema: Self.schema, url: url, cloudKitDatabase: .none)
-
-        self.init(modelContainer: try ModelContainer(for: Self.schema, configurations: [configuration]))
+        let configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
+        return try ModelContainer(for: schema, configurations: [configuration])
     }
 }

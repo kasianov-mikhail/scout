@@ -8,12 +8,18 @@
 import Foundation
 
 package struct CachedDatabase: Database {
+    @MainActor package static var cache: (any RecordCaching)?
+
     let base: any Database
     let scope: String
     let cache: any RecordCaching
+    let settledCutoff: @Sendable () -> Date
 
-    var settledCutoff: @Sendable () -> Date = {
-        Date().startOfWeek.addingWeek(-1)
+    package init(base: any Database, scope: String, cache: any RecordCaching, settledCutoff: @escaping @Sendable () -> Date = { Date().startOfWeek.addingWeek(-1) }) {
+        self.base = base
+        self.scope = scope
+        self.cache = cache
+        self.settledCutoff = settledCutoff
     }
 
     package func lookup(recordName: String, fields: [String]?) async throws -> Record {
@@ -73,23 +79,5 @@ package struct CachedDatabase: Database {
         }
 
         return CachedMetricSeries.series(cached: cached, fetched: fetched)
-    }
-}
-
-@MainActor extension CachedDatabase {
-    package static var cache: (any RecordCaching)?
-    package static var storage: CacheStorage?
-
-    package init?(backend: Backend) {
-        guard let cache = Self.cache else {
-            return nil
-        }
-        self.init(backend: backend, cache: cache)
-    }
-}
-
-extension CachedDatabase {
-    init(backend: Backend, cache: any RecordCaching) {
-        self.init(base: backend.database, scope: backend.id, cache: cache)
     }
 }

@@ -15,57 +15,74 @@ import Testing
 @MainActor
 @Suite("CacheStatus")
 struct CacheStatusTests {
-    @Test("The status reports the size the storage measures")
-    func reportsStorageSize() {
-        #expect(CacheStatus(storage: makeStorage(size: 4_096)).bytes == 4_096)
+    @Test("The status has no size until it is refreshed")
+    func startsUnmeasured() {
+        let status = CacheStatus(cache: SpyCacheClearing(size: 4_096))
+
+        #expect(status.bytes == nil)
+        #expect(!status.isEmpty)
+        #expect(status.sizeLabel == "")
+    }
+
+    @Test("Refreshing reports the size the storage measures")
+    func reportsStorageSize() async {
+        #expect(await makeStatus(size: 4_096).bytes == 4_096)
     }
 
     @Test("Clearing erases the storage and measures it again")
-    func clears() {
-        var size: Int64 = 4_096
-        var clears = 0
-        let storage = CacheStorage(
-            bytes: { size },
-            removeAll: {
-                clears += 1
-                size = 0
-            }
-        )
-        let status = CacheStatus(storage: storage)
+    func clears() async {
+        let cache = SpyCacheClearing(size: 4_096)
+        let status = CacheStatus(cache: cache)
 
-        status.clear()
+        await status.clear()
 
-        #expect(clears == 1)
+        #expect(await cache.clears == 1)
         #expect(status.bytes == 0)
         #expect(status.isEmpty)
     }
 
     @Test("An empty cache reads as empty rather than as zero bytes")
-    func labelsAnEmptyCache() {
-        let status = CacheStatus(storage: makeStorage(size: 0))
+    func labelsAnEmptyCache() async {
+        let status = await makeStatus(size: 0)
 
         #expect(status.isEmpty)
         #expect(status.sizeLabel == "Empty")
     }
 
     @Test("A populated cache reports its size in file units")
-    func labelsAPopulatedCache() {
-        let status = CacheStatus(storage: makeStorage(size: 12_582_912))
+    func labelsAPopulatedCache() async {
+        let status = await makeStatus(size: 12_582_912)
 
         #expect(!status.isEmpty)
         #expect(status.sizeLabel == Int64(12_582_912).formatted(.byteCount(style: .file)))
     }
 
     @Test("A larger cache reads differently from a smaller one")
-    func labelsScaleWithSize() {
-        let large = CacheStatus(storage: makeStorage(size: 12_582_912))
-        let small = CacheStatus(storage: makeStorage(size: 12_288))
+    func labelsScaleWithSize() async {
+        let large = await makeStatus(size: 12_582_912)
+        let small = await makeStatus(size: 12_288)
 
         #expect(large.sizeLabel != small.sizeLabel)
     }
 }
 
 @MainActor
-private func makeStorage(size: Int64) -> CacheStorage {
-    CacheStorage(bytes: { size }, removeAll: {})
+private func makeStatus(size: Int64) async -> CacheStatus {
+    let status = CacheStatus(cache: SpyCacheClearing(size: size))
+    await status.refresh()
+    return status
+}
+
+private actor SpyCacheClearing: CacheClearing {
+    private(set) var size: Int64
+    private(set) var clears = 0
+
+    init(size: Int64) {
+        self.size = size
+    }
+
+    func removeAll() {
+        clears += 1
+        size = 0
+    }
 }

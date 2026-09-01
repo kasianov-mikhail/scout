@@ -11,13 +11,12 @@ import Scout
 
 @MainActor
 final class CacheStatus: ObservableObject {
-    @Published private(set) var bytes: Int64
+    @Published private(set) var bytes: Int64?
 
-    private let storage: CacheStorage
+    private let cache: any CacheClearing
 
-    init(storage: CacheStorage) {
-        self.storage = storage
-        bytes = storage.bytes()
+    init(cache: any CacheClearing) {
+        self.cache = cache
     }
 
     var isEmpty: Bool {
@@ -25,11 +24,22 @@ final class CacheStatus: ObservableObject {
     }
 
     var sizeLabel: String {
-        isEmpty ? "Empty" : bytes.formatted(.byteCount(style: .file))
+        switch bytes {
+        case nil:
+            ""
+        case 0:
+            "Empty"
+        case let bytes?:
+            bytes.formatted(.byteCount(style: .file))
+        }
     }
 
-    func clear() {
-        storage.removeAll()
-        bytes = storage.bytes()
+    func refresh() async {
+        bytes = await cache.size
+    }
+
+    func clear() async {
+        await cache.removeAll()
+        await refresh()
     }
 }

@@ -13,9 +13,9 @@ struct SettingsOverviewView: View {
     @Binding var activeID: String
     @StateObject var provider: BackendHealthProvider
 
-    let cache: CacheStorage?
+    let cache: (any CacheClearing)?
 
-    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil, cache: CacheStorage? = nil) {
+    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil, cache: (any CacheClearing)? = nil) {
         self._activeID = activeID
         self._provider = StateObject(wrappedValue: provider ?? BackendHealthProvider(backends: backends))
         self.cache = cache
@@ -39,7 +39,7 @@ struct SettingsOverviewView: View {
             }
 
             if let cache {
-                CacheSection(storage: cache)
+                CacheSection(cache: cache)
             }
 
             Header(title: "Diagnostics")
@@ -92,7 +92,7 @@ private struct BackendRow: View {
             backends: [],
             activeID: $activeID,
             provider: BackendHealthProvider(healths: .samples),
-            cache: .sample
+            cache: CacheSample()
         )
     }
 }
@@ -105,7 +105,7 @@ private struct BackendRow: View {
             backends: [],
             activeID: $activeID,
             provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2))),
-            cache: .sample(bytes: 0)
+            cache: CacheSample(size: 0)
         )
     }
 }
