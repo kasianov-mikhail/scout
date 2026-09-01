@@ -3,12 +3,6 @@ name: Server
 on:
   push:
     branches: [main]
-    paths:
-      - "Sources/Connectors/Hosted/**"
-      - "Sources/Scout/Database/**"
-      - "Tests/Connectors/Hosted/**"
-      - ".github/workflows/server.yml"
-      - ".github/scripts/**"
   pull_request:
   repository_dispatch:
     types: [scout-server-updated]
@@ -18,6 +12,9 @@ on:
 
 permissions:
   contents: read
+
+env:
+  PATTERN: ^(Sources/Connectors/Hosted/|Sources/Scout/Database/|Tests/Connectors/Hosted/|\.github/workflows/server\.yml$|\.github/scripts/)
 
 concurrency:
   group: server-${{ github.event_name == 'pull_request' && github.ref || github.run_id }}
@@ -43,7 +40,9 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: .github/scripts/detect-wire-changes.sh
+          BEFORE_SHA: ${{ github.event.before }}
+          OUTPUT: backend
+        run: .github/scripts/detect-changes.sh
 
   contract:
     needs: changes

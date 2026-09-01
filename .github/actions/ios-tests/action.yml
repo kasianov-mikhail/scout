@@ -55,7 +55,7 @@ runs:
       uses: actions/cache@v6
       with:
         path: /tmp/spm
-        key: spm-${{ hashFiles('Package.swift') }}
+        key: spm-${{ hashFiles('Package.resolved') }}
         restore-keys: spm-
 
     - name: Build
