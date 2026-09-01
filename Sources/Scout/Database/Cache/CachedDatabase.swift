@@ -17,8 +17,7 @@ package struct CachedDatabase: Database {
     }
 
     package func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        let fieldsKey = fields.map { $0.sorted().joined(separator: ",") } ?? "*"
-        let fingerprint = [scope, "lookup", recordName, fieldsKey].joined(separator: "|")
+        let fingerprint = CacheKey.lookup(scope: scope, recordName: recordName, fields: fields).fingerprint
 
         if let record = await cache.lookupRecord(for: fingerprint) {
             return record
@@ -43,10 +42,7 @@ package struct CachedDatabase: Database {
             return try await base.series(matching: query)
         }
 
-        let fingerprint = CachedMetricSeries.fingerprint(
-            scope: scope,
-            query: query
-        )
+        let fingerprint = CacheKey.series(scope: scope, query: query).fingerprint
 
         var cached: [Record] = []
         var cachedUpper = query.range.lowerBound
