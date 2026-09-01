@@ -9,9 +9,9 @@ import Foundation
 import Scout
 import SwiftData
 
-@available(iOS 17, macOS 14, *)
+@available(iOS 18, macOS 15, *)
 @ModelActor
-actor RecordCache<Row: RecordCacheRow> {
+actor RecordCache {
     func coveredRange(for fingerprint: String) -> Range<Date>? {
         let predicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
         var descriptor = FetchDescriptor(predicate: predicate)
@@ -25,8 +25,8 @@ actor RecordCache<Row: RecordCacheRow> {
 
     func records(for fingerprint: String, in range: Range<Date>) -> [Record]? {
         let descriptor = FetchDescriptor(
-            predicate: Row.predicate(fingerprint: fingerprint, in: range),
-            sortBy: [Row.dateSort]
+            predicate: CachedRecord.predicate(fingerprint: fingerprint, in: range),
+            sortBy: [CachedRecord.dateSort]
         )
         guard let entries = try? modelContext.fetch(descriptor) else {
             return nil
@@ -43,7 +43,7 @@ actor RecordCache<Row: RecordCacheRow> {
 
     func store(_ records: [Record], for fingerprint: String, covering range: Range<Date>) {
         let encoder = JSONEncoder()
-        var entries: [Row] = []
+        var entries: [CachedRecord] = []
 
         for record in records {
             guard case .date(let date)? = record.fields["date"] else {
@@ -55,7 +55,7 @@ actor RecordCache<Row: RecordCacheRow> {
             guard let payload = try? encoder.encode(CachedRecordPayload(record: record)) else {
                 return
             }
-            entries.append(Row(fingerprint: fingerprint, date: date, payload: payload))
+            entries.append(CachedRecord(fingerprint: fingerprint, date: date, payload: payload))
         }
 
         let predicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
@@ -63,10 +63,10 @@ actor RecordCache<Row: RecordCacheRow> {
         descriptor.fetchLimit = 1
 
         if let span = try? modelContext.fetch(descriptor).first, span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
-            try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint, in: range))
+            try? modelContext.delete(model: CachedRecord.self, where: CachedRecord.predicate(fingerprint: fingerprint, in: range))
             span.upperDate = max(span.upperDate, range.upperBound)
         } else {
-            try? modelContext.delete(model: Row.self, where: Row.predicate(fingerprint: fingerprint))
+            try? modelContext.delete(model: CachedRecord.self, where: CachedRecord.predicate(fingerprint: fingerprint))
             try? modelContext.delete(model: CachedSpan.self, where: predicate)
 
             modelContext.insert(
@@ -85,7 +85,7 @@ actor RecordCache<Row: RecordCacheRow> {
     }
 
     func lookupRecord(for fingerprint: String) -> Record? {
-        var descriptor = FetchDescriptor(predicate: Row.predicate(fingerprint: fingerprint))
+        var descriptor = FetchDescriptor(predicate: CachedRecord.predicate(fingerprint: fingerprint))
         descriptor.fetchLimit = 1
 
         guard let entry = try? modelContext.fetch(descriptor).first else {
@@ -100,12 +100,12 @@ actor RecordCache<Row: RecordCacheRow> {
         }
 
         try? modelContext.delete(
-            model: Row.self,
-            where: Row.predicate(fingerprint: fingerprint)
+            model: CachedRecord.self,
+            where: CachedRecord.predicate(fingerprint: fingerprint)
         )
 
         modelContext.insert(
-            Row(
+            CachedRecord(
                 fingerprint: fingerprint,
                 date: .distantPast,
                 payload: payload
@@ -116,5 +116,5 @@ actor RecordCache<Row: RecordCacheRow> {
     }
 }
 
-@available(iOS 17, macOS 14, *)
+@available(iOS 18, macOS 15, *)
 extension RecordCache: RecordCaching {}

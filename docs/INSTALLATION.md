@@ -46,7 +46,7 @@ The package publishes these products:
 | `NativeConnector` | `Backend.cloudKit(container:)`, syncing to your CloudKit container |
 | `HostedConnector` | `Backend.server(url:apiKey:)`, syncing to a [Scout server](https://github.com/kasianov-mikhail/scout-server) |
 | `ScoutUI` | The in-app dashboard — see the [Dashboard Guide](DASHBOARD.md) |
-| `LookupIndex` | A SwiftData record cache for the dashboard, enabled with `LookupIndex.enable()` on iOS 17+ |
+| `LookupIndex` | A SwiftData record cache for the dashboard, enabled with `LookupIndex.enable()` on iOS 18+ |
 | `DemoConnector` | `Backend.demo()`, an offline backend preloaded with fabricated data for previews and screenshots |
 
 ## Enable CloudKit

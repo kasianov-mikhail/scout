@@ -9,21 +9,21 @@ import Scout
 
 /// The record-cache module for Scout.
 ///
-/// The cache is backed by SwiftData, which is available only on iOS 17 and
-/// macOS 14. It lives in a separate module so the core `Scout` framework — and
-/// anything that only links it, including its test bundles — does not link
-/// SwiftData and keeps loading on earlier systems.
+/// The cache is backed by SwiftData and its compound `#Index`, which is
+/// available only on iOS 18 and macOS 15. It lives in a separate module so the
+/// core `Scout` framework — and anything that only links it, including its test
+/// bundles — does not link SwiftData and keeps loading on earlier systems.
 ///
 public enum LookupIndex {
     /// Routes Scout's backends through the SwiftData-backed record cache.
     ///
     /// Call this once during app startup. Without it, `Scout` resolves every
-    /// backend to its uncached database. On systems earlier than iOS 17 /
-    /// macOS 14 — or when the cache store cannot be opened — the call is a
+    /// backend to its uncached database. On systems earlier than iOS 18 /
+    /// macOS 15 — or when the cache store cannot be opened — the call is a
     /// no-op and backends stay uncached.
     ///
     @MainActor public static func enable() {
-        guard #available(iOS 17, macOS 14, *) else {
+        guard #available(iOS 18, macOS 15, *) else {
             return
         }
 
@@ -39,14 +39,10 @@ public enum LookupIndex {
         )
     }
 
-    @available(iOS 17, macOS 14, *)
+    @available(iOS 18, macOS 15, *)
     @MainActor private static func resolveCache(at location: RecordCacheLocation) {
         do {
-            if #available(iOS 18, macOS 15, *) {
-                CachedDatabase.cache = try RecordCache<IndexedCachedRecord>(location: location)
-            } else {
-                CachedDatabase.cache = try RecordCache<CachedRecord>(location: location)
-            }
+            CachedDatabase.cache = try RecordCache(location: location)
         } catch {
             CachedDatabase.cache = nil
             print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")

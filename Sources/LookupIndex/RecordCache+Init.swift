@@ -9,8 +9,10 @@ import CoreData
 import Foundation
 import SwiftData
 
-@available(iOS 17, macOS 14, *)
+@available(iOS 18, macOS 15, *)
 extension RecordCache {
+    static let schema = Schema([CachedRecord.self, CachedSpan.self])
+
     init(location: RecordCacheLocation = RecordCacheLocation()) throws {
         try location.manager.createDirectory(at: location.directory, withIntermediateDirectories: true)
 
@@ -29,9 +31,8 @@ extension RecordCache {
             location.destroyStore()
         }
 
-        let schema = Schema([Row.self, CachedSpan.self])
-        let configuration = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
+        let configuration = ModelConfiguration(schema: Self.schema, url: url, cloudKitDatabase: .none)
 
-        self.init(modelContainer: try ModelContainer(for: schema, configurations: [configuration]))
+        self.init(modelContainer: try ModelContainer(for: Self.schema, configurations: [configuration]))
     }
 }

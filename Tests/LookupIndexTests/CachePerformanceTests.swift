@@ -35,10 +35,12 @@ final class CachedMetricSeriesPerformanceTests: XCTestCase {
     }
 }
 
-@available(iOS 17, macOS 14, *)
 final class RecordCachePerformanceTests: XCTestCase {
     func testStorePerformance() throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        guard #available(iOS 18, macOS 15, *) else {
+            throw XCTSkip("Requires iOS 18")
+        }
+        let cache = try makeRecordCache()
         let records = makeRecords(count: 5_000)
         let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 6_000_000)
 
@@ -48,7 +50,10 @@ final class RecordCachePerformanceTests: XCTestCase {
     }
 
     func testFetchAndDecodePerformance() throws {
-        let cache = try makeRecordCache(CachedRecord.self)
+        guard #available(iOS 18, macOS 15, *) else {
+            throw XCTSkip("Requires iOS 18")
+        }
+        let cache = try makeRecordCache()
         let records = makeRecords(count: 5_000)
         let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 6_000_000)
         runBlocking { await cache.store(records, for: "fp", covering: range) }
@@ -69,9 +74,11 @@ final class RecordCachePerformanceTests: XCTestCase {
     }
 }
 
-@available(iOS 17, macOS 14, *)
 final class CachedDatabasePerformanceTests: XCTestCase {
     func testCachedSeriesReadPerformance() throws {
+        guard #available(iOS 18, macOS 15, *) else {
+            throw XCTSkip("Requires iOS 18")
+        }
         let base = SpyDatabase()
         // Sized so the warm-up store finishes well inside runBlocking's timeout:
         // at 40×800 the 32k-row SwiftData insert alone brushed 60s on CI runners.
@@ -80,7 +87,7 @@ final class CachedDatabasePerformanceTests: XCTestCase {
         let database = CachedDatabase(
             base: base,
             scope: "perf",
-            cache: try makeRecordCache(CachedRecord.self),
+            cache: try makeRecordCache(),
             settledCutoff: { cutoff }
         )
         let query = SeriesQuery(
