@@ -19,6 +19,7 @@ jobs:
 
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      legs: ${{ steps.legs.outputs.legs }}
 
     steps:
       - uses: actions/checkout@v7
@@ -33,6 +34,13 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           BEFORE_SHA: ${{ github.event.before }}
         run: .github/scripts/detect-code-changes.sh
+
+      - name: Read the iOS matrix
+        id: legs
+        run: |
+          legs="$(.github/scripts/ios-matrix.sh)"
+          echo "$legs"
+          echo "legs=$legs" >> "$GITHUB_OUTPUT"
 
   lint:
     needs: scope
@@ -109,35 +117,13 @@ jobs:
             fi
           fi
 
-  matrix:
-    needs: scope
-    if: needs.scope.outputs.code == 'true'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    outputs:
-      legs: ${{ steps.legs.outputs.legs }}
-
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          filter: blob:none
-
-      - name: Read the iOS matrix
-        id: legs
-        run: |
-          legs="$(.github/scripts/ios-matrix.sh)"
-          echo "$legs"
-          echo "legs=$legs" >> "$GITHUB_OUTPUT"
-
   tests:
     name: test-ios-${{ matrix.ios }} (${{ matrix.configuration }})
-    needs: [scope, lint, model-versions, matrix]
+    needs: [scope, lint, model-versions]
     if: >-
       ${{ always()
       && needs.scope.outputs.code == 'true'
       && needs.lint.result == 'success'
-      && needs.matrix.result == 'success'
       && (needs.model-versions.result == 'success' || needs.model-versions.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
@@ -147,7 +133,7 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix: ${{ fromJSON(needs.matrix.outputs.legs) }}
+      matrix: ${{ fromJSON(needs.scope.outputs.legs) }}
 
     steps:
       - uses: actions/checkout@v7
@@ -162,7 +148,7 @@ jobs:
 
   tests-gate:
     name: tests-gate
-    needs: [scope, lint, model-versions, matrix, tests]
+    needs: [scope, lint, model-versions, tests]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 2
@@ -182,7 +168,6 @@ jobs:
           .github/scripts/require-results.sh \
             "Lint|${{ needs.lint.result }}" \
             "The model-version check|${{ needs.model-versions.result }}|success,skipped" \
-            "The matrix job|${{ needs.matrix.result }}" \
             "The iOS test matrix|${{ needs.tests.result }}"
           echo "Gate passes."
 
