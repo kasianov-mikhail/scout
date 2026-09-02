@@ -83,12 +83,12 @@ final class CachedDatabasePerformanceTests: XCTestCase {
         // Sized so the warm-up store finishes well inside runBlocking's timeout:
         // at 40×800 the 32k-row SwiftData insert alone brushed 60s on CI runners.
         base.series = makeSeries(versions: 10, points: 400)
-        let cutoff = Date(timeIntervalSince1970: 3_000_000)
+        let now = Date(timeIntervalSince1970: 4_000_000)
         let database = CachedDatabase(
             base: base,
             scope: "perf",
             cache: try makeRecordCache(),
-            settledCutoff: { cutoff }
+            now: { now }
         )
         let query = SeriesQuery(
             name: "Session",
