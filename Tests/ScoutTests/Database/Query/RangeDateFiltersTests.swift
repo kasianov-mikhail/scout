@@ -24,4 +24,18 @@ struct RangeDateFiltersTests {
             ]
         )
     }
+
+    @Test("Date range bounds a named field") func dateFiltersOnField() {
+        let start = Date(timeIntervalSinceReferenceDate: 0)
+        let end = Date(timeIntervalSinceReferenceDate: 86400)
+
+        let filters = (start..<end).dateFilters(on: "start_date")
+
+        #expect(
+            filters == [
+                RecordQuery.Filter(field: "start_date", op: .greaterThanOrEquals, value: .date(start)),
+                RecordQuery.Filter(field: "start_date", op: .lessThan, value: .date(end)),
+            ]
+        )
+    }
 }

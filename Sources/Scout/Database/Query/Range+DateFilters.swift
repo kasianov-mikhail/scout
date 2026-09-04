@@ -9,9 +9,13 @@ import Foundation
 
 extension Range<Date> {
     package var dateFilters: [RecordQuery.Filter] {
+        dateFilters(on: "date")
+    }
+
+    package func dateFilters(on field: String) -> [RecordQuery.Filter] {
         [
-            RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(lowerBound)),
-            RecordQuery.Filter(field: "date", op: .lessThan, value: .date(upperBound)),
+            RecordQuery.Filter(field: field, op: .greaterThanOrEquals, value: .date(lowerBound)),
+            RecordQuery.Filter(field: field, op: .lessThan, value: .date(upperBound)),
         ]
     }
 }
