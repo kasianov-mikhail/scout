@@ -47,7 +47,7 @@ struct StatView: View {
                     Row {
                         Text(verbatim: "Events")
                         Spacer()
-                        RedactedText(count: segment.count)
+                        RedactedText(count: segment.total)
                     } destination: {
                         EventStatList(eventName: stat.eventName, range: extent.domain)
                     }
