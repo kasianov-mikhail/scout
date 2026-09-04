@@ -13,13 +13,15 @@ package struct CachedDatabase: Database {
     let base: any Database
     let scope: String
     let cache: any RecordCaching
-    let settledCutoff: @Sendable () -> Date
+    let now: @Sendable () -> Date
+    let types: Set<String>
 
-    package init(base: any Database, scope: String, cache: any RecordCaching, settledCutoff: @escaping @Sendable () -> Date = { Date().startOfWeek.addingWeek(-1) }) {
+    package init(base: any Database, scope: String, cache: any RecordCaching, now: @escaping @Sendable () -> Date = { Date() }, types: Set<String> = [EventEntry.recordType]) {
         self.base = base
         self.scope = scope
         self.cache = cache
-        self.settledCutoff = settledCutoff
+        self.now = now
+        self.types = types
     }
 
     package func lookup(recordName: String, fields: [String]?) async throws -> Record {
@@ -34,7 +36,7 @@ package struct CachedDatabase: Database {
             fields: fields
         )
 
-        if record.recordType == EventEntry.recordType {
+        if types.contains(record.recordType) {
             await cache.storeLookup(record, for: fingerprint)
         }
 
@@ -42,7 +44,8 @@ package struct CachedDatabase: Database {
     }
 
     package func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
-        let frozenUpper = min(query.range.upperBound, settledCutoff())
+        let settledCutoff = now().startOfWeek.addingWeek(-1)
+        let frozenUpper = min(query.range.upperBound, settledCutoff)
 
         guard query.range.lowerBound < frozenUpper else {
             return try await base.series(matching: query)

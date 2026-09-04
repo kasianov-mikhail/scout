@@ -13,18 +13,22 @@ import Testing
 
 struct CachedDatabaseTests {
     let lower = Date(timeIntervalSince1970: 0)
-    let cutoff = Date(timeIntervalSince1970: 3_000_000)
     let upper = Date(timeIntervalSince1970: 4_000_000)
 
+    var cutoff: Date {
+        upper.startOfWeek.addingWeek(-1)
+    }
+
     @available(iOS 18, macOS 15, *)
-    func makeDatabase(base: SpyDatabase) throws -> CachedDatabase {
-        let frozen = cutoff
+    func makeDatabase(base: SpyDatabase, types: Set<String> = [EventEntry.recordType]) throws -> CachedDatabase {
+        let now = upper
 
         return CachedDatabase(
             base: base,
             scope: "test",
             cache: try makeRecordCache(),
-            settledCutoff: { frozen }
+            now: { now },
+            types: types
         )
     }
 
@@ -145,6 +149,24 @@ struct CachedDatabaseTests {
         _ = try await database.lookup(recordName: "session-1", fields: nil)
 
         #expect(base.lookups == ["session-1", "session-1"])
+    }
+
+    @available(iOS 18, macOS 15, *)
+    @Test("The immutable record types decide which lookups are cached")
+    func honorsImmutableRecordTypes() async throws {
+        let base = SpyDatabase()
+        let database = try makeDatabase(base: base, types: [SessionEntry.recordType])
+        base.records = [
+            Record(recordType: SessionEntry.recordType, recordID: "session-1"),
+            Record(recordType: EventEntry.recordType, recordID: "event-1"),
+        ]
+
+        _ = try await database.lookup(recordName: "session-1", fields: nil)
+        _ = try await database.lookup(recordName: "session-1", fields: nil)
+        _ = try await database.lookup(recordName: "event-1", fields: nil)
+        _ = try await database.lookup(recordName: "event-1", fields: nil)
+
+        #expect(base.lookups == ["session-1", "event-1", "event-1"])
     }
 
     @available(iOS 18, macOS 15, *)
