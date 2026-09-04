@@ -47,7 +47,7 @@ struct DevicesProviderTests {
     @Test("Keeps one visit per session so devices can be counted per period")
     func fetchKeepsSessionVisits() async throws {
         let deviceA = UUID()
-        let date = Date(year: 2026, month: 6, day: 3)
+        let date = Date(timeIntervalSinceNow: -.day)
 
         let database = DatabaseStub()
         database.add(
@@ -66,6 +66,37 @@ struct DevicesProviderTests {
 
         #expect(report.visits.count == 2)
         #expect(report.visits.allSatisfy { $0.deviceID == deviceA.uuidString })
+    }
+
+    @Test("Skips sessions and crashes older than the default range")
+    func fetchIgnoresRecordsOutsideDefaultRange() async throws {
+        let deviceA = UUID()
+        let recent = Date(timeIntervalSinceNow: -.day)
+        let stale = Calendar.utc.defaultRange.lowerBound.addingTimeInterval(-.day)
+
+        let database = DatabaseStub()
+        database.add(
+            .deviceStub(deviceID: deviceA, date: stale, model: "iPhone15,3"),
+            .sessionStub(
+                sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: recent, osVersion: "iOS 17.4",
+                deviceID: deviceA),
+            .sessionStub(
+                sessionID: UUID(), launchID: UUID(), installID: UUID(), startDate: stale, osVersion: "iOS 16.7",
+                deviceID: deviceA),
+            .crashStub(deviceID: deviceA, date: recent),
+            .crashStub(deviceID: deviceA, date: stale)
+        )
+
+        let provider = DevicesProvider()
+        await provider.fetchIfNeeded(in: database)
+        let report = try #require(provider.result).get()
+        let summary = try #require(report.summaries.first)
+
+        #expect(report.summaries.count == 1)
+        #expect(summary.model == "iPhone15,3")
+        #expect(summary.sessions == 1)
+        #expect(summary.crashes == 1)
+        #expect(report.visits.count == 1)
     }
 
     @Test("No devices yields no summaries")

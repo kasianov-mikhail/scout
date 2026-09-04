@@ -17,18 +17,20 @@ final class DevicesProvider: ObservableObject, Provider {
     }
 
     func fetch(in database: DatabaseReader) async throws -> DevicesReport {
+        let range = Calendar.utc.defaultRange
+
         async let devices: [Record] = database.readAll(
             matching: RecordQuery(recordType: Device.self),
             fields: ["device_id", "model"]
         )
 
         async let sessions: [Record] = database.readAll(
-            matching: RecordQuery(recordType: Session.self),
+            matching: RecordQuery(recordType: Session.self, filters: range.dateFilters(on: "start_date")),
             fields: ["device_id", "os_version", "start_date"]
         )
 
         async let crashes: [Record] = database.readAll(
-            matching: RecordQuery(recordType: Crash.self),
+            matching: RecordQuery(recordType: Crash.self, filters: range.dateFilters),
             fields: ["device_id"]
         )
 
