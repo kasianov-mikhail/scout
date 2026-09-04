@@ -14,8 +14,8 @@ extension MetricReading {
         let current = points.bucket(on: period)
 
         self.init(
-            baseline: previous.map { Double($0.count) }.median ?? 0,
-            recent: current.reversed().map { Double($0.count) }
+            baseline: previous.map { Double($0.value) }.median ?? 0,
+            recent: current.reversed().map { Double($0.value) }
         )
     }
 
@@ -41,5 +41,5 @@ func stabilityValues(sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], in
         sessions.bucket(in: range, component: component).reversed(),
         crashes.bucket(in: range, component: component).reversed()
     )
-    .map { Stability(of: $1.count, in: $0.count).value }
+    .map { Stability(of: $1.value, in: $0.value).value }
 }

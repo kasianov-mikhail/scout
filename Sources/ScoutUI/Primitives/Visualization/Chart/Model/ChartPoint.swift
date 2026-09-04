@@ -13,7 +13,7 @@ typealias ChartNumeric = Plottable & MetricScalar
 
 struct ChartPoint<T: ChartNumeric>: ChartSeries {
     let date: Date
-    let count: T
+    let value: T
 }
 
 extension ChartPoint: Comparable {
@@ -28,7 +28,7 @@ extension ChartPoint: Fixture where T == Int {
         return (1...372).map { day in
             ChartPoint(
                 date: base.addingTimeInterval(TimeInterval(day - 1) * .day + 12 * .hour),
-                count: 12 + day % 40 + (day / 9) % 18
+                value: 12 + day % 40 + (day / 9) % 18
             )
         }
     }
@@ -36,7 +36,7 @@ extension ChartPoint: Fixture where T == Int {
 
 extension ChartPoint {
     static func + (lhs: ChartPoint, rhs: ChartPoint) -> ChartPoint {
-        ChartPoint(date: lhs.date, count: lhs.count + rhs.count)
+        ChartPoint(date: lhs.date, value: lhs.value + rhs.value)
     }
 
     static func += (lhs: inout ChartPoint, rhs: ChartPoint) {
@@ -51,7 +51,7 @@ extension [ChartPoint<Int>] {
         let end = Date()
         return (0..<168).compactMap { i in
             Calendar.utc.date(byAdding: .hour, value: -i, to: end).map {
-                ChartPoint(date: $0, count: .random(in: 0...20))
+                ChartPoint(date: $0, value: .random(in: 0...20))
             }
         }
         .sorted()

@@ -19,9 +19,9 @@ struct TrendTests {
     func additive() throws {
         let trend = Trend.total(
             points: [
-                makePoint(day: 7, hour: 1, count: 8),
-                makePoint(day: 7, hour: 2, count: 4),
-                makePoint(day: 6, hour: 1, count: 10),
+                makePoint(day: 7, hour: 1, value: 8),
+                makePoint(day: 7, hour: 2, value: 4),
+                makePoint(day: 6, hour: 1, value: 10),
             ],
             period: scale
         )
@@ -33,7 +33,7 @@ struct TrendTests {
 
     @Test("Additive points with an empty previous day carry no delta")
     func additiveWithoutPrevious() {
-        let trend = Trend.total(points: [makePoint(day: 7, hour: 1, count: 8)], period: scale)
+        let trend = Trend.total(points: [makePoint(day: 7, hour: 1, value: 8)], period: scale)
 
         #expect(trend.count == 8)
         #expect(trend.delta == nil)
@@ -87,8 +87,8 @@ struct TrendTests {
         #expect(Trend.loading.series == nil)
     }
 
-    private func makePoint(day: Int, hour: Int, count: Int) -> ChartPoint<Int> {
-        ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), count: count)
+    private func makePoint(day: Int, hour: Int, value: Int) -> ChartPoint<Int> {
+        ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), value: value)
     }
 
     private func makeActivity(day: Int, level: Int) -> ActivityPoint {

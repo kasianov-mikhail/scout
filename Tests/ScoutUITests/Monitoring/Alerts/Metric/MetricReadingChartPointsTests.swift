@@ -19,8 +19,8 @@ struct MetricReadingChartPointsTests {
     func recentOrder() {
         let reading = MetricReading(
             points: [
-                makePoint(day: 7, hour: 0, count: 5),
-                makePoint(day: 7, hour: 23, count: 9),
+                makePoint(day: 7, hour: 0, value: 5),
+                makePoint(day: 7, hour: 23, value: 9),
             ],
             period: scale
         )
@@ -34,8 +34,8 @@ struct MetricReadingChartPointsTests {
     func sameHour() {
         let reading = MetricReading(
             points: [
-                makePoint(day: 7, hour: 3, count: 2),
-                makePoint(day: 7, hour: 3, count: 3),
+                makePoint(day: 7, hour: 3, value: 2),
+                makePoint(day: 7, hour: 3, value: 3),
             ],
             period: scale
         )
@@ -45,7 +45,7 @@ struct MetricReadingChartPointsTests {
 
     @Test("Baseline is the median hourly bucket of the previous window")
     func baseline() {
-        let points = (0..<24).map { makePoint(day: 6, hour: $0, count: 4) }
+        let points = (0..<24).map { makePoint(day: 6, hour: $0, value: 4) }
         let reading = MetricReading(points: points, period: scale)
 
         #expect(reading.baseline == 4)
@@ -53,7 +53,7 @@ struct MetricReadingChartPointsTests {
 
     @Test("An empty previous window carries no baseline to compare against")
     func emptyPrevious() {
-        let reading = MetricReading(points: [makePoint(day: 7, hour: 1, count: 8)], period: scale)
+        let reading = MetricReading(points: [makePoint(day: 7, hour: 1, value: 8)], period: scale)
 
         #expect(reading.baseline == 0)
         #expect(reading.reference(for: .baselineFactor(2)) == nil)
@@ -61,10 +61,10 @@ struct MetricReadingChartPointsTests {
 
     @Test("Crash-free stability is computed per hour")
     func stability() {
-        let sessions = (0..<24).map { makePoint(day: 7, hour: $0, count: 10) }
+        let sessions = (0..<24).map { makePoint(day: 7, hour: $0, value: 10) }
         let reading = MetricReading(
             sessions: sessions,
-            crashes: [makePoint(day: 7, hour: 5, count: 1)],
+            crashes: [makePoint(day: 7, hour: 5, value: 1)],
             period: scale
         )
 
@@ -84,14 +84,14 @@ struct MetricReadingChartPointsTests {
     func crashesWithoutSessions() {
         let reading = MetricReading(
             sessions: [],
-            crashes: [makePoint(day: 7, hour: 3, count: 2)],
+            crashes: [makePoint(day: 7, hour: 3, value: 2)],
             period: scale
         )
 
         #expect(reading.recent[3] == 0)
     }
 
-    private func makePoint(day: Int, hour: Int, count: Int) -> ChartPoint<Int> {
-        ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), count: count)
+    private func makePoint(day: Int, hour: Int, value: Int) -> ChartPoint<Int> {
+        ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), value: value)
     }
 }

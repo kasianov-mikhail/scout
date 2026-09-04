@@ -22,21 +22,21 @@ struct ChartComparisonTests {
 
     @Test("Reference segment aligns previous counts to current buckets") func testReferenceSegment() {
         let extent = ChartExtent(period: Period.week)
-        let points = makePoints(in: extent.domain, count: 2) + makePoints(in: extent.previousDomain, count: 5)
+        let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
 
         let segment = extent.segment(from: points)
         let reference = extent.referenceSegment(from: points, alignedTo: segment)
 
         #expect(reference.count == segment.count)
         #expect(reference.map(\.date) == segment.map(\.date))
-        #expect(reference.allSatisfy { $0.count == 5 })
-        #expect(segment.allSatisfy { $0.count == 2 })
+        #expect(reference.allSatisfy { $0.value == 5 })
+        #expect(segment.allSatisfy { $0.value == 2 })
     }
 
     @Test("Reference segment pairs buckets by offset across month lengths") func testMonthLengthMismatch() {
         let domain = Date(year: 2026, month: 5, day: 10)..<Date(year: 2026, month: 6, day: 10)
         let extent = ChartExtent(period: Period.month, domain: domain)
-        let points = makePoints(in: extent.domain, count: 2) + makePoints(in: extent.previousDomain, count: 5)
+        let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
 
         let segment = extent.segment(from: points)
         let reference = extent.referenceSegment(from: points, alignedTo: segment)
@@ -44,26 +44,26 @@ struct ChartComparisonTests {
         #expect(segment.count == 31)
         #expect(reference.count == 30)
         #expect(reference.map(\.date) == segment.prefix(30).map(\.date))
-        #expect(reference.allSatisfy { $0.count == 5 })
+        #expect(reference.allSatisfy { $0.value == 5 })
     }
 
     @Test("Reference segment is zero without previous data") func testEmptyReference() {
         let extent = ChartExtent(period: Period.week)
-        let points = makePoints(in: extent.domain, count: 3)
+        let points = makePoints(in: extent.domain, value: 3)
 
         let segment = extent.segment(from: points)
         let reference = extent.referenceSegment(from: points, alignedTo: segment)
 
         #expect(reference.count == segment.count)
-        #expect(reference.allSatisfy { $0.count == 0 })
+        #expect(reference.allSatisfy { $0.value == 0 })
     }
 
-    func makePoints(in range: Range<Date>, count: Int) -> [ChartPoint<Int>] {
+    func makePoints(in range: Range<Date>, value: Int) -> [ChartPoint<Int>] {
         var points: [ChartPoint<Int>] = []
         var date = range.lowerBound
 
         while date < range.upperBound {
-            points.append(ChartPoint(date: date, count: count))
+            points.append(ChartPoint(date: date, value: value))
             date.addDay()
         }
 

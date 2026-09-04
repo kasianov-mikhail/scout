@@ -14,12 +14,12 @@ import SwiftUI
 ///
 struct ReferenceLevel {
     let x: ClosedRange<CGFloat>
-    let count: CGFloat
+    let value: CGFloat
     let reference: CGFloat
     let isClamped: Bool
 
     /// Whether the previous level lies above the bar (the value dropped).
-    var isDrop: Bool { reference < count }
+    var isDrop: Bool { reference < value }
 }
 
 extension ReferenceLevel {
@@ -27,17 +27,17 @@ extension ReferenceLevel {
     /// empty in both periods, or falling outside the plot.
     ///
     init?<T: ChartNumeric>(pair: ComparisonPair<T>, proxy: ChartProxy, plotFrame: CGRect) {
-        guard let referenceCount = pair.reference else {
+        guard let referenceValue = pair.reference else {
             return nil
         }
-        guard pair.count != .zero || referenceCount != .zero else {
+        guard pair.value != .zero || referenceValue != .zero else {
             return nil
         }
         guard let barStartX = proxy.position(forX: pair.barStart), let barEndX = proxy.position(forX: pair.barEnd)
         else {
             return nil
         }
-        guard let countY = proxy.position(forY: pair.count), let referenceY = proxy.position(forY: referenceCount)
+        guard let valueY = proxy.position(forY: pair.value), let referenceY = proxy.position(forY: referenceValue)
         else {
             return nil
         }
@@ -46,7 +46,7 @@ extension ReferenceLevel {
 
         self.init(
             x: (plotFrame.minX + barStartX)...(plotFrame.minX + barEndX),
-            count: plotFrame.minY + countY,
+            value: plotFrame.minY + valueY,
             reference: max(reference, plotFrame.minY),
             isClamped: reference < plotFrame.minY
         )
@@ -64,8 +64,8 @@ extension [ReferenceLevel] {
     var slices: Path {
         Path { path in
             for level in self {
-                let top = Swift.min(level.count, level.reference)
-                let bottom = Swift.max(level.count, level.reference)
+                let top = Swift.min(level.value, level.reference)
+                let bottom = Swift.max(level.value, level.reference)
                 path.addRect(
                     CGRect(
                         x: level.x.lowerBound,
@@ -99,14 +99,14 @@ extension [ReferenceLevel] {
     var contours: Path {
         Path { path in
             for level in self {
-                path.move(to: CGPoint(x: level.x.lowerBound, y: level.count))
+                path.move(to: CGPoint(x: level.x.lowerBound, y: level.value))
                 path.addLine(to: CGPoint(x: level.x.lowerBound, y: level.reference))
                 if level.isClamped {
                     path.move(to: CGPoint(x: level.x.upperBound, y: level.reference))
                 } else {
                     path.addLine(to: CGPoint(x: level.x.upperBound, y: level.reference))
                 }
-                path.addLine(to: CGPoint(x: level.x.upperBound, y: level.count))
+                path.addLine(to: CGPoint(x: level.x.upperBound, y: level.value))
             }
         }
     }

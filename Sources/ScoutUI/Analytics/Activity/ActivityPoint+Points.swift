@@ -23,7 +23,7 @@ extension [ActivityPoint] {
             guard count > 0 else {
                 return nil
             }
-            return ChartPoint(date: Date(millisecondsSince1970: point.date), count: count)
+            return ChartPoint(date: Date(millisecondsSince1970: point.date), value: count)
         }
     }
 }
