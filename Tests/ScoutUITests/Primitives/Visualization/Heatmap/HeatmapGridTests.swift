@@ -18,8 +18,8 @@ struct HeatmapGridTests {
         let sunday = try makeDate(year: 2026, month: 7, day: 19, hour: 23)
         let grid = HeatmapGrid(
             points: [
-                ChartPoint(date: monday, count: 3),
-                ChartPoint(date: sunday, count: 5),
+                ChartPoint(date: monday, value: 3),
+                ChartPoint(date: sunday, value: 5),
             ],
             range: try weekRange(),
             calendar: .utc
@@ -37,8 +37,8 @@ struct HeatmapGridTests {
         let range = try makeDate(year: 2026, month: 7, day: 6)..<makeDate(year: 2026, month: 7, day: 20)
         let grid = HeatmapGrid(
             points: [
-                ChartPoint(date: first, count: 3),
-                ChartPoint(date: second, count: 4),
+                ChartPoint(date: first, value: 3),
+                ChartPoint(date: second, value: 4),
             ],
             range: range,
             calendar: .utc
@@ -54,9 +54,9 @@ struct HeatmapGridTests {
         let after = try makeDate(year: 2026, month: 7, day: 20, hour: 0)
         let grid = HeatmapGrid(
             points: [
-                ChartPoint(date: inside, count: 3),
-                ChartPoint(date: before, count: 10),
-                ChartPoint(date: after, count: 10),
+                ChartPoint(date: inside, value: 3),
+                ChartPoint(date: before, value: 10),
+                ChartPoint(date: after, value: 10),
             ],
             range: try weekRange(),
             calendar: .utc

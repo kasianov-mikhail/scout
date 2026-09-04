@@ -65,7 +65,7 @@ struct ReferenceLevelTests {
     func makeLevel(reference: CGFloat, isClamped: Bool = false) -> ReferenceLevel {
         ReferenceLevel(
             x: 10...30,
-            count: 80,
+            value: 80,
             reference: reference,
             isClamped: isClamped
         )

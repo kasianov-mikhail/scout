@@ -23,7 +23,7 @@ extension Collection where Element: ChartSeries {
             let points = filter {
                 newDate..<date ~= $0.date
             }
-            result.append(Element(date: newDate, count: points.total))
+            result.append(Element(date: newDate, value: points.total))
             date = newDate
         }
 

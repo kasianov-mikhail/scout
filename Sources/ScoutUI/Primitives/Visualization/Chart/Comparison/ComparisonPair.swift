@@ -18,7 +18,7 @@ import Scout
 struct ComparisonPair<T: ChartNumeric>: Identifiable {
     let date: Date
     let bin: Range<Date>
-    let count: T
+    let value: T
     let reference: T?
 
     var id: Date { date }
@@ -47,13 +47,13 @@ extension Collection {
     /// reference and draw no comparison marks.
     ///
     func paired<T>(with reference: [ChartPoint<T>], unit: Calendar.Component) -> [ComparisonPair<T>] where Element == ChartPoint<T> {
-        let counts = Dictionary(reference.map { ($0.date, $0.count) }, uniquingKeysWith: +)
+        let values = Dictionary(reference.map { ($0.date, $0.value) }, uniquingKeysWith: +)
         return map { point in
             ComparisonPair(
                 date: point.date,
                 bin: binRange(of: point.date, unit: unit),
-                count: point.count,
-                reference: counts[point.date]
+                value: point.value,
+                reference: values[point.date]
             )
         }
     }

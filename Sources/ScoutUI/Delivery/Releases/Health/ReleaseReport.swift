@@ -76,7 +76,7 @@ extension [ChartPoint<Int>] {
 
         for point in self where range.contains(point.date) {
             let index = Swift.min(slices - 1, Int(point.date.timeIntervalSince(range.lowerBound) / step))
-            values[index] += point.count
+            values[index] += point.value
         }
 
         return values

@@ -31,9 +31,9 @@ struct ActivityProviderTests {
         let monthly = series.points(on: .monthly).sorted()
 
         // Zero-activity days never become points.
-        #expect(daily.map(\.count) == [2, 1])
-        #expect(weekly.map(\.count) == [2, 3])
-        #expect(monthly.map(\.count) == [2, 2, 5])
+        #expect(daily.map(\.value) == [2, 1])
+        #expect(weekly.map(\.value) == [2, 3])
+        #expect(monthly.map(\.value) == [2, 2, 5])
 
         // Millisecond timestamps resolve back to the original dates.
         #expect(daily.first?.date == date(2026, 6, 10))

@@ -20,7 +20,7 @@ struct RankedSeriesTests {
     private func group(_ name: String, _ values: [Double]) -> PointGroup<Double> {
         let start = period.initialRange.lowerBound
         let points = values.enumerated().map { hour, value in
-            ChartPoint(date: start.addingTimeInterval(TimeInterval(hour) * .hour), count: value)
+            ChartPoint(date: start.addingTimeInterval(TimeInterval(hour) * .hour), value: value)
         }
         return PointGroup(name: name, points: points)
     }

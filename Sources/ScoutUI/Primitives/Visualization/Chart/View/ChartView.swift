@@ -21,7 +21,7 @@ struct ChartView<T: ChartNumeric>: View {
             ForEach(segment, id: \.date) { point in
                 BarMark(
                     x: .value("X", point.date, unit: timing.unit),
-                    y: .value("Y", point.count),
+                    y: .value("Y", point.value),
                     width: .ratio(ChartGeometry.barRatio)
                 )
             }

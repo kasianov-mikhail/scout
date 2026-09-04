@@ -35,7 +35,7 @@ struct ChartTimingTests {
     @Test("Day-unit ticks land on UTC midnights") func dayTicksAlignToUTC() {
         let base = Date(timeIntervalSince1970: 1_752_759_000)  // 2025-07-17 13:30 UTC
         let points = (0..<7).map { day in
-            ChartPoint(date: base.addingTimeInterval(Double(day) * 86400), count: day)
+            ChartPoint(date: base.addingTimeInterval(Double(day) * 86400), value: day)
         }
         let extent = ChartExtent(period: Period.week)
 

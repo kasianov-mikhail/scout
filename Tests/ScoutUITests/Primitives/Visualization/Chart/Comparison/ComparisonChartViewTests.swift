@@ -19,7 +19,7 @@ import Testing
 struct ComparisonChartViewTests {
     @Test("Renders bars with the reference overlay") @MainActor func testRender() {
         let extent = ChartExtent(period: Period.week)
-        let points = makePoints(in: extent.domain, count: 2) + makePoints(in: extent.previousDomain, count: 5)
+        let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
         let segment = extent.segment(from: points)
 
         let renderer = ImageRenderer(
@@ -55,12 +55,12 @@ struct ComparisonChartViewTests {
         #endif
     }
 
-    func makePoints(in range: Range<Date>, count: Int) -> [ChartPoint<Int>] {
+    func makePoints(in range: Range<Date>, value: Int) -> [ChartPoint<Int>] {
         var points: [ChartPoint<Int>] = []
         var date = range.lowerBound
 
         while date < range.upperBound {
-            points.append(ChartPoint(date: date, count: count))
+            points.append(ChartPoint(date: date, value: value))
             date.addDay()
         }
 
