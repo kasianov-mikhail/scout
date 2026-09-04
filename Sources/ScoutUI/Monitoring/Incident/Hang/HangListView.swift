@@ -14,7 +14,6 @@ struct HangListView: View {
     var body: some View {
         IncidentList(
             provider: provider,
-            title: "Hangs",
             placeholder: Placeholder(
                 text: "No hangs",
                 systemImage: "checkmark.shield",

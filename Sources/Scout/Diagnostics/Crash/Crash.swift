@@ -40,6 +40,7 @@ extension Crash: Comparable {
 }
 
 extension Crash: RecordDecodable {
+    package static let kind = IncidentKind.crash
     package static let recordType = CrashEntry.recordType
 
     package static let desiredKeys = [

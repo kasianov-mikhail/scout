@@ -14,7 +14,6 @@ struct CrashListView: View {
     var body: some View {
         IncidentList(
             provider: provider,
-            title: "Crashes",
             placeholder: Placeholder(
                 text: "No crashes",
                 systemImage: "checkmark.shield",

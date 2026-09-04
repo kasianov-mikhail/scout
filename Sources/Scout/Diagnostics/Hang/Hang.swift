@@ -42,6 +42,7 @@ extension Hang: Comparable {
 }
 
 extension Hang: RecordDecodable {
+    package static let kind = IncidentKind.hang
     package static let recordType = HangEntry.recordType
 
     package static let desiredKeys = [

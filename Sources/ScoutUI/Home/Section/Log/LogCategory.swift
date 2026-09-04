@@ -29,9 +29,9 @@ enum LogCategory: String, CaseIterable, Identifiable {
         case .devices:
             "Devices"
         case .crashes:
-            "Crashes"
+            IncidentKind.crash.title
         case .hangs:
-            "Hangs"
+            IncidentKind.hang.title
         }
     }
 
@@ -61,9 +61,9 @@ enum LogCategory: String, CaseIterable, Identifiable {
         case .devices:
             .cyan
         case .crashes:
-            .red
+            IncidentKind.crash.color
         case .hangs:
-            .orange
+            IncidentKind.hang.color
         }
     }
 }

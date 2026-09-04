@@ -9,12 +9,17 @@ import Foundation
 import Scout
 
 protocol Incident: Identifiable, Comparable, SessionContext {
+    static var kind: IncidentKind { get }
+
     var fingerprint: String { get }
     var name: String { get }
     var reason: String? { get }
     var stackTrace: [String] { get }
     var date: Date? { get }
 }
+
+extension Crash: Incident {}
+extension Hang: Incident {}
 
 struct IncidentGroup<Element: Incident>: Identifiable {
     let records: [Element]

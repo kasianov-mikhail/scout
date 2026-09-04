@@ -14,7 +14,7 @@ struct HangRow: View {
     var body: some View {
         IncidentRow(
             group: group,
-            accent: (group.severity.systemImage, group.severity.color)
+            accent: (group.severity.systemImage, IncidentKind.hang.color)
         ) { group in
             HangGroupDetailView(group: group)
         }

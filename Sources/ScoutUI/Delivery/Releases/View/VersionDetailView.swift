@@ -44,35 +44,25 @@ struct VersionDetailView: View {
             .padding(.bottom, 4)
             .listRowSeparator(.hidden, edges: .top)
 
-            IncidentTrendSection(title: "Crashes", records: crashRecords, color: .red) {
+            IncidentTrendSection(records: crashRecords) {
                 if crashRecords.count > 0 {
                     AllButton { showAllCrashes = true }
                 }
             }
 
-            IncidentTrendSection(title: "Hangs", records: hangRecords, color: .orange) {
+            IncidentTrendSection(records: hangRecords) {
                 if hangRecords.count > 0 {
                     AllButton { showAllHangs = true }
                 }
             }
         }
         .navigationDestination(isPresented: $showAllCrashes) {
-            VersionIncidentsView(
-                title: "Crashes",
-                issuesTitle: "Top crash issues",
-                records: crashRecords,
-                color: .red
-            ) { group in
+            VersionIncidentsView(issuesTitle: "Top crash issues", records: crashRecords) { group in
                 CrashGroupDetailView(group: group)
             }
         }
         .navigationDestination(isPresented: $showAllHangs) {
-            VersionIncidentsView(
-                title: "Hangs",
-                issuesTitle: "Top hang issues",
-                records: hangRecords,
-                color: .orange
-            ) { group in
+            VersionIncidentsView(issuesTitle: "Top hang issues", records: hangRecords) { group in
                 HangGroupDetailView(group: group)
             }
         }
@@ -94,47 +84,41 @@ struct VersionDetailView: View {
 }
 
 private struct VersionIncidentsView<Element: Incident, Destination: View>: View {
-    let title: String
     let issuesTitle: String
     let records: [Element]
-    let color: Color
 
     @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     var body: some View {
         InsetList {
-            IncidentTrendChart(records: records, color: color)
+            IncidentTrendChart(records: records)
                 .padding(.top)
 
             IncidentIssuesSection(
                 title: issuesTitle,
                 groups: IncidentGroup.groups(from: records),
-                color: color,
                 destination: destination
             )
         }
-        .navigationTitle(en: title)
+        .navigationTitle(en: Element.kind.title)
         .largeNavigationTitle()
     }
 }
 
 private struct IncidentTrendSection<Element: Incident, Trailing: View>: View {
-    let title: String
     let records: [Element]
-    let color: Color
 
     @ViewBuilder let trailing: () -> Trailing
 
     var body: some View {
-        Header(title: title, trailing: trailing)
+        Header(title: Element.kind.title, trailing: trailing)
 
-        IncidentTrendChart(records: records, color: color)
+        IncidentTrendChart(records: records)
     }
 }
 
 private struct IncidentTrendChart<Element: Incident>: View {
     let records: [Element]
-    let color: Color
 
     private var days: [DailyCount] {
         DailyCount.series(from: records)
@@ -149,7 +133,7 @@ private struct IncidentTrendChart<Element: Incident>: View {
                 y: .value("Count", day.count),
                 width: .ratio(0.6)
             )
-            .foregroundStyle(color.gradient)
+            .foregroundStyle(Element.kind.color.gradient)
             .cornerRadius(3)
         }
         .chartXAxis {
@@ -178,7 +162,6 @@ private struct IncidentTrendChart<Element: Incident>: View {
 private struct IncidentIssuesSection<Element: Incident, Destination: View>: View {
     let title: String
     let groups: [IncidentGroup<Element>]
-    let color: Color
     @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     @ViewBuilder
@@ -195,7 +178,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
 
                     Spacer()
 
-                    CountBadge(count: group.count, color: color)
+                    CountBadge(count: group.count, color: Element.kind.color)
                 } destination: {
                     destination(group)
                 }
