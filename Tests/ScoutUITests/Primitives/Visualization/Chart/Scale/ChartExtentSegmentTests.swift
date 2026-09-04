@@ -21,8 +21,8 @@ struct ChartExtentSegmentTests {
         date = Date()
         range = date..<date.addingTimeInterval(3600)
 
-        let chartPoint1 = ChartPoint(date: date, count: 10)
-        let chartPoint2 = ChartPoint(date: date.addingTimeInterval(86400), count: 20)
+        let chartPoint1 = ChartPoint(date: date, value: 10)
+        let chartPoint2 = ChartPoint(date: date.addingTimeInterval(86400), value: 20)
 
         points = [chartPoint1, chartPoint2]
     }
@@ -31,6 +31,6 @@ struct ChartExtentSegmentTests {
         let extent = ChartExtent(period: Period.today, domain: range)
         let points = extent.segment(from: points)
 
-        #expect(points.map(\.count) == [10])
+        #expect(points.map(\.value) == [10])
     }
 }

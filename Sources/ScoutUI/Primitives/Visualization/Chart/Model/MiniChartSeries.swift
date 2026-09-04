@@ -41,7 +41,7 @@ extension MiniChartSeries {
             case .total:
                 slice.total
             case .latest:
-                slice.max()?.count ?? .zero
+                slice.max()?.value ?? .zero
             }
         }
     }

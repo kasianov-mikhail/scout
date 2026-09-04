@@ -13,7 +13,7 @@ extension MetricSeries {
         points.map { point in
             ChartPoint(
                 date: Date(millisecondsSince1970: point.date),
-                count: T(point.value.doubleValue)
+                value: T(point.value.doubleValue)
             )
         }
     }

@@ -91,7 +91,7 @@ struct SeriesSpanTests {
 
         let points = span.points { $0 != CrashEntry.recordType }
 
-        #expect(points.map(\.count) == [3])
+        #expect(points.map(\.value) == [3])
     }
 
     @Test("Points by category keep the telemetry series filed under it")
@@ -105,7 +105,7 @@ struct SeriesSpanTests {
 
         let points = span.points(inCategories: Set(StatusBuckets.categories))
 
-        #expect(points.map(\.count).sorted() == [1, 5])
+        #expect(points.map(\.value).sorted() == [1, 5])
         #expect(points.total == 6)
     }
 

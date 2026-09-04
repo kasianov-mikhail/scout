@@ -44,13 +44,13 @@ struct MetricsProviderTests {
 
         let calls = try #require(groups.first { $0.name == "api_calls" })
         // Points span two weeks but flatten under the one name.
-        #expect(calls.points.map(\.count).sorted() == [1, 2, 3])
+        #expect(calls.points.map(\.value).sorted() == [1, 2, 3])
         // The cell position round-trips back to the original hour.
         #expect(calls.points.contains { $0.date == date(2026, 6, 10, 9) })
         #expect(calls.points.contains { $0.date == date(2026, 6, 17, 9) })
 
         let errors = try #require(groups.first { $0.name == "errors" })
-        #expect(errors.points.map(\.count) == [4])
+        #expect(errors.points.map(\.value) == [4])
     }
 
     private func date(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Date {

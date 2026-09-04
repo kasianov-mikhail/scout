@@ -45,7 +45,7 @@ extension AlertMetric {
                 .flatMap { $0.chartPoints() as [ChartPoint<Int>] }
                 .bucket(in: range, component: .hour)
                 .reversed()
-                .map { Double($0.count) }
+                .map { Double($0.value) }
 
         case .crashFreeSessions:
             async let sessions = database.sessionSeries(in: range)

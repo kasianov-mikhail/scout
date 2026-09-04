@@ -24,7 +24,7 @@ extension ChartExtent {
     /// counterpart and are omitted; the chart draws no reference for them.
     ///
     func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        zip(segment, previousSegment(from: points)).map { ChartPoint(date: $0.date, count: $1.count) }
+        zip(segment, previousSegment(from: points)).map { ChartPoint(date: $0.date, value: $1.value) }
     }
 
     /// Whether the comparison overlay has anything to show.

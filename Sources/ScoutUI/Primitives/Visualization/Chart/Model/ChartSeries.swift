@@ -8,31 +8,31 @@
 import Foundation
 import Scout
 
-protocol ChartSeries: HasCount {
+protocol ChartSeries: HasValue {
     var date: Date { get }
-    init(date: Date, count: Count)
+    init(date: Date, value: Value)
 }
 
-protocol HasCount {
-    associatedtype Count: AdditiveArithmetic
-    var count: Count { get }
+protocol HasValue {
+    associatedtype Value: AdditiveArithmetic
+    var value: Value { get }
 }
 
-extension Collection where Element: HasCount {
-    var total: Element.Count {
-        reduce(.zero) { $0 + $1.count }
+extension Collection where Element: HasValue {
+    var total: Element.Value {
+        reduce(.zero) { $0 + $1.value }
     }
 }
 
 extension Collection where Element: ChartSeries {
-    func total(in range: Range<Date>) -> Element.Count {
+    func total(in range: Range<Date>) -> Element.Value {
         filter { range.contains($0.date) }
             .total
     }
 
-    func latest(in range: Range<Date>) -> Element.Count {
+    func latest(in range: Range<Date>) -> Element.Value {
         filter { range.contains($0.date) }
             .max { $0.date < $1.date }?
-            .count ?? .zero
+            .value ?? .zero
     }
 }

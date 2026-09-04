@@ -57,7 +57,7 @@ struct ComparisonChartView<T: ChartNumeric>: View {
             xStart: .value("Start", pair.barStart),
             xEnd: .value("End", pair.barEnd),
             yStart: .value("Zero", T.zero),
-            yEnd: .value("Count", pair.count)
+            yEnd: .value("Count", pair.value)
         )
         .foregroundStyle(color)
         .cornerRadius(3)
@@ -74,7 +74,7 @@ struct ComparisonChartView<T: ChartNumeric>: View {
     let today = Date().startOfDay
     let counts = [14, 25, 17, 22, 9, 18, 12, 12, 16, 10, 19, 11, 15, 8]
     let points = counts.enumerated().map { i, count in
-        ChartPoint(date: today.addingDay(-i - 1), count: count)
+        ChartPoint(date: today.addingDay(-i - 1), value: count)
     }
     let segment = extent.segment(from: points)
 
