@@ -21,17 +21,17 @@ struct HangDetailView: View {
 
                 HStack(spacing: 6) {
                     Image(systemName: hang.severity.systemImage)
-                        .foregroundStyle(hang.severity.color)
+                        .foregroundStyle(IncidentKind.hang.color)
                     Text(verbatim: "\(hang.severity.label) · \(hang.duration.duration)")
                         .fontWeight(.bold)
-                        .foregroundStyle(hang.severity.color)
+                        .foregroundStyle(IncidentKind.hang.color)
                 }
                 Divider().padding(.vertical)
                 if let reason = hang.reason {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(verbatim: "BLOCKED ON:")
                         Text(reason)
-                            .foregroundColor(hang.severity.color)
+                            .foregroundColor(IncidentKind.hang.color)
                     }
                     .fontWeight(.bold)
                 }
@@ -39,11 +39,11 @@ struct HangDetailView: View {
             .listRowSeparator(.hidden, edges: .top)
             .padding(.bottom)
 
-            ContextSection(context: hang, timelineHighlight: hang.severity.color)
+            ContextSection(context: hang, timelineHighlight: IncidentKind.hang.color)
 
             StackTraceSection(frames: hang.stackTrace)
         }
-        .navigationTint(hang.severity.color)
+        .navigationTint(IncidentKind.hang.color)
         .exportToolbar(text: HangExport(hang: hang).text)
         .monospacedNavigationTitle(en: hang.name)
     }

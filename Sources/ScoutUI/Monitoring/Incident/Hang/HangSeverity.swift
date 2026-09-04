@@ -21,15 +21,6 @@ enum HangSeverity {
         }
     }
 
-    var color: Color {
-        switch self {
-        case .warning:
-            .orange
-        case .critical:
-            .red
-        }
-    }
-
     var systemImage: String {
         switch self {
         case .warning:
@@ -37,5 +28,11 @@ enum HangSeverity {
         case .critical:
             "exclamationmark.octagon"
         }
+    }
+}
+
+extension Hang {
+    var severity: HangSeverity {
+        duration >= 8 ? .critical : .warning
     }
 }

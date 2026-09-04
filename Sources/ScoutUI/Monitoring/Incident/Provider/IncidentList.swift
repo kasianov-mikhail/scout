@@ -12,7 +12,6 @@ struct IncidentList<Element: RecordDecodable & Incident, Row: View>: View {
     @Environment(\.database) var database
     @ObservedObject var provider: IncidentProvider<Element>
 
-    let title: String
     let placeholder: Placeholder
 
     @ViewBuilder let row: (IncidentGroup<Element>) -> Row
@@ -42,7 +41,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Row: View>: View {
                 RingIndicator().frame(maxHeight: .infinity)
             }
         }
-        .navigationTitle(en: title)
+        .navigationTitle(en: Element.kind.title)
         .message($provider.message)
         .refreshes([provider])
     }

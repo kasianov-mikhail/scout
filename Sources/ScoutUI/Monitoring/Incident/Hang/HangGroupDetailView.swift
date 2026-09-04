@@ -25,7 +25,7 @@ struct HangGroupDetailView: View {
         InsetList {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 16) {
-                    Readout(title: "Duration", value: group.durationText, color: group.severity.color)
+                    Readout(title: "Duration", value: group.durationText, color: IncidentKind.hang.color)
                     Readout(title: "Occurrences", value: "\(group.count)")
                     Readout(title: "Devices", value: "\(group.affectedDevices)")
                     Readout(title: "Sessions", value: "\(group.affectedSessions)")
@@ -47,7 +47,7 @@ struct HangGroupDetailView: View {
 
             ForEach(group.records, content: occurrenceRow)
         }
-        .navigationTint(group.severity.color)
+        .navigationTint(IncidentKind.hang.color)
         .exportToolbar(text: HangGroupExport(group: group).text, tint: .primary)
         .monospacedNavigationTitle(en: group.name)
         .task {
@@ -66,7 +66,7 @@ struct HangGroupDetailView: View {
             Text(verbatim: hang.duration.duration)
                 .font(.footnote)
                 .monospacedDigit()
-                .foregroundStyle(hang.severity.color)
+                .foregroundStyle(IncidentKind.hang.color)
         } destination: {
             HangDetailView(hang: hang)
         }

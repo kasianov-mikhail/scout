@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Scout
 import SwiftUI
 
 enum GlobalSearchCategory: String, CaseIterable, Identifiable {
@@ -35,9 +36,9 @@ enum GlobalSearchCategory: String, CaseIterable, Identifiable {
         case .releases:
             .green
         case .crashes:
-            .red
+            IncidentKind.crash.color
         case .hangs:
-            .orange
+            IncidentKind.hang.color
         }
     }
 

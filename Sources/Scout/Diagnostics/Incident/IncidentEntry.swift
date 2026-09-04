@@ -7,6 +7,11 @@
 
 import CoreData
 
+package enum IncidentKind: CaseIterable, Sendable {
+    case crash
+    case hang
+}
+
 @objc(IncidentEntry)
 package class IncidentEntry: SyncableEntry {
     @NSManaged var appVersion: String?
