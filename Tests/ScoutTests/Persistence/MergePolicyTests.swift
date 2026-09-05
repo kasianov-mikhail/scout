@@ -21,9 +21,9 @@ struct MergePolicyTests {
     ///
     @Test("A duplicate insert on the same natural key dedupes instead of throwing")
     func duplicateInsertDedupes() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let container = try makeContainer(in: directory)
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+        let container = try store.container()
 
         // The main-queue viewContext is off-limits here: Swift Testing runs on a
         // background thread, and mutating it there races the main run loop's own
@@ -56,9 +56,9 @@ struct MergePolicyTests {
     ///
     @Test("Concurrent writes touching one session merge instead of failing")
     func concurrentSessionWritesMerge() async throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let container = try makeContainer(in: directory)
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+        let container = try store.container()
 
         let identity = Identity.stub.snapshot
         try await container.performBackgroundTask { @Sendable context in
@@ -123,9 +123,9 @@ struct MergePolicyTests {
     ///
     @Test("Racing linkedSession writes collapse to one row per lifecycle entity")
     func concurrentLinkedSessionDedupes() async throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let container = try makeContainer(in: directory)
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+        let container = try store.container()
 
         let identity = Identity.stub.snapshot
         let failures = Protected<[String]>([])
@@ -166,9 +166,9 @@ struct MergePolicyTests {
     ///
     @Test("A bare duplicate insert keeps the filled session fields")
     func bareDuplicateKeepsFilledFields() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        let container = try makeContainer(in: directory)
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+        let container = try store.container()
 
         let identity = Identity.stub.snapshot
 
@@ -200,21 +200,5 @@ struct MergePolicyTests {
             #expect(sessions.first?.appVersion == "1.2.3")
             #expect(sessions.first?.osVersion == "26.0")
         }
-    }
-
-    /// Uniqueness constraints and row versioning are only enforced by the SQLite
-    /// store, so every case here needs a real file-backed store — an in-memory
-    /// one silently allows the duplicate and never conflicts.
-    ///
-    private func makeContainer(in directory: URL) throws -> NSPersistentContainer {
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-
-        let container = NSPersistentContainer(named: "ScoutModel")
-        container.persistentStoreDescriptions = [
-            NSPersistentStoreDescription(url: directory.appendingPathComponent("ScoutModel.sqlite"))
-        ]
-        try container.loadStore()
-
-        return container
     }
 }
