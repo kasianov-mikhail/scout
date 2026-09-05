@@ -55,6 +55,7 @@ struct MigrationTests {
                 )
                 let metadata = coordinator.metadata(for: store)
                 #expect(current.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata))
+                try coordinator.remove(store)
             } catch {
                 Issue.record("Store created by \(versionURL.lastPathComponent) failed to migrate: \(error)")
             }

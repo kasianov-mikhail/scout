@@ -22,10 +22,8 @@ struct MigrationDedupeTests {
     ///
     @Test("A store with duplicate lifecycle rows migrates into merged singles")
     func duplicatesMergeDuringMigration() throws {
-        let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        defer { try? FileManager.default.removeItem(at: directory) }
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        let storeURL = directory.appendingPathComponent("ScoutModel.sqlite")
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
 
         let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
         let oldURL = momdURL.appendingPathComponent("ScoutModel 3.mom")
@@ -39,7 +37,7 @@ struct MigrationDedupeTests {
         let lateDate = Date(timeIntervalSinceNow: -300)
 
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let store = try coordinator.addPersistentStore(type: .sqlite, at: storeURL)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
         let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         seed.persistentStoreCoordinator = coordinator
 
@@ -89,11 +87,9 @@ struct MigrationDedupeTests {
 
             try seed.save()
         }
-        try coordinator.remove(store)
+        try coordinator.remove(seeded)
 
-        let container = NSPersistentContainer(named: "ScoutModel")
-        container.persistentStoreDescriptions = [NSPersistentStoreDescription(url: storeURL)]
-        try container.loadStore()
+        let container = try store.container()
 
         let context = container.newBackgroundContext()
         try context.performAndWait {
