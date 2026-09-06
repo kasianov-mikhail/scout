@@ -32,17 +32,13 @@ struct RetentionHeroChartView: View {
 private struct RetentionHeroChart: View {
     let cohorts: [RetentionCohort]
 
-    private var stats: [RetentionCohort.DayStat] {
-        RetentionCohort.stats(for: cohorts)
-    }
-
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "Average Retention").font(.headline)
                 Text(verbatim: "Across \(cohorts.count) weekly cohorts").font(.caption).foregroundStyle(.secondary)
 
-                Chart(stats) { stat in
+                Chart(cohorts.stats) { stat in
                     AreaMark(
                         x: .value("Day", stat.day),
                         yStart: .value("Low", stat.low),

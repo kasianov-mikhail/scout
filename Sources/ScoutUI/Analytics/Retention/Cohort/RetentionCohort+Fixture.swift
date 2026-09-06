@@ -31,7 +31,12 @@ extension RetentionCohort: Fixture {
                 return day == 0 ? 1 : min(target * quality, 0.95)
             }
 
-            return RetentionCohort(id: start, size: size, retention: retention)
+            return RetentionCohort(
+                id: start,
+                size: size,
+                retention: retention,
+                segments: RetentionSegment.samples(size: size, retention: retention)
+            )
         }
     }
 }
