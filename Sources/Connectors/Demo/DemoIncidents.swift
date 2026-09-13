@@ -64,7 +64,7 @@ struct DemoIncidents {
         ]
 
         let crashProne = Set(
-            stride(from: 0, to: scenario.installs.count, by: 60).map { scenario.installs[$0].id }
+            stride(from: 0, to: scenario.installs.count, by: 63).map { scenario.installs[$0].id }
         )
 
         for session in scenario.sessions {

@@ -14,17 +14,13 @@ struct RetentionCohortDetailView: View {
     let cohort: RetentionCohort
     let cohorts: [RetentionCohort]
 
-    private var average: [RetentionCohort.DayStat] {
-        RetentionCohort.stats(for: cohorts)
-    }
-
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 4) {
                 Text(verbatim: "\(cohort.size) installs").font(.caption).foregroundStyle(.secondary)
 
                 Chart {
-                    ForEach(average) { stat in
+                    ForEach(cohorts.stats) { stat in
                         LineMark(
                             x: .value("Day", stat.day),
                             y: .value("Average", stat.average),
@@ -72,19 +68,21 @@ struct RetentionCohortDetailView: View {
             .padding(.top)
             .listRowSeparator(.hidden)
 
-            Header(title: "By OS Version")
+            if cohort.segments.count > 0 {
+                Header(title: "By OS Version")
 
-            ForEach(cohort.segments) { segment in
-                Row {
-                    Text(verbatim: segment.name).font(.subheadline)
-                    Spacer()
+                ForEach(cohort.segments) { segment in
+                    Row {
+                        Text(verbatim: segment.name).font(.subheadline)
+                        Spacer()
 
-                    HStack(spacing: 14) {
-                        stat(day: 7, retention: segment.retention)
-                        stat(day: 30, retention: segment.retention)
+                        HStack(spacing: 14) {
+                            stat(day: 7, retention: segment.retention)
+                            stat(day: 30, retention: segment.retention)
+                        }
+                    } destination: {
+                        RetentionSegmentDetailView(segment: segment, cohort: cohort)
                     }
-                } destination: {
-                    RetentionSegmentDetailView(segment: segment, cohort: cohort)
                 }
             }
         }

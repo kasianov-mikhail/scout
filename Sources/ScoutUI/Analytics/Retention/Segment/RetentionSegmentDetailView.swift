@@ -14,19 +14,12 @@ struct RetentionSegmentDetailView: View {
     let segment: RetentionSegment
     let cohort: RetentionCohort
 
-    private var crashMultiplier: Double {
-        let others = cohort.segments.filter { $0.name != segment.name }
-        let baseline = others.map(\.crashRate).reduce(0, +) / Double(max(others.count, 1))
-        guard baseline > 0 else {
-            return 1
-        }
-        return segment.crashRate / baseline
-    }
-
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: "Week of \(cohort.label)").font(.caption).foregroundStyle(.secondary)
+                Text(verbatim: "\(segment.size) installs · week of \(cohort.label)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
 
                 Chart {
                     ForEach(Array(zip(RetentionCohort.dayOffsets, cohort.retention)), id: \.0) { day, rate in
@@ -66,8 +59,7 @@ struct RetentionSegmentDetailView: View {
                     AxisMarks { value in
                         AxisGridLine()
                         if let rate = value.as(Double.self) {
-                            AxisValueLabel(
-                                rate.formatted(.retentionRate))
+                            AxisValueLabel(rate.formatted(.retentionRate))
                         }
                     }
                 }
@@ -75,6 +67,10 @@ struct RetentionSegmentDetailView: View {
                 .padding(.top, 8)
 
                 legend
+
+                if let comparison = RetentionComparison(segment: segment, cohort: cohort) {
+                    Text(verbatim: comparison.text).font(.caption).foregroundStyle(.secondary)
+                }
             }
             .padding(.top)
             .listRowSeparator(.hidden)
@@ -82,19 +78,11 @@ struct RetentionSegmentDetailView: View {
             Header(title: "Stability")
 
             HStack(spacing: 24) {
-                stabilityStat(title: "Crashes", value: segment.crashRate, color: .red)
-                stabilityStat(title: "Hangs", value: segment.hangRate, color: .orange)
+                RetentionStabilityStat(incident: .crash, count: segment.crashes, size: segment.size)
+                RetentionStabilityStat(incident: .hang, count: segment.hangs, size: segment.size)
             }
-
-            if crashMultiplier > 1.2 {
-                Text(
-                    verbatim:
-                        "\(crashMultiplier.formatted(numberFormatStyle))× the crash rate of other versions in this cohort"
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
-                .listRowSeparator(.hidden, edges: .bottom)
-            }
+            .padding(.top, 8)
+            .listRowSeparator(.hidden, edges: .bottom)
         }
         .navigationTitle(en: segment.name)
     }
@@ -105,21 +93,7 @@ struct RetentionSegmentDetailView: View {
             RetentionLegendItem(color: Color(.systemGray4), dashed: true, title: "Cohort")
         }
     }
-
-    private func stabilityStat(title: String, value: Double, color: Color) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(verbatim: title.uppercased()).font(.caption2).foregroundStyle(.secondary)
-            Text(verbatim: "\(value.formatted(numberFormatStyle))%")
-                .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundStyle(color)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(height: 70)
-    }
 }
-
-private let numberFormatStyle = FloatingPointFormatStyle<Double>(locale: Locale(identifier: "en_US"))
-    .precision(.fractionLength(1))
 
 #Preview("RetentionSegmentDetailView") {
     let cohort = RetentionCohort.samples[0]

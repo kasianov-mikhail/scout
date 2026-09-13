@@ -286,7 +286,7 @@ func makeVisitRecord(device: String, day: Int) -> Record {
     return record
 }
 
-func makeSessionRecord(id: String, device: String, day: Int) -> Record {
+func makeSessionRecord(id: String, device: String, day: Int, os: String? = nil) -> Record {
     var record = Record(recordType: SessionEntry.recordType, recordID: id)
     record["start_date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + .hour)
     record["end_date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + 2 * .hour)
@@ -294,5 +294,6 @@ func makeSessionRecord(id: String, device: String, day: Int) -> Record {
     record["app_version"] = "1.2.0"
     record["device_id"] = device
     record["install_id"] = "install-\(device)"
+    record["os_version"] = os
     return record
 }

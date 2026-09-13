@@ -75,14 +75,14 @@ struct DemoScenario {
         self.versions = versions
 
         let models = [
-            ("iPhone 15 Pro", "17.5.1"),
-            ("iPhone 14", "17.4.1"),
-            ("iPhone SE (3rd generation)", "16.7.8"),
-            ("iPad Pro 11-inch", "17.5"),
-            ("iPhone 13 mini", "17.3.1"),
-            ("iPhone 15", "18.0"),
-            ("iPad Air", "17.4"),
-            ("iPhone 12", "16.6.1"),
+            ("iPhone 15 Pro", "iOS 17.5.1"),
+            ("iPhone 14", "iOS 17.4.1"),
+            ("iPhone SE (3rd generation)", "iOS 16.7.8"),
+            ("iPad Pro 11-inch", "iOS 17.5"),
+            ("iPhone 13 mini", "iOS 17.3.1"),
+            ("iPhone 15", "iOS 18.0"),
+            ("iPad Air", "iOS 17.4"),
+            ("iPhone 12", "iOS 16.6.1"),
         ]
         let locales = ["en_US", "en_GB", "de_DE", "fr_FR", "ja_JP", "es_ES"]
         let channels = ["AppStore", "AppStore", "AppStore", "TestFlight"]

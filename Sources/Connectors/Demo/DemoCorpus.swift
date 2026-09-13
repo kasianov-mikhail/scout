@@ -25,7 +25,7 @@ enum DemoCorpus {
         let events = DemoEvents(scenario: scenario)
         let releases = DemoReleases(scenario: scenario, incidents: incidents)
         let metrics = DemoMetrics(clock: clock)
-        let activity = DemoActivity(scenario: scenario)
+        let activity = DemoActivity(scenario: scenario, incidents: incidents)
 
         return Corpus(
             records: scenario.records + incidents.records + events.records,

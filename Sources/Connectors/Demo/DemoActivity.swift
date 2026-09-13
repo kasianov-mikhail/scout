@@ -12,7 +12,7 @@ struct DemoActivity {
     let points: [ActivityPoint]
     let cohorts: [RetentionCohort]
 
-    init(scenario: DemoScenario) {
+    init(scenario: DemoScenario, incidents: DemoIncidents) {
         let range = scenario.clock.foldRange
 
         let visits = scenario.sessions.map {
@@ -20,17 +20,19 @@ struct DemoActivity {
         }
         points = ActivityPoint.points(visits: visits, in: range)
 
-        var installDays: [String: Date] = [:]
-        for install in scenario.installs where range.contains(install.date) {
-            installDays[install.id.uuidString] = install.date
-        }
+        cohorts = [RetentionCohort](
+            installs: scenario.installs.map { DatedID(date: $0.date, id: $0.id.uuidString) },
+            sessions: scenario.sessions.map { InstallSession(install: $0.install.id.uuidString, date: $0.start, os: $0.device.os) },
+            crashes: incidents.crashes.dated,
+            hangs: incidents.hangs.dated,
+            range: range,
+            now: scenario.clock.now
+        )
+    }
+}
 
-        var sessionDays: [String: Set<Date>] = [:]
-        for session in scenario.sessions {
-            sessionDays[session.install.id.uuidString, default: []].insert(session.start.startOfDay)
-        }
-
-        cohorts = RetentionCohort.build(
-            installDays: installDays, sessionDays: sessionDays, in: range, asOf: scenario.clock.now)
+extension [DemoIncidents.Point] {
+    fileprivate var dated: [DatedID] {
+        map { DatedID(date: $0.date, id: $0.installID.uuidString) }
     }
 }
