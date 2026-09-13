@@ -16,8 +16,8 @@ struct RetentionCohortStatsTests {
     func statsTolerateShortRetention() {
         let week = Date(timeIntervalSince1970: 1_704_067_200).startOfWeek
         let cohorts = [
-            RetentionCohort(id: week, size: 10, retention: [1, 0.5, 0.4, 0.3]),
-            RetentionCohort(id: week.addingDay(7), size: 10, retention: [1, 0.7]),
+            RetentionCohort(id: week, size: 10, retention: [1, 0.5, 0.4, 0.3], segments: []),
+            RetentionCohort(id: week.addingDay(7), size: 10, retention: [1, 0.7], segments: []),
         ]
 
         let stats = cohorts.stats

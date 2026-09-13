@@ -111,28 +111,38 @@ extension NativeDatabase {
             idField: "install_id",
             in: range
         )
-        async let sessions = store.datedIDs(
+        async let sessions = store.records(
             entity: SessionEntry.recordType,
             dateField: "start_date",
+            in: range
+        )
+        async let crashes = store.datedIDs(
+            entity: CrashEntry.recordType,
+            dateField: "date",
+            idField: "install_id",
+            in: range
+        )
+        async let hangs = store.datedIDs(
+            entity: HangEntry.recordType,
+            dateField: "date",
             idField: "install_id",
             in: range
         )
 
-        var installDays: [String: Date] = [:]
-        for install in try await installs {
-            installDays[install.id] = install.date
-        }
-
-        var sessionDays: [String: Set<Date>] = [:]
-        for session in try await sessions {
-            sessionDays[session.id, default: []].insert(session.date.startOfDay)
-        }
-
-        return RetentionCohort.build(
-            installDays: installDays,
-            sessionDays: sessionDays,
-            in: range,
-            asOf: Date()
+        return [RetentionCohort](
+            installs: try await installs,
+            sessions: try await sessions.compactMap { record -> InstallSession? in
+                let install: String? = record["install_id"]
+                let start: Date? = record["start_date"]
+                guard let install, let start else {
+                    return nil
+                }
+                return InstallSession(install: install, date: start, os: record["os_version"])
+            },
+            crashes: try await crashes,
+            hangs: try await hangs,
+            range: range,
+            now: Date()
         )
     }
 }

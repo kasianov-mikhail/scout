@@ -24,10 +24,8 @@ extension RetentionSegment {
                 name: variant.name,
                 size: installs,
                 retention: retention.map { $0.map { min($0 * variant.factor, 0.98) } },
-                incidents: [
-                    .crash: Int((Double(installs) * variant.crashed).rounded()),
-                    .hang: Int((Double(installs) * variant.hanged).rounded()),
-                ]
+                crashes: Int((Double(installs) * variant.crashed).rounded()),
+                hangs: Int((Double(installs) * variant.hanged).rounded())
             )
         }
     }

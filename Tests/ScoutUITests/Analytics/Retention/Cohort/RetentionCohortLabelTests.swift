@@ -24,7 +24,7 @@ struct RetentionCohortLabelTests {
         let midnight = Date(timeIntervalSince1970: 1_704_067_200).startOfWeek
         let lastSecond = midnight.addingDay().addingTimeInterval(-1)
 
-        #expect(RetentionCohort(id: midnight, size: 10, retention: []).label == "Dec 31")
-        #expect(RetentionCohort(id: lastSecond, size: 10, retention: []).label == "Dec 31")
+        #expect(RetentionCohort(id: midnight, size: 10, retention: [], segments: []).label == "Dec 31")
+        #expect(RetentionCohort(id: lastSecond, size: 10, retention: [], segments: []).label == "Dec 31")
     }
 }

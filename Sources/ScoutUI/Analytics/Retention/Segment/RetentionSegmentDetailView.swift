@@ -78,11 +78,10 @@ struct RetentionSegmentDetailView: View {
             Header(title: "Stability")
 
             HStack(spacing: 24) {
-                ForEach(IncidentKind.allCases.filter { segment.incidents[$0] != nil }, id: \.self) { incident in
-                    RetentionStabilityStat(segment: segment, incident: incident)
-                }
-                .padding(.top, 8)
+                RetentionStabilityStat(incident: .crash, count: segment.crashes, size: segment.size)
+                RetentionStabilityStat(incident: .hang, count: segment.hangs, size: segment.size)
             }
+            .padding(.top, 8)
             .listRowSeparator(.hidden, edges: .bottom)
         }
         .navigationTitle(en: segment.name)

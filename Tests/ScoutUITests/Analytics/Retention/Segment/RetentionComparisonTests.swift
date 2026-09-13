@@ -12,10 +12,10 @@ import Testing
 @testable import ScoutUI
 
 struct RetentionComparisonTests {
-    private let cohort = RetentionCohort(id: Date(), size: 100, retention: [1, 0.5, 0.4, 0.25, 0.2, 0.1])
+    private let cohort = RetentionCohort(id: Date(), size: 100, retention: [1, 0.5, 0.4, 0.25, 0.2, 0.1], segments: [])
 
     private func segment(size: Int = 20, day7: Double?) -> RetentionSegment {
-        RetentionSegment(name: "iOS 16", size: size, retention: [1, 0.5, 0.4, day7, 0.1, 0.05])
+        RetentionSegment(name: "iOS 16", size: size, retention: [1, 0.5, 0.4, day7, 0.1, 0.05], crashes: 0, hangs: 0)
     }
 
     @Test("A segment retaining worse than the other versions reads as below")

@@ -69,21 +69,20 @@ extension EntityStore {
         }
     }
 
-    func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws -> [(date: Date, id: String)] {
+    func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws -> [DatedID] {
         let records = try await records(
             entity: entity,
             dateField: dateField,
             in: range
         )
 
-        return records.compactMap { record -> (date: Date, id: String)? in
-            guard case .date(let date)? = record.values[dateField] else {
+        return records.compactMap { record -> DatedID? in
+            let date: Date? = record[dateField]
+            let id: String? = record[idField]
+            guard let date, let id else {
                 return nil
             }
-            guard case .string(let id)? = record.values[idField] else {
-                return nil
-            }
-            return (date, id)
+            return DatedID(date: date, id: id)
         }
     }
 }

@@ -10,16 +10,18 @@ import Scout
 import SwiftUI
 
 struct RetentionStabilityStat: View {
-    let segment: RetentionSegment
     let incident: IncidentKind
+    let count: Int
+    let size: Int
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: incident.title.uppercased()).font(.caption2).foregroundStyle(.secondary)
-            Text(verbatim: segment.share(of: incident).formatted(.incidentRate))
+            Text(verbatim: (size > 0 ? Double(count) / Double(size) : 0).formatted(.incidentRate))
                 .font(.system(size: 20, weight: .bold, design: .rounded))
                 .foregroundStyle(incident.color)
-            Text(verbatim: "\(segment.count(of: incident)) of \(segment.size) installs")
+                .padding(.bottom, 2)
+            Text(verbatim: "\(count) of \(size) installs")
                 .font(.caption2)
                 .foregroundStyle(.secondary)
         }
@@ -38,8 +40,8 @@ extension FormatStyle where Self == FloatingPointFormatStyle<Double>.Percent {
     let segment = RetentionCohort.samples[0].segments[2]
 
     HStack(spacing: 24) {
-        RetentionStabilityStat(segment: segment, incident: .crash)
-        RetentionStabilityStat(segment: segment, incident: .hang)
+        RetentionStabilityStat(incident: .crash, count: segment.crashes, size: segment.size)
+        RetentionStabilityStat(incident: .hang, count: segment.hangs, size: segment.size)
     }
     .padding()
 }

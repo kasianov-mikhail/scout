@@ -32,7 +32,7 @@ struct HomeRetentionSection: View {
 
             HomeRetentionRow(series: series) { path.append(.retention) }
 
-            ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
+            ForEach(summaryOffsets, id: \.self) { day in
                 let rate = stats.first { $0.day == day }?.average
 
                 Button {
@@ -61,7 +61,7 @@ struct HomeRetentionSection: View {
         default:
             HomeRetentionRow(series: .empty) {}
 
-            ForEach(RetentionCohort.summaryOffsets, id: \.self) { day in
+            ForEach(summaryOffsets, id: \.self) { day in
                 Button {
                 } label: {
                     HStack {
@@ -98,3 +98,5 @@ struct HomeRetentionSection: View {
         }
     }
 }
+
+private let summaryOffsets = [1, 7, 30]
