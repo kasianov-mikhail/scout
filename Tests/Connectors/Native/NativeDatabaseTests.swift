@@ -86,6 +86,43 @@ struct NativeDatabaseTests {
         #expect(ids == ["s-4", "s-3", "s-2", "s-1", "s-0"])
     }
 
+    @Test("An unlimited read returns one page and a cursor instead of the whole history")
+    func unlimitedReadPages() async throws {
+        let records = (0...nativePageSize).map { index in
+            var record = makeEventRecord(id: "e-\(index)", name: "tap")
+            record["date"] = TestDate.reference.addingTimeInterval(TimeInterval(index))
+            return record
+        }
+        try await database.write(records: records)
+
+        let query = RecordQuery(
+            recordType: Event.self,
+            sort: [RecordQuery.Sort(field: "date", ascending: false)]
+        )
+        let first = try await database.read(matching: query, fields: Event.desiredKeys)
+        #expect(first.records.count == nativePageSize)
+        #expect(first.records.first?.recordID == "e-\(nativePageSize)")
+
+        let cursor = try #require(first.cursor)
+        let rest = try await database.readMore(from: cursor, fields: Event.desiredKeys)
+        #expect(rest.records.map(\.recordID) == ["e-0"])
+        #expect(rest.cursor == nil)
+    }
+
+    @Test("A limited read without a sort pages newest first by the entity's date")
+    func unsortedLimitedReadPages() async throws {
+        for index in 0..<3 {
+            try await database.write(record: makeSessionRecord(id: "s-\(index)", device: "a", day: index))
+        }
+
+        let first = try await database.read(matching: RecordQuery(recordType: Session.self), fields: nil, limit: 2)
+        #expect(first.records.map(\.recordID) == ["s-2", "s-1"])
+
+        let cursor = try #require(first.cursor)
+        let rest = try await database.readMore(from: cursor, fields: nil)
+        #expect(rest.records.map(\.recordID) == ["s-0"])
+    }
+
     @Test("Lookup restores a record by its identifier")
     func lookup() async throws {
         try await database.write(record: makeEventRecord(id: "e-9", name: "open"))

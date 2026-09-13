@@ -36,29 +36,18 @@ extension NativeDatabase: DatabaseWriter {
 
 extension NativeDatabase: DatabaseReader {
     func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        let store = try await resolve()
-        let entity = query.recordType.recordType
-        let sort = query.sort.first
-
-        let builder = query.filters.reduce(store.query(entity)) { $0.filter($1) }
-
-        let records = try await builder.records(
-            orderedBy: sort?.field ?? EntityCatalog.dateField(for: entity),
-            ascending: sort?.ascending ?? false
-        )
-
-        return RecordChunk(records: records.map(Record.init(entityRecord:)), cursor: nil)
+        try await read(matching: query, fields: fields, limit: nativePageSize)
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        guard let sort = query.sort.first else {
-            return try await read(matching: query, fields: fields)
-        }
+        let entity = query.recordType.recordType
+        let sort = query.sort.first
+
         return try await resolve().page(
-            entity: query.recordType.recordType,
+            entity: entity,
             filters: query.filters,
-            field: sort.field,
-            ascending: sort.ascending,
+            field: sort?.field ?? EntityCatalog.dateField(for: entity),
+            ascending: sort?.ascending ?? false,
             limit: limit,
             after: nil
         )
