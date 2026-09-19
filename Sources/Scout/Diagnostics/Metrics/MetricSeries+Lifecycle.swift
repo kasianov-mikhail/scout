@@ -29,6 +29,7 @@ extension MetricSeries {
 
     /// A Boolean value indicating whether the series is one of Scout's reserved
     /// lifecycle or service series rather than a diagnostic or custom event.
+    ///
     package var isLifecycle: Bool {
         Self.lifecycleNames.contains(name)
     }

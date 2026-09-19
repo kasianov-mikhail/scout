@@ -163,9 +163,7 @@ import Testing
         }
 
         let early = try await records(Session.self).filter { record in
-            guard let installID: String = record["install_id"], let start: Date = record["start_date"],
-                let installed = installDates[installID]
-            else {
+            guard let installID: String = record["install_id"], let start: Date = record["start_date"], let installed = installDates[installID] else {
                 return false
             }
             return start < installed

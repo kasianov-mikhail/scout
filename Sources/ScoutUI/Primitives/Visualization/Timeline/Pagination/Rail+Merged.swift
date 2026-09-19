@@ -22,7 +22,7 @@ extension Rail {
 }
 
 extension Rail {
-    fileprivate typealias Flattened = (
+    private typealias Flattened = (
         installs: [Install],
         launches: [Launch],
         sessions: [Session],
@@ -30,7 +30,7 @@ extension Rail {
         crashes: [Crash]
     )
 
-    fileprivate var flattened: Flattened {
+    private var flattened: Flattened {
         let launches = installs.flatMap(\.launches)
         let sessions = launches.flatMap(\.sessions)
         return (

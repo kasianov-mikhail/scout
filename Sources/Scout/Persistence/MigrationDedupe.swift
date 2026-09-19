@@ -23,9 +23,9 @@ struct MigrationDedupe {
     var bundles: [Bundle] = [.module]
 
     func prepare(_ description: NSPersistentStoreDescription) throws {
-        guard description.type == NSSQLiteStoreType else { return }
-        guard let url = description.url else { return }
-        guard FileManager.default.fileExists(atPath: url.path) else { return }
+        guard description.type == NSSQLiteStoreType, let url = description.url, FileManager.default.fileExists(atPath: url.path) else {
+            return
+        }
 
         let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(type: .sqlite, at: url)
         guard !model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata) else { return }
@@ -58,7 +58,9 @@ struct MigrationDedupe {
 
         var survivors: [UUID: NSManagedObject] = [:]
         for row in try context.fetch(request) {
-            guard let id = row.value(forKey: key) as? UUID else { continue }
+            guard let id = row.value(forKey: key) as? UUID else {
+                continue
+            }
 
             if let survivor = survivors[id] {
                 merge(row, into: survivor, in: context)
