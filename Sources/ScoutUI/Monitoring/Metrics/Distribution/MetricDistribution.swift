@@ -41,10 +41,7 @@ struct MetricDistribution<H: QuantileHistogram>: Equatable {
     func summary(in range: Range<Date>) -> Percentiles? {
         let combined = histogram(in: range)
 
-        guard let p50 = combined.percentile(0.5),
-            let p90 = combined.percentile(0.9),
-            let p99 = combined.percentile(0.99)
-        else {
+        guard let p50 = combined.percentile(0.5), let p90 = combined.percentile(0.9), let p99 = combined.percentile(0.99) else {
             return nil
         }
 

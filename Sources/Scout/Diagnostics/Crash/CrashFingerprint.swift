@@ -20,7 +20,7 @@ package struct CrashFingerprint {
 }
 
 extension CrashFingerprint {
-    fileprivate static func signature(name: String, reason: String?, stackTrace: [String]) -> String {
+    private static func signature(name: String, reason: String?, stackTrace: [String]) -> String {
         let normalizedFrames =
             stackTrace
             .lazy
@@ -32,13 +32,13 @@ extension CrashFingerprint {
             .joined(separator: "\n")
     }
 
-    fileprivate static func normalizeFrame(_ frame: String) -> String {
+    private static func normalizeFrame(_ frame: String) -> String {
         normalizeText(frame)
             .replacingOccurrences(of: #"0x[0-9a-f]+"#, with: "0x", options: .regularExpression)
             .replacingOccurrences(of: #"\b\d+\b"#, with: "#", options: .regularExpression)
     }
 
-    fileprivate static func normalizeText(_ text: String) -> String {
+    private static func normalizeText(_ text: String) -> String {
         text
             .lowercased()
             .trimmingCharacters(in: .whitespacesAndNewlines)

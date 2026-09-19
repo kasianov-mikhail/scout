@@ -30,20 +30,19 @@ struct TimelineItemConnectedTests {
         let a = makeItem(sessionID: sessionID)
         let b = makeItem(sessionID: sessionID)
 
-        #expect(connected(a, b, on: .session))
+        #expect(a.isConnected(other: b, kind: .session))
     }
 
     @Test("Rows in different groups are not connected")
     func testDifferentGroups() {
-        #expect(!connected(makeItem(sessionID: UUID()), makeItem(sessionID: UUID()), on: .session))
+        #expect(!makeItem(sessionID: UUID()).isConnected(other: makeItem(sessionID: UUID()), kind: .session))
     }
 
     @Test("A missing neighbor breaks the rail")
     func testMissingNeighbor() {
         let item = makeItem(sessionID: UUID())
 
-        #expect(!connected(nil, item, on: .session))
-        #expect(!connected(item, nil, on: .session))
+        #expect(!item.isConnected(other: nil, kind: .session))
     }
 
     @Test("A nil group id breaks the rail even when both rows are active")
@@ -51,7 +50,7 @@ struct TimelineItemConnectedTests {
         let a = makeItem(sessionID: nil)
         let b = makeItem(sessionID: nil)
 
-        #expect(!connected(a, b, on: .session))
+        #expect(!a.isConnected(other: b, kind: .session))
     }
 
     @Test("An inactive kind breaks the rail")
@@ -60,6 +59,6 @@ struct TimelineItemConnectedTests {
         let a = makeItem(sessionID: sessionID, active: [.install])
         let b = makeItem(sessionID: sessionID)
 
-        #expect(!connected(a, b, on: .session))
+        #expect(!a.isConnected(other: b, kind: .session))
     }
 }

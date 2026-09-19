@@ -51,8 +51,7 @@ struct RawCrashReport {
         guard let addresses = reader.readAddresses(limit: StackWalker.maximumFrameCount) else {
             return nil
         }
-        guard let installID = reader.readUUID(), let launchID = reader.readUUID(), let deviceID = reader.readUUID()
-        else {
+        guard let installID = reader.readUUID(), let launchID = reader.readUUID(), let deviceID = reader.readUUID() else {
             return nil
         }
         guard let appVersion = reader.readString() else {
@@ -90,8 +89,7 @@ struct RawCrashReport {
         let loaded = Image.loadedBases()
 
         return addresses.enumerated().map { index, address in
-            guard let image = images.first(where: { address >= $0.base && address < $0.base + $0.size })
-            else {
+            guard let image = images.first(where: { address >= $0.base && address < $0.base + $0.size }) else {
                 return StackWalker.unknownFrame(index: index, address: address)
             }
 

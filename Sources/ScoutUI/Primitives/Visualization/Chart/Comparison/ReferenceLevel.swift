@@ -33,12 +33,10 @@ extension ReferenceLevel {
         guard pair.value != .zero || referenceValue != .zero else {
             return nil
         }
-        guard let barStartX = proxy.position(forX: pair.barStart), let barEndX = proxy.position(forX: pair.barEnd)
-        else {
+        guard let barStartX = proxy.position(forX: pair.barStart), let barEndX = proxy.position(forX: pair.barEnd) else {
             return nil
         }
-        guard let valueY = proxy.position(forY: pair.value), let referenceY = proxy.position(forY: referenceValue)
-        else {
+        guard let valueY = proxy.position(forY: pair.value), let referenceY = proxy.position(forY: referenceValue) else {
             return nil
         }
 
