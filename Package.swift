@@ -149,7 +149,8 @@ let package = Package(
                 "Scout",
                 "Support",
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         ),
         .testTarget(
             name: "DemoConnectorTests",
