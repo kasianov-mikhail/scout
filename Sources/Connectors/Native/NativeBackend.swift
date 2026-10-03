@@ -33,7 +33,10 @@ extension Backend {
 
         let database = NativeDatabase {
             try await stores.value(id: id) {
-                try await container.publishedStore()
+                if let error = try await container.accountStatus().error {
+                    throw error
+                }
+                return try await container.publishedStore()
             }
         }
 
@@ -53,20 +56,7 @@ extension Backend {
                 }
             },
             accountWarning: {
-                switch try await container.accountStatus() {
-                case .available:
-                    nil
-                case .noAccount:
-                    .noAccount
-                case .restricted:
-                    .restricted
-                case .temporarilyUnavailable:
-                    .temporarilyUnavailable
-                case .couldNotDetermine:
-                    .couldNotDetermine
-                @unknown default:
-                    .couldNotDetermine
-                }
+                try await container.accountStatus().error
             }
         )
     }
@@ -80,20 +70,5 @@ extension CKContainer {
         try await CatalogEntry.publishAll(into: store, registry: registry)
 
         return store
-    }
-}
-
-extension CKAccountStatus {
-    var backendStatus: Backend.Status {
-        switch self {
-        case .available:
-            .reachable
-        case .noAccount, .restricted, .temporarilyUnavailable:
-            .readOnly
-        case .couldNotDetermine:
-            .unreachable
-        @unknown default:
-            .unreachable
-        }
     }
 }

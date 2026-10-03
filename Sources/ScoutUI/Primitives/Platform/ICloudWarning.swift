@@ -56,9 +56,9 @@ private struct ICloudWarningModifier: ViewModifier {
             return
         }
         do {
-            let status = try await warning()
-            title = status?.title
-            description = status?.description
+            let accountError = try await warning()
+            title = accountError?.title
+            description = accountError?.errorDescription
         } catch {
             title = "iCloud Error"
             description = error.localizedDescription
@@ -66,7 +66,7 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 }
 
-extension Backend.AccountStatus {
+extension Backend.AccountError {
     fileprivate var title: String {
         switch self {
         case .noAccount:
@@ -77,19 +77,6 @@ extension Backend.AccountStatus {
             "iCloud Temporarily Unavailable"
         case .couldNotDetermine:
             "iCloud Status Unknown"
-        }
-    }
-
-    fileprivate var description: String {
-        switch self {
-        case .noAccount:
-            "Sign in to iCloud to sync data."
-        case .restricted:
-            "iCloud access is restricted by parental controls or a device policy."
-        case .temporarilyUnavailable:
-            "Your iCloud account is temporarily unavailable. Try again later."
-        case .couldNotDetermine:
-            "Couldn't determine your iCloud account status. Check your connection and try again."
         }
     }
 }

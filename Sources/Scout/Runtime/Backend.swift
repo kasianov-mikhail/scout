@@ -7,7 +7,7 @@
 
 package typealias StatusProbe = @Sendable () async -> Backend.Status
 
-package typealias AccountWarning = @Sendable () async throws -> Backend.AccountStatus?
+package typealias AccountWarning = @Sendable () async throws -> Backend.AccountError?
 
 public struct Backend: Sendable {
     package let id: String
