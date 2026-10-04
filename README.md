@@ -81,7 +81,9 @@ The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports
 
 It ships as a separate `ScoutUI` product, so you decide which builds carry it. See the [Dashboard Guide](docs/DASHBOARD.md) for linking it, presenting it, and keeping it out of the App Store build.
 
-<img width="200" src="https://github.com/user-attachments/assets/0987c808-6d08-4e99-8ca7-1218d352e0bf"> <img width="200" src="https://github.com/user-attachments/assets/a70ae4d9-3680-48d3-8129-2febdc466030"> <img width="200" src="https://github.com/user-attachments/assets/6043911e-fd0b-4f6e-9785-c262dab1c6d7"> <img width="200" src="https://github.com/user-attachments/assets/dcec26e1-4e44-473c-b2e9-cde8ea2ffe2f">
+<img width="260" alt="Home" src="https://github.com/user-attachments/assets/4c68c1d3-c10f-4b39-82ae-39edbabd881d"> <img width="260" alt="Event" src="https://github.com/user-attachments/assets/ecaa33eb-bb10-4b1c-8e94-5b6aea67a4e4"> <img width="260" alt="Retention" src="https://github.com/user-attachments/assets/238547ae-9167-4522-9330-4e02b7de62fc">
+
+<img width="260" alt="Crash" src="https://github.com/user-attachments/assets/b980029a-08ab-4bf0-92d7-d467691266cd"> <img width="260" alt="Metric distribution" src="https://github.com/user-attachments/assets/8cdc5a67-5f1d-4c09-a49e-bd575987a405"> <img width="260" alt="Release health" src="https://github.com/user-attachments/assets/f7d0dd82-a84d-4a00-9e9c-5cf782265919">
 
 ## Roadmap
 
