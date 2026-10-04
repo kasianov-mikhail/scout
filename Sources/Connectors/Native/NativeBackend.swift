@@ -49,11 +49,7 @@ extension Backend {
             displayName: "iCloud",
             engine: .cloudKit,
             probeStatus: {
-                do {
-                    return try await container.accountStatus().backendStatus
-                } catch {
-                    return .failed(error)
-                }
+                (try? await container.accountStatus())?.backendStatus ?? .unreachable
             },
             accountWarning: {
                 try await container.accountStatus().error

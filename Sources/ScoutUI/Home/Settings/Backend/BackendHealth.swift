@@ -72,7 +72,7 @@ extension Backend.Status? {
             "Operational"
         case .readOnly:
             "Read-Only"
-        case .unreachable, .failed:
+        case .unreachable:
             "Unreachable"
         case nil:
             "Checking"
@@ -85,7 +85,7 @@ extension Backend.Status? {
             .green
         case .readOnly:
             .orange
-        case .unreachable, .failed:
+        case .unreachable:
             .red
         case nil:
             .gray
@@ -98,7 +98,7 @@ extension Backend.Status? {
             "checkmark.circle.fill"
         case .readOnly:
             "exclamationmark.triangle.fill"
-        case .unreachable, .failed:
+        case .unreachable:
             "xmark.octagon.fill"
         case nil:
             "questionmark.circle.fill"
