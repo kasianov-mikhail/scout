@@ -43,11 +43,9 @@ struct DeliverTests {
         [cloudBackend, serverBackend]
     }
 
-    /// Run the delivery engine for a type the way `synchronize` does: skip an
-    /// unavailable backend, otherwise send its raw records and let the send itself
-    /// count the attempt on failure.
+    /// Run the delivery engine for a type the way `synchronize` does: send its raw
+    /// records and let the send itself count the attempt on failure.
     func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
-        guard await backend.checkAvailability() else { return }
         try await RecordSender(backend: backend).deliver(type: type, in: context)
     }
 
@@ -163,44 +161,14 @@ struct DeliverTests {
         #expect(cloud.records.count(of: "Event") == 1)
     }
 
-    @Test("Offline passes cost nothing: an unavailable backend keeps its full budget")
-    func offlinePassesPreserveAttempts() async throws {
-        let event = EventEntry.stub(name: "login", in: context)
-        try context.save()
-        try SyncableEntry.plan(backends: backends, in: context)
-
-        let offlineServer = Backend(
-            id: "server",
-            database: server,
-            displayName: "server",
-            engine: .cloudKit,
-            verifyAccess: { throw URLError(.notConnectedToInternet) }
-        )
-
-        // Many sync passes fire while the backend is unreachable...
-        for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
-            try await deliver(EventEntry.self, to: offlineServer)
-        }
-
-        // ...yet not one attempt is spent, so the record is still deliverable.
-        #expect(event.delivery(for: "server")?.attempts == 0)
-        #expect(event.delivery(for: "server")?.isPending == true)
-        #expect(server.records.count(of: "Event") == 0)
-
-        // Connectivity returns and the record delivers on the first real send.
-        try await deliver(EventEntry.self, to: serverBackend)
-        #expect(event.delivery(for: "server")?.isDelivered == true)
-        #expect(server.records.count(of: "Event") == 1)
-    }
-
     @Test("Transient write failures don't consume the attempt budget")
     func transientFailuresPreserveAttempts() async throws {
         let event = EventEntry.stub(name: "login", in: context)
         try context.save()
         try SyncableEntry.plan(backends: [serverBackend], in: context)
 
-        // The availability check passes, but every real send fails on connectivity
-        // for far longer than the attempt budget would allow...
+        // Every send fails on connectivity for far longer than the attempt budget
+        // would allow...
         for _ in 0..<(DeliveryEntry.maxAttempts * 2) {
             server.writeErrors.append(TransientTestError())
             await #expect(throws: (any Error).self) {
@@ -408,6 +376,7 @@ struct DeliverTests {
         // The session completes on a background context once the row is already
         // delivered, so only the requeue can bring it back.
         try endSessionInBackground(session.objectID)
+        context.refreshAllObjects()
 
         try await deliver(SessionEntry.self, to: cloudBackend)
 

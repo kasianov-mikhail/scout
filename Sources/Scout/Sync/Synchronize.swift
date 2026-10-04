@@ -22,7 +22,14 @@ func synchronize(backends: [Backend], dispatcher: Dispatcher) async throws -> Vo
 
         let availability = await withTaskGroup(of: (Int, Bool).self) { group in
             for (offset, backend) in backends.enumerated() {
-                group.addTask { (offset, await backend.checkAvailability()) }
+                group.addTask {
+                    do {
+                        try await backend.verifyAccess?()
+                        return (offset, true)
+                    } catch {
+                        return (offset, false)
+                    }
+                }
             }
             var flags = [Bool](repeating: false, count: backends.count)
             for await (offset, isAvailable) in group {
