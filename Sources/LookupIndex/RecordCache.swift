@@ -14,11 +14,12 @@ actor RecordCache {
     static let schema = Schema([CachedRecord.self, CachedSpan.self])
 
     private let location: RecordCacheLocation
-    private var context: ModelContext
+    private var container: ModelContainer
+    private lazy var context = ModelContext(container)
 
     init(location: RecordCacheLocation = RecordCacheLocation()) throws {
         self.location = location
-        context = ModelContext(try Self.container(at: location.storeURL, in: location))
+        container = try Self.container(at: location.storeURL, in: location)
     }
 
     var size: Int64 {
@@ -31,7 +32,8 @@ actor RecordCache {
 
     func removeAll() {
         do {
-            context = ModelContext(try Self.container(at: location.nextStoreURL, in: location))
+            container = try Self.container(at: location.nextStoreURL, in: location)
+            context = ModelContext(container)
             location.retire()
             return
         } catch {
