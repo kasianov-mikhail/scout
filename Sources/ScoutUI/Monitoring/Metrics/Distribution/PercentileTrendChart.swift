@@ -25,7 +25,7 @@ struct PercentileTrendChart: View {
     var body: some View {
         Chart(trend) { point in
             AreaMark(
-                x: .value("Date", point.date, unit: unit),
+                x: .value("Date", point.date),
                 y: .value("P99", point.p99)
             )
             .foregroundStyle(
@@ -38,12 +38,16 @@ struct PercentileTrendChart: View {
             .interpolationMethod(.monotone)
 
             LineMark(
-                x: .value("Date", point.date, unit: unit),
+                x: .value("Date", point.date),
                 y: .value("P99", point.p99)
             )
             .foregroundStyle(.orange)
             .lineStyle(StrokeStyle(lineWidth: 2))
             .interpolationMethod(.monotone)
+        }
+        .chartXScale(domain: domain)
+        .chartXAxis {
+            AxisMarks(format: unit.chartFormat)
         }
         .chartYAxis {
             AxisMarks { value in
@@ -54,6 +58,13 @@ struct PercentileTrendChart: View {
             }
         }
         .aspectRatio(1.618, contentMode: .fit)
+        .environment(\.calendar, .utc)
+        .environment(\.timeZone, Calendar.utc.timeZone)
+    }
+
+    private var domain: ClosedRange<Date> {
+        let first = trend.first?.date ?? .now
+        return first...(trend.last?.date ?? first)
     }
 }
 
