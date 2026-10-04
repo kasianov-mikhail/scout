@@ -13,7 +13,6 @@ extension Backend {
         Backend(
             id: url.absoluteString,
             database: HTTPDatabase(url: url, apiKey: apiKey),
-            checkAvailability: { true },
             displayName: url.host ?? url.absoluteString,
             engine: .server(
                 .init(

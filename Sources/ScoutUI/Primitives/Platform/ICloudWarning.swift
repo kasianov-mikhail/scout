@@ -9,35 +9,33 @@ import Scout
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ warning: AccountWarning?, error: Binding<Backend.AccountError?>) -> some View {
-        modifier(ICloudWarningModifier(warning: warning, accountError: error))
+    func iCloudWarning(_ verify: (@Sendable () async throws -> Void)?, issue: Binding<ICloudIssue?>) -> some View {
+        modifier(ICloudWarningModifier(verify: verify, issue: issue))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
-    let warning: AccountWarning?
+    let verify: (@Sendable () async throws -> Void)?
 
-    @Binding var accountError: Backend.AccountError?
+    @Binding var issue: ICloudIssue?
     @State private var isAlertPresented = false
-    @State private var title: String?
-    @State private var description: String?
 
     func body(content: Content) -> some View {
         content
             .toolbar {
-                if let title, let description {
+                if let issue {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             isAlertPresented = true
                         } label: {
                             Image(systemName: "icloud.slash").foregroundStyle(.orange)
                         }
-                        .alert(Text(verbatim: title), isPresented: $isAlertPresented) {
+                        .alert(Text(verbatim: issue.title), isPresented: $isAlertPresented) {
                             Button(role: .cancel, action: {}) {
                                 Text(verbatim: "OK")
                             }
                         } message: {
-                            Text(verbatim: description)
+                            Text(verbatim: issue.message)
                         }
                     }
                 }
@@ -53,33 +51,17 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 
     private func verify() async {
-        guard let warning else {
-            accountError = nil
+        guard let verify else {
+            issue = nil
             return
         }
         do {
-            accountError = try await warning()
-            title = accountError?.title
-            description = accountError?.errorDescription
+            try await verify()
+            issue = nil
+        } catch let error as Backend.AccountError {
+            issue = .account(error)
         } catch {
-            accountError = nil
-            title = "iCloud Error"
-            description = error.localizedDescription
-        }
-    }
-}
-
-extension Backend.AccountError {
-    fileprivate var title: String {
-        switch self {
-        case .noAccount:
-            "Not Signed In to iCloud"
-        case .restricted:
-            "iCloud Restricted"
-        case .temporarilyUnavailable:
-            "iCloud Temporarily Unavailable"
-        case .couldNotDetermine:
-            "iCloud Status Unknown"
+            issue = .failure(error)
         }
     }
 }

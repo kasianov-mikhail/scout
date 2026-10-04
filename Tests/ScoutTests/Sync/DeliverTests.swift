@@ -25,7 +25,6 @@ struct DeliverTests {
         Backend(
             id: "cloud",
             database: cloud,
-            checkAvailability: { true },
             displayName: "cloud",
             engine: .cloudKit
         )
@@ -35,7 +34,6 @@ struct DeliverTests {
         Backend(
             id: "server",
             database: server,
-            checkAvailability: { true },
             displayName: "server",
             engine: .cloudKit
         )
@@ -174,9 +172,9 @@ struct DeliverTests {
         let offlineServer = Backend(
             id: "server",
             database: server,
-            checkAvailability: { false },
             displayName: "server",
-            engine: .cloudKit
+            engine: .cloudKit,
+            verifyAccess: { throw URLError(.notConnectedToInternet) }
         )
 
         // Many sync passes fire while the backend is unreachable...

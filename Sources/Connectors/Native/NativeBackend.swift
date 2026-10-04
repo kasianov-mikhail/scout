@@ -33,9 +33,7 @@ extension Backend {
 
         let database = NativeDatabase {
             try await stores.value(id: id) {
-                if let error = try await container.accountStatus().error {
-                    throw error
-                }
+                try await container.accountStatus().verify()
                 return try await container.publishedStore()
             }
         }
@@ -43,16 +41,13 @@ extension Backend {
         return Backend(
             id: id,
             database: database,
-            checkAvailability: {
-                (try? await container.accountStatus()) == .available
-            },
             displayName: "iCloud",
             engine: .cloudKit,
             probeStatus: {
                 (try? await container.accountStatus())?.backendStatus ?? .unreachable
             },
-            accountWarning: {
-                try await container.accountStatus().error
+            verifyAccess: {
+                try await container.accountStatus().verify()
             }
         )
     }
