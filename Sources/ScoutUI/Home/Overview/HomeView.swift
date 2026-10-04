@@ -13,6 +13,8 @@ struct HomeView: View {
 
     @AppStorage("scout_active_backend") private var activeID = ""
     @State private var path: [HomeDestination] = []
+    @State private var accountError: Backend.AccountError?
+
     @StateObject private var tint = Tint()
 
     init(backends: [Backend]) {
@@ -44,12 +46,15 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $path) {
             Group {
-                if let backend {
-                    HomeList(path: $path).iCloudWarning(backend.accountWarning)
-                } else {
+                if backend == nil {
                     ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
+                } else if accountError == .noAccount {
+                    ErrorView(description: Backend.AccountError.noAccount.localizedDescription, retry: nil)
+                } else {
+                    HomeList(path: $path)
                 }
             }
+            .iCloudWarning(backend?.accountWarning, error: $accountError)
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")
             .dismissable()
