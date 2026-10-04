@@ -24,15 +24,3 @@ public struct Backend: Sendable {
         self.verifyAccess = verifyAccess
     }
 }
-
-extension Backend {
-    func checkAvailability() async -> Bool {
-        guard let verifyAccess else { return true }
-        do {
-            try await verifyAccess()
-            return true
-        } catch {
-            return false
-        }
-    }
-}
