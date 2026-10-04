@@ -46,7 +46,7 @@ struct DemoEvents {
         for (index, session) in scenario.sessions.enumerated() {
             let span = max(1, session.end.timeIntervalSince(session.start))
 
-            for _ in 0..<random.int(in: 0...2) {
+            for _ in 0..<random.int(in: 1...3) {
                 let name = DemoEvents.names[random.int(in: 0...DemoEvents.names.count - 1)]
                 let date = session.start.addingTimeInterval(random.double(in: 0...span))
                 let level = name == "Sync_Failed" ? EventLevel.error : levels[index % levels.count]
