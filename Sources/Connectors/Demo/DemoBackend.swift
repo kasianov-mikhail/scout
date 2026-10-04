@@ -25,7 +25,6 @@ extension Backend {
         Backend(
             id: "scout.demo",
             database: DemoDatabase(corpus: now.map(DemoCorpus.make(now:)) ?? DemoCorpus.shared),
-            checkAvailability: { true },
             displayName: "Demo",
             engine: .local,
             probeStatus: { .reachable }

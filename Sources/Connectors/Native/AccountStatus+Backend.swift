@@ -9,20 +9,20 @@ import CloudKit
 import Scout
 
 extension CKAccountStatus {
-    var error: Backend.AccountError? {
+    func verify() throws(Backend.AccountError) {
         switch self {
         case .available:
-            nil
+            return
         case .noAccount:
-            .noAccount
+            throw .noAccount
         case .restricted:
-            .restricted
+            throw .restricted
         case .temporarilyUnavailable:
-            .temporarilyUnavailable
+            throw .temporarilyUnavailable
         case .couldNotDetermine:
-            .couldNotDetermine
+            throw .couldNotDetermine
         @unknown default:
-            .couldNotDetermine
+            throw .couldNotDetermine
         }
     }
 

@@ -7,24 +7,32 @@
 
 package typealias StatusProbe = @Sendable () async -> Backend.Status
 
-package typealias AccountWarning = @Sendable () async throws -> Backend.AccountError?
-
 public struct Backend: Sendable {
     package let id: String
     package let database: any Database
-    package let checkAvailability: @Sendable () async -> Bool
     package let displayName: String
     package let engine: Engine
     package let probeStatus: StatusProbe?
-    package let accountWarning: AccountWarning?
+    package let verifyAccess: (@Sendable () async throws -> Void)?
 
-    package init(id: String, database: any Database, checkAvailability: @escaping @Sendable () async -> Bool, displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, accountWarning: AccountWarning? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, verifyAccess: (@Sendable () async throws -> Void)? = nil) {
         self.id = id
         self.database = database
-        self.checkAvailability = checkAvailability
         self.displayName = displayName
         self.engine = engine
         self.probeStatus = probeStatus
-        self.accountWarning = accountWarning
+        self.verifyAccess = verifyAccess
+    }
+}
+
+extension Backend {
+    func checkAvailability() async -> Bool {
+        guard let verifyAccess else { return true }
+        do {
+            try await verifyAccess()
+            return true
+        } catch {
+            return false
+        }
     }
 }

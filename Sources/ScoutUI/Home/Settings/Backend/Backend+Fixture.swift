@@ -14,7 +14,6 @@ extension Backend: Fixture {
             Backend(
                 id: "https://api.scout.app",
                 database: DefaultDatabase(),
-                checkAvailability: { true },
                 displayName: "Production",
                 engine: .cloudKit,
                 probeStatus: { .reachable }
@@ -22,17 +21,16 @@ extension Backend: Fixture {
             Backend(
                 id: "https://staging.scout.app",
                 database: DefaultDatabase(),
-                checkAvailability: { true },
                 displayName: "Staging",
                 engine: .cloudKit
             ),
             Backend(
                 id: "http://localhost:8080",
                 database: DefaultDatabase(),
-                checkAvailability: { false },
                 displayName: "Local",
                 engine: .cloudKit,
-                probeStatus: { .unreachable }
+                probeStatus: { .unreachable },
+                verifyAccess: { throw URLError(.notConnectedToInternet) }
             ),
         ]
     }
