@@ -83,17 +83,17 @@ It ships as a separate `ScoutUI` product, so you decide which builds carry it. S
 
 <table>
 <tr>
-<td><img width="240" alt="Home" src="https://github.com/user-attachments/assets/4c68c1d3-c10f-4b39-82ae-39edbabd881d"></td>
-<td><img width="240" alt="Event" src="https://github.com/user-attachments/assets/ecaa33eb-bb10-4b1c-8e94-5b6aea67a4e4"></td>
-<td><img width="240" alt="Retention" src="https://github.com/user-attachments/assets/238547ae-9167-4522-9330-4e02b7de62fc"></td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/ecb48f2a-1391-4ed6-8770-8b8ec6d45544"><img width="240" alt="Home" src="https://github.com/user-attachments/assets/4c68c1d3-c10f-4b39-82ae-39edbabd881d"></picture></td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/4b8e0be5-20cc-4e76-bc4e-5c445eccab70"><img width="240" alt="Event" src="https://github.com/user-attachments/assets/ecaa33eb-bb10-4b1c-8e94-5b6aea67a4e4"></picture></td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/74f7e28f-c247-4ab4-872c-d6374db8432d"><img width="240" alt="Retention" src="https://github.com/user-attachments/assets/238547ae-9167-4522-9330-4e02b7de62fc"></picture></td>
 </tr>
 </table>
 
 <table>
 <tr>
-<td><img width="240" alt="Crash" src="https://github.com/user-attachments/assets/b980029a-08ab-4bf0-92d7-d467691266cd"></td>
-<td><img width="240" alt="Metric distribution" src="https://github.com/user-attachments/assets/8cdc5a67-5f1d-4c09-a49e-bd575987a405"></td>
-<td><img width="240" alt="Release health" src="https://github.com/user-attachments/assets/f7d0dd82-a84d-4a00-9e9c-5cf782265919"></td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/dd1f0d3e-db03-4e0f-a18d-c8a8ed8a819f"><img width="240" alt="Crash" src="https://github.com/user-attachments/assets/b980029a-08ab-4bf0-92d7-d467691266cd"></picture></td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/2eeff2a1-050f-40f9-a04c-b23363d23858"><img width="240" alt="Metric distribution" src="https://github.com/user-attachments/assets/8cdc5a67-5f1d-4c09-a49e-bd575987a405"></picture></td>
+<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/761084f7-711d-4612-b4b8-bf484010c02f"><img width="240" alt="Release health" src="https://github.com/user-attachments/assets/f7d0dd82-a84d-4a00-9e9c-5cf782265919"></picture></td>
 </tr>
 </table>
 
