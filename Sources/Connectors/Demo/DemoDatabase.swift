@@ -36,18 +36,17 @@ final class DemoDatabase: DatabaseReader, DatabaseWriter, Sendable {
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        page(matching: query, limit: limit, after: 0)
+        Self.page(of: records.filter { query.matches($0) }.sorted(by: query.ordering), limit: limit, after: 0)
     }
 
-    private func page(matching query: RecordQuery, limit: Int, after offset: Int) -> RecordChunk {
-        let matches = records.filter { query.matches($0) }.sorted(by: query.ordering)
+    private static func page(of matches: [Record], limit: Int, after offset: Int) -> RecordChunk {
         let page = matches.dropFirst(offset).prefix(limit)
         let next = offset + page.count
 
         return RecordChunk(
             records: Array(page),
             cursor: next < matches.count
-                ? RecordCursor { _ in self.page(matching: query, limit: limit, after: next) }
+                ? RecordCursor { _ in Self.page(of: matches, limit: limit, after: next) }
                 : nil
         )
     }
