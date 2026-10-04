@@ -10,15 +10,5 @@ extension Backend {
         case reachable
         case readOnly
         case unreachable
-        case failed(any Error & Sendable)
-
-        static package func == (lhs: Self, rhs: Self) -> Bool {
-            switch (lhs, rhs) {
-            case (.reachable, .reachable), (.readOnly, .readOnly), (.unreachable, .unreachable):
-                true
-            default:
-                false
-            }
-        }
     }
 }
