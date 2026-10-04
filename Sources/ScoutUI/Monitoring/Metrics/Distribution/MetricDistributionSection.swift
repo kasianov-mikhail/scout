@@ -23,7 +23,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
     }
 
     var body: some View {
-        Group {
+        VStack(alignment: .leading) {
             switch provider.result {
             case .success(let distribution):
                 if let percentiles = distribution.summary(in: extent.domain) {
