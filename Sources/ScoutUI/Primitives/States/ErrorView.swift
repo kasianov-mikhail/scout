@@ -12,12 +12,11 @@ struct ErrorView: View {
     let description: Text
     let retry: (() async -> Void)?
 
-    @State private var isRetrying: Bool
+    @State private var isRetrying = false
 
-    init(description: Text, retry: (() async -> Void)?, isRetrying: Bool = false) {
+    init(description: Text, retry: (() async -> Void)?) {
         self.description = description
         self.retry = retry
-        _isRetrying = State(initialValue: isRetrying)
     }
 
     var body: some View {
@@ -70,8 +69,8 @@ struct ErrorView: View {
 }
 
 extension ErrorView {
-    init(description: String, retry: (() async -> Void)?, isRetrying: Bool = false) {
-        self.init(description: Text(verbatim: description), retry: retry, isRetrying: isRetrying)
+    init(description: String, retry: (() async -> Void)?) {
+        self.init(description: Text(verbatim: description), retry: retry)
     }
 }
 
@@ -81,15 +80,5 @@ extension ErrorView {
             + "to test how the ErrorView handles multiline text display. "
             + "It should properly wrap and be readable without any issues.",
         retry: {}
-    )
-}
-
-#Preview("Retrying") {
-    ErrorView(
-        description: "This is a sample error message that is intentionally made very long "
-            + "to test how the ErrorView handles multiline text display. "
-            + "It should properly wrap and be readable without any issues.",
-        retry: {},
-        isRetrying: true
     )
 }

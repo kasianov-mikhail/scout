@@ -9,14 +9,15 @@ import Scout
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ warning: AccountWarning?) -> some View {
-        modifier(ICloudWarningModifier(warning: warning))
+    func iCloudWarning(_ warning: AccountWarning?, error: Binding<Backend.AccountError?>) -> some View {
+        modifier(ICloudWarningModifier(warning: warning, accountError: error))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
     let warning: AccountWarning?
 
+    @Binding var accountError: Backend.AccountError?
     @State private var isAlertPresented = false
     @State private var title: String?
     @State private var description: String?
@@ -53,13 +54,15 @@ private struct ICloudWarningModifier: ViewModifier {
 
     private func verify() async {
         guard let warning else {
+            accountError = nil
             return
         }
         do {
-            let accountError = try await warning()
+            accountError = try await warning()
             title = accountError?.title
             description = accountError?.errorDescription
         } catch {
+            accountError = nil
             title = "iCloud Error"
             description = error.localizedDescription
         }
