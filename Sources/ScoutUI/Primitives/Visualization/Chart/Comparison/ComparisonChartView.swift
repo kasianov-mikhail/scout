@@ -43,7 +43,6 @@ struct ComparisonChartView<T: ChartNumeric>: View {
             }
         }
         .aspectRatio(4 / 3, contentMode: .fit)
-        .padding(.horizontal)
         .environment(\.calendar, .utc)
         .environment(\.timeZone, Calendar.utc.timeZone)
     }
