@@ -41,7 +41,7 @@ struct DemoScenario {
         var device: DeviceInfo { install.device }
     }
 
-    static let installCount = 300
+    static let installCount = 2400
     static let spanDays = 120
 
     let clock: DemoClock
@@ -68,21 +68,23 @@ struct DemoScenario {
         var random = DemoRandom(seed: 0x5C0_17_DE_A11)
 
         let versions = [
-            AppVersion(version: "2.1.0", build: "210", releasedDaysAgo: 64),
-            AppVersion(version: "2.2.0", build: "220", releasedDaysAgo: 35),
-            AppVersion(version: "2.3.0", build: "230", releasedDaysAgo: 12),
+            AppVersion(version: "2.1.0", build: "210", releasedDaysAgo: 120),
+            AppVersion(version: "2.2.0", build: "220", releasedDaysAgo: 62),
+            AppVersion(version: "2.3.0", build: "230", releasedDaysAgo: 26),
         ]
         self.versions = versions
 
         let models = [
-            ("iPhone 15 Pro", "iOS 17.5.1"),
-            ("iPhone 14", "iOS 17.4.1"),
-            ("iPhone SE (3rd generation)", "iOS 16.7.8"),
-            ("iPad Pro 11-inch", "iOS 17.5"),
-            ("iPhone 13 mini", "iOS 17.3.1"),
-            ("iPhone 15", "iOS 18.0"),
-            ("iPad Air", "iOS 17.4"),
-            ("iPhone 12", "iOS 16.6.1"),
+            ("iPhone 17 Pro", "iOS 26.0.1"),
+            ("iPhone 16", "iOS 26.0"),
+            ("iPhone 17 Pro", "iOS 26.0.1"),
+            ("iPhone 17 Pro Max", "iOS 26.0.1"),
+            ("iPhone 16", "iOS 26.0"),
+            ("iPhone Air", "iOS 26.0.1"),
+            ("iPhone 17 Pro", "iOS 26.0"),
+            ("iPhone 15 Pro", "iOS 18.6.2"),
+            ("iPhone 17 Pro Max", "iOS 26.0"),
+            ("iPad Pro", "iPadOS 26.0"),
         ]
         let locales = ["en_US", "en_GB", "de_DE", "fr_FR", "ja_JP", "es_ES"]
         let channels = ["AppStore", "AppStore", "AppStore", "TestFlight"]
@@ -96,7 +98,7 @@ struct DemoScenario {
         var sessions: [SessionInfo] = []
 
         for index in 0..<Self.installCount {
-            let installDaysAgo = index * Self.spanDays / Self.installCount
+            let installDaysAgo = Int(Double(Self.spanDays) * pow(Double(index) / Double(Self.installCount), 1.15))
             let model = models[index % models.count]
 
             let install = InstallInfo(

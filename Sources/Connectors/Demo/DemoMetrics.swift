@@ -62,7 +62,7 @@ struct DemoMetrics {
             .int($0.int(in: 200...9000))
         }
         telemetry(Self.timers, category: Telemetry.Export.timer.rawValue, perDay: 6) {
-            .double($0.double(in: 0.02...1.4))
+            .double($0.double(in: 0.04...0.32))
         }
 
         for name in Self.counters + ["bytes_downloaded_mb"] {
@@ -83,7 +83,7 @@ struct DemoMetrics {
 
         for name in Self.timers {
             samples += Self.histogram(
-                name: name, categories: LatencyBuckets.categories, center: 0.4, scale: 140,
+                name: name, categories: LatencyBuckets.categories, center: 0.38, scale: 140,
                 clock: clock, random: &random)
         }
         for name in Self.recorders {
@@ -99,14 +99,16 @@ struct DemoMetrics {
         var samples: [DemoSample] = []
         let center = Double(categories.count) * ratio
 
-        for (index, category) in categories.enumerated() {
-            let weight = exp(-pow(Double(index) - center, 2) / 14)
+        for day in stride(from: 56, through: 0, by: -1) {
+            let shift = sin(Double(day) * 0.9) * 0.45 + random.double(in: -0.25...0.25)
 
-            for day in stride(from: 56, through: 0, by: -7) {
+            for (index, category) in categories.enumerated() {
+                let weight = exp(-pow(Double(index) - center - shift, 2) / 3)
+
                 samples.append(
                     DemoSample(
                         name: name, category: category, date: clock.momentDaysAgo(day),
-                        value: .int(Int((weight * scale).rounded()) + random.int(in: 0...4))))
+                        value: .int(Int((weight * scale * random.double(in: 0.85...1.15)).rounded()))))
             }
         }
         return samples
