@@ -89,9 +89,6 @@ extension Runtime {
 
         try await identity.bootstrap()
 
-        let backends = backends
-        let dispatcher = dispatcher
-
         identity.table.startListening {
             try await backends.synchronize(using: dispatcher)
         }
