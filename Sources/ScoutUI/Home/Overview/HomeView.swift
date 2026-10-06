@@ -74,14 +74,14 @@ struct HomeView: View {
 }
 
 extension View {
-    /// Presents the Scout home screen modally over this view.
+    /// Presents the Scout dashboard modally over this view.
     ///
-    /// The screen is always shown as a full-screen cover on iOS (a sheet on macOS, which has no
+    /// The dashboard is always shown as a full-screen cover on iOS (a sheet on macOS, which has no
     /// full-screen cover presentation), never pushed onto a navigation stack, so it keeps its own
     /// navigation and environment self-contained.
     ///
     /// - Parameters:
-    ///   - isPresented: A binding that controls whether the home screen is shown.
+    ///   - isPresented: A binding that controls whether the dashboard is shown.
     ///   - backends: The backends to inspect.
     /// - Returns: A view that presents the dashboard over this view while `isPresented` is `true`.
     ///
