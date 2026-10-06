@@ -7,6 +7,8 @@
 
 import Foundation
 
+package let defaultRecordPageSize = 400
+
 package struct RecordChunk {
     package let records: [Record]
     package let cursor: RecordCursor?

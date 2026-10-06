@@ -59,29 +59,24 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
         self.records += records
     }
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         if let error = errors.popLast() {
             throw error
         }
-        return RecordChunk(
-            records: records.filter { query.matches($0) },
-            cursor: nil
-        )
-    }
-
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
-        if let error = errors.popLast() {
-            throw error
-        }
-        return RecordChunk(
-            records: [],
-            cursor: nil
-        )
+        return RecordChunk(records: records, query: query, limit: defaultRecordPageSize)
     }
 }
 
 extension InMemoryDatabase {
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
+        []
+    }
+
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
+        []
+    }
+
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
         []
     }
 

@@ -39,12 +39,15 @@ struct CachedDatabaseTests {
         let database = try makeDatabase(base: base)
         let query = RecordQuery(
             recordType: Event.self,
-            filters: (lower..<upper).dateFilters,
+            filters: [
+                RecordQuery.Filter(field: "date", op: .greaterThanOrEquals, value: .date(lower)),
+                RecordQuery.Filter(field: "date", op: .lessThan, value: .date(upper)),
+            ],
             sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
 
-        _ = try await database.readAll(matching: query, fields: nil)
-        _ = try await database.readAll(matching: query, fields: nil)
+        _ = try await database.read(matching: query, fields: nil)
+        _ = try await database.read(matching: query, fields: nil)
 
         #expect(base.queries.count == 2)
         #expect(base.queries.first?.filters == query.filters)
@@ -66,8 +69,14 @@ struct CachedDatabaseTests {
             )
         ]
 
-        let first = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
-        let second = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
+        let query = MetricSeriesQuery(
+            category: "http_status",
+            values: .int,
+            bucket: .hour,
+            range: lower..<upper
+        )
+        let first = try await database.metricSeries(matching: query)
+        let second = try await database.metricSeries(matching: query)
 
         #expect(base.seriesRanges == [lower..<upper, cutoff..<upper])
         #expect(first.count == 1)
@@ -91,8 +100,22 @@ struct CachedDatabaseTests {
             )
         ]
 
-        _ = try await database.metricSeries(Double.self, category: "http_latency", in: lower..<upper)
-        _ = try await database.metricSeries(Int.self, category: "http_status", in: lower..<upper)
+        _ = try await database.metricSeries(
+            matching: MetricSeriesQuery(
+                category: "http_latency",
+                values: .double,
+                bucket: .hour,
+                range: lower..<upper
+            )
+        )
+        _ = try await database.metricSeries(
+            matching: MetricSeriesQuery(
+                category: "http_status",
+                values: .int,
+                bucket: .hour,
+                range: lower..<upper
+            )
+        )
 
         #expect(base.seriesRanges == [lower..<upper, lower..<upper])
     }
@@ -110,10 +133,10 @@ struct CachedDatabaseTests {
                 points: [MetricSeriesPoint(date: 1_000_000_000, value: .int(4))]
             )
         ]
-        let query = SeriesQuery(name: "Session", byVersion: true, range: lower..<upper)
+        let query = LifecycleSeriesQuery(counter: .sessions, byVersion: true, range: lower..<upper)
 
-        let first = try await database.series(matching: query)
-        let second = try await database.series(matching: query)
+        let first = try await database.lifecycleSeries(matching: query)
+        let second = try await database.lifecycleSeries(matching: query)
 
         #expect(base.seriesRanges == [lower..<upper, cutoff..<upper])
         #expect(first.map(\.version) == ["1.2.0"])
@@ -191,7 +214,7 @@ final class SpyDatabase: Database, @unchecked Sendable {
     var series: [MetricSeries] = []
     var seriesRanges: [Range<Date>] = []
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         queries.append(query)
         // The cache never caches reads, so these tests only assert on the recorded
         // queries — the spy echoes back whatever rows it was seeded with, unfiltered.
@@ -214,10 +237,22 @@ final class SpyDatabase: Database, @unchecked Sendable {
         []
     }
 
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
-        seriesRanges.append(query.range)
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
+        series(in: query.range)
+    }
+
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
+        series(in: query.range)
+    }
+
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
+        series(in: query.range)
+    }
+
+    private func series(in range: Range<Date>) -> [MetricSeries] {
+        seriesRanges.append(range)
         return series.compactMap { series in
-            let points = series.points.filter { query.range.contains(Date(millisecondsSince1970: $0.date)) }
+            let points = series.points.filter { range.contains(Date(millisecondsSince1970: $0.date)) }
             guard points.count > 0 else {
                 return nil
             }

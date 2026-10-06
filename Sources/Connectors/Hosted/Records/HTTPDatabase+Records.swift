@@ -9,14 +9,6 @@ import Foundation
 import Scout
 
 extension HTTPDatabase: RecordReader {
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(
-            matching: query,
-            fields: fields,
-            limit: defaultRecordPageSize
-        )
-    }
-
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         try await run(
             query: HTTPQuery(

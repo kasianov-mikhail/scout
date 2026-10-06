@@ -11,13 +11,13 @@ import XCTest
 @testable import LookupIndex
 @testable import Scout
 
-final class CachedMetricSeriesPerformanceTests: XCTestCase {
+final class CachedSeriesPerformanceTests: XCTestCase {
     func testSeriesMergePerformance() {
-        let cached = CachedMetricSeries.records(from: makeSeries(keys: 120, points: 400, from: 0))
+        let cached = makeSeries(keys: 120, points: 400, from: 0).cacheRecords
         let fetched = makeSeries(keys: 120, points: 120, from: 400)
 
         measure {
-            _ = CachedMetricSeries.series(cached: cached, fetched: fetched)
+            _ = [MetricSeries](cached: cached, fetched: fetched)
         }
     }
 
@@ -90,16 +90,16 @@ final class CachedDatabasePerformanceTests: XCTestCase {
             cache: try makeRecordCache(),
             now: { now }
         )
-        let query = SeriesQuery(
-            name: "Session",
+        let query = LifecycleSeriesQuery(
+            counter: .sessions,
             byVersion: true,
             range: Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 4_000_000)
         )
 
-        runBlocking { _ = try? await database.series(matching: query) }
+        runBlocking { _ = try? await database.lifecycleSeries(matching: query) }
 
         measure {
-            runBlocking { _ = try? await database.series(matching: query) }
+            runBlocking { _ = try? await database.lifecycleSeries(matching: query) }
         }
     }
 

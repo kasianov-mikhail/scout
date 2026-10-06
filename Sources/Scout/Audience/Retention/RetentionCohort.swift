@@ -28,12 +28,3 @@ extension RetentionCohort: Comparable {
         lhs.id < rhs.id
     }
 }
-
-extension RetentionCohort {
-    package static func rate(_ retention: [Double?], onDay day: Int) -> Double? {
-        guard let index = dayOffsets.firstIndex(of: day), retention.indices.contains(index) else {
-            return nil
-        }
-        return retention[index]
-    }
-}

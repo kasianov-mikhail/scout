@@ -16,10 +16,6 @@ extension DemoDatabase: RecordReader {
         return record
     }
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: defaultRecordPageSize)
-    }
-
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         RecordChunk(records: records, query: query, limit: limit)
     }

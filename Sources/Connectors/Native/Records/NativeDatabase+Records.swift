@@ -9,10 +9,6 @@ import Foundation
 import Scout
 
 extension NativeDatabase: RecordReader {
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: defaultRecordPageSize)
-    }
-
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         let entity = query.recordType.recordType
         let sort = query.primarySort

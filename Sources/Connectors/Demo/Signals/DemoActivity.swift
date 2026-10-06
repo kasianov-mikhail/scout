@@ -13,7 +13,8 @@ struct DemoActivity {
     let cohorts: [RetentionCohort]
 
     init(scenario: DemoScenario, incidents: DemoIncidents) {
-        let range = scenario.clock.now.trailingYear
+        let today = scenario.clock.now.startOfDay
+        let range = today.addingYear(-1).addingWeek(-1)..<today.addingDay()
 
         let visits = scenario.sessions.map {
             ActivityVisit(date: $0.start, user: $0.device.id.uuidString)
