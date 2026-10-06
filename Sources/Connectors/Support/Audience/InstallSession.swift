@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 package struct InstallSession: Comparable {
     package let install: String

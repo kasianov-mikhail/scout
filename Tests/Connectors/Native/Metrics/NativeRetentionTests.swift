@@ -50,7 +50,7 @@ struct NativeRetentionTests {
         #expect(cohort.segments.map(\.size) == [2, 1])
 
         let latest = try #require(cohort.segments.first)
-        #expect(RetentionCohort.rate(latest.retention, onDay: 7) == 0.5)
+        #expect(latest.retention[3] == 0.5)
     }
 
     @Test("Crashes and hangs land in the segment of the install that saw them within 30 days, session or not")

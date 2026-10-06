@@ -63,8 +63,8 @@ struct CachedDatabaseTests {
                 name: "2xx",
                 category: "http_status",
                 points: [
-                    MetricSeriesPoint(date: 1_000_000_000, value: .int(4)),
-                    MetricSeriesPoint(date: 3_500_000_000, value: .int(7)),
+                    MetricSeriesPoint(date: Date(millisecondsSince1970: 1_000_000_000), value: 4),
+                    MetricSeriesPoint(date: Date(millisecondsSince1970: 3_500_000_000), value: 7),
                 ]
             )
         ]
@@ -84,7 +84,7 @@ struct CachedDatabaseTests {
         #expect(second.first?.name == "2xx")
         #expect(second.first?.category == "http_status")
         #expect(second.first?.points.map(\.date) == first.first?.points.map(\.date))
-        #expect(second.first?.points.map(\.value) == [.int(4), .int(7)])
+        #expect(second.first?.points.map(\.value) == [4, 7])
     }
 
     @available(iOS 18, macOS 15, *)
@@ -96,7 +96,7 @@ struct CachedDatabaseTests {
             MetricSeries(
                 name: "latency",
                 category: "http_latency",
-                points: [MetricSeriesPoint(date: 1_000_000_000, value: .double(0.2))]
+                points: [MetricSeriesPoint(date: Date(millisecondsSince1970: 1_000_000_000), value: 0.2)]
             )
         ]
 
@@ -130,10 +130,10 @@ struct CachedDatabaseTests {
                 name: "Session",
                 category: nil,
                 version: "1.2.0",
-                points: [MetricSeriesPoint(date: 1_000_000_000, value: .int(4))]
+                points: [MetricSeriesPoint(date: Date(millisecondsSince1970: 1_000_000_000), value: 4)]
             )
         ]
-        let query = LifecycleSeriesQuery(counter: .sessions, byVersion: true, range: lower..<upper)
+        let query = LifecycleSeriesQuery.sessions(byVersion: true, range: lower..<upper)
 
         let first = try await database.lifecycleSeries(matching: query)
         let second = try await database.lifecycleSeries(matching: query)
@@ -141,7 +141,7 @@ struct CachedDatabaseTests {
         #expect(base.seriesRanges == [lower..<upper, cutoff..<upper])
         #expect(first.map(\.version) == ["1.2.0"])
         #expect(second.map(\.version) == ["1.2.0"])
-        #expect(second.first?.points.map(\.value) == [.int(4)])
+        #expect(second.first?.points.map(\.value) == [4])
     }
 
     @available(iOS 18, macOS 15, *)
@@ -252,7 +252,7 @@ final class SpyDatabase: Database, @unchecked Sendable {
     private func series(in range: Range<Date>) -> [MetricSeries] {
         seriesRanges.append(range)
         return series.compactMap { series in
-            let points = series.points.filter { range.contains(Date(millisecondsSince1970: $0.date)) }
+            let points = series.points.filter { range.contains($0.date) }
             guard points.count > 0 else {
                 return nil
             }

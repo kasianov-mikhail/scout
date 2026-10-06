@@ -88,7 +88,7 @@ struct ServerContractTests {
             guard let cursor = chunk.cursor else {
                 break
             }
-            chunk = try await database.readMore(from: cursor, fields: nil)
+            chunk = try await cursor.next(nil)
             indices += paramCounts(in: chunk.records)
         }
 
@@ -163,8 +163,7 @@ struct ServerContractTests {
         try await database.write(records: [first, second])
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(
-                counter: .sessions,
+            matching: LifecycleSeriesQuery.sessions(
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )
@@ -172,7 +171,7 @@ struct ServerContractTests {
         let sessions = try #require(series.first { $0.version == version })
 
         #expect(sessions.name == "Session")
-        #expect(sessions.points.map(\.value.doubleValue).reduce(0, +) == 2)
+        #expect(sessions.points.map(\.value).reduce(0, +) == 2)
     }
 
     @Test("An event source reaches a custom event named like the Session counter")
@@ -180,10 +179,10 @@ struct ServerContractTests {
         let database = try makeDatabase()
         let hour = Date(timeIntervalSince1970: Double(Int.random(in: 400_000...450_000)) * 3600)
         let events = EventSeriesQuery(name: "Session", bucket: .hour, range: hour..<hour.addingTimeInterval(3600))
-        let sessions = LifecycleSeriesQuery(counter: .sessions, bucket: .hour, range: events.range)
+        let sessions = LifecycleSeriesQuery.sessions(bucket: .hour, range: events.range)
 
         func total(_ series: [MetricSeries]) -> Double {
-            series.flatMap(\.points).map(\.value.doubleValue).reduce(0, +)
+            series.flatMap(\.points).map(\.value).reduce(0, +)
         }
 
         let eventsBefore = try await total(database.eventSeries(matching: events))
@@ -215,15 +214,14 @@ struct ServerContractTests {
         try await database.write(records: [first, second])
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(
-                counter: .firstCrashes,
+            matching: LifecycleSeriesQuery.firstCrashes(
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )
         )
         let crashes = try #require(series.first { $0.version == version })
 
-        #expect(crashes.points.map(\.value.doubleValue).reduce(0, +) == 1)
+        #expect(crashes.points.map(\.value).reduce(0, +) == 1)
     }
 
     @Test("Crashes filter by app version on the server")
@@ -242,7 +240,7 @@ struct ServerContractTests {
             recordType: Crash.self,
             filters: [RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))]
         )
-        let crashes: [Crash] = try await database.readAll(matching: query, fields: Crash.desiredKeys)
+        let crashes = try await database.read(matching: query, fields: Crash.desiredKeys).records.map(Crash.init)
 
         #expect(crashes.count == 2)
         #expect(crashes.allSatisfy { $0.name == "SIGSEGV" })
@@ -264,7 +262,7 @@ struct ServerContractTests {
             recordType: Hang.self,
             filters: [RecordQuery.Filter(field: "app_version", op: .equals, value: .string(version))]
         )
-        let hangs: [Hang] = try await database.readAll(matching: query, fields: Hang.desiredKeys)
+        let hangs = try await database.read(matching: query, fields: Hang.desiredKeys).records.map(Hang.init)
 
         #expect(hangs.count == 2)
         #expect(hangs.allSatisfy { $0.name == "Main Thread Blocked" })
@@ -283,14 +281,17 @@ struct ServerContractTests {
         ])
 
         let series = try await database.metricSeries(
-            Int.self,
-            category: category,
-            in: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            matching: MetricSeriesQuery(
+                category: category,
+                values: .int,
+                bucket: .hour,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
         )
         let bucketSeries = try #require(series.first { $0.name == marker })
 
         #expect(bucketSeries.category == category)
-        #expect(bucketSeries.points.map(\.value.doubleValue).reduce(0, +) == 2)
+        #expect(bucketSeries.points.map(\.value).reduce(0, +) == 2)
     }
 
     @Test("A metric series round-trips a name carrying reserved query characters")
@@ -311,14 +312,14 @@ struct ServerContractTests {
             matching: MetricSeriesQuery(
                 name: marker,
                 category: category,
-                values: Int.seriesValues,
+                values: .int,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )
         )
         let matched = try #require(series.first { $0.name == marker })
 
         #expect(matched.category == category)
-        #expect(matched.points.map(\.value.doubleValue).reduce(0, +) == 2)
+        #expect(matched.points.map(\.value).reduce(0, +) == 2)
     }
 
     @Test("A reachability ping succeeds against a live server")

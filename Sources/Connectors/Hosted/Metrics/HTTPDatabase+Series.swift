@@ -30,19 +30,50 @@ extension HTTPDatabase: SeriesReader {
         .series
     }
 
-    func seriesEndpoint(for query: some SeriesQuery) -> URL? {
-        let dimensions = query.dimensions
+    func seriesEndpoint(for query: EventSeriesQuery) -> URL? {
+        seriesEndpoint(
+            source: "event",
+            bucket: query.bucket,
+            range: query.range,
+            filters: [
+                query.name.map { "name=\(Self.encode($0))" }
+            ]
+        )
+    }
 
-        let params: [String?] = [
-            "bucket=\(dimensions.bucket.rawValue)",
-            query.range.queryParameters,
-            "source=\(dimensions.source)",
-            dimensions.name.map { "name=\(Self.encode($0))" },
-            dimensions.category.map { "category=\(Self.encode($0))" },
-            dimensions.values.map { "values=\(Self.encode($0.rawValue))" },
-            dimensions.byVersion ? "by=version" : nil,
-            dimensions.reduce == .sum ? nil : "reduce=\(dimensions.reduce.rawValue)",
-        ]
+    func seriesEndpoint(for query: LifecycleSeriesQuery) -> URL? {
+        seriesEndpoint(
+            source: "lifecycle",
+            bucket: query.bucket,
+            range: query.range,
+            filters: [
+                "name=\(Self.encode(query.name))",
+                query.byVersion ? "by=version" : nil,
+            ]
+        )
+    }
+
+    func seriesEndpoint(for query: MetricSeriesQuery) -> URL? {
+        seriesEndpoint(
+            source: "metric",
+            bucket: query.bucket,
+            range: query.range,
+            filters: [
+                query.name.map { "name=\(Self.encode($0))" },
+                query.category.map { "category=\(Self.encode($0))" },
+                query.values.map { "values=\(Self.encode($0.rawValue))" },
+                query.reduce == .sum ? nil : "reduce=\(query.reduce.rawValue)",
+            ]
+        )
+    }
+
+    private func seriesEndpoint(source: String, bucket: SeriesBucket, range: Range<Date>, filters: [String?]) -> URL? {
+        let params: [String?] =
+            [
+                "bucket=\(bucket.rawValue)",
+                range.queryParameters,
+                "source=\(source)",
+            ] + filters
 
         return URL(string: "api/v1/metrics/series?" + params.compactMap(\.self).joined(separator: "&"), relativeTo: url)
     }

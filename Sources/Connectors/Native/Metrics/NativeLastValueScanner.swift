@@ -5,30 +5,20 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import Scout
 import ScoutDB
 
-struct LastValueSeries {
+struct NativeLastValueScanner {
     let query: MetricSeriesQuery
     let store: EntityStore
 
-    func series() async throws -> [MetricSeries] {
-        async let ints = query.values == .double ? [] : series(values: .int)
-        async let doubles = query.values == .int ? [] : series(values: .double)
-
-        return try await [MetricSeries](
-            ints: ints,
-            doubles: doubles,
-            values: query.values
-        )
-    }
-
-    private func series(values: MetricSeriesQuery.Values) async throws -> [MetricSeries] {
+    func series(values: MetricSeriesQuery.Values) async throws -> [MetricSeries] {
         let records = try await store.records(
             entity: values.metricsEntity,
             dateField: "date",
-            in: query.window
+            in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
         )
 
         let samples = records.compactMap {
@@ -38,10 +28,15 @@ struct LastValueSeries {
         var latest = LatestValues()
 
         for sample in samples {
-            latest.add(sample.value, key: sample.key, date: sample.date, bucket: query.bucket)
+            latest.add(
+                sample.value,
+                key: sample.key,
+                date: sample.date,
+                start: query.bucket.start(of: sample.date)
+            )
         }
 
-        return latest.series(values: values)
+        return latest.series
     }
 
     private struct Sample {
@@ -57,10 +52,7 @@ struct LastValueSeries {
             let name: String? = record["name"]
             let category: String? = record["category"]
 
-            guard let name else {
-                return nil
-            }
-            guard query.matches(name: name, category: category) else {
+            guard let name, let key = query.key(metric: name, category: category) else {
                 return nil
             }
 
@@ -74,8 +66,7 @@ struct LastValueSeries {
             }
 
             self.date = date
-
-            key = SeriesKey(metric: name, category: category)
+            self.key = key
         }
     }
 }

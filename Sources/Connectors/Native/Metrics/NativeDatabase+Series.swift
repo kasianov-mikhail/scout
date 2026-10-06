@@ -10,14 +10,14 @@ import Scout
 
 extension NativeDatabase: SeriesReader {
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
-        try await NativeEventSeries(query: query, store: resolve()).series().nonEmptySorted
+        try await NativeEventScanner(query: query, store: resolve()).series
     }
 
     func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
-        try await NativeLifecycleSeries(query: query, store: resolve()).series().nonEmptySorted
+        try await NativeLifecycleScanner(query: query, store: resolve()).series
     }
 
     func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
-        try await NativeMetricSeries(query: query, store: resolve()).series().nonEmptySorted
+        try await NativeMetricScanner(query: query, store: resolve()).series
     }
 }

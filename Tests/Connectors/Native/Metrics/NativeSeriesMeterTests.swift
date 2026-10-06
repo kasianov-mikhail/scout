@@ -26,11 +26,11 @@ extension NativeSeriesTests {
         foreign["category"] = "timer"
         try await database.write(record: foreign)
 
-        let series = try await database.metricSeries(Double.self, category: "meter", reduce: .last, in: range)
+        let series = try await database.metricSeries(matching: meters)
 
         let gauge = try #require(series.first { $0.name == "queue_depth" })
         #expect(gauge.category == "meter")
-        #expect(gauge.points.map(\.value) == [.double(8)])
+        #expect(gauge.points.map(\.value) == [8])
     }
 
     @Test("A meter resolves the last value per bucket independently")
@@ -44,10 +44,10 @@ extension NativeSeriesTests {
         try await database.write(
             record: makeMeterRecord(id: "g-3", name: "queue_depth", value: 9, date: second.addingTimeInterval(60)))
 
-        let series = try await database.metricSeries(Double.self, category: "meter", reduce: .last, in: range)
+        let series = try await database.metricSeries(matching: meters)
 
         let gauge = try #require(series.first { $0.name == "queue_depth" })
-        #expect(gauge.points.map(\.value) == [.double(2), .double(9)])
+        #expect(gauge.points.map(\.value) == [2, 9])
     }
 
     @Test("A meter keeps a zero as its latest value")
@@ -58,10 +58,20 @@ extension NativeSeriesTests {
         try await database.write(
             record: makeMeterRecord(id: "g-2", name: "queue_depth", value: 0, date: hour.addingTimeInterval(120)))
 
-        let series = try await database.metricSeries(Double.self, category: "meter", reduce: .last, in: range)
+        let series = try await database.metricSeries(matching: meters)
 
         let gauge = try #require(series.first { $0.name == "queue_depth" })
-        #expect(gauge.points.map(\.value) == [.double(0)])
+        #expect(gauge.points.map(\.value) == [0])
+    }
+
+    private var meters: MetricSeriesQuery {
+        MetricSeriesQuery(
+            category: "meter",
+            values: .double,
+            bucket: .hour,
+            reduce: .last,
+            range: range
+        )
     }
 }
 

@@ -6,17 +6,18 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
-extension [RetentionCohort] {
-    package init(installs: [DatedID], sessions: [InstallSession], crashes: [DatedID], hangs: [DatedID], range: Range<Date>, now: Date) {
+extension RetentionCohort {
+    package static func cohorts(installs: [DatedID], sessions: [InstallSession], crashes: [DatedID], hangs: [DatedID], range: Range<Date>, now: Date) -> [RetentionCohort] {
         let sessions = Dictionary(grouping: sessions, by: \.install)
         let names = sessions.compactMapValues(\.osMajor)
         let sessionDays = sessions.map { InstallDates(install: $0.key, dates: $0.value.days) }
-        let crashes = [InstallDates](crashes)
-        let hangs = [InstallDates](hangs)
-        let horizon = (RetentionCohort.dayOffsets.last ?? 0) + 1
+        let crashes = InstallDates.grouped(crashes)
+        let hangs = InstallDates.grouped(hangs)
+        let horizon = (dayOffsets.last ?? 0) + 1
 
-        self = InstallGroup(installs).days(in: range).byWeek.map { week, installs in
+        return InstallGroup(installs).days(in: range).byWeek.map { week, installs in
             RetentionCohort(
                 week: week,
                 installs: installs,

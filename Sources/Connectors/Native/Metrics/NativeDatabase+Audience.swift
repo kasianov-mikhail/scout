@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import Scout
 
@@ -14,18 +15,20 @@ extension NativeDatabase: AudienceReader {
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
         let window = lookback..<range.upperBound
 
-        async let markers = store.visits(
+        async let markers = store.datedIDs(
             entity: VisitEntry.recordType,
             dateField: "date",
+            idField: "device_id",
             in: window
         )
-        async let sessions = store.visits(
+        async let sessions = store.datedIDs(
             entity: SessionEntry.recordType,
             dateField: "start_date",
+            idField: "device_id",
             in: window
         )
 
-        return ActivityPoint.points(visits: try await markers + sessions, in: range)
+        return try await ActivityPoint.points(visits: markers + sessions, in: range)
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
@@ -55,9 +58,9 @@ extension NativeDatabase: AudienceReader {
             in: range
         )
 
-        return [RetentionCohort](
-            installs: try await installs,
-            sessions: try await sessions.compactMap { record -> InstallSession? in
+        return try await RetentionCohort.cohorts(
+            installs: installs,
+            sessions: sessions.compactMap { record -> InstallSession? in
                 let install: String? = record["install_id"]
                 let start: Date? = record["start_date"]
                 guard let install, let start else {
@@ -65,8 +68,8 @@ extension NativeDatabase: AudienceReader {
                 }
                 return InstallSession(install: install, date: start, os: record["os_version"])
             },
-            crashes: try await crashes,
-            hangs: try await hangs,
+            crashes: crashes,
+            hangs: hangs,
             range: range,
             now: Date()
         )

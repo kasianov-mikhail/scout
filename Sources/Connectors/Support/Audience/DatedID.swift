@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 package struct DatedID {
     package let date: Date

@@ -21,29 +21,19 @@ extension CachedDatabase: SeriesReader {
     }
 
     private func series<Query: SeriesQuery>(matching query: Query, fetch: (Query) async throws -> [MetricSeries]) async throws -> [MetricSeries] {
-        let settledCutoff = now().startOfWeek.addingWeek(-1)
-        let frozenUpper = min(query.range.upperBound, settledCutoff)
+        let frozenUpper = min(query.range.upperBound, now().startOfWeek.addingWeek(-1))
 
         guard query.range.lowerBound < frozenUpper else {
             return try await fetch(query)
         }
 
-        let fingerprint = ([scope, "series"] + query.dimensions.components).joined(separator: "|")
-
-        var cached: [Record] = []
-        var cachedUpper = query.range.lowerBound
-
-        if let covered = await cache.coveredRange(for: fingerprint), covered.lowerBound <= query.range.lowerBound, covered.upperBound > query.range.lowerBound {
-            let upper = min(covered.upperBound, frozenUpper)
-
-            if let records = await cache.records(for: fingerprint, in: query.range.lowerBound..<upper) {
-                cached = records
-                cachedUpper = upper
-            }
-        }
+        let fingerprint = [scope, "series", query.fingerprint].joined(separator: "|")
+        let frozen = query.range.lowerBound..<frozenUpper
+        let cached = await cachedSpan(for: fingerprint, in: frozen)
+        let cachedUpper = cached?.upper ?? frozen.lowerBound
 
         guard cachedUpper < query.range.upperBound else {
-            return [MetricSeries](cached: cached, fetched: [])
+            return MetricSeries.combined(cached: cached?.records ?? [], fetched: [])
         }
 
         var remainder = query
@@ -58,7 +48,48 @@ extension CachedDatabase: SeriesReader {
             )
         }
 
-        return [MetricSeries](cached: cached, fetched: fetched)
+        return MetricSeries.combined(cached: cached?.records ?? [], fetched: fetched)
+    }
+
+    private func cachedSpan(for fingerprint: String, in frozen: Range<Date>) async -> CachedSpan? {
+        guard let covered = await cache.coveredRange(for: fingerprint) else {
+            return nil
+        }
+        guard covered.lowerBound <= frozen.lowerBound, covered.upperBound > frozen.lowerBound else {
+            return nil
+        }
+
+        let upper = min(covered.upperBound, frozen.upperBound)
+
+        guard let records = await cache.records(for: fingerprint, in: frozen.lowerBound..<upper) else {
+            return nil
+        }
+
+        return CachedSpan(records: records, upper: upper)
+    }
+}
+
+private struct CachedSpan {
+    let records: [Record]
+    let upper: Date
+}
+
+private struct CachedPoint {
+    let key: SeriesKey
+    let point: MetricSeriesPoint
+
+    init?(record: Record) {
+        let date: Date? = record["date"]
+        let name: String? = record["name"]
+        let double: Double? = record["value"]
+        let integer: Int64? = record["value"]
+
+        guard let date, let name, let value = double ?? integer.map({ Double($0) }) else {
+            return nil
+        }
+
+        key = SeriesKey(name: name, category: record["category"], version: record["app_version"])
+        point = MetricSeriesPoint(date: date, value: value)
     }
 }
 
@@ -67,64 +98,31 @@ extension [MetricSeries] {
         flatMap { series in
             series.points.map { point in
                 var record = Record(recordType: "MetricSeriesPoint", recordID: UUID().uuidString)
-                record.fields["date"] = .date(Date(millisecondsSince1970: point.date))
-                record.fields["name"] = .string(series.name)
-                record.fields["category"] = series.category.map(RecordValue.string)
-                record.fields["app_version"] = series.version.map(RecordValue.string)
-
-                switch point.value {
-                case .int(let value):
-                    record.fields["value"] = .int(Int64(value))
-                case .double(let value):
-                    record.fields["value"] = .double(value)
-                }
+                record["date"] = point.date
+                record["name"] = series.name
+                record["category"] = series.category
+                record["app_version"] = series.version
+                record["value"] = point.value
 
                 return record
             }
         }
     }
+}
 
-    init(cached: [Record], fetched: [MetricSeries]) {
+extension MetricSeries {
+    static func combined(cached: [Record], fetched: [MetricSeries]) -> [MetricSeries] {
         var points: [SeriesKey: [MetricSeriesPoint]] = [:]
 
-        for record in cached {
-            guard case .date(let date)? = record.fields["date"] else {
-                continue
-            }
-            guard case .string(let name)? = record.fields["name"] else {
-                continue
-            }
-
-            let value: MetricValue
-
-            switch record.fields["value"] {
-            case .int(let integer)?:
-                value = .int(Int(integer))
-            case .double(let double)?:
-                value = .double(double)
-            default:
-                continue
-            }
-
-            let category: String? =
-                if case .string(let category)? = record.fields["category"] { category } else { nil }
-            let version: String? =
-                if case .string(let version)? = record.fields["app_version"] { version } else { nil }
-
-            let key = SeriesKey(
-                name: name,
-                category: category,
-                version: version
-            )
-
-            points[key, default: []].append(MetricSeriesPoint(date: date.millisecondsSince1970, value: value))
+        for case let cached? in cached.map(CachedPoint.init) {
+            points[cached.key, default: []].append(cached.point)
         }
 
         for series in fetched {
             points[series.key, default: []] += series.points
         }
 
-        self = points.sorted { $0.key < $1.key }
+        return points.sorted { $0.key < $1.key }
             .map { key, points in
                 MetricSeries(
                     name: key.name,

@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 
 @testable import Scout
@@ -63,7 +64,7 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
         if let error = errors.popLast() {
             throw error
         }
-        return RecordChunk(records: records, query: query, limit: defaultRecordPageSize)
+        return RecordChunk.page(of: records.matching(query), limit: defaultRecordPageSize)
     }
 }
 

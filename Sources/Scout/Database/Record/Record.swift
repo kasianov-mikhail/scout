@@ -26,7 +26,7 @@ package struct Record: Equatable, Sendable, Codable {
         set { fields[key] = newValue?.recordValue }
     }
 
-    package mutating func setValues(_ values: [String: Any]) {
+    mutating func setValues(_ values: [String: Any]) {
         fields.merge(values.compactMapValues(RecordValue.init(any:))) { _, new in new }
     }
 }

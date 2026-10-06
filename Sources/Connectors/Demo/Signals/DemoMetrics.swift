@@ -40,56 +40,84 @@ struct DemoMetrics {
             }
         }
 
-        func telemetry(_ names: [String], category: String, perDay: Int, _ value: (inout DemoRandom) -> MetricValue) {
+        func telemetry(_ names: [String], category: String, values: MetricSeriesQuery.Values, perDay: Int, _ value: (inout DemoRandom) -> Double) {
             for name in names {
                 moments(spanDays: 60, perDay: perDay) { date in
                     samples.append(
-                        DemoSample(name: name, category: category, source: .metric, date: date, value: value(&random)))
+                        DemoSample(
+                            name: name,
+                            category: category,
+                            source: .metric,
+                            date: date,
+                            values: values,
+                            value: value(&random)
+                        )
+                    )
                 }
             }
         }
 
-        telemetry(Self.counters, category: Telemetry.Export.counter.rawValue, perDay: 6) {
-            .int($0.int(in: 0...40))
+        telemetry(Self.counters, category: Telemetry.Export.counter.rawValue, values: .int, perDay: 6) {
+            Double($0.int(in: 0...40))
         }
-        telemetry(["bytes_downloaded_mb"], category: Telemetry.Export.floatingCounter.rawValue, perDay: 6) {
-            .double($0.double(in: 0...12))
+        telemetry(["bytes_downloaded_mb"], category: Telemetry.Export.floatingCounter.rawValue, values: .double, perDay: 6) {
+            $0.double(in: 0...12)
         }
-        telemetry(["memory_usage_mb", "active_connections"], category: Telemetry.Export.meter.rawValue, perDay: 6) {
-            .double($0.double(in: 120...480))
+        telemetry(["memory_usage_mb", "active_connections"], category: Telemetry.Export.meter.rawValue, values: .double, perDay: 6) {
+            $0.double(in: 120...480)
         }
-        telemetry(Self.recorders, category: Telemetry.Export.recorder.rawValue, perDay: 6) {
-            .int($0.int(in: 200...9000))
+        telemetry(Self.recorders, category: Telemetry.Export.recorder.rawValue, values: .int, perDay: 6) {
+            Double($0.int(in: 200...9000))
         }
-        telemetry(Self.timers, category: Telemetry.Export.timer.rawValue, perDay: 6) {
-            .double($0.double(in: 0.04...0.32))
+        telemetry(Self.timers, category: Telemetry.Export.timer.rawValue, values: .double, perDay: 6) {
+            $0.double(in: 0.04...0.32)
         }
 
         for name in Self.counters + ["bytes_downloaded_mb"] {
             for day in stride(from: 40, through: 0, by: -20) {
                 samples.append(
                     DemoSample(
-                        name: name, category: ResetMarker.category, source: .metric, date: clock.momentDaysAgo(day),
-                        value: .int(random.int(in: 1...3))))
+                        name: name,
+                        category: ResetMarker.category,
+                        source: .metric,
+                        date: clock.momentDaysAgo(day),
+                        value: Double(random.int(in: 1...3))
+                    )
+                )
             }
         }
 
         for endpoint in Self.endpoints {
             samples += Self.histogram(
-                name: endpoint, categories: LatencyBuckets.categories, center: 0.45, scale: 180,
-                clock: clock, random: &random)
+                name: endpoint,
+                categories: LatencyBuckets.categories,
+                center: 0.45,
+                scale: 180,
+                clock: clock,
+                random: &random
+            )
             samples += Self.statuses(endpoint: endpoint, clock: clock, random: &random)
         }
 
         for name in Self.timers {
             samples += Self.histogram(
-                name: name, categories: LatencyBuckets.categories, center: 0.38, scale: 140,
-                clock: clock, random: &random)
+                name: name,
+                categories: LatencyBuckets.categories,
+                center: 0.38,
+                scale: 140,
+                clock: clock,
+                random: &random
+            )
         }
         for name in Self.recorders {
             samples += Self.histogram(
-                name: name, categories: RecorderBuckets.categories, center: 0.55, scale: 140,
-                clock: clock, random: &random)
+                name: name,
+                categories: RecorderBuckets.categories,
+                center: 0.55,
+                scale: 140,
+                clock: clock,
+                random: &random
+            )
         }
 
         self.samples = samples
@@ -107,8 +135,13 @@ struct DemoMetrics {
 
                 samples.append(
                     DemoSample(
-                        name: name, category: category, source: .metric, date: clock.momentDaysAgo(day),
-                        value: .int(Int((weight * scale * random.double(in: 0.85...1.15)).rounded()))))
+                        name: name,
+                        category: category,
+                        source: .metric,
+                        date: clock.momentDaysAgo(day),
+                        value: (weight * scale * random.double(in: 0.85...1.15)).rounded()
+                    )
+                )
             }
         }
         return samples
@@ -123,8 +156,13 @@ struct DemoMetrics {
             for day in stride(from: 56, through: 0, by: -7) {
                 samples.append(
                     DemoSample(
-                        name: endpoint, category: category, source: .metric, date: clock.momentDaysAgo(day),
-                        value: .int(Int((weight * 600).rounded()) + random.int(in: 0...2))))
+                        name: endpoint,
+                        category: category,
+                        source: .metric,
+                        date: clock.momentDaysAgo(day),
+                        value: (weight * 600).rounded() + Double(random.int(in: 0...2))
+                    )
+                )
             }
         }
         return samples

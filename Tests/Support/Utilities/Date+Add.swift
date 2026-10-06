@@ -10,7 +10,7 @@ import Scout
 
 extension Date {
     func addingHour(_ value: Int = 1) -> Date {
-        adding(.hour, value: value)
+        Calendar.utc.date(byAdding: .hour, value: value, to: self)!
     }
 
     mutating func addDay(_ value: Int = 1) {

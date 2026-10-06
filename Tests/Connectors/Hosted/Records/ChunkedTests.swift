@@ -7,7 +7,7 @@
 
 import Testing
 
-@testable import Scout
+@testable import HostedConnector
 
 struct ChunkedTests {
     @Test("Empty array returns empty result")

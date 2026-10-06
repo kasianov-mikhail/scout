@@ -32,8 +32,8 @@ struct NativeSeriesTests {
         let series = try await database.eventSeries(matching: EventSeriesQuery(bucket: .hour, range: range))
 
         let purchase = try #require(series.first { $0.name == "purchase" })
-        #expect(purchase.points.map(\.value) == [.int(2)])
-        #expect(purchase.points.first?.date == TestDate.reference.addingTimeInterval(10 * .hour).millisecondsSince1970)
+        #expect(purchase.points.map(\.value) == [2])
+        #expect(purchase.points.first?.date == TestDate.reference.addingTimeInterval(10 * .hour))
     }
 
     @Test("A name filter narrows the series")
@@ -61,8 +61,8 @@ struct NativeSeriesTests {
 
         let latency = try #require(series.first)
         #expect(latency.category == "timer")
-        #expect(latency.points.map(\.value) == [.int(7)])
-        #expect(latency.points.first?.date == TestDate.reference.millisecondsSince1970)
+        #expect(latency.points.map(\.value) == [7])
+        #expect(latency.points.first?.date == TestDate.reference)
     }
 
     @Test("Session series carry the app version")
@@ -71,13 +71,13 @@ struct NativeSeriesTests {
         try await database.write(record: makeSessionRecord(id: "s-2", device: "b", day: 0))
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(counter: .sessions, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery.sessions(bucket: .day, byVersion: true, range: range)
         )
 
         let sessions = try #require(series.first)
         #expect(sessions.name == SessionEntry.recordType)
         #expect(sessions.version == "1.2.0")
-        #expect(sessions.points.map(\.value) == [.int(2)])
+        #expect(sessions.points.map(\.value) == [2])
     }
 
     @Test("Hangs aggregate into a per-version series")
@@ -90,13 +90,13 @@ struct NativeSeriesTests {
         try await database.write(record: hang)
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(counter: .hangs, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery.hangs(bucket: .day, byVersion: true, range: range)
         )
 
         let hangs = try #require(series.first)
         #expect(hangs.name == HangEntry.recordType)
         #expect(hangs.version == "1.2.0")
-        #expect(hangs.points.map(\.value) == [.int(1)])
+        #expect(hangs.points.map(\.value) == [1])
     }
 
     @Test("Version installs and crashed installs synthesize from raw records")
@@ -119,15 +119,15 @@ struct NativeSeriesTests {
         }
 
         let installs = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(counter: .installs, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery.installs(bucket: .day, byVersion: true, range: range)
         )
-        #expect(installs.first?.points.map(\.value) == [.int(1)])
+        #expect(installs.first?.points.map(\.value) == [1])
         #expect(installs.first?.version == "1.2.0")
 
         let crashed = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(counter: .firstCrashes, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery.firstCrashes(bucket: .day, byVersion: true, range: range)
         )
-        #expect(crashed.first?.points.map(\.value) == [.int(2)])
+        #expect(crashed.first?.points.map(\.value) == [2])
         #expect(crashed.first?.version == "1.2.0")
     }
 
@@ -144,7 +144,7 @@ struct NativeSeriesTests {
         let event = try #require(series.first)
         #expect(series.count == 1)
         #expect(event.name == SessionEntry.recordType)
-        #expect(event.points.map(\.value) == [.int(2)])
+        #expect(event.points.map(\.value) == [2])
     }
 
     @Test("An explicit lifecycle source ignores a same-named custom event")
@@ -154,8 +154,7 @@ struct NativeSeriesTests {
         try await database.write(record: makeSessionRecord(id: "s-2", device: "b", day: 0))
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(
-                counter: .sessions,
+            matching: LifecycleSeriesQuery.sessions(
                 bucket: .day,
                 byVersion: true,
                 range: range
@@ -165,7 +164,7 @@ struct NativeSeriesTests {
         let sessions = try #require(series.first)
         #expect(series.count == 1)
         #expect(sessions.version == "1.2.0")
-        #expect(sessions.points.map(\.value) == [.int(2)])
+        #expect(sessions.points.map(\.value) == [2])
     }
 
     @Test("Double metric series carry name and category")
@@ -182,7 +181,7 @@ struct NativeSeriesTests {
         let latency = try #require(series.first { $0.name == "latency" })
 
         #expect(latency.category == "recorder")
-        #expect(latency.points.map(\.value) == [.double(1.5)])
+        #expect(latency.points.map(\.value) == [1.5])
     }
 
     @Test("A pipe in the category keeps the metric in its own series")
@@ -199,6 +198,6 @@ struct NativeSeriesTests {
         let renew = try #require(series.first { $0.name == "renew" })
 
         #expect(renew.category == "billing|eu")
-        #expect(renew.points.map(\.value) == [.double(2.5)])
+        #expect(renew.points.map(\.value) == [2.5])
     }
 }

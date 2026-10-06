@@ -17,7 +17,7 @@ final class CachedSeriesPerformanceTests: XCTestCase {
         let fetched = makeSeries(keys: 120, points: 120, from: 400)
 
         measure {
-            _ = [MetricSeries](cached: cached, fetched: fetched)
+            _ = MetricSeries.combined(cached: cached, fetched: fetched)
         }
     }
 
@@ -28,7 +28,7 @@ final class CachedSeriesPerformanceTests: XCTestCase {
                 category: nil,
                 version: "1.0.\(key)",
                 points: (0..<points).map { index in
-                    MetricSeriesPoint(date: (start + Int64(index)) * 3_600_000, value: .int(index))
+                    MetricSeriesPoint(date: Date(millisecondsSince1970: (start + Int64(index)) * 3_600_000), value: Double(index))
                 }
             )
         }
@@ -90,8 +90,7 @@ final class CachedDatabasePerformanceTests: XCTestCase {
             cache: try makeRecordCache(),
             now: { now }
         )
-        let query = LifecycleSeriesQuery(
-            counter: .sessions,
+        let query = LifecycleSeriesQuery.sessions(
             byVersion: true,
             range: Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 4_000_000)
         )
@@ -110,7 +109,7 @@ final class CachedDatabasePerformanceTests: XCTestCase {
                 category: nil,
                 version: "1.0.\(version)",
                 points: (0..<points).map { index in
-                    MetricSeriesPoint(date: Int64(index) * 3_600 * 1_000, value: .int(index))
+                    MetricSeriesPoint(date: Date(millisecondsSince1970: Int64(index) * 3_600 * 1_000), value: Double(index))
                 }
             )
         }

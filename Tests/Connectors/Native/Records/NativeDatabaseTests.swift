@@ -57,7 +57,7 @@ struct NativeDatabaseTests {
         #expect(first.records.map(\.recordID) == ["e-2", "e-0"])
 
         let cursor = try #require(first.cursor)
-        let rest = try await database.readMore(from: cursor, fields: nil)
+        let rest = try await cursor.next(nil)
         #expect(rest.records.map(\.recordID) == ["e-1"])
         #expect(rest.cursor == nil)
     }
@@ -78,7 +78,7 @@ struct NativeDatabaseTests {
         #expect(chunk.records.count == 2)
         ids += chunk.records.map(\.recordID)
         while let cursor = chunk.cursor {
-            chunk = try await database.readMore(from: cursor, fields: Session.desiredKeys)
+            chunk = try await cursor.next(Session.desiredKeys)
             #expect(chunk.records.count <= 2)
             ids += chunk.records.map(\.recordID)
         }
@@ -104,7 +104,7 @@ struct NativeDatabaseTests {
         #expect(first.records.first?.recordID == "e-\(defaultRecordPageSize)")
 
         let cursor = try #require(first.cursor)
-        let rest = try await database.readMore(from: cursor, fields: Event.desiredKeys)
+        let rest = try await cursor.next(Event.desiredKeys)
         #expect(rest.records.map(\.recordID) == ["e-0"])
         #expect(rest.cursor == nil)
     }
@@ -119,7 +119,7 @@ struct NativeDatabaseTests {
         #expect(first.records.map(\.recordID) == ["s-2", "s-1"])
 
         let cursor = try #require(first.cursor)
-        let rest = try await database.readMore(from: cursor, fields: nil)
+        let rest = try await cursor.next(nil)
         #expect(rest.records.map(\.recordID) == ["s-0"])
     }
 
@@ -148,13 +148,20 @@ struct NativeDatabaseTests {
         try await database.write(record: foreign)
 
         let range = TestDate.reference..<TestDate.reference.addingTimeInterval(.day)
-        let series = try await database.metricSeries(Int.self, category: "timer", in: range)
+        let series = try await database.metricSeries(
+            matching: MetricSeriesQuery(
+                category: "timer",
+                values: .int,
+                bucket: .hour,
+                range: range
+            )
+        )
 
         #expect(Set(series.map(\.name)) == ["checkout", "signup"])
         let checkout = try #require(series.first { $0.name == "checkout" })
-        #expect(checkout.points.map(\.value) == [.int(7)])
+        #expect(checkout.points.map(\.value) == [7])
         #expect(
-            checkout.points.map(\.date) == [TestDate.reference.addingTimeInterval(10 * .hour).millisecondsSince1970])
+            checkout.points.map(\.date) == [TestDate.reference.addingTimeInterval(10 * .hour)])
     }
 
     @Test("Session records round-trip their captured environment")

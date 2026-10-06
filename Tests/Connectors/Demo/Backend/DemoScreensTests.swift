@@ -59,7 +59,7 @@ import Testing
     }
 
     @Test func homeSessionStatLightsUp() async throws {
-        let points = try await StatProvider(subject: .lifecycle(.sessions)).fetch(in: database)
+        let points = try await StatProvider(subject: .sessions).fetch(in: database)
         #expect(points.count > 0)
     }
 

@@ -8,6 +8,7 @@
 import Foundation
 import Testing
 
+@testable import ConnectorSupport
 @testable import Scout
 @testable import Support
 
@@ -18,13 +19,13 @@ struct ActivityPointTests {
         let start = TestDate.reference
         let range = start..<start.addingTimeInterval(42 * .day)
 
-        var visits: [ActivityVisit] = []
+        var visits: [DatedID] = []
         for dayOffset in -35..<42 {
             let day = start.addingTimeInterval(TimeInterval(dayOffset) * .day)
             let activeUsers = ((dayOffset * 7 + 3) % 11 + 11) % 11
             for index in 0...activeUsers {
                 let user = "user-\((dayOffset * 5 + index) % 17)"
-                visits.append(ActivityVisit(date: day.addingTimeInterval(TimeInterval(index) * .hour), user: user))
+                visits.append(DatedID(date: day.addingTimeInterval(TimeInterval(index) * .hour), id: user))
             }
         }
 
@@ -40,7 +41,7 @@ struct ActivityPointTests {
         let start = TestDate.reference
         let range = start..<start.addingTimeInterval(10 * .day)
         let visits = (0..<10).map {
-            ActivityVisit(date: start.addingTimeInterval(TimeInterval($0) * .day), user: "user-\($0)")
+            DatedID(date: start.addingTimeInterval(TimeInterval($0) * .day), id: "user-\($0)")
         }
 
         let points = ActivityPoint.points(visits: visits, in: range)
@@ -52,10 +53,10 @@ struct ActivityPointTests {
         [point.date, Int64(point.dau), Int64(point.wau), Int64(point.mau)]
     }
 
-    private static func bruteForce(visits: [ActivityVisit], in range: Range<Date>) -> [ActivityPoint] {
+    private static func bruteForce(visits: [DatedID], in range: Range<Date>) -> [ActivityPoint] {
         var users: [Date: Set<String>] = [:]
         for visit in visits {
-            users[visit.date.startOfDay, default: []].insert(visit.user)
+            users[visit.date.startOfDay, default: []].insert(visit.id)
         }
 
         func distinctUsers(ending day: Date, days: Int) -> Int {

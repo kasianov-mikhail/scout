@@ -69,7 +69,7 @@ struct HostedQueryEncodingTests {
     @Test("A lifecycle query is sent with the lifecycle source and the counter name")
     func lifecycleSourceIsEncoded() throws {
         let url = try #require(
-            database.seriesEndpoint(for: LifecycleSeriesQuery(counter: .firstCrashes, range: day..<day.addingDay()))
+            database.seriesEndpoint(for: LifecycleSeriesQuery.firstCrashes(range: day..<day.addingDay()))
         )
 
         #expect(queryItems(of: url)["source"] == "lifecycle")

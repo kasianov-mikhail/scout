@@ -6,22 +6,13 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-
-package struct ActivityVisit {
-    package let date: Date
-    package let user: String
-
-    package init(date: Date, user: String) {
-        self.date = date
-        self.user = user
-    }
-}
+import Scout
 
 extension ActivityPoint {
-    package static func points(visits: [ActivityVisit], in range: Range<Date>) -> [ActivityPoint] {
+    package static func points(visits: [DatedID], in range: Range<Date>) -> [ActivityPoint] {
         var users: [Date: Set<String>] = [:]
         for visit in visits {
-            users[visit.date.startOfDay, default: []].insert(visit.user)
+            users[visit.date.startOfDay, default: []].insert(visit.id)
         }
 
         let firstDay = range.lowerBound.startOfDay

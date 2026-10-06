@@ -33,22 +33,22 @@ import Testing
     }
 
     @Test func lifecycleSeriesPopulateWithAndWithoutVersions() async throws {
-        for counter in [LifecycleCounter.sessions, .crashes, .hangs] {
+        for name in [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType] {
             let byVersion = try await database.lifecycleSeries(
-                matching: LifecycleSeriesQuery(counter: counter, bucket: .day, byVersion: true, range: range))
-            #expect(byVersion.count > 0, "expected by-version \(counter.name) series")
+                matching: LifecycleSeriesQuery(name: name, bucket: .day, byVersion: true, range: range))
+            #expect(byVersion.count > 0, "expected by-version \(name) series")
             #expect(byVersion.allSatisfy { $0.version != nil })
 
-            let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(counter: counter, range: range))
-            #expect(aggregate.count == 1, "expected one aggregate \(counter.name) series")
+            let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: name, range: range))
+            #expect(aggregate.count == 1, "expected one aggregate \(name) series")
             #expect(aggregate.allSatisfy { $0.version == nil })
         }
     }
 
     @Test func aggregateSeriesEqualsSumOfVersions() async throws {
         let byVersion = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(counter: .sessions, byVersion: true, range: range))
-        let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(counter: .sessions, range: range))
+            matching: LifecycleSeriesQuery.sessions(byVersion: true, range: range))
+        let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery.sessions(range: range))
 
         #expect(byVersion.total == aggregate.total)
         #expect(try await aggregate.total == records(Session.self).count)
@@ -82,7 +82,7 @@ import Testing
             Double.self, category: Telemetry.Export.timer.rawValue, in: range)
 
         #expect(series.count > 0)
-        let values = series.flatMap(\.points).map(\.value.doubleValue)
+        let values = series.flatMap(\.points).map(\.value)
         #expect(values.allSatisfy { $0 > 0 && $0 < 10 }, "timer values out of range: \(values.max() ?? 0)")
     }
 
@@ -114,7 +114,7 @@ import Testing
         var total = chunk.records.count
 
         while let cursor = chunk.cursor {
-            chunk = try await database.readMore(from: cursor, fields: nil)
+            chunk = try await cursor.next(nil)
             total += chunk.records.count
             pages += 1
         }
@@ -194,6 +194,6 @@ import Testing
 
 extension [MetricSeries] {
     fileprivate var total: Int {
-        flatMap(\.points).reduce(0) { $0 + Int($1.value.doubleValue) }
+        flatMap(\.points).reduce(0) { $0 + Int($1.value) }
     }
 }

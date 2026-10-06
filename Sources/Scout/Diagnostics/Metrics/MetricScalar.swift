@@ -9,16 +9,16 @@ import CoreData
 
 package protocol MetricScalar: AdditiveArithmetic & Comparable & Hashable & Sendable & RecordValueConvertible {
     associatedtype Object: MetricsValued where Object.Value == Self
-    static var seriesValues: SeriesQuery.Values { get }
+    static var seriesValues: MetricSeriesQuery.Values { get }
     init(_ value: Double)
 }
 
 extension Int: MetricScalar {
     package typealias Object = IntMetricsEntry
-    static package var seriesValues: SeriesQuery.Values { .int }
+    static package var seriesValues: MetricSeriesQuery.Values { .int }
 }
 
 extension Double: MetricScalar {
     package typealias Object = DoubleMetricsEntry
-    static package var seriesValues: SeriesQuery.Values { .double }
+    static package var seriesValues: MetricSeriesQuery.Values { .double }
 }

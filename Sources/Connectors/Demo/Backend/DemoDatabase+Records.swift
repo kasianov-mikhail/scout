@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import Scout
 
@@ -17,6 +18,6 @@ extension DemoDatabase: RecordReader {
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        RecordChunk(records: records, query: query, limit: limit)
+        RecordChunk.page(of: records.matching(query), limit: limit)
     }
 }

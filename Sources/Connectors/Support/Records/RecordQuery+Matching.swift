@@ -6,26 +6,19 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
-extension RecordChunk {
-    package init(records: [Record], query: RecordQuery, limit: Int) {
-        self = Self.page(of: records.filter { query.matches($0) }.sorted(by: query.ordering), limit: limit, after: 0)
-    }
-
-    private static func page(of matches: [Record], limit: Int, after offset: Int) -> RecordChunk {
-        let page = matches.dropFirst(offset).prefix(limit)
-        let next = offset + page.count
-
-        return RecordChunk(
-            records: Array(page),
-            cursor: next < matches.count
-                ? RecordCursor { _ in Self.page(of: matches, limit: limit, after: next) }
-                : nil
-        )
+extension [Record] {
+    package func matching(_ query: RecordQuery) -> [Record] {
+        filter(query.matches).sorted(by: query.ordering)
     }
 }
 
 extension RecordQuery {
+    fileprivate func matches(_ record: Record) -> Bool {
+        record.recordType == recordType.recordType && filters.allSatisfy { $0.matches(record.fields) }
+    }
+
     fileprivate var ordering: (Record, Record) -> Bool {
         { lhs, rhs in
             for key in effectiveSort {
@@ -50,12 +43,18 @@ extension RecordValue {
         case (_, nil):
             return .orderedDescending
         case (.string(let lhs), .string(let rhs)):
-            return lhs < rhs ? .orderedAscending : lhs == rhs ? .orderedSame : .orderedDescending
+            return lhs.compared(to: rhs)
         case (let lhs?, let rhs?):
             guard let lhs = lhs.value, let rhs = rhs.value else {
                 return .orderedSame
             }
-            return lhs < rhs ? .orderedAscending : lhs == rhs ? .orderedSame : .orderedDescending
+            return lhs.compared(to: rhs)
         }
+    }
+}
+
+extension Comparable {
+    fileprivate func compared(to other: Self) -> ComparisonResult {
+        self < other ? .orderedAscending : self == other ? .orderedSame : .orderedDescending
     }
 }
