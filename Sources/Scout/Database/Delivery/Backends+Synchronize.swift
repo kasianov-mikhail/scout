@@ -9,25 +9,23 @@
 
 typealias Synchronize = @MainActor () async throws -> Void
 
-extension Dispatcher {
+extension [Backend] {
     @MainActor
-    func synchronize(backends: [Backend]) async throws {
+    func synchronize(using dispatcher: Dispatcher) async throws {
         let context = persistentContainer.viewContext
 
-        try await performEnsuringBackground {
+        try await dispatcher.performEnsuringBackground {
             try await persistentContainer.performBackgroundTask { context in
                 context.mergePolicy = NSMergePolicy.scout
-                try SyncableEntry.plan(backends: backends, in: context)
-                try DateEntry.cleanup(backends: backends, in: context)
+                try SyncableEntry.plan(backends: self, in: context)
+                try DateEntry.cleanup(backends: self, in: context)
             }
 
             await withTaskGroup(of: Void.self) { group in
-                for backend in await backends.available {
-                    let sender = RecordSender(backend: backend)
-
+                for backend in await available {
                     for type in SyncableEntry.deliverableTypes {
                         group.addTask {
-                            await sender.deliver(type, in: context)
+                            await backend.deliver(type, in: context)
                         }
                     }
                 }
@@ -36,7 +34,7 @@ extension Dispatcher {
 
             try await persistentContainer.performBackgroundTask { context in
                 context.mergePolicy = NSMergePolicy.scout
-                try SyncableEntry.purge(to: Set(backends.map(\.id)), in: context)
+                try SyncableEntry.purge(to: Set(map(\.id)), in: context)
                 try context.save()
             }
         }
