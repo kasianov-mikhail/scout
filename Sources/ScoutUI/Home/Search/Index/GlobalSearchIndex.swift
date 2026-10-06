@@ -31,11 +31,6 @@ struct GlobalSearchIndex {
 
     private static let endpointCategories = Set(LatencyBuckets.categories + StatusBuckets.categories)
 
-    private static let reservedNames = MetricSeries.lifecycleNames.union([
-        CrashEntry.recordType,
-        HangEntry.recordType,
-    ])
-
     func hits(matching query: String) -> [GlobalSearchHit] {
         let text = query.trimmingCharacters(in: .whitespaces)
 
@@ -51,7 +46,7 @@ struct GlobalSearchIndex {
             Set(series.filter(predicate).map(\.name)).filter(matches).sorted()
         }
 
-        let events = names { $0.category == nil && !Self.reservedNames.contains($0.name) }
+        let events = names { $0.category == nil }
             .map { GlobalSearchHit.event(name: $0) }
 
         let metrics = Self.telemetries.flatMap { telemetry in

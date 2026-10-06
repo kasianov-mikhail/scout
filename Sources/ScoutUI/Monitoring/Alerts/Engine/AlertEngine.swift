@@ -21,7 +21,7 @@ final class AlertEngine {
         self.notifier = notifier
     }
 
-    func statuses(in database: DatabaseReader) async throws -> [AlertStatus] {
+    func statuses(in database: SeriesReader) async throws -> [AlertStatus] {
         let now = Date()
         let rules = try registry.rules()
         let readings = try await readings(for: Set(rules.map(\.metric)), in: database)
@@ -40,11 +40,11 @@ final class AlertEngine {
         }
     }
 
-    private func readings(for metrics: Set<AlertMetric>, in database: DatabaseReader) async throws -> MetricReadings {
+    private func readings(for metrics: Set<AlertMetric>, in database: SeriesReader) async throws -> MetricReadings {
         try await withThrowingTaskGroup(of: (AlertMetric, MetricReading).self) { group in
             for metric in metrics {
                 group.addTask {
-                    (metric, try await metric.reading(in: database, period: AlertScale.trailing))
+                    try await (metric, metric.reading(in: database, period: AlertScale.trailing))
                 }
             }
 
@@ -57,7 +57,7 @@ final class AlertEngine {
     }
 
     @discardableResult
-    func run(in database: DatabaseReader) async throws -> [AlertStatus] {
+    func run(in database: SeriesReader) async throws -> [AlertStatus] {
         let statuses = try await statuses(in: database)
 
         for status in statuses {

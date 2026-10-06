@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class AlertProvider: ObservableObject, Provider {
+final class AlertProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[AlertStatus]>?
 
     @Published private(set) var notificationsDenied = false
@@ -56,7 +56,7 @@ final class AlertProvider: ObservableObject, Provider {
         }
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [AlertStatus] {
+    func fetch(in database: SeriesReader) async throws -> [AlertStatus] {
         try await AlertEngine(registry: registry, notifier: notifier).statuses(in: database)
     }
 }

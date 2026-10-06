@@ -18,8 +18,13 @@ protocol Incident: Identifiable, Comparable, SessionContext {
     var date: Date? { get }
 }
 
-extension Crash: Incident {}
-extension Hang: Incident {}
+extension Crash: Incident {
+    static let kind = IncidentKind.crash
+}
+
+extension Hang: Incident {
+    static let kind = IncidentKind.hang
+}
 
 struct IncidentGroup<Element: Incident>: Identifiable {
     let records: [Element]

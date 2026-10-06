@@ -9,21 +9,31 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class ReleaseHealthProvider: ObservableObject, Provider {
+final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[ReleaseHealth]>?
 
     init(_ result: ProviderResult<Output>? = nil) {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [ReleaseHealth] {
-        let range = Calendar.utc.defaultRange
+    func fetch(in database: SeriesReader) async throws -> [ReleaseHealth] {
+        let range = Date().trailingYear
 
-        async let sessions = database.series(matching: query(name: SessionEntry.recordType, in: range))
-        async let crashes = database.series(matching: query(name: CrashEntry.recordType, in: range))
-        async let hangs = database.series(matching: query(name: HangEntry.recordType, in: range))
-        async let installs = database.series(matching: query(name: VersionEntry.recordType, in: range))
-        async let crashedInstalls = database.series(matching: query(name: MarkerEntry.crashName, in: range))
+        async let sessions = database.lifecycleSeries(
+            matching: .sessions(bucket: .day, byVersion: true, range: range)
+        )
+        async let crashes = database.lifecycleSeries(
+            matching: .crashes(bucket: .day, byVersion: true, range: range)
+        )
+        async let hangs = database.lifecycleSeries(
+            matching: .hangs(bucket: .day, byVersion: true, range: range)
+        )
+        async let installs = database.lifecycleSeries(
+            matching: .installs(bucket: .day, byVersion: true, range: range)
+        )
+        async let crashedInstalls = database.lifecycleSeries(
+            matching: .firstCrashes(bucket: .day, byVersion: true, range: range)
+        )
 
         return try await ReleaseSeries(
             sessions: sessions,
@@ -33,9 +43,5 @@ final class ReleaseHealthProvider: ObservableObject, Provider {
             crashedInstalls: crashedInstalls
         )
         .report(in: range)
-    }
-
-    private func query(name: String, in range: Range<Date>) -> SeriesQuery {
-        SeriesQuery(name: name, bucket: .day, byVersion: true, source: .lifecycle, range: range)
     }
 }

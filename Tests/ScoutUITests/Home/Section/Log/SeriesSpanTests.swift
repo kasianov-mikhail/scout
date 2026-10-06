@@ -119,7 +119,7 @@ struct SeriesSpanTests {
         MetricSeries(
             name: name,
             category: category,
-            points: [MetricSeriesPoint(date: date.millisecondsSince1970, value: .int(value))]
+            points: [MetricSeriesPoint(date: date, value: Double(value))]
         )
     }
 
@@ -127,7 +127,7 @@ struct SeriesSpanTests {
         MetricSeries(
             name: name,
             category: category,
-            points: [MetricSeriesPoint(date: date.millisecondsSince1970, value: .double(value))]
+            points: [MetricSeriesPoint(date: date, value: value)]
         )
     }
 }

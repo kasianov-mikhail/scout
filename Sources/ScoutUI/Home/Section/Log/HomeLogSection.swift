@@ -23,8 +23,13 @@ struct HomeLogSection: View {
             AllButton { path.append(.log) }
         }
         .task(id: period) {
-            log.period = period
             log.visits = visits
+
+            guard log.period != period else {
+                return
+            }
+
+            log.period = period
             await log.fetchIfNeeded(in: database)
         }
         .onChange(of: visits) { log.visits = $0 }

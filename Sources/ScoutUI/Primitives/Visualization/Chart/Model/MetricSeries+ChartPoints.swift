@@ -12,8 +12,8 @@ extension MetricSeries {
     func chartPoints<T: ChartNumeric>() -> [ChartPoint<T>] {
         points.map { point in
             ChartPoint(
-                date: Date(millisecondsSince1970: point.date),
-                value: T(point.value.doubleValue)
+                date: point.date,
+                value: T(point.value)
             )
         }
     }

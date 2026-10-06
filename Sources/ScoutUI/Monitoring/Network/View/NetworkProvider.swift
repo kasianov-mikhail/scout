@@ -10,19 +10,19 @@ import Foundation
 import Scout
 
 @MainActor
-final class NetworkProvider: ObservableObject, Provider {
+final class NetworkProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<NetworkReport>?
 
     init(_ result: ProviderResult<Output>? = nil) {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> NetworkReport {
+    func fetch(in database: SeriesReader) async throws -> NetworkReport {
         let categories = LatencyBuckets.categories + StatusBuckets.categories
         let series = try await database.metricSeries(
             Int.self,
             categories: categories,
-            in: Calendar.utc.defaultRange
+            in: Date().trailingYear
         )
         return NetworkReport(series: series)
     }

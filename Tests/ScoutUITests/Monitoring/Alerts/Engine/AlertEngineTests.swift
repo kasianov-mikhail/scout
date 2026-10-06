@@ -145,8 +145,8 @@ struct AlertEngineTests {
             category: nil,
             points: counts.map {
                 MetricSeriesPoint(
-                    date: horizon.addingHour(-$0.hoursAgo).millisecondsSince1970,
-                    value: .int($0.count)
+                    date: horizon.addingHour(-$0.hoursAgo),
+                    value: Double($0.count)
                 )
             }
         )

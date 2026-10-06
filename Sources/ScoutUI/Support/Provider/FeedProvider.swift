@@ -28,7 +28,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     @discardableResult
-    func fetchLatest(matching query: RecordQuery, in database: DatabaseReader) async -> Bool {
+    func fetchLatest(matching query: RecordQuery, in database: RecordReader) async -> Bool {
         let generation = generation
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
@@ -53,7 +53,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     @discardableResult
-    func fetchAll(matching query: RecordQuery, in database: DatabaseReader) async -> Bool {
+    func fetchAll(matching query: RecordQuery, in database: RecordReader) async -> Bool {
         let generation = generation
         do {
             let results: [Element] = try await database.readAll(matching: query, fields: Element.desiredKeys)
@@ -74,7 +74,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         }
     }
 
-    func fetchAgain(matching query: RecordQuery, in database: DatabaseReader) async {
+    func fetchAgain(matching query: RecordQuery, in database: RecordReader) async {
         let generation = generation
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
@@ -95,10 +95,10 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     @discardableResult
-    func fetchMore(cursor: RecordCursor, in database: DatabaseReader) async -> Bool {
+    func fetchMore(cursor: RecordCursor, in database: RecordReader) async -> Bool {
         let generation = generation
         do {
-            let results = try await database.readMore(from: cursor, fields: nil)
+            let results = try await cursor.next(nil)
             guard generation == self.generation else {
                 return true
             }

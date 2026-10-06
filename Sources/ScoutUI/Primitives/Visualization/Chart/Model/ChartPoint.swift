@@ -24,7 +24,7 @@ extension ChartPoint: Comparable {
 
 extension ChartPoint: Fixture where T == Int {
     static var samples: [ChartPoint<Int>] {
-        let base = Calendar.utc.defaultRange.lowerBound
+        let base = Date().trailingYear.lowerBound
         return (1...372).map { day in
             ChartPoint(
                 date: base.addingTimeInterval(TimeInterval(day - 1) * .day + 12 * .hour),

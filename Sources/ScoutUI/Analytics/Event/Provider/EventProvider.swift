@@ -18,12 +18,12 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
         super.init(records)
     }
 
-    func fetch(for filter: EventQuery, in database: DatabaseReader) async {
+    func fetch(for filter: EventQuery, in database: RecordReader) async {
         await fetchAgain(matching: query(for: filter), in: database)
     }
 
     @discardableResult
-    func fetchLatest(for filter: EventQuery, in database: DatabaseReader) async -> Bool {
+    func fetchLatest(for filter: EventQuery, in database: RecordReader) async -> Bool {
         await fetchLatest(matching: query(for: filter), in: database)
     }
 

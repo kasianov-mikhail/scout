@@ -62,3 +62,33 @@ extension Provider {
         }
     }
 }
+
+protocol SeriesProvider: Provider {
+    func fetch(in database: SeriesReader) async throws -> Output
+}
+
+extension SeriesProvider {
+    func fetch(in database: DatabaseReader) async throws -> Output {
+        try await fetch(in: database as SeriesReader)
+    }
+}
+
+protocol AudienceProvider: Provider {
+    func fetch(in database: AudienceReader) async throws -> Output
+}
+
+extension AudienceProvider {
+    func fetch(in database: DatabaseReader) async throws -> Output {
+        try await fetch(in: database as AudienceReader)
+    }
+}
+
+protocol RecordProvider: Provider {
+    func fetch(in database: RecordReader) async throws -> Output
+}
+
+extension RecordProvider {
+    func fetch(in database: DatabaseReader) async throws -> Output {
+        try await fetch(in: database as RecordReader)
+    }
+}

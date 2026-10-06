@@ -25,14 +25,14 @@ struct ResetMarkerProviderTests {
                 name: "api_calls",
                 category: ResetMarker.category,
                 points: [
-                    MetricSeriesPoint(date: first.millisecondsSince1970, value: .int(1)),
-                    MetricSeriesPoint(date: second.millisecondsSince1970, value: .int(1)),
+                    MetricSeriesPoint(date: first, value: 1),
+                    MetricSeriesPoint(date: second, value: 1),
                 ]
             ),
             MetricSeries(
                 name: "errors",
                 category: ResetMarker.category,
-                points: [MetricSeriesPoint(date: foreign.millisecondsSince1970, value: .int(1))]
+                points: [MetricSeriesPoint(date: foreign, value: 1)]
             ),
         ])
     }

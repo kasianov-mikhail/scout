@@ -10,7 +10,7 @@ import Foundation
 import Scout
 
 @MainActor
-final class ResetMarkerProvider: ObservableObject, Provider {
+final class ResetMarkerProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[Date]>?
 
     private let name: String
@@ -21,20 +21,20 @@ final class ResetMarkerProvider: ObservableObject, Provider {
         self.isEnabled = isEnabled
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [Date] {
+    func fetch(in database: SeriesReader) async throws -> [Date] {
         guard isEnabled else { return [] }
 
         let series = try await database.metricSeries(
             Int.self,
             category: ResetMarker.category,
-            in: Calendar.utc.defaultRange
+            in: Date().trailingYear
         )
 
         return
             series
             .filter { $0.name == name }
             .flatMap(\.points)
-            .map { Date(millisecondsSince1970: $0.date) }
+            .map(\.date)
             .sorted()
     }
 

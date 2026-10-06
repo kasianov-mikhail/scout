@@ -40,8 +40,8 @@ extension MetricHistogram {
                 continue
             }
             for point in singleSeries.points {
-                let date = Date(millisecondsSince1970: point.date)
-                result[date, default: Self()].add(count: Int(point.value.doubleValue), at: index)
+                let date = point.date
+                result[date, default: Self()].add(count: Int(point.value), at: index)
             }
         }
 

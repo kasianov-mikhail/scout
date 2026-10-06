@@ -48,7 +48,7 @@ final class RailLane: ObservableObject {
     // Continuations of `loadMore` calls parked behind an in-flight load.
     private var waiters: [CheckedContinuation<Void, Never>] = []
 
-    func loadMore(in database: DatabaseReader) async throws -> (sessions: [Session], events: [Event]) {
+    func loadMore(in database: RecordReader) async throws -> (sessions: [Session], events: [Event]) {
         // Snapshot before parking: a reset that lands while this call waits
         // means the chunk now belongs to a newer timeline, not this caller.
         let generation = generation
@@ -112,11 +112,11 @@ final class RailLane: ObservableObject {
     // long tail of follow-up requests.
     private var chunkLimit: Int { eventName == nil ? 25 : 100 }
 
-    private func chunk(in database: DatabaseReader) async throws -> RecordChunk {
+    private func chunk(in database: RecordReader) async throws -> RecordChunk {
         guard let cursor else {
             return try await Session.fetchChunk(
                 installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, limit: chunkLimit, in: database)
         }
-        return try await database.readMore(from: cursor, fields: Session.desiredKeys)
+        return try await cursor.next(Session.desiredKeys)
     }
 }

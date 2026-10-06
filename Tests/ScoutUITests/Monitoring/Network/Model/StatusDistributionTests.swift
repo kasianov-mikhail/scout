@@ -58,7 +58,7 @@ struct StatusDistributionTests {
             name: "GET /v1/events",
             category: category,
             points: points.map { date, count in
-                MetricSeriesPoint(date: date.millisecondsSince1970, value: .int(count))
+                MetricSeriesPoint(date: date, value: Double(count))
             }
         )
     }

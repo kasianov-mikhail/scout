@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 
 @testable import Scout
@@ -59,10 +60,6 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         throw RecordNotFoundError()
     }
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields, limit: Int.max)
-    }
-
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         await gate?.wait()
         return chunk(matching: query, limit: limit)
@@ -73,29 +70,37 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         defer { lock.unlock() }
         counts[query.recordType.recordType, default: 0] += 1
 
-        let records = (storage[query.recordType.recordType] ?? []).filter { query.matches($0) }
-        return RecordChunk(records: Array(records.prefix(limit)), cursor: nil)
+        return RecordChunk.page(of: (storage[query.recordType.recordType] ?? []).matching(query), limit: limit)
     }
 
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
-        RecordChunk(records: [], cursor: nil)
-    }
-
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         await gate?.wait()
-        return seriesChunk(matching: query)
+        return seriesChunk(kind: .event, name: query.name, category: nil, byVersion: false, range: query.range)
     }
 
-    private func seriesChunk(matching query: SeriesQuery) -> [MetricSeries] {
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
+        await gate?.wait()
+        return seriesChunk(kind: .lifecycle, name: query.name, category: nil, byVersion: query.byVersion, range: query.range)
+    }
+
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
+        await gate?.wait()
+        return seriesChunk(kind: .metric, name: query.name, category: query.category, byVersion: false, range: query.range)
+    }
+
+    private func seriesChunk(kind: SeriesKind, name: String?, category: String?, byVersion: Bool, range: Range<Date>) -> [MetricSeries] {
         lock.lock()
         defer { lock.unlock() }
         seriesCalls += 1
 
         return
             seriesStorage
-            .filter { query.matches(name: $0.name, category: $0.category, version: $0.version) }
+            .filter { SeriesKind(series: $0) == kind }
+            .filter { name == nil || $0.name == name }
+            .filter { category == nil || $0.category == category }
+            .filter { !byVersion || $0.version != nil }
             .compactMap { series in
-                let points = series.points.filter { query.range.contains(Date(millisecondsSince1970: $0.date)) }
+                let points = series.points.filter { range.contains($0.date) }
                 guard points.count > 0 else {
                     return nil
                 }
@@ -223,5 +228,19 @@ extension Record {
 
     static func eventStub(name: String, sessionID: UUID, date: Date) -> Record {
         Event.stub(name: name, sessionID: sessionID, date: date).record
+    }
+}
+
+private enum SeriesKind {
+    case event, lifecycle, metric
+
+    init(series: MetricSeries) {
+        if series.category != nil {
+            self = .metric
+        } else if [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType, VersionEntry.recordType, MarkerEntry.crashName].contains(series.name) {
+            self = .lifecycle
+        } else {
+            self = .event
+        }
     }
 }

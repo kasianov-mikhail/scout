@@ -52,16 +52,6 @@ struct GlobalSearchIndexTests {
         #expect(hits.map(\.category) == [.events])
     }
 
-    @Test("Lifecycle and incident series are not events") func reservedNames() {
-        let index = makeIndex(series: [
-            makeSeries(SessionEntry.recordType),
-            makeSeries(CrashEntry.recordType),
-            makeSeries(HangEntry.recordType),
-        ])
-
-        #expect(index.hits(matching: "s").isEmpty)
-    }
-
     @Test("Metric series match by telemetry category") func metricMatch() {
         let index = makeIndex(series: [
             makeSeries("api_calls", category: Telemetry.Export.counter.rawValue),

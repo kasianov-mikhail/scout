@@ -78,8 +78,8 @@ struct ReleaseReportTests {
             category: nil,
             version: "5.0",
             points: [
-                MetricSeriesPoint(date: start.millisecondsSince1970, value: .int(2)),
-                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400).millisecondsSince1970, value: .int(3)),
+                MetricSeriesPoint(date: start, value: 2),
+                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400), value: 3),
             ]
         )
 
@@ -105,8 +105,8 @@ struct ReleaseReportTests {
             category: nil,
             version: "5.0",
             points: [
-                MetricSeriesPoint(date: start.millisecondsSince1970, value: .int(5)),
-                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400).millisecondsSince1970, value: .int(7)),
+                MetricSeriesPoint(date: start, value: 5),
+                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400), value: 7),
             ]
         )
 
@@ -122,7 +122,7 @@ struct ReleaseReportTests {
         let unversioned = MetricSeries(
             name: SessionEntry.recordType,
             category: nil,
-            points: [MetricSeriesPoint(date: range.lowerBound.millisecondsSince1970, value: .int(5))]
+            points: [MetricSeriesPoint(date: range.lowerBound, value: 5)]
         )
 
         let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [])
@@ -179,7 +179,7 @@ struct ReleaseReportTests {
             name: name,
             category: nil,
             version: version,
-            points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0).millisecondsSince1970, value: .int(count))]
+            points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: Double(count))]
         )
     }
 }

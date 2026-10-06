@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class AlertBacktestProvider: ObservableObject, Provider {
+final class AlertBacktestProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[Double]>?
 
     var metric: AlertMetric
@@ -18,7 +18,7 @@ final class AlertBacktestProvider: ObservableObject, Provider {
         self.metric = metric
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [Double] {
+    func fetch(in database: SeriesReader) async throws -> [Double] {
         let horizon = Date().startOfHour
 
         return try await metric.values(

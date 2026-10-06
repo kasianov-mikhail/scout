@@ -181,7 +181,7 @@ struct FeedProviderTests {
     }
 }
 
-private final class PagingDatabase: DatabaseReader, @unchecked Sendable {
+private final class PagingDatabase: RecordReader, @unchecked Sendable {
     private let page1: [Record]
     private let page2: [Record]
 
@@ -190,39 +190,29 @@ private final class PagingDatabase: DatabaseReader, @unchecked Sendable {
         self.page2 = page2
     }
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         let page2 = self.page2
         return RecordChunk(records: page1, cursor: RecordCursor { _ in RecordChunk(records: page2, cursor: nil) })
     }
 
-    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields)
-    }
-
     func lookup(recordName: String, fields: [String]?) async throws -> Record { throw RecordNotFoundError() }
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] { [] }
-    func activity(in range: Range<Date>) async throws -> [ActivityPoint] { [] }
-    func retention(in range: Range<Date>) async throws -> [RetentionCohort] { [] }
 }
 
-private final class CancellingDatabase: DatabaseReader, @unchecked Sendable {
+private final class CancellingDatabase: RecordReader, @unchecked Sendable {
     func lookup(recordName: String, fields: [String]?) async throws -> Record { throw CancellationError() }
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk { throw CancellationError() }
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] { throw CancellationError() }
-    func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw CancellationError() }
-    func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw CancellationError() }
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk { throw CancellationError() }
 }
 
 private struct RefreshFailure: Error {}
 
 private final class FailingDatabase: DatabaseReader, @unchecked Sendable {
     func lookup(recordName: String, fields: [String]?) async throws -> Record { throw RefreshFailure() }
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk { throw RefreshFailure() }
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         throw RefreshFailure()
     }
-    func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk { throw RefreshFailure() }
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] { throw RefreshFailure() }
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] { throw RefreshFailure() }
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] { throw RefreshFailure() }
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] { throw RefreshFailure() }
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw RefreshFailure() }
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw RefreshFailure() }
 }

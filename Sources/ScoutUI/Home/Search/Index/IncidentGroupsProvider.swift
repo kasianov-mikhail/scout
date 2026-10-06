@@ -9,10 +9,10 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class IncidentGroupsProvider<Element: RecordDecodable & Incident>: ObservableObject, Provider {
+final class IncidentGroupsProvider<Element: RecordDecodable & Incident>: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<[IncidentGroup<Element>]>?
 
-    func fetch(in database: DatabaseReader) async throws -> [IncidentGroup<Element>] {
+    func fetch(in database: RecordReader) async throws -> [IncidentGroup<Element>] {
         let chunk = try await database.read(
             matching: Element.query(),
             fields: Element.desiredKeys

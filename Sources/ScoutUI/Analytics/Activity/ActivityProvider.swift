@@ -9,14 +9,14 @@ import Foundation
 import Scout
 
 @MainActor
-final class ActivityProvider: ObservableObject, Provider {
+final class ActivityProvider: ObservableObject, AudienceProvider {
     @Published var result: ProviderResult<[ActivityPoint]>?
 
     init(_ result: ProviderResult<Output>? = nil) {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [ActivityPoint] {
-        try await database.activity(in: Calendar.utc.defaultRange)
+    func fetch(in database: AudienceReader) async throws -> [ActivityPoint] {
+        try await database.activity(in: Date().trailingYear)
     }
 }

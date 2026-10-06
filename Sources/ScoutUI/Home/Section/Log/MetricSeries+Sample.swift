@@ -12,9 +12,9 @@ extension MetricSeries {
     static func samples(for period: Period) -> [MetricSeries] {
         let date = period.initialRange.lowerBound
 
-        func point(hour: Int, value: MetricValue) -> MetricSeriesPoint {
+        func point(hour: Int, value: Double) -> MetricSeriesPoint {
             MetricSeriesPoint(
-                date: date.addingTimeInterval(TimeInterval(hour) * .hour).millisecondsSince1970,
+                date: date.addingTimeInterval(TimeInterval(hour) * .hour),
                 value: value
             )
         }
@@ -23,27 +23,27 @@ extension MetricSeries {
             MetricSeries(
                 name: EventEntry.recordType,
                 category: nil,
-                points: [point(hour: 0, value: .int(48))]
+                points: [point(hour: 0, value: 48)]
             ),
             MetricSeries(
                 name: CrashEntry.recordType,
                 category: nil,
-                points: [point(hour: 1, value: .int(3))]
+                points: [point(hour: 1, value: 3)]
             ),
             MetricSeries(
                 name: HangEntry.recordType,
                 category: nil,
-                points: [point(hour: 4, value: .int(6))]
+                points: [point(hour: 4, value: 6)]
             ),
             MetricSeries(
                 name: "api_calls",
                 category: Telemetry.Export.counter.rawValue,
-                points: [point(hour: 2, value: .int(140))]
+                points: [point(hour: 2, value: 140)]
             ),
             MetricSeries(
                 name: "cache_hit_rate",
                 category: Telemetry.Export.floatingCounter.rawValue,
-                points: [point(hour: 3, value: .double(91.5))]
+                points: [point(hour: 3, value: 91.5)]
             ),
         ]
     }

@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class ParamProvider: ObservableObject, Provider {
+final class ParamProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<[Item]>?
 
     private let recordID: String
@@ -19,7 +19,7 @@ final class ParamProvider: ObservableObject, Provider {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> Output {
+    func fetch(in database: RecordReader) async throws -> Output {
         try await database
             .lookup(recordName: recordID, fields: ["params"])["params"]
             .map(Item.fromData)?

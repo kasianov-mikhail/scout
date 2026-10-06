@@ -72,7 +72,7 @@ struct DevicesProviderTests {
     func fetchIgnoresRecordsOutsideDefaultRange() async throws {
         let deviceA = UUID()
         let recent = Date(timeIntervalSinceNow: -.day)
-        let stale = Calendar.utc.defaultRange.lowerBound.addingTimeInterval(-.day)
+        let stale = Date().trailingYear.lowerBound.addingTimeInterval(-.day)
 
         let database = DatabaseStub()
         database.add(

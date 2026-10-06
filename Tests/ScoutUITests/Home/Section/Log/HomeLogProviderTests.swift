@@ -15,14 +15,14 @@ import Testing
 struct HomeLogProviderTests {
     let allTime = Date.distantPast..<Date.distantFuture
 
-    @Test("Fetch carries every value flavor in one sweep")
+    @Test("Fetch reads events, crashes, hangs and metrics in one pass")
     func fetchSweepsAllFlavors() async throws {
         let database = DatabaseStub()
         database.add(
-            series: makeSeries(name: "login", value: .int(3)),
-            makeSeries(name: "Crash", value: .int(2)),
-            makeSeries(name: "api_calls", category: "counter", value: .int(7)),
-            makeSeries(name: "load_time", category: "timer", value: .double(0.25))
+            series: makeSeries(name: "login", value: 3),
+            makeSeries(name: "Crash", value: 2),
+            makeSeries(name: "api_calls", category: "counter", value: 7),
+            makeSeries(name: "load_time", category: "timer", value: 0.25)
         )
 
         let provider = HomeLogProvider()
@@ -35,17 +35,16 @@ struct HomeLogProviderTests {
         #expect(span.points { $0 != CrashEntry.recordType }.total == 3)
         #expect(span.points { $0 == CrashEntry.recordType }.total == 2)
         #expect(span.metricCount == 2)
-        #expect(database.seriesReadCount == 1)
+        #expect(database.seriesReadCount == 4)
     }
 
-    @Test("Fetch drops lifecycle series, keeping crashes")
-    func fetchDropsLifecycle() async throws {
+    @Test("Fetch reads crashes but not sessions from the lifecycle counters")
+    func fetchSkipsSessions() async throws {
         let database = DatabaseStub()
         database.add(
-            series: makeSeries(name: "login", value: .int(3)),
-            makeSeries(name: "Crash", value: .int(2)),
-            makeSeries(name: "Session", value: .int(5)),
-            makeSeries(name: "Launch", value: .int(1))
+            series: makeSeries(name: "login", value: 3),
+            makeSeries(name: "Crash", value: 2),
+            makeSeries(name: "Session", value: 5)
         )
 
         let provider = HomeLogProvider()
@@ -56,13 +55,13 @@ struct HomeLogProviderTests {
         #expect(Set(result.map(\.name)) == ["login", "Crash"])
     }
 
-    @Test("Fetch drops the release markers so they never count as events")
-    func fetchDropsMarkers() async throws {
+    @Test("Fetch never reads the release markers, so they never count as events")
+    func fetchSkipsMarkers() async throws {
         let database = DatabaseStub()
         database.add(
-            series: makeSeries(name: "login", value: .int(3)),
-            makeSeries(name: VersionEntry.recordType, value: .int(1)),
-            makeSeries(name: MarkerEntry.crashName, value: .int(1))
+            series: makeSeries(name: "login", value: 3),
+            makeSeries(name: VersionEntry.recordType, value: 1),
+            makeSeries(name: MarkerEntry.crashName, value: 1)
         )
 
         let provider = HomeLogProvider()
@@ -77,9 +76,9 @@ struct HomeLogProviderTests {
     func fetchesSelectedPeriodAndPrevious() async throws {
         let database = DatabaseStub()
         database.add(
-            series: makeSeries(name: "recent", date: Date().addingDay(-2), value: .int(3)),
-            makeSeries(name: "previous", date: Date().addingDay(-40), value: .int(4)),
-            makeSeries(name: "old", date: Date().addingDay(-200), value: .int(5))
+            series: makeSeries(name: "recent", date: Date().addingDay(-2), value: 3),
+            makeSeries(name: "previous", date: Date().addingDay(-40), value: 4),
+            makeSeries(name: "old", date: Date().addingDay(-200), value: 5)
         )
 
         let provider = HomeLogProvider()
@@ -98,7 +97,7 @@ struct HomeLogProviderTests {
     @Test("Switching periods keeps earlier results cached")
     func cachesResultsPerPeriod() async throws {
         let database = DatabaseStub()
-        database.add(series: makeSeries(name: "login", value: .int(3)))
+        database.add(series: makeSeries(name: "login", value: 3))
 
         let provider = HomeLogProvider()
         provider.period = .today
@@ -108,7 +107,7 @@ struct HomeLogProviderTests {
         provider.period = .today
         await provider.fetchIfNeeded(in: database)
 
-        #expect(database.seriesReadCount == 2)
+        #expect(database.seriesReadCount == 8)
         #expect(provider.result != nil)
         provider.period = .week
         #expect(provider.result != nil)
@@ -117,7 +116,7 @@ struct HomeLogProviderTests {
     @Test("A fetch that finishes after a period switch never fills the new period's slot")
     func staleFetchSkipsSwitchedPeriod() async throws {
         let database = DatabaseStub()
-        database.add(series: makeSeries(name: "login", value: .int(3)))
+        database.add(series: makeSeries(name: "login", value: 3))
         let gate = Gate()
         database.gate = gate
 
@@ -142,11 +141,11 @@ struct HomeLogProviderTests {
         #expect(try provider.result?.get() != nil)
     }
 
-    private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: MetricValue) -> MetricSeries {
+    private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: Double) -> MetricSeries {
         MetricSeries(
             name: name,
             category: category,
-            points: [MetricSeriesPoint(date: date.millisecondsSince1970, value: value)]
+            points: [MetricSeriesPoint(date: date, value: value)]
         )
     }
 }

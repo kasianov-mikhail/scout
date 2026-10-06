@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class DeviceIncidentsProvider: ObservableObject, Provider {
+final class DeviceIncidentsProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<DeviceIncidents>?
 
     private let deviceID: UUID
@@ -19,7 +19,7 @@ final class DeviceIncidentsProvider: ObservableObject, Provider {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> DeviceIncidents {
+    func fetch(in database: RecordReader) async throws -> DeviceIncidents {
         async let crashes: [Crash] = database.readAll(matching: query(for: Crash.self), fields: Crash.desiredKeys)
         async let hangs: [Hang] = database.readAll(matching: query(for: Hang.self), fields: Hang.desiredKeys)
 

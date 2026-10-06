@@ -10,7 +10,7 @@ import Scout
 
 struct TimelineFeed {
     let deviceID: UUID
-    let database: DatabaseReader
+    let database: RecordReader
 
     func device() async throws -> Device {
         let query = RecordQuery(
