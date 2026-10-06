@@ -23,8 +23,10 @@ package class SyncableEntry: DateEntry {
     }
 }
 
+typealias DeliverableEntry = SyncableEntry & RecordEncodable
+
 extension SyncableEntry {
-    static let deliverableTypes: [any (SyncableEntry & RecordEncodable).Type] = [
+    static let deliverableTypes: [any DeliverableEntry.Type] = [
         EventEntry.self,
         SessionEntry.self,
         VisitEntry.self,

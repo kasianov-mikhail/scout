@@ -16,9 +16,7 @@ final class DeliveryEntry: NSManagedObject {
     @NSManaged var attempts: Int16
     @NSManaged var object: SyncableEntry
 
-    static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<
-        NSManagedObjectID
-    > {
+    static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<NSManagedObjectID> {
         let request = NSFetchRequest<NSDictionary>(entityName: "DeliveryEntry")
         request.resultType = .dictionaryResultType
         request.propertiesToFetch = ["object"]

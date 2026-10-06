@@ -63,7 +63,7 @@ extension Runtime {
         self.init(
             backends: backends,
             identity: identity,
-            sync: { try await synchronize(backends: backends, dispatcher: dispatcher) }
+            sync: { try await dispatcher.synchronize(backends: backends) }
         )
 
         guard backends.count > 0 else {

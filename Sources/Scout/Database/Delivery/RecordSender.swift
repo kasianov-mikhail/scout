@@ -24,11 +24,19 @@ package protocol TransientFailure: Error {
 }
 
 @MainActor extension RecordSender {
-    func deliver(_ type: any (SyncableEntry & RecordEncodable).Type, in context: NSManagedObjectContext) async throws {
-        try await deliver(type: type, in: context)
+    func deliver(_ type: any DeliverableEntry.Type, in context: NSManagedObjectContext) async {
+        do {
+            try await deliver(type: type, in: context)
+        } catch is CancellationError {
+            // A cancelled pass leaves the records pending for the next one.
+        } catch let error as any TransientFailure where error.isTransient {
+            // Offline or throttled: the next pass retries the same records.
+        } catch {
+            print("Failed to deliver \(type) to backend \(id): \(error)")
+        }
     }
 
-    func deliver<T: SyncableEntry & RecordEncodable>(type: T.Type, in context: NSManagedObjectContext) async throws {
+    func deliver<T: DeliverableEntry>(type: T.Type, in context: NSManagedObjectContext) async throws {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
 
         request.predicate = NSPredicate(
@@ -64,7 +72,7 @@ package protocol TransientFailure: Error {
         }
     }
 
-    private func send<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
+    private func send<T: DeliverableEntry>(_ objects: [T]) async throws {
         var batches = [objects]
         var probes = 32
         var rejection: (any Error)?
@@ -101,7 +109,7 @@ package protocol TransientFailure: Error {
         }
     }
 
-    private func write<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
+    private func write<T: DeliverableEntry>(_ objects: [T]) async throws {
         let records = objects.map(\.record)
 
         try await database.write(records: records)
