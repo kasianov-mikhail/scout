@@ -45,8 +45,8 @@ struct DeliverTests {
 
     /// Run the delivery engine for a type the way `synchronize` does: send its raw
     /// records and let the send itself count the attempt on failure.
-    func deliver<T: SyncableEntry & RecordEncodable>(_ type: T.Type, to backend: Backend) async throws {
-        try await RecordSender(backend: backend).deliver(type: type, in: context)
+    func deliver<T: DeliverableEntry>(_ type: T.Type, to backend: Backend) async throws {
+        try await RecordSender<T>(backend: backend).deliver(in: context)
     }
 
     /// End a session and requeue it on a private-queue sibling, the way the real

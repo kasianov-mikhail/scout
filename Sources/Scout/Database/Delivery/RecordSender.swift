@@ -7,7 +7,7 @@
 
 import CoreData
 
-struct RecordSender: Sendable {
+struct RecordSender<T: DeliverableEntry>: Sendable {
     let id: String
     let database: any Database
 }
@@ -24,11 +24,7 @@ package protocol TransientFailure: Error {
 }
 
 @MainActor extension RecordSender {
-    func deliver(_ type: any (SyncableEntry & RecordEncodable).Type, in context: NSManagedObjectContext) async throws {
-        try await deliver(type: type, in: context)
-    }
-
-    func deliver<T: SyncableEntry & RecordEncodable>(type: T.Type, in context: NSManagedObjectContext) async throws {
+    func deliver(in context: NSManagedObjectContext) async throws {
         let request = NSFetchRequest<T>(entityName: String(describing: T.self))
 
         request.predicate = NSPredicate(
@@ -64,7 +60,7 @@ package protocol TransientFailure: Error {
         }
     }
 
-    private func send<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
+    private func send(_ objects: [T]) async throws {
         var batches = [objects]
         var probes = 32
         var rejection: (any Error)?
@@ -80,19 +76,7 @@ package protocol TransientFailure: Error {
                 throw error
             } catch {
                 rejection = error
-
-                if batch.count > 1 {
-                    let half = batch.count / 2
-                    batches.append(Array(batch[half...]))
-                    batches.append(Array(batch[..<half]))
-                } else {
-                    let delivery = batch[0].delivery(for: id)
-                    delivery?.attempts += 1
-
-                    if let delivery, delivery.attempts >= DeliveryEntry.maxAttempts {
-                        print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
-                    }
-                }
+                batches += narrow(batch, after: error)
             }
         }
 
@@ -101,7 +85,23 @@ package protocol TransientFailure: Error {
         }
     }
 
-    private func write<T: SyncableEntry & RecordEncodable>(_ objects: [T]) async throws {
+    private func narrow(_ batch: [T], after error: any Error) -> [[T]] {
+        guard batch.count == 1 else {
+            let half = batch.count / 2
+            return [Array(batch[half...]), Array(batch[..<half])]
+        }
+
+        let delivery = batch[0].delivery(for: id)
+        delivery?.attempts += 1
+
+        if let delivery, delivery.attempts >= DeliveryEntry.maxAttempts {
+            print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
+        }
+
+        return []
+    }
+
+    private func write(_ objects: [T]) async throws {
         let records = objects.map(\.record)
 
         try await database.write(records: records)

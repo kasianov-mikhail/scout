@@ -30,7 +30,7 @@ import Foundation
 public struct Runtime: Sendable {
     let backends: [Backend]
     let identity: Identity
-    let sync: Synchronize
+    let dispatcher: any Dispatcher
 }
 
 extension Runtime {
@@ -58,12 +58,10 @@ extension Runtime {
             session: Protected(UUID())
         )
 
-        let dispatcher = Coalescer()
-
         self.init(
             backends: backends,
             identity: identity,
-            sync: { try await synchronize(backends: backends, dispatcher: dispatcher) }
+            dispatcher: Coalescer()
         )
 
         guard backends.count > 0 else {
@@ -91,11 +89,13 @@ extension Runtime {
 
         try await identity.bootstrap()
 
-        identity.table.startListening(completion: sync)
+        identity.table.startListening {
+            try await backends.synchronize(using: dispatcher)
+        }
 
         Task {
             do {
-                try await sync()
+                try await backends.synchronize(using: dispatcher)
             } catch {
                 print("Failed to run the first sync: \(error)")
             }
