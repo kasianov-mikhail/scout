@@ -7,8 +7,6 @@
 
 @preconcurrency import CoreData
 
-typealias Synchronize = @MainActor () async throws -> Void
-
 extension [Backend] {
     @MainActor
     func synchronize(using dispatcher: Dispatcher) async throws {

@@ -10,5 +10,9 @@ import Foundation
 @testable import Scout
 
 extension Runtime {
-    static let stub = Runtime(backends: [makeBackend(id: "stub")], identity: .stub, sync: {})
+    static let stub = Runtime(backends: [makeBackend(id: "stub")], identity: .stub, dispatcher: IdleDispatcher())
+}
+
+private struct IdleDispatcher: Dispatcher {
+    func perform(_ work: @escaping Work) async throws {}
 }

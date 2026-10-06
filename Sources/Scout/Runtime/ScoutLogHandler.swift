@@ -66,7 +66,7 @@ public struct ScoutLogHandler: LogHandler {
                     context.mergePolicy = NSMergePolicy.scout
                     try Scout.log(event, date: date, identity: identity, context: context)
                 }
-                try await runtime.sync()
+                try await runtime.backends.synchronize(using: runtime.dispatcher)
             } catch {
                 print("Failed to save log: \(error)")
             }

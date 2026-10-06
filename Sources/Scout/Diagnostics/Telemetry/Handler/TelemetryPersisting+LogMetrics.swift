@@ -67,7 +67,8 @@ extension TelemetryPersisting {
     }
 
     private func persistMetrics(_ save: @escaping @Sendable (NSManagedObjectContext) throws -> Void) {
-        let sync = runtime.sync
+        let backends = runtime.backends
+        let dispatcher = runtime.dispatcher
 
         Task {
             do {
@@ -75,7 +76,7 @@ extension TelemetryPersisting {
                     context.mergePolicy = NSMergePolicy.scout
                     try save(context)
                 }
-                try await sync()
+                try await backends.synchronize(using: dispatcher)
             } catch {
                 print("Failed to save metrics: \(error)")
             }
