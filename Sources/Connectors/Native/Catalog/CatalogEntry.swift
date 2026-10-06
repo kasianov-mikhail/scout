@@ -43,32 +43,3 @@ struct CatalogEntry {
         Field(name: "version", type: .int),
     ]
 }
-
-extension CatalogEntry {
-    func declaration(on store: EntityStore) -> SchemaBuilder {
-        var builder = store.schema(entity)
-
-        for field in fields {
-            builder = builder.field(field.name, field.type, .ungrouped)
-        }
-        for aggregate in aggregates {
-            switch aggregate {
-            case .count(let group, let date):
-                builder = builder.count(by: group, at: date)
-            case .sum(let field, let group, let date):
-                builder = builder.sum(field, by: group, at: date)
-            }
-        }
-
-        return builder
-    }
-
-    func matches(_ schema: EntitySchema) -> Bool {
-        guard schema.fields.count == fields.count else {
-            return false
-        }
-        return zip(schema.fields, fields).allSatisfy {
-            $0.name == $1.name && $0.type == $1.type
-        }
-    }
-}

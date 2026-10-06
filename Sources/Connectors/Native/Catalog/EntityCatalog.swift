@@ -16,15 +16,6 @@ enum EntityCatalog {
         CatalogEntry.entries.first { $0.entity == record.recordType }?.derive(record) ?? [:]
     }
 
-    static func dateField(for entity: String) -> String {
-        switch entity {
-        case SessionEntry.recordType, LaunchEntry.recordType:
-            "start_date"
-        default:
-            "date"
-        }
-    }
-
     static func encodeSeriesKey(category: String, name: String) -> String {
         escape(category) + "|" + escape(name)
     }
