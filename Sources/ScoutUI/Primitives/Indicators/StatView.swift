@@ -49,7 +49,7 @@ struct StatView: View {
                         Spacer()
                         RedactedText(count: segment.total)
                     } destination: {
-                        EventStatList(eventName: stat.eventName, range: extent.domain)
+                        EventStatList(eventName: stat.subject.name, range: extent.domain)
                     }
                     .foregroundColor(.blue)
                 }
@@ -73,7 +73,7 @@ struct StatView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(
-                        title: stat.eventName,
+                        title: stat.subject.name,
                         rangeLabel: extent.domain.label(using: rangeDateFormatter)
                     ) {
                         ChartView(segment: segment, timing: extent)
@@ -95,7 +95,7 @@ extension EnvironmentValues {
         StatView(
             showList: true,
             extent: ChartExtent(period: .yesterday),
-            stat: .init(.success([]), eventName: "app_launch")
+            stat: .init(.success([]), subject: .event("app_launch"))
         )
         .navigationTitle(en: "App Launch")
         .environmentObject(Tint())

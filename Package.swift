@@ -60,9 +60,17 @@ let package = Package(
             ]
         ),
         .target(
+            name: "ConnectorSupport",
+            dependencies: [
+                "Scout"
+            ],
+            path: "Sources/Connectors/Support"
+        ),
+        .target(
             name: "NativeConnector",
             dependencies: [
                 "Scout",
+                "ConnectorSupport",
                 .product(name: "ScoutDB", package: "scout-db"),
             ],
             path: "Sources/Connectors/Native"
@@ -70,7 +78,8 @@ let package = Package(
         .target(
             name: "HostedConnector",
             dependencies: [
-                "Scout"
+                "Scout",
+                "ConnectorSupport",
             ],
             path: "Sources/Connectors/Hosted"
         ),
@@ -90,14 +99,16 @@ let package = Package(
         .target(
             name: "DemoConnector",
             dependencies: [
-                "Scout"
+                "Scout",
+                "ConnectorSupport",
             ],
             path: "Sources/Connectors/Demo"
         ),
         .target(
             name: "Support",
             dependencies: [
-                "Scout"
+                "Scout",
+                "ConnectorSupport",
             ],
             path: "Tests/Support"
         ),
@@ -107,6 +118,14 @@ let package = Package(
                 "Scout",
                 "Support",
             ]
+        ),
+        .testTarget(
+            name: "ConnectorSupportTests",
+            dependencies: [
+                "ConnectorSupport",
+                "Support",
+            ],
+            path: "Tests/Connectors/Support"
         ),
         .testTarget(
             name: "NativeConnectorTests",
@@ -130,6 +149,7 @@ let package = Package(
             dependencies: [
                 "ScoutUI",
                 "HostedConnector",
+                "ConnectorSupport",
                 "Support",
             ]
         ),

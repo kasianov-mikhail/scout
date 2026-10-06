@@ -97,11 +97,11 @@ extension RecordValue {
         }
     }
 
-    var string: String? {
+    package var string: String? {
         if case .string(let value) = self { value } else { nil }
     }
 
-    var strings: [String]? {
+    package var strings: [String]? {
         if case .strings(let value) = self { value } else { nil }
     }
 }

@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class SessionInfoProvider: ObservableObject, Provider {
+final class SessionInfoProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<SessionInfo>?
 
     private let sessionID: UUID
@@ -21,7 +21,7 @@ final class SessionInfoProvider: ObservableObject, Provider {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> SessionInfo {
+    func fetch(in database: RecordReader) async throws -> SessionInfo {
         let session = try await database.lookup(
             recordName: sessionID.uuidString,
             fields: ["app_version", "build_number", "os_version", "locale", "channel", "start_date", "end_date"]
@@ -41,7 +41,7 @@ final class SessionInfoProvider: ObservableObject, Provider {
         )
     }
 
-    private func deviceModel(in database: DatabaseReader) async throws -> String? {
+    private func deviceModel(in database: RecordReader) async throws -> String? {
         guard let deviceID else { return nil }
         let device = try? await database.lookup(recordName: deviceID.uuidString, fields: ["model"])
         return device?["model"]

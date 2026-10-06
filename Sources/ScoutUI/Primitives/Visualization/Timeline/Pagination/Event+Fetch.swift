@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 extension Event {
-    static func fetch(sessionIDs: [UUID], name: String?, in database: DatabaseReader) async throws -> [Event] {
+    static func fetch(sessionIDs: [UUID], name: String?, in database: RecordReader) async throws -> [Event] {
         guard sessionIDs.count > 0 else {
             return []
         }

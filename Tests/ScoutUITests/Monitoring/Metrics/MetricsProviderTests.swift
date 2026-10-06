@@ -21,16 +21,16 @@ struct MetricsProviderTests {
                 name: "api_calls",
                 category: "counter",
                 points: [
-                    MetricSeriesPoint(date: ms(2026, 6, 10, 9), value: .int(2)),
-                    MetricSeriesPoint(date: ms(2026, 6, 10, 10), value: .int(3)),
-                    MetricSeriesPoint(date: ms(2026, 6, 17, 9), value: .int(1)),
+                    MetricSeriesPoint(date: ms(2026, 6, 10, 9), value: 2),
+                    MetricSeriesPoint(date: ms(2026, 6, 10, 10), value: 3),
+                    MetricSeriesPoint(date: ms(2026, 6, 17, 9), value: 1),
                 ]
             ),
             MetricSeries(
                 name: "errors",
                 category: "counter",
                 points: [
-                    MetricSeriesPoint(date: ms(2026, 6, 10, 9), value: .int(4))
+                    MetricSeriesPoint(date: ms(2026, 6, 10, 9), value: 4)
                 ]
             ),
         ])
@@ -57,7 +57,7 @@ struct MetricsProviderTests {
         Date(year: year, month: month, day: day, hour: hour)
     }
 
-    private func ms(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Int64 {
-        Int64((date(year, month, day, hour).timeIntervalSince1970 * 1000).rounded())
+    private func ms(_ year: Int, _ month: Int, _ day: Int, _ hour: Int) -> Date {
+        date(year, month, day, hour)
     }
 }

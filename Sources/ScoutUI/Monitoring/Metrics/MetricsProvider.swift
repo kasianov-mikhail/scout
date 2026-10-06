@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 @MainActor
-final class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
+final class MetricsProvider<T: ChartNumeric>: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[MetricSeries]>?
 
     private let telemetry: Telemetry.Export
@@ -18,12 +18,12 @@ final class MetricsProvider<T: ChartNumeric>: ObservableObject, Provider {
         self.telemetry = telemetry
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [MetricSeries] {
+    func fetch(in database: SeriesReader) async throws -> [MetricSeries] {
         try await database.metricSeries(
             T.self,
             category: telemetry.rawValue,
             reduce: telemetry == .meter ? .last : .sum,
-            in: Calendar.utc.defaultRange
+            in: Date().trailingYear
         )
     }
 }

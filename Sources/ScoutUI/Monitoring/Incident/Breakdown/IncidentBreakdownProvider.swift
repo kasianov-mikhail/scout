@@ -10,7 +10,7 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class IncidentBreakdownProvider: ObservableObject, Provider {
+final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<IncidentBreakdown>?
 
     private let deviceIDs: [UUID]
@@ -22,19 +22,19 @@ final class IncidentBreakdownProvider: ObservableObject, Provider {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> IncidentBreakdown {
+    func fetch(in database: RecordReader) async throws -> IncidentBreakdown {
         async let models = deviceModels(in: database)
         async let versions = osVersions(in: database)
 
         return try await IncidentBreakdown(
             devices: IncidentBreakdown.segments(from: Array(models.values)),
             osVersions: IncidentBreakdown.segments(from: Array(versions.values)),
-            modelsByDevice: try await models,
-            versionsBySession: try await versions
+            modelsByDevice: models,
+            versionsBySession: versions
         )
     }
 
-    private func deviceModels(in database: DatabaseReader) async throws -> [UUID: String] {
+    private func deviceModels(in database: RecordReader) async throws -> [UUID: String] {
         guard deviceIDs.count > 0 else {
             return [:]
         }
@@ -53,7 +53,7 @@ final class IncidentBreakdownProvider: ObservableObject, Provider {
         return dictionary(from: records, key: "device_id", value: "model")
     }
 
-    private func osVersions(in database: DatabaseReader) async throws -> [UUID: String] {
+    private func osVersions(in database: RecordReader) async throws -> [UUID: String] {
         guard sessionIDs.count > 0 else {
             return [:]
         }

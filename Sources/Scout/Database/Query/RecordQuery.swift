@@ -35,9 +35,3 @@ package protocol RecordDecodable: Sendable, Equatable, RecordEncodable {
 
     init(record: Record) throws
 }
-
-extension RecordQuery {
-    package func matches(_ record: Record) -> Bool {
-        record.recordType == recordType.recordType && filters.allSatisfy { $0.matches(record.fields) }
-    }
-}

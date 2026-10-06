@@ -15,7 +15,7 @@ struct HomeList: View {
 
     @StateObject var activities = ActivityProvider()
     @StateObject var retention = RetentionProvider()
-    @StateObject var sessions = StatProvider(eventName: "Session")
+    @StateObject var sessions = StatProvider(subject: .sessions)
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
     @StateObject var devices = DevicesProvider()
@@ -92,7 +92,7 @@ struct HomeList: View {
             path: .constant([]),
             activities: .init(),
             retention: .init(),
-            sessions: .init(eventName: "Session"),
+            sessions: .init(subject: .sessions),
             releases: .init(.success(.samples)),
             logs: .init(),
             devices: .init(),
@@ -109,7 +109,7 @@ struct HomeList: View {
             path: .constant([]),
             activities: .init(.success(.samples)),
             retention: .init(.success(.samples)),
-            sessions: .init(.success(.samples), eventName: "Session"),
+            sessions: .init(.success(.samples), subject: .sessions),
             releases: .init(.success(.samples)),
             logs: .init(acrossAllPeriods: MetricSeries.samples(for: .today)),
             devices: .init(.success(.sample)),
@@ -126,7 +126,7 @@ struct HomeList: View {
             path: .constant([]),
             activities: .init(.success([])),
             retention: .init(.success([])),
-            sessions: .init(.success([]), eventName: "Session"),
+            sessions: .init(.success([]), subject: .sessions),
             releases: .init(.success([])),
             logs: .init(acrossAllPeriods: []),
             devices: .init(.success(.empty)),

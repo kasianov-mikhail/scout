@@ -40,7 +40,7 @@ struct GlobalSearchRow: View {
     @ViewBuilder private var destination: some View {
         switch hit {
         case .event(let name):
-            EventStatList(eventName: name, range: Calendar.utc.defaultRange)
+            EventStatList(eventName: name, range: Date().trailingYear)
         case .metric(let name, let telemetry):
             MetricSearchDetail(name: name, telemetry: telemetry)
         case .endpoint(let name):

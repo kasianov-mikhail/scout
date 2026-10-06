@@ -10,7 +10,7 @@ import Foundation
 import Scout
 
 @MainActor
-final class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, Provider {
+final class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<MetricDistribution<H>>?
 
     private let name: String
@@ -22,11 +22,11 @@ final class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, 
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> MetricDistribution<H> {
+    func fetch(in database: SeriesReader) async throws -> MetricDistribution<H> {
         let series = try await database.metricSeries(
             Int.self,
             categories: categories,
-            in: Calendar.utc.defaultRange
+            in: Date().trailingYear
         )
         return MetricDistribution(series: series.filter { $0.name == name })
     }

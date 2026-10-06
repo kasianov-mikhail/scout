@@ -12,7 +12,7 @@ extension Incident where Self: RecordDecodable {
     static func query(filters extra: [RecordQuery.Filter] = []) -> RecordQuery {
         RecordQuery(
             recordType: Self.self,
-            filters: Calendar.utc.defaultRange.dateFilters + extra,
+            filters: Date().trailingYear.dateFilters + extra,
             sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
     }

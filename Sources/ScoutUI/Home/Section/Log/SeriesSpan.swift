@@ -35,7 +35,7 @@ struct SeriesSpan {
                 guard let category = series.category, categories.contains(category) else {
                     return
                 }
-                if series.points.contains(where: { range.contains(Date(millisecondsSince1970: $0.date)) }) {
+                if series.points.contains(where: { range.contains($0.date) }) {
                     keys.insert([category, series.name])
                 }
             }

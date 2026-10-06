@@ -53,7 +53,7 @@ struct NetworkProviderTests {
             name: name,
             category: category,
             points: points.map { date, count in
-                MetricSeriesPoint(date: date.millisecondsSince1970, value: .int(count))
+                MetricSeriesPoint(date: date, value: Double(count))
             }
         )
     }
@@ -74,7 +74,15 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
+        []
+    }
+
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
+        []
+    }
+
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
         series.filter { $0.category == query.category }
     }
 
@@ -82,7 +90,7 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         throw RecordNotFoundError()
     }
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         RecordChunk(records: [], cursor: nil)
     }
 }
@@ -98,7 +106,15 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
         throw Failure()
     }
 
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries] {
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
+        throw Failure()
+    }
+
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
+        throw Failure()
+    }
+
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
         throw Failure()
     }
 
@@ -106,7 +122,7 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
         throw Failure()
     }
 
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         throw Failure()
     }
 }

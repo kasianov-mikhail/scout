@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 @MainActor
-final class HomeLogProvider: ObservableObject, Provider {
+final class HomeLogProvider: ObservableObject, SeriesProvider {
     typealias Output = [MetricSeries]
 
     @Published var period: Period {
@@ -50,23 +50,36 @@ final class HomeLogProvider: ObservableObject, Provider {
         report = LogSeries(series: series, visits: visits, period: period).report
     }
 
-    func fetch(in database: DatabaseReader) async throws -> Output {
+    func fetch(in database: SeriesReader) async throws -> Output {
         let period = period
         let window = period.previousRange.lowerBound..<period.initialRange.upperBound
-        let series = try await database.series(
-            matching: SeriesQuery(bucket: period.logBucket, range: window)
+        let bucket = period.logBucket
+
+        async let events = database.eventSeries(
+            matching: EventSeriesQuery(bucket: bucket, range: window)
         )
+        async let crashes = database.lifecycleSeries(
+            matching: LifecycleSeriesQuery.crashes(bucket: bucket, range: window)
+        )
+        async let hangs = database.lifecycleSeries(
+            matching: LifecycleSeriesQuery.hangs(bucket: bucket, range: window)
+        )
+        async let metrics = database.metricSeries(
+            matching: MetricSeriesQuery(bucket: bucket, range: window)
+        )
+
+        let series = try await events + crashes + hangs + metrics
 
         guard period == self.period else {
             throw CancellationError()
         }
 
-        return series.filter { !$0.isLifecycle }
+        return series
     }
 }
 
 extension Period {
-    fileprivate var logBucket: SeriesQuery.Bucket {
+    fileprivate var logBucket: SeriesBucket {
         switch self {
         case .today, .yesterday:
             .hour

@@ -9,12 +9,19 @@ import Foundation
 import Scout
 
 @MainActor
-final class SearchSeriesProvider: ObservableObject, Provider {
+final class SearchSeriesProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[MetricSeries]>?
 
-    func fetch(in database: DatabaseReader) async throws -> [MetricSeries] {
-        try await database.series(
-            matching: SeriesQuery(bucket: .week, range: Calendar.utc.defaultRange)
+    func fetch(in database: SeriesReader) async throws -> [MetricSeries] {
+        let range = Date().trailingYear
+
+        async let events = database.eventSeries(
+            matching: EventSeriesQuery(bucket: .week, range: range)
         )
+        async let metrics = database.metricSeries(
+            matching: MetricSeriesQuery(bucket: .week, range: range)
+        )
+
+        return try await events + metrics
     }
 }

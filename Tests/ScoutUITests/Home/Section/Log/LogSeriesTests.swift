@@ -18,10 +18,10 @@ struct LogSeriesTests {
     func events() {
         let report = makeReport(
             series: [
-                makeSeries(name: "login", value: .int(3)),
-                makeSeries(name: "purchase", value: .int(4)),
-                makeSeries(name: CrashEntry.recordType, value: .int(2)),
-                makeSeries(name: HangEntry.recordType, value: .int(1)),
+                makeSeries(name: "login", value: 3),
+                makeSeries(name: "purchase", value: 4),
+                makeSeries(name: CrashEntry.recordType, value: 2),
+                makeSeries(name: HangEntry.recordType, value: 1),
             ]
         )
 
@@ -34,9 +34,9 @@ struct LogSeriesTests {
     func network() {
         let report = makeReport(
             series: [
-                makeSeries(name: "/users", category: "status_2xx", value: .int(5)),
-                makeSeries(name: "/users", category: "status_5xx", value: .int(1)),
-                makeSeries(name: "/users", category: "timer_le_500", value: .int(8)),
+                makeSeries(name: "/users", category: "status_2xx", value: 5),
+                makeSeries(name: "/users", category: "status_5xx", value: 1),
+                makeSeries(name: "/users", category: "timer_le_500", value: 8),
             ]
         )
 
@@ -47,9 +47,9 @@ struct LogSeriesTests {
     func metrics() {
         let report = makeReport(
             series: [
-                makeSeries(name: "api_calls", category: "counter", value: .int(7)),
-                makeSeries(name: "api_calls", category: "counter", value: .int(2)),
-                makeSeries(name: "load_time", category: "timer", value: .double(1.0)),
+                makeSeries(name: "api_calls", category: "counter", value: 7),
+                makeSeries(name: "api_calls", category: "counter", value: 2),
+                makeSeries(name: "load_time", category: "timer", value: 1.0),
             ]
         )
 
@@ -74,7 +74,7 @@ struct LogSeriesTests {
     @Test("Every category draws a sparkline with one value per slice")
     func sliceCount() throws {
         let report = makeReport(
-            series: [makeSeries(name: "login", value: .int(3))],
+            series: [makeSeries(name: "login", value: 3)],
             visits: [DeviceVisit(deviceID: UUID().uuidString, date: today.addingTimeInterval(3600))]
         )
 
@@ -93,11 +93,11 @@ struct LogSeriesTests {
         .report
     }
 
-    private func makeSeries(name: String, category: String? = nil, value: MetricValue) -> MetricSeries {
+    private func makeSeries(name: String, category: String? = nil, value: Double) -> MetricSeries {
         MetricSeries(
             name: name,
             category: category,
-            points: [MetricSeriesPoint(date: today.addingTimeInterval(3600).millisecondsSince1970, value: value)]
+            points: [MetricSeriesPoint(date: today.addingTimeInterval(3600), value: value)]
         )
     }
 }

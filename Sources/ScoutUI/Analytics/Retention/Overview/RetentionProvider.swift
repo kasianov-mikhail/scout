@@ -9,14 +9,14 @@ import Foundation
 import Scout
 
 @MainActor
-final class RetentionProvider: ObservableObject, Provider {
+final class RetentionProvider: ObservableObject, AudienceProvider {
     @Published var result: ProviderResult<[RetentionCohort]>?
 
     init(_ result: ProviderResult<Output>? = nil) {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [RetentionCohort] {
-        try await database.retention(in: Calendar.utc.defaultRange)
+    func fetch(in database: AudienceReader) async throws -> [RetentionCohort] {
+        try await database.retention(in: Date().trailingYear)
     }
 }

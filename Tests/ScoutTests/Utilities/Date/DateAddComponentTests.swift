@@ -37,13 +37,6 @@ struct DateAddComponentTests {
         #expect(result.timeIntervalSince(base) == 86400 * 14)
     }
 
-    @Test("addingMonth adds one month by default")
-    func addingMonthDefault() {
-        let result = base.addingMonth()
-        let components = Calendar.utc.dateComponents([.month], from: base, to: result)
-        #expect(components.month == 1)
-    }
-
     @Test("addingYear adds one year by default")
     func addingYearDefault() {
         let result = base.addingYear()
@@ -55,11 +48,5 @@ struct DateAddComponentTests {
     func addingNegative() {
         let result = base.addingDay(-1)
         #expect(result.timeIntervalSince(base) == -86400)
-    }
-
-    @Test("adding generic component works")
-    func addingGeneric() {
-        let result = base.adding(.minute, value: 30)
-        #expect(result.timeIntervalSince(base) == 1800)
     }
 }

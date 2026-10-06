@@ -9,20 +9,45 @@ import Foundation
 import Scout
 
 @MainActor
-final class StatProvider: ObservableObject, Provider {
+final class StatProvider: ObservableObject, SeriesProvider {
     @Published var result: ProviderResult<[ChartPoint<Int>]>?
 
-    let eventName: String
+    enum Subject {
+        case event(String)
+        case sessions
 
-    init(_ result: ProviderResult<Output>? = nil, eventName: String) {
-        self.eventName = eventName
+        var name: String {
+            switch self {
+            case .event(let name):
+                name
+            case .sessions:
+                SessionEntry.recordType
+            }
+        }
+    }
+
+    let subject: Subject
+
+    init(_ result: ProviderResult<Output>? = nil, subject: Subject) {
+        self.subject = subject
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> [ChartPoint<Int>] {
-        let series = try await database.series(
-            matching: SeriesQuery(name: eventName, bucket: .hour, range: Calendar.utc.defaultRange)
-        )
+    func fetch(in database: SeriesReader) async throws -> [ChartPoint<Int>] {
+        let range = Date().trailingYear
+
+        let series =
+            switch subject {
+            case .event(let name):
+                try await database.eventSeries(
+                    matching: EventSeriesQuery(name: name, bucket: .hour, range: range)
+                )
+            case .sessions:
+                try await database.lifecycleSeries(
+                    matching: .sessions(bucket: .hour, range: range)
+                )
+            }
+
         return series.flatMap { $0.chartPoints() }
     }
 }

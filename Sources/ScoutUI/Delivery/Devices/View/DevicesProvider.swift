@@ -9,15 +9,15 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class DevicesProvider: ObservableObject, Provider {
+final class DevicesProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<DevicesReport>?
 
     init(_ result: ProviderResult<Output>? = nil) {
         self.result = result
     }
 
-    func fetch(in database: DatabaseReader) async throws -> DevicesReport {
-        let range = Calendar.utc.defaultRange
+    func fetch(in database: RecordReader) async throws -> DevicesReport {
+        let range = Date().trailingYear
 
         async let devices: [Record] = database.readAll(
             matching: RecordQuery(recordType: Device.self),

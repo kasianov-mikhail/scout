@@ -11,13 +11,13 @@ import XCTest
 @testable import LookupIndex
 @testable import Scout
 
-final class CachedMetricSeriesPerformanceTests: XCTestCase {
+final class CachedSeriesPerformanceTests: XCTestCase {
     func testSeriesMergePerformance() {
-        let cached = CachedMetricSeries.records(from: makeSeries(keys: 120, points: 400, from: 0))
+        let cached = makeSeries(keys: 120, points: 400, from: 0).cacheRecords
         let fetched = makeSeries(keys: 120, points: 120, from: 400)
 
         measure {
-            _ = CachedMetricSeries.series(cached: cached, fetched: fetched)
+            _ = MetricSeries.combined(cached: cached, fetched: fetched)
         }
     }
 
@@ -28,7 +28,7 @@ final class CachedMetricSeriesPerformanceTests: XCTestCase {
                 category: nil,
                 version: "1.0.\(key)",
                 points: (0..<points).map { index in
-                    MetricSeriesPoint(date: (start + Int64(index)) * 3_600_000, value: .int(index))
+                    MetricSeriesPoint(date: Date(millisecondsSince1970: (start + Int64(index)) * 3_600_000), value: Double(index))
                 }
             )
         }
@@ -90,16 +90,15 @@ final class CachedDatabasePerformanceTests: XCTestCase {
             cache: try makeRecordCache(),
             now: { now }
         )
-        let query = SeriesQuery(
-            name: "Session",
+        let query = LifecycleSeriesQuery.sessions(
             byVersion: true,
             range: Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 4_000_000)
         )
 
-        runBlocking { _ = try? await database.series(matching: query) }
+        runBlocking { _ = try? await database.lifecycleSeries(matching: query) }
 
         measure {
-            runBlocking { _ = try? await database.series(matching: query) }
+            runBlocking { _ = try? await database.lifecycleSeries(matching: query) }
         }
     }
 
@@ -110,7 +109,7 @@ final class CachedDatabasePerformanceTests: XCTestCase {
                 category: nil,
                 version: "1.0.\(version)",
                 points: (0..<points).map { index in
-                    MetricSeriesPoint(date: Int64(index) * 3_600 * 1_000, value: .int(index))
+                    MetricSeriesPoint(date: Date(millisecondsSince1970: Int64(index) * 3_600 * 1_000), value: Double(index))
                 }
             )
         }

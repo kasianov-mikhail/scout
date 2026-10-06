@@ -9,39 +9,32 @@ import Foundation
 
 package typealias Database = DatabaseReader & DatabaseWriter
 
-package protocol DatabaseReader: Sendable {
-    func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk
-    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk
-    func lookup(recordName: String, fields: [String]?) async throws -> Record
-    func series(matching query: SeriesQuery) async throws -> [MetricSeries]
-    func activity(in range: Range<Date>) async throws -> [ActivityPoint]
-    func retention(in range: Range<Date>) async throws -> [RetentionCohort]
-}
+package typealias DatabaseReader = SeriesReader & AudienceReader & RecordReader
 
 package protocol DatabaseWriter: Sendable {
     func write(record: Record) async throws
     func write(records: [Record]) async throws
 }
 
-extension DatabaseReader {
-    package func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        try await read(matching: query, fields: fields)
-    }
+package protocol SeriesReader: Sendable {
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries]
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries]
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries]
+}
 
-    package func readMore(from cursor: RecordCursor, fields: [String]?) async throws -> RecordChunk {
-        try await cursor.next(fields)
-    }
+package protocol AudienceReader: Sendable {
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint]
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort]
+}
 
-    package func readAll(matching query: RecordQuery, fields: [String]?) async throws -> [Record] {
-        var chunk = try await read(matching: query, fields: fields)
-        while let cursor = chunk.cursor {
-            chunk += try await readMore(from: cursor, fields: fields)
-        }
-        return chunk.records
-    }
+package protocol RecordReader: Sendable {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk
+    func lookup(recordName: String, fields: [String]?) async throws -> Record
+}
 
-    package func readAll<T: RecordDecodable>(matching query: RecordQuery, fields: [String]? = nil) async throws -> [T] {
-        try await readAll(matching: query, fields: fields).map(T.init)
+extension RecordReader {
+    package func read(matching query: RecordQuery, fields: [String]?) async throws -> RecordChunk {
+        try await read(matching: query, fields: fields, limit: defaultRecordPageSize)
     }
 }
 

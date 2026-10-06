@@ -66,7 +66,7 @@ struct ReleaseHealthProviderTests {
             name: name,
             category: nil,
             version: version,
-            points: [MetricSeriesPoint(date: date.millisecondsSince1970, value: .int(count))]
+            points: [MetricSeriesPoint(date: date, value: Double(count))]
         )
     }
 }
