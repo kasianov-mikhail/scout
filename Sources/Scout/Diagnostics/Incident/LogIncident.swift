@@ -51,7 +51,7 @@ func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(_ info: Info, id: UUI
     object.name = info.name
     object.fingerprint = info.fingerprint
     object.reason = info.reason
-    object.stackTrace = try? JSONEncoder().encode(info.stackTrace)
+    object.stackTrace = try JSONEncoder().encode(info.stackTrace)
 
     // Reattach to the session/launch/install chain captured at incident time,
     // materializing any hub the faulted run didn't persist.
