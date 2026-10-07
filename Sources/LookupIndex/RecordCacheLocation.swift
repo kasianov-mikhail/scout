@@ -39,16 +39,33 @@ struct RecordCacheLocation: @unchecked Sendable {
 
     func destroyStore(at url: URL) {
         for suffix in storeSuffixes {
-            try? manager.removeItem(atPath: url.path + suffix)
+            remove(path: url.path + suffix)
         }
     }
 
     func sweepRetired() {
         let current = storeURL.lastPathComponent
-        let names = (try? manager.contentsOfDirectory(atPath: directory.path)) ?? []
 
-        for name in names where name.hasPrefix(storeName) && !name.hasPrefix(current) {
-            try? manager.removeItem(at: directory.appending(path: name))
+        do {
+            let names = try manager.contentsOfDirectory(atPath: directory.path)
+
+            for name in names where name.hasPrefix(storeName) && !name.hasPrefix(current) {
+                remove(path: directory.appending(path: name).path)
+            }
+        } catch {
+            print("Failed to list the record cache directory: \(error)")
+        }
+    }
+
+    private func remove(path: String) {
+        guard manager.fileExists(atPath: path) else {
+            return
+        }
+
+        do {
+            try manager.removeItem(atPath: path)
+        } catch {
+            print("Failed to remove \(path): \(error)")
         }
     }
 

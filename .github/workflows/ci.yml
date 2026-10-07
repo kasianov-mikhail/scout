@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
@@ -55,7 +56,7 @@ jobs:
 
   lint:
     needs: scope
-    if: needs.scope.outputs.code == 'true'
+    if: needs.scope.outputs.code == 'true' && github.event.pull_request.draft != true
     runs-on: macos-26
     timeout-minutes: 5
 
@@ -172,6 +173,10 @@ jobs:
       - name: Require the matrix to pass
         run: |
           .github/scripts/require-results.sh "The scope job|${{ needs.scope.result }}"
+          if [ "${{ github.event.pull_request.draft }}" = "true" ]; then
+            echo "Draft pull request; the iOS matrix runs once it is ready for review."
+            exit 0
+          fi
           if [ "${{ needs.scope.outputs.code }}" != "true" ]; then
             echo "Nothing outside the docs changed; the iOS matrix has nothing to build."
             exit 0
@@ -344,6 +349,10 @@ jobs:
       - name: Require the API diff to pass
         run: |
           .github/scripts/require-results.sh "The scope job|${{ needs.scope.result }}"
+          if [ "${{ github.event.pull_request.draft }}" = "true" ]; then
+            echo "Draft pull request; the API diff runs once it is ready for review."
+            exit 0
+          fi
           if [ "${{ needs.scope.outputs.code }}" != "true" ]; then
             echo "Nothing outside the docs changed; the public API cannot have moved."
             exit 0

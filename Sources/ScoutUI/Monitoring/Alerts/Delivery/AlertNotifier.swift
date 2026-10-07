@@ -19,7 +19,11 @@ struct AlertNotifier {
     }
 
     func requestAuthorization() async {
-        _ = try? await center.requestAuthorization(options: [.alert, .sound, .badge])
+        do {
+            _ = try await center.requestAuthorization(options: [.alert, .sound, .badge])
+        } catch {
+            print("Failed to request notification authorization: \(error)")
+        }
     }
 
     func refusesNotifications() async -> Bool {

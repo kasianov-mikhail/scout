@@ -47,7 +47,11 @@ func installSignalHandler(identity: Identity) {
 
 private func prepareRawReport(identity: Identity) {
     let directory = IncidentArchive.crash.directory
-    try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    do {
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    } catch {
+        print("Failed to create the crash report directory: \(error)")
+    }
 
     let fileName = "\(UUID().uuidString).\(RawCrashFormat.pathExtension)"
     reportPath = strdup(directory.appendingPathComponent(fileName).path)
