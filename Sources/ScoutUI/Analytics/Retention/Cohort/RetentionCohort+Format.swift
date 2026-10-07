@@ -16,14 +16,7 @@ extension RetentionCohort {
 }
 
 extension DateFormatter {
-    static let cohortDay: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.calendar = .utc
-        formatter.timeZone = Calendar.utc.timeZone
-        formatter.dateFormat = "MMM d"
-        return formatter
-    }()
+    static let cohortDay = DateFormatter(format: "MMM d")
 }
 
 extension FormatStyle where Self == FloatingPointFormatStyle<Double>.Percent {

@@ -53,11 +53,4 @@ struct FilterPeriodView: View {
     }
 }
 
-private let dateBoxFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.locale = Locale(identifier: "en_US")
-    formatter.calendar = .utc
-    formatter.timeZone = Calendar.utc.timeZone
-    formatter.dateFormat = "d MMM yyyy"
-    return formatter
-}()
+private let dateBoxFormatter = DateFormatter(format: "d MMM yyyy")

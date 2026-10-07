@@ -19,23 +19,9 @@ struct CalendarMonth {
 
     static let weekdaySymbols = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-    private static let monthYear: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.calendar = .utc
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        formatter.dateFormat = "LLLL yyyy"
-        return formatter
-    }()
+    private static let monthYear = DateFormatter(format: "LLLL yyyy")
 
-    private static let shortMonthYear: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.calendar = .utc
-        formatter.timeZone = TimeZone(identifier: "UTC")
-        formatter.dateFormat = "MMM yyyy"
-        return formatter
-    }()
+    private static let shortMonthYear = DateFormatter(format: "MMM yyyy")
 
     var title: String { Self.monthYear.string(from: month).capitalized }
     var shortTitle: String { Self.shortMonthYear.string(from: month).uppercased() }
