@@ -38,12 +38,7 @@ extension [SeriesKey: [Date: Double]] {
                 )
             }
 
-            return MetricSeries(
-                name: key.name,
-                category: key.category,
-                version: key.version,
-                points: points
-            )
+            return MetricSeries(key: key, points: points)
         }
         .nonEmptySorted
     }

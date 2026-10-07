@@ -25,6 +25,10 @@ package struct SeriesKey: Hashable, Comparable, Sendable {
 }
 
 extension MetricSeries {
+    package init(key: SeriesKey, points: [MetricSeriesPoint]) {
+        self.init(name: key.name, category: key.category, version: key.version, points: points)
+    }
+
     package var key: SeriesKey {
         SeriesKey(name: name, category: category, version: version)
     }
