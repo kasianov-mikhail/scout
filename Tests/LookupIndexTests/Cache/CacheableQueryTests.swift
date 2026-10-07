@@ -8,9 +8,10 @@
 import Foundation
 import Testing
 
+@testable import LookupIndex
 @testable import Scout
 
-struct SeriesQueryFingerprintTests {
+struct CacheableQueryTests {
     let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 1)
 
     @Test("Metric series fingerprint spell out every metric dimension")

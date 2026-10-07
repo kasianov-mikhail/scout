@@ -10,7 +10,6 @@ import Foundation
 package protocol SeriesQuery: Sendable {
     var bucket: SeriesBucket { get }
     var range: Range<Date> { get set }
-    var fingerprint: String { get }
 }
 
 package enum SeriesBucket: String, Sendable {
@@ -38,10 +37,6 @@ package struct EventSeriesQuery: SeriesQuery {
         self.bucket = bucket
         self.range = range
     }
-
-    package var fingerprint: String {
-        "\(name ?? "*")|*|*|\(bucket.rawValue)|*|event|sum"
-    }
 }
 
 package struct LifecycleSeriesQuery: SeriesQuery {
@@ -55,10 +50,6 @@ package struct LifecycleSeriesQuery: SeriesQuery {
         self.bucket = bucket
         self.byVersion = byVersion
         self.range = range
-    }
-
-    package var fingerprint: String {
-        "\(name)|*|*|\(bucket.rawValue)|\(byVersion ? "version" : "*")|lifecycle|sum"
     }
 }
 
@@ -107,9 +98,5 @@ package struct MetricSeriesQuery: SeriesQuery {
         self.bucket = bucket
         self.reduce = reduce
         self.range = range
-    }
-
-    package var fingerprint: String {
-        "\(name ?? "*")|\(category ?? "*")|\(values?.rawValue ?? "*")|\(bucket.rawValue)|*|metric|\(reduce.rawValue)"
     }
 }

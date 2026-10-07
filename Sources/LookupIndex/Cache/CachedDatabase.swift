@@ -6,17 +6,17 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
-package struct CachedDatabase: Sendable {
-    @MainActor package static var cache: (any RecordCaching)?
-
+@available(iOS 18, macOS 15, *)
+struct CachedDatabase: Sendable {
     let base: any Database
     let scope: String
-    let cache: any RecordCaching
+    let cache: RecordCache
     let now: @Sendable () -> Date
     let types: Set<String>
 
-    package init(base: any Database, scope: String, cache: any RecordCaching, now: @escaping @Sendable () -> Date = { Date() }, types: Set<String> = [EventEntry.recordType]) {
+    init(base: any Database, scope: String, cache: RecordCache, now: @escaping @Sendable () -> Date = { Date() }, types: Set<String> = [EventEntry.recordType]) {
         self.base = base
         self.scope = scope
         self.cache = cache

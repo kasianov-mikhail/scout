@@ -29,10 +29,7 @@ struct HomeView: View {
         guard let backend else {
             return DefaultDatabase()
         }
-        guard let cache = CachedDatabase.cache else {
-            return backend.database
-        }
-        return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
+        return backend.cachedDatabase
     }
 
     private var active: Binding<String> {

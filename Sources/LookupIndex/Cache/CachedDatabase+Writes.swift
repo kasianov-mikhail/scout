@@ -6,13 +6,15 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
+@available(iOS 18, macOS 15, *)
 extension CachedDatabase: DatabaseWriter {
-    package func write(record: Record) async throws {
+    func write(record: Record) async throws {
         try await base.write(record: record)
     }
 
-    package func write(records: [Record]) async throws {
+    func write(records: [Record]) async throws {
         try await base.write(records: records)
     }
 }
