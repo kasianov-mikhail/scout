@@ -19,6 +19,7 @@ jobs:
 
     outputs:
       code: ${{ steps.filter.outputs.code }}
+      api: ${{ steps.api-filter.outputs.api }}
       legs: ${{ steps.legs.outputs.legs }}
 
     steps:
@@ -35,6 +36,16 @@ jobs:
           BEFORE_SHA: ${{ github.event.before }}
           PATTERN: ^(Sources/|Tests/|Package\.swift$|\.swift-format$|\.github/)
           OUTPUT: code
+        run: .github/scripts/detect-changes.sh
+
+      - name: Detect public API changes
+        id: api-filter
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          PATTERN: ^(Sources/|Package\.swift$|\.github/)
+          OUTPUT: api
         run: .github/scripts/detect-changes.sh
 
       - name: Read the iOS matrix
@@ -192,7 +203,7 @@ jobs:
 
   api-breakage:
     needs: [scope, lint, model-versions]
-    if: github.event_name == 'pull_request' && needs.scope.outputs.code == 'true'
+    if: github.event_name == 'pull_request' && needs.scope.outputs.api == 'true'
     runs-on: macos-26
     timeout-minutes: 30
 
@@ -341,6 +352,11 @@ jobs:
           fi
           .github/scripts/require-results.sh \
             "Lint|${{ needs.lint.result }}" \
-            "The model-version check|${{ needs.model-versions.result }}" \
+            "The model-version check|${{ needs.model-versions.result }}"
+          if [ "${{ needs.scope.outputs.api }}" != "true" ]; then
+            echo "No source or manifest changed; the public API cannot have moved."
+            exit 0
+          fi
+          .github/scripts/require-results.sh \
             "The API breakage check|${{ needs.api-breakage.result }}"
           echo "Gate passes."
