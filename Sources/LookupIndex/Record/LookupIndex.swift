@@ -27,7 +27,7 @@ public enum LookupIndex {
             return
         }
         do {
-            CachedDatabase.cache = try RecordCache()
+            Backend.cache = try RecordCache()
         } catch {
             print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")
         }

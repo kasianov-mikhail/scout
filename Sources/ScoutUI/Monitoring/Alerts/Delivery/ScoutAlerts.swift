@@ -59,11 +59,7 @@
                 return
             }
             do {
-                if let cache = CachedDatabase.cache {
-                    _ = try await engine.run(in: CachedDatabase(base: backend.database, scope: backend.id, cache: cache))
-                } else {
-                    _ = try await engine.run(in: backend.database)
-                }
+                _ = try await engine.run(in: backend.cachedDatabase)
             } catch {
                 print("Failed to evaluate the alert rules in the background: \(error)")
             }

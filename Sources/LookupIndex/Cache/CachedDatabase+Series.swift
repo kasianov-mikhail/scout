@@ -6,21 +6,23 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
+@available(iOS 18, macOS 15, *)
 extension CachedDatabase: SeriesReader {
-    package func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
+    func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         try await series(matching: query, fetch: base.eventSeries)
     }
 
-    package func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
+    func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
         try await series(matching: query, fetch: base.lifecycleSeries)
     }
 
-    package func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
+    func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
         try await series(matching: query, fetch: base.metricSeries)
     }
 
-    private func series<Query: SeriesQuery>(matching query: Query, fetch: (Query) async throws -> [MetricSeries]) async throws -> [MetricSeries] {
+    private func series<Query: CacheableQuery>(matching query: Query, fetch: (Query) async throws -> [MetricSeries]) async throws -> [MetricSeries] {
         let frozenUpper = min(query.range.upperBound, now().startOfWeek.addingWeek(-1))
 
         guard query.range.lowerBound < frozenUpper else {
@@ -51,7 +53,7 @@ extension CachedDatabase: SeriesReader {
         return MetricSeries.combined(cached: cached?.records ?? [], fetched: fetched)
     }
 
-    private func cachedSpan(for fingerprint: String, in frozen: Range<Date>) async -> CachedSpan? {
+    private func cachedSpan(for fingerprint: String, in frozen: Range<Date>) async -> CoveredSpan? {
         guard let covered = await cache.coveredRange(for: fingerprint) else {
             return nil
         }
@@ -65,11 +67,11 @@ extension CachedDatabase: SeriesReader {
             return nil
         }
 
-        return CachedSpan(records: records, upper: upper)
+        return CoveredSpan(records: records, upper: upper)
     }
 }
 
-private struct CachedSpan {
+private struct CoveredSpan {
     let records: [Record]
     let upper: Date
 }
