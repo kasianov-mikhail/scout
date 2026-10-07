@@ -59,7 +59,7 @@ private struct EventFilter: ViewModifier {
             #endif
         }
         .task(id: filter) {
-            guard !filter.text.isEmpty, (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
+            guard !filter.text.isEmpty, (try? await Task.sleep(for: .milliseconds(300))) != nil else {
                 return
             }
 
