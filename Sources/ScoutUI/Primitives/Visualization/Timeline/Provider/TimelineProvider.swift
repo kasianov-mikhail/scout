@@ -76,11 +76,9 @@ final class TimelineProvider: ObservableObject {
                     throw CancellationError()
                 }
 
-                let lanes = [older, newer].filter { $0.pendingInstalls.count > 0 }
+                let lanes = [older, newer].filter { !$0.pendingInstalls.isEmpty }
 
-                guard lanes.count > 0 else {
-                    break
-                }
+                guard !lanes.isEmpty else { break }
 
                 try await withThrowingTaskGroup(of: (sessions: [Session], events: [Event]).self) { group in
                     for lane in lanes {

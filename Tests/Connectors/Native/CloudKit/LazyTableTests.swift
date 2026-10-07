@@ -35,7 +35,7 @@ struct LazyTableTests {
         try await publish(through: shared)
 
         #expect(first.records.count == 1, "The second call reads through the value the first one left")
-        #expect(second.records.count == 0)
+        #expect(second.records.isEmpty)
     }
 
     @Test("An id of its own gets a value of its own")

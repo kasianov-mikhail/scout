@@ -16,7 +16,7 @@ struct ChartExportFile {
 
     var filename: String {
         let trimmed = name.replacingOccurrences(of: "/", with: "-").trimmingCharacters(in: .whitespacesAndNewlines)
-        let base = trimmed.count > 0 ? trimmed : "Chart"
+        let base = trimmed.isEmpty ? "Chart" : trimmed
         return "\(base).\(format.fileExtension)"
     }
 

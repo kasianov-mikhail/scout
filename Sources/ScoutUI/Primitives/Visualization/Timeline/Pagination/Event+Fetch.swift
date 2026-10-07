@@ -10,9 +10,7 @@ import Scout
 
 extension Event {
     static func fetch(sessionIDs: [UUID], name: String?, in database: RecordReader) async throws -> [Event] {
-        guard sessionIDs.count > 0 else {
-            return []
-        }
+        guard !sessionIDs.isEmpty else { return [] }
 
         let ids = sessionIDs.map(\.uuidString)
         let query = RecordQuery(recordType: Event.self, filters: filters(ids: ids, name: name))

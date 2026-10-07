@@ -25,9 +25,7 @@ extension [RetentionCohort] {
             let rates = compactMap {
                 RetentionCohort.rate($0.retention, onDay: day)
             }
-            guard rates.count > 0 else {
-                return nil
-            }
+            guard !rates.isEmpty else { return nil }
             return RetentionCohort.DayStat(
                 day: day, average: rates.reduce(0, +) / Double(rates.count), low: rates.min() ?? 0,
                 high: rates.max() ?? 0

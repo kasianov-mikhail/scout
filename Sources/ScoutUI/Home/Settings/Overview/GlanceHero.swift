@@ -18,7 +18,7 @@ struct GlanceSummary {
         reachable = backends.filter { $0.status == .reachable }.count
         total = backends.count
         let latencies = backends.compactMap(\.latency)
-        averageLatency = latencies.count > 0 ? latencies.reduce(0, +) / latencies.count : nil
+        averageLatency = latencies.isEmpty ? nil : latencies.reduce(0, +) / latencies.count
     }
 
     var allOperational: Bool {

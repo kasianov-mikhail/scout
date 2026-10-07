@@ -30,7 +30,7 @@ struct BackendHealthTests {
         #expect(info.hasAPIKey)
         #expect(!info.isSecure)
         #expect(health.status == nil)
-        #expect(health.pings.count == 0)
+        #expect(health.pings.isEmpty)
     }
 
     @Test("Marks HTTPS server backends as secure and keyless ones as not set")

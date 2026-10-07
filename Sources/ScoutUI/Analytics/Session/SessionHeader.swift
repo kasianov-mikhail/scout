@@ -46,7 +46,7 @@ struct SessionHeader: View {
         if let startDate = info.startDate {
             parts.append("started \(startDate.relativeString)")
         }
-        return parts.count > 0 ? parts.joined(separator: " · ") : nil
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 }
 

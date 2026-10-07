@@ -45,13 +45,13 @@ struct VersionDetailView: View {
             .listRowSeparator(.hidden, edges: .top)
 
             IncidentTrendSection(records: crashRecords) {
-                if crashRecords.count > 0 {
+                if !crashRecords.isEmpty {
                     AllButton { showAllCrashes = true }
                 }
             }
 
             IncidentTrendSection(records: hangRecords) {
-                if hangRecords.count > 0 {
+                if !hangRecords.isEmpty {
                     AllButton { showAllHangs = true }
                 }
             }
@@ -166,7 +166,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
 
     @ViewBuilder
     var body: some View {
-        if groups.count > 0 {
+        if !groups.isEmpty {
             Header(title: title)
 
             ForEach(groups) { group in

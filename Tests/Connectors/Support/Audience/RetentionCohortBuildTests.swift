@@ -259,7 +259,7 @@ struct RetentionCohortBuildTests {
 
         let cohort = try #require(cohorts.first { $0.id == installDay.startOfWeek })
 
-        #expect(cohort.segments.count == 0)
+        #expect(cohort.segments.isEmpty)
     }
 
     @Test("Milestones that have not elapsed are nil in segments too")
@@ -293,6 +293,6 @@ struct RetentionCohortBuildTests {
             now: now
         )
 
-        #expect(cohorts.count == 0)
+        #expect(cohorts.isEmpty)
     }
 }

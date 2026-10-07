@@ -105,7 +105,7 @@ struct RecordCacheTests {
         #expect(await cache.coveredRange(for: "b") == nil)
 
         let cached = try #require(await cache.records(for: "b", in: date(0)..<date(300)))
-        #expect(cached.count == 0)
+        #expect(cached.isEmpty)
     }
 
     @available(iOS 18, macOS 15, *)
@@ -142,7 +142,7 @@ struct RecordCacheTests {
 
         #expect(await cache.coveredRange(for: "fp") == nil)
         let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(300)))
-        #expect(cached.count == 0)
+        #expect(cached.isEmpty)
         #expect(await cache.size == 0)
     }
 

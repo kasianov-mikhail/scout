@@ -59,7 +59,7 @@ final class RailLane: ObservableObject {
             await withCheckedContinuation { waiters.append($0) }
         }
 
-        guard generation == self.generation, cursor != nil || pendingInstalls.count > 0 else {
+        guard generation == self.generation, cursor != nil || !pendingInstalls.isEmpty else {
             throw CancellationError()
         }
 

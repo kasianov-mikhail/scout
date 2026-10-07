@@ -19,7 +19,7 @@ enum StackWalker {
     static let maximumFrameCount = 64
 
     static func walk(pc: UInt64, fp: UInt64, into buffer: UnsafeMutableBufferPointer<UInt64>) -> Int {
-        guard buffer.count > 0, pc != 0 else {
+        guard !buffer.isEmpty, pc != 0 else {
             return 0
         }
 

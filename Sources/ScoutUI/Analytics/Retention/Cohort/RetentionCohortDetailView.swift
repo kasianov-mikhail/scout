@@ -68,7 +68,7 @@ struct RetentionCohortDetailView: View {
             .padding(.top)
             .listRowSeparator(.hidden)
 
-            if cohort.segments.count > 0 {
+            if !cohort.segments.isEmpty {
                 Header(title: "By OS Version")
 
                 ForEach(cohort.segments) { segment in

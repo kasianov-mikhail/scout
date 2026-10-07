@@ -22,7 +22,7 @@ extension MetricSeries {
 extension [MetricSeries] {
     var nonEmptySorted: [MetricSeries] {
         filter {
-            $0.points.count > 0
+            !$0.points.isEmpty
         }
         .sorted {
             $0.key < $1.key

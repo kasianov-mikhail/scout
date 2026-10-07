@@ -35,9 +35,7 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
     }
 
     private func deviceModels(in database: RecordReader) async throws -> [UUID: String] {
-        guard deviceIDs.count > 0 else {
-            return [:]
-        }
+        guard !deviceIDs.isEmpty else { return [:] }
 
         let query = RecordQuery(
             recordType: Device.self,
@@ -54,9 +52,7 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
     }
 
     private func osVersions(in database: RecordReader) async throws -> [UUID: String] {
-        guard sessionIDs.count > 0 else {
-            return [:]
-        }
+        guard !sessionIDs.isEmpty else { return [:] }
 
         let query = RecordQuery(
             recordType: Session.self,

@@ -302,7 +302,7 @@ struct DeliverTests {
         let charged = try context.fetchAll(EventEntry.self).filter {
             ($0.delivery(for: "server")?.attempts ?? 0) > 0
         }
-        #expect(charged.count > 0)
+        #expect(!charged.isEmpty)
     }
 
     @Test("A requeue during the send survives the delivery pass")

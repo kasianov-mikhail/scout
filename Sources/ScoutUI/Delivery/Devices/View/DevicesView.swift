@@ -14,7 +14,7 @@ struct DevicesView: View {
 
     var body: some View {
         ProviderView(provider: provider) { report in
-            if report.summaries.count > 0 {
+            if !report.summaries.isEmpty {
                 content(report.summaries)
             } else {
                 Placeholder(

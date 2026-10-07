@@ -15,7 +15,7 @@ struct RetentionHeroChartView: View {
 
     var body: some View {
         ProviderView(provider: provider) { cohorts in
-            if cohorts.count > 0 {
+            if !cohorts.isEmpty {
                 RetentionHeroChart(cohorts: cohorts)
             } else {
                 Placeholder(

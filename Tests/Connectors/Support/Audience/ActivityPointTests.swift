@@ -33,7 +33,7 @@ struct ActivityPointTests {
         let reference = Self.bruteForce(visits: visits, in: range)
 
         #expect(windowed.map(Self.tuple) == reference.map(Self.tuple))
-        #expect(windowed.count > 0)
+        #expect(!windowed.isEmpty)
     }
 
     @Test("Points come back ascending without an extra sort")

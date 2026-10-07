@@ -33,7 +33,7 @@ struct BackendHealthProviderTests {
         #expect(up?.lastChecked != nil)
         #expect(down?.status == .unreachable)
         #expect(down?.latency == nil)
-        #expect(down?.pings.count == 0)
+        #expect(down?.pings.isEmpty == true)
         #expect(down?.lastChecked != nil)
     }
 

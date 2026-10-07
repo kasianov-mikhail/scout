@@ -14,7 +14,7 @@ import Testing
 struct SystemInfoTests {
     @Test("deviceModel resolves to a non-empty identifier")
     func deviceModel() {
-        #expect(SystemInfo.deviceModel.count > 0)
+        #expect(!SystemInfo.deviceModel.isEmpty)
     }
 
     @Test("osVersion pairs the platform name with a version number")

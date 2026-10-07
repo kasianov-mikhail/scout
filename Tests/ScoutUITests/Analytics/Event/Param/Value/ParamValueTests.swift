@@ -125,7 +125,7 @@ struct ParamValueTests {
         #expect(leaves.count == 1)
         #expect(leaves[0].label == "0")
         #expect(leaves[0].value == .stringConvertible(.number("5")))
-        #expect(leaves[0].value.nodes.count == 0)
+        #expect(leaves[0].value.nodes.isEmpty)
     }
 
     @Test("Array elements become indexed nodes")
@@ -139,7 +139,7 @@ struct ParamValueTests {
 
     @Test("Scalars produce no nodes")
     func scalarNodes() {
-        #expect(ParamValue(parsing: "plain").nodes.count == 0)
+        #expect(ParamValue(parsing: "plain").nodes.isEmpty)
     }
 
     @Test("Text renders scalars verbatim")

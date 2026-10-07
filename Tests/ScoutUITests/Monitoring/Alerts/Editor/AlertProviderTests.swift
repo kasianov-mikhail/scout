@@ -29,7 +29,7 @@ struct AlertProviderTests {
         let statuses = try await provider.fetch(in: database)
 
         #expect(statuses[0].outcome.shouldNotify)
-        #expect(center.requests.count == 0)
+        #expect(center.requests.isEmpty)
         #expect(try registry.state(for: errorRule) == .armed)
     }
 

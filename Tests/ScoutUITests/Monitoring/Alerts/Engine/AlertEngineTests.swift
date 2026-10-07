@@ -79,7 +79,7 @@ struct AlertEngineTests {
 
         _ = try await engine.run(in: database)
 
-        #expect(center.requests.count == 0)
+        #expect(center.requests.isEmpty)
 
         center.addError = nil
         let second = try await engine.run(in: database)

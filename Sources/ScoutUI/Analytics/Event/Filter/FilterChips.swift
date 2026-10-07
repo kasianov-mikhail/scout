@@ -14,7 +14,7 @@ struct FilterChips: View {
     var body: some View {
         let chips = query.chips
 
-        if chips.count > 0 {
+        if !chips.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
                     ForEach(chips) { chip in

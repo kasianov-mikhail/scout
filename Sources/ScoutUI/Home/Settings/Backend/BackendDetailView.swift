@@ -65,7 +65,7 @@ struct BackendDetailView: View {
 
             DetailValueRow(title: "Last Checked", value: backend.lastCheckedLabel)
 
-            if backend.pings.count > 0 {
+            if !backend.pings.isEmpty {
                 HStack {
                     Text(verbatim: "Recent Pings")
                     Spacer()

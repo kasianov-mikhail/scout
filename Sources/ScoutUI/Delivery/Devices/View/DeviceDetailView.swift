@@ -42,7 +42,7 @@ struct DeviceDetailView: View {
                 }
             }
 
-            if crashes.count > 0 {
+            if !crashes.isEmpty {
                 Header(title: "Recent Crashes")
                 ForEach(crashes) { crash in
                     Row {
@@ -59,7 +59,7 @@ struct DeviceDetailView: View {
                 }
             }
 
-            if hangs.count > 0 {
+            if !hangs.isEmpty {
                 Header(title: "Recent Hangs")
                 ForEach(hangs) { hang in
                     Row {

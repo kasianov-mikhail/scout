@@ -24,7 +24,7 @@ struct IncidentExport<Element: Incident> {
             lines.append(.blank)
             lines.append(.text("Reason: \(reason)"))
         }
-        if incident.stackTrace.count > 0 {
+        if !incident.stackTrace.isEmpty {
             lines.append(.blank)
             lines.append(.heading(level: 2, "Stack Trace"))
             lines.append(.code(incident.stackTrace))
@@ -55,7 +55,7 @@ struct IncidentGroupExport<Element: Incident> {
         }
 
         let rows = group.records.compactMap(row)
-        if rows.count > 0 {
+        if !rows.isEmpty {
             lines.append(.blank)
             lines.append(.heading(level: 2, "Occurrences"))
             lines.append(contentsOf: rows)
@@ -78,6 +78,6 @@ struct IncidentGroupExport<Element: Incident> {
         }
 
         let row = "\(ExportFormat.timestamp(date))\(rowSuffix(element))"
-        return .bullet(ids.count > 0 ? "\(row)  (\(ids.joined(separator: ", ")))" : row)
+        return .bullet(ids.isEmpty ? row : "\(row)  (\(ids.joined(separator: ", ")))")
     }
 }

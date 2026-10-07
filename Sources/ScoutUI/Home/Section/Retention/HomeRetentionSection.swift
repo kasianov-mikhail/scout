@@ -15,13 +15,13 @@ struct HomeRetentionSection: View {
 
     var body: some View {
         Header(title: "Retention") {
-            if let cohorts = try? retention.result?.get(), cohorts.count > 0 {
+            if let cohorts = try? retention.result?.get(), !cohorts.isEmpty {
                 AllButton { path.append(.retention) }
             }
         }
 
         switch retention.result {
-        case .success(let cohorts) where cohorts.count > 0:
+        case .success(let cohorts) where !cohorts.isEmpty:
             let stats = cohorts.stats
 
             let series = MiniChartSeries(

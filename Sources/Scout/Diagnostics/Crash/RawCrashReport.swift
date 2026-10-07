@@ -68,7 +68,7 @@ struct RawCrashReport {
         self.installID = installID
         self.launchID = launchID
         self.deviceID = deviceID
-        self.appVersion = appVersion.count > 0 ? appVersion : nil
+        self.appVersion = appVersion.isEmpty ? nil : appVersion
         self.images = images
     }
 
