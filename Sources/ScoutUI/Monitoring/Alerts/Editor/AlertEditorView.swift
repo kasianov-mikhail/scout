@@ -70,7 +70,7 @@ struct AlertEditorView: View {
             }
         }
         .task(id: draft.metric) {
-            guard draft.isValid, (try? await Task.sleep(nanoseconds: 300_000_000)) != nil else {
+            guard draft.isValid, (try? await Task.sleep(for: .milliseconds(300))) != nil else {
                 return
             }
 
