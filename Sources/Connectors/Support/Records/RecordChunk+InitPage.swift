@@ -9,14 +9,14 @@ import Foundation
 import Scout
 
 extension RecordChunk {
-    package static func page(of matches: [Record], limit: Int, after offset: Int = 0) -> RecordChunk {
+    package init(page matches: [Record], limit: Int, after offset: Int = 0) {
         let page = matches.dropFirst(offset).prefix(limit)
         let next = offset + page.count
 
-        return RecordChunk(
+        self.init(
             records: Array(page),
             cursor: next < matches.count
-                ? RecordCursor { _ in Self.page(of: matches, limit: limit, after: next) }
+                ? RecordCursor { _ in RecordChunk(page: matches, limit: limit, after: next) }
                 : nil
         )
     }

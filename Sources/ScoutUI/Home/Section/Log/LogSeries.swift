@@ -33,10 +33,10 @@ struct LogSeries {
         let incidents: Set = [CrashEntry.recordType, HangEntry.recordType]
 
         return [
-            .events: trend(span.points { !incidents.contains($0) }),
-            .crashes: trend(span.points { $0 == CrashEntry.recordType }),
-            .hangs: trend(span.points { $0 == HangEntry.recordType }),
-            .network: trend(span.points(inCategories: Set(StatusBuckets.categories))),
+            .events: Trend(total: span.points { !incidents.contains($0) }, period: period),
+            .crashes: Trend(total: span.points { $0 == CrashEntry.recordType }, period: period),
+            .hangs: Trend(total: span.points { $0 == HangEntry.recordType }, period: period),
+            .network: Trend(total: span.points(inCategories: Set(StatusBuckets.categories)), period: period),
             .metrics: metrics,
             .devices: devices,
         ]
@@ -44,9 +44,5 @@ struct LogSeries {
 
     private func count(in range: Range<Date>) -> Int {
         SeriesSpan(series: series, range: range).metricCount
-    }
-
-    private func trend(_ points: [ChartPoint<Int>]) -> Trend {
-        .total(points: points, period: period)
     }
 }

@@ -161,7 +161,7 @@ import Testing
     }
 
     @Test func retentionMaturityFollowsCorpusNow() async throws {
-        let pinned = DemoDatabase(corpus: DemoCorpus.make(now: Date().addingTimeInterval(-200 * 86400)))
+        let pinned = DemoDatabase(corpus: DemoCorpus.Corpus(now: Date().addingTimeInterval(-200 * 86400)))
         let cohorts = try await pinned.retention(in: range)
 
         #expect(cohorts.count > 0)

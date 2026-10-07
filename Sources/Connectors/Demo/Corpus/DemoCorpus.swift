@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 enum DemoCorpus {
-    static let shared = make(now: Date())
+    static let shared = Corpus(now: Date())
 
     struct Corpus {
         var records: [Record]
@@ -17,8 +17,10 @@ enum DemoCorpus {
         var activity: [ActivityPoint]
         var retention: [RetentionCohort]
     }
+}
 
-    static func make(now: Date) -> Corpus {
+extension DemoCorpus.Corpus {
+    init(now: Date) {
         let clock = DemoClock(now: now)
         let scenario = DemoScenario(clock: clock)
         let incidents = DemoIncidents(scenario: scenario)
@@ -27,7 +29,7 @@ enum DemoCorpus {
         let metrics = DemoMetrics(clock: clock)
         let activity = DemoActivity(scenario: scenario, incidents: incidents)
 
-        return Corpus(
+        self.init(
             records: scenario.records + incidents.records + events.records,
             samples: releases.samples + events.samples + metrics.samples,
             activity: activity.points,
