@@ -26,8 +26,13 @@ actor RecordCache {
         var descriptor = FetchDescriptor<CachedRecord>()
         descriptor.propertiesToFetch = [\.size]
 
-        let rows = (try? context.fetch(descriptor)) ?? []
-        return rows.reduce(0) { $0 + Int64($1.size) }
+        do {
+            let rows = try context.fetch(descriptor)
+            return rows.reduce(0) { $0 + Int64($1.size) }
+        } catch {
+            print("Failed to measure the record cache: \(error)")
+            return 0
+        }
     }
 
     func removeAll() {
@@ -40,9 +45,13 @@ actor RecordCache {
             print("Failed to open the next record cache store, so the current one is emptied in place: \(error)")
         }
 
-        try? context.delete(model: CachedRecord.self)
-        try? context.delete(model: CachedSpan.self)
-        try? context.save()
+        do {
+            try context.delete(model: CachedRecord.self)
+            try context.delete(model: CachedSpan.self)
+            try context.save()
+        } catch {
+            print("Failed to empty the record cache: \(error)")
+        }
     }
 
     func coveredRange(for fingerprint: String) -> Range<Date>? {
@@ -50,10 +59,18 @@ actor RecordCache {
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
 
-        guard let span = try? context.fetch(descriptor).first, span.lowerDate < span.upperDate else {
+        do {
+            guard let span = try context.fetch(descriptor).first else {
+                return nil
+            }
+            guard span.lowerDate < span.upperDate else {
+                return nil
+            }
+            return span.lowerDate..<span.upperDate
+        } catch {
+            print("Failed to read the covered range of the record cache: \(error)")
             return nil
         }
-        return span.lowerDate..<span.upperDate
     }
 
     func records(for fingerprint: String, in range: Range<Date>) -> [Record]? {
@@ -61,18 +78,17 @@ actor RecordCache {
             predicate: CachedRecord.predicate(fingerprint: fingerprint, in: range),
             sortBy: [SortDescriptor(\.date)]
         )
-        guard let entries = try? context.fetch(descriptor) else {
-            return nil
-        }
-
         let decoder = JSONDecoder()
-        let records = entries.compactMap {
-            try? decoder.decode(Record.self, from: $0.payload)
-        }
-        guard records.count == entries.count else {
+
+        do {
+            let entries = try context.fetch(descriptor)
+            return try entries.map {
+                try decoder.decode(Record.self, from: $0.payload)
+            }
+        } catch {
+            print("Failed to read records from the record cache: \(error)")
             return nil
         }
-        return records
     }
 
     func store(_ records: [Record], for fingerprint: String, covering range: Range<Date>) {
@@ -86,76 +102,90 @@ actor RecordCache {
             guard range.contains(date) else {
                 continue
             }
-            guard let payload = try? encoder.encode(record) else {
+            do {
+                let payload = try encoder.encode(record)
+                entries.append(CachedRecord(fingerprint: fingerprint, date: date, payload: payload))
+            } catch {
+                print("Failed to encode a record for the record cache: \(error)")
                 return
             }
-            entries.append(CachedRecord(fingerprint: fingerprint, date: date, payload: payload))
         }
 
         let predicate = #Predicate<CachedSpan> { $0.fingerprint == fingerprint }
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
 
-        if let span = try? context.fetch(descriptor).first, span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
-            try? context.delete(
-                model: CachedRecord.self,
-                where: CachedRecord.predicate(fingerprint: fingerprint, in: range)
-            )
-            span.upperDate = max(span.upperDate, range.upperBound)
-        } else {
-            try? context.delete(
-                model: CachedRecord.self,
-                where: CachedRecord.predicate(fingerprint: fingerprint)
-            )
-            try? context.delete(
-                model: CachedSpan.self,
-                where: predicate
-            )
-
-            context.insert(
-                CachedSpan(
-                    fingerprint: fingerprint,
-                    lowerDate: range.lowerBound,
-                    upperDate: range.upperBound
+        do {
+            if let span = try context.fetch(descriptor).first, span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
+                try context.delete(
+                    model: CachedRecord.self,
+                    where: CachedRecord.predicate(fingerprint: fingerprint, in: range)
                 )
-            )
-        }
+                span.upperDate = max(span.upperDate, range.upperBound)
+            } else {
+                try context.delete(
+                    model: CachedRecord.self,
+                    where: CachedRecord.predicate(fingerprint: fingerprint)
+                )
+                try context.delete(
+                    model: CachedSpan.self,
+                    where: predicate
+                )
 
-        for entry in entries {
-            context.insert(entry)
+                context.insert(
+                    CachedSpan(
+                        fingerprint: fingerprint,
+                        lowerDate: range.lowerBound,
+                        upperDate: range.upperBound
+                    )
+                )
+            }
+
+            for entry in entries {
+                context.insert(entry)
+            }
+            try context.save()
+        } catch {
+            print("Failed to store records in the record cache: \(error)")
         }
-        try? context.save()
     }
 
     func lookupRecord(for fingerprint: String) -> Record? {
         var descriptor = FetchDescriptor(predicate: CachedRecord.predicate(fingerprint: fingerprint))
         descriptor.fetchLimit = 1
 
-        guard let entry = try? context.fetch(descriptor).first else {
+        do {
+            guard let entry = try context.fetch(descriptor).first else {
+                return nil
+            }
+            return try JSONDecoder().decode(Record.self, from: entry.payload)
+        } catch {
+            print("Failed to read a lookup record from the record cache: \(error)")
             return nil
         }
-        return try? JSONDecoder().decode(Record.self, from: entry.payload)
     }
 
     func storeLookup(_ record: Record, for fingerprint: String) {
-        guard let payload = try? JSONEncoder().encode(record) else {
-            return
-        }
+        do {
+            let payload = try JSONEncoder().encode(record)
 
-        try? context.delete(
-            model: CachedRecord.self,
-            where: CachedRecord.predicate(fingerprint: fingerprint)
-        )
-
-        context.insert(
-            CachedRecord(
-                fingerprint: fingerprint,
-                date: .distantPast,
-                payload: payload
+            try context.delete(
+                model: CachedRecord.self,
+                where: CachedRecord.predicate(fingerprint: fingerprint)
             )
-        )
 
-        try? context.save()
+            context.insert(
+                CachedRecord(
+                    fingerprint: fingerprint,
+                    date: .distantPast,
+                    payload: payload
+                )
+            )
+
+            try context.save()
+        } catch {
+            print("Failed to store a lookup record in the record cache: \(error)")
+        }
     }
 }
 
