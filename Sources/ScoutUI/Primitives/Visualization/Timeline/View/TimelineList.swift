@@ -38,7 +38,7 @@ struct TimelineList<Pagination: View>: View {
 }
 
 #Preview {
-    NavigationView {
+    NavigationStack {
         ScrollView {
             let items = [TimelineItem].samples
 
