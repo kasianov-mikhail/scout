@@ -36,11 +36,28 @@ struct IncidentArchive<Payload: Codable & Sendable> {
         }
     }
 
-    func flush(deviceID: UUID) async {
-        guard let files = try? fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
-            return
+    var files: [URL] {
+        guard fileManager.fileExists(atPath: directory.path) else {
+            return []
         }
 
+        do {
+            return try fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)
+        } catch {
+            print("Failed to list \(pathExtension) files: \(error)")
+            return []
+        }
+    }
+
+    func remove(file: URL) {
+        do {
+            try fileManager.removeItem(at: file)
+        } catch {
+            print("Failed to remove \(file.lastPathComponent): \(error)")
+        }
+    }
+
+    func flush(deviceID: UUID) async {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
 
@@ -50,7 +67,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
                 data = try Data(contentsOf: file)
             } catch {
                 print("Failed to read \(file.lastPathComponent), removing it: \(error)")
-                try? fileManager.removeItem(at: file)
+                remove(file: file)
                 continue
             }
 
@@ -59,7 +76,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
                 payload = try decoder.decode(Payload.self, from: data)
             } catch {
                 print("Failed to decode \(file.lastPathComponent), removing it: \(error)")
-                try? fileManager.removeItem(at: file)
+                remove(file: file)
                 continue
             }
 
