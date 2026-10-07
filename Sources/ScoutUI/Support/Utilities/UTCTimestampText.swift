@@ -9,12 +9,7 @@
 import Scout
 import SwiftUI
 
-private let utcDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.timeZone = TimeZone(secondsFromGMT: 0)
-    formatter.dateFormat = "dd.MM.y, HH:mm"
-    return formatter
-}()
+private let utcDateFormatter = DateFormatter(format: "dd.MM.y, HH:mm")
 
 struct UTCTimestampText: View {
     let date: Date

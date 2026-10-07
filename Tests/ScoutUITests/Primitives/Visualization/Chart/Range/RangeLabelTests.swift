@@ -12,11 +12,7 @@ import Testing
 @testable import ScoutUI
 
 struct RangeLabelTests {
-    let formatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd"
-        return formatter
-    }()
+    let formatter = DateFormatter(format: "yyyy-MM-dd")
 
     @Test("Single day range") func testSingleDayRange() throws {
         let startDate = try #require(formatter.date(from: "2024-01-01"))

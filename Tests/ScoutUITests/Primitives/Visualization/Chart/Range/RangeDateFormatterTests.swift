@@ -12,9 +12,8 @@ import Testing
 @testable import ScoutUI
 
 struct RangeDateFormatterTests {
-    @Test("Uses the en_US locale and medium date style") func testConfiguration() {
-        #expect(rangeDateFormatter.locale == Locale(identifier: "en_US"))
-        #expect(rangeDateFormatter.dateStyle == .medium)
+    @Test("Uses a month, day and year format") func testConfiguration() {
+        #expect(rangeDateFormatter.dateFormat == "MMM d, y")
     }
 
     /// The chart domain is built from UTC day boundaries, so the label has to read
@@ -25,9 +24,7 @@ struct RangeDateFormatterTests {
     }
 
     @Test("Formats a date in the expected style") func testFormatting() throws {
-        let parser = DateFormatter()
-        parser.dateFormat = "yyyy-MM-dd"
-        parser.timeZone = Calendar.utc.timeZone
+        let parser = DateFormatter(format: "yyyy-MM-dd")
         let date = try #require(parser.date(from: "2024-01-01"))
 
         #expect(rangeDateFormatter.string(from: date) == "Jan 1, 2024")

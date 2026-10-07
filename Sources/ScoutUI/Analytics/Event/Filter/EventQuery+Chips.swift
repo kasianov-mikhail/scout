@@ -56,13 +56,7 @@ extension EventQuery {
         }
     }
 
-    private static let chipFormatter: DateFormatter = {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US")
-        formatter.timeZone = Calendar.utc.timeZone
-        formatter.dateFormat = "d MMM"
-        return formatter
-    }()
+    private static let chipFormatter = DateFormatter(format: "d MMM")
 }
 
 extension UUID {
