@@ -12,7 +12,7 @@ struct RedactedText: View {
     let count: Int?
 
     var body: some View {
-        if let count = count {
+        if let count {
             Text(count == 0 ? "—" : count.compact)
         } else {
             Redacted(length: 5)
