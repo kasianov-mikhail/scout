@@ -26,7 +26,7 @@ package class DateEntry: NSManagedObject {
     }
 
     var isDeletable: Bool {
-        isPurgeable && references.count == 0
+        isPurgeable && references.isEmpty
     }
 
     var latest: Date? {

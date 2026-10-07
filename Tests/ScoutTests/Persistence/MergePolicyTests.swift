@@ -106,7 +106,7 @@ struct MergePolicyTests {
             }
         }
 
-        #expect(failures.current.count == 0)
+        #expect(failures.current.isEmpty)
 
         let context = container.newBackgroundContext()
         try context.performAndWait {
@@ -146,7 +146,7 @@ struct MergePolicyTests {
             }
         }
 
-        #expect(failures.current.count == 0)
+        #expect(failures.current.isEmpty)
 
         let context = container.newBackgroundContext()
         try context.performAndWait {

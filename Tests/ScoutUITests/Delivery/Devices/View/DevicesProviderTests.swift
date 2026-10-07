@@ -107,6 +107,6 @@ struct DevicesProviderTests {
         await provider.fetchIfNeeded(in: database)
         let report = try #require(provider.result).get()
 
-        #expect(report.summaries.count == 0)
+        #expect(report.summaries.isEmpty)
     }
 }

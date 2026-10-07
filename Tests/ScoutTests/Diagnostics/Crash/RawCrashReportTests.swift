@@ -145,7 +145,7 @@ struct RawCrashReportTests {
         archive.convertRawReports()
 
         let files = try fileManager.storedFiles("Crashes")
-        #expect(files.count == 0)
+        #expect(files.isEmpty)
     }
 
     private func crashArchive(_ fileManager: FileManager) -> IncidentArchive<CrashInfo> {

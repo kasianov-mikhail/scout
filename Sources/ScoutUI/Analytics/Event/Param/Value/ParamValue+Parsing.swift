@@ -82,7 +82,7 @@ extension ParamValue.Convertible {
     private static let numberScalars = CharacterSet(charactersIn: "0123456789+-.eE")
 
     private static func isNumber(_ text: String) -> Bool {
-        guard text.count > 0, Double(text) != nil else {
+        guard !text.isEmpty, Double(text) != nil else {
             return false
         }
         return text.unicodeScalars.allSatisfy(numberScalars.contains)

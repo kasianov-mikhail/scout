@@ -55,7 +55,7 @@ struct AlertNotifierTests {
         let undelivered = await notifier.deliver([status])
 
         #expect(undelivered.map(\.rule) == [status.rule])
-        #expect(center.requests.count == 0)
+        #expect(center.requests.isEmpty)
     }
 
     @Test("A delivered notification leaves nothing undelivered")
@@ -65,7 +65,7 @@ struct AlertNotifierTests {
 
         let undelivered = await notifier.deliver([makeStatus(shouldNotify: true)])
 
-        #expect(undelivered.count == 0)
+        #expect(undelivered.isEmpty)
         #expect(center.requests.count == 1)
     }
 

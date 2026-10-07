@@ -24,7 +24,7 @@ struct HomeAlertSection: View {
                         CountBadge(count: statuses.firingCount)
                     }
 
-                    if statuses.count > 0 {
+                    if !statuses.isEmpty {
                         AllButton { path.append(.alerts) }
                     }
                 } else {
@@ -46,7 +46,7 @@ struct HomeAlertSection: View {
         case .success(let statuses) where statuses.allHealthy:
             placeholderText("All healthy").foregroundStyle(.green)
 
-        case .success(let statuses) where statuses.count > 0:
+        case .success(let statuses) where !statuses.isEmpty:
             ForEach(statuses.prefix(2), id: \.rule) { status in
                 AlertRow(status: status)
             }

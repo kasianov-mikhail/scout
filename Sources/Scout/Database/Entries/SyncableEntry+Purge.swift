@@ -9,9 +9,7 @@ import CoreData
 
 extension SyncableEntry {
     static func purge(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws {
-        guard backendIDs.count > 0 else {
-            return
-        }
+        guard !backendIDs.isEmpty else { return }
 
         let request = NSFetchRequest<SyncableEntry>(entityName: "SyncableEntry")
         request.predicate = NSPredicate(

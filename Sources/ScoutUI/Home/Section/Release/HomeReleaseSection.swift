@@ -15,13 +15,13 @@ struct HomeReleaseSection: View {
 
     var body: some View {
         Header(title: "Releases") {
-            if let releases = try? releases.result?.get(), releases.count > 0 {
+            if let releases = try? releases.result?.get(), !releases.isEmpty {
                 AllButton { path.append(.releaseHealth) }
             }
         }
 
         switch releases.result {
-        case .success(let releases) where releases.count > 0:
+        case .success(let releases) where !releases.isEmpty:
             ForEach(releases.prefix(3)) { release in
                 ReleaseRow(release: release)
             }

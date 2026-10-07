@@ -15,7 +15,7 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
     @ViewBuilder let row: (Element) -> RowContent
 
     var body: some View {
-        if breakdown.devices.count > 0 {
+        if !breakdown.devices.isEmpty {
             Header(title: "Top Devices")
 
             chart(
@@ -25,7 +25,7 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
             )
         }
 
-        if breakdown.osVersions.count > 0 {
+        if !breakdown.osVersions.isEmpty {
             Header(title: "OS Versions")
 
             chart(

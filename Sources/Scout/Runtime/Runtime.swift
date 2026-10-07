@@ -64,9 +64,7 @@ extension Runtime {
             dispatcher: Coalescer()
         )
 
-        guard backends.count > 0 else {
-            return
-        }
+        guard !backends.isEmpty else { return }
 
         let runtime = self
 

@@ -12,9 +12,7 @@ struct DevicesExport {
     let devices: [DeviceSummary]
 
     var text: String? {
-        guard devices.count > 0 else {
-            return nil
-        }
+        guard !devices.isEmpty else { return nil }
         var lines: [ExportLine] = [.heading(level: 1, title), .text(summary), .blank]
         lines.append(contentsOf: devices.sorted { $0.lastSeen > $1.lastSeen }.map(row))
         return lines.text

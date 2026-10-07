@@ -27,7 +27,7 @@ struct Timeline: View {
                 RingIndicator().frame(maxHeight: .infinity)
             case .failure(let error):
                 errorView(Text(verbatim: error.localizedDescription))
-            case .success where provider.items.count == 0:
+            case .success where provider.items.isEmpty:
                 errorView(Text(verbatim: "The timeline couldn't be loaded."))
             case .success:
                 list
@@ -75,7 +75,7 @@ struct Timeline: View {
     /// loading or on an error or empty result.
     ///
     private var showsList: Bool {
-        if case .success = provider.result, provider.items.count > 0 {
+        if case .success = provider.result, !provider.items.isEmpty {
             return true
         }
         return false

@@ -99,7 +99,7 @@ extension AlertDraft {
     }
 
     var isValid: Bool {
-        choice == .crashFreeSessions || eventName.count > 0
+        choice == .crashFreeSessions || !eventName.isEmpty
     }
 
     private var condition: AlertCondition {

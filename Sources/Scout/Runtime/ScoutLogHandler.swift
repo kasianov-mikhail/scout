@@ -53,9 +53,7 @@ public struct ScoutLogHandler: LogHandler {
     }
 
     public func log(event: LogEvent) {
-        guard runtime.backends.count > 0 else {
-            return
-        }
+        guard !runtime.backends.isEmpty else { return }
 
         let date = Date()
         let identity = runtime.identity.snapshot

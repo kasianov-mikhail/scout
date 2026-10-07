@@ -37,6 +37,6 @@ struct RangeSlicesTests {
     func emptyRange() {
         let date = Date(year: 2026, month: 6, day: 1)
 
-        #expect((date..<date).slices(count: 7).count == 0)
+        #expect((date..<date).slices(count: 7).isEmpty)
     }
 }

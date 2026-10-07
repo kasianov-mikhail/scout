@@ -18,7 +18,7 @@ import Testing
 
     @Test func releaseHealthLightsUp() async throws {
         let health = try await ReleaseHealthProvider().fetch(in: database)
-        #expect(health.count > 0)
+        #expect(!health.isEmpty)
     }
 
     @Test func releaseHealthReadsHealthy() async throws {
@@ -33,7 +33,7 @@ import Testing
 
     @Test func devicesLightUp() async throws {
         let report = try await DevicesProvider().fetch(in: database)
-        #expect(report.summaries.count > 0)
+        #expect(!report.summaries.isEmpty)
     }
 
     @Test func networkLightsUp() async throws {
@@ -50,27 +50,27 @@ import Testing
 
     @Test func activityLightsUp() async throws {
         let points = try await ActivityProvider().fetch(in: database)
-        #expect(points.count > 0)
+        #expect(!points.isEmpty)
     }
 
     @Test func retentionLightsUp() async throws {
         let cohorts = try await RetentionProvider().fetch(in: database)
-        #expect(cohorts.count > 0)
+        #expect(!cohorts.isEmpty)
     }
 
     @Test func homeSessionStatLightsUp() async throws {
         let points = try await StatProvider(subject: .sessions).fetch(in: database)
-        #expect(points.count > 0)
+        #expect(!points.isEmpty)
     }
 
     @Test func eventStatLightsUp() async throws {
         let points = try await StatProvider(subject: .event("Search_Performed")).fetch(in: database)
-        #expect(points.count > 0)
+        #expect(!points.isEmpty)
     }
 
     @Test func homeLogLightsUp() async throws {
         let series = try await HomeLogProvider().fetch(in: database)
-        #expect(series.count > 0)
+        #expect(!series.isEmpty)
     }
 
     @Test func deviceTimelineLightsUp() async throws {
@@ -85,7 +85,7 @@ import Testing
             feed: TimelineFeed(deviceID: deviceID, database: database), anchorEvent: nil, eventName: nil)
 
         let rail = try #require(try provider.result?.get())
-        #expect(rail.installs.count > 0)
-        #expect(provider.items.count > 0, "device timeline renders no rows")
+        #expect(!rail.installs.isEmpty)
+        #expect(!provider.items.isEmpty, "device timeline renders no rows")
     }
 }

@@ -253,9 +253,7 @@ final class SpyDatabase: Database, @unchecked Sendable {
         seriesRanges.append(range)
         return series.compactMap { series in
             let points = series.points.filter { range.contains($0.date) }
-            guard points.count > 0 else {
-                return nil
-            }
+            guard !points.isEmpty else { return nil }
             return MetricSeries(name: series.name, category: series.category, version: series.version, points: points)
         }
     }

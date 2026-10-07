@@ -21,9 +21,7 @@ struct TimelineExport {
 
     /// The exported document, or `nil` when the rail has no installs.
     var text: String? {
-        guard rail.installs.count > 0 else {
-            return nil
-        }
+        guard !rail.installs.isEmpty else { return nil }
 
         var lines: [ExportLine] = [.heading(level: 1, title), .text(summary)]
 
@@ -67,7 +65,7 @@ extension TimelineExport {
             ExportFormat.counted(sessions.count, .session),
             ExportFormat.counted(events.count, .event),
         ]
-        if crashes.count > 0 {
+        if !crashes.isEmpty {
             parts.append(ExportFormat.counted(crashes.count, .crash))
         }
         return parts.joined(separator: " · ")

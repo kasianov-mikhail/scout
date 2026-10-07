@@ -14,9 +14,7 @@ extension TelemetryPersisting {
     }
 
     func logMetrics(category: String, value: some MetricScalar) {
-        guard runtime.backends.count > 0 else {
-            return
-        }
+        guard !runtime.backends.isEmpty else { return }
 
         let label = self.label
         let date = Date()
@@ -27,9 +25,7 @@ extension TelemetryPersisting {
     }
 
     func logTimer(seconds: TimeInterval) {
-        guard runtime.backends.count > 0 else {
-            return
-        }
+        guard !runtime.backends.isEmpty else { return }
 
         let label = self.label
         let date = Date()
@@ -49,9 +45,7 @@ extension TelemetryPersisting {
     }
 
     func logRecorder(value: Double) {
-        guard runtime.backends.count > 0 else {
-            return
-        }
+        guard !runtime.backends.isEmpty else { return }
 
         let label = self.label
         let date = Date()

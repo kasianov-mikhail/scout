@@ -42,9 +42,7 @@ package protocol TransientFailure: Error {
             $0.delivery(for: id)?.isPending == true
         }
 
-        guard objects.count > 0 else {
-            return
-        }
+        guard !objects.isEmpty else { return }
 
         do {
             try await send(objects)

@@ -23,20 +23,20 @@ import Testing
     }
 
     @Test func rawRecordsPresentForEveryListType() async throws {
-        #expect(try await records(Device.self).count > 0)
-        #expect(try await records(Install.self).count > 0)
-        #expect(try await records(Launch.self).count > 0)
-        #expect(try await records(Session.self).count > 0)
-        #expect(try await records(Crash.self).count > 0)
-        #expect(try await records(Hang.self).count > 0)
-        #expect(try await records(Event.self).count > 0)
+        #expect(try await !records(Device.self).isEmpty)
+        #expect(try await !records(Install.self).isEmpty)
+        #expect(try await !records(Launch.self).isEmpty)
+        #expect(try await !records(Session.self).isEmpty)
+        #expect(try await !records(Crash.self).isEmpty)
+        #expect(try await !records(Hang.self).isEmpty)
+        #expect(try await !records(Event.self).isEmpty)
     }
 
     @Test func lifecycleSeriesPopulateWithAndWithoutVersions() async throws {
         for name in [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType] {
             let byVersion = try await database.lifecycleSeries(
                 matching: LifecycleSeriesQuery(name: name, bucket: .day, byVersion: true, range: range))
-            #expect(byVersion.count > 0, "expected by-version \(name) series")
+            #expect(!byVersion.isEmpty, "expected by-version \(name) series")
             #expect(byVersion.allSatisfy { $0.version != nil })
 
             let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: name, range: range))
@@ -69,19 +69,19 @@ import Testing
     }
 
     @Test func telemetryAndNetworkSeriesPopulate() async throws {
-        #expect(try await database.metricSeries(Int.self, category: "counter", in: range).count > 0)
+        #expect(try await !database.metricSeries(Int.self, category: "counter", in: range).isEmpty)
         #expect(
-            try await database.metricSeries(
+            try await !database.metricSeries(
                 Int.self, categories: LatencyBuckets.categories + StatusBuckets.categories, in: range
-            ).count > 0)
-        #expect(try await database.metricSeries(Int.self, categories: RecorderBuckets.categories, in: range).count > 0)
+            ).isEmpty)
+        #expect(try await !database.metricSeries(Int.self, categories: RecorderBuckets.categories, in: range).isEmpty)
     }
 
     @Test func timerSeriesAreRecordedInSeconds() async throws {
         let series = try await database.metricSeries(
             Double.self, category: Telemetry.Export.timer.rawValue, in: range)
 
-        #expect(series.count > 0)
+        #expect(!series.isEmpty)
         let values = series.flatMap(\.points).map(\.value)
         #expect(values.allSatisfy { $0 > 0 && $0 < 10 }, "timer values out of range: \(values.max() ?? 0)")
     }
@@ -138,7 +138,7 @@ import Testing
             record["app_version"]
         }
 
-        #expect(versions.count > 0)
+        #expect(!versions.isEmpty)
         #expect(versions == versions.sorted())
     }
 
@@ -149,8 +149,8 @@ import Testing
     }
 
     @Test func activityAndRetentionAggregate() async throws {
-        #expect(try await database.activity(in: range).count > 0)
-        #expect(try await database.retention(in: range).count > 0)
+        #expect(try await !database.activity(in: range).isEmpty)
+        #expect(try await !database.retention(in: range).isEmpty)
     }
 
     @Test func activityCountsDistinctDevices() async throws {
@@ -164,7 +164,7 @@ import Testing
         let pinned = DemoDatabase(corpus: DemoCorpus.Corpus(now: Date().addingTimeInterval(-200 * 86400)))
         let cohorts = try await pinned.retention(in: range)
 
-        #expect(cohorts.count > 0)
+        #expect(!cohorts.isEmpty)
         #expect(cohorts.contains { $0.retention.contains { $0 == nil } })
     }
 
@@ -181,7 +181,7 @@ import Testing
             return start < installed
         }
 
-        #expect(early.count == 0, "\(early.count) sessions start before their install")
+        #expect(early.isEmpty, "\(early.count) sessions start before their install")
     }
 
     @Test func hostWritesDoNotLeakIntoTheExhibit() async throws {

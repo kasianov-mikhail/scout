@@ -82,7 +82,7 @@ extension FilterDraft {
     }
 
     var isApplyEnabled: Bool {
-        levels.count > 0 && isSessionValid && isDeviceValid && isDateRangeValid && result != query.wrappedValue
+        !levels.isEmpty && isSessionValid && isDeviceValid && isDateRangeValid && result != query.wrappedValue
     }
 
     func apply() {
@@ -92,8 +92,8 @@ extension FilterDraft {
 
 extension FilterDraft {
     var isResetEnabled: Bool {
-        levels != EventQuery.allLevels || isDateRangeEnabled || sessionText.trimmed.count > 0
-            || deviceText.trimmed.count > 0
+        levels != EventQuery.allLevels || isDateRangeEnabled || !sessionText.trimmed.isEmpty
+            || !deviceText.trimmed.isEmpty
     }
 
     func reset() {

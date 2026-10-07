@@ -21,7 +21,7 @@ let persistentContainer: NSPersistentContainer = {
 
 extension NSPersistentContainer {
     var isStoreLoaded: Bool {
-        persistentStoreCoordinator.persistentStores.count > 0
+        !persistentStoreCoordinator.persistentStores.isEmpty
     }
 }
 

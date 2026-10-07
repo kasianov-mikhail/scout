@@ -79,7 +79,7 @@ struct NativeRetentionTests {
         let cohort = try #require(try await database.retention(in: range).first)
 
         #expect(cohort.size == 1)
-        #expect(cohort.segments.count == 0)
+        #expect(cohort.segments.isEmpty)
     }
 }
 

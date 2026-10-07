@@ -15,7 +15,7 @@ struct GlobalSearchList: View {
     var body: some View {
         let hits = index.hits(matching: query)
 
-        if hits.count > 0 {
+        if !hits.isEmpty {
             InsetList {
                 ForEach(hits) { hit in
                     GlobalSearchRow(hit: hit, query: query)

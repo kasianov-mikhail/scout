@@ -43,7 +43,7 @@ struct AlertListView: View {
 
     @ViewBuilder private var content: some View {
         switch provider.result {
-        case .success(let statuses) where statuses.count > 0:
+        case .success(let statuses) where !statuses.isEmpty:
             InsetList {
                 chips(statuses)
 

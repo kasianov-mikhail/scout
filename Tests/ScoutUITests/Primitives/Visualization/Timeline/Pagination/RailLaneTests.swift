@@ -45,7 +45,7 @@ struct RailLaneTests {
 
         #expect(sessions.map(\.sessionID) == [sessionID])
         #expect(events.map(\.name) == ["e"])
-        #expect(lane.pendingInstalls.count == 0)
+        #expect(lane.pendingInstalls.isEmpty)
         #expect(!lane.isLoading)
     }
 

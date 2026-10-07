@@ -86,6 +86,6 @@ struct TimelineProviderTests {
         await provider.start(feed: feed, anchorEvent: nil, eventName: nil)
 
         _ = try #require(provider.result).get()
-        #expect(provider.items.count == 0)
+        #expect(provider.items.isEmpty)
     }
 }
