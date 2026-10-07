@@ -22,13 +22,11 @@ struct ProviderView<P: Provider, Content: View>: View {
             case .success(let data):
                 content(data)
             case .failure(let error):
-                ErrorView(description: Text(error.localizedDescription), retry: fetch)
+                ErrorView(description: Text(error.localizedDescription)) {
+                    await provider.fetchAgain(in: database)
+                }
             }
         }
         .refreshes([provider])
-    }
-
-    private func fetch() async {
-        await provider.fetchAgain(in: database)
     }
 }

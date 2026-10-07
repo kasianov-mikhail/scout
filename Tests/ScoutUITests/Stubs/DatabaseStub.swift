@@ -70,7 +70,7 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         defer { lock.unlock() }
         counts[query.recordType.recordType, default: 0] += 1
 
-        return RecordChunk.page(of: (storage[query.recordType.recordType] ?? []).matching(query), limit: limit)
+        return RecordChunk(page: (storage[query.recordType.recordType] ?? []).matching(query), limit: limit)
     }
 
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {

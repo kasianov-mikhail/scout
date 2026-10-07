@@ -30,7 +30,7 @@ private struct AnchoredScroll<ID: Hashable>: ViewModifier {
                 }
                 .toolbar {
                     ToolbarItemGroup(placement: .bottomBar) {
-                        if let direction = recenterDirection(in: viewport) {
+                        if let anchorFrame, let direction = RecenterDirection(frame: anchorFrame, viewport: viewport) {
                             Button {
                                 withAnimation {
                                     center(with: proxy)
@@ -76,10 +76,6 @@ private struct AnchoredScroll<ID: Hashable>: ViewModifier {
             // (or right away when there is no anchor to land).
             .environment(\.isScrollSettled, anchorFrame != nil || id == nil)
         }
-    }
-
-    private func recenterDirection(in viewport: CGRect) -> RecenterDirection? {
-        anchorFrame.flatMap { frame in RecenterDirection(frame: frame, viewport: viewport) }
     }
 
     private func center(with proxy: ScrollViewProxy) {

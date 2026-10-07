@@ -64,7 +64,7 @@ final class InMemoryDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendabl
         if let error = errors.popLast() {
             throw error
         }
-        return RecordChunk.page(of: records.matching(query), limit: defaultRecordPageSize)
+        return RecordChunk(page: records.matching(query), limit: defaultRecordPageSize)
     }
 }
 

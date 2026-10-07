@@ -17,8 +17,8 @@ struct TrendTests {
 
     @Test("Additive points sum into the count and compare against the previous day")
     func additive() throws {
-        let trend = Trend.total(
-            points: [
+        let trend = Trend(
+            total: [
                 makePoint(day: 7, hour: 1, value: 8),
                 makePoint(day: 7, hour: 2, value: 4),
                 makePoint(day: 6, hour: 1, value: 10),
@@ -33,7 +33,7 @@ struct TrendTests {
 
     @Test("Additive points with an empty previous day carry no delta")
     func additiveWithoutPrevious() {
-        let trend = Trend.total(points: [makePoint(day: 7, hour: 1, value: 8)], period: scale)
+        let trend = Trend(total: [makePoint(day: 7, hour: 1, value: 8)], period: scale)
 
         #expect(trend.count == 8)
         #expect(trend.delta == nil)
@@ -41,8 +41,8 @@ struct TrendTests {
 
     @Test("Levels are sampled, not summed, and compared level to level")
     func levels() throws {
-        let trend = Trend.latest(
-            points: [
+        let trend = Trend(
+            latest: [
                 makeActivity(day: -1, level: 120),
                 makeActivity(day: -2, level: 100),
                 makeActivity(day: -8, level: 90),
@@ -56,7 +56,7 @@ struct TrendTests {
 
     @Test("Levels outside the window read as a zero level, not as loading")
     func levelsOutsideWindow() {
-        let trend = Trend.latest(points: [makeActivity(day: -20, level: 100)], period: .week)
+        let trend = Trend(latest: [makeActivity(day: -20, level: 100)], period: .week)
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
@@ -64,7 +64,7 @@ struct TrendTests {
 
     @Test("An empty level series reads as a zero level, not as loading")
     func emptyLevels() throws {
-        let trend = Trend.latest(points: [], period: .week)
+        let trend = Trend(latest: [], period: .week)
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)

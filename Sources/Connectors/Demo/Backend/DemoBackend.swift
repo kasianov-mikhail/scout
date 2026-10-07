@@ -24,7 +24,7 @@ extension Backend {
     public static func demo(now: Date? = nil) -> Backend {
         Backend(
             id: "scout.demo",
-            database: DemoDatabase(corpus: now.map(DemoCorpus.make(now:)) ?? DemoCorpus.shared),
+            database: DemoDatabase(corpus: now.map(DemoCorpus.Corpus.init(now:)) ?? DemoCorpus.shared),
             displayName: "Demo",
             engine: .local,
             probeStatus: { .reachable }

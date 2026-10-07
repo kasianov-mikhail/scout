@@ -17,26 +17,26 @@ struct Trend {
 extension Trend {
     static let loading = Trend(count: nil, delta: nil, series: nil)
 
-    static func latest(points: [ActivityPoint], period: Period) -> Trend {
-        let levels = points.points(on: period.activityPeriod)
+    init(latest: [ActivityPoint], period: Period) {
+        let levels = latest.points(on: period.activityPeriod)
         let current = levels.latest(in: period.initialRange)
         let previous = levels.latest(in: period.previousRange)
 
-        return Trend(
+        self.init(
             count: current,
             delta: Delta(current: current, previous: previous),
             series: MiniChartSeries(points: levels, range: period.initialRange, aggregation: .latest)
         )
     }
 
-    static func total(points: [ChartPoint<Int>], period: some ChartTimeScale) -> Trend {
-        let current = points.total(in: period.initialRange)
-        let previous = points.total(in: period.previousRange)
+    init(total: [ChartPoint<Int>], period: some ChartTimeScale) {
+        let current = total.total(in: period.initialRange)
+        let previous = total.total(in: period.previousRange)
 
-        return Trend(
+        self.init(
             count: current,
             delta: Delta(current: current, previous: previous),
-            series: MiniChartSeries(points: points, range: period.initialRange, aggregation: .total)
+            series: MiniChartSeries(points: total, range: period.initialRange, aggregation: .total)
         )
     }
 }
