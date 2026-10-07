@@ -66,7 +66,7 @@ extension DeviceSummary {
                 return nil
             }
             self.deviceID = deviceID
-            osVersion = record["os_version"] ?? "—"
+            self.osVersion = record["os_version"] ?? "—"
             self.startDate = startDate
         }
     }

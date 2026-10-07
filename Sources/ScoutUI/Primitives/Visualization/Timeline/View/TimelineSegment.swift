@@ -33,9 +33,9 @@ extension TimelineSegment {
     init(kind: LegendKind, row: TimelineItem, prev: TimelineItem?, next: TimelineItem?) {
         let active = row.active.contains(kind)
 
-        self.color = kind.color
-        self.isActive = active
-        self.topRadius = (active && !row.isConnected(other: prev, kind: kind)) ? 4 : 0
-        self.bottomRadius = (active && !row.isConnected(other: next, kind: kind)) ? 4 : 0
+        color = kind.color
+        isActive = active
+        topRadius = (active && !row.isConnected(other: prev, kind: kind)) ? 4 : 0
+        bottomRadius = (active && !row.isConnected(other: next, kind: kind)) ? 4 : 0
     }
 }

@@ -34,6 +34,6 @@ final class CachedRecord {
         self.fingerprint = fingerprint
         self.date = date
         self.payload = payload
-        size = payload.count
+        self.size = payload.count
     }
 }

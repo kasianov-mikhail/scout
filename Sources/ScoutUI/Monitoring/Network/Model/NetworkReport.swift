@@ -25,7 +25,7 @@ struct NetworkReport {
                 merged[date] = merged[date, default: LatencyHistogram()] + histogram
             }
         }
-        combined = TimerDistribution(histograms: merged)
+        self.combined = TimerDistribution(histograms: merged)
     }
 
     init(series: [MetricSeries]) {

@@ -30,7 +30,7 @@ final class HomeLogProvider: ObservableObject, SeriesProvider {
     private(set) var report: [LogCategory: Trend]?
 
     init(acrossAllPeriods series: Output? = nil) {
-        self.period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
+        period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
         if let series {
             results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(series)) })
             rebuildReport()

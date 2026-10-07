@@ -58,9 +58,9 @@ struct NativeLastValueScanner {
 
             switch record.values["value"] {
             case .double(let raw):
-                value = raw
+                self.value = raw
             case .int(let raw):
-                value = Double(raw)
+                self.value = Double(raw)
             default:
                 return nil
             }

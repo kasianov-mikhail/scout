@@ -11,7 +11,7 @@ struct DemoRandom: RandomNumberGenerator {
     private var state: UInt64
 
     init(seed: UInt64) {
-        self.state = seed
+        state = seed
     }
 
     mutating func next() -> UInt64 {

@@ -14,8 +14,8 @@ struct RecordSender<T: DeliverableEntry>: Sendable {
 
 extension RecordSender {
     init(backend: Backend) {
-        self.id = backend.id
-        self.database = backend.database
+        id = backend.id
+        database = backend.database
     }
 }
 
