@@ -4,6 +4,9 @@ on:
   push:
     branches: [main]
   pull_request:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -39,8 +42,14 @@ jobs:
 
       - name: Read the iOS matrix
         id: legs
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
-          legs="$(jq -c . .github/matrix/ios.json)"
+          case "$EVENT_NAME" in
+            schedule | workflow_dispatch) filter='.configuration = ["Release"]' ;;
+            *) filter='.configuration = ["Debug"]' ;;
+          esac
+          legs="$(jq -c "$filter" .github/matrix/ios.json)"
           echo "$legs"
           echo "legs=$legs" >> "$GITHUB_OUTPUT"
 
