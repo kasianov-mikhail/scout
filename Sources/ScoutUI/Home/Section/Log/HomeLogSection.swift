@@ -37,7 +37,7 @@ struct HomeLogSection: View {
         ForEach(Array(LogCategory.allCases.enumerated()), id: \.element) { index, category in
             Row {
                 Image(systemName: category.systemImage)
-                    .foregroundColor(category.color)
+                    .foregroundStyle(category.color)
                     .frame(width: 24)
                 Text(verbatim: category.title)
                 Spacer()

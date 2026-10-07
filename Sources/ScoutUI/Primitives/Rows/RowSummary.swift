@@ -26,7 +26,7 @@ struct RowSummary: View {
             )
             .frame(width: 56, height: 22)
             RedactedText(count: count)
-                .foregroundColor(.primary)
+                .foregroundStyle(.primary)
                 .frame(minWidth: Self.countWidth, alignment: .trailing)
         }
     }

@@ -25,7 +25,7 @@ struct ErrorView: View {
 
             Image(systemName: "exclamationmark.triangle")
                 .font(.system(size: 48))
-                .foregroundColor(.yellow)
+                .foregroundStyle(.yellow)
 
             Text(verbatim: "An error occurred")
                 .font(.title2)

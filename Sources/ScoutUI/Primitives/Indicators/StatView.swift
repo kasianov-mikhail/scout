@@ -51,7 +51,7 @@ struct StatView: View {
                     } destination: {
                         EventStatList(eventName: stat.subject.name, range: extent.domain)
                     }
-                    .foregroundColor(.blue)
+                    .foregroundStyle(.blue)
                 }
 
                 Header(title: "Weekly Pattern") {

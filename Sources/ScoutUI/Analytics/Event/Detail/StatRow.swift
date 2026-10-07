@@ -22,11 +22,11 @@ struct StatRow<Destination: View>: View {
         Row {
             if let systemImage {
                 Image(systemName: systemImage)
-                    .foregroundColor(color)
+                    .foregroundStyle(color)
                     .frame(width: 24)
             }
             Text(period.title)
-                .foregroundColor(systemImage == nil ? color : .primary)
+                .foregroundStyle(systemImage == nil ? color : .primary)
             Spacer()
 
             RowSummary(
