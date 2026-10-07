@@ -13,13 +13,13 @@ package protocol CacheClearing: Actor {
 }
 
 package protocol DatabaseCaching: CacheClearing {
-    nonisolated func cached(_ database: any Database, scope: String) -> any Database
+    nonisolated func cached(_ database: any DatabaseReader, scope: String) -> any DatabaseReader
 }
 
 extension Backend {
     @MainActor package static var cache: (any DatabaseCaching)?
 
-    @MainActor package var cachedDatabase: any Database {
+    @MainActor package var cachedReader: any DatabaseReader {
         Self.cache?.cached(database, scope: id) ?? database
     }
 }
