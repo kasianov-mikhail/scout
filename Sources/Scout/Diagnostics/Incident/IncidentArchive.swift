@@ -32,7 +32,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
 
             try data.write(to: fileURL, options: .atomic)
         } catch {
-            print("Failed to archive \(pathExtension): \(error)")
+            scoutLog.error("Failed to archive \(pathExtension, privacy: .public): \(String(describing: error), privacy: .public)")
         }
     }
 
@@ -49,7 +49,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
             do {
                 data = try Data(contentsOf: file)
             } catch {
-                print("Failed to read \(file.lastPathComponent), removing it: \(error)")
+                scoutLog.error("Failed to read \(file.lastPathComponent, privacy: .public), removing it: \(String(describing: error), privacy: .public)")
                 try? fileManager.removeItem(at: file)
                 continue
             }
@@ -58,7 +58,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
             do {
                 payload = try decoder.decode(Payload.self, from: data)
             } catch {
-                print("Failed to decode \(file.lastPathComponent), removing it: \(error)")
+                scoutLog.error("Failed to decode \(file.lastPathComponent, privacy: .public), removing it: \(String(describing: error), privacy: .public)")
                 try? fileManager.removeItem(at: file)
                 continue
             }
@@ -71,7 +71,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
                 }
                 try fileManager.removeItem(at: file)
             } catch {
-                print("Failed to process \(pathExtension): \(error)")
+                scoutLog.error("Failed to process \(pathExtension, privacy: .public): \(String(describing: error), privacy: .public)")
             }
         }
     }

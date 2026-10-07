@@ -37,7 +37,7 @@ actor RecordCache {
             location.retire()
             return
         } catch {
-            print("Failed to open the next record cache store, so the current one is emptied in place: \(error)")
+            scoutLog.error("Failed to open the next record cache store, so the current one is emptied in place: \(String(describing: error), privacy: .public)")
         }
 
         try? context.delete(model: CachedRecord.self)

@@ -13,7 +13,7 @@ let persistentContainer: NSPersistentContainer = {
     do {
         try container.loadStore()
     } catch {
-        print("Failed to load the Scout store: \(error)")
+        scoutLog.error("Failed to load the Scout store: \(String(describing: error), privacy: .public)")
     }
 
     return container

@@ -78,7 +78,7 @@ extension TelemetryPersisting {
                 }
                 try await backends.synchronize(using: dispatcher)
             } catch {
-                print("Failed to save metrics: \(error)")
+                scoutLog.error("Failed to save metrics: \(String(describing: error), privacy: .public)")
             }
         }
     }

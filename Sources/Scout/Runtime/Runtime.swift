@@ -74,7 +74,7 @@ extension Runtime {
             do {
                 try await runtime.start()
             } catch {
-                print("Failed to start Scout: \(error)")
+                scoutLog.error("Failed to start Scout: \(String(describing: error), privacy: .public)")
             }
         }
     }
@@ -83,7 +83,7 @@ extension Runtime {
     func start() async throws {
         for case let .server(info) in backends.map(\.engine) {
             if let warning = info.setupWarning {
-                print(warning)
+                scoutLog.warning("\(warning, privacy: .public)")
             }
         }
 
@@ -97,7 +97,7 @@ extension Runtime {
             do {
                 try await backends.synchronize(using: dispatcher)
             } catch {
-                print("Failed to run the first sync: \(error)")
+                scoutLog.error("Failed to run the first sync: \(String(describing: error), privacy: .public)")
             }
         }
     }

@@ -68,7 +68,7 @@ public struct ScoutLogHandler: LogHandler {
                 }
                 try await runtime.backends.synchronize(using: runtime.dispatcher)
             } catch {
-                print("Failed to save log: \(error)")
+                scoutLog.error("Failed to save log: \(String(describing: error), privacy: .public)")
             }
         }
     }

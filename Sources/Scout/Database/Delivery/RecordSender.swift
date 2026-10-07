@@ -95,7 +95,7 @@ package protocol TransientFailure: Error {
         delivery?.attempts += 1
 
         if let delivery, delivery.attempts >= DeliveryEntry.maxAttempts {
-            print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
+            scoutLog.error("Giving up on a \(String(describing: T.self), privacy: .public) record for backend \(id, privacy: .public) after \(delivery.attempts) failed attempts: \(String(describing: error), privacy: .public)")
         }
 
         return []

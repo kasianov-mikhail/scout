@@ -29,7 +29,7 @@ public enum LookupIndex {
         do {
             CachedDatabase.cache = try RecordCache()
         } catch {
-            print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")
+            scoutLog.error("Failed to open the record cache store, so backends stay uncached until the next launch: \(String(describing: error), privacy: .public)")
         }
     }
 }

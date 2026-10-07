@@ -32,7 +32,7 @@ private func run(_ action: ActionTable.Action) async {
     do {
         try await action()
     } catch {
-        print("Failed to run action: \(error)")
+        scoutLog.error("Failed to run action: \(String(describing: error), privacy: .public)")
     }
 }
 

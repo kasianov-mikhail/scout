@@ -8,6 +8,7 @@
 #if canImport(BackgroundTasks) && !os(macOS)
     import BackgroundTasks
     import Foundation
+    import Scout
 
     protocol AlertTaskScheduler: Sendable {
         func register(forTaskWithIdentifier identifier: String, using queue: DispatchQueue?, launchHandler: @escaping @Sendable (BGTask) -> Void) -> Bool
@@ -52,7 +53,7 @@
             do {
                 try scheduler.submit(request)
             } catch {
-                print("Failed to schedule the alert background refresh: \(error)")
+                scoutLog.error("Failed to schedule the alert background refresh: \(String(describing: error), privacy: .public)")
             }
         }
     }

@@ -16,7 +16,7 @@ import CoreData
         } catch let error as any TransientFailure where error.isTransient {
             // Offline or throttled: the next pass retries the same records.
         } catch {
-            print("Failed to deliver \(type) to backend \(id): \(error)")
+            scoutLog.error("Failed to deliver \(String(describing: type), privacy: .public) to backend \(id, privacy: .public): \(String(describing: error), privacy: .public)")
         }
     }
 }

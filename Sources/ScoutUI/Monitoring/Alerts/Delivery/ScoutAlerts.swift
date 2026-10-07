@@ -38,7 +38,7 @@
             }
 
             if !refresher.register() {
-                print("Failed to register the alert background refresh; list \(taskIdentifier) in BGTaskSchedulerPermittedIdentifiers and register before the app finishes launching")
+                scoutLog.error("Failed to register the alert background refresh; list \(taskIdentifier, privacy: .public) in BGTaskSchedulerPermittedIdentifiers and register before the app finishes launching")
             }
             scheduler = refresher
         }
