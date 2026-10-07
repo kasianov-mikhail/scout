@@ -35,7 +35,13 @@ struct MigrationDedupe {
 
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: source)
         let store = try coordinator.addPersistentStore(type: .sqlite, at: url)
-        defer { try? coordinator.remove(store) }
+        defer {
+            do {
+                try coordinator.remove(store)
+            } catch {
+                print("Failed to detach the legacy store: \(error)")
+            }
+        }
 
         let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
         context.persistentStoreCoordinator = coordinator
