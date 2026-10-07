@@ -93,7 +93,8 @@ let package = Package(
         .target(
             name: "LookupIndex",
             dependencies: [
-                "Scout"
+                "Scout",
+                "ConnectorSupport",
             ]
         ),
         .target(
