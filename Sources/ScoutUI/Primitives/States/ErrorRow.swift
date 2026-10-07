@@ -17,7 +17,7 @@ struct ErrorRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "exclamationmark.triangle")
-                .foregroundColor(.yellow)
+                .foregroundStyle(.yellow)
 
             Text(verbatim: description)
                 .font(.callout)

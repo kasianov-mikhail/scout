@@ -31,7 +31,7 @@ struct HangDetailView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(verbatim: "BLOCKED ON:")
                         Text(reason)
-                            .foregroundColor(IncidentKind.hang.color)
+                            .foregroundStyle(IncidentKind.hang.color)
                     }
                     .fontWeight(.bold)
                 }
