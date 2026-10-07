@@ -17,10 +17,10 @@ struct Connection: Identifiable, Sendable {
 
 extension Connection {
     init(backend: Backend) {
-        self.id = backend.id
-        self.name = backend.displayName
-        self.status = nil
-        self.probe = backend.probeStatus
+        id = backend.id
+        name = backend.displayName
+        status = nil
+        probe = backend.probeStatus
     }
 
     func refreshingStatus() async -> Connection {

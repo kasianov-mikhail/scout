@@ -17,8 +17,8 @@ struct EventView: View {
 
     init(event: Event, param: ParamProvider? = nil, stat: StatProvider? = nil) {
         self.event = event
-        _param = StateObject(wrappedValue: param ?? ParamProvider(recordID: event.id))
-        _stat = StateObject(wrappedValue: stat ?? StatProvider(subject: .event(event.name)))
+        self._param = StateObject(wrappedValue: param ?? ParamProvider(recordID: event.id))
+        self._stat = StateObject(wrappedValue: stat ?? StatProvider(subject: .event(event.name)))
     }
 
     var body: some View {

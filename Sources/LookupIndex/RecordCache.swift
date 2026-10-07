@@ -19,7 +19,7 @@ actor RecordCache {
 
     init(location: RecordCacheLocation = RecordCacheLocation()) throws {
         self.location = location
-        container = try Self.container(at: location.storeURL, in: location)
+        self.container = try Self.container(at: location.storeURL, in: location)
     }
 
     var size: Int64 {

@@ -18,9 +18,9 @@ final class ServerStub: DatabaseReader, @unchecked Sendable {
     let metricsSeries: [MetricSeries]
 
     init(activity: [ActivityPoint] = [], retention: [RetentionCohort] = [], metrics: [MetricSeries] = []) {
-        self.activitySeries = activity
-        self.retentionCohorts = retention
-        self.metricsSeries = metrics
+        activitySeries = activity
+        retentionCohorts = retention
+        metricsSeries = metrics
     }
 
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {

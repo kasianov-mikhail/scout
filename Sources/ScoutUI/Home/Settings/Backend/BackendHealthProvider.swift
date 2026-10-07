@@ -18,7 +18,7 @@ final class BackendHealthProvider: ObservableObject, Refreshable {
     }
 
     init(healths: [BackendHealth]) {
-        self.backends = healths
+        backends = healths
     }
 
     func refreshAll() async {

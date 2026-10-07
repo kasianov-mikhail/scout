@@ -15,10 +15,10 @@ struct DemoDatabase: DatabaseWriter, Sendable {
     let retentionCohorts: [RetentionCohort]
 
     init(corpus: DemoCorpus.Corpus) {
-        self.records = corpus.records
-        self.samples = corpus.samples
-        self.activityPoints = corpus.activity
-        self.retentionCohorts = corpus.retention
+        records = corpus.records
+        samples = corpus.samples
+        activityPoints = corpus.activity
+        retentionCohorts = corpus.retention
     }
 
     func write(record: Record) async throws {}

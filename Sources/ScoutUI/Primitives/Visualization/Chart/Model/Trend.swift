@@ -44,7 +44,7 @@ extension Trend {
 extension Trend {
     init(count: Int, previous: Int, values: [Int]) {
         self.count = count
-        delta = Delta(current: count, previous: previous)
-        series = MiniChartSeries(values: values)
+        self.delta = Delta(current: count, previous: previous)
+        self.series = MiniChartSeries(values: values)
     }
 }
