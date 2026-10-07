@@ -81,7 +81,11 @@ extension Crash: RecordEncodable {
         record["name"] = name
         record["fingerprint"] = fingerprint
         record["reason"] = reason
-        record["stack_trace"] = try? JSONEncoder().encode(stackTrace)
+        do {
+            record["stack_trace"] = try JSONEncoder().encode(stackTrace)
+        } catch {
+            print("Failed to encode the stack trace: \(error)")
+        }
         record["date"] = date
         record["device_id"] = deviceID?.uuidString
         record["install_id"] = installID?.uuidString
