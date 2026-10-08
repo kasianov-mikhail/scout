@@ -46,10 +46,10 @@ The border colors are GitHub's muted divider, drawn opaque: `#d1d9e0` at 70 % ov
 
 ## README layout
 
-- Each row of three is its own `<p>`. Put the three `<picture>` elements on one line, with no whitespace between them, joined by `&emsp;&emsp;&ensp;`.
-- The gap is 2.5 em, about 40 px at the 16 px README font. It is the same as the gap between the columns on the GitHub dashboard.
+- Each row of three is its own `<p>`. Put the three `<picture>` elements on one line, with no whitespace between them, joined by `&emsp;&emsp;`.
+- The gap is 2 em, about 31 px at the 16 px README font. It equals the 32 px padding between the README box border and the first picture, so the space is the same on every side. Measure that padding again if GitHub changes it.
 - Every `<img>` has `width="240"`.
-- Three pictures and two gaps take 800 px. The README column is 838 px, so they fit. A narrower view wraps the third picture.
+- Three pictures and two gaps take about 784 px. The README column is 838 px, so they fit. A narrower view wraps the third picture.
 - The vertical gap is the paragraph margin, 16 px, plus about 6 px under an inline image. It cannot be changed without CSS.
 
 ## If a step fails
