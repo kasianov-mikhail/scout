@@ -37,6 +37,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_SHA: ${{ github.event.before }}
           PATTERN: ^(Sources/|Tests/|Package\.swift$|\.swift-format$|\.github/)
           OUTPUT: code
@@ -47,6 +48,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_SHA: ${{ github.event.before }}
           PATTERN: ^(Sources/|Package\.swift$|\.github/)
           OUTPUT: api
