@@ -8,6 +8,7 @@
 import Foundation
 import Testing
 
+@testable import LookupIndex
 @testable import Scout
 
 struct CachedDatabaseSeriesTests {

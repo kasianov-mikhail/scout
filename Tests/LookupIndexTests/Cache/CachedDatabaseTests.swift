@@ -207,7 +207,7 @@ struct CachedDatabaseTests {
     }
 }
 
-final class SpyDatabase: Database, @unchecked Sendable {
+final class SpyDatabase: DatabaseReader, @unchecked Sendable {
     var records: [Record] = []
     var queries: [RecordQuery] = []
     var lookups: [String] = []
@@ -257,7 +257,4 @@ final class SpyDatabase: Database, @unchecked Sendable {
             return MetricSeries(name: series.name, category: series.category, version: series.version, points: points)
         }
     }
-
-    func write(record: Record) async throws {}
-    func write(records: [Record]) async throws {}
 }

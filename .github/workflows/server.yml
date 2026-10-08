@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
   repository_dispatch:
     types: [scout-server-updated]
   schedule:
@@ -46,7 +47,7 @@ jobs:
 
   contract:
     needs: changes
-    if: needs.changes.outputs.backend == 'true'
+    if: needs.changes.outputs.backend == 'true' && github.event.pull_request.draft != true
     runs-on: macos-26
     timeout-minutes: 30
 

@@ -53,16 +53,18 @@ extension IncidentArchive<CrashInfo> {
     // between write and remove, the next launch overwrites the same crash
     // instead of duplicating it.
     func convertRawReports() {
-        guard let files = try? fileManager.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil) else {
-            return
-        }
-
         for file in files where file.pathExtension == RawCrashFormat.pathExtension {
-            if let data = try? Data(contentsOf: file), let report = RawCrashReport(data: data) {
-                let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
-                write(report.crashInfo(), id: id)
+            do {
+                let data = try Data(contentsOf: file)
+
+                if let report = RawCrashReport(data: data) {
+                    let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
+                    write(report.crashInfo(), id: id)
+                }
+            } catch {
+                print("Failed to read \(file.lastPathComponent): \(error)")
             }
-            try? fileManager.removeItem(at: file)
+            remove(file: file)
         }
     }
 }

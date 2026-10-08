@@ -45,19 +45,23 @@
 
         /// Requests a background refresh, skipped while no alert rules exist.
         public static func scheduleBackgroundRefresh() {
-            let rules = (try? AlertRegistry().rules()) ?? []
-            guard !rules.isEmpty else { return }
-            scheduler?.schedule()
+            do {
+                let rules = try AlertRegistry().rules()
+                guard !rules.isEmpty else { return }
+                scheduler?.schedule()
+            } catch {
+                print("Failed to read the alert rules: \(error)")
+            }
         }
 
         private static func refresh(engine: AlertEngine, backends: [Backend]) async {
             guard let backend = backends.active else {
                 return
             }
-            if let cache = CachedDatabase.cache {
-                _ = try? await engine.run(in: CachedDatabase(base: backend.database, scope: backend.id, cache: cache))
-            } else {
-                _ = try? await engine.run(in: backend.database)
+            do {
+                _ = try await engine.run(in: backend.cachedReader)
+            } catch {
+                print("Failed to evaluate the alert rules in the background: \(error)")
             }
         }
     }

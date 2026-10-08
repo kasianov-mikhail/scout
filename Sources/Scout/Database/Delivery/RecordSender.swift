@@ -9,7 +9,7 @@ import CoreData
 
 struct RecordSender<T: DeliverableEntry>: Sendable {
     let id: String
-    let database: any Database
+    let database: any DatabaseWriter
 }
 
 extension RecordSender {

@@ -7,6 +7,7 @@
 
 import Testing
 
+@testable import ConnectorSupport
 @testable import Scout
 
 struct SeriesKeyTests {

@@ -25,14 +25,11 @@ struct HomeView: View {
         backends.active(id: activeID)
     }
 
-    @MainActor private var database: any Database {
+    @MainActor private var database: any DatabaseReader {
         guard let backend else {
             return DefaultDatabase()
         }
-        guard let cache = CachedDatabase.cache else {
-            return backend.database
-        }
-        return CachedDatabase(base: backend.database, scope: backend.id, cache: cache)
+        return backend.cachedReader
     }
 
     private var active: Binding<String> {

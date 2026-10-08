@@ -6,9 +6,11 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
+@available(iOS 18, macOS 15, *)
 extension CachedDatabase: RecordReader {
-    package func lookup(recordName: String, fields: [String]?) async throws -> Record {
+    func lookup(recordName: String, fields: [String]?) async throws -> Record {
         let fingerprint = Self.fingerprint(scope: scope, recordName: recordName, fields: fields)
 
         if let record = await cache.lookupRecord(for: fingerprint) {
@@ -27,11 +29,12 @@ extension CachedDatabase: RecordReader {
         return record
     }
 
-    package func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         try await base.read(matching: query, fields: fields, limit: limit)
     }
 }
 
+@available(iOS 18, macOS 15, *)
 extension CachedDatabase {
     static func fingerprint(scope: String, recordName: String, fields: [String]?) -> String {
         [

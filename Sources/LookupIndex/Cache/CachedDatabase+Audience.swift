@@ -6,13 +6,15 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
+@available(iOS 18, macOS 15, *)
 extension CachedDatabase: AudienceReader {
-    package func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
+    func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         try await base.activity(in: range)
     }
 
-    package func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+    func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         try await base.retention(in: range)
     }
 }
