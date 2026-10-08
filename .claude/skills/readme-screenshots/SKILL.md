@@ -13,7 +13,7 @@ GitHub strips `style` from README HTML. Bake the frame into each PNG, and never 
 |---|---|
 | `ORIGINALS` | Folder with the simulator screenshots, 1206 × 2622, named `<screen>-light` and `<screen>-dark`. Keep it outside the repository. |
 | `WORK` | Scratch folder for the framed files. |
-| `SCREENS` | `home event retention crash metric_distribution release_health` |
+| `SCREENS` | `home event retention crash metric_distribution release_health`. The list is in `frame-all.sh`. |
 | `SKILL` | This folder, `.claude/skills/readme-screenshots`. |
 
 ## Frame specification
@@ -32,16 +32,17 @@ The border colors are GitHub's muted divider, drawn opaque: `#d1d9e0` at 70 % ov
 
 ## Steps
 
-1. Build the tool: `swiftc -O $SKILL/scripts/frame.swift -o $WORK/frame`.
-2. Frame every screen and theme: `$WORK/frame $ORIGINALS/<screen>-<theme> $WORK/framed/<screen>-<theme>.png <theme>`. The theme is `light` or `dark`.
-3. Compress each file: `pngquant --quality 85-100 --speed 1 --strip --force --output $WORK/out/<name>.png $WORK/framed/<name>.png`.
+1. Run `$SKILL/scripts/frame-all.sh $ORIGINALS $WORK`.
+   - It builds `frame.swift` with `swiftc -O`.
+   - It frames every screen and theme into `$WORK/framed/<screen>-<theme>.png`. A single file: `$WORK/frame <input> <output.png> <light|dark>`.
+   - It compresses each file into `$WORK/out` with `pngquant --quality 85-100 --speed 1 --strip --force`.
    - The 8-bit palette keeps the alpha of the rounded corners.
    - Each file is about 60–100 KB, down from about 300 KB.
-4. Look at the result on a white page and on a `#0d1117` page before the upload.
-5. Ask the user to drop the files from `$WORK/out` into a comment on the PR. GitHub gives each file a `user-attachments` URL.
-6. Compare each URL with its local file: `curl -sL -o dl.png <url>` and `cmp dl.png $WORK/out/<name>.png`. Use only URLs that match.
-7. Put the URLs in the README, and keep the layout below.
-8. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
+2. Look at the result on a white page and on a `#0d1117` page before the upload.
+3. Ask the user to drop the files from `$WORK/out` into a comment on the PR. GitHub gives each file a `user-attachments` URL.
+4. Compare each URL with its local file: `curl -sL -o dl.png <url>` and `cmp dl.png $WORK/out/<name>.png`. Use only URLs that match.
+5. Put the URLs in the README, and keep the layout below.
+6. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
 
 ## README layout
 

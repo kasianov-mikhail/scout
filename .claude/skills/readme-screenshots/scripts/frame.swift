@@ -4,6 +4,10 @@ import ImageIO
 import UniformTypeIdentifiers
 
 let args = CommandLine.arguments
+guard args.count == 4, ["light", "dark"].contains(args[3]) else {
+    FileHandle.standardError.write(Data("usage: frame <input> <output.png> <light|dark>\n".utf8))
+    exit(64)
+}
 let input = args[1], output = args[2], dark = args[3] == "dark"
 
 guard let src = CGImageSourceCreateWithURL(URL(fileURLWithPath: input) as CFURL, nil),
