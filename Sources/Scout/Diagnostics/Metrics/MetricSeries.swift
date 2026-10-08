@@ -20,25 +20,3 @@ package struct MetricSeries: Decodable, Sendable {
         self.points = points
     }
 }
-
-package struct SeriesKey: Hashable, Comparable, Sendable {
-    package let name: String
-    package let category: String?
-    package let version: String?
-
-    package init(name: String, category: String?, version: String?) {
-        self.name = name
-        self.category = category
-        self.version = version
-    }
-
-    package static func < (lhs: Self, rhs: Self) -> Bool {
-        (lhs.name, lhs.category ?? "", lhs.version ?? "") < (rhs.name, rhs.category ?? "", rhs.version ?? "")
-    }
-}
-
-extension MetricSeries {
-    package var key: SeriesKey {
-        SeriesKey(name: name, category: category, version: version)
-    }
-}

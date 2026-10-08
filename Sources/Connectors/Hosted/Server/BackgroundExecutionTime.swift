@@ -5,6 +5,8 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Scout
+
 #if os(iOS)
     import UIKit
 #else
@@ -28,8 +30,6 @@ struct InsufficientBackgroundTimeError: LocalizedError {
     let recoverySuggestion: String? = "Try again later."
 }
 
-// The window closed before the request went out, so no backend ever saw the
-// records: charging them an attempt would abandon data nothing rejected.
 extension InsufficientBackgroundTimeError: TransientFailure {
     var isTransient: Bool {
         true

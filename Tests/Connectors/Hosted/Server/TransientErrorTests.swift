@@ -27,6 +27,11 @@ struct TransientErrorTests {
         #expect(HTTPDatabaseError(status: 429, reason: nil).isTransient)
     }
 
+    @Test("Running out of background time is transient")
+    func backgroundTimeExhaustionIsTransient() {
+        #expect(InsufficientBackgroundTimeError().isTransient)
+    }
+
     @Test("Rejections count against the attempt budget")
     func rejectionsAreNotTransient() {
         #expect(!HTTPDatabaseError(status: 400, reason: "bad record").isTransient)
