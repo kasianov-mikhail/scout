@@ -14,26 +14,30 @@ GitHub strips `style` from README HTML. Bake the frame into each PNG, and never 
 | `ORIGINALS` | Folder with the simulator screenshots, 1206 × 2622, named `<screen>-light` and `<screen>-dark`. Keep it outside the repository. |
 | `WORK` | Scratch folder for the framed files. |
 | `SCREENS` | `home event retention crash metric_distribution release_health` |
+| `DISPLAY_WIDTH` | Width of the picture in the README, in CSS px. 240 for a screenshot. 774 for the logo, the README content width on a file page. |
+| `SCALE` | Pixels of the PNG per CSS px. 4. |
+| `RADIUS` | GitHub box corner radius, in CSS px. 6. |
+| `BORDER` | GitHub box border width, in CSS px. 1. |
 
 ## Frame specification
 
 | Property | Value |
 |---|---|
-| Width | 960 px, height from the aspect ratio (960 × 2087). That is 4 px per CSS px for a 240 px display width. |
-| Corner radius | 24 px, which is 6 CSS px, the GitHub box radius. |
-| Border | 4 px, which is 1 CSS px, drawn inside the image. |
-| Border color, light | `#dfe4e9` |
-| Border color, dark | `#2f353d` |
+| Width | `DISPLAY_WIDTH × SCALE`. For a screenshot 960 px, with the height from the aspect ratio (960 × 2087). |
+| Corner radius | `RADIUS × SCALE`. 24 px. |
+| Border | `BORDER × SCALE`, drawn inside the image. 4 px. |
+| Border color, light | `#dfe4e9`, the muted divider below. |
+| Border color, dark | `#2f353d`, the muted divider below. |
 | Shadow and margin | None. No transparent margin around the image. |
 | Color space | sRGB, high-quality interpolation. |
 
-The border colors are GitHub's muted divider, drawn opaque: `#d1d9e0` at 70 % over white, and `#3d444d` at 70 % over `#0d1117`. The default border color, `#d1d9e0` and `#3d444d`, looked heavier than the dividers under the README headings.
+The border colors are the GitHub Primer muted divider (`borderColor-muted`), drawn opaque: `#d1d9e0` at 70 % over white, and `#3d444d` at 70 % over `#0d1117`. The default border color, `#d1d9e0` and `#3d444d`, looked heavier than the dividers under the README headings.
 
 ## Steps
 
 1. Frame every screen and theme into `$WORK/framed/<screen>-<theme>.png`.
    - Use any image tool. Follow the frame specification above.
-   - Scale the original to 960 px wide with high-quality interpolation, in sRGB.
+   - Scale the original to `DISPLAY_WIDTH × SCALE` px wide with high-quality interpolation, in sRGB.
    - Clip to the rounded rectangle, then draw the border inside the image.
 2. Compress each file into `$WORK/out` with `pngquant --quality 85-100 --speed 1 --strip --force --output <out> <in>`.
    - The 8-bit palette keeps the alpha of the rounded corners.
@@ -51,8 +55,8 @@ The logo at the top of the README uses the same frame. Make the PNGs by hand or 
 | Property | Value |
 |---|---|
 | Source | The light logo, 2742 × 914, opaque white. It has an old gray border 1 px from each edge. Cut 6 px from every edge to remove it. |
-| Width | 3096 px, height from the aspect ratio (3096 × 1023). That is 4 px per CSS px for a 774 px display width, the README content width on a file page. The border is 1 CSS px at that width and scales with the column. |
-| Corner radius and border | As in the frame specification: 24 px radius, 4 px border inside the image, same colors per theme. |
+| Width | `DISPLAY_WIDTH × SCALE`, with `DISPLAY_WIDTH` 774. That is 3096 px, and the height from the aspect ratio is 1023 px. |
+| Corner radius and border | As in the frame specification, from `RADIUS` and `BORDER`. The border scales with the column, because the image has `width="100%"`. |
 | Dark background | `#0d1117` |
 | Dark text color | `#e6edf3`, instead of the light-theme navy `#0e2a39`. |
 | Dark mark color | `#3872f0`, the same blue as in the light theme. |
@@ -67,7 +71,7 @@ Recolor the dark version by coverage, not by a color swap. Each pixel is white m
 
 - Each row of three is its own `<p>`. Put the three `<picture>` elements on one line, with no whitespace between them, joined by `&emsp;&emsp;`.
 - The gap is 2 em, about 31 px at the 16 px README font. It equals the 32 px padding between the README box border and the first picture, so the space is the same on every side. Measure that padding again if GitHub changes it.
-- Every `<img>` has `width="240"`.
+- Every `<img>` has `width` equal to `DISPLAY_WIDTH`, which is `240`.
 - Three pictures and two gaps take about 784 px. The README column is 838 px, so they fit. A narrower view wraps the third picture.
 - The vertical gap is the paragraph margin, 16 px, plus about 6 px under an inline image. It cannot be changed without CSS.
 
