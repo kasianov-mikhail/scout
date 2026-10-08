@@ -44,6 +44,25 @@ The border colors are GitHub's muted divider, drawn opaque: `#d1d9e0` at 70 % ov
 5. Put the URLs in the README, and keep the layout below.
 6. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
 
+## Logo
+
+The logo at the top of the README uses the same frame. Make the PNGs by hand or with any image tool.
+
+| Property | Value |
+|---|---|
+| Source | The light logo, 2742 × 914, opaque white. It has an old gray border 1 px from each edge. Cut 6 px from every edge to remove it. |
+| Width | 3096 px, height from the aspect ratio (3096 × 1023). That is 4 px per CSS px for a 774 px display width, the README content width. |
+| Corner radius and border | As in the frame specification: 24 px radius, 4 px border inside the image, same colors per theme. |
+| Dark background | `#0d1117` |
+| Dark text color | `#e6edf3`, instead of the light-theme navy `#0e2a39`. |
+| Dark mark color | `#3872f0`, the same blue as in the light theme. |
+
+Recolor the dark version by coverage, not by a color swap. Each pixel is white mixed with one ink, so mix the same share of that ink into the dark background. This keeps the anti-aliased edges free of white halos.
+
+- Compress with `pngquant`, as for the screenshots.
+- In the README, use a `<picture>` with the dark `<source>` and the light `<img width="774">`.
+- Put the `<picture>` in its own `<p>`. A bare image at the top of the README gets no paragraph margin, so the badges would sit right under it. The `<p>` gives the standard 16 px margin.
+
 ## README layout
 
 - Each row of three is its own `<p>`. Put the three `<picture>` elements on one line, with no whitespace between them, joined by `&emsp;&emsp;`.

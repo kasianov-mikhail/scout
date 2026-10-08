@@ -1,4 +1,4 @@
-<img width="1371" alt="logo" src="https://github.com/user-attachments/assets/9e27f4e8-603b-4ec5-b0b0-e3d2f8d0d8d9">
+<p><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/ea52295b-30bd-47e9-bb3b-445585b22d8e"><img width="774" alt="Scout" src="https://github.com/user-attachments/assets/e936e3a2-63c8-4b1b-b3b2-4632041646dc"></picture></p>
 
 [![CI](https://github.com/kasianov-mikhail/scout/actions/workflows/ci.yml/badge.svg)](https://github.com/kasianov-mikhail/scout/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/kasianov-mikhail/scout)](https://github.com/kasianov-mikhail/scout/releases)
