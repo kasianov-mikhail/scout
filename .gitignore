@@ -6,3 +6,4 @@ xcuserdata/
 Package.resolved
 .claude/*
 !.claude/commands/
+!.claude/skills/
