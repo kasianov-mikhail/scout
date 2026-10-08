@@ -1,4 +1,4 @@
-<img width="1371" alt="logo" src="https://github.com/user-attachments/assets/9e27f4e8-603b-4ec5-b0b0-e3d2f8d0d8d9">
+<p><img width="1371" alt="logo" src="https://github.com/user-attachments/assets/9e27f4e8-603b-4ec5-b0b0-e3d2f8d0d8d9"></p>
 
 [![CI](https://github.com/kasianov-mikhail/scout/actions/workflows/ci.yml/badge.svg)](https://github.com/kasianov-mikhail/scout/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/kasianov-mikhail/scout)](https://github.com/kasianov-mikhail/scout/releases)

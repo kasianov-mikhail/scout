@@ -44,6 +44,18 @@ The border colors are GitHub's muted divider, drawn opaque: `#d1d9e0` at 70 % ov
 5. Put the URLs in the README, and keep the layout below.
 6. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
 
+## Logo
+
+The logo at the top of the README uses the same frame. The source is the current light logo, 2742 × 914, opaque white. It has an old gray border 1 px from each edge.
+
+- Run `swiftc -O $SKILL/scripts/frame-logo.swift -o $WORK/frame-logo`, then `$WORK/frame-logo <logo.png> <out.png> <light|dark>` for each theme.
+- The script cuts 6 px from every edge to remove the old border.
+- Width is 774 × 4 = 3096 px. 774 px is the README content width, so the border is 1 CSS px and the radius is 6 CSS px.
+- The dark version recovers the ink coverage of each pixel. It mixes the coverage into `#0d1117`. The text ink becomes `#e6edf3`. The blue mark stays `#3872f0`.
+- Compress with `pngquant`, as for the screenshots.
+- In the README, use a `<picture>` with the dark `<source>` and the light `<img width="774">`.
+- Put the `<picture>` in its own `<p>`. A bare image at the top of the README gets no paragraph margin, so the badges would sit right under it. The `<p>` gives the standard 16 px margin.
+
 ## README layout
 
 - Each row of three is its own `<p>`. Put the three `<picture>` elements on one line, with no whitespace between them, joined by `&emsp;&emsp;`.
