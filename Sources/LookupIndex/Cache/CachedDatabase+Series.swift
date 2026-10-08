@@ -127,12 +127,7 @@ extension MetricSeries {
 
         return points.sorted { $0.key < $1.key }
             .map { key, points in
-                MetricSeries(
-                    name: key.name,
-                    category: key.category,
-                    version: key.version,
-                    points: points.sorted { $0.date < $1.date }
-                )
+                MetricSeries(key: key, points: points.sorted { $0.date < $1.date })
             }
     }
 }
