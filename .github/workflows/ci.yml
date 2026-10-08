@@ -326,7 +326,6 @@ jobs:
           fi
           removed="$(comm -23 /tmp/baseline.set /tmp/current.set || true)"
           if [ -z "$removed" ]; then
-            echo "No public API was removed against the base branch." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           {
