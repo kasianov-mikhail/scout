@@ -51,7 +51,7 @@ The logo at the top of the README uses the same frame. Make the PNGs by hand or 
 | Property | Value |
 |---|---|
 | Source | The light logo, 2742 × 914, opaque white. It has an old gray border 1 px from each edge. Cut 6 px from every edge to remove it. |
-| Width | 3096 px, height from the aspect ratio (3096 × 1023). That is 4 px per CSS px for a 774 px display width, the README content width. |
+| Width | 3096 px, height from the aspect ratio (3096 × 1023). That is 4 px per CSS px for a 774 px display width, the README content width on a file page. The border is 1 CSS px at that width and scales with the column. |
 | Corner radius and border | As in the frame specification: 24 px radius, 4 px border inside the image, same colors per theme. |
 | Dark background | `#0d1117` |
 | Dark text color | `#e6edf3`, instead of the light-theme navy `#0e2a39`. |
@@ -60,7 +60,7 @@ The logo at the top of the README uses the same frame. Make the PNGs by hand or 
 Recolor the dark version by coverage, not by a color swap. Each pixel is white mixed with one ink, so mix the same share of that ink into the dark background. This keeps the anti-aliased edges free of white halos.
 
 - Compress with `pngquant`, as for the screenshots.
-- In the README, use a `<picture>` with the dark `<source>` and the light `<img width="774">`.
+- In the README, use a `<picture>` with the dark `<source>` and the light `<img width="100%">`. The logo then fills the content width at any README column width, so the left and right padding stay equal.
 - Put the `<picture>` in its own `<p>`. A bare image at the top of the README gets no paragraph margin, so the badges would sit right under it. The `<p>` gives the standard 16 px margin.
 
 ## README layout
