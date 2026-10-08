@@ -81,21 +81,17 @@ The built-in SwiftUI dashboard lets you inspect logs, metrics, and crash reports
 
 It ships as a separate `ScoutUI` product, so you decide which builds carry it. See the [Dashboard Guide](docs/DASHBOARD.md) for linking it, presenting it, and keeping it out of the App Store build.
 
-<table>
-<tr>
-<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/ecb48f2a-1391-4ed6-8770-8b8ec6d45544"><img width="240" alt="Home" src="https://github.com/user-attachments/assets/4c68c1d3-c10f-4b39-82ae-39edbabd881d"></picture></td>
-<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/4b8e0be5-20cc-4e76-bc4e-5c445eccab70"><img width="240" alt="Event" src="https://github.com/user-attachments/assets/ecaa33eb-bb10-4b1c-8e94-5b6aea67a4e4"></picture></td>
-<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/74f7e28f-c247-4ab4-872c-d6374db8432d"><img width="240" alt="Retention" src="https://github.com/user-attachments/assets/238547ae-9167-4522-9330-4e02b7de62fc"></picture></td>
-</tr>
-</table>
+<p>
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/9b3e4699-e03c-493d-a1f0-71eaaa7289d7"><img width="256" alt="Home" src="https://github.com/user-attachments/assets/5cf86e44-7086-4fb6-abc5-091d765f3536"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/81fc2204-bac2-4a3b-8a30-723dcf30f52a"><img width="256" alt="Event" src="https://github.com/user-attachments/assets/15afb343-9511-4a96-8be4-a3c1681dd86f"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/a570c4b1-f8e1-4567-a0ce-93e15f5c3b98"><img width="256" alt="Retention" src="https://github.com/user-attachments/assets/9530ce69-c7f9-4ba8-9ddf-210372b8db78"></picture>
+</p>
 
-<table>
-<tr>
-<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/dd1f0d3e-db03-4e0f-a18d-c8a8ed8a819f"><img width="240" alt="Crash" src="https://github.com/user-attachments/assets/b980029a-08ab-4bf0-92d7-d467691266cd"></picture></td>
-<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/2eeff2a1-050f-40f9-a04c-b23363d23858"><img width="240" alt="Metric distribution" src="https://github.com/user-attachments/assets/8cdc5a67-5f1d-4c09-a49e-bd575987a405"></picture></td>
-<td><picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/761084f7-711d-4612-b4b8-bf484010c02f"><img width="240" alt="Release health" src="https://github.com/user-attachments/assets/f7d0dd82-a84d-4a00-9e9c-5cf782265919"></picture></td>
-</tr>
-</table>
+<p>
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/6657922b-547c-4456-beb2-45df31fe8a90"><img width="256" alt="Crash" src="https://github.com/user-attachments/assets/9e4e12ff-972c-4f49-a9e4-6763a3b85bae"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/192d3aab-a83c-43f8-8ff5-24957ec3a049"><img width="256" alt="Metric distribution" src="https://github.com/user-attachments/assets/f192b375-664c-4725-bf0c-2dddf7ee5c52"></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/0870eb84-35e3-4643-a236-5f728902de9d"><img width="256" alt="Release health" src="https://github.com/user-attachments/assets/a5e460fd-8373-4f34-9803-463d384cbe4c"></picture>
+</p>
 
 ## Roadmap
 
