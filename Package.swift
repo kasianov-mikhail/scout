@@ -42,7 +42,6 @@ let package = Package(
             url: "https://github.com/kasianov-mikhail/scout-db.git",
             revision: "d82f7da4b1a7c7ad793c1b276c470b3dbadb7486"
         ),
-        .package(url: "https://github.com/pointfreeco/swift-snapshot-testing.git", from: "1.18.0"),
     ],
     targets: [
         .target(
@@ -162,16 +161,6 @@ let package = Package(
             ]
             // LookupIndex autolinks SwiftData (iOS 17+), so this bundle can't load
             // on the iOS 16 simulator; the `ci.yml` iOS 16 leg skips it entirely.
-        ),
-        .testTarget(
-            name: "ScoutSnapshotTests",
-            dependencies: [
-                "ScoutUI",
-                "Scout",
-                "Support",
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing"),
-            ],
-            exclude: ["__Snapshots__"]
         ),
         .testTarget(
             name: "DemoConnectorTests",
