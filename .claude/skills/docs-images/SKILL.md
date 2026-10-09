@@ -1,6 +1,6 @@
 ---
-name: readme-screenshots
-description: Frame, compress, upload, and lay out the images in the Scout README, the dashboard screenshots and the logo — border, corner radius, divider colors, dark variant, spacing between pictures, and PNG compression. Use when the README screenshots or the logo are re-exported, added, restyled, or their layout changes.
+name: docs-images
+description: Frame, compress, upload, and lay out the images in the documentation files, such as the Scout README dashboard screenshots and logo — border, corner radius, divider colors, dark variant, spacing between pictures, and PNG compression. Use when images in the README or other documentation are re-exported, added, restyled, or their layout changes.
 ---
 
 The README shows six dashboard screens in light and dark. Each is a `<picture>` with a `prefers-color-scheme: dark` `<source>` and a light `<img>`. The PNGs are uploaded to GitHub (`user-attachments`) and are not stored in the repository.
