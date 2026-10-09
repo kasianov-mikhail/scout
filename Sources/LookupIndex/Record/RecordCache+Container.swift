@@ -7,7 +7,7 @@
 
 import CoreData
 import Foundation
-import SwiftData
+@_weakLinked import SwiftData
 
 @available(iOS 18, macOS 15, *)
 extension RecordCache {

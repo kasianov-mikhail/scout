@@ -6,8 +6,7 @@
       "ios": 16,
       "os": "macos-15",
       "device": "iPhone 14",
-      "runtime": "16.4",
-      "skipTesting": "LookupIndexTests"
+      "runtime": "16.4"
     },
     {
       "ios": 17,
