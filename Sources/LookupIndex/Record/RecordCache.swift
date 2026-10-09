@@ -7,7 +7,7 @@
 
 import Foundation
 import Scout
-import SwiftData
+@_weakLinked import SwiftData
 
 @available(iOS 18, macOS 15, *)
 actor RecordCache {
