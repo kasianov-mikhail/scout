@@ -11,13 +11,13 @@ import Testing
 @testable import LookupIndex
 @testable import Scout
 
-struct CachedDatabaseRecordsTests {
+struct CachingDatabaseRecordsTests {
     @available(iOS 18, macOS 15, *)
     @Test("Lookup keys sort the requested fields and mark a full fetch")
     func lookupFingerprint() {
-        let sorted = CachedDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["name", "date"])
-        let reversed = CachedDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["date", "name"])
-        let full = CachedDatabase.fingerprint(scope: "s", recordName: "event-1", fields: nil)
+        let sorted = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["name", "date"])
+        let reversed = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["date", "name"])
+        let full = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: nil)
 
         #expect(sorted == "s|lookup|event-1|date,name")
         #expect(sorted == reversed)

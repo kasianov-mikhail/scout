@@ -11,7 +11,7 @@ import Testing
 @testable import LookupIndex
 @testable import Scout
 
-struct CachedDatabaseSeriesTests {
+struct CachingDatabaseSeriesTests {
     @Test func mergesCachedAndFetchedPointsUnderTheSameKey() {
         let cached = [makeSeries(points: [makePoint(date: 2)])].cacheRecords
         let fetched = [makeSeries(points: [makePoint(date: 1)])]

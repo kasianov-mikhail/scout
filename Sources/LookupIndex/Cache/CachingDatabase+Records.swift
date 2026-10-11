@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 @available(iOS 18, macOS 15, *)
-extension CachedDatabase: RecordReader {
+extension CachingDatabase: RecordReader {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         let fingerprint = Self.fingerprint(scope: scope, recordName: recordName, fields: fields)
 
@@ -35,7 +35,7 @@ extension CachedDatabase: RecordReader {
 }
 
 @available(iOS 18, macOS 15, *)
-extension CachedDatabase {
+extension CachingDatabase {
     static func fingerprint(scope: String, recordName: String, fields: [String]?) -> String {
         [
             scope,
