@@ -192,6 +192,6 @@ actor RecordCache {
 @available(iOS 18, macOS 15, *)
 extension RecordCache: DatabaseCaching {
     nonisolated func cached(_ database: any DatabaseReader, scope: String) -> any DatabaseReader {
-        CachedDatabase(base: database, scope: scope, cache: self)
+        CachingDatabase(base: database, scope: scope, cache: self)
     }
 }

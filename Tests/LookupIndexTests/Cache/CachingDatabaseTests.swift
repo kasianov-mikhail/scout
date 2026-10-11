@@ -11,7 +11,7 @@ import Testing
 @testable import LookupIndex
 @testable import Scout
 
-struct CachedDatabaseTests {
+struct CachingDatabaseTests {
     let lower = Date(timeIntervalSince1970: 0)
     let upper = Date(timeIntervalSince1970: 4_000_000)
 
@@ -20,10 +20,10 @@ struct CachedDatabaseTests {
     }
 
     @available(iOS 18, macOS 15, *)
-    func makeDatabase(base: SpyDatabase, types: Set<String> = [EventEntry.recordType]) throws -> CachedDatabase {
+    func makeDatabase(base: SpyDatabase, types: Set<String> = [EventEntry.recordType]) throws -> CachingDatabase {
         let now = upper
 
-        return CachedDatabase(
+        return CachingDatabase(
             base: base,
             scope: "test",
             cache: try makeRecordCache(),

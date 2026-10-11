@@ -74,7 +74,7 @@ final class RecordCachePerformanceTests: XCTestCase {
     }
 }
 
-final class CachedDatabasePerformanceTests: XCTestCase {
+final class CachingDatabasePerformanceTests: XCTestCase {
     func testCachedSeriesReadPerformance() throws {
         guard #available(iOS 18, macOS 15, *) else {
             throw XCTSkip("Requires iOS 18")
@@ -84,7 +84,7 @@ final class CachedDatabasePerformanceTests: XCTestCase {
         // at 40×800 the 32k-row SwiftData insert alone brushed 60s on CI runners.
         base.series = makeSeries(versions: 10, points: 400)
         let now = Date(timeIntervalSince1970: 4_000_000)
-        let database = CachedDatabase(
+        let database = CachingDatabase(
             base: base,
             scope: "perf",
             cache: try makeRecordCache(),

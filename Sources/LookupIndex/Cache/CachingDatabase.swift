@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 @available(iOS 18, macOS 15, *)
-struct CachedDatabase: Sendable {
+struct CachingDatabase: Sendable {
     let base: any DatabaseReader
     let scope: String
     let cache: RecordCache
