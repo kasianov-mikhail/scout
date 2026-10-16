@@ -25,7 +25,7 @@ struct MetricKitStackTree: Decodable {
         }
     }
 
-    struct Frame: Decodable, Equatable {
+    struct Frame: Decodable, Equatable, Sendable {
         let binaryName: String?
         let offsetIntoBinaryTextSegment: UInt64?
         let subFrames: [Frame]

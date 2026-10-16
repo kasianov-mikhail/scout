@@ -21,6 +21,8 @@ extension Identity {
 
         try await persistentContainer.run(recoveryCommands)
         try await persistentContainer.run(startupCommands())
+
+        installMetricKitReceiver(identity: self)
     }
 
     private var recoveryCommands: [any Command] {
