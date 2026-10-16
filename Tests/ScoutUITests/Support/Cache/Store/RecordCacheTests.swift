@@ -11,14 +11,14 @@ import Testing
 @testable import Scout
 @testable import ScoutUI
 
-func makeRecordCacheLocation(manager: FileManager = .default) throws -> RecordCacheLocation {
+func makeRecordCacheStorage(manager: FileManager = .default) throws -> RecordCacheStorage {
     let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    return RecordCacheLocation(directory: directory, manager: manager)
+    return RecordCacheStorage(directory: directory, manager: manager)
 }
 
 func makeRecordCache() throws -> RecordCache {
-    RecordCache(location: try makeRecordCacheLocation())
+    RecordCache(storage: try makeRecordCacheStorage())
 }
 
 struct RecordCacheTests {

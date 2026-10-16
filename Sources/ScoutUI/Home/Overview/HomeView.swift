@@ -18,7 +18,8 @@ struct HomeView: View {
     @StateObject private var tint = Tint()
 
     init(backends: [Backend]) {
-        let cache = RecordCache(location: RecordCacheLocation())
+        let storage = RecordCacheStorage()
+        let cache = RecordCache(storage: storage)
 
         self._backends = State(
             initialValue: backends.map { backend in
