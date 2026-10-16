@@ -7,6 +7,7 @@
 
 import Scout
 import SwiftUI
+import UserNotifications
 
 struct HomeList: View {
     @AppStorage("scout_home_period") var period = Period.today
@@ -19,7 +20,7 @@ struct HomeList: View {
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
     @StateObject var devices = DevicesProvider()
-    @StateObject var alerts = AlertProvider(notifier: AlertNotifier())
+    @StateObject var alerts = AlertProvider(permission: NotificationPermission(center: UNUserNotificationCenter.current()))
 
     var body: some View {
         InsetList {

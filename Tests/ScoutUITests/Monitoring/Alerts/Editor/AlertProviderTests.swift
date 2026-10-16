@@ -16,20 +16,18 @@ import Testing
 struct AlertProviderTests {
     private let defaults = UserDefaults(suiteName: "AlertProviderTests-\(UUID().uuidString)")!
 
-    @Test("Fetching reads statuses for display without advancing state or delivering")
+    @Test("Fetching reads statuses for display without advancing state")
     func fetchIsReadOnly() async throws {
         let database = DatabaseStub()
         database.add(series: makeSeries(name: "Error", counts: errorCounts))
 
-        let center = NotificationCenterStub()
         let registry = AlertRegistry(defaults: defaults)
         try registry.save([errorRule])
-        let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
+        let provider = AlertProvider(registry: registry)
 
         let statuses = try await provider.fetch(in: database)
 
         #expect(statuses[0].outcome.shouldNotify)
-        #expect(center.requests.isEmpty)
         #expect(try registry.state(for: errorRule) == .armed)
     }
 
@@ -38,7 +36,7 @@ struct AlertProviderTests {
         let center = NotificationCenterStub()
         center.status = .notDetermined
         let registry = AlertRegistry(defaults: defaults)
-        let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
+        let provider = AlertProvider(registry: registry, permission: NotificationPermission(center: center))
 
         await provider.add(errorRule)
 
@@ -56,7 +54,7 @@ struct AlertProviderTests {
         let center = NotificationCenterStub()
         center.status = .notDetermined
         center.grant = false
-        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), permission: NotificationPermission(center: center))
 
         await provider.add(errorRule)
 
@@ -69,7 +67,7 @@ struct AlertProviderTests {
         center.status = .notDetermined
         let registry = AlertRegistry(defaults: defaults)
         try registry.save([errorRule])
-        let provider = AlertProvider(registry: registry, notifier: AlertNotifier(center: center))
+        let provider = AlertProvider(registry: registry, permission: NotificationPermission(center: center))
 
         await provider.add(crashFreeRule)
 
@@ -91,7 +89,7 @@ struct AlertProviderTests {
     func notificationsDeniedWhenDenied() async {
         let center = NotificationCenterStub()
         center.status = .denied
-        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), permission: NotificationPermission(center: center))
 
         await provider.refreshNotificationStatus()
 
@@ -107,7 +105,7 @@ struct AlertProviderTests {
     func notificationsNotDeniedWhenNotDetermined() async {
         let center = NotificationCenterStub()
         center.status = .notDetermined
-        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), notifier: AlertNotifier(center: center))
+        let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), permission: NotificationPermission(center: center))
 
         await provider.refreshNotificationStatus()
 
