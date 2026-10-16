@@ -13,7 +13,7 @@ extension Backend: Fixture {
         [
             Backend(
                 id: "https://api.scout.app",
-                database: DefaultDatabase(),
+                database: EmptyDatabase(),
                 displayName: "Production",
                 engine: .cloudKit,
                 probeStatus: { .reachable },
@@ -21,13 +21,13 @@ extension Backend: Fixture {
             ),
             Backend(
                 id: "https://staging.scout.app",
-                database: DefaultDatabase(),
+                database: EmptyDatabase(),
                 displayName: "Staging",
                 engine: .cloudKit
             ),
             Backend(
                 id: "http://localhost:8080",
-                database: DefaultDatabase(),
+                database: EmptyDatabase(),
                 displayName: "Local",
                 engine: .cloudKit,
                 probeStatus: { .unreachable },

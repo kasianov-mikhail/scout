@@ -11,10 +11,6 @@ import SwiftUI
 struct HomeView: View {
     @State private var backends: [Backend]
 
-    @AppStorage("scout_active_backend") private var activeID = ""
-    @State private var path: [HomeDestination] = []
-    @State private var issue: ICloudIssue?
-
     @StateObject private var tint = Tint()
 
     init(backends: [Backend]) {
@@ -36,35 +32,13 @@ struct HomeView: View {
         )
     }
 
-    private var backend: Backend? {
-        backends.active(id: activeID)
-    }
-
-    private var active: Binding<String> {
-        Binding {
-            backend?.id ?? ""
-        } set: {
-            activeID = $0
-        }
-    }
-
     var body: some View {
-        NavigationStack(path: $path) {
-            Group {
-                if backend == nil {
-                    ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
-                } else if case .account(.noAccount) = issue {
-                    ErrorView(description: Backend.AccountError.noAccount.localizedDescription, retry: nil)
-                } else {
-                    HomeList(path: $path)
-                }
+        Group {
+            if let first = backends.first {
+                HomeContent(first: first, others: Array(backends.dropFirst()))
+            } else {
+                EmptyHome()
             }
-            .iCloudWarning(backend?.verifyAccess, issue: $issue)
-            .toolbarBackground(.visible, for: .navigationBar)
-            .navigationTitle(en: "Home")
-            .dismissable()
-            .id(backend?.id)
-            .connectionToolbar(backends: backends, activeID: active)
         }
         .background {
             Rectangle().fill(.background).ignoresSafeArea()
@@ -73,8 +47,63 @@ struct HomeView: View {
         .imageScale(.medium)
         .dynamicTypeSize(.large)
         .tint(tint.value)
-        .environment(\.database, backend?.database ?? DefaultDatabase())
         .environmentObject(tint)
+    }
+}
+
+private struct HomeContent: View {
+    let first: Backend
+    let others: [Backend]
+
+    @AppStorage("scout_active_backend") private var activeID = ""
+    @State private var path: [HomeDestination] = []
+    @State private var issue: ICloudIssue?
+
+    private var backends: [Backend] {
+        [first] + others
+    }
+
+    private var backend: Backend {
+        backends.active(id: activeID) ?? first
+    }
+
+    private var active: Binding<String> {
+        Binding {
+            backend.id
+        } set: {
+            activeID = $0
+        }
+    }
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            Group {
+                if case .account(.noAccount) = issue {
+                    ErrorView(description: Backend.AccountError.noAccount.localizedDescription, retry: nil)
+                } else {
+                    HomeList(path: $path)
+                }
+            }
+            .iCloudWarning(backend.verifyAccess, issue: $issue)
+            .toolbarBackground(.visible, for: .navigationBar)
+            .navigationTitle(en: "Home")
+            .dismissable()
+            .id(backend.id)
+            .connectionToolbar(backends: backends, activeID: active)
+        }
+        .environment(\.database, backend.database)
+    }
+}
+
+private struct EmptyHome: View {
+    var body: some View {
+        NavigationStack {
+            ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
+                .toolbarBackground(.visible, for: .navigationBar)
+                .navigationTitle(en: "Home")
+                .dismissable()
+                .connectionToolbar(backends: [], activeID: .constant(""))
+        }
     }
 }
 
