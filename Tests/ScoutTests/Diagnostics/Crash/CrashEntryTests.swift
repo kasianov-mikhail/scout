@@ -34,6 +34,24 @@ struct CrashEntryTests {
         #expect(object.record["session_id"] == session.sessionID.uuidString)
     }
 
+    @Test("record includes the source and window start")
+    func testRecordIncludesSourceAndWindowStart() {
+        let object = makeCrashObject(name: "EXC_BAD_ACCESS", date: date)
+        object.source = "metrickit"
+        object.windowStart = date.addingTimeInterval(-600)
+
+        #expect(object.record["source"] == "metrickit")
+        #expect(object.record["date_start"] == date.addingTimeInterval(-600))
+    }
+
+    @Test("record leaves out the source and window start of a crash caught in process")
+    func testRecordOmitsSourceAndWindowStart() {
+        let object = makeCrashObject(name: "SIGABRT", date: date)
+
+        #expect(object.record.fields["source"] == nil)
+        #expect(object.record.fields["date_start"] == nil)
+    }
+
     @Test("record computes a fallback fingerprint for migrated crashes")
     func testRecordComputesFallbackFingerprint() throws {
         let object = makeCrashObject(name: "SIGABRT", date: date)

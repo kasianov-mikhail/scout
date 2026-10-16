@@ -137,6 +137,7 @@ struct TimelineExportTests {
             reason: "unexpectedly found nil",
             stackTrace: [],
             date: TimelineFixture.at(10),
+            source: .inProcess,
             id: "crash",
             deviceID: nil,
             installID: nil,

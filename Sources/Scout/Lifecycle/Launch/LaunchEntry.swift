@@ -13,6 +13,7 @@ package final class LaunchEntry: SyncableEntry, HasInstall {
 
     @NSManaged var endDate: Date?
     @NSManaged var launchID: UUID
+    @NSManaged var processID: Int32
     @NSManaged var install: InstallEntry?
     @NSManaged var sessions: Set<SessionEntry>
     @NSManaged var versions: Set<VersionEntry>

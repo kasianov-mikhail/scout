@@ -89,6 +89,8 @@ extension CatalogEntry {
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
+            .init(name: "date_start", type: .timestamp),
+            .init(name: "source", type: .string),
         ]
     )
 

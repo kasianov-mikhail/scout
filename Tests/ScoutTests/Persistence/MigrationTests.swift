@@ -63,4 +63,49 @@ struct MigrationTests {
             try coordinator.destroyPersistentStore(at: storeURL, ofType: NSSQLiteStoreType)
         }
     }
+
+    @Test("A ScoutModel 4 store keeps its crashes and launches after migration")
+    func version4DataSurvives() throws {
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+
+        let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
+        let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 4.mom")))
+
+        let launchID = UUID()
+        let crashID = UUID()
+        let date = Date(timeIntervalSince1970: 1_750_000_000)
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
+        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        seed.persistentStoreCoordinator = coordinator
+
+        try seed.performAndWait {
+            let launch = seed.insert(LaunchEntry.self)
+            launch.launchID = launchID
+            launch.date = date
+
+            let crash = seed.insert(CrashEntry.self)
+            crash.crashID = crashID
+            crash.name = "SIGSEGV"
+            crash.reason = "Signal 11 received"
+            crash.date = date
+
+            try seed.save()
+        }
+        try coordinator.remove(seeded)
+
+        let context = try store.container().newBackgroundContext()
+        try context.performAndWait {
+            let launch = try #require(try context.existing(LaunchEntry.self, key: "launchID", id: launchID))
+            #expect(launch.processID == 0)
+
+            let crash = try #require(try context.existing(CrashEntry.self, key: "crashID", id: crashID))
+            #expect(crash.name == "SIGSEGV")
+            #expect(crash.reason == "Signal 11 received")
+            #expect(crash.source == nil)
+            #expect(crash.windowStart == nil)
+        }
+    }
 }
