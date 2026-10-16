@@ -6,6 +6,7 @@
 - [Option 1: One Binary, Hidden Entry Point](#option-1-one-binary-hidden-entry-point)
 - [Option 2: A TestFlight-Only Target or Branch](#option-2-a-testflight-only-target-or-branch)
 - [Choosing](#choosing)
+- [Cache the Dashboard Data](#cache-the-dashboard-data)
 
 The dashboard ships as its own product, `ScoutUI`, separate from the `Scout` runtime. Recording logs, metrics, and crashes needs only `Scout` and a connector, so linking the dashboard is a deliberate step — and one you can take in the builds your testers run without taking it in the build you release.
 
@@ -120,3 +121,7 @@ Two things to weigh before choosing this. First, the build you release is not th
 ## Choosing
 
 Start with option 1. It is a few lines, it keeps one binary through the whole pipeline, and the dashboard is reachable in TestFlight the moment a tester needs it. Move to option 2 when binary size matters enough to pay for the split, or when you want a guarantee — not a runtime check — that no dashboard code ships to App Store users.
+
+## Cache the Dashboard Data
+
+`ScoutUI` reads through a Core Data cache, so repeated queries are served from a local store. There is nothing to set up: the dashboard loads the cache itself and keeps separate entries for each backend. Alert evaluation in `ScoutAlerts` always reads fresh data. Clear Cache in the dashboard settings empties the store. `LookupIndex.enable()` from earlier releases is deprecated and does nothing.

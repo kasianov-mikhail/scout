@@ -5,11 +5,9 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import ConnectorSupport
 import Foundation
 import Scout
 
-@available(iOS 18, macOS 15, *)
 extension CachingDatabase: SeriesReader {
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         try await series(matching: query, fetch: base.eventSeries)

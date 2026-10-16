@@ -59,7 +59,7 @@
                 return
             }
             do {
-                _ = try await engine.run(in: backend.cachedReader)
+                _ = try await engine.run(in: backend.database)
             } catch {
                 print("Failed to evaluate the alert rules in the background: \(error)")
             }

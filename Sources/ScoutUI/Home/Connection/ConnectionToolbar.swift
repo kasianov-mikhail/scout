@@ -43,8 +43,7 @@ private struct ConnectionToolbar: ViewModifier {
                 NavigationStack {
                     SettingsOverviewView(
                         backends: backends,
-                        activeID: $activeID,
-                        cache: Backend.cache
+                        activeID: $activeID
                     )
                 }
                 .opaquePresentation()

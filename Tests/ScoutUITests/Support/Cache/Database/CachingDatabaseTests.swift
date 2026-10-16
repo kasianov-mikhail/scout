@@ -8,8 +8,8 @@
 import Foundation
 import Testing
 
-@testable import LookupIndex
 @testable import Scout
+@testable import ScoutUI
 
 struct CachingDatabaseTests {
     let lower = Date(timeIntervalSince1970: 0)
@@ -19,7 +19,6 @@ struct CachingDatabaseTests {
         upper.startOfWeek.addingWeek(-1)
     }
 
-    @available(iOS 18, macOS 15, *)
     func makeDatabase(base: SpyDatabase, types: Set<String> = [EventEntry.recordType]) throws -> CachingDatabase {
         let now = upper
 
@@ -32,7 +31,19 @@ struct CachingDatabaseTests {
         )
     }
 
-    @available(iOS 18, macOS 15, *)
+    @Test("Writes reach the wrapped database untouched")
+    func forwardsWrites() async throws {
+        let base = SpyDatabase()
+        let database = try makeDatabase(base: base)
+        let first = Record(recordType: "Event", recordID: "event-1")
+        let second = Record(recordType: "Event", recordID: "event-2")
+
+        try await database.write(record: first)
+        try await database.write(records: [second])
+
+        #expect(base.written.map(\.recordID) == ["event-1", "event-2"])
+    }
+
     @Test("Record queries pass through unchanged")
     func passesThroughOtherQueries() async throws {
         let base = SpyDatabase()
@@ -53,7 +64,6 @@ struct CachingDatabaseTests {
         #expect(base.queries.first?.filters == query.filters)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("A repeated series request only fetches the live remainder")
     func seriesFetchesRemainderOnly() async throws {
         let base = SpyDatabase()
@@ -87,7 +97,6 @@ struct CachingDatabaseTests {
         #expect(second.first?.points.map(\.value) == [4, 7])
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Series caches are split by scalar type and category")
     func seriesSeparatesFingerprints() async throws {
         let base = SpyDatabase()
@@ -120,7 +129,6 @@ struct CachingDatabaseTests {
         #expect(base.seriesRanges == [lower..<upper, lower..<upper])
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Version-grouped series round-trip through the cache")
     func cachesVersionGroups() async throws {
         let base = SpyDatabase()
@@ -144,7 +152,6 @@ struct CachingDatabaseTests {
         #expect(second.first?.points.map(\.value) == [4])
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("An event lookup is served from the cache after the first fetch")
     func cachesEventLookup() async throws {
         let base = SpyDatabase()
@@ -161,7 +168,6 @@ struct CachingDatabaseTests {
         #expect(base.lookups == ["event-1"])
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Lookups of mutable record types are not cached")
     func skipsMutableLookup() async throws {
         let base = SpyDatabase()
@@ -174,7 +180,6 @@ struct CachingDatabaseTests {
         #expect(base.lookups == ["session-1", "session-1"])
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("The immutable record types decide which lookups are cached")
     func honorsImmutableRecordTypes() async throws {
         let base = SpyDatabase()
@@ -192,7 +197,6 @@ struct CachingDatabaseTests {
         #expect(base.lookups == ["session-1", "event-1", "event-1"])
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Lookups with different field sets are cached separately")
     func separatesLookupFields() async throws {
         let base = SpyDatabase()
@@ -207,8 +211,9 @@ struct CachingDatabaseTests {
     }
 }
 
-final class SpyDatabase: DatabaseReader, @unchecked Sendable {
+final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var records: [Record] = []
+    var written: [Record] = []
     var queries: [RecordQuery] = []
     var lookups: [String] = []
     var series: [MetricSeries] = []
@@ -219,6 +224,14 @@ final class SpyDatabase: DatabaseReader, @unchecked Sendable {
         // The cache never caches reads, so these tests only assert on the recorded
         // queries — the spy echoes back whatever rows it was seeded with, unfiltered.
         return RecordChunk(records: records, cursor: nil)
+    }
+
+    func write(record: Record) async throws {
+        written.append(record)
+    }
+
+    func write(records: [Record]) async throws {
+        written += records
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {

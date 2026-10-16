@@ -8,7 +8,6 @@
 import Foundation
 import Scout
 
-@available(iOS 18, macOS 15, *)
 extension CachingDatabase: AudienceReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         try await base.activity(in: range)

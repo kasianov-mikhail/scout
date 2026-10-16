@@ -8,22 +8,17 @@
 import Foundation
 import Testing
 
-@testable import LookupIndex
 @testable import Scout
+@testable import ScoutUI
 
 func makeRecordCacheLocation(manager: FileManager = .default) throws -> RecordCacheLocation {
     let directory = FileManager.default.temporaryDirectory.appending(path: UUID().uuidString)
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    return RecordCacheLocation(
-        directory: directory,
-        defaults: UserDefaults(suiteName: "RecordCacheTests-\(UUID().uuidString)")!,
-        manager: manager
-    )
+    return RecordCacheLocation(directory: directory, manager: manager)
 }
 
-@available(iOS 18, macOS 15, *)
 func makeRecordCache() throws -> RecordCache {
-    try RecordCache(location: makeRecordCacheLocation())
+    RecordCache(location: try makeRecordCacheLocation())
 }
 
 struct RecordCacheTests {
@@ -39,7 +34,6 @@ struct RecordCacheTests {
         Date(timeIntervalSince1970: interval)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Stored records round-trip through the cache")
     func roundTrip() async throws {
         let cache = try makeRecordCache()
@@ -53,7 +47,6 @@ struct RecordCacheTests {
         #expect(await cache.coveredRange(for: "fp") == date(0)..<date(300))
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Contiguous stores extend the covered span")
     func extendsSpan() async throws {
         let cache = try makeRecordCache()
@@ -67,7 +60,6 @@ struct RecordCacheTests {
         #expect(cached.count == 2)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("A disjoint store replaces the previous span")
     func replacesDisjointSpan() async throws {
         let cache = try makeRecordCache()
@@ -82,7 +74,6 @@ struct RecordCacheTests {
         #expect(cached.first?.fields["date"] == .date(date(700)))
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Overlapping stores do not duplicate records")
     func deduplicatesOverlap() async throws {
         let cache = try makeRecordCache()
@@ -95,7 +86,6 @@ struct RecordCacheTests {
         #expect(cached.count == 1)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Fingerprints are isolated from each other")
     func isolatesFingerprints() async throws {
         let cache = try makeRecordCache()
@@ -108,7 +98,6 @@ struct RecordCacheTests {
         #expect(cached.isEmpty)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("A record without a date aborts the store")
     func abortsWithoutDate() async throws {
         let cache = try makeRecordCache()
@@ -119,7 +108,6 @@ struct RecordCacheTests {
         #expect(await cache.coveredRange(for: "fp") == nil)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Records outside the covered range are skipped")
     func skipsOutOfRange() async throws {
         let cache = try makeRecordCache()
@@ -132,7 +120,6 @@ struct RecordCacheTests {
         #expect(cached.first?.fields["date"] == .date(date(100)))
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Clearing forgets every span and record")
     func clears() async throws {
         let cache = try makeRecordCache()
@@ -146,7 +133,6 @@ struct RecordCacheTests {
         #expect(await cache.size == 0)
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("The size sums the stored payloads")
     func sumsPayloadSizes() async throws {
         let cache = try makeRecordCache()
@@ -160,7 +146,6 @@ struct RecordCacheTests {
         #expect(await cache.size == Int64(expected))
     }
 
-    @available(iOS 18, macOS 15, *)
     @Test("Range predicates return only the requested prefix")
     func filtersByRange() async throws {
         let cache = try makeRecordCache()

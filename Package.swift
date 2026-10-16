@@ -90,11 +90,7 @@ let package = Package(
             ]
         ),
         .target(
-            name: "LookupIndex",
-            dependencies: [
-                "Scout",
-                "ConnectorSupport",
-            ]
+            name: "LookupIndex"
         ),
         .target(
             name: "DemoConnector",
@@ -152,15 +148,6 @@ let package = Package(
                 "ConnectorSupport",
                 "Support",
             ]
-        ),
-        .testTarget(
-            name: "LookupIndexTests",
-            dependencies: [
-                "LookupIndex",
-                "Scout",
-            ]
-            // LookupIndex autolinks SwiftData (iOS 17+), so this bundle can't load
-            // on the iOS 16 simulator; the `ci.yml` iOS 16 leg skips it entirely.
         ),
         .testTarget(
             name: "DemoConnectorTests",

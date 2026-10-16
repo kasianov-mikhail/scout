@@ -8,7 +8,6 @@
 import Foundation
 import Scout
 
-@available(iOS 18, macOS 15, *)
 extension CachingDatabase: RecordReader {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         let fingerprint = Self.fingerprint(scope: scope, recordName: recordName, fields: fields)
@@ -34,7 +33,6 @@ extension CachingDatabase: RecordReader {
     }
 }
 
-@available(iOS 18, macOS 15, *)
 extension CachingDatabase {
     static func fingerprint(scope: String, recordName: String, fields: [String]?) -> String {
         [

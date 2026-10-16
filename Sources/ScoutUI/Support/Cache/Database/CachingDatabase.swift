@@ -8,19 +8,10 @@
 import Foundation
 import Scout
 
-@available(iOS 18, macOS 15, *)
 struct CachingDatabase: Sendable {
-    let base: any DatabaseReader
+    let base: any Database
     let scope: String
     let cache: RecordCache
     let now: @Sendable () -> Date
     let types: Set<String>
-
-    init(base: any DatabaseReader, scope: String, cache: RecordCache, now: @escaping @Sendable () -> Date = { Date() }, types: Set<String> = [EventEntry.recordType]) {
-        self.base = base
-        self.scope = scope
-        self.cache = cache
-        self.now = now
-        self.types = types
-    }
 }

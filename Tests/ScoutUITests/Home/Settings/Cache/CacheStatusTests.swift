@@ -17,7 +17,7 @@ import Testing
 struct CacheStatusTests {
     @Test("The status has no size until it is refreshed")
     func startsUnmeasured() {
-        let status = CacheStatus(cache: SpyCacheClearing(size: 4_096))
+        let status = CacheStatus(cache: CacheSample(size: 4_096))
 
         #expect(status.bytes == nil)
         #expect(!status.isEmpty)
@@ -31,12 +31,12 @@ struct CacheStatusTests {
 
     @Test("Clearing erases the storage and measures it again")
     func clears() async {
-        let cache = SpyCacheClearing(size: 4_096)
-        let status = CacheStatus(cache: cache)
+        let status = CacheStatus(cache: CacheSample(size: 4_096))
+        await status.refresh()
+        #expect(status.bytes == 4_096)
 
         await status.clear()
 
-        #expect(await cache.clears == 1)
         #expect(status.bytes == 0)
         #expect(status.isEmpty)
     }
@@ -68,21 +68,7 @@ struct CacheStatusTests {
 
 @MainActor
 private func makeStatus(size: Int64) async -> CacheStatus {
-    let status = CacheStatus(cache: SpyCacheClearing(size: size))
+    let status = CacheStatus(cache: CacheSample(size: size))
     await status.refresh()
     return status
-}
-
-private actor SpyCacheClearing: CacheClearing {
-    private(set) var size: Int64
-    private(set) var clears = 0
-
-    init(size: Int64) {
-        self.size = size
-    }
-
-    func removeAll() {
-        clears += 1
-        size = 0
-    }
 }

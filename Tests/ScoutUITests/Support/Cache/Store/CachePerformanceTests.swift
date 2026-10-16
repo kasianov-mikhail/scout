@@ -8,8 +8,8 @@
 import Foundation
 import XCTest
 
-@testable import LookupIndex
 @testable import Scout
+@testable import ScoutUI
 
 final class CachedSeriesPerformanceTests: XCTestCase {
     func testSeriesMergePerformance() {
@@ -37,9 +37,6 @@ final class CachedSeriesPerformanceTests: XCTestCase {
 
 final class RecordCachePerformanceTests: XCTestCase {
     func testStorePerformance() throws {
-        guard #available(iOS 18, macOS 15, *) else {
-            throw XCTSkip("Requires iOS 18")
-        }
         let cache = try makeRecordCache()
         let records = makeRecords(count: 5_000)
         let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 6_000_000)
@@ -50,9 +47,6 @@ final class RecordCachePerformanceTests: XCTestCase {
     }
 
     func testFetchAndDecodePerformance() throws {
-        guard #available(iOS 18, macOS 15, *) else {
-            throw XCTSkip("Requires iOS 18")
-        }
         let cache = try makeRecordCache()
         let records = makeRecords(count: 5_000)
         let range = Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 6_000_000)
@@ -76,19 +70,17 @@ final class RecordCachePerformanceTests: XCTestCase {
 
 final class CachingDatabasePerformanceTests: XCTestCase {
     func testCachedSeriesReadPerformance() throws {
-        guard #available(iOS 18, macOS 15, *) else {
-            throw XCTSkip("Requires iOS 18")
-        }
         let base = SpyDatabase()
         // Sized so the warm-up store finishes well inside runBlocking's timeout:
-        // at 40×800 the 32k-row SwiftData insert alone brushed 60s on CI runners.
+        // at 40×800 the 32k-row insert alone brushed 60s on CI runners.
         base.series = makeSeries(versions: 10, points: 400)
         let now = Date(timeIntervalSince1970: 4_000_000)
         let database = CachingDatabase(
             base: base,
             scope: "perf",
             cache: try makeRecordCache(),
-            now: { now }
+            now: { now },
+            types: [EventEntry.recordType]
         )
         let query = LifecycleSeriesQuery.sessions(
             byVersion: true,

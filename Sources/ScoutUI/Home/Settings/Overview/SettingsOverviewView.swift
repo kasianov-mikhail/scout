@@ -13,12 +13,12 @@ struct SettingsOverviewView: View {
     @Binding var activeID: String
     @StateObject var provider: BackendHealthProvider
 
-    let cache: (any CacheClearing)?
+    let backends: [Backend]
 
-    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil, cache: (any CacheClearing)? = nil) {
+    init(backends: [Backend], activeID: Binding<String>, provider: BackendHealthProvider? = nil) {
+        self.backends = backends
         self._activeID = activeID
         self._provider = StateObject(wrappedValue: provider ?? BackendHealthProvider(backends: backends))
-        self.cache = cache
     }
 
     var body: some View {
@@ -38,7 +38,7 @@ struct SettingsOverviewView: View {
                 }
             }
 
-            if let cache {
+            if let cache = backends.active(id: activeID)?.cache {
                 CacheSection(cache: cache)
             }
 
@@ -89,10 +89,9 @@ private struct BackendRow: View {
     @Previewable @State var activeID = [BackendHealth].samples[0].id
     NavigationStack {
         SettingsOverviewView(
-            backends: [],
+            backends: .samples,
             activeID: $activeID,
-            provider: BackendHealthProvider(healths: .samples),
-            cache: CacheSample()
+            provider: BackendHealthProvider(healths: .samples)
         )
     }
 }
@@ -104,8 +103,7 @@ private struct BackendRow: View {
         SettingsOverviewView(
             backends: [],
             activeID: $activeID,
-            provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2))),
-            cache: CacheSample(size: 0)
+            provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2)))
         )
     }
 }
