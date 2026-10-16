@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 package struct SeriesKey: Hashable, Comparable, Sendable {
     package let name: String

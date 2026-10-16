@@ -8,8 +8,8 @@
 import Foundation
 import Testing
 
-@testable import LookupIndex
 @testable import Scout
+@testable import ScoutUI
 
 struct CachingDatabaseSeriesTests {
     @Test func mergesCachedAndFetchedPointsUnderTheSameKey() {

@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 struct HomeView: View {
-    let backends: [Backend]
+    @State private var backends: [Backend]
 
     @AppStorage("scout_active_backend") private var activeID = ""
     @State private var path: [HomeDestination] = []
@@ -18,18 +18,26 @@ struct HomeView: View {
     @StateObject private var tint = Tint()
 
     init(backends: [Backend]) {
-        self.backends = backends
+        let cache = RecordCache(location: RecordCacheLocation())
+
+        self._backends = State(
+            initialValue: backends.map { backend in
+                var backend = backend
+                backend.database = CachingDatabase(
+                    base: backend.database,
+                    scope: backend.id,
+                    cache: cache,
+                    now: { Date() },
+                    types: [EventEntry.recordType]
+                )
+                backend.cache = cache
+                return backend
+            }
+        )
     }
 
     private var backend: Backend? {
         backends.active(id: activeID)
-    }
-
-    @MainActor private var database: any DatabaseReader {
-        guard let backend else {
-            return DefaultDatabase()
-        }
-        return backend.cachedReader
     }
 
     private var active: Binding<String> {
@@ -65,7 +73,7 @@ struct HomeView: View {
         .imageScale(.medium)
         .dynamicTypeSize(.large)
         .tint(tint.value)
-        .environment(\.database, database)
+        .environment(\.database, backend?.database ?? DefaultDatabase())
         .environmentObject(tint)
     }
 }

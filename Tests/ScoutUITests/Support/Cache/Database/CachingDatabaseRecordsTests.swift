@@ -8,11 +8,10 @@
 import Foundation
 import Testing
 
-@testable import LookupIndex
 @testable import Scout
+@testable import ScoutUI
 
 struct CachingDatabaseRecordsTests {
-    @available(iOS 18, macOS 15, *)
     @Test("Lookup keys sort the requested fields and mark a full fetch")
     func lookupFingerprint() {
         let sorted = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["name", "date"])
