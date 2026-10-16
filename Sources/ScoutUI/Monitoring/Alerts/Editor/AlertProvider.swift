@@ -15,11 +15,11 @@ final class AlertProvider: ObservableObject, SeriesProvider {
     @Published private(set) var notificationsDenied = false
 
     private let registry: AlertRegistry
-    private let notifier: AlertNotifier?
+    private let permission: NotificationPermission?
 
-    init(_ result: ProviderResult<Output>? = nil, registry: AlertRegistry = AlertRegistry(), notifier: AlertNotifier? = nil) {
+    init(_ result: ProviderResult<Output>? = nil, registry: AlertRegistry = AlertRegistry(), permission: NotificationPermission? = nil) {
         self.registry = registry
-        self.notifier = notifier
+        self.permission = permission
         self.result = result
     }
 
@@ -31,18 +31,16 @@ final class AlertProvider: ObservableObject, SeriesProvider {
 
             try registry.save(rules + [rule])
 
-            if let notifier, await notifier.needsAuthorization() {
-                await notifier.requestAuthorization()
-                await refreshNotificationStatus()
-            }
+            await permission?.requestIfUndetermined()
+            await refreshNotificationStatus()
         } catch {
             result = .failure(error)
         }
     }
 
     func refreshNotificationStatus() async {
-        if let notifier {
-            notificationsDenied = await notifier.refusesNotifications()
+        if let permission {
+            notificationsDenied = await permission.isDenied
         }
     }
 
@@ -57,6 +55,6 @@ final class AlertProvider: ObservableObject, SeriesProvider {
     }
 
     func fetch(in database: SeriesReader) async throws -> [AlertStatus] {
-        try await AlertEngine(registry: registry, notifier: notifier).statuses(in: database)
+        try await AlertEngine(registry: registry, notifier: nil).statuses(in: database)
     }
 }

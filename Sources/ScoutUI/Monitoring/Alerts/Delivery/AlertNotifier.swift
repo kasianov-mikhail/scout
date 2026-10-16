@@ -14,22 +14,6 @@ struct AlertNotifier {
         self.center = center
     }
 
-    func needsAuthorization() async -> Bool {
-        await center.authorizationStatus() == .notDetermined
-    }
-
-    func requestAuthorization() async {
-        do {
-            _ = try await center.requestAuthorization(options: [.alert, .sound, .badge])
-        } catch {
-            print("Failed to request notification authorization: \(error)")
-        }
-    }
-
-    func refusesNotifications() async -> Bool {
-        await center.authorizationStatus() == .denied
-    }
-
     @discardableResult
     func deliver(_ statuses: [AlertStatus]) async -> [AlertStatus] {
         var undelivered: [AlertStatus] = []
