@@ -18,7 +18,7 @@ enum EntityCatalog {
     }
 
     static func encodeSeriesKey(category: String, name: String) -> String {
-        escape(category) + "|" + escape(name)
+        category.escaped + "|" + name.escaped
     }
 
     static func decodeSeriesKey(_ key: String) -> (category: String, name: String)? {
@@ -31,21 +31,23 @@ enum EntityCatalog {
             } else if character == "\\" {
                 isEscaped = true
             } else if character == "|" {
-                return (unescape(String(key[..<index])), unescape(String(key[key.index(after: index)...])))
+                return (String(key[..<index]).unescaped, String(key[key.index(after: index)...]).unescaped)
             }
             index = key.index(after: index)
         }
         return nil
     }
+}
 
-    private static func escape(_ component: String) -> String {
-        component.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "|", with: "\\|")
+extension String {
+    fileprivate var escaped: String {
+        replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "|", with: "\\|")
     }
 
-    private static func unescape(_ escaped: String) -> String {
+    fileprivate var unescaped: String {
         var result = ""
         var isEscaped = false
-        for character in escaped {
+        for character in self {
             if isEscaped {
                 if character != "\\" && character != "|" {
                     result.append("\\")
