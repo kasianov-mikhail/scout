@@ -50,6 +50,31 @@ extension Crash: Fixture {
         )
     }
 
+    static func sample(source: IncidentSource) -> Crash {
+        let name = "Watchdog Termination"
+        let reason = "Namespace FRONTBOARD, Code 0x8badf00d"
+        let stackTrace = [
+            "0   libsystem_kernel.dylib   + 0x1234",
+            "1   MyApp   + 0x1a2f0",
+            "2   UIKitCore   + 0x1388",
+            "3   MyApp   + 0x7d0",
+        ]
+
+        return Crash(
+            name: name,
+            fingerprint: CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value,
+            reason: reason,
+            stackTrace: stackTrace,
+            date: Date(),
+            source: source,
+            id: UUID().uuidString,
+            deviceID: UUID(),
+            installID: UUID(),
+            launchID: UUID(),
+            sessionID: UUID()
+        )
+    }
+
     static var samples: [Crash] {
         let counts: KeyValuePairs<String, Int> = ["NSRangeException": 8, "Fatal error": 4, "SIGSEGV": 2]
 
