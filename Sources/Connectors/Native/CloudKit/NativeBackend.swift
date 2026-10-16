@@ -45,14 +45,24 @@ extension Backend {
             probeStatus: {
                 (try? await container.accountStatus())?.backendStatus ?? .unreachable
             },
-            verifyAccess: {
-                try await container.accountStatus().verify()
-            }
+            verifyAccess: container.verifyAccount
         )
     }
 }
 
 extension CKContainer {
+    fileprivate func verifyAccount() async throws(Backend.AccountError) {
+        let status: CKAccountStatus
+
+        do {
+            status = try await accountStatus()
+        } catch {
+            throw .failure(error)
+        }
+
+        try status.verify()
+    }
+
     fileprivate func publishedStore() async throws -> EntityStore {
         let registry = SchemaRegistry(database: publicCloudDatabase)
         let store = EntityStore(database: publicCloudDatabase, registry: registry)

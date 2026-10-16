@@ -31,7 +31,7 @@ extension Backend: Fixture {
                 displayName: "Local",
                 engine: .cloudKit,
                 probeStatus: { .unreachable },
-                verifyAccess: { throw URLError(.notConnectedToInternet) }
+                verifyAccess: { () throws(AccountError) in throw .failure(URLError(.notConnectedToInternet)) }
             ),
         ]
     }

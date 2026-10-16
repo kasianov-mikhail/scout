@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 package typealias StatusProbe = @Sendable () async -> Backend.Status
+package typealias AccessCheck = @Sendable () async throws(Backend.AccountError) -> Void
 
 package protocol CacheClearing: Actor {
     var size: Int64 { get }
@@ -18,10 +19,10 @@ public struct Backend: Sendable {
     package let displayName: String
     package let engine: Engine
     package let probeStatus: StatusProbe?
-    package let verifyAccess: (@Sendable () async throws -> Void)?
+    package let verifyAccess: AccessCheck?
     package var cache: (any CacheClearing)?
 
-    package init(id: String, database: any Database, displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, verifyAccess: (@Sendable () async throws -> Void)? = nil, cache: (any CacheClearing)? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, verifyAccess: AccessCheck? = nil, cache: (any CacheClearing)? = nil) {
         self.id = id
         self.database = database
         self.displayName = displayName
