@@ -33,8 +33,7 @@ extension Backend {
 
         let database = NativeDatabase {
             try await stores.value(id: id) {
-                try await container.accountStatus().verify()
-                return try await container.publishedStore()
+                try await container.publishedStore()
             }
         }
 
