@@ -13,7 +13,6 @@ struct HomeView: View {
 
     @AppStorage("scout_active_backend") private var activeID = ""
     @State private var path: [HomeDestination] = []
-    @State private var issue: ICloudIssue?
 
     @StateObject private var tint = Tint()
 
@@ -58,7 +57,7 @@ struct HomeView: View {
                     HomeList(path: $path)
                 }
             }
-            .iCloudWarning(backend?.verifyAccess, issue: $issue)
+            .iCloudWarning(backend)
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")
             .dismissable()

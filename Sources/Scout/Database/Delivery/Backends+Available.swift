@@ -12,7 +12,7 @@ extension [Backend] {
                 for backend in self {
                     group.addTask {
                         do {
-                            try await backend.verifyAccess?()
+                            try await backend.checkAccess?()
                             return backend
                         } catch {
                             return nil
@@ -22,10 +22,8 @@ extension [Backend] {
 
                 var available: [Backend] = []
 
-                for await backend in group {
-                    if let backend {
-                        available.append(backend)
-                    }
+                for await case let backend? in group {
+                    available.append(backend)
                 }
 
                 return available

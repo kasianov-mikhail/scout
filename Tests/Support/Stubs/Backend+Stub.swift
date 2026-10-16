@@ -10,11 +10,12 @@ import Foundation
 @testable import Scout
 
 /// A minimal backend identified only by `id`, for tests that exercise backend-set membership (e.g. `cleanup`) without driving real delivery.
-func makeBackend(id: String) -> Backend {
+func makeBackend(id: String, checkAccess: AccessCheck? = nil) -> Backend {
     Backend(
         id: id,
         database: InMemoryDatabase(),
         displayName: id,
-        engine: .cloudKit
+        engine: .cloudKit,
+        checkAccess: checkAccess
     )
 }

@@ -42,10 +42,7 @@ extension Backend {
             database: database,
             displayName: "iCloud",
             engine: .cloudKit,
-            probeStatus: {
-                (try? await container.accountStatus())?.backendStatus ?? .unreachable
-            },
-            verifyAccess: {
+            checkAccess: {
                 try await container.accountStatus().verify()
             }
         )

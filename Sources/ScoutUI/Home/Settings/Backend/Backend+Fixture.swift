@@ -16,7 +16,7 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 displayName: "Production",
                 engine: .cloudKit,
-                probeStatus: { .reachable },
+                checkAccess: {},
                 cache: CacheSample()
             ),
             Backend(
@@ -30,8 +30,7 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 displayName: "Local",
                 engine: .cloudKit,
-                probeStatus: { .unreachable },
-                verifyAccess: { throw URLError(.notConnectedToInternet) }
+                checkAccess: { throw URLError(.notConnectedToInternet) }
             ),
         ]
     }

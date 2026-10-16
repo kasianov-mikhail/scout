@@ -9,15 +9,15 @@ import Scout
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ verify: (@Sendable () async throws -> Void)?, issue: Binding<ICloudIssue?>) -> some View {
-        modifier(ICloudWarningModifier(verify: verify, issue: issue))
+    func iCloudWarning(_ backend: Backend?) -> some View {
+        modifier(ICloudWarningModifier(backend: backend))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
-    let verify: (@Sendable () async throws -> Void)?
+    let backend: Backend?
 
-    @Binding var issue: ICloudIssue?
+    @State private var issue: Backend.AccountError?
     @State private var isAlertPresented = false
 
     func body(content: Content) -> some View {
@@ -35,33 +35,33 @@ private struct ICloudWarningModifier: ViewModifier {
                                 Text(verbatim: "OK")
                             }
                         } message: {
-                            Text(verbatim: issue.message)
+                            Text(verbatim: issue.localizedDescription)
                         }
                     }
                 }
             }
             .task {
-                await verify()
+                await check()
             }
             .onReceive(NotificationCenter.default.publisher(for: AppLifecycle.willEnterForeground)) { _ in
                 Task {
-                    await verify()
+                    await check()
                 }
             }
     }
 
-    private func verify() async {
-        guard let verify else {
-            issue = nil
+    private func check() async {
+        guard case .cloudKit = backend?.engine else {
+            return
+        }
+        guard let check = backend?.checkAccess else {
             return
         }
         do {
-            try await verify()
+            try await check()
             issue = nil
-        } catch let error as Backend.AccountError {
-            issue = .account(error)
         } catch {
-            issue = .failure(error)
+            issue = Backend.AccountError(error)
         }
     }
 }

@@ -25,17 +25,4 @@ extension CKAccountStatus {
             throw .couldNotDetermine
         }
     }
-
-    var backendStatus: Backend.Status {
-        switch self {
-        case .available:
-            .reachable
-        case .noAccount, .restricted, .temporarilyUnavailable:
-            .readOnly
-        case .couldNotDetermine:
-            .unreachable
-        @unknown default:
-            .unreachable
-        }
-    }
 }
