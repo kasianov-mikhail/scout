@@ -7,6 +7,7 @@
 
 import Foundation
 import Scout
+import SwiftUI
 
 struct DefaultDatabase: Database {
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
@@ -39,4 +40,8 @@ struct DefaultDatabase: Database {
 
     func write(record: Record) async throws {}
     func write(records: [Record]) async throws {}
+}
+
+extension EnvironmentValues {
+    @Entry var database: DatabaseReader = DefaultDatabase()
 }
