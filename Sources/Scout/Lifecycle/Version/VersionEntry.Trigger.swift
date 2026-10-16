@@ -17,11 +17,8 @@ extension VersionEntry {
             let appVersion = bundle.marketingVersion
             let buildNumber = bundle.buildNumber
 
-            let request = NSFetchRequest<VersionEntry>(entityName: "VersionEntry")
-            request.predicate = NSPredicate(format: "launch.install.installID == %@", installID as CVarArg)
-            request.sortDescriptors = [NSSortDescriptor(key: DateEntry.datePrimitiveKey, ascending: false)]
-            request.fetchLimit = 1
-            let latest = try context.fetch(request).first
+            let predicate = NSPredicate(format: "launch.install.installID == %@", installID as CVarArg)
+            let latest = try context.latest(type: VersionEntry.self, predicate: predicate)
 
             if latest?.appVersion == appVersion && latest?.buildNumber == buildNumber {
                 return

@@ -12,12 +12,9 @@ extension SessionEntry {
         let launchID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
-            request.sortDescriptors = [NSSortDescriptor(key: DateEntry.datePrimitiveKey, ascending: false)]
-            request.predicate = NSPredicate(format: "launch.launchID == %@", launchID as CVarArg)
-            request.fetchLimit = 1
+            let predicate = NSPredicate(format: "launch.launchID == %@", launchID as CVarArg)
 
-            guard let session = try context.fetch(request).first else {
+            guard let session = try context.latest(type: SessionEntry.self, predicate: predicate) else {
                 throw LifecycleError()
             }
 
