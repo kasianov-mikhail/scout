@@ -54,8 +54,6 @@ struct HomeView: View {
             Group {
                 if backend == nil {
                     ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
-                } else if case .account(.noAccount) = issue {
-                    ErrorView(description: Backend.AccountError.noAccount.localizedDescription, retry: nil)
                 } else {
                     HomeList(path: $path)
                 }
