@@ -10,7 +10,7 @@ import Scout
 
 extension CachingDatabase: RecordReader {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        let fingerprint = Self.fingerprint(scope: scope, recordName: recordName, fields: fields)
+        let fingerprint = lookupFingerprint(recordName: recordName, fields: fields)
 
         if let record = await cache.lookupRecord(for: fingerprint) {
             return record
@@ -34,7 +34,7 @@ extension CachingDatabase: RecordReader {
 }
 
 extension CachingDatabase {
-    static func fingerprint(scope: String, recordName: String, fields: [String]?) -> String {
+    func lookupFingerprint(recordName: String, fields: [String]?) -> String {
         [
             scope,
             "lookup",

@@ -13,10 +13,11 @@ import Testing
 
 struct CachingDatabaseRecordsTests {
     @Test("Lookup keys sort the requested fields and mark a full fetch")
-    func lookupFingerprint() {
-        let sorted = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["name", "date"])
-        let reversed = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: ["date", "name"])
-        let full = CachingDatabase.fingerprint(scope: "s", recordName: "event-1", fields: nil)
+    func lookupFingerprint() throws {
+        let database = CachingDatabase(base: SpyDatabase(), scope: "s", cache: try makeRecordCache(), now: Date.init, types: [])
+        let sorted = database.lookupFingerprint(recordName: "event-1", fields: ["name", "date"])
+        let reversed = database.lookupFingerprint(recordName: "event-1", fields: ["date", "name"])
+        let full = database.lookupFingerprint(recordName: "event-1", fields: nil)
 
         #expect(sorted == "s|lookup|event-1|date,name")
         #expect(sorted == reversed)
