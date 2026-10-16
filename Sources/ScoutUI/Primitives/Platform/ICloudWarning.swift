@@ -51,10 +51,7 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 
     private func verify() async {
-        guard let verify else {
-            issue = nil
-            return
-        }
+        guard let verify else { return }
         do {
             try await verify()
             issue = nil
