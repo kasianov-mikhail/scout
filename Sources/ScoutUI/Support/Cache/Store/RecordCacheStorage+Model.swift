@@ -7,7 +7,7 @@
 
 import CoreData
 
-extension RecordCache {
+extension RecordCacheStorage {
     nonisolated(unsafe) static let model: NSManagedObjectModel = {
         let record = NSEntityDescription()
         record.name = "CachedRecord"

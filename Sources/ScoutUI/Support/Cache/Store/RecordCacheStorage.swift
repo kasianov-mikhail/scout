@@ -8,8 +8,7 @@
 import CoreData
 import Foundation
 
-// FileManager is documented thread-safe but not Sendable-annotated.
-struct RecordCacheLocation: @unchecked Sendable {
+struct RecordCacheStorage: @unchecked Sendable {
     private let storeName = "RecordCache.store"
     private let storeSuffixes = ["", "-shm", "-wal"]
 
@@ -21,11 +20,40 @@ struct RecordCacheLocation: @unchecked Sendable {
         self.manager = manager
     }
 
-    var storeURL: URL {
+    private var storeURL: URL {
         directory.appending(path: storeName)
     }
 
-    func prepare(model: NSManagedObjectModel) throws {
+    func open() -> NSManagedObjectContext? {
+        do {
+            try prepare()
+
+            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: Self.model)
+            _ = try coordinator.addPersistentStore(type: .sqlite, configuration: nil, at: storeURL)
+
+            let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+            context.persistentStoreCoordinator = coordinator
+            return context
+        } catch {
+            print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")
+            return nil
+        }
+    }
+
+    func destroy(context: NSManagedObjectContext?) {
+        if let coordinator = context?.persistentStoreCoordinator {
+            do {
+                for store in coordinator.persistentStores {
+                    try coordinator.remove(store)
+                }
+            } catch {
+                print("Failed to close the record cache store: \(error)")
+            }
+        }
+        destroyStore()
+    }
+
+    private func prepare() throws {
         try manager.createDirectory(at: directory, withIntermediateDirectories: true)
         sweepRetired()
 
@@ -34,7 +62,7 @@ struct RecordCacheLocation: @unchecked Sendable {
         }
         do {
             let metadata = try NSPersistentStoreCoordinator.metadataForPersistentStore(type: .sqlite, at: storeURL)
-            if model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata) {
+            if Self.model.isConfiguration(withName: nil, compatibleWithStoreMetadata: metadata) {
                 return
             }
         } catch {
@@ -43,7 +71,7 @@ struct RecordCacheLocation: @unchecked Sendable {
         destroyStore()
     }
 
-    func destroyStore() {
+    private func destroyStore() {
         for suffix in storeSuffixes {
             remove(path: storeURL.path + suffix)
         }

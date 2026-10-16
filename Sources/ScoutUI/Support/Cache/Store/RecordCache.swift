@@ -10,11 +10,11 @@ import Foundation
 import Scout
 
 actor RecordCache: CacheClearing {
-    private let location: RecordCacheLocation
-    private lazy var context = open()
+    private let storage: RecordCacheStorage
+    private lazy var context = storage.open()
 
-    init(location: RecordCacheLocation) {
-        self.location = location
+    init(storage: RecordCacheStorage) {
+        self.storage = storage
     }
 
     var size: Int64 {
@@ -42,17 +42,8 @@ actor RecordCache: CacheClearing {
     }
 
     func removeAll() {
-        if let coordinator = context?.persistentStoreCoordinator {
-            do {
-                for store in coordinator.persistentStores {
-                    try coordinator.remove(store)
-                }
-            } catch {
-                print("Failed to close the record cache store: \(error)")
-            }
-        }
-        location.destroyStore()
-        context = open()
+        storage.destroy(context: context)
+        context = storage.open()
     }
 
     func coveredRange(for fingerprint: String) -> Range<Date>? {
@@ -165,22 +156,6 @@ actor RecordCache: CacheClearing {
         } catch {
             context.performAndWait { context.rollback() }
             print("Failed to store a lookup record in the record cache: \(error)")
-        }
-    }
-
-    private func open() -> NSManagedObjectContext? {
-        do {
-            try location.prepare(model: Self.model)
-
-            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: Self.model)
-            _ = try coordinator.addPersistentStore(type: .sqlite, configuration: nil, at: location.storeURL)
-
-            let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-            context.persistentStoreCoordinator = coordinator
-            return context
-        } catch {
-            print("Failed to open the record cache store, so backends stay uncached until the next launch: \(error)")
-            return nil
         }
     }
 }
