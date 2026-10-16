@@ -50,4 +50,12 @@ struct CrashFingerprintTests {
         #expect(fingerprint.value.count == 64)
         #expect(fingerprint.value.allSatisfy { $0.isHexDigit && !$0.isUppercase })
     }
+
+    @Test("Keeps the offsets of unsymbolicated frames apart")
+    func offsetsStayDistinct() {
+        let first = CrashFingerprint(name: "EXC_BAD_ACCESS", offsets: ["MyApp + 0x1a2f0"])
+        let second = CrashFingerprint(name: "EXC_BAD_ACCESS", offsets: ["MyApp + 0x1a2f4"])
+
+        #expect(first.value != second.value)
+    }
 }
