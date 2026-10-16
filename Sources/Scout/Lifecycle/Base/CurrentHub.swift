@@ -9,8 +9,12 @@ import CoreData
 
 extension NSManagedObjectContext {
     func existing<T: NSManagedObject>(_ type: T.Type, key: String, id: UUID) throws -> T? {
+        try latest(type: type, predicate: NSPredicate(format: "%K == %@", key, id as CVarArg))
+    }
+
+    func latest<T: NSManagedObject>(type: T.Type, predicate: NSPredicate) throws -> T? {
         let request = NSFetchRequest<T>(entityName: String(describing: type))
-        request.predicate = NSPredicate(format: "%K == %@", key, id as CVarArg)
+        request.predicate = predicate
         request.sortDescriptors = [NSSortDescriptor(key: DateEntry.datePrimitiveKey, ascending: false)]
         request.fetchLimit = 1
         return try fetch(request).first
