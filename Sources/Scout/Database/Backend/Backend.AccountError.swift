@@ -30,6 +30,15 @@ extension Backend {
             }
         }
 
+        var status: Status {
+            switch self {
+            case .noAccount, .restricted, .temporarilyUnavailable:
+                .readOnly
+            case .couldNotDetermine, .failure:
+                .unreachable
+            }
+        }
+
         package var errorDescription: String? {
             switch self {
             case .noAccount:

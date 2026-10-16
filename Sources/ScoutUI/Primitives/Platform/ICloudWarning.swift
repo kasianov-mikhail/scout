@@ -9,13 +9,13 @@ import Scout
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ verify: AccessCheck?) -> some View {
-        modifier(ICloudWarningModifier(verify: verify))
+    func iCloudWarning(_ backend: Backend?) -> some View {
+        modifier(ICloudWarningModifier(backend: backend))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
-    let verify: AccessCheck?
+    let backend: Backend?
 
     @State private var issue: Backend.AccountError?
     @State private var isAlertPresented = false
@@ -41,19 +41,24 @@ private struct ICloudWarningModifier: ViewModifier {
                 }
             }
             .task {
-                await verify()
+                await check()
             }
             .onReceive(NotificationCenter.default.publisher(for: AppLifecycle.willEnterForeground)) { _ in
                 Task {
-                    await verify()
+                    await check()
                 }
             }
     }
 
-    private func verify() async {
-        guard let verify else { return }
+    private func check() async {
+        guard case .cloudKit = backend?.engine else {
+            return
+        }
+        guard let check = backend?.checkAccess else {
+            return
+        }
         do {
-            try await verify()
+            try await check()
             issue = nil
         } catch {
             issue = error

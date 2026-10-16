@@ -42,16 +42,13 @@ extension Backend {
             database: database,
             displayName: "iCloud",
             engine: .cloudKit,
-            probeStatus: {
-                (try? await container.accountStatus())?.backendStatus ?? .unreachable
-            },
-            verifyAccess: container.verifyAccount
+            checkAccess: container.checkAccount
         )
     }
 }
 
 extension CKContainer {
-    fileprivate func verifyAccount() async throws(Backend.AccountError) {
+    fileprivate func checkAccount() async throws(Backend.AccountError) {
         let status: CKAccountStatus
 
         do {

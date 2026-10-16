@@ -24,4 +24,12 @@ struct AccountErrorTests {
         #expect(error.title == "iCloud Error")
         #expect(error.localizedDescription == URLError(.notConnectedToInternet).localizedDescription)
     }
+
+    @Test("Account issues leave the backend read-only and failures make it unreachable") func status() {
+        #expect(Backend.AccountError.noAccount.status == .readOnly)
+        #expect(Backend.AccountError.restricted.status == .readOnly)
+        #expect(Backend.AccountError.temporarilyUnavailable.status == .readOnly)
+        #expect(Backend.AccountError.couldNotDetermine.status == .unreachable)
+        #expect(Backend.AccountError.failure(URLError(.notConnectedToInternet)).status == .unreachable)
+    }
 }

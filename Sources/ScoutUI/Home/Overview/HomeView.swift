@@ -57,7 +57,7 @@ struct HomeView: View {
                     HomeList(path: $path)
                 }
             }
-            .iCloudWarning(backend?.verifyAccess)
+            .iCloudWarning(backend)
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")
             .dismissable()

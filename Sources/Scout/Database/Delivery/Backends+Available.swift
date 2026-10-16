@@ -12,7 +12,7 @@ extension [Backend] {
                 for backend in self {
                     group.addTask {
                         do {
-                            try await backend.verifyAccess?()
+                            try await backend.checkAccess?()
                             return backend
                         } catch {
                             return nil

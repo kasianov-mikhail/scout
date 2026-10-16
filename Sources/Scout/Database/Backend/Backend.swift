@@ -18,17 +18,31 @@ public struct Backend: Sendable {
     package var database: any Database
     package let displayName: String
     package let engine: Engine
-    package let probeStatus: StatusProbe?
-    package let verifyAccess: AccessCheck?
+    package let checkAccess: AccessCheck?
     package var cache: (any CacheClearing)?
 
-    package init(id: String, database: any Database, displayName: String, engine: Engine, probeStatus: StatusProbe? = nil, verifyAccess: AccessCheck? = nil, cache: (any CacheClearing)? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, cache: (any CacheClearing)? = nil) {
         self.id = id
         self.database = database
         self.displayName = displayName
         self.engine = engine
-        self.probeStatus = probeStatus
-        self.verifyAccess = verifyAccess
+        self.checkAccess = checkAccess
         self.cache = cache
+    }
+}
+
+extension Backend {
+    package var probeStatus: StatusProbe? {
+        guard let checkAccess else {
+            return nil
+        }
+        return {
+            do throws(AccountError) {
+                try await checkAccess()
+                return .reachable
+            } catch {
+                return error.status
+            }
+        }
     }
 }

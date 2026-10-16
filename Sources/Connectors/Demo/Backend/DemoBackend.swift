@@ -27,7 +27,7 @@ extension Backend {
             database: DemoDatabase(corpus: now.map(DemoCorpus.Corpus.init(now:)) ?? DemoCorpus.shared),
             displayName: "Demo",
             engine: .local,
-            probeStatus: { .reachable }
+            checkAccess: {}
         )
     }
 }

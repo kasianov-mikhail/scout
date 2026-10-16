@@ -10,9 +10,11 @@ import Scout
 
 extension Backend {
     public static func server(url: URL, apiKey: String?) -> Backend {
-        Backend(
+        let database = HTTPDatabase(url: url, apiKey: apiKey)
+
+        return Backend(
             id: url.absoluteString,
-            database: HTTPDatabase(url: url, apiKey: apiKey),
+            database: database,
             displayName: url.host ?? url.absoluteString,
             engine: .server(
                 .init(
@@ -21,15 +23,18 @@ extension Backend {
                     isSecure: url.scheme?.lowercased() == "https"
                 )
             ),
-            probeStatus: {
-                do {
-                    try await HTTPDatabase(url: url, apiKey: apiKey).ping()
-                    return .reachable
-                } catch {
-                    return .unreachable
-                }
-            }
+            checkAccess: database.checkAccess
         )
+    }
+}
+
+extension HTTPDatabase {
+    fileprivate func checkAccess() async throws(Backend.AccountError) {
+        do {
+            try await ping()
+        } catch {
+            throw .failure(error)
+        }
     }
 }
 
