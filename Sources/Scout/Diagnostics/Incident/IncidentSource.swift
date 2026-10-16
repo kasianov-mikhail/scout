@@ -15,8 +15,6 @@ package enum IncidentSource: Equatable, Sendable {
 extension IncidentSource {
     private static let metricKitValue = "metrickit"
 
-    // Records predate the field, so an in-process incident leaves it out and
-    // a value this version doesn't know reads as in-process too.
     init(record: Record) {
         let value: String? = record["source"]
 
