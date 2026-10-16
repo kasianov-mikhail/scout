@@ -11,6 +11,10 @@ import ScoutDB
 
 private let stores = LazyTable<EntityStore>()
 
+struct NativeDatabase: Sendable {
+    let resolve: @Sendable () async throws -> EntityStore
+}
+
 extension Backend {
     /// A CloudKit backend that stores records through scout-db's frozen Entity/Vector
     /// schema.
