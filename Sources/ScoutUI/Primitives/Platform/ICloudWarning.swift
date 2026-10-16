@@ -61,7 +61,7 @@ private struct ICloudWarningModifier: ViewModifier {
             try await check()
             issue = nil
         } catch {
-            issue = error
+            issue = Backend.AccountError(error)
         }
     }
 }

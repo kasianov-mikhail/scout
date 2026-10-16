@@ -15,6 +15,10 @@ extension Backend {
         case temporarilyUnavailable
         case failure(any Error)
 
+        package init(_ error: any Error) {
+            self = error as? AccountError ?? .failure(error)
+        }
+
         package var title: String {
             switch self {
             case .noAccount:

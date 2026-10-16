@@ -30,12 +30,8 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 displayName: "Local",
                 engine: .cloudKit,
-                checkAccess: checkOffline
+                checkAccess: { throw URLError(.notConnectedToInternet) }
             ),
         ]
-    }
-
-    private static func checkOffline() async throws(AccountError) {
-        throw .failure(URLError(.notConnectedToInternet))
     }
 }

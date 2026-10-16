@@ -6,7 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 package typealias StatusProbe = @Sendable () async -> Backend.Status
-package typealias AccessCheck = @Sendable () async throws(Backend.AccountError) -> Void
+package typealias AccessCheck = @Sendable () async throws -> Void
 
 package protocol CacheClearing: Actor {
     var size: Int64 { get }
@@ -37,11 +37,11 @@ extension Backend {
             return nil
         }
         return {
-            do throws(AccountError) {
+            do {
                 try await checkAccess()
                 return .reachable
             } catch {
-                return error.status
+                return AccountError(error).status
             }
         }
     }

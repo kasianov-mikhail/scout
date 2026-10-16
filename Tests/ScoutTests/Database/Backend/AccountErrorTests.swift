@@ -25,6 +25,11 @@ struct AccountErrorTests {
         #expect(error.localizedDescription == URLError(.notConnectedToInternet).localizedDescription)
     }
 
+    @Test("An account error passes through and any other error becomes a failure") func wrapping() {
+        #expect(Backend.AccountError(Backend.AccountError.noAccount).title == "Not Signed In to iCloud")
+        #expect(Backend.AccountError(URLError(.notConnectedToInternet)).title == "iCloud Error")
+    }
+
     @Test("Account issues leave the backend read-only and failures make it unreachable") func status() {
         #expect(Backend.AccountError.noAccount.status == .readOnly)
         #expect(Backend.AccountError.restricted.status == .readOnly)

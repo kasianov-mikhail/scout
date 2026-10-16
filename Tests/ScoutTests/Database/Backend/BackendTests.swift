@@ -18,7 +18,7 @@ struct BackendTests {
     }
 
     @Test("A failing access check probes as the status of its error") func failing() async {
-        let backend = makeBackend(id: "backend", checkAccess: checkNoAccount)
+        let backend = makeBackend(id: "backend", checkAccess: { throw Backend.AccountError.noAccount })
 
         #expect(await backend.probeStatus?() == .readOnly)
     }
@@ -28,8 +28,4 @@ struct BackendTests {
 
         #expect(backend.probeStatus == nil)
     }
-}
-
-private func checkNoAccount() async throws(Backend.AccountError) {
-    throw .noAccount
 }

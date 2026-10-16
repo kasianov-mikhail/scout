@@ -23,18 +23,8 @@ extension Backend {
                     isSecure: url.scheme?.lowercased() == "https"
                 )
             ),
-            checkAccess: database.checkAccess
+            checkAccess: database.ping
         )
-    }
-}
-
-extension HTTPDatabase {
-    fileprivate func checkAccess() async throws(Backend.AccountError) {
-        do {
-            try await ping()
-        } catch {
-            throw .failure(error)
-        }
     }
 }
 

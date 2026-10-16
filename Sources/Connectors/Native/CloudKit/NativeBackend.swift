@@ -42,24 +42,14 @@ extension Backend {
             database: database,
             displayName: "iCloud",
             engine: .cloudKit,
-            checkAccess: container.checkAccount
+            checkAccess: {
+                try await container.accountStatus().verify()
+            }
         )
     }
 }
 
 extension CKContainer {
-    fileprivate func checkAccount() async throws(Backend.AccountError) {
-        let status: CKAccountStatus
-
-        do {
-            status = try await accountStatus()
-        } catch {
-            throw .failure(error)
-        }
-
-        try status.verify()
-    }
-
     fileprivate func publishedStore() async throws -> EntityStore {
         let registry = SchemaRegistry(database: publicCloudDatabase)
         let store = EntityStore(database: publicCloudDatabase, registry: registry)
