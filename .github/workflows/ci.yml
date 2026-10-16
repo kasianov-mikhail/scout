@@ -202,7 +202,12 @@ jobs:
 
   notify:
     needs: tests
-    if: github.event_name == 'push' && github.repository == 'kasianov-mikhail/scout'
+    # always() keeps the model-versions job, skipped on push, from skipping this one through tests
+    if: >-
+      ${{ always()
+      && github.event_name == 'push'
+      && github.repository == 'kasianov-mikhail/scout'
+      && needs.tests.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
