@@ -26,16 +26,15 @@ extension HasSession where Self: IncidentEntry {
         record["fingerprint"] =
             fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
         record["reason"] = reason
-        record["source"] = source
         record["stack_trace"] = stackTrace
         record["date"] = date
-        record["date_start"] = windowStart
         record["uuid"] = id.uuidString
         record["app_version"] = appVersion
         record["session_id"] = sessionID?.uuidString
         record["launch_id"] = launchID?.uuidString
         record["install_id"] = installID?.uuidString
         record["device_id"] = deviceID?.uuidString
+        IncidentSource(entry: self).encode(into: &record)
 
         record.setValues(metadata)
 

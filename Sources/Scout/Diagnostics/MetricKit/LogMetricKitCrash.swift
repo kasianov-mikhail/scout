@@ -8,13 +8,6 @@
 import CoreData
 
 func logMetricKitCrash(crash: MetricKitCrash, installID: UUID, context: NSManagedObjectContext) throws {
-    let existing = NSFetchRequest<CrashEntry>(entityName: "CrashEntry")
-    existing.predicate = NSPredicate(format: "crashID == %@", crash.id as CVarArg)
-
-    guard try context.count(for: existing) == 0 else {
-        return
-    }
-
     let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
     let launch = try install.flatMap { try crashedLaunch(crash: crash, install: $0, context: context) }
 
@@ -25,14 +18,9 @@ func logMetricKitCrash(crash: MetricKitCrash, installID: UUID, context: NSManage
         return
     }
 
-    let entry = context.insert(CrashEntry.self)
-    entry.crashID = crash.id
-    entry.date = crash.date
-    entry.appVersion = crash.appVersion
-    entry.name = crash.name
-    entry.fingerprint = crash.fingerprint
-    entry.reason = crash.reason
-    entry.stackTrace = try JSONEncoder().encode(crash.stackTrace)
+    guard let entry = try context.insertIncident(type: CrashEntry.self, content: crash, idKey: "crashID", id: crash.id) else {
+        return
+    }
     entry.session = try launch.flatMap { try lastSession(launch: $0, date: crash.date, context: context) }
     crash.source.apply(to: entry)
 

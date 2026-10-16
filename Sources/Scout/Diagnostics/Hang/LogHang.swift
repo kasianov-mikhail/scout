@@ -12,12 +12,10 @@ func logHang(_ hang: HangInfo, id: UUID = UUID(), deviceID: UUID, context: NSMan
         hang,
         id: id,
         deviceID: deviceID,
-        entityName: "HangEntry",
         idKey: "hangID",
         markerName: MarkerEntry.hangName,
         context: context
     ) { (entry: HangEntry, session) in
-        entry.hangID = id
         entry.session = session
         entry.duration = hang.duration
     }
