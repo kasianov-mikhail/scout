@@ -11,6 +11,14 @@ import SwiftUI
 struct CrashDetailView: View {
     let crash: Crash
 
+    @StateObject private var threads: CrashThreadsProvider
+    @Environment(\.database) private var database
+
+    init(crash: Crash, threads: CrashThreadsProvider? = nil) {
+        self.crash = crash
+        self._threads = StateObject(wrappedValue: threads ?? CrashThreadsProvider(crashID: crash.id))
+    }
+
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 10) {
@@ -33,10 +41,19 @@ struct CrashDetailView: View {
 
             ContextSection(context: crash, timelineHighlight: .red)
             StackTraceSection(crash: crash)
+
+            if case .success(let threads) = threads.result {
+                CrashThreadsSection(threads: threads)
+            }
         }
         .navigationTint(.red)
         .exportToolbar(text: CrashExport(crash: crash).text)
         .monospacedNavigationTitle(en: crash.name)
+        .task {
+            if crash.source != .inProcess {
+                await threads.fetchIfNeeded(in: database)
+            }
+        }
     }
 }
 
@@ -49,7 +66,10 @@ struct CrashDetailView: View {
 
 #Preview("MetricKit") {
     NavigationStack {
-        CrashDetailView(crash: .sample(source: .metricKit(windowStart: Date(timeIntervalSinceNow: -720))))
+        CrashDetailView(
+            crash: .sample(source: .metricKit(windowStart: Date(timeIntervalSinceNow: -720))),
+            threads: CrashThreadsProvider(.success(.samples), crashID: "")
+        )
     }
     .environmentObject(Tint())
 }
