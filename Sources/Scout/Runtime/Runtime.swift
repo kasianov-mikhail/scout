@@ -31,6 +31,7 @@ public struct Runtime: Sendable {
     let backends: [Backend]
     let identity: Identity
     let dispatcher: any Dispatcher
+    let screens = Protected(ScreenTracker())
 }
 
 extension Runtime {
@@ -87,7 +88,7 @@ extension Runtime {
 
         try await identity.bootstrap()
 
-        identity.table.startListening {
+        table.startListening {
             try await backends.synchronize(using: dispatcher)
         }
 
@@ -98,5 +99,18 @@ extension Runtime {
                 print("Failed to run the first sync: \(error)")
             }
         }
+    }
+
+    private var table: ActionTable {
+        ActionTable(actions: [
+            AppLifecycle.willEnterForeground: {
+                try await identity.enter()
+                record { $0.resume() }
+            },
+            AppLifecycle.didEnterBackground: {
+                record { $0.suspend() }
+                try await identity.leave()
+            },
+        ])
     }
 }

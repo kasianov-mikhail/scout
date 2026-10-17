@@ -28,6 +28,7 @@ extension Identity {
     private var recoveryCommands: [any Command] {
         [
             SessionEntry.Recovery(launchID: launch),
+            ScreenEntry.Recovery(launchID: launch),
             LaunchEntry.Recovery(launchID: launch),
         ]
     }
