@@ -26,8 +26,8 @@ struct MarkerEntryMonitorTests {
     func markIsIdempotent() throws {
         let install = makeInstall()
 
-        try MarkerEntry.mark(name: MarkerEntry.installName, install: install, appVersion: "2.0", in: context)
-        try MarkerEntry.mark(name: MarkerEntry.installName, install: install, appVersion: "2.0", in: context)
+        try install.mark(name: MarkerEntry.installName, appVersion: "2.0")
+        try install.mark(name: MarkerEntry.installName, appVersion: "2.0")
 
         let markers = try context.fetchAll(MarkerEntry.self)
         #expect(markers.count == 1)
@@ -40,17 +40,17 @@ struct MarkerEntryMonitorTests {
         let install = makeInstall()
         let other = makeInstall()
 
-        try MarkerEntry.mark(name: MarkerEntry.installName, install: install, appVersion: "2.0", in: context)
-        try MarkerEntry.mark(name: MarkerEntry.installName, install: install, appVersion: "3.0", in: context)
-        try MarkerEntry.mark(name: MarkerEntry.crashName, install: install, appVersion: "2.0", in: context)
-        try MarkerEntry.mark(name: MarkerEntry.installName, install: other, appVersion: "2.0", in: context)
+        try install.mark(name: MarkerEntry.installName, appVersion: "2.0")
+        try install.mark(name: MarkerEntry.installName, appVersion: "3.0")
+        try install.mark(name: MarkerEntry.crashName, appVersion: "2.0")
+        try other.mark(name: MarkerEntry.installName, appVersion: "2.0")
 
         #expect(try context.fetchAll(MarkerEntry.self).count == 4)
     }
 
     @Test("mark ignores a missing version")
     func markSkipsNilVersion() throws {
-        try MarkerEntry.mark(name: MarkerEntry.installName, install: makeInstall(), appVersion: nil, in: context)
+        try makeInstall().mark(name: MarkerEntry.installName, appVersion: nil)
         #expect(try context.fetchAll(MarkerEntry.self).isEmpty)
     }
 }
