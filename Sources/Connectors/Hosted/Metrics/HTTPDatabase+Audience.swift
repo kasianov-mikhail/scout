@@ -38,19 +38,40 @@ extension HTTPDatabase: AudienceReader {
                 id: Date(millisecondsSince1970: $0.date),
                 size: $0.size,
                 retention: $0.retained.rates(of: $0.size),
-                segments: []
+                segments: ($0.segments ?? []).map(RetentionSegment.init(segment:)).sorted()
             )
         }
     }
 
-    private struct RetentionResponse: Decodable {
+    fileprivate struct RetentionResponse: Decodable {
         let cohorts: [Cohort]
 
         struct Cohort: Decodable {
             let date: Int64
             let size: Int
             let retained: [Int?]
+            let segments: [Segment]?
         }
+
+        struct Segment: Decodable {
+            let name: String
+            let size: Int
+            let retained: [Int?]
+            let crashes: Int
+            let hangs: Int
+        }
+    }
+}
+
+extension RetentionSegment {
+    fileprivate init(segment: HTTPDatabase.RetentionResponse.Segment) {
+        self.init(
+            name: segment.name,
+            size: segment.size,
+            retention: segment.retained.rates(of: segment.size),
+            crashes: segment.crashes,
+            hangs: segment.hangs
+        )
     }
 }
 
