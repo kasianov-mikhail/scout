@@ -34,25 +34,19 @@ private func crashedLaunch(crash: MetricKitCrash, install: InstallEntry, context
         return nil
     }
 
-    let request = NSFetchRequest<LaunchEntry>(entityName: "LaunchEntry")
-    request.predicate = NSPredicate(
+    let predicate = NSPredicate(
         format: "install == %@ AND processID == %d AND %K <= %@",
         install,
         processID,
         DateEntry.datePrimitiveKey,
         crash.date as NSDate
     )
-    request.sortDescriptors = [NSSortDescriptor(key: DateEntry.datePrimitiveKey, ascending: false)]
-    request.fetchLimit = 1
-    return try context.fetch(request).first
+    return try context.latest(type: LaunchEntry.self, predicate: predicate)
 }
 
 private func lastSession(launch: LaunchEntry, date: Date, context: NSManagedObjectContext) throws -> SessionEntry? {
-    let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
-    request.predicate = NSPredicate(format: "launch == %@ AND %K <= %@", launch, DateEntry.datePrimitiveKey, date as NSDate)
-    request.sortDescriptors = [NSSortDescriptor(key: DateEntry.datePrimitiveKey, ascending: false)]
-    request.fetchLimit = 1
-    return try context.fetch(request).first
+    let predicate = NSPredicate(format: "launch == %@ AND %K <= %@", launch, DateEntry.datePrimitiveKey, date as NSDate)
+    return try context.latest(type: SessionEntry.self, predicate: predicate)
 }
 
 extension SessionEntry {
