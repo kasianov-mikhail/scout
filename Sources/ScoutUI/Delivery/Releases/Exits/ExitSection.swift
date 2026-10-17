@@ -17,19 +17,17 @@ struct ExitSection: View {
         if let clean = summary.clean {
             Header(title: "Exits")
 
-            VStack(alignment: .leading, spacing: 16) {
-                HStack(spacing: 28) {
-                    Readout(title: "Clean exits", stability: clean)
-                    Readout(title: "Exits", value: summary.total.compact)
-                    Spacer()
-                }
-
-                if !summary.abnormal.isEmpty {
-                    ExitShareBar(shares: summary.abnormal)
-                        .padding(.bottom, 16)
-                }
+            HStack(spacing: 28) {
+                Readout(title: "Clean exits", stability: clean)
+                Readout(title: "Exits", value: summary.total.compact)
+                Spacer()
             }
-            .listRowSeparator(.hidden, edges: .bottom)
+
+            if !summary.abnormal.isEmpty {
+                ExitShareBar(shares: summary.abnormal)
+                    .padding(.vertical, 16)
+                    .listRowSeparator(.hidden, edges: .bottom)
+            }
 
             if !summary.abnormal.isEmpty {
                 ForEach(summary.abnormal) { share in

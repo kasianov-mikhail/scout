@@ -40,7 +40,9 @@ struct ReleaseSeries {
             let crashPoints = crashPoints[version] ?? []
             let crashes = crashPoints.total
             let installs = installCounts[version] ?? 0
-            let previous = versions[(index + 1)...].lazy.compactMap { summaries[$0] }.first { !$0.isEmpty }
+            let previous = versions[(index + 1)...].lazy
+                .compactMap { version in summaries[version].map { PerformanceComparison.VersionSummary(version: version, summary: $0) } }
+                .first { !$0.summary.isEmpty }
 
             return ReleaseHealth(
                 id: version,
