@@ -75,7 +75,7 @@ struct RawCrashReport {
     func crashInfo() -> CrashInfo {
         CrashInfo(
             name: signalName(signal),
-            reason: "Signal \(signal) received",
+            reason: signalReason(signal: signal),
             stackTrace: symbolicatedStackTrace(),
             date: date,
             installID: installID,
@@ -97,7 +97,7 @@ struct RawCrashReport {
             if let base = loaded[image.name] {
                 return StackWalker.symbolicate(index: index, address: base + offset)
             }
-            return "\(index)   \(image.name)   + 0x\(String(offset, radix: 16))"
+            return StackWalker.offsetFrame(index: index, image: image.name, offset: "0x\(String(offset, radix: 16))")
         }
     }
 }

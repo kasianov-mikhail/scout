@@ -69,6 +69,10 @@ enum StackWalker {
         "\(index)   ???                  0x\(String(address, radix: 16))"
     }
 
+    static func offsetFrame(index: Int, image: String, offset: String) -> String {
+        "\(index)   \(image)   + \(offset)"
+    }
+
     static func symbolicate(index: Int, address: UInt64) -> String {
         var info = Dl_info()
 

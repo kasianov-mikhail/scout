@@ -8,12 +8,12 @@
 import CryptoKit
 import Foundation
 
-struct MetricKitCrash: Sendable {
+struct MetricKitCrash: IncidentContent, Sendable {
     let exceptionType: Int?
     let signal: Int32?
     let terminationReason: String?
     let exception: Exception?
-    let appVersion: String
+    let appVersion: String?
     let processID: Int32?
     let window: DateInterval
     let frames: [MetricKitStackTree.Frame]
@@ -58,12 +58,12 @@ extension MetricKitCrash {
     }
 
     var reason: String? {
-        exception?.message ?? terminationReason ?? signal.map { "Signal \($0) received" }
+        exception?.message ?? terminationReason ?? signal.map(signalReason)
     }
 
     var stackTrace: [String] {
         frames.enumerated().map { index, frame in
-            "\(index)   \(frame.binary)   + \(frame.offset)"
+            StackWalker.offsetFrame(index: index, image: frame.binary, offset: frame.offset)
         }
     }
 
@@ -88,7 +88,7 @@ extension MetricKitCrash {
             [
                 name,
                 reason ?? "",
-                appVersion,
+                appVersion ?? "",
                 processID.map(String.init) ?? "",
                 String(window.start.timeIntervalSince1970),
                 String(window.end.timeIntervalSince1970),

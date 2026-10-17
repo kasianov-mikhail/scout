@@ -12,12 +12,10 @@ func logCrash(_ crash: CrashInfo, id: UUID = UUID(), deviceID: UUID, context: NS
         crash,
         id: id,
         deviceID: deviceID,
-        entityName: "CrashEntry",
         idKey: "crashID",
         markerName: MarkerEntry.crashName,
         context: context
     ) { (entry: CrashEntry, session) in
-        entry.crashID = id
         entry.session = session
     }
 }

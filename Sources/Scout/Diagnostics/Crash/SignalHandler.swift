@@ -109,3 +109,7 @@ private func writeRawReport(signal: Int32, context: UnsafeMutableRawPointer?) {
 func signalName(_ sig: Int32) -> String {
     fatalSignals.first { $0.signal == sig }?.name ?? "SIGNAL_\(sig)"
 }
+
+func signalReason(signal: Int32) -> String {
+    "Signal \(signal) received"
+}

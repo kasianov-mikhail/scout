@@ -7,16 +7,19 @@
 
 import CoreData
 
-protocol IncidentInfo {
+protocol IncidentContent {
     var name: String { get }
     var reason: String? { get }
     var stackTrace: [String] { get }
     var fingerprint: String { get }
     var date: Date { get }
+    var appVersion: String? { get }
+}
+
+protocol IncidentInfo: IncidentContent {
     var installID: UUID { get }
     var launchID: UUID { get }
     var sessionID: UUID { get }
-    var appVersion: String? { get }
 }
 
 extension CrashInfo: IncidentInfo {
@@ -33,25 +36,13 @@ extension HangInfo: IncidentInfo {
     }
 }
 
-func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(_ info: Info, id: UUID, deviceID: UUID, entityName: String, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
+func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(_ info: Info, id: UUID, deviceID: UUID, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
     // The id doubles as the archive file's UUID, so a flush interrupted
     // between the save and the file removal doesn't insert a duplicate
     // on the next launch.
-    let request = NSFetchRequest<Entry>(entityName: entityName)
-    request.predicate = NSPredicate(format: "%K == %@", idKey, id as CVarArg)
-    request.fetchLimit = 1
-    guard try context.count(for: request) == 0 else {
+    guard let object = try context.insertIncident(type: Entry.self, content: info, idKey: idKey, id: id) else {
         return
     }
-
-    let object = context.insert(Entry.self)
-
-    object.date = info.date
-    object.appVersion = info.appVersion
-    object.name = info.name
-    object.fingerprint = info.fingerprint
-    object.reason = info.reason
-    object.stackTrace = try JSONEncoder().encode(info.stackTrace)
 
     // Reattach to the session/launch/install chain captured at incident time,
     // materializing any hub the faulted run didn't persist.
@@ -72,4 +63,25 @@ func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(_ info: Info, id: UUI
     )
 
     try context.save()
+}
+
+extension NSManagedObjectContext {
+    func insertIncident<Entry: IncidentEntry>(type: Entry.Type, content: some IncidentContent, idKey: String, id: UUID) throws -> Entry? {
+        let request = NSFetchRequest<Entry>(entityName: String(describing: type))
+        request.predicate = NSPredicate(format: "%K == %@", idKey, id as CVarArg)
+        request.fetchLimit = 1
+        guard try count(for: request) == 0 else {
+            return nil
+        }
+
+        let object = insert(type)
+        object.setValue(id, forKey: idKey)
+        object.date = content.date
+        object.appVersion = content.appVersion
+        object.name = content.name
+        object.fingerprint = content.fingerprint
+        object.reason = content.reason
+        object.stackTrace = try JSONEncoder().encode(content.stackTrace)
+        return object
+    }
 }

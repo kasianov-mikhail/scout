@@ -25,6 +25,14 @@ extension IncidentSource {
         }
     }
 
+    init(entry: IncidentEntry) {
+        if entry.source == metricKitValue {
+            self = .metricKit(windowStart: entry.windowStart)
+        } else {
+            self = .inProcess
+        }
+    }
+
     func apply(to entry: IncidentEntry) {
         guard case .metricKit(let windowStart) = self else {
             return
