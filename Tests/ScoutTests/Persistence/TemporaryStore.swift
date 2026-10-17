@@ -10,7 +10,7 @@ import CoreData
 @testable import Scout
 
 final class TemporaryStore {
-    let directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+    let directory = URL.applicationSupportDirectory.appending(path: "ScoutTests").appending(path: UUID().uuidString)
 
     private var containers: [NSPersistentContainer] = []
 

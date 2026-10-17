@@ -32,9 +32,9 @@ struct MigrationTests {
                 continue
             }
 
-            let storeURL = FileManager.default.temporaryDirectory
-                .appendingPathComponent(UUID().uuidString)
-                .appendingPathExtension("sqlite")
+            let store = try TemporaryStore()
+            defer { store.tearDown() }
+            let storeURL = store.url
 
             let oldCoordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
             let oldStore = try oldCoordinator.addPersistentStore(type: .sqlite, at: storeURL)
@@ -59,8 +59,6 @@ struct MigrationTests {
             } catch {
                 Issue.record("Store created by \(versionURL.lastPathComponent) failed to migrate: \(error)")
             }
-
-            try coordinator.destroyPersistentStore(at: storeURL, ofType: NSSQLiteStoreType)
         }
     }
 
