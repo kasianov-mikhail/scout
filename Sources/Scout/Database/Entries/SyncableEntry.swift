@@ -36,6 +36,7 @@ extension SyncableEntry {
         DeviceEntry.self,
         CrashEntry.self,
         HangEntry.self,
+        ExitEntry.self,
         IntMetricsEntry.self,
         DoubleMetricsEntry.self,
     ]
