@@ -86,6 +86,7 @@ extension CatalogEntry {
             .init(name: "fingerprint", type: .string),
             .init(name: "reason", type: .string),
             .init(name: "stack_trace", type: .bytes),
+            .init(name: "threads", type: .bytes),
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),

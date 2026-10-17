@@ -52,6 +52,18 @@ struct CrashEntryTests {
         #expect(object.record.fields["date_start"] == nil)
     }
 
+    @Test("record carries the threads and leaves them out when missing")
+    func testRecordCarriesThreads() throws {
+        let object = makeCrashObject(name: "EXC_BAD_ACCESS", date: Date())
+        #expect(object.record.fields["threads"] == nil)
+
+        let threads = [CrashThread(crashed: true, frames: ["0 MyApp"]), CrashThread(crashed: false, frames: ["0 libsystem"])]
+        object.threads = try JSONEncoder().encode(threads)
+
+        let data: Data = try #require(object.record["threads"])
+        #expect(try JSONDecoder().decode([CrashThread].self, from: data) == threads)
+    }
+
     @Test("record computes a fallback fingerprint for migrated crashes")
     func testRecordComputesFallbackFingerprint() throws {
         let object = makeCrashObject(name: "SIGABRT", date: date)
