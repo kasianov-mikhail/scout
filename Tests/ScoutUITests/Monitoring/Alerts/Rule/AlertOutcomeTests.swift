@@ -11,8 +11,7 @@ import Testing
 @testable import ScoutUI
 @testable import Support
 
-struct AlertEvaluatorTests {
-    private let evaluator = AlertEvaluator()
+struct AlertOutcomeTests {
     private let now = Date(year: 2026, month: 7, day: 20, hour: 14)
 
     private let rule = AlertRule(
@@ -26,14 +25,14 @@ struct AlertEvaluatorTests {
 
     @Test("An armed rule fires and notifies when the breach sustains")
     func fires() {
-        let outcome = evaluator.evaluate(rule, reading: breached, state: .armed, now: now)
+        let outcome = rule.outcome(reading: breached, state: .armed, now: now)
 
         #expect(outcome == AlertOutcome(state: .firing(since: now), shouldNotify: true))
     }
 
     @Test("An armed rule stays quiet while the metric is healthy")
     func staysArmed() {
-        let outcome = evaluator.evaluate(rule, reading: healthy, state: .armed, now: now)
+        let outcome = rule.outcome(reading: healthy, state: .armed, now: now)
 
         #expect(outcome == AlertOutcome(state: .armed, shouldNotify: false))
     }
@@ -41,7 +40,7 @@ struct AlertEvaluatorTests {
     @Test("A firing rule keeps its start date and does not notify again")
     func keepsFiring() {
         let since = Date(year: 2026, month: 7, day: 20, hour: 12)
-        let outcome = evaluator.evaluate(rule, reading: breached, state: .firing(since: since), now: now)
+        let outcome = rule.outcome(reading: breached, state: .firing(since: since), now: now)
 
         #expect(outcome == AlertOutcome(state: .firing(since: since), shouldNotify: false))
     }
@@ -49,7 +48,7 @@ struct AlertEvaluatorTests {
     @Test("A firing rule re-arms silently once the breach clears")
     func recovers() {
         let since = Date(year: 2026, month: 7, day: 20, hour: 12)
-        let outcome = evaluator.evaluate(rule, reading: healthy, state: .firing(since: since), now: now)
+        let outcome = rule.outcome(reading: healthy, state: .firing(since: since), now: now)
 
         #expect(outcome == AlertOutcome(state: .armed, shouldNotify: false))
     }
@@ -57,7 +56,7 @@ struct AlertEvaluatorTests {
     @Test("A muted rule suppresses a sustained breach until the mute expires")
     func muted() {
         let until = Date(year: 2026, month: 7, day: 20, hour: 16)
-        let outcome = evaluator.evaluate(rule, reading: breached, state: .muted(until: until), now: now)
+        let outcome = rule.outcome(reading: breached, state: .muted(until: until), now: now)
 
         #expect(outcome == AlertOutcome(state: .muted(until: until), shouldNotify: false))
     }
@@ -65,7 +64,7 @@ struct AlertEvaluatorTests {
     @Test("An expired mute evaluates again and fires anew")
     func muteExpired() {
         let until = Date(year: 2026, month: 7, day: 20, hour: 13)
-        let outcome = evaluator.evaluate(rule, reading: breached, state: .muted(until: until), now: now)
+        let outcome = rule.outcome(reading: breached, state: .muted(until: until), now: now)
 
         #expect(outcome == AlertOutcome(state: .firing(since: now), shouldNotify: true))
     }
@@ -73,7 +72,7 @@ struct AlertEvaluatorTests {
     @Test("An expired mute re-arms silently when the metric is healthy")
     func muteExpiredHealthy() {
         let until = Date(year: 2026, month: 7, day: 20, hour: 13)
-        let outcome = evaluator.evaluate(rule, reading: healthy, state: .muted(until: until), now: now)
+        let outcome = rule.outcome(reading: healthy, state: .muted(until: until), now: now)
 
         #expect(outcome == AlertOutcome(state: .armed, shouldNotify: false))
     }

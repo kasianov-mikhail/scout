@@ -12,13 +12,13 @@ struct AlertOutcome: Equatable {
     let shouldNotify: Bool
 }
 
-struct AlertEvaluator {
-    func evaluate(_ rule: AlertRule, reading: MetricReading, state: AlertState, now: Date) -> AlertOutcome {
+extension AlertRule {
+    func outcome(reading: MetricReading, state: AlertState, now: Date) -> AlertOutcome {
         if case .muted(let until) = state, now < until {
             return AlertOutcome(state: state, shouldNotify: false)
         }
 
-        guard rule.isSustained(in: reading) else {
+        guard isSustained(in: reading) else {
             return AlertOutcome(state: .armed, shouldNotify: false)
         }
 

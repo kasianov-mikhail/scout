@@ -23,7 +23,6 @@ extension AlertRule {
 
     func backtestFireCount(over values: [Double]) -> Int {
         let window = Self.windowBuckets
-        let evaluator = AlertEvaluator()
 
         guard values.count >= window * 2 else {
             return 0
@@ -37,7 +36,7 @@ extension AlertRule {
                 baseline: Array(values[(end - window * 2)..<(end - window)]).median ?? 0,
                 recent: Array(values[(end - window)..<end])
             )
-            let outcome = evaluator.evaluate(self, reading: reading, state: state, now: Date(timeIntervalSince1970: 0))
+            let outcome = self.outcome(reading: reading, state: state, now: Date(timeIntervalSince1970: 0))
 
             state = outcome.state
 

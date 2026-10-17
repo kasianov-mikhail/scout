@@ -14,7 +14,6 @@ typealias MetricReadings = [AlertMetric: MetricReading]
 final class AlertEngine {
     private let registry: AlertRegistry
     private let notifier: AlertNotifier?
-    private let evaluator = AlertEvaluator()
 
     init(registry: AlertRegistry, notifier: AlertNotifier?) {
         self.registry = registry
@@ -30,8 +29,7 @@ final class AlertEngine {
             guard let reading = readings[rule.metric] else {
                 return nil
             }
-            let outcome = evaluator.evaluate(
-                rule,
+            let outcome = rule.outcome(
                 reading: reading,
                 state: try registry.state(for: rule),
                 now: now
