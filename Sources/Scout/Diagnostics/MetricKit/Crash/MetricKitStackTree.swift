@@ -28,10 +28,11 @@ struct MetricKitStackTree: Decodable {
     struct Frame: Decodable, Equatable, Sendable {
         let binaryName: String?
         let offsetIntoBinaryTextSegment: UInt64?
+        let sampleCount: Int
         let subFrames: [Frame]
 
         private enum CodingKeys: String, CodingKey {
-            case binaryName, offsetIntoBinaryTextSegment, subFrames
+            case binaryName, offsetIntoBinaryTextSegment, sampleCount, subFrames
         }
     }
 }
@@ -41,6 +42,7 @@ extension MetricKitStackTree.Frame {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         binaryName = try container.decodeIfPresent(String.self, forKey: .binaryName)
         offsetIntoBinaryTextSegment = try container.decodeIfPresent(UInt64.self, forKey: .offsetIntoBinaryTextSegment)
+        sampleCount = try container.decodeIfPresent(Int.self, forKey: .sampleCount) ?? 0
         subFrames = try container.decodeIfPresent([Self].self, forKey: .subFrames) ?? []
     }
 }
@@ -52,12 +54,20 @@ extension MetricKitStackTree {
 
     var crashedFrames: [Frame] {
         let stack = callStacks.first(where: \.threadAttributed) ?? callStacks.first
-        var frames: [Frame] = []
-        var next = stack?.callStackRootFrames.first
+        return path(root: stack?.callStackRootFrames.first) { $0.first }
+    }
 
-        while let frame = next {
+    var heaviestFrames: [Frame] {
+        path(root: callStacks.flatMap(\.callStackRootFrames).heaviest) { $0.heaviest }
+    }
+
+    private func path(root: Frame?, next: ([Frame]) -> Frame?) -> [Frame] {
+        var frames: [Frame] = []
+        var current = root
+
+        while let frame = current {
             frames.append(frame)
-            next = frame.subFrames.first
+            current = next(frame.subFrames)
         }
         return frames
     }
@@ -70,5 +80,11 @@ extension MetricKitStackTree.Frame {
 
     var offset: String {
         offsetIntoBinaryTextSegment.map { "0x\(String($0, radix: 16))" } ?? "???"
+    }
+}
+
+extension [MetricKitStackTree.Frame] {
+    fileprivate var heaviest: MetricKitStackTree.Frame? {
+        self.max { $0.sampleCount < $1.sampleCount }
     }
 }

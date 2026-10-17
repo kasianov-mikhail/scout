@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MetricKitCrash: IncidentContent, Sendable {
+struct MetricKitCrash: MetricKitIncident, Sendable {
     let exceptionType: Int?
     let signal: Int32?
     let terminationReason: String?
@@ -58,24 +58,6 @@ extension MetricKitCrash {
 
     var reason: String? {
         exception?.message ?? terminationReason ?? signal.map(signalReason)
-    }
-
-    var stackTrace: [String] {
-        frames.enumerated().map { index, frame in
-            StackWalker.offsetFrame(index: index, image: frame.binary, offset: frame.offset)
-        }
-    }
-
-    var fingerprint: String {
-        CrashFingerprint(name: name, offsets: frames.map { "\($0.binary) + \($0.offset)" }).value
-    }
-
-    var source: IncidentSource {
-        .metricKit(windowStart: window.duration > 0 ? window.start : nil)
-    }
-
-    var date: Date {
-        window.end
     }
 
     var isCaughtInProcess: Bool {

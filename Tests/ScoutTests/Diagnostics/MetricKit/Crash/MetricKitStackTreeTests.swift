@@ -21,6 +21,24 @@ struct MetricKitStackTreeTests {
         #expect(frames == ["MyApp + 0x1a2f0", "UIKitCore + 0x1388", "MyApp + 0x7d0"])
     }
 
+    @Test("The heaviest path follows the frame with the most samples at each level")
+    func heaviestPath() throws {
+        let json = """
+            {"callStacks": [{"callStackRootFrames": [
+                {"binaryName": "Light", "offsetIntoBinaryTextSegment": 1, "sampleCount": 2},
+                {"binaryName": "Heavy", "offsetIntoBinaryTextSegment": 2, "sampleCount": 9, "subFrames": [
+                    {"binaryName": "Rare", "offsetIntoBinaryTextSegment": 3, "sampleCount": 1},
+                    {"binaryName": "Hot", "offsetIntoBinaryTextSegment": 4, "sampleCount": 8}
+                ]}
+            ]}]}
+            """
+
+        let tree = try MetricKitStackTree(json: Data(json.utf8))
+
+        #expect(tree.heaviestFrames.map(\.binary) == ["Heavy", "Hot"])
+        #expect(tree.heaviestFrames.map(\.sampleCount) == [9, 8])
+    }
+
     @Test("Without an attributed thread the first stack stands in")
     func firstStackWithoutAttribution() throws {
         let json = """
