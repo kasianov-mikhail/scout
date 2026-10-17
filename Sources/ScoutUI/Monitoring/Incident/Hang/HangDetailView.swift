@@ -41,7 +41,7 @@ struct HangDetailView: View {
 
             ContextSection(context: hang, timelineHighlight: IncidentKind.hang.color)
 
-            StackTraceSection(frames: hang.stackTrace)
+            StackTraceSection(frames: hang.stackTrace, caption: nil)
         }
         .navigationTint(IncidentKind.hang.color)
         .exportToolbar(text: HangExport(hang: hang).text)

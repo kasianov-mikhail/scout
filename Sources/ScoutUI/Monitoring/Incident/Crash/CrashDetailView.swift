@@ -14,8 +14,13 @@ struct CrashDetailView: View {
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 10) {
-                if let date = crash.date {
+                switch (crash.source, crash.date) {
+                case (.metricKit(let start?), let end?):
+                    UTCTimeRangeText(start: start, end: end)
+                case (_, let date?):
                     UTCTimestampText(date: date)
+                case (_, nil):
+                    EmptyView()
                 }
 
                 if let reason = crash.reason {
@@ -27,8 +32,7 @@ struct CrashDetailView: View {
             .padding(.vertical)
 
             ContextSection(context: crash, timelineHighlight: .red)
-
-            StackTraceSection(frames: crash.stackTrace)
+            StackTraceSection(crash: crash)
         }
         .navigationTint(.red)
         .exportToolbar(text: CrashExport(crash: crash).text)
@@ -39,6 +43,20 @@ struct CrashDetailView: View {
 #Preview {
     NavigationStack {
         CrashDetailView(crash: .sample)
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("MetricKit") {
+    NavigationStack {
+        CrashDetailView(crash: .sample(source: .metricKit(windowStart: Date(timeIntervalSinceNow: -720))))
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("MetricKit Without Window") {
+    NavigationStack {
+        CrashDetailView(crash: .sample(source: .metricKit(windowStart: nil)))
     }
     .environmentObject(Tint())
 }
