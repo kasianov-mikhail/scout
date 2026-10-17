@@ -115,7 +115,6 @@ struct IncidentArchiveTests {
         IncidentArchive(
             folder: crashFolder,
             pathExtension: "crash",
-            persist: logCrash,
             fileManager: fileManager
         )
     }
@@ -124,7 +123,6 @@ struct IncidentArchiveTests {
         IncidentArchive(
             folder: hangFolder,
             pathExtension: "hang",
-            persist: logHang,
             fileManager: fileManager
         )
     }

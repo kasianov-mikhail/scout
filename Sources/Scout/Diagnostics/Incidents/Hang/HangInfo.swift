@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
 struct HangInfo: Codable {
     let name: String
@@ -33,6 +33,21 @@ struct HangInfo: Codable {
 
 extension IncidentArchive<HangInfo> {
     static var hang: Self {
-        IncidentArchive(folder: "Hangs", pathExtension: "hang", persist: logHang)
+        IncidentArchive(folder: "Hangs", pathExtension: "hang")
+    }
+}
+
+extension HangInfo {
+    func log(id: UUID = UUID(), deviceID: UUID, context: NSManagedObjectContext) throws {
+        try log(
+            id: id,
+            deviceID: deviceID,
+            idKey: "hangID",
+            markerName: MarkerEntry.hangName,
+            context: context
+        ) { (entry: HangEntry, session) in
+            entry.session = session
+            entry.duration = duration
+        }
     }
 }

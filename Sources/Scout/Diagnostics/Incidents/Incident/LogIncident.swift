@@ -20,6 +20,8 @@ protocol IncidentInfo: IncidentContent {
     var installID: UUID { get }
     var launchID: UUID { get }
     var sessionID: UUID { get }
+
+    func log(id: UUID, deviceID: UUID, context: NSManagedObjectContext) throws
 }
 
 extension CrashInfo: IncidentInfo {
@@ -36,33 +38,35 @@ extension HangInfo: IncidentInfo {
     }
 }
 
-func logIncident<Entry: IncidentEntry, Info: IncidentInfo>(_ info: Info, id: UUID, deviceID: UUID, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
-    // The id doubles as the archive file's UUID, so a flush interrupted
-    // between the save and the file removal doesn't insert a duplicate
-    // on the next launch.
-    guard let object = try context.insertIncident(type: Entry.self, content: info, idKey: idKey, id: id) else {
-        return
+extension IncidentInfo {
+    func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
+        // The id doubles as the archive file's UUID, so a flush interrupted
+        // between the save and the file removal doesn't insert a duplicate
+        // on the next launch.
+        guard let object = try context.insertIncident(type: Entry.self, content: self, idKey: idKey, id: id) else {
+            return
+        }
+
+        // Reattach to the session/launch/install chain captured at incident time,
+        // materializing any hub the faulted run didn't persist.
+        let session = try context.linkedSession(
+            deviceID: deviceID,
+            installID: installID,
+            launchID: launchID,
+            sessionID: sessionID,
+            date: date
+        )
+        configure(object, session)
+
+        try MarkerEntry.mark(
+            name: markerName,
+            install: session.launch?.install,
+            appVersion: appVersion,
+            in: context
+        )
+
+        try context.save()
     }
-
-    // Reattach to the session/launch/install chain captured at incident time,
-    // materializing any hub the faulted run didn't persist.
-    let session = try context.linkedSession(
-        deviceID: deviceID,
-        installID: info.installID,
-        launchID: info.launchID,
-        sessionID: info.sessionID,
-        date: info.date
-    )
-    configure(object, session)
-
-    try MarkerEntry.mark(
-        name: markerName,
-        install: session.launch?.install,
-        appVersion: info.appVersion,
-        in: context
-    )
-
-    try context.save()
 }
 
 extension NSManagedObjectContext {

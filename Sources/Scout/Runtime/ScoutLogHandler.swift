@@ -62,7 +62,7 @@ public struct ScoutLogHandler: LogHandler {
             do {
                 try await persistentContainer.performBackgroundTask { context in
                     context.mergePolicy = NSMergePolicy.scout
-                    try Scout.log(event, date: date, identity: identity, context: context)
+                    try event.log(date: date, identity: identity, context: context)
                 }
                 try await runtime.backends.synchronize(using: runtime.dispatcher)
             } catch {
