@@ -25,9 +25,11 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
     @NSManaged var resourceExceptions: Set<ResourceEntry>
     @NSManaged var events: Set<EventEntry>
     @NSManaged var metrics: Set<MetricsEntry>
+    @NSManaged var screens: Set<ScreenEntry>
 
     override var references: Set<DateEntry> {
-        Set(Array(crashes) + Array(hangs) + Array(events) + Array(metrics))
+        let children: [Set<DateEntry>] = [crashes, hangs, events, metrics, screens]
+        return Set(children.joined())
     }
 
     // A session spans an interval, so the launch that owns it only ends once the

@@ -28,6 +28,7 @@ typealias DeliverableEntry = SyncableEntry & RecordEncodable
 extension SyncableEntry {
     static let deliverableTypes: [any DeliverableEntry.Type] = [
         EventEntry.self,
+        ScreenEntry.self,
         SessionEntry.self,
         VisitEntry.self,
         LaunchEntry.self,

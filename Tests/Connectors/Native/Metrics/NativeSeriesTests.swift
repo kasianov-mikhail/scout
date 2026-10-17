@@ -133,6 +133,21 @@ struct NativeSeriesTests {
         #expect(series.map { $0.points.map(\.value) } == [[2], [1]])
     }
 
+    @Test("Screen views count per screen and version")
+    func screenSeries() async throws {
+        try await database.write(record: makeScreenRecord(id: "s-1", name: "Feed"))
+        try await database.write(record: makeScreenRecord(id: "s-2", name: "Feed"))
+        try await database.write(record: makeScreenRecord(id: "s-3", name: "Profile"))
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ScreenEntry.recordType, bucket: .day, byVersion: true, range: range)
+        )
+
+        #expect(series.map(\.category) == ["Feed", "Profile"])
+        #expect(series.map(\.version) == ["1.2.0", "1.2.0"])
+        #expect(series.map { $0.points.map(\.value) } == [[2], [1]])
+    }
+
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
         var version = Record(recordType: VersionEntry.recordType, recordID: "v-1")
@@ -241,6 +256,14 @@ struct NativeSeriesTests {
         record["name"] = "CPU Exception"
         record["category"] = kind
         record["value"] = 92.5
+        record["app_version"] = "1.2.0"
+        record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
+        return record
+    }
+
+    private func makeScreenRecord(id: String, name: String) -> Record {
+        var record = Record(recordType: ScreenEntry.recordType, recordID: id)
+        record["category"] = name
         record["app_version"] = "1.2.0"
         record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
         return record
