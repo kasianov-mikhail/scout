@@ -31,14 +31,4 @@
             self.init(name: reason.exceptionName, message: reason.composedMessage)
         }
     }
-
-    extension MXCrashDiagnostic {
-        fileprivate var processID: Int32? {
-            if #available(iOS 17, macOS 14, *) {
-                metaData.pid
-            } else {
-                nil
-            }
-        }
-    }
 #endif
