@@ -101,6 +101,25 @@ struct MetricKitCrashLogTests {
         #expect(try context.fetchAll(CrashEntry.self).count == 1)
     }
 
+    @Test("A saved crash keeps its threads")
+    func savesThreads() throws {
+        let threads = [CrashThread(crashed: true, frames: ["0 MyApp"]), CrashThread(crashed: false, frames: ["0 libsystem_kernel"])]
+
+        try makeCrash(processID: nil, signal: 9, threads: threads).log(installID: Identity.stub.install, context: context)
+
+        let entry = try #require(try context.fetchAll(CrashEntry.self).first)
+        let data = try #require(entry.threads)
+        #expect(try JSONDecoder().decode([CrashThread].self, from: data) == threads)
+    }
+
+    @Test("A crash without threads stores none")
+    func noThreads() throws {
+        try makeCrash(processID: nil, signal: 9).log(installID: Identity.stub.install, context: context)
+
+        let entry = try #require(try context.fetchAll(CrashEntry.self).first)
+        #expect(entry.threads == nil)
+    }
+
     @Test("A saved crash marks its version as crashed for the install")
     func marksVersion() throws {
         makeInstall()
@@ -128,7 +147,7 @@ struct MetricKitCrashLogTests {
         return session
     }
 
-    private func makeCrash(processID: Int32?, signal: Int32 = 11) -> MetricKitCrash {
+    private func makeCrash(processID: Int32?, signal: Int32 = 11, threads: [CrashThread] = []) -> MetricKitCrash {
         MetricKitCrash(
             exceptionType: signal == 9 ? 10 : 1,
             signal: signal,
@@ -138,7 +157,7 @@ struct MetricKitCrashLogTests {
             processID: processID,
             window: DateInterval(start: start.addingTimeInterval(60), end: start.addingTimeInterval(1_800)),
             frames: [MetricKitStackTree.Frame(binaryName: "MyApp", offsetIntoBinaryTextSegment: 4096, sampleCount: 1, subFrames: [])],
-            threads: []
+            threads: threads
         )
     }
 }
