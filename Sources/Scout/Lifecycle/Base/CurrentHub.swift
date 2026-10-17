@@ -20,36 +20,26 @@ extension NSManagedObjectContext {
         return try fetch(request).first
     }
 
-    func linkedSession(deviceID: UUID, installID: UUID, launchID: UUID, sessionID: UUID, date: Date) throws -> SessionEntry {
-        let device = try fetchOrCreate(DeviceEntry.self, key: "deviceID", id: deviceID) {
-            $0.deviceID = deviceID
+    func linkedSession(_ identity: Identity.Snapshot, date: Date) throws -> SessionEntry {
+        let device = try fetchOrCreate(DeviceEntry.self, key: "deviceID", id: identity.device) {
+            $0.deviceID = identity.device
             $0.date = date
         }
-        let install = try fetchOrCreate(InstallEntry.self, key: "installID", id: installID) {
-            $0.installID = installID
+        let install = try fetchOrCreate(InstallEntry.self, key: "installID", id: identity.install) {
+            $0.installID = identity.install
             $0.date = date
             $0.device = device
         }
-        let launch = try fetchOrCreate(LaunchEntry.self, key: "launchID", id: launchID) {
-            $0.launchID = launchID
+        let launch = try fetchOrCreate(LaunchEntry.self, key: "launchID", id: identity.launch) {
+            $0.launchID = identity.launch
             $0.date = date
             $0.install = install
         }
-        return try fetchOrCreate(SessionEntry.self, key: "sessionID", id: sessionID) {
-            $0.sessionID = sessionID
+        return try fetchOrCreate(SessionEntry.self, key: "sessionID", id: identity.session) {
+            $0.sessionID = identity.session
             $0.date = date
             $0.launch = launch
         }
-    }
-
-    func linkedSession(_ identity: Identity.Snapshot, date: Date) throws -> SessionEntry {
-        try linkedSession(
-            deviceID: identity.device,
-            installID: identity.install,
-            launchID: identity.launch,
-            sessionID: identity.session,
-            date: date
-        )
     }
 
     func upsert<T: SyncableEntry>(_ type: T.Type, key: String, id: UUID, update: (T) throws -> Void) throws {

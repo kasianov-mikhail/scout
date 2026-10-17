@@ -42,13 +42,13 @@ struct MigrationDedupeTests {
         seed.persistentStoreCoordinator = coordinator
 
         try seed.performAndWait {
-            let bare = try seed.linkedSession(
-                deviceID: deviceID,
-                installID: installID,
-                launchID: launchID,
-                sessionID: sessionID,
-                date: earlyDate
+            let identity = Identity.Snapshot(
+                install: installID,
+                launch: launchID,
+                device: deviceID,
+                session: sessionID
             )
+            let bare = try seed.linkedSession(identity, date: earlyDate)
 
             let delivery = seed.insert(DeliveryEntry.self)
             delivery.backendID = "backend"

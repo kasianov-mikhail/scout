@@ -49,13 +49,13 @@ extension IncidentInfo {
 
         // Reattach to the session/launch/install chain captured at incident time,
         // materializing any hub the faulted run didn't persist.
-        let session = try context.linkedSession(
-            deviceID: deviceID,
-            installID: installID,
-            launchID: launchID,
-            sessionID: sessionID,
-            date: date
+        let identity = Identity.Snapshot(
+            install: installID,
+            launch: launchID,
+            device: deviceID,
+            session: sessionID
         )
+        let session = try context.linkedSession(identity, date: date)
         configure(object, session)
 
         try MarkerEntry.mark(
