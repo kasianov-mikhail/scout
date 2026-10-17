@@ -19,6 +19,12 @@ package final class DailyMetricEntry: SyncableEntry {
     @NSManaged var windowStart: Date?
 }
 
+struct DailyMetricReading: Hashable, Sendable {
+    let name: String
+    let category: String?
+    let value: Int
+}
+
 extension DailyMetricEntry: RecordEncodable {
     package var record: Record {
         var record = Record(recordType: Self.recordType, recordID: metricID.uuidString)
