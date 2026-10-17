@@ -8,8 +8,9 @@
 import CoreData
 
 @objc(HangEntry)
-package final class HangEntry: IncidentEntry, HasSession {
+package final class HangEntry: IncidentEntry, HasSession, KeyedIncident {
     package static let recordType = "Hang"
+    static let idKey = "hangID"
 
     @NSManaged var session: SessionEntry?
     @NSManaged var hangID: UUID

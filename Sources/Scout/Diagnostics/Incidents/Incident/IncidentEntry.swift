@@ -18,6 +18,10 @@ package class IncidentEntry: SyncableEntry {
     @NSManaged var windowStart: Date?
 }
 
+protocol KeyedIncident: IncidentEntry {
+    static var idKey: String { get }
+}
+
 extension HasSession where Self: IncidentEntry {
     func incident(type: String, id: UUID) -> Record {
         var record = Record(recordType: type, recordID: id.uuidString)

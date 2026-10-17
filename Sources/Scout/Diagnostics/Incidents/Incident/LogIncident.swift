@@ -17,6 +17,8 @@ protocol IncidentContent {
 }
 
 protocol IncidentInfo: IncidentContent {
+    static var markerName: String { get }
+
     var installID: UUID { get }
     var launchID: UUID { get }
     var sessionID: UUID { get }
@@ -25,12 +27,16 @@ protocol IncidentInfo: IncidentContent {
 }
 
 extension CrashInfo: IncidentInfo {
+    static let markerName = MarkerEntry.crashName
+
     var fingerprint: String {
         CrashFingerprint(name: name, reason: reason, stackTrace: stackTrace).value
     }
 }
 
 extension HangInfo: IncidentInfo {
+    static let markerName = MarkerEntry.hangName
+
     // A hang's reason embeds the per-occurrence duration, which would make
     // every fingerprint unique — identity comes from the name and stack alone.
     var fingerprint: String {
@@ -39,11 +45,11 @@ extension HangInfo: IncidentInfo {
 }
 
 extension IncidentInfo {
-    func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
+    func log<Entry: KeyedIncident>(id: UUID, deviceID: UUID, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
         // The id doubles as the archive file's UUID, so a flush interrupted
         // between the save and the file removal doesn't insert a duplicate
         // on the next launch.
-        guard let object = try context.insertIncident(type: Entry.self, content: self, idKey: idKey, id: id) else {
+        guard let object = try context.insertIncident(type: Entry.self, content: self, id: id) else {
             return
         }
 
@@ -59,7 +65,7 @@ extension IncidentInfo {
         configure(object, session)
 
         try MarkerEntry.mark(
-            name: markerName,
+            name: Self.markerName,
             install: session.launch?.install,
             appVersion: appVersion,
             in: context
@@ -70,16 +76,16 @@ extension IncidentInfo {
 }
 
 extension NSManagedObjectContext {
-    func insertIncident<Entry: IncidentEntry>(type: Entry.Type, content: some IncidentContent, idKey: String, id: UUID) throws -> Entry? {
+    func insertIncident<Entry: KeyedIncident>(type: Entry.Type, content: some IncidentContent, id: UUID) throws -> Entry? {
         let request = NSFetchRequest<Entry>(entityName: String(describing: type))
-        request.predicate = NSPredicate(format: "%K == %@", idKey, id as CVarArg)
+        request.predicate = NSPredicate(format: "%K == %@", Entry.idKey, id as CVarArg)
         request.fetchLimit = 1
         guard try count(for: request) == 0 else {
             return nil
         }
 
         let object = insert(type)
-        object.setValue(id, forKey: idKey)
+        object.setValue(id, forKey: Entry.idKey)
         object.date = content.date
         object.appVersion = content.appVersion
         object.name = content.name

@@ -19,7 +19,7 @@ extension MetricKitCrash {
             return
         }
 
-        guard let entry = try context.insertIncident(type: CrashEntry.self, content: self, idKey: "crashID", id: id) else {
+        guard let entry = try context.insertIncident(type: CrashEntry.self, content: self, id: id) else {
             return
         }
         entry.session = try launch?.lastSession(date: date, context: context)

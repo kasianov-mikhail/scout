@@ -12,7 +12,7 @@ extension MetricKitResource {
         let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
         let launch = try install.flatMap { try processLaunch(install: $0, context: context) }
 
-        guard let entry = try context.insertIncident(type: ResourceEntry.self, content: self, idKey: "resourceID", id: id) else {
+        guard let entry = try context.insertIncident(type: ResourceEntry.self, content: self, id: id) else {
             return
         }
         entry.kind = kind.rawValue

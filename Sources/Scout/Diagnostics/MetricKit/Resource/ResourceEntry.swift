@@ -8,8 +8,9 @@
 import CoreData
 
 @objc(ResourceEntry)
-package final class ResourceEntry: IncidentEntry, HasSession {
+package final class ResourceEntry: IncidentEntry, HasSession, KeyedIncident {
     package static let recordType = "ResourceException"
+    static let idKey = "resourceID"
 
     @NSManaged var session: SessionEntry?
     @NSManaged var resourceID: UUID

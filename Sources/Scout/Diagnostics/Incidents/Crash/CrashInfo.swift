@@ -74,8 +74,6 @@ extension CrashInfo {
         try log(
             id: id,
             deviceID: deviceID,
-            idKey: "crashID",
-            markerName: MarkerEntry.crashName,
             context: context
         ) { (entry: CrashEntry, session) in
             entry.session = session
