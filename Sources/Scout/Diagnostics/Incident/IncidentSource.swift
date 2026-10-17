@@ -12,24 +12,32 @@ package enum IncidentSource: Equatable, Sendable {
     case metricKit(windowStart: Date?)
 }
 
-extension IncidentSource {
-    private static let metricKitValue = "metrickit"
+private let metricKitValue = "metrickit"
 
+extension IncidentSource {
     init(record: Record) {
         let value: String? = record["source"]
 
-        if value == Self.metricKitValue {
+        if value == metricKitValue {
             self = .metricKit(windowStart: record["date_start"])
         } else {
             self = .inProcess
         }
     }
 
+    func apply(to entry: IncidentEntry) {
+        guard case .metricKit(let windowStart) = self else {
+            return
+        }
+        entry.source = metricKitValue
+        entry.windowStart = windowStart
+    }
+
     func encode(into record: inout Record) {
         guard case .metricKit(let windowStart) = self else {
             return
         }
-        record["source"] = Self.metricKitValue
+        record["source"] = metricKitValue
         record["date_start"] = windowStart
     }
 }

@@ -24,7 +24,7 @@ private nonisolated(unsafe) var reportTrailerCount = 0
 private nonisolated(unsafe) var reportFrames: UnsafeMutablePointer<UInt64>?
 private nonisolated(unsafe) var reportSession: Protected<UUID>?
 
-private let fatalSignals: [(signal: Int32, name: String)] = [
+let fatalSignals: [(signal: Int32, name: String)] = [
     (SIGABRT, "SIGABRT"),
     (SIGSEGV, "SIGSEGV"),
     (SIGBUS, "SIGBUS"),

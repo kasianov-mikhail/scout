@@ -8,7 +8,7 @@
 import CryptoKit
 import Foundation
 
-struct MetricKitCrash {
+struct MetricKitCrash: Sendable {
     let exceptionType: Int?
     let signal: Int32?
     let terminationReason: String?
@@ -18,7 +18,7 @@ struct MetricKitCrash {
     let window: DateInterval
     let frames: [MetricKitStackTree.Frame]
 
-    struct Exception {
+    struct Exception: Sendable {
         let name: String
         let message: String
     }
@@ -77,6 +77,10 @@ extension MetricKitCrash {
 
     var date: Date {
         window.end
+    }
+
+    var isCaughtInProcess: Bool {
+        exception != nil || fatalSignals.contains { $0.signal == signal }
     }
 
     var id: UUID {
