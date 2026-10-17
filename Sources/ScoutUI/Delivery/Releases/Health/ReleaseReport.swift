@@ -16,6 +16,7 @@ struct ReleaseSeries {
     let crashedInstalls: [MetricSeries]
     let exits: [MetricSeries]
     let performance: [MetricSeries]
+    let resources: [MetricSeries]
 
     func report(in range: Range<Date>) -> [ReleaseHealth] {
         let sessionCounts = sessions.points(in: range).mapValues(\.total)
@@ -24,6 +25,7 @@ struct ReleaseSeries {
         let installCounts = installs.points(in: range).mapValues(\.total)
         let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
         let exitCounts = exits.reasonCounts(in: range)
+        let resourceCounts = resources.kindCounts(in: range)
         let summaries = Dictionary(grouping: performance, by: \.version).mapValues {
             PerformanceSummary(series: $0, range: range)
         }
@@ -54,7 +56,8 @@ struct ReleaseSeries {
                 adoption: Adoption(of: sessions, in: totalSessions),
                 trend: crashPoints.trend(in: range),
                 exits: ExitSummary(counts: exitCounts[version] ?? [:]),
-                performance: PerformanceComparison(current: summaries[version] ?? PerformanceSummary(), previous: previous)
+                performance: PerformanceComparison(current: summaries[version] ?? PerformanceSummary(), previous: previous),
+                resources: ResourceSummary(counts: resourceCounts[version] ?? [:])
             )
         }
     }
@@ -80,6 +83,19 @@ extension [MetricSeries] {
             if let version = series.version, let reason = series.category.flatMap(ExitReason.init(rawValue:)) {
                 let points: [ChartPoint<Int>] = series.chartPoints()
                 result[version, default: [:]][reason, default: 0] += points.filter { range.contains($0.date) }.total
+            }
+        }
+        return result
+    }
+}
+
+extension [MetricSeries] {
+    fileprivate func kindCounts(in range: Range<Date>) -> [String: [ResourceKind: Int]] {
+        var result: [String: [ResourceKind: Int]] = [:]
+        for series in self {
+            if let version = series.version, let kind = series.category.flatMap(ResourceKind.init(rawValue:)) {
+                let points: [ChartPoint<Int>] = series.chartPoints()
+                result[version, default: [:]][kind, default: 0] += points.filter { range.contains($0.date) }.total
             }
         }
         return result

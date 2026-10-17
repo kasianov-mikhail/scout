@@ -71,6 +71,7 @@ import Testing
 
         #expect(Set(resources.compactMap(\.category)) == ["cpu", "disk_write"])
         #expect(resources.allSatisfy { $0.version != nil })
+        #expect(try await resources.total == records(ResourceException.self).count)
     }
 
     @Test func launchSeriesCoverEverySession() async throws {
