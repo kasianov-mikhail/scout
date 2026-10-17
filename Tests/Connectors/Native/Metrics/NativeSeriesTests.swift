@@ -99,17 +99,21 @@ struct NativeSeriesTests {
         #expect(hangs.points.map(\.value) == [1])
     }
 
-    @Test("Exit counts sum per reason and version")
+    @Test("Exit counts sum per reason and version apart from other daily metrics")
     func exitSeries() async throws {
         try await database.write(record: makeExitRecord(id: "x-1", reason: "watchdog", count: 2))
         try await database.write(record: makeExitRecord(id: "x-2", reason: "watchdog", count: 3))
         try await database.write(record: makeExitRecord(id: "x-3", reason: "normal", count: 40))
 
+        var launch = makeExitRecord(id: "x-4", reason: "400", count: 7)
+        launch["name"] = "launch_time"
+        try await database.write(record: launch)
+
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: ExitEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: ExitReason.metricName, bucket: .day, byVersion: true, range: range)
         )
 
-        #expect(series.map(\.name) == [ExitEntry.recordType, ExitEntry.recordType])
+        #expect(series.map(\.name) == [ExitReason.metricName, ExitReason.metricName])
         #expect(series.map(\.category) == ["normal", "watchdog"])
         #expect(series.map(\.version) == ["1.2.0", "1.2.0"])
         #expect(series.map { $0.points.map(\.value) } == [[40], [5]])
@@ -219,7 +223,8 @@ struct NativeSeriesTests {
     }
 
     private func makeExitRecord(id: String, reason: String, count: Int) -> Record {
-        var record = Record(recordType: ExitEntry.recordType, recordID: id)
+        var record = Record(recordType: DailyMetricEntry.recordType, recordID: id)
+        record["name"] = ExitReason.metricName
         record["category"] = reason
         record["value"] = count
         record["app_version"] = "1.2.0"

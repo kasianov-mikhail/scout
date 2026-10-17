@@ -19,6 +19,8 @@ package enum ExitReason: String, CaseIterable, Sendable {
 }
 
 extension ExitReason {
+    package static let metricName = "exit"
+
     package var isClean: Bool {
         switch self {
         case .normal, .memoryPressure:

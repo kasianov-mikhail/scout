@@ -203,7 +203,7 @@ struct ReleaseReportTests {
 
     private func exitSeries(_ version: String, reason: String, count: Int) -> MetricSeries {
         MetricSeries(
-            name: ExitEntry.recordType,
+            name: ExitReason.metricName,
             category: reason,
             version: version,
             points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: Double(count))]

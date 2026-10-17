@@ -18,13 +18,14 @@ struct LogMetricKitExitsTests {
     let window = DateInterval(start: Date(timeIntervalSince1970: 1_750_000_000), duration: 86_400)
     let installID = UUID()
 
-    @Test("Each reason becomes one row with its count, version, and window")
+    @Test("Each reason becomes one exit row with its count, version, and window")
     func savesOneRowPerReason() throws {
         try logMetricKitExits(exits: makeExits(), installID: installID, context: context)
 
-        let rows = try context.fetchAll(ExitEntry.self).sorted { $0.reason < $1.reason }
-        #expect(rows.map(\.reason) == ["normal", "watchdog"])
-        #expect(rows.map(\.count) == [9, 2])
+        let rows = try context.fetchAll(DailyMetricEntry.self).sorted { ($0.category ?? "") < ($1.category ?? "") }
+        #expect(rows.allSatisfy { $0.name == "exit" })
+        #expect(rows.map(\.category) == ["normal", "watchdog"])
+        #expect(rows.map(\.value) == [9, 2])
         #expect(rows.allSatisfy { $0.appVersion == "3.2.0" })
         #expect(rows.allSatisfy { $0.windowStart == window.start && $0.date == window.end })
     }
@@ -34,7 +35,7 @@ struct LogMetricKitExitsTests {
         try logMetricKitExits(exits: makeExits(), installID: installID, context: context)
         try logMetricKitExits(exits: makeExits(), installID: installID, context: context)
 
-        #expect(try context.fetchAll(ExitEntry.self).count == 2)
+        #expect(try context.fetchAll(DailyMetricEntry.self).count == 2)
     }
 
     @Test("The next day's report adds its own rows")
@@ -44,7 +45,7 @@ struct LogMetricKitExitsTests {
         try logMetricKitExits(exits: makeExits(), installID: installID, context: context)
         try logMetricKitExits(exits: makeExits(window: nextDay), installID: installID, context: context)
 
-        #expect(try context.fetchAll(ExitEntry.self).count == 4)
+        #expect(try context.fetchAll(DailyMetricEntry.self).count == 4)
     }
 
     private func makeExits(window: DateInterval? = nil) -> MetricKitExits {

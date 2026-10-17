@@ -24,22 +24,21 @@ struct NativeLifecycleScanner {
                 CrashEntry.recordType,
                 HangEntry.recordType,
                 VersionEntry.recordType,
-                ExitEntry.recordType,
             ]
 
-            guard isCrash || entities.contains(query.name) else {
-                return []
-            }
+            let isDailyMetric = !isCrash && !entities.contains(query.name)
+            let entity = isCrash ? CrashEntry.recordType : isDailyMetric ? DailyMetricEntry.recordType : query.name
 
             let records = try await store.records(
-                entity: isCrash ? CrashEntry.recordType : query.name,
+                entity: entity,
                 dateField: dateField,
                 in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             )
 
-            let visits = records.compactMap {
-                LifecycleVisit(record: $0, dateField: dateField)
-            }
+            let visits =
+                records
+                .filter { !isDailyMetric || $0["name"] == query.name }
+                .compactMap { LifecycleVisit(record: $0, dateField: dateField) }
 
             let counted = isCrash ? visits.firstPerInstall : visits
 

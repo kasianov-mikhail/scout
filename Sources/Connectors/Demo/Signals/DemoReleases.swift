@@ -38,7 +38,7 @@ struct DemoReleases {
 
         let ended = sessions.map { session in
             DemoSample(
-                name: ExitEntry.recordType,
+                name: ExitReason.metricName,
                 category: random.exitReason().rawValue,
                 version: session.version.version,
                 source: .lifecycle,
@@ -48,7 +48,7 @@ struct DemoReleases {
 
         let crashed = crashes.map { crash in
             DemoSample(
-                name: ExitEntry.recordType,
+                name: ExitReason.metricName,
                 category: ExitReason.badAccess.rawValue,
                 version: crash.version,
                 source: .lifecycle,
