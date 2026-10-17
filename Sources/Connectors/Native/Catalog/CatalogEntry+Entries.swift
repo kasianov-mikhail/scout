@@ -12,7 +12,7 @@ import ScoutDB
 
 extension CatalogEntry {
     static let entries: [CatalogEntry] = [
-        event, session, visit, launch, install, device, version, crash, hang, dailyMetric,
+        event, session, visit, launch, install, device, version, crash, hang, resourceException, dailyMetric,
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
@@ -105,6 +105,23 @@ extension CatalogEntry {
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
+        ]
+    )
+
+    private static let resourceException = CatalogEntry(
+        entity: ResourceEntry.recordType,
+        fields: [
+            .init(name: "name", type: .text),
+            .init(name: "fingerprint", type: .string),
+            .init(name: "reason", type: .string),
+            .init(name: "stack_trace", type: .bytes),
+            .init(name: "category", type: .string),
+            .init(name: "value", type: .double),
+            .init(name: "session_id", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "date_start", type: .timestamp),
+            .init(name: "source", type: .string),
         ]
     )
 

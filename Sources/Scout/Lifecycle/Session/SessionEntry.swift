@@ -22,6 +22,7 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
 
     @NSManaged var crashes: Set<CrashEntry>
     @NSManaged var hangs: Set<HangEntry>
+    @NSManaged var resourceExceptions: Set<ResourceEntry>
     @NSManaged var events: Set<EventEntry>
     @NSManaged var metrics: Set<MetricsEntry>
 
