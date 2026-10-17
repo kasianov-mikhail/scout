@@ -1,6 +1,6 @@
 # Incidents
 
-Scout records crashes and hangs as incidents and counts app exits per day. This page lists every failure an iOS or macOS app can hit, whether Scout captures it, and how.
+Scout records crashes and hangs as incidents and collects daily app exit counts and performance metrics. This page lists every failure an iOS or macOS app can hit, whether Scout captures it, and how.
 
 | Incident | Status | Detected by |
 | --- | --- | --- |
@@ -14,5 +14,5 @@ Scout records crashes and hangs as incidents and counts app exits per day. This 
 | CPU exception | 📋 Planned | MetricKit |
 | Disk write exception | 📋 Planned | MetricKit |
 | Memory exception | 📋 Planned | MetricKit |
-| Slow launch | 📋 Planned | MetricKit |
+| Slow launch | ✅ Implemented | MetricKit |
 | Hang reported by MetricKit | ⏸ Not planned | MetricKit |
