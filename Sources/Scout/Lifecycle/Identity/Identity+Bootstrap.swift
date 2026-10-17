@@ -34,7 +34,7 @@ extension Identity {
         [
             DeviceEntry.Trigger(deviceID: device),
             InstallEntry.Trigger(installID: install, deviceID: device),
-            LaunchEntry.Trigger(launchID: launch, installID: install),
+            LaunchEntry.Trigger(launchID: launch, installID: install, processID: ProcessInfo.processInfo.processIdentifier),
             VersionEntry.Trigger(installID: install, launchID: launch, bundle: bundle),
             SessionEntry.Trigger(session: session, launchID: launch, bundle: bundle),
             VisitEntry.Trigger(launchID: launch),

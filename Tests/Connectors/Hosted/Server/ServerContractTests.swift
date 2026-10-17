@@ -246,6 +246,20 @@ struct ServerContractTests {
         #expect(crashes.allSatisfy { $0.name == "SIGSEGV" })
     }
 
+    @Test("A crash keeps its source and window start")
+    func crashSourceRoundTrip() async throws {
+        let database = try makeDatabase()
+        var record = makeCrash(appVersion: "contract")
+        record["source"] = "metrickit"
+        record["date_start"] = eventDate.addingTimeInterval(-600)
+
+        try await database.write(record: record)
+        let crash = try Crash(record: try await database.lookup(recordName: record.recordID, fields: Crash.desiredKeys))
+
+        #expect(crash.source == .metricKit(windowStart: eventDate.addingTimeInterval(-600)))
+        #expect(crash.date == eventDate)
+    }
+
     @Test("Hangs filter by app version on the server")
     func hangsByVersion() async throws {
         let database = try makeDatabase()

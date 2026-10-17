@@ -13,18 +13,20 @@ package struct Crash {
     package let reason: String?
     package let stackTrace: [String]
     package let date: Date?
+    package let source: IncidentSource
     package let id: String
     package let deviceID: UUID?
     package let installID: UUID?
     package let launchID: UUID?
     package let sessionID: UUID?
 
-    package init(name: String, fingerprint: String, reason: String?, stackTrace: [String], date: Date?, id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?) {
+    package init(name: String, fingerprint: String, reason: String?, stackTrace: [String], date: Date?, source: IncidentSource, id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?) {
         self.name = name
         self.fingerprint = fingerprint
         self.reason = reason
         self.stackTrace = stackTrace
         self.date = date
+        self.source = source
         self.id = id
         self.deviceID = deviceID
         self.installID = installID
@@ -48,6 +50,8 @@ extension Crash: RecordDecodable {
         "reason",
         "stack_trace",
         "date",
+        "date_start",
+        "source",
         "uuid",
         "device_id",
         "install_id",
@@ -59,6 +63,7 @@ extension Crash: RecordDecodable {
         name = record["name"] ?? ""
         reason = record["reason"]
         date = record["date"]
+        source = IncidentSource(record: record)
         id = record.recordID
         deviceID = record["device_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
@@ -87,6 +92,7 @@ extension Crash: RecordEncodable {
             print("Failed to encode the stack trace: \(error)")
         }
         record["date"] = date
+        source.encode(into: &record)
         record["device_id"] = deviceID?.uuidString
         record["install_id"] = installID?.uuidString
         record["launch_id"] = launchID?.uuidString

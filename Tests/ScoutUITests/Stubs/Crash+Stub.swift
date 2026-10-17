@@ -18,6 +18,7 @@ extension Crash {
             reason: reason,
             stackTrace: stackTrace,
             date: date,
+            source: .inProcess,
             id: UUID().uuidString,
             deviceID: deviceID,
             installID: installID,

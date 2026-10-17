@@ -11,10 +11,12 @@ extension LaunchEntry {
     package struct Trigger: Command {
         let launchID: UUID
         let installID: UUID
+        let processID: Int32
 
         func execute(in context: NSManagedObjectContext) throws {
             try context.upsert(LaunchEntry.self, key: "launchID", id: launchID) { launch in
                 launch.install = try context.existing(InstallEntry.self, key: "installID", id: installID)
+                launch.processID = processID
             }
         }
     }

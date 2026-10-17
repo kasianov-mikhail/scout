@@ -200,6 +200,7 @@ extension Record {
             reason: nil,
             stackTrace: [],
             date: date,
+            source: .inProcess,
             id: crashID.uuidString,
             deviceID: deviceID,
             installID: nil,

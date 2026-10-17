@@ -152,6 +152,7 @@ struct DemoIncidents {
                             reason: signature.reason,
                             stackTrace: signature.frames,
                             date: date,
+                            source: .inProcess,
                             id: id.uuidString,
                             deviceID: session.device.id,
                             installID: session.install.id,

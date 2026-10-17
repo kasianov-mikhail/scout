@@ -13,7 +13,9 @@ package class IncidentEntry: SyncableEntry {
     @NSManaged var name: String?
     @NSManaged var fingerprint: String?
     @NSManaged var reason: String?
+    @NSManaged var source: String?
     @NSManaged var stackTrace: Data?
+    @NSManaged var windowStart: Date?
 }
 
 extension HasSession where Self: IncidentEntry {
@@ -24,8 +26,10 @@ extension HasSession where Self: IncidentEntry {
         record["fingerprint"] =
             fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
         record["reason"] = reason
+        record["source"] = source
         record["stack_trace"] = stackTrace
         record["date"] = date
+        record["date_start"] = windowStart
         record["uuid"] = id.uuidString
         record["app_version"] = appVersion
         record["session_id"] = sessionID?.uuidString

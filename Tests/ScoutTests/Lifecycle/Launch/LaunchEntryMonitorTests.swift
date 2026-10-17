@@ -19,7 +19,7 @@ struct LaunchEntryMonitorTests {
 
     @Test("trigger creates a LaunchEntry")
     func createsLaunch() throws {
-        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install).execute(in: context)
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install, processID: 42).execute(in: context)
 
         let launches = try context.fetchAll(LaunchEntry.self)
         #expect(launches.count == 1)
@@ -27,9 +27,17 @@ struct LaunchEntryMonitorTests {
         #expect(launches.first?.endDate == nil)
     }
 
+    @Test("trigger records the launch's process ID")
+    func recordsProcessID() throws {
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install, processID: 42).execute(in: context)
+
+        let launches = try context.fetchAll(LaunchEntry.self)
+        #expect(launches.first?.processID == 42)
+    }
+
     @Test("Launch stays open when a session inside it is completed")
     func launchRemainsOpenAfterSessionComplete() throws {
-        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install).execute(in: context)
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install, processID: 42).execute(in: context)
         try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
         try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
 
@@ -42,11 +50,12 @@ struct LaunchEntryMonitorTests {
         _ = try context.linkedSession(identity.snapshot, date: Date())
         try context.save()
 
-        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install).execute(in: context)
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install, processID: 42).execute(in: context)
 
         let launches = try context.fetchAll(LaunchEntry.self)
         #expect(launches.count == 1)
         #expect(launches.first?.install?.installID == identity.install)
+        #expect(launches.first?.processID == 42)
     }
 
     @Test("trigger queues a delivered launch again after linking the install")
@@ -56,7 +65,7 @@ struct LaunchEntryMonitorTests {
         let delivery = launch.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
         try context.save()
 
-        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install).execute(in: context)
+        try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install, processID: 42).execute(in: context)
 
         #expect(delivery.isPending)
         #expect(delivery.attempts == 0)
