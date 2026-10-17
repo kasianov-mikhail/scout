@@ -73,6 +73,46 @@ struct DemoMetrics {
             $0.double(in: 0.04...0.32)
         }
 
+        func histogram(name: String, categories: [String], center: Double, scale: Double) {
+            let peak = Double(categories.count) * center
+
+            for day in stride(from: 56, through: 0, by: -1) {
+                let shift = sin(Double(day) * 0.9) * 0.45 + random.double(in: -0.25...0.25)
+
+                for (index, category) in categories.enumerated() {
+                    let weight = exp(-pow(Double(index) - peak - shift, 2) / 3)
+
+                    samples.append(
+                        DemoSample(
+                            name: name,
+                            category: category,
+                            source: .metric,
+                            date: clock.momentDaysAgo(day),
+                            value: (weight * scale * random.double(in: 0.85...1.15)).rounded()
+                        )
+                    )
+                }
+            }
+        }
+
+        func statuses(endpoint: String) {
+            for (index, category) in StatusBuckets.categories.enumerated() {
+                let weight = [0.94, 0.03, 0.025, 0.005][min(index, 3)]
+
+                for day in stride(from: 56, through: 0, by: -7) {
+                    samples.append(
+                        DemoSample(
+                            name: endpoint,
+                            category: category,
+                            source: .metric,
+                            date: clock.momentDaysAgo(day),
+                            value: (weight * 600).rounded() + Double(random.int(in: 0...2))
+                        )
+                    )
+                }
+            }
+        }
+
         for name in Self.counters + ["bytes_downloaded_mb"] {
             for day in stride(from: 40, through: 0, by: -20) {
                 samples.append(
@@ -88,83 +128,32 @@ struct DemoMetrics {
         }
 
         for endpoint in Self.endpoints {
-            samples += Self.histogram(
+            histogram(
                 name: endpoint,
                 categories: LatencyBuckets.categories,
                 center: 0.45,
-                scale: 180,
-                clock: clock,
-                random: &random
+                scale: 180
             )
-            samples += Self.statuses(endpoint: endpoint, clock: clock, random: &random)
+            statuses(endpoint: endpoint)
         }
 
         for name in Self.timers {
-            samples += Self.histogram(
+            histogram(
                 name: name,
                 categories: LatencyBuckets.categories,
                 center: 0.38,
-                scale: 140,
-                clock: clock,
-                random: &random
+                scale: 140
             )
         }
         for name in Self.recorders {
-            samples += Self.histogram(
+            histogram(
                 name: name,
                 categories: RecorderBuckets.categories,
                 center: 0.55,
-                scale: 140,
-                clock: clock,
-                random: &random
+                scale: 140
             )
         }
 
         self.samples = samples
-    }
-
-    private static func histogram(name: String, categories: [String], center ratio: Double, scale: Double, clock: DemoClock, random: inout DemoRandom) -> [DemoSample] {
-        var samples: [DemoSample] = []
-        let center = Double(categories.count) * ratio
-
-        for day in stride(from: 56, through: 0, by: -1) {
-            let shift = sin(Double(day) * 0.9) * 0.45 + random.double(in: -0.25...0.25)
-
-            for (index, category) in categories.enumerated() {
-                let weight = exp(-pow(Double(index) - center - shift, 2) / 3)
-
-                samples.append(
-                    DemoSample(
-                        name: name,
-                        category: category,
-                        source: .metric,
-                        date: clock.momentDaysAgo(day),
-                        value: (weight * scale * random.double(in: 0.85...1.15)).rounded()
-                    )
-                )
-            }
-        }
-        return samples
-    }
-
-    private static func statuses(endpoint: String, clock: DemoClock, random: inout DemoRandom) -> [DemoSample] {
-        var samples: [DemoSample] = []
-
-        for (index, category) in StatusBuckets.categories.enumerated() {
-            let weight = [0.94, 0.03, 0.025, 0.005][min(index, 3)]
-
-            for day in stride(from: 56, through: 0, by: -7) {
-                samples.append(
-                    DemoSample(
-                        name: endpoint,
-                        category: category,
-                        source: .metric,
-                        date: clock.momentDaysAgo(day),
-                        value: (weight * 600).rounded() + Double(random.int(in: 0...2))
-                    )
-                )
-            }
-        }
-        return samples
     }
 }
