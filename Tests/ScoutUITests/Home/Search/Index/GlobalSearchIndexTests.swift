@@ -33,7 +33,8 @@ struct GlobalSearchIndexTests {
             hangs: 0,
             sessions: 1,
             adoption: 1.0,
-            trend: []
+            trend: [],
+            exits: ExitSummary(counts: [:])
         )
     }
 
