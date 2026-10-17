@@ -226,6 +226,19 @@ struct ServerContractTests {
         #expect(crashes.points.map(\.value).reduce(0, +) == 1)
     }
 
+    @Test("Crash threads survive the round trip")
+    func crashThreads() async throws {
+        let database = try makeDatabase()
+        let threads = try JSONEncoder().encode([CrashThread(crashed: true, frames: ["0 MyApp + 4096"])])
+        var record = makeCrash(appVersion: "contract-\(UUID().uuidString)")
+        record["threads"] = threads
+
+        try await database.write(records: [record])
+        let restored = try await database.lookup(recordName: record.recordID, fields: ["threads"])
+
+        #expect(restored["threads"] == threads)
+    }
+
     @Test("Resource exceptions count per kind and version")
     func resourceSeries() async throws {
         let database = try makeDatabase()
