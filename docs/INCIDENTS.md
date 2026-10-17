@@ -1,6 +1,6 @@
 # Incidents
 
-Scout records crashes and hangs as incidents and collects daily app exit counts and performance metrics. This page lists every failure an iOS or macOS app can hit, whether Scout captures it, and how.
+Scout records crashes, hangs, and resource exceptions as incidents and collects daily app exit counts and performance metrics. This page lists every failure an iOS or macOS app can hit, whether Scout captures it, and how.
 
 | Incident | Status | Detected by |
 | --- | --- | --- |
@@ -11,8 +11,8 @@ Scout records crashes and hangs as incidents and collects daily app exit counts 
 | Crash the in-process handlers miss: watchdog kill, other `SIGKILL`, stack overflow | ✅ Implemented | MetricKit |
 | Memory-limit termination (jetsam) | ✅ Implemented | MetricKit |
 | Other terminations: background task timeout, locked file, CPU limit | ✅ Implemented | MetricKit |
-| CPU exception | 📋 Planned | MetricKit |
-| Disk write exception | 📋 Planned | MetricKit |
-| Memory exception | 📋 Planned | MetricKit |
+| CPU exception | ✅ Implemented | MetricKit |
+| Disk write exception | ✅ Implemented | MetricKit |
+| Memory exception | ⛔ Not available | None: MetricKit has no such diagnostic, so memory-limit terminations count as exits |
 | Slow launch | ✅ Implemented | MetricKit |
 | Hang reported by MetricKit | ⏸ Not planned | MetricKit |
