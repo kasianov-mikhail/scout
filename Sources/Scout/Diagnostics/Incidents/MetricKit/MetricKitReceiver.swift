@@ -30,11 +30,14 @@
 
         func didReceive(_ payloads: [MXDiagnosticPayload]) {
             for payload in payloads {
-                let window = DateInterval(start: payload.timeStampBegin, end: max(payload.timeStampBegin, payload.timeStampEnd))
+                let window = DateInterval(reportFrom: payload.timeStampBegin, to: payload.timeStampEnd)
 
                 for diagnostic in payload.crashDiagnostics ?? [] {
                     do {
-                        store(crash: try MetricKitCrash(diagnostic: diagnostic, window: window))
+                        let crash = try MetricKitCrash(diagnostic: diagnostic, window: window)
+                        save(subject: "a MetricKit crash") { [installID] context in
+                            try logMetricKitCrash(crash: crash, installID: installID, context: context)
+                        }
                     } catch {
                         print("Failed to read a MetricKit crash: \(error)")
                     }
@@ -42,13 +45,23 @@
             }
         }
 
-        private func store(crash: MetricKitCrash) {
-            persistentContainer.performBackgroundTask { [installID] context in
+        func didReceive(_ payloads: [MXMetricPayload]) {
+            for payload in payloads {
+                if let exits = MetricKitExits(payload: payload) {
+                    save(subject: "MetricKit exits") { [installID] context in
+                        try logMetricKitExits(exits: exits, installID: installID, context: context)
+                    }
+                }
+            }
+        }
+
+        private func save(subject: String, write: @escaping @Sendable (NSManagedObjectContext) throws -> Void) {
+            persistentContainer.performBackgroundTask { context in
                 context.mergePolicy = NSMergePolicy.scout
                 do {
-                    try logMetricKitCrash(crash: crash, installID: installID, context: context)
+                    try write(context)
                 } catch {
-                    print("Failed to save a MetricKit crash: \(error)")
+                    print("Failed to save \(subject): \(error)")
                 }
             }
         }
@@ -66,6 +79,56 @@
                 window: window,
                 frames: try MetricKitStackTree(json: diagnostic.callStackTree.jsonRepresentation()).crashedFrames
             )
+        }
+    }
+
+    extension MetricKitExits {
+        fileprivate init?(payload: MXMetricPayload) {
+            guard let metric = payload.applicationExitMetrics else {
+                return nil
+            }
+            self.init(
+                foreground: metric.foregroundExitData.counts,
+                background: metric.backgroundExitData.counts,
+                appVersion: payload.latestApplicationVersion,
+                window: DateInterval(reportFrom: payload.timeStampBegin, to: payload.timeStampEnd)
+            )
+        }
+    }
+
+    extension DateInterval {
+        fileprivate init(reportFrom begin: Date, to end: Date) {
+            self.init(start: begin, end: max(begin, end))
+        }
+    }
+
+    extension MXForegroundExitData {
+        fileprivate var counts: [ExitReason: Int] {
+            [
+                .normal: cumulativeNormalAppExitCount,
+                .memoryLimit: cumulativeMemoryResourceLimitExitCount,
+                .watchdog: cumulativeAppWatchdogExitCount,
+                .badAccess: cumulativeBadAccessExitCount,
+                .illegalInstruction: cumulativeIllegalInstructionExitCount,
+                .abnormal: cumulativeAbnormalExitCount,
+            ]
+        }
+    }
+
+    extension MXBackgroundExitData {
+        fileprivate var counts: [ExitReason: Int] {
+            [
+                .normal: cumulativeNormalAppExitCount,
+                .memoryPressure: cumulativeMemoryPressureExitCount,
+                .memoryLimit: cumulativeMemoryResourceLimitExitCount,
+                .cpuLimit: cumulativeCPUResourceLimitExitCount,
+                .watchdog: cumulativeAppWatchdogExitCount,
+                .badAccess: cumulativeBadAccessExitCount,
+                .illegalInstruction: cumulativeIllegalInstructionExitCount,
+                .abnormal: cumulativeAbnormalExitCount,
+                .lockedFile: cumulativeSuspendedWithLockedFileExitCount,
+                .taskTimeout: cumulativeBackgroundTaskAssertionTimeoutExitCount,
+            ]
         }
     }
 
