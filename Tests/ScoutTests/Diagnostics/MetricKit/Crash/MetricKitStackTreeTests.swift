@@ -39,6 +39,38 @@ struct MetricKitStackTreeTests {
         #expect(tree.heaviestFrames.map(\.sampleCount) == [9, 8])
     }
 
+    @Test("Every thread comes out, with the attributed one marked as crashed")
+    func threads() throws {
+        let json = """
+            {"callStacks": [
+                {"callStackRootFrames": [{"binaryName": "libsystem_kernel.dylib", "offsetIntoBinaryTextSegment": 16}]},
+                {"threadAttributed": true, "callStackRootFrames": [
+                    {"binaryName": "MyApp", "offsetIntoBinaryTextSegment": 32, "subFrames": [
+                        {"binaryName": "UIKitCore", "offsetIntoBinaryTextSegment": 48}
+                    ]}
+                ]}
+            ]}
+            """
+
+        let threads = try MetricKitStackTree(json: Data(json.utf8)).threads
+
+        #expect(threads.map(\.crashed) == [false, true])
+        #expect(threads.map(\.frames.count) == [1, 2])
+        #expect(threads[1].frames[0].contains("MyApp"))
+    }
+
+    @Test("Threads past the limit are left out, but the crashed one stays")
+    func threadLimit() throws {
+        let idle = #"{"callStackRootFrames": [{"binaryName": "libsystem_kernel.dylib", "offsetIntoBinaryTextSegment": 16}]}"#
+        let crashed = #"{"threadAttributed": true, "callStackRootFrames": [{"binaryName": "MyApp", "offsetIntoBinaryTextSegment": 32}]}"#
+        let json = #"{"callStacks": ["# + Array(repeating: idle, count: 70).joined(separator: ",") + "," + crashed + "]}"
+
+        let threads = try MetricKitStackTree(json: Data(json.utf8)).threads
+
+        #expect(threads.count == 65)
+        #expect(threads.last?.crashed == true)
+    }
+
     @Test("Without an attributed thread the first stack stands in")
     func firstStackWithoutAttribution() throws {
         let json = """

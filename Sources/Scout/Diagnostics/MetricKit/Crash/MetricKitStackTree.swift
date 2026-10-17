@@ -53,23 +53,33 @@ extension MetricKitStackTree {
     }
 
     var crashedFrames: [Frame] {
-        let stack = callStacks.first(where: \.threadAttributed) ?? callStacks.first
-        return path(root: stack?.callStackRootFrames.first) { $0.first }
+        crashedStack?.frames ?? []
     }
 
     var heaviestFrames: [Frame] {
         path(root: callStacks.flatMap(\.callStackRootFrames).heaviest) { $0.heaviest }
     }
 
-    private func path(root: Frame?, next: ([Frame]) -> Frame?) -> [Frame] {
-        var frames: [Frame] = []
-        var current = root
+    var threads: [CrashThread] {
+        callStacks.enumerated()
+            .filter { $0.offset < threadLimit || $0.offset == crashedIndex }
+            .map { index, stack in
+                CrashThread(crashed: index == crashedIndex, frames: Array(stack.frames.prefix(threadFrameLimit)).stackTrace)
+            }
+    }
 
-        while let frame = current {
-            frames.append(frame)
-            current = next(frame.subFrames)
-        }
-        return frames
+    private var crashedIndex: Int {
+        callStacks.firstIndex(where: \.threadAttributed) ?? 0
+    }
+
+    private var crashedStack: CallStack? {
+        callStacks.indices.contains(crashedIndex) ? callStacks[crashedIndex] : nil
+    }
+}
+
+extension MetricKitStackTree.CallStack {
+    fileprivate var frames: [MetricKitStackTree.Frame] {
+        path(root: callStackRootFrames.first) { $0.first }
     }
 }
 
@@ -84,7 +94,27 @@ extension MetricKitStackTree.Frame {
 }
 
 extension [MetricKitStackTree.Frame] {
+    var stackTrace: [String] {
+        enumerated().map { index, frame in
+            StackWalker.offsetFrame(index: index, image: frame.binary, offset: frame.offset)
+        }
+    }
+
     fileprivate var heaviest: MetricKitStackTree.Frame? {
         self.max { $0.sampleCount < $1.sampleCount }
     }
+}
+
+private let threadLimit = 64
+private let threadFrameLimit = 64
+
+private func path(root: MetricKitStackTree.Frame?, next: ([MetricKitStackTree.Frame]) -> MetricKitStackTree.Frame?) -> [MetricKitStackTree.Frame] {
+    var frames: [MetricKitStackTree.Frame] = []
+    var current = root
+
+    while let frame = current {
+        frames.append(frame)
+        current = next(frame.subFrames)
+    }
+    return frames
 }

@@ -137,7 +137,8 @@ struct MetricKitCrashLogTests {
             appVersion: "3.2.0",
             processID: processID,
             window: DateInterval(start: start.addingTimeInterval(60), end: start.addingTimeInterval(1_800)),
-            frames: [MetricKitStackTree.Frame(binaryName: "MyApp", offsetIntoBinaryTextSegment: 4096, sampleCount: 1, subFrames: [])]
+            frames: [MetricKitStackTree.Frame(binaryName: "MyApp", offsetIntoBinaryTextSegment: 4096, sampleCount: 1, subFrames: [])],
+            threads: []
         )
     }
 }

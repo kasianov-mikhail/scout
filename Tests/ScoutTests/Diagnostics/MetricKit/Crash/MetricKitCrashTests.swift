@@ -116,7 +116,8 @@ struct MetricKitCrashTests {
     }
 
     private func makeCrash(exceptionType: Int? = nil, signal: Int32? = nil, terminationReason: String? = nil, exception: MetricKitCrash.Exception? = nil, window: DateInterval? = nil, json: String = crashTreeJSON) throws -> MetricKitCrash {
-        MetricKitCrash(
+        let tree = try MetricKitStackTree(json: Data(json.utf8))
+        return MetricKitCrash(
             exceptionType: exceptionType,
             signal: signal,
             terminationReason: terminationReason,
@@ -124,7 +125,8 @@ struct MetricKitCrashTests {
             appVersion: "3.2.0",
             processID: 412,
             window: window ?? self.window,
-            frames: try MetricKitStackTree(json: Data(json.utf8)).crashedFrames
+            frames: tree.crashedFrames,
+            threads: tree.threads
         )
     }
 }

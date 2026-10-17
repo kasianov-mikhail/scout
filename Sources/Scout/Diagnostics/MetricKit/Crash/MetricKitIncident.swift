@@ -17,9 +17,7 @@ protocol MetricKitIncident: IncidentContent, Sendable {
 
 extension MetricKitIncident {
     var stackTrace: [String] {
-        frames.enumerated().map { index, frame in
-            StackWalker.offsetFrame(index: index, image: frame.binary, offset: frame.offset)
-        }
+        frames.stackTrace
     }
 
     var fingerprint: String {

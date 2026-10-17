@@ -10,6 +10,7 @@
 
     extension MetricKitCrash {
         init(diagnostic: MXCrashDiagnostic, window: DateInterval) throws {
+            let tree = try MetricKitStackTree(json: diagnostic.callStackTree.jsonRepresentation())
             self.init(
                 exceptionType: diagnostic.exceptionType?.intValue,
                 signal: diagnostic.signal?.int32Value,
@@ -18,7 +19,8 @@
                 appVersion: diagnostic.applicationVersion,
                 processID: diagnostic.processID,
                 window: window,
-                frames: try MetricKitStackTree(json: diagnostic.callStackTree.jsonRepresentation()).crashedFrames
+                frames: tree.crashedFrames,
+                threads: tree.threads
             )
         }
     }
