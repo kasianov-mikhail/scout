@@ -226,6 +226,30 @@ struct ServerContractTests {
         #expect(crashes.points.map(\.value).reduce(0, +) == 1)
     }
 
+    @Test("Exit counts sum per reason and version")
+    func exitSeries() async throws {
+        let database = try makeDatabase()
+        let version = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeExit(reason: "watchdog", count: 2, appVersion: version),
+            makeExit(reason: "watchdog", count: 3, appVersion: version),
+            makeExit(reason: "normal", count: 40, appVersion: version),
+        ])
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(
+                name: ExitEntry.recordType,
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let exits = series.filter { $0.version == version }
+
+        #expect(exits.map(\.category) == ["normal", "watchdog"])
+        #expect(exits.map { $0.points.map(\.value).reduce(0, +) } == [40, 5])
+    }
+
     @Test("Crashes filter by app version on the server")
     func crashesByVersion() async throws {
         let database = try makeDatabase()
@@ -397,6 +421,15 @@ struct ServerContractTests {
         record["name"] = "SIGSEGV"
         record["app_version"] = appVersion
         record["session_id"] = UUID().uuidString
+        record["date"] = eventDate
+        return record
+    }
+
+    private func makeExit(reason: String, count: Int, appVersion: String) -> Record {
+        var record = Record(recordType: "Exit", recordID: "contract-\(UUID().uuidString)")
+        record["category"] = reason
+        record["value"] = count
+        record["app_version"] = appVersion
         record["date"] = eventDate
         return record
     }
