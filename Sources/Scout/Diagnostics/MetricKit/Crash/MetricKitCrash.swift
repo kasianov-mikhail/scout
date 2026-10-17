@@ -16,6 +16,7 @@ struct MetricKitCrash: MetricKitIncident, Sendable {
     let processID: Int32?
     let window: DateInterval
     let frames: [MetricKitStackTree.Frame]
+    let threads: [CrashThread]
 
     struct Exception: Sendable {
         let name: String
