@@ -9,7 +9,7 @@ import Charts
 import Scout
 import SwiftUI
 
-struct ExitsSection: View {
+struct ExitSection: View {
     let summary: ExitSummary
 
     @ViewBuilder
@@ -72,12 +72,12 @@ private struct ExitShareBar: View {
 
 #Preview {
     InsetList {
-        ExitsSection(summary: [ReleaseHealth].samples[0].exits)
+        ExitSection(summary: [ReleaseHealth].samples[0].exits)
     }
 }
 
 #Preview("Only clean exits") {
     InsetList {
-        ExitsSection(summary: ExitSummary(counts: [.normal: 1200, .memoryPressure: 300]))
+        ExitSection(summary: ExitSummary(counts: [.normal: 1200, .memoryPressure: 300]))
     }
 }

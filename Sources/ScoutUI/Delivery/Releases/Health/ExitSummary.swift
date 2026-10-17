@@ -12,16 +12,6 @@ struct ExitSummary {
     let counts: [ExitReason: Int]
 }
 
-struct ExitShare: Identifiable {
-    let reason: ExitReason
-    let count: Int
-    let total: Int
-
-    var id: ExitReason {
-        reason
-    }
-}
-
 extension ExitSummary {
     var total: Int {
         counts.values.reduce(0, +)
@@ -36,15 +26,5 @@ extension ExitSummary {
             .filter { !$0.key.isClean && $0.value > 0 }
             .map { ExitShare(reason: $0.key, count: $0.value, total: total) }
             .sorted { $0.count == $1.count ? $0.reason.rawValue < $1.reason.rawValue : $0.count > $1.count }
-    }
-}
-
-extension ExitShare {
-    var perMille: Double {
-        total > 0 ? Double(count) * 1000 / Double(total) : 0
-    }
-
-    var formatted: String {
-        String(format: "%.1f ‰", perMille)
     }
 }
