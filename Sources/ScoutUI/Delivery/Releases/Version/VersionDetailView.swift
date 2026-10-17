@@ -13,14 +13,17 @@ struct VersionDetailView: View {
     let release: ReleaseHealth
     @StateObject var crashes: VersionIncidentProvider<Crash>
     @StateObject var hangs: VersionIncidentProvider<Hang>
+    @StateObject var resources: VersionIncidentProvider<ResourceException>
 
     @State private var showAllCrashes = false
     @State private var showAllHangs = false
+    @State private var showAllResources = false
 
-    init(release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil, hangs: VersionIncidentProvider<Hang>? = nil) {
+    init(release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil, hangs: VersionIncidentProvider<Hang>? = nil, resources: VersionIncidentProvider<ResourceException>? = nil) {
         self.release = release
         self._crashes = StateObject(wrappedValue: crashes ?? VersionIncidentProvider(version: release.id))
         self._hangs = StateObject(wrappedValue: hangs ?? VersionIncidentProvider(version: release.id))
+        self._resources = StateObject(wrappedValue: resources ?? VersionIncidentProvider(version: release.id))
     }
 
     var body: some View {
@@ -56,6 +59,10 @@ struct VersionDetailView: View {
                 }
             }
 
+            ResourceSection(summary: release.resources, records: resourceRecords) {
+                showAllResources = true
+            }
+
             ExitSection(summary: release.exits)
             PerformanceSection(release: release)
         }
@@ -69,12 +76,18 @@ struct VersionDetailView: View {
                 HangGroupDetailView(group: group)
             }
         }
+        .navigationDestination(isPresented: $showAllResources) {
+            VersionIncidentsView(issuesTitle: "Top resource issues", records: resourceRecords) { group in
+                ResourceGroupDetailView(group: group)
+            }
+        }
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .monospacedNavigationTitle(en: release.id)
         .message($crashes.message)
         .message($hangs.message)
-        .refreshes([crashes, hangs])
+        .message($resources.message)
+        .refreshes([crashes, hangs, resources])
     }
 
     private var crashRecords: [Crash] {
@@ -83,6 +96,10 @@ struct VersionDetailView: View {
 
     private var hangRecords: [Hang] {
         hangs.records ?? []
+    }
+
+    private var resourceRecords: [ResourceException] {
+        resources.records ?? []
     }
 }
 
@@ -108,7 +125,7 @@ private struct VersionIncidentsView<Element: Incident, Destination: View>: View 
     }
 }
 
-private struct IncidentTrendSection<Element: Incident, Trailing: View>: View {
+struct IncidentTrendSection<Element: Incident, Trailing: View>: View {
     let records: [Element]
 
     @ViewBuilder let trailing: () -> Trailing
@@ -120,7 +137,7 @@ private struct IncidentTrendSection<Element: Incident, Trailing: View>: View {
     }
 }
 
-private struct IncidentTrendChart<Element: Incident>: View {
+struct IncidentTrendChart<Element: Incident>: View {
     let records: [Element]
 
     private var days: [DailyCount] {
@@ -195,7 +212,8 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
         VersionDetailView(
             release: [ReleaseHealth].samples[0],
             crashes: .init(.samples, version: "3.2.0"),
-            hangs: .init(.samples, version: "3.2.0")
+            hangs: .init(.samples, version: "3.2.0"),
+            resources: .init(.samples, version: "3.2.0")
         )
     }
     .environmentObject(Tint())
@@ -208,7 +226,8 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
         VersionDetailView(
             release: release,
             crashes: .init([], version: release.id),
-            hangs: .init([], version: release.id)
+            hangs: .init([], version: release.id),
+            resources: .init([], version: release.id)
         )
     }
     .environmentObject(Tint())
