@@ -26,7 +26,7 @@ extension MetricKitCrash {
         source.apply(to: entry)
         entry.threads = threads.isEmpty ? nil : try JSONEncoder().encode(threads)
 
-        try MarkerEntry.mark(name: MarkerEntry.crashName, install: install, appVersion: appVersion, in: context)
+        try install?.mark(name: MarkerEntry.crashName, appVersion: appVersion)
 
         try context.save()
     }

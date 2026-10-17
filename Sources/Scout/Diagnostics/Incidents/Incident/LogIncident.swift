@@ -58,12 +58,7 @@ extension IncidentInfo {
         )
         configure(object, session)
 
-        try MarkerEntry.mark(
-            name: markerName,
-            install: session.launch?.install,
-            appVersion: appVersion,
-            in: context
-        )
+        try session.launch?.install?.mark(name: markerName, appVersion: appVersion)
 
         try context.save()
     }
