@@ -12,7 +12,7 @@ import ScoutDB
 
 extension CatalogEntry {
     static let entries: [CatalogEntry] = [
-        event, session, visit, launch, install, device, version, crash, hang, exit,
+        event, session, visit, launch, install, device, version, crash, hang, exit, performance,
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
@@ -111,6 +111,18 @@ extension CatalogEntry {
     private static let exit = CatalogEntry(
         entity: ExitEntry.recordType,
         fields: [
+            .init(name: "category", type: .string),
+            .init(name: "value", type: .int),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "date_start", type: .timestamp),
+        ]
+    )
+
+    private static let performance = CatalogEntry(
+        entity: PerformanceEntry.recordType,
+        fields: [
+            .init(name: "name", type: .string),
             .init(name: "category", type: .string),
             .init(name: "value", type: .int),
             .init(name: "app_version", type: .string),
