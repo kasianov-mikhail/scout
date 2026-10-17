@@ -12,8 +12,8 @@ import Testing
 @testable import Support
 
 @MainActor
-@Suite("logMetricKitCrash")
-struct LogMetricKitCrashTests {
+@Suite("MetricKitCrash.log")
+struct MetricKitCrashLogTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let start = Date(timeIntervalSince1970: 1_750_000_000)
 
@@ -24,7 +24,7 @@ struct LogMetricKitCrashTests {
         let later = makeSession(launch: launch, date: start.addingTimeInterval(300))
         makeSession(launch: launch, date: start.addingTimeInterval(7_200))
 
-        try logMetricKitCrash(crash: makeCrash(processID: 412), installID: Identity.stub.install, context: context)
+        try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
 
         let crash = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(crash.session == later)
@@ -43,7 +43,7 @@ struct LogMetricKitCrashTests {
         caught.date = start.addingTimeInterval(500)
         caught.session = session
 
-        try logMetricKitCrash(crash: makeCrash(processID: 412), installID: Identity.stub.install, context: context)
+        try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
 
         #expect(try context.fetchAll(CrashEntry.self).count == 1)
     }
@@ -53,7 +53,7 @@ struct LogMetricKitCrashTests {
         let launch = makeLaunch(processID: 412, date: start)
         makeSession(launch: launch, date: start)
 
-        try logMetricKitCrash(crash: makeCrash(processID: 412, signal: 9), installID: UUID(), context: context)
+        try makeCrash(processID: 412, signal: 9).log(installID: UUID(), context: context)
 
         let crash = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(crash.session == nil)
@@ -64,7 +64,7 @@ struct LogMetricKitCrashTests {
         let launch = makeLaunch(processID: 412, date: start.addingTimeInterval(3_600))
         makeSession(launch: launch, date: start.addingTimeInterval(3_600))
 
-        try logMetricKitCrash(crash: makeCrash(processID: 412, signal: 9), installID: Identity.stub.install, context: context)
+        try makeCrash(processID: 412, signal: 9).log(installID: Identity.stub.install, context: context)
 
         let crash = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(crash.session == nil)
@@ -74,7 +74,7 @@ struct LogMetricKitCrashTests {
     func skipsUnlinkedCatchableCrash() throws {
         makeInstall()
 
-        try logMetricKitCrash(crash: makeCrash(processID: nil, signal: 11), installID: Identity.stub.install, context: context)
+        try makeCrash(processID: nil, signal: 11).log(installID: Identity.stub.install, context: context)
 
         #expect(try context.fetchAll(CrashEntry.self).isEmpty)
     }
@@ -83,7 +83,7 @@ struct LogMetricKitCrashTests {
     func keepsUnlinkedUncatchableCrash() throws {
         makeInstall()
 
-        try logMetricKitCrash(crash: makeCrash(processID: nil, signal: 9), installID: Identity.stub.install, context: context)
+        try makeCrash(processID: nil, signal: 9).log(installID: Identity.stub.install, context: context)
 
         let crash = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(crash.session == nil)
@@ -95,8 +95,8 @@ struct LogMetricKitCrashTests {
         makeInstall()
         let crash = makeCrash(processID: nil, signal: 9)
 
-        try logMetricKitCrash(crash: crash, installID: Identity.stub.install, context: context)
-        try logMetricKitCrash(crash: crash, installID: Identity.stub.install, context: context)
+        try crash.log(installID: Identity.stub.install, context: context)
+        try crash.log(installID: Identity.stub.install, context: context)
 
         #expect(try context.fetchAll(CrashEntry.self).count == 1)
     }
@@ -105,7 +105,7 @@ struct LogMetricKitCrashTests {
     func marksVersion() throws {
         makeInstall()
 
-        try logMetricKitCrash(crash: makeCrash(processID: nil, signal: 9), installID: Identity.stub.install, context: context)
+        try makeCrash(processID: nil, signal: 9).log(installID: Identity.stub.install, context: context)
 
         let marker = try #require(try context.fetchAll(MarkerEntry.self).first)
         #expect(marker.name == MarkerEntry.crashName)

@@ -11,14 +11,16 @@
 
     private nonisolated(unsafe) var receiver: MetricKitReceiver?
 
-    func installMetricKitReceiver(identity: Identity) {
-        guard receiver == nil else {
-            return
-        }
+    extension Identity {
+        func installMetricKitReceiver() {
+            guard receiver == nil else {
+                return
+            }
 
-        let installed = MetricKitReceiver(installID: identity.install)
-        MXMetricManager.shared.add(installed)
-        receiver = installed
+            let installed = MetricKitReceiver(installID: install)
+            MXMetricManager.shared.add(installed)
+            receiver = installed
+        }
     }
 
     private final class MetricKitReceiver: NSObject, MXMetricManagerSubscriber {
@@ -36,7 +38,7 @@
                     do {
                         let crash = try MetricKitCrash(diagnostic: diagnostic, window: window)
                         save(subject: "a MetricKit crash") { [installID] context in
-                            try logMetricKitCrash(crash: crash, installID: installID, context: context)
+                            try crash.log(installID: installID, context: context)
                         }
                     } catch {
                         print("Failed to read a MetricKit crash: \(error)")
@@ -74,5 +76,7 @@
         }
     }
 #else
-    func installMetricKitReceiver(identity: Identity) {}
+    extension Identity {
+        func installMetricKitReceiver() {}
+    }
 #endif
