@@ -10,7 +10,7 @@ import CoreData
 extension MetricKitCrash {
     func log(installID: UUID, context: NSManagedObjectContext) throws {
         let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
-        let launch = try install.flatMap { try launch(install: $0, context: context) }
+        let launch = try install.flatMap { try crashedLaunch(install: $0, context: context) }
 
         if let launch, launch.sessions.contains(where: \.hasCrashes) {
             return
@@ -30,7 +30,7 @@ extension MetricKitCrash {
         try context.save()
     }
 
-    private func launch(install: InstallEntry, context: NSManagedObjectContext) throws -> LaunchEntry? {
+    private func crashedLaunch(install: InstallEntry, context: NSManagedObjectContext) throws -> LaunchEntry? {
         guard let processID else {
             return nil
         }
