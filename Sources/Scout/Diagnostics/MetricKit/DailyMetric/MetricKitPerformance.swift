@@ -5,14 +5,14 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-private let launchStep = 100
-private let memoryStep = 50
-
 package enum PerformanceMetric: String, CaseIterable, Sendable {
     case launchTime = "launch_time"
     case hangTime = "hang_time"
     case foregroundTime = "foreground_time"
     case peakMemory = "peak_memory"
+
+    package static let launchStep = 100
+    package static let memoryStep = 50
 }
 
 struct MetricKitPerformance: Sendable {
@@ -34,7 +34,7 @@ struct MetricKitPerformance: Sendable {
 
 extension MetricKitPerformance {
     var readings: [DailyMetricReading] {
-        var readings = launches.counts(step: launchStep).sorted { $0.key < $1.key }.map {
+        var readings = launches.counts(step: PerformanceMetric.launchStep).sorted { $0.key < $1.key }.map {
             DailyMetricReading(name: PerformanceMetric.launchTime.rawValue, category: String($0.key), value: $0.value)
         }
 
@@ -49,7 +49,7 @@ extension MetricKitPerformance {
         }
 
         if let peakMemoryMegabytes {
-            let bucket = Int(peakMemoryMegabytes) / memoryStep * memoryStep
+            let bucket = Int(peakMemoryMegabytes) / PerformanceMetric.memoryStep * PerformanceMetric.memoryStep
             readings.append(DailyMetricReading(name: PerformanceMetric.peakMemory.rawValue, category: String(bucket), value: 1))
         }
 

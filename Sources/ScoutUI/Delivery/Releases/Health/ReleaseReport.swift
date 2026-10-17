@@ -15,6 +15,7 @@ struct ReleaseSeries {
     let installs: [MetricSeries]
     let crashedInstalls: [MetricSeries]
     let exits: [MetricSeries]
+    let performance: [MetricSeries]
 
     func report(in range: Range<Date>) -> [ReleaseHealth] {
         let sessionCounts = sessions.points(in: range).mapValues(\.total)
@@ -23,6 +24,9 @@ struct ReleaseSeries {
         let installCounts = installs.points(in: range).mapValues(\.total)
         let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
         let exitCounts = exits.reasonCounts(in: range)
+        let summaries = Dictionary(grouping: performance, by: \.version).mapValues {
+            PerformanceSummary(series: $0, range: range)
+        }
 
         let versions = Set(sessionCounts.keys)
             .union(crashPoints.keys)
@@ -31,11 +35,12 @@ struct ReleaseSeries {
 
         let totalSessions = sessionCounts.values.reduce(0, +)
 
-        return versions.map { version in
+        return versions.enumerated().map { index, version in
             let sessions = sessionCounts[version] ?? 0
             let crashPoints = crashPoints[version] ?? []
             let crashes = crashPoints.total
             let installs = installCounts[version] ?? 0
+            let previous = versions[(index + 1)...].lazy.compactMap { summaries[$0] }.first { !$0.isEmpty }
 
             return ReleaseHealth(
                 id: version,
@@ -46,7 +51,8 @@ struct ReleaseSeries {
                 sessions: sessions,
                 adoption: Adoption(of: sessions, in: totalSessions),
                 trend: crashPoints.trend(in: range),
-                exits: ExitSummary(counts: exitCounts[version] ?? [:])
+                exits: ExitSummary(counts: exitCounts[version] ?? [:]),
+                performance: PerformanceComparison(current: summaries[version] ?? PerformanceSummary(), previous: previous)
             )
         }
     }

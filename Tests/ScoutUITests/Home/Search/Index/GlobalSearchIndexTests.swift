@@ -34,7 +34,8 @@ struct GlobalSearchIndexTests {
             sessions: 1,
             adoption: 1.0,
             trend: [],
-            exits: ExitSummary(counts: [:])
+            exits: ExitSummary(counts: [:]),
+            performance: PerformanceComparison(current: PerformanceSummary(), previous: nil)
         )
     }
 

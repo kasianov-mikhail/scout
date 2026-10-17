@@ -22,7 +22,8 @@ struct ReleaseReportTests {
             hangs: [],
             installs: [],
             crashedInstalls: [],
-            exits: []
+            exits: [],
+            performance: []
         )
         .report(in: range)
 
@@ -50,7 +51,8 @@ struct ReleaseReportTests {
             hangs: [hangSeries("2.0", count: 3)],
             installs: [],
             crashedInstalls: [],
-            exits: []
+            exits: [],
+            performance: []
         )
         .report(in: range)
 
@@ -65,7 +67,8 @@ struct ReleaseReportTests {
             hangs: [],
             installs: [installSeries("2.0", count: 4)],
             crashedInstalls: [crashedInstallSeries("2.0", count: 1)],
-            exits: []
+            exits: [],
+            performance: []
         )
         .report(in: range)
 
@@ -92,7 +95,8 @@ struct ReleaseReportTests {
             hangs: [],
             installs: [],
             crashedInstalls: [],
-            exits: []
+            exits: [],
+            performance: []
         )
         .report(in: start..<start.addingTimeInterval(7 * 86_400))
 
@@ -114,7 +118,7 @@ struct ReleaseReportTests {
             ]
         )
 
-        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [])
+        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [])
             .report(in: start..<start.addingTimeInterval(86_400))
 
         #expect(releases.map(\.id) == ["5.0"])
@@ -129,7 +133,7 @@ struct ReleaseReportTests {
             points: [MetricSeriesPoint(date: range.lowerBound, value: 5)]
         )
 
-        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [])
+        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [])
             .report(in: range)
 
         #expect(releases.isEmpty)
@@ -137,7 +141,7 @@ struct ReleaseReportTests {
 
     @Test("No data yields no releases")
     func testEmpty() {
-        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [])
+        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [])
             .report(in: range)
         #expect(releases.isEmpty)
     }
@@ -152,7 +156,8 @@ struct ReleaseReportTests {
             hangs: [],
             installs: [],
             crashedInstalls: [],
-            exits: []
+            exits: [],
+            performance: []
         )
         .report(in: range)
 
@@ -172,13 +177,36 @@ struct ReleaseReportTests {
                 exitSeries("2.0", reason: "watchdog", count: 10),
                 exitSeries("2.0", reason: "unknown", count: 5),
                 exitSeries("1.0", reason: "memory_limit", count: 4),
-            ]
+            ],
+            performance: []
         )
         .report(in: range)
 
         #expect(releases[0].exits.counts == [.normal: 90, .watchdog: 10])
         #expect(releases[0].exits.clean?.value == 0.9)
         #expect(releases[1].exits.counts == [.memoryLimit: 4])
+    }
+
+    @Test("Performance compares with the newest older version that has data")
+    func testPerformanceComparesWithPreviousVersion() {
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("3.0", count: 1), sessionSeries("2.0", count: 1), sessionSeries("1.0", count: 1)],
+            crashes: [],
+            hangs: [],
+            installs: [],
+            crashedInstalls: [],
+            exits: [],
+            performance: [
+                performanceSeries("3.0", metric: .launchTime, category: "400", count: 10),
+                performanceSeries("1.0", metric: .launchTime, category: "200", count: 10),
+            ]
+        )
+        .report(in: range)
+
+        #expect(releases[0].performance.current.launchTime == 450)
+        #expect(releases[0].performance.previous?.launchTime == 250)
+        #expect(releases[1].performance.current.isEmpty)
+        #expect(releases[2].performance.previous == nil)
     }
 
     private func sessionSeries(_ version: String, count: Int) -> MetricSeries {
@@ -199,6 +227,15 @@ struct ReleaseReportTests {
 
     private func crashedInstallSeries(_ version: String, count: Int) -> MetricSeries {
         series(name: MarkerEntry.crashName, version: version, count: count)
+    }
+
+    private func performanceSeries(_ version: String, metric: PerformanceMetric, category: String, count: Int) -> MetricSeries {
+        MetricSeries(
+            name: metric.rawValue,
+            category: category,
+            version: version,
+            points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: Double(count))]
+        )
     }
 
     private func exitSeries(_ version: String, reason: String, count: Int) -> MetricSeries {
