@@ -53,28 +53,6 @@ package struct LifecycleSeriesQuery: SeriesQuery {
     }
 }
 
-extension LifecycleSeriesQuery {
-    package static func sessions(bucket: SeriesBucket = .day, byVersion: Bool = false, range: Range<Date>) -> Self {
-        Self(name: SessionEntry.recordType, bucket: bucket, byVersion: byVersion, range: range)
-    }
-
-    package static func crashes(bucket: SeriesBucket = .day, byVersion: Bool = false, range: Range<Date>) -> Self {
-        Self(name: CrashEntry.recordType, bucket: bucket, byVersion: byVersion, range: range)
-    }
-
-    package static func hangs(bucket: SeriesBucket = .day, byVersion: Bool = false, range: Range<Date>) -> Self {
-        Self(name: HangEntry.recordType, bucket: bucket, byVersion: byVersion, range: range)
-    }
-
-    package static func installs(bucket: SeriesBucket = .day, byVersion: Bool = false, range: Range<Date>) -> Self {
-        Self(name: VersionEntry.recordType, bucket: bucket, byVersion: byVersion, range: range)
-    }
-
-    package static func firstCrashes(bucket: SeriesBucket = .day, byVersion: Bool = false, range: Range<Date>) -> Self {
-        Self(name: MarkerEntry.crashName, bucket: bucket, byVersion: byVersion, range: range)
-    }
-}
-
 package struct MetricSeriesQuery: SeriesQuery {
     package enum Values: String, Sendable {
         case int, double

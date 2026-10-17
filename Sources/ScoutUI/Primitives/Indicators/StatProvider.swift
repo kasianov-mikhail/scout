@@ -44,7 +44,7 @@ final class StatProvider: ObservableObject, SeriesProvider {
                 )
             case .sessions:
                 try await database.lifecycleSeries(
-                    matching: .sessions(bucket: .hour, range: range)
+                    matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, range: range)
                 )
             }
 

@@ -59,10 +59,10 @@ final class HomeLogProvider: ObservableObject, SeriesProvider {
             matching: EventSeriesQuery(bucket: bucket, range: window)
         )
         async let crashes = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.crashes(bucket: bucket, range: window)
+            matching: LifecycleSeriesQuery(name: CrashEntry.recordType, bucket: bucket, range: window)
         )
         async let hangs = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.hangs(bucket: bucket, range: window)
+            matching: LifecycleSeriesQuery(name: HangEntry.recordType, bucket: bucket, range: window)
         )
         async let metrics = database.metricSeries(
             matching: MetricSeriesQuery(bucket: bucket, range: window)

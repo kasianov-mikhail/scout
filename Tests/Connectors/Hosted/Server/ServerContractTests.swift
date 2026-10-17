@@ -163,7 +163,8 @@ struct ServerContractTests {
         try await database.write(records: [first, second])
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.sessions(
+            matching: LifecycleSeriesQuery(
+                name: SessionEntry.recordType,
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )
@@ -179,7 +180,7 @@ struct ServerContractTests {
         let database = try makeDatabase()
         let hour = Date(timeIntervalSince1970: Double(Int.random(in: 400_000...450_000)) * 3600)
         let events = EventSeriesQuery(name: "Session", bucket: .hour, range: hour..<hour.addingTimeInterval(3600))
-        let sessions = LifecycleSeriesQuery.sessions(bucket: .hour, range: events.range)
+        let sessions = LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, range: events.range)
 
         func total(_ series: [MetricSeries]) -> Double {
             series.flatMap(\.points).map(\.value).reduce(0, +)
@@ -214,7 +215,8 @@ struct ServerContractTests {
         try await database.write(records: [first, second])
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.firstCrashes(
+            matching: LifecycleSeriesQuery(
+                name: MarkerEntry.crashName,
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )

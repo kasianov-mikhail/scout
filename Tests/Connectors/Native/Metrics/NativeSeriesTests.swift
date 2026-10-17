@@ -71,7 +71,7 @@ struct NativeSeriesTests {
         try await database.write(record: makeSessionRecord(id: "s-2", device: "b", day: 0))
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.sessions(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
 
         let sessions = try #require(series.first)
@@ -90,7 +90,7 @@ struct NativeSeriesTests {
         try await database.write(record: hang)
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.hangs(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: HangEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
 
         let hangs = try #require(series.first)
@@ -119,13 +119,13 @@ struct NativeSeriesTests {
         }
 
         let installs = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.installs(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: VersionEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
         #expect(installs.first?.points.map(\.value) == [1])
         #expect(installs.first?.version == "1.2.0")
 
         let crashed = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.firstCrashes(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)
         )
         #expect(crashed.first?.points.map(\.value) == [2])
         #expect(crashed.first?.version == "1.2.0")
@@ -154,7 +154,8 @@ struct NativeSeriesTests {
         try await database.write(record: makeSessionRecord(id: "s-2", device: "b", day: 0))
 
         let series = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.sessions(
+            matching: LifecycleSeriesQuery(
+                name: SessionEntry.recordType,
                 bucket: .day,
                 byVersion: true,
                 range: range

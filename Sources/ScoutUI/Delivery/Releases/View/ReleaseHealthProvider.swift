@@ -20,19 +20,19 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
         let range = Date().trailingYear
 
         async let sessions = database.lifecycleSeries(
-            matching: .sessions(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let crashes = database.lifecycleSeries(
-            matching: .crashes(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: CrashEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let hangs = database.lifecycleSeries(
-            matching: .hangs(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: HangEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let installs = database.lifecycleSeries(
-            matching: .installs(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: VersionEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let crashedInstalls = database.lifecycleSeries(
-            matching: .firstCrashes(bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)
         )
 
         return try await ReleaseSeries(
