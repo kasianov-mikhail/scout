@@ -55,6 +55,8 @@ struct VersionDetailView: View {
                     AllButton { showAllHangs = true }
                 }
             }
+
+            ExitsSection(summary: release.exits)
         }
         .navigationDestination(isPresented: $showAllCrashes) {
             VersionIncidentsView(issuesTitle: "Top crash issues", records: crashRecords) { group in

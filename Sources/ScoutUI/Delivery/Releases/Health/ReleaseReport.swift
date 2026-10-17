@@ -14,6 +14,7 @@ struct ReleaseSeries {
     let hangs: [MetricSeries]
     let installs: [MetricSeries]
     let crashedInstalls: [MetricSeries]
+    let exits: [MetricSeries]
 
     func report(in range: Range<Date>) -> [ReleaseHealth] {
         let sessionCounts = sessions.points(in: range).mapValues(\.total)
@@ -21,6 +22,7 @@ struct ReleaseSeries {
         let hangCounts = hangs.points(in: range).mapValues(\.total)
         let installCounts = installs.points(in: range).mapValues(\.total)
         let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
+        let exitCounts = exits.reasonCounts(in: range)
 
         let versions = Set(sessionCounts.keys)
             .union(crashPoints.keys)
@@ -43,7 +45,8 @@ struct ReleaseSeries {
                 hangs: hangCounts[version] ?? 0,
                 sessions: sessions,
                 adoption: Adoption(of: sessions, in: totalSessions),
-                trend: crashPoints.trend(in: range)
+                trend: crashPoints.trend(in: range),
+                exits: ExitSummary(counts: exitCounts[version] ?? [:])
             )
         }
     }
@@ -56,6 +59,19 @@ extension [MetricSeries] {
             if let version = series.version {
                 let points: [ChartPoint<Int>] = series.chartPoints()
                 result[version, default: []] += points.filter { range.contains($0.date) }
+            }
+        }
+        return result
+    }
+}
+
+extension [MetricSeries] {
+    fileprivate func reasonCounts(in range: Range<Date>) -> [String: [ExitReason: Int]] {
+        var result: [String: [ExitReason: Int]] = [:]
+        for series in self {
+            if let version = series.version, let reason = series.category.flatMap(ExitReason.init(rawValue:)) {
+                let points: [ChartPoint<Int>] = series.chartPoints()
+                result[version, default: [:]][reason, default: 0] += points.filter { range.contains($0.date) }.total
             }
         }
         return result

@@ -21,7 +21,8 @@ struct ReleaseReportTests {
             crashes: [crashSeries("2.0", count: 1)],
             hangs: [],
             installs: [],
-            crashedInstalls: []
+            crashedInstalls: [],
+            exits: []
         )
         .report(in: range)
 
@@ -48,7 +49,8 @@ struct ReleaseReportTests {
             crashes: [],
             hangs: [hangSeries("2.0", count: 3)],
             installs: [],
-            crashedInstalls: []
+            crashedInstalls: [],
+            exits: []
         )
         .report(in: range)
 
@@ -62,7 +64,8 @@ struct ReleaseReportTests {
             crashes: [],
             hangs: [],
             installs: [installSeries("2.0", count: 4)],
-            crashedInstalls: [crashedInstallSeries("2.0", count: 1)]
+            crashedInstalls: [crashedInstallSeries("2.0", count: 1)],
+            exits: []
         )
         .report(in: range)
 
@@ -88,7 +91,8 @@ struct ReleaseReportTests {
             crashes: [crashes],
             hangs: [],
             installs: [],
-            crashedInstalls: []
+            crashedInstalls: [],
+            exits: []
         )
         .report(in: start..<start.addingTimeInterval(7 * 86_400))
 
@@ -110,7 +114,7 @@ struct ReleaseReportTests {
             ]
         )
 
-        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [])
             .report(in: start..<start.addingTimeInterval(86_400))
 
         #expect(releases.map(\.id) == ["5.0"])
@@ -125,7 +129,7 @@ struct ReleaseReportTests {
             points: [MetricSeriesPoint(date: range.lowerBound, value: 5)]
         )
 
-        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [])
             .report(in: range)
 
         #expect(releases.isEmpty)
@@ -133,7 +137,7 @@ struct ReleaseReportTests {
 
     @Test("No data yields no releases")
     func testEmpty() {
-        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [])
+        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [])
             .report(in: range)
         #expect(releases.isEmpty)
     }
@@ -147,11 +151,34 @@ struct ReleaseReportTests {
             crashes: [],
             hangs: [],
             installs: [],
-            crashedInstalls: []
+            crashedInstalls: [],
+            exits: []
         )
         .report(in: range)
 
         #expect(releases.map(\.id) == ["4.0", "3.10", "3.9"])
+    }
+
+    @Test("Exits are summed per version and reason")
+    func testExitsByVersion() {
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 2), sessionSeries("1.0", count: 1)],
+            crashes: [],
+            hangs: [],
+            installs: [],
+            crashedInstalls: [],
+            exits: [
+                exitSeries("2.0", reason: "normal", count: 90),
+                exitSeries("2.0", reason: "watchdog", count: 10),
+                exitSeries("2.0", reason: "unknown", count: 5),
+                exitSeries("1.0", reason: "memory_limit", count: 4),
+            ]
+        )
+        .report(in: range)
+
+        #expect(releases[0].exits.counts == [.normal: 90, .watchdog: 10])
+        #expect(releases[0].exits.clean?.value == 0.9)
+        #expect(releases[1].exits.counts == [.memoryLimit: 4])
     }
 
     private func sessionSeries(_ version: String, count: Int) -> MetricSeries {
@@ -172,6 +199,15 @@ struct ReleaseReportTests {
 
     private func crashedInstallSeries(_ version: String, count: Int) -> MetricSeries {
         series(name: MarkerEntry.crashName, version: version, count: count)
+    }
+
+    private func exitSeries(_ version: String, reason: String, count: Int) -> MetricSeries {
+        MetricSeries(
+            name: ExitEntry.recordType,
+            category: reason,
+            version: version,
+            points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: Double(count))]
+        )
     }
 
     private func series(name: String, version: String, count: Int) -> MetricSeries {

@@ -34,13 +34,17 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
         async let crashedInstalls = database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)
         )
+        async let exits = database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ExitEntry.recordType, bucket: .day, byVersion: true, range: range)
+        )
 
         return try await ReleaseSeries(
             sessions: sessions,
             crashes: crashes,
             hangs: hangs,
             installs: installs,
-            crashedInstalls: crashedInstalls
+            crashedInstalls: crashedInstalls,
+            exits: exits
         )
         .report(in: range)
     }
