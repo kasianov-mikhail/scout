@@ -47,9 +47,10 @@
 
         func didReceive(_ payloads: [MXMetricPayload]) {
             for payload in payloads {
-                if let exits = MetricKitExits(payload: payload) {
-                    save(subject: "MetricKit exits") { [installID] context in
-                        try logMetricKitExits(exits: exits, installID: installID, context: context)
+                let report = MetricKitReport(payload: payload)
+                if !report.readings.isEmpty {
+                    save(subject: "a MetricKit report") { [installID] context in
+                        try report.log(installID: installID, context: context)
                     }
                 }
             }
@@ -67,87 +68,9 @@
         }
     }
 
-    extension MetricKitCrash {
-        fileprivate init(diagnostic: MXCrashDiagnostic, window: DateInterval) throws {
-            self.init(
-                exceptionType: diagnostic.exceptionType?.intValue,
-                signal: diagnostic.signal?.int32Value,
-                terminationReason: diagnostic.terminationReason,
-                exception: Exception(diagnostic: diagnostic),
-                appVersion: diagnostic.applicationVersion,
-                processID: diagnostic.processID,
-                window: window,
-                frames: try MetricKitStackTree(json: diagnostic.callStackTree.jsonRepresentation()).crashedFrames
-            )
-        }
-    }
-
-    extension MetricKitExits {
-        fileprivate init?(payload: MXMetricPayload) {
-            guard let metric = payload.applicationExitMetrics else {
-                return nil
-            }
-            self.init(
-                foreground: metric.foregroundExitData.counts,
-                background: metric.backgroundExitData.counts,
-                appVersion: payload.latestApplicationVersion,
-                window: DateInterval(reportFrom: payload.timeStampBegin, to: payload.timeStampEnd)
-            )
-        }
-    }
-
     extension DateInterval {
-        fileprivate init(reportFrom begin: Date, to end: Date) {
+        init(reportFrom begin: Date, to end: Date) {
             self.init(start: begin, end: max(begin, end))
-        }
-    }
-
-    extension MXForegroundExitData {
-        fileprivate var counts: [ExitReason: Int] {
-            [
-                .normal: cumulativeNormalAppExitCount,
-                .memoryLimit: cumulativeMemoryResourceLimitExitCount,
-                .watchdog: cumulativeAppWatchdogExitCount,
-                .badAccess: cumulativeBadAccessExitCount,
-                .illegalInstruction: cumulativeIllegalInstructionExitCount,
-                .abnormal: cumulativeAbnormalExitCount,
-            ]
-        }
-    }
-
-    extension MXBackgroundExitData {
-        fileprivate var counts: [ExitReason: Int] {
-            [
-                .normal: cumulativeNormalAppExitCount,
-                .memoryPressure: cumulativeMemoryPressureExitCount,
-                .memoryLimit: cumulativeMemoryResourceLimitExitCount,
-                .cpuLimit: cumulativeCPUResourceLimitExitCount,
-                .watchdog: cumulativeAppWatchdogExitCount,
-                .badAccess: cumulativeBadAccessExitCount,
-                .illegalInstruction: cumulativeIllegalInstructionExitCount,
-                .abnormal: cumulativeAbnormalExitCount,
-                .lockedFile: cumulativeSuspendedWithLockedFileExitCount,
-                .taskTimeout: cumulativeBackgroundTaskAssertionTimeoutExitCount,
-            ]
-        }
-    }
-
-    extension MetricKitCrash.Exception {
-        fileprivate init?(diagnostic: MXCrashDiagnostic) {
-            guard #available(iOS 17, macOS 14, *), let reason = diagnostic.exceptionReason else {
-                return nil
-            }
-            self.init(name: reason.exceptionName, message: reason.composedMessage)
-        }
-    }
-
-    extension MXCrashDiagnostic {
-        fileprivate var processID: Int32? {
-            if #available(iOS 17, macOS 14, *) {
-                metaData.pid
-            } else {
-                nil
-            }
         }
     }
 #else
