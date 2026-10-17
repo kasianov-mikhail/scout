@@ -30,7 +30,7 @@ struct CacheableQueryTests {
 
     @Test("Lifecycle series fingerprint spell out the counter and the version split")
     func lifecycleFingerprint() {
-        let query = LifecycleSeriesQuery.sessions(bucket: .hour, byVersion: true, range: range)
+        let query = LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, byVersion: true, range: range)
 
         #expect(query.fingerprint == "Session|*|*|hour|version|lifecycle|sum")
     }

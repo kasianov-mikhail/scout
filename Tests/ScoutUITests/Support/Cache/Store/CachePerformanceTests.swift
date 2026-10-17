@@ -82,7 +82,8 @@ final class CachingDatabasePerformanceTests: XCTestCase {
             now: { now },
             types: [EventEntry.recordType]
         )
-        let query = LifecycleSeriesQuery.sessions(
+        let query = LifecycleSeriesQuery(
+            name: SessionEntry.recordType,
             byVersion: true,
             range: Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 4_000_000)
         )

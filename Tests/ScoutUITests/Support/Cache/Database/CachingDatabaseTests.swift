@@ -141,7 +141,7 @@ struct CachingDatabaseTests {
                 points: [MetricSeriesPoint(date: Date(millisecondsSince1970: 1_000_000_000), value: 4)]
             )
         ]
-        let query = LifecycleSeriesQuery.sessions(byVersion: true, range: lower..<upper)
+        let query = LifecycleSeriesQuery(name: SessionEntry.recordType, byVersion: true, range: lower..<upper)
 
         let first = try await database.lifecycleSeries(matching: query)
         let second = try await database.lifecycleSeries(matching: query)

@@ -70,10 +70,10 @@ private struct StabilityPoints {
 
     init(database: SeriesReader, range: Range<Date>) async throws {
         async let sessions = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.sessions(bucket: .hour, range: range)
+            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, range: range)
         )
         async let crashes = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.crashes(bucket: .hour, range: range)
+            matching: LifecycleSeriesQuery(name: CrashEntry.recordType, bucket: .hour, range: range)
         )
 
         self.sessions = try await sessions.flatMap { $0.chartPoints() }

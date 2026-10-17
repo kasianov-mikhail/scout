@@ -47,8 +47,8 @@ import Testing
 
     @Test func aggregateSeriesEqualsSumOfVersions() async throws {
         let byVersion = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery.sessions(byVersion: true, range: range))
-        let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery.sessions(range: range))
+            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, byVersion: true, range: range))
+        let aggregate = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: SessionEntry.recordType, range: range))
 
         #expect(byVersion.total == aggregate.total)
         #expect(try await aggregate.total == records(Session.self).count)
