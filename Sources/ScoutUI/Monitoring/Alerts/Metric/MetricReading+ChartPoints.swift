@@ -19,27 +19,10 @@ extension MetricReading {
         )
     }
 
-    init(sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], period: some ChartTimeScale) {
-        func stabilities(in range: Range<Date>) -> [Double] {
-            stabilityValues(
-                sessions: sessions,
-                crashes: crashes,
-                in: range,
-                component: period.pointComponent
-            )
-        }
-
+    init(stability: StabilityPoints, period: some ChartTimeScale) {
         self.init(
-            baseline: stabilities(in: period.previousRange).median ?? 0,
-            recent: stabilities(in: period.initialRange)
+            baseline: stability.values(range: period.previousRange, component: period.pointComponent).median ?? 0,
+            recent: stability.values(range: period.initialRange, component: period.pointComponent)
         )
     }
-}
-
-func stabilityValues(sessions: [ChartPoint<Int>], crashes: [ChartPoint<Int>], in range: Range<Date>, component: Calendar.Component) -> [Double] {
-    zip(
-        sessions.bucket(in: range, component: component).reversed(),
-        crashes.bucket(in: range, component: component).reversed()
-    )
-    .map { Stability(of: $1.value, in: $0.value).value }
 }
