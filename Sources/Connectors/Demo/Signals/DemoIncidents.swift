@@ -18,6 +18,7 @@ struct DemoIncidents {
     let records: [Record]
     let crashes: [Point]
     let hangs: [Point]
+    let resources: [ResourceKind: [Point]]
 
     init(scenario: DemoScenario) {
         var random = DemoRandom(seed: 0xDEAD_FA11)
@@ -192,9 +193,21 @@ struct DemoIncidents {
             }
         }
 
+        var resourceRandom = DemoRandom(seed: 0x5E5_0C3E)
+        var resources: [ResourceKind: [Point]] = [:]
+
+        for session in scenario.sessions {
+            let roll = resourceRandom.double(in: 0...1)
+            let kind: ResourceKind? = roll < 0.004 ? .cpu : roll < 0.006 ? .diskWrite : nil
+            if let kind {
+                resources[kind, default: []].append(Point(date: session.end, version: session.version.version, installID: session.install.id))
+            }
+        }
+
         self.records = records
         self.crashes = crashes
         self.hangs = hangs
+        self.resources = resources
     }
 
     private static func stackTrace(frames: [(module: String, symbol: String)]) -> [String] {

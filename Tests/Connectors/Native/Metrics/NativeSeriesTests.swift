@@ -119,6 +119,20 @@ struct NativeSeriesTests {
         #expect(series.map { $0.points.map(\.value) } == [[40], [5]])
     }
 
+    @Test("Resource exceptions count per kind and version, not by their amount")
+    func resourceSeries() async throws {
+        try await database.write(record: makeResourceRecord(id: "r-1", kind: "cpu"))
+        try await database.write(record: makeResourceRecord(id: "r-2", kind: "cpu"))
+        try await database.write(record: makeResourceRecord(id: "r-3", kind: "disk_write"))
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ResourceEntry.recordType, bucket: .day, byVersion: true, range: range)
+        )
+
+        #expect(series.map(\.category) == ["cpu", "disk_write"])
+        #expect(series.map { $0.points.map(\.value) } == [[2], [1]])
+    }
+
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
         var version = Record(recordType: VersionEntry.recordType, recordID: "v-1")
@@ -220,6 +234,16 @@ struct NativeSeriesTests {
 
         #expect(renew.category == "billing|eu")
         #expect(renew.points.map(\.value) == [2.5])
+    }
+
+    private func makeResourceRecord(id: String, kind: String) -> Record {
+        var record = Record(recordType: ResourceEntry.recordType, recordID: id)
+        record["name"] = "CPU Exception"
+        record["category"] = kind
+        record["value"] = 92.5
+        record["app_version"] = "1.2.0"
+        record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
+        return record
     }
 
     private func makeExitRecord(id: String, reason: String, count: Int) -> Record {
