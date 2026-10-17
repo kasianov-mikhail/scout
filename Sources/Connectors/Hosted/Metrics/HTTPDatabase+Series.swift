@@ -33,8 +33,7 @@ extension HTTPDatabase: SeriesReader {
     func seriesEndpoint(for query: EventSeriesQuery) -> URL? {
         seriesEndpoint(
             source: "event",
-            bucket: query.bucket,
-            range: query.range,
+            query: query,
             filters: [
                 query.name.map { "name=\(Self.encode($0))" }
             ]
@@ -44,8 +43,7 @@ extension HTTPDatabase: SeriesReader {
     func seriesEndpoint(for query: LifecycleSeriesQuery) -> URL? {
         seriesEndpoint(
             source: "lifecycle",
-            bucket: query.bucket,
-            range: query.range,
+            query: query,
             filters: [
                 "name=\(Self.encode(query.name))",
                 query.byVersion ? "by=version" : nil,
@@ -56,8 +54,7 @@ extension HTTPDatabase: SeriesReader {
     func seriesEndpoint(for query: MetricSeriesQuery) -> URL? {
         seriesEndpoint(
             source: "metric",
-            bucket: query.bucket,
-            range: query.range,
+            query: query,
             filters: [
                 query.name.map { "name=\(Self.encode($0))" },
                 query.category.map { "category=\(Self.encode($0))" },
@@ -67,11 +64,11 @@ extension HTTPDatabase: SeriesReader {
         )
     }
 
-    private func seriesEndpoint(source: String, bucket: SeriesBucket, range: Range<Date>, filters: [String?]) -> URL? {
+    private func seriesEndpoint(source: String, query: some SeriesQuery, filters: [String?]) -> URL? {
         let params: [String?] =
             [
-                "bucket=\(bucket.rawValue)",
-                range.queryParameters,
+                "bucket=\(query.bucket.rawValue)",
+                query.range.queryParameters,
                 "source=\(source)",
             ] + filters
 
