@@ -7,29 +7,29 @@
 
 import CoreData
 
-@objc(PerformanceEntry)
-package final class PerformanceEntry: SyncableEntry {
-    package static let recordType = "Performance"
+@objc(DailyMetricEntry)
+package final class DailyMetricEntry: SyncableEntry {
+    package static let recordType = "DailyMetric"
 
-    @NSManaged var performanceID: UUID
+    @NSManaged var metricID: UUID
     @NSManaged var appVersion: String?
-    @NSManaged var metric: String
-    @NSManaged var bucket: String?
+    @NSManaged var name: String
+    @NSManaged var category: String?
     @NSManaged var value: Int
     @NSManaged var windowStart: Date?
 }
 
-extension PerformanceEntry: RecordEncodable {
+extension DailyMetricEntry: RecordEncodable {
     package var record: Record {
-        var record = Record(recordType: Self.recordType, recordID: performanceID.uuidString)
+        var record = Record(recordType: Self.recordType, recordID: metricID.uuidString)
 
-        record["name"] = metric
-        record["category"] = bucket
+        record["name"] = name
+        record["category"] = category
         record["value"] = value
         record["app_version"] = appVersion
         record["date"] = date
         record["date_start"] = windowStart
-        record["uuid"] = performanceID.uuidString
+        record["uuid"] = metricID.uuidString
 
         record.setValues(metadata)
 

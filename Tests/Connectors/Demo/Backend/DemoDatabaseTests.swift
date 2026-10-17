@@ -55,7 +55,7 @@ import Testing
     }
 
     @Test func exitSeriesCoverEverySessionAndCrash() async throws {
-        let exits = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: ExitEntry.recordType, byVersion: true, range: range))
+        let exits = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: ExitReason.metricName, byVersion: true, range: range))
         let sessions = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: SessionEntry.recordType, range: range))
         let crashes = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: CrashEntry.recordType, range: range))
 

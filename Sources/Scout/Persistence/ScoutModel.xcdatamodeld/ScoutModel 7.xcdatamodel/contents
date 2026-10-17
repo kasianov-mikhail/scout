@@ -69,28 +69,16 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="ExitEntry" representedClassName="ExitEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
+    <entity name="DailyMetricEntry" representedClassName="DailyMetricEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
-        <attribute name="count" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
-        <attribute name="exitID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="reason" attributeType="String"/>
-        <attribute name="windowStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
-        <uniquenessConstraints>
-            <uniquenessConstraint>
-                <constraint value="exitID"/>
-            </uniquenessConstraint>
-        </uniquenessConstraints>
-    </entity>
-    <entity name="PerformanceEntry" representedClassName="PerformanceEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
-        <attribute name="appVersion" optional="YES" attributeType="String"/>
-        <attribute name="bucket" optional="YES" attributeType="String"/>
-        <attribute name="metric" attributeType="String"/>
-        <attribute name="performanceID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="category" optional="YES" attributeType="String"/>
+        <attribute name="metricID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String"/>
         <attribute name="value" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="windowStart" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <uniquenessConstraints>
             <uniquenessConstraint>
-                <constraint value="performanceID"/>
+                <constraint value="metricID"/>
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>

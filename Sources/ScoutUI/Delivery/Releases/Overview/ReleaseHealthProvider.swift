@@ -35,7 +35,7 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
             matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)
         )
         async let exits = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: ExitEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: ExitReason.metricName, bucket: .day, byVersion: true, range: range)
         )
 
         return try await ReleaseSeries(

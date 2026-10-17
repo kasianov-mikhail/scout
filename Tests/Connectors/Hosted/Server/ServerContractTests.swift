@@ -239,7 +239,7 @@ struct ServerContractTests {
 
         let series = try await database.lifecycleSeries(
             matching: LifecycleSeriesQuery(
-                name: ExitEntry.recordType,
+                name: ExitReason.metricName,
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )
@@ -426,7 +426,8 @@ struct ServerContractTests {
     }
 
     private func makeExit(reason: String, count: Int, appVersion: String) -> Record {
-        var record = Record(recordType: "Exit", recordID: "contract-\(UUID().uuidString)")
+        var record = Record(recordType: "DailyMetric", recordID: "contract-\(UUID().uuidString)")
+        record["name"] = "exit"
         record["category"] = reason
         record["value"] = count
         record["app_version"] = appVersion

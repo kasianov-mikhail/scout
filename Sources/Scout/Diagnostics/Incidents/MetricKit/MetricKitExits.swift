@@ -22,6 +22,7 @@ extension MetricKitExits {
     func id(of reason: ExitReason, installID: UUID) -> UUID {
         UUID(digesting: [
             installID.uuidString,
+            ExitReason.metricName,
             reason.rawValue,
             appVersion ?? "",
             String(window.start.timeIntervalSince1970),
