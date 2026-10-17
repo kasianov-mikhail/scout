@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
 struct CrashInfo: Codable {
     let name: String
@@ -44,7 +44,7 @@ struct CrashInfo: Codable {
 
 extension IncidentArchive<CrashInfo> {
     static var crash: Self {
-        IncidentArchive(folder: "Crashes", pathExtension: "crash", persist: logCrash)
+        IncidentArchive(folder: "Crashes", pathExtension: "crash")
     }
 
     // The signal handler leaves raw reports behind — symbolicating them is
@@ -65,6 +65,20 @@ extension IncidentArchive<CrashInfo> {
                 print("Failed to read \(file.lastPathComponent): \(error)")
             }
             remove(file: file)
+        }
+    }
+}
+
+extension CrashInfo {
+    func log(id: UUID = UUID(), deviceID: UUID, context: NSManagedObjectContext) throws {
+        try log(
+            id: id,
+            deviceID: deviceID,
+            idKey: "crashID",
+            markerName: MarkerEntry.crashName,
+            context: context
+        ) { (entry: CrashEntry, session) in
+            entry.session = session
         }
     }
 }

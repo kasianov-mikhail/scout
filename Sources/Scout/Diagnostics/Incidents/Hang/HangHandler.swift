@@ -24,12 +24,36 @@ private var uptime: TimeInterval {
 
 // Installs a watchdog that detects an unresponsive main thread and captures
 // its stack trace before the system watchdog can kill the app.
-func installHangHandler(identity: Identity) {
-    guard !isInstalled else { return }
-    isInstalled = true
+extension Identity {
+    func installHangHandler() {
+        guard !isInstalled else { return }
+        isInstalled = true
 
-    schedulePing()
-    scheduleCheck(identity: identity)
+        schedulePing()
+        scheduleHangCheck()
+    }
+
+    fileprivate func scheduleHangCheck() {
+        watchdogQueue.asyncAfter(deadline: .now() + HangMonitor.pingInterval) {
+            if let duration = monitor.check(at: uptime) {
+                reportHang(duration: duration)
+            }
+            scheduleHangCheck()
+        }
+    }
+
+    fileprivate func reportHang(duration: TimeInterval) {
+        let isCritical = duration >= HangMonitor.criticalThreshold
+
+        let hang = HangInfo(
+            name: isCritical ? "Watchdog Termination Imminent" : "Main Thread Blocked",
+            reason: "Main thread unresponsive for \(String(format: "%.1f", duration))s",
+            stackTrace: MainThreadBacktrace.capture(),
+            duration: duration,
+            identity: self
+        )
+        IncidentArchive.hang.write(hang)
+    }
 }
 
 private func schedulePing() {
@@ -41,26 +65,4 @@ private func schedulePing() {
             schedulePing()
         }
     }
-}
-
-private func scheduleCheck(identity: Identity) {
-    watchdogQueue.asyncAfter(deadline: .now() + HangMonitor.pingInterval) {
-        if let duration = monitor.check(at: uptime) {
-            reportHang(duration: duration, identity: identity)
-        }
-        scheduleCheck(identity: identity)
-    }
-}
-
-private func reportHang(duration: TimeInterval, identity: Identity) {
-    let isCritical = duration >= HangMonitor.criticalThreshold
-
-    let hang = HangInfo(
-        name: isCritical ? "Watchdog Termination Imminent" : "Main Thread Blocked",
-        reason: "Main thread unresponsive for \(String(format: "%.1f", duration))s",
-        stackTrace: MainThreadBacktrace.capture(),
-        duration: duration,
-        identity: identity
-    )
-    IncidentArchive.hang.write(hang)
 }

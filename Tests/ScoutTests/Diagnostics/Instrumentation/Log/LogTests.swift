@@ -24,8 +24,7 @@ private func makeEvent(_ message: String, level: Logger.Level = .info, metadata:
     let context = NSManagedObjectContext.inMemoryContext()
     let date = Date()
 
-    try log(
-        makeEvent("Test Event", metadata: ["key": .string("value")]),
+    try makeEvent("Test Event", metadata: ["key": .string("value")]).log(
         date: date,
         identity: Identity.stub.snapshot,
         context: context
@@ -56,8 +55,7 @@ private func makeEvent(_ message: String, level: Logger.Level = .info, metadata:
         "tags": .array([.string("a"), .string("b"), .string("c")])
     ]
 
-    try log(
-        makeEvent("Array Event", metadata: metadata), date: Date(), identity: Identity.stub.snapshot, context: context)
+    try makeEvent("Array Event", metadata: metadata).log(date: Date(), identity: Identity.stub.snapshot, context: context)
 
     let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
@@ -73,8 +71,7 @@ private func makeEvent(_ message: String, level: Logger.Level = .info, metadata:
         "user": .dictionary(["name": .string("Alice"), "role": .string("admin")])
     ]
 
-    try log(
-        makeEvent("Dict Event", metadata: metadata), date: Date(), identity: Identity.stub.snapshot, context: context)
+    try makeEvent("Dict Event", metadata: metadata).log(date: Date(), identity: Identity.stub.snapshot, context: context)
 
     let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
@@ -92,8 +89,7 @@ private func makeEvent(_ message: String, level: Logger.Level = .info, metadata:
         "map": .dictionary(["key": .string("val")]),
     ]
 
-    try log(
-        makeEvent("Mixed Event", metadata: metadata), date: Date(), identity: Identity.stub.snapshot, context: context)
+    try makeEvent("Mixed Event", metadata: metadata).log(date: Date(), identity: Identity.stub.snapshot, context: context)
 
     let events = try context.fetchAll(EventEntry.self)
     let paramData = try #require(events.first?.params)
@@ -110,7 +106,7 @@ private func makeEvent(_ message: String, level: Logger.Level = .info, metadata:
     let context = NSManagedObjectContext.inMemoryContext()
     let identity = Identity.stub.snapshot
 
-    try log(makeEvent("Early Event"), date: Date(), identity: identity, context: context)
+    try makeEvent("Early Event").log(date: Date(), identity: identity, context: context)
 
     let event = try #require(try context.fetchAll(EventEntry.self).first)
     let session = try #require(event.session)
@@ -126,8 +122,8 @@ private func makeEvent(_ message: String, level: Logger.Level = .info, metadata:
     let context = NSManagedObjectContext.inMemoryContext()
     let identity = Identity.stub.snapshot
 
-    try log(makeEvent("First"), date: Date(), identity: identity, context: context)
-    try log(makeEvent("Second"), date: Date(), identity: identity, context: context)
+    try makeEvent("First").log(date: Date(), identity: identity, context: context)
+    try makeEvent("Second").log(date: Date(), identity: identity, context: context)
 
     #expect(try context.fetchAll(SessionEntry.self).count == 1)
 }

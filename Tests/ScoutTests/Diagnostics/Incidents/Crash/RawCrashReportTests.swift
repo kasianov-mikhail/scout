@@ -152,7 +152,6 @@ struct RawCrashReportTests {
         IncidentArchive(
             folder: "Crashes",
             pathExtension: "crash",
-            persist: logCrash,
             fileManager: fileManager
         )
     }

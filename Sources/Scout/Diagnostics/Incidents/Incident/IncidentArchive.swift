@@ -7,12 +7,9 @@
 
 import CoreData
 
-struct IncidentArchive<Payload: Codable & Sendable> {
-    typealias Persist = @Sendable (Payload, UUID, UUID, NSManagedObjectContext) throws -> Void
-
+struct IncidentArchive<Payload: IncidentInfo & Codable & Sendable> {
     let folder: String
     let pathExtension: String
-    let persist: Persist
     var fileManager: FileManager = .default
 
     var directory: URL {
@@ -84,7 +81,7 @@ struct IncidentArchive<Payload: Codable & Sendable> {
                 let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
                 try await persistentContainer.performBackgroundTask { context in
                     context.mergePolicy = NSMergePolicy.scout
-                    try persist(payload, id, deviceID, context)
+                    try payload.log(id: id, deviceID: deviceID, context: context)
                 }
                 try fileManager.removeItem(at: file)
             } catch {

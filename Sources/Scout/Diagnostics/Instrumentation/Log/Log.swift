@@ -8,21 +8,23 @@
 import CoreData
 import Logging
 
-func log(_ event: LogEvent, date: Date, identity: Identity.Snapshot, context: NSManagedObjectContext) throws {
-    let object = context.insert(EventEntry.self)
+extension LogEvent {
+    func log(date: Date, identity: Identity.Snapshot, context: NSManagedObjectContext) throws {
+        let object = context.insert(EventEntry.self)
 
-    object.eventID = UUID()
-    object.date = date
-    object.session = try context.linkedSession(identity, date: date)
-    object.level = event.level.rawValue
-    object.name = event.message.description
+        object.eventID = UUID()
+        object.date = date
+        object.session = try context.linkedSession(identity, date: date)
+        object.level = level.rawValue
+        object.name = message.description
 
-    if let params = event.metadata?.compactMapValues(\.stringValue) {
-        object.params = try JSONEncoder().encode(params)
-        object.paramCount = Int64(params.count)
+        if let params = metadata?.compactMapValues(\.stringValue) {
+            object.params = try JSONEncoder().encode(params)
+            object.paramCount = Int64(params.count)
+        }
+
+        try context.save()
     }
-
-    try context.save()
 }
 
 extension Logger.MetadataValue {

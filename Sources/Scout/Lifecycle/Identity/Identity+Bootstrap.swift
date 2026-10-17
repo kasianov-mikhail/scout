@@ -12,7 +12,7 @@ extension Identity {
     func bootstrap() async throws {
         installExceptionHandler(identity: self)
         installSignalHandler(identity: self)
-        installHangHandler(identity: self)
+        installHangHandler()
 
         let crashes = IncidentArchive.crash
         crashes.convertRawReports()
