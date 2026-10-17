@@ -15,6 +15,8 @@ extension IncidentKind {
             "Crashes"
         case .hang:
             "Hangs"
+        case .resource:
+            "Resource exceptions"
         }
     }
 
@@ -24,6 +26,8 @@ extension IncidentKind {
             .red
         case .hang:
             .orange
+        case .resource:
+            .indigo
         }
     }
 }

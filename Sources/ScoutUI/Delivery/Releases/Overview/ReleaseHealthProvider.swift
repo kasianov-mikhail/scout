@@ -47,6 +47,9 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
         async let foregroundTimes = database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: PerformanceMetric.foregroundTime.rawValue, bucket: .day, byVersion: true, range: range)
         )
+        async let resources = database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ResourceEntry.recordType, bucket: .day, byVersion: true, range: range)
+        )
         async let peakMemory = database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: PerformanceMetric.peakMemory.rawValue, bucket: .day, byVersion: true, range: range)
         )
@@ -58,7 +61,8 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
             installs: installs,
             crashedInstalls: crashedInstalls,
             exits: exits,
-            performance: launches + hangTimes + foregroundTimes + peakMemory
+            performance: launches + hangTimes + foregroundTimes + peakMemory,
+            resources: resources
         )
         .report(in: range)
     }

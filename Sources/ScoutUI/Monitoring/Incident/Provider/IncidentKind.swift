@@ -8,4 +8,5 @@
 enum IncidentKind: CaseIterable, Sendable {
     case crash
     case hang
+    case resource
 }

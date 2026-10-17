@@ -26,6 +26,10 @@ extension Hang: Incident {
     static let kind = IncidentKind.hang
 }
 
+extension ResourceException: Incident {
+    static let kind = IncidentKind.resource
+}
+
 struct IncidentGroup<Element: Incident>: Identifiable {
     let records: [Element]
 

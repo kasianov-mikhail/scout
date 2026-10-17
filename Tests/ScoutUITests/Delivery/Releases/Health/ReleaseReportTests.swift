@@ -23,7 +23,8 @@ struct ReleaseReportTests {
             installs: [],
             crashedInstalls: [],
             exits: [],
-            performance: []
+            performance: [],
+            resources: []
         )
         .report(in: range)
 
@@ -52,7 +53,8 @@ struct ReleaseReportTests {
             installs: [],
             crashedInstalls: [],
             exits: [],
-            performance: []
+            performance: [],
+            resources: []
         )
         .report(in: range)
 
@@ -68,7 +70,8 @@ struct ReleaseReportTests {
             installs: [installSeries("2.0", count: 4)],
             crashedInstalls: [crashedInstallSeries("2.0", count: 1)],
             exits: [],
-            performance: []
+            performance: [],
+            resources: []
         )
         .report(in: range)
 
@@ -96,7 +99,8 @@ struct ReleaseReportTests {
             installs: [],
             crashedInstalls: [],
             exits: [],
-            performance: []
+            performance: [],
+            resources: []
         )
         .report(in: start..<start.addingTimeInterval(7 * 86_400))
 
@@ -118,7 +122,7 @@ struct ReleaseReportTests {
             ]
         )
 
-        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [])
+        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [], resources: [])
             .report(in: start..<start.addingTimeInterval(86_400))
 
         #expect(releases.map(\.id) == ["5.0"])
@@ -133,7 +137,7 @@ struct ReleaseReportTests {
             points: [MetricSeriesPoint(date: range.lowerBound, value: 5)]
         )
 
-        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [])
+        let releases = ReleaseSeries(sessions: [unversioned], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [], resources: [])
             .report(in: range)
 
         #expect(releases.isEmpty)
@@ -141,7 +145,7 @@ struct ReleaseReportTests {
 
     @Test("No data yields no releases")
     func testEmpty() {
-        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [])
+        let releases = ReleaseSeries(sessions: [], crashes: [], hangs: [], installs: [], crashedInstalls: [], exits: [], performance: [], resources: [])
             .report(in: range)
         #expect(releases.isEmpty)
     }
@@ -157,7 +161,8 @@ struct ReleaseReportTests {
             installs: [],
             crashedInstalls: [],
             exits: [],
-            performance: []
+            performance: [],
+            resources: []
         )
         .report(in: range)
 
@@ -178,7 +183,8 @@ struct ReleaseReportTests {
                 exitSeries("2.0", reason: "unknown", count: 5),
                 exitSeries("1.0", reason: "memory_limit", count: 4),
             ],
-            performance: []
+            performance: [],
+            resources: []
         )
         .report(in: range)
 
@@ -199,7 +205,8 @@ struct ReleaseReportTests {
             performance: [
                 performanceSeries("3.0", metric: .launchTime, category: "400", count: 10),
                 performanceSeries("1.0", metric: .launchTime, category: "200", count: 10),
-            ]
+            ],
+            resources: []
         )
         .report(in: range)
 
@@ -208,6 +215,36 @@ struct ReleaseReportTests {
         #expect(releases[0].performance.previous?.summary.launchTime == 250)
         #expect(releases[1].performance.current.isEmpty)
         #expect(releases[2].performance.previous == nil)
+    }
+
+    @Test("Resource exceptions are counted per version and kind")
+    func testResourcesByVersion() {
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 1)],
+            crashes: [],
+            hangs: [],
+            installs: [],
+            crashedInstalls: [],
+            exits: [],
+            performance: [],
+            resources: [
+                MetricSeries(
+                    name: ResourceEntry.recordType,
+                    category: "cpu",
+                    version: "2.0",
+                    points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: 3)]
+                ),
+                MetricSeries(
+                    name: ResourceEntry.recordType,
+                    category: "gpu",
+                    version: "2.0",
+                    points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: 9)]
+                ),
+            ]
+        )
+        .report(in: range)
+
+        #expect(releases[0].resources.counts == [.cpu: 3])
     }
 
     private func sessionSeries(_ version: String, count: Int) -> MetricSeries {
