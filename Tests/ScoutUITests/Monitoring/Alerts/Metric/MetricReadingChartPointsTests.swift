@@ -62,11 +62,11 @@ struct MetricReadingChartPointsTests {
     @Test("Crash-free stability is computed per hour")
     func stability() {
         let sessions = (0..<24).map { makePoint(day: 7, hour: $0, value: 10) }
-        let reading = MetricReading(
+        let stability = StabilityPoints(
             sessions: sessions,
-            crashes: [makePoint(day: 7, hour: 5, value: 1)],
-            period: scale
+            crashes: [makePoint(day: 7, hour: 5, value: 1)]
         )
+        let reading = MetricReading(stability: stability, period: scale)
 
         #expect(reading.recent[5] == 0.9)
         #expect(reading.recent[6] == 1)
@@ -74,7 +74,7 @@ struct MetricReadingChartPointsTests {
 
     @Test("An idle hour reads as fully stable")
     func idle() {
-        let reading = MetricReading(sessions: [], crashes: [], period: scale)
+        let reading = MetricReading(stability: StabilityPoints(sessions: [], crashes: []), period: scale)
 
         #expect(reading.recent.allSatisfy { $0 == 1 })
         #expect(reading.baseline == 1)
@@ -82,11 +82,11 @@ struct MetricReadingChartPointsTests {
 
     @Test("A crashing hour with no sessions reads as fully unstable")
     func crashesWithoutSessions() {
-        let reading = MetricReading(
+        let stability = StabilityPoints(
             sessions: [],
-            crashes: [makePoint(day: 7, hour: 3, value: 2)],
-            period: scale
+            crashes: [makePoint(day: 7, hour: 3, value: 2)]
         )
+        let reading = MetricReading(stability: stability, period: scale)
 
         #expect(reading.recent[3] == 0)
     }

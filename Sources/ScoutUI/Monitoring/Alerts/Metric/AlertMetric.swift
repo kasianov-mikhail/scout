@@ -32,11 +32,7 @@ extension AlertMetric {
         case .crashFreeSessions:
             let points = try await StabilityPoints(database: database, range: range)
 
-            return MetricReading(
-                sessions: points.sessions,
-                crashes: points.crashes,
-                period: period
-            )
+            return MetricReading(stability: points, period: period)
         }
     }
 
@@ -54,29 +50,7 @@ extension AlertMetric {
         case .crashFreeSessions:
             let points = try await StabilityPoints(database: database, range: range)
 
-            return stabilityValues(
-                sessions: points.sessions,
-                crashes: points.crashes,
-                in: range,
-                component: .hour
-            )
+            return points.values(range: range, component: .hour)
         }
-    }
-}
-
-private struct StabilityPoints {
-    let sessions: [ChartPoint<Int>]
-    let crashes: [ChartPoint<Int>]
-
-    init(database: SeriesReader, range: Range<Date>) async throws {
-        async let sessions = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, range: range)
-        )
-        async let crashes = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: CrashEntry.recordType, bucket: .hour, range: range)
-        )
-
-        self.sessions = try await sessions.flatMap { $0.chartPoints() }
-        self.crashes = try await crashes.flatMap { $0.chartPoints() }
     }
 }
