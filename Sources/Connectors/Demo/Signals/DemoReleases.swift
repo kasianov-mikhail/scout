@@ -23,6 +23,11 @@ struct DemoReleases {
         samples += incidents.hangs.map {
             DemoSample(name: HangEntry.recordType, version: $0.version, source: .lifecycle, date: $0.date)
         }
+        samples += incidents.resources.flatMap { kind, points in
+            points.map {
+                DemoSample(name: ResourceEntry.recordType, category: kind.rawValue, version: $0.version, source: .lifecycle, date: $0.date)
+            }
+        }
         samples += scenario.adoption.map {
             DemoSample(name: VersionEntry.recordType, version: $0.version, source: .lifecycle, date: $0.date)
         }

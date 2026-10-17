@@ -24,6 +24,7 @@ struct NativeLifecycleScanner {
                 CrashEntry.recordType,
                 HangEntry.recordType,
                 VersionEntry.recordType,
+                ResourceEntry.recordType,
             ]
 
             let isDailyMetric = !isCrash && !entities.contains(query.name)
@@ -38,7 +39,7 @@ struct NativeLifecycleScanner {
             let visits =
                 records
                 .filter { !isDailyMetric || $0["name"] == query.name }
-                .compactMap { LifecycleVisit(record: $0, dateField: dateField) }
+                .compactMap { LifecycleVisit(record: $0, dateField: dateField, summed: isDailyMetric) }
 
             let counted = isCrash ? visits.firstPerInstall : visits
 
@@ -66,7 +67,7 @@ private struct LifecycleVisit {
     let category: String?
     let count: Int
 
-    init?(record: EntityRecord, dateField: String) {
+    init?(record: EntityRecord, dateField: String, summed: Bool) {
         guard case .date(let date)? = record.values[dateField] else {
             return nil
         }
@@ -75,7 +76,7 @@ private struct LifecycleVisit {
         self.version = record["app_version"]
         self.install = record["install_id"]
         self.category = record["category"]
-        self.count = record["value"] ?? 1
+        self.count = summed ? record["value"] ?? 1 : 1
     }
 }
 

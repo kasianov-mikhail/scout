@@ -226,6 +226,30 @@ struct ServerContractTests {
         #expect(crashes.points.map(\.value).reduce(0, +) == 1)
     }
 
+    @Test("Resource exceptions count per kind and version")
+    func resourceSeries() async throws {
+        let database = try makeDatabase()
+        let version = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeResourceException(kind: "cpu", appVersion: version),
+            makeResourceException(kind: "cpu", appVersion: version),
+            makeResourceException(kind: "disk_write", appVersion: version),
+        ])
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(
+                name: ResourceEntry.recordType,
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let resources = series.filter { $0.version == version }
+
+        #expect(resources.map(\.category) == ["cpu", "disk_write"])
+        #expect(resources.map { $0.points.map(\.value).reduce(0, +) } == [2, 1])
+    }
+
     @Test("Exit counts sum per reason and version")
     func exitSeries() async throws {
         let database = try makeDatabase()
@@ -430,6 +454,16 @@ struct ServerContractTests {
         record["name"] = "exit"
         record["category"] = reason
         record["value"] = count
+        record["app_version"] = appVersion
+        record["date"] = eventDate
+        return record
+    }
+
+    private func makeResourceException(kind: String, appVersion: String) -> Record {
+        var record = Record(recordType: "ResourceException", recordID: "contract-\(UUID().uuidString)")
+        record["name"] = "CPU Exception"
+        record["category"] = kind
+        record["value"] = 92.5
         record["app_version"] = appVersion
         record["date"] = eventDate
         return record

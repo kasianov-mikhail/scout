@@ -64,6 +64,15 @@ import Testing
         #expect(exits.allSatisfy { $0.version != nil })
     }
 
+    @Test func resourceSeriesSplitByKind() async throws {
+        let resources = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ResourceEntry.recordType, byVersion: true, range: range)
+        )
+
+        #expect(Set(resources.compactMap(\.category)) == ["cpu", "disk_write"])
+        #expect(resources.allSatisfy { $0.version != nil })
+    }
+
     @Test func launchSeriesCoverEverySession() async throws {
         let launches = try await database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: PerformanceMetric.launchTime.rawValue, byVersion: true, range: range)
