@@ -64,6 +64,16 @@ import Testing
         #expect(exits.allSatisfy { $0.version != nil })
     }
 
+    @Test func launchSeriesCoverEverySession() async throws {
+        let launches = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: PerformanceMetric.launchTime.rawValue, byVersion: true, range: range)
+        )
+        let sessions = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: SessionEntry.recordType, range: range))
+
+        #expect(launches.total == sessions.total)
+        #expect(launches.allSatisfy { $0.version != nil && $0.category != nil })
+    }
+
     @Test func eventSeriesTotalsMatchEventRecords() async throws {
         for name in DemoEvents.names {
             let series = try await database.eventSeries(matching: EventSeriesQuery(name: name, range: range))

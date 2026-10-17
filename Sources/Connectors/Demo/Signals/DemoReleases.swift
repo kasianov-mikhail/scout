@@ -29,6 +29,7 @@ struct DemoReleases {
 
         samples += DemoReleases.crashedInstalls(incidents.crashes)
         samples += DemoReleases.exits(sessions: scenario.sessions, crashes: incidents.crashes)
+        samples += DemoReleases.performance(sessions: scenario.sessions, hangs: incidents.hangs)
 
         self.samples = samples
     }
@@ -57,6 +58,57 @@ struct DemoReleases {
         }
 
         return ended + crashed
+    }
+
+    private static func performance(sessions: [DemoScenario.SessionInfo], hangs: [DemoIncidents.Point]) -> [DemoSample] {
+        var random = DemoRandom(seed: 0x9E8F_0A11)
+        var samples: [DemoSample] = []
+
+        for session in sessions {
+            let version = session.version.version
+            let launch = random.double(in: 250...650) + Double(session.version.releasedDaysAgo % 5) * 40
+            let memory = random.double(in: 120...420)
+
+            samples.append(
+                DemoSample(
+                    name: PerformanceMetric.launchTime.rawValue,
+                    category: String(Int(launch) / PerformanceMetric.launchStep * PerformanceMetric.launchStep),
+                    version: version,
+                    source: .lifecycle,
+                    date: session.start
+                )
+            )
+            samples.append(
+                DemoSample(
+                    name: PerformanceMetric.foregroundTime.rawValue,
+                    version: version,
+                    source: .lifecycle,
+                    date: session.end,
+                    value: session.end.timeIntervalSince(session.start).rounded()
+                )
+            )
+            samples.append(
+                DemoSample(
+                    name: PerformanceMetric.peakMemory.rawValue,
+                    category: String(Int(memory) / PerformanceMetric.memoryStep * PerformanceMetric.memoryStep),
+                    version: version,
+                    source: .lifecycle,
+                    date: session.end
+                )
+            )
+        }
+
+        samples += hangs.map { hang in
+            DemoSample(
+                name: PerformanceMetric.hangTime.rawValue,
+                version: hang.version,
+                source: .lifecycle,
+                date: hang.date,
+                value: random.double(in: 250...2_500).rounded()
+            )
+        }
+
+        return samples
     }
 
     private static func crashedInstalls(_ crashes: [DemoIncidents.Point]) -> [DemoSample] {

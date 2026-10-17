@@ -57,6 +57,7 @@ struct VersionDetailView: View {
             }
 
             ExitSection(summary: release.exits)
+            PerformanceSection(release: release)
         }
         .navigationDestination(isPresented: $showAllCrashes) {
             VersionIncidentsView(issuesTitle: "Top crash issues", records: crashRecords) { group in

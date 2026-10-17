@@ -204,7 +204,8 @@ struct ReleaseReportTests {
         .report(in: range)
 
         #expect(releases[0].performance.current.launchTime == 450)
-        #expect(releases[0].performance.previous?.launchTime == 250)
+        #expect(releases[0].performance.previous?.version == "1.0")
+        #expect(releases[0].performance.previous?.summary.launchTime == 250)
         #expect(releases[1].performance.current.isEmpty)
         #expect(releases[2].performance.previous == nil)
     }
