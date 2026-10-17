@@ -18,7 +18,14 @@ struct NativeLifecycleScanner {
         get async throws {
             let isCrash = query.name == MarkerEntry.crashName
             let dateField = query.name == SessionEntry.recordType ? "start_date" : "date"
-            let entities = [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType, VersionEntry.recordType]
+
+            let entities = [
+                SessionEntry.recordType,
+                CrashEntry.recordType,
+                HangEntry.recordType,
+                VersionEntry.recordType,
+                ExitEntry.recordType,
+            ]
 
             guard isCrash || entities.contains(query.name) else {
                 return []
@@ -41,11 +48,11 @@ struct NativeLifecycleScanner {
             for visit in counted {
                 let key = SeriesKey(
                     name: query.name,
-                    category: nil,
+                    category: visit.category,
                     version: query.byVersion ? visit.version : nil
                 )
 
-                totals.add(1, key: key, start: query.bucket.start(of: visit.date))
+                totals.add(Double(visit.count), key: key, start: query.bucket.start(of: visit.date))
             }
 
             return totals.series
@@ -57,6 +64,8 @@ private struct LifecycleVisit {
     let date: Date
     let version: String?
     let install: String?
+    let category: String?
+    let count: Int
 
     init?(record: EntityRecord, dateField: String) {
         guard case .date(let date)? = record.values[dateField] else {
@@ -66,6 +75,8 @@ private struct LifecycleVisit {
         self.date = date
         self.version = record["app_version"]
         self.install = record["install_id"]
+        self.category = record["category"]
+        self.count = record["value"] ?? 1
     }
 }
 

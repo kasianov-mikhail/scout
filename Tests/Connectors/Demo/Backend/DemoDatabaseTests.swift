@@ -54,6 +54,16 @@ import Testing
         #expect(try await aggregate.total == records(Session.self).count)
     }
 
+    @Test func exitSeriesCoverEverySessionAndCrash() async throws {
+        let exits = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: ExitEntry.recordType, byVersion: true, range: range))
+        let sessions = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: SessionEntry.recordType, range: range))
+        let crashes = try await database.lifecycleSeries(matching: LifecycleSeriesQuery(name: CrashEntry.recordType, range: range))
+
+        #expect(exits.total == sessions.total + crashes.total)
+        #expect(Set(exits.compactMap(\.category)).isSuperset(of: ["normal", "memory_pressure", "bad_access"]))
+        #expect(exits.allSatisfy { $0.version != nil })
+    }
+
     @Test func eventSeriesTotalsMatchEventRecords() async throws {
         for name in DemoEvents.names {
             let series = try await database.eventSeries(matching: EventSeriesQuery(name: name, range: range))

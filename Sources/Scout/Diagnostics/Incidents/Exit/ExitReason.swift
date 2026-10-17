@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-enum ExitReason: String, CaseIterable, Sendable {
+package enum ExitReason: String, CaseIterable, Sendable {
     case normal
     case memoryPressure = "memory_pressure"
     case memoryLimit = "memory_limit"
@@ -19,7 +19,7 @@ enum ExitReason: String, CaseIterable, Sendable {
 }
 
 extension ExitReason {
-    var isClean: Bool {
+    package var isClean: Bool {
         switch self {
         case .normal, .memoryPressure:
             true

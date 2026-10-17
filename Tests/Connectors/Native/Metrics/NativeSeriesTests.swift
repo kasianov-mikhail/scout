@@ -99,6 +99,22 @@ struct NativeSeriesTests {
         #expect(hangs.points.map(\.value) == [1])
     }
 
+    @Test("Exit counts sum per reason and version")
+    func exitSeries() async throws {
+        try await database.write(record: makeExitRecord(id: "x-1", reason: "watchdog", count: 2))
+        try await database.write(record: makeExitRecord(id: "x-2", reason: "watchdog", count: 3))
+        try await database.write(record: makeExitRecord(id: "x-3", reason: "normal", count: 40))
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ExitEntry.recordType, bucket: .day, byVersion: true, range: range)
+        )
+
+        #expect(series.map(\.name) == [ExitEntry.recordType, ExitEntry.recordType])
+        #expect(series.map(\.category) == ["normal", "watchdog"])
+        #expect(series.map(\.version) == ["1.2.0", "1.2.0"])
+        #expect(series.map { $0.points.map(\.value) } == [[40], [5]])
+    }
+
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
         var version = Record(recordType: VersionEntry.recordType, recordID: "v-1")
@@ -200,5 +216,14 @@ struct NativeSeriesTests {
 
         #expect(renew.category == "billing|eu")
         #expect(renew.points.map(\.value) == [2.5])
+    }
+
+    private func makeExitRecord(id: String, reason: String, count: Int) -> Record {
+        var record = Record(recordType: ExitEntry.recordType, recordID: id)
+        record["category"] = reason
+        record["value"] = count
+        record["app_version"] = "1.2.0"
+        record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
+        return record
     }
 }
