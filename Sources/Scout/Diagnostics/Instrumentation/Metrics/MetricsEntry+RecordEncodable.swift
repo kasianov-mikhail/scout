@@ -25,18 +25,11 @@ extension DoubleMetricsEntry: RecordEncodable {
 
 extension MetricsEntry {
     fileprivate func metricRecord(type: String, value: some RecordValueConvertible) -> Record {
-        var record = Record(recordType: type, recordID: objectID.uriRepresentation().absoluteString)
+        var record = sessionRecord(type: type, id: objectID.uriRepresentation().absoluteString)
 
         record["name"] = name
         record["category"] = telemetry
         record["value"] = value
-        record["date"] = date
-        record["session_id"] = sessionID?.uuidString
-        record["launch_id"] = launchID?.uuidString
-        record["install_id"] = installID?.uuidString
-        record["device_id"] = deviceID?.uuidString
-
-        record.setValues(metadata)
 
         return record
     }

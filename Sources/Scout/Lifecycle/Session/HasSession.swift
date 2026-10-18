@@ -28,3 +28,19 @@ extension HasSession {
         session?.deviceID
     }
 }
+
+extension HasSession where Self: DateEntry {
+    func sessionRecord(type: String, id: String) -> Record {
+        var record = Record(recordType: type, recordID: id)
+
+        record["date"] = date
+        record["session_id"] = sessionID?.uuidString
+        record["launch_id"] = launchID?.uuidString
+        record["install_id"] = installID?.uuidString
+        record["device_id"] = deviceID?.uuidString
+
+        record.setValues(metadata)
+
+        return record
+    }
+}

@@ -21,20 +21,13 @@ package final class EventEntry: SyncableEntry, HasSession {
 
 extension EventEntry: RecordEncodable {
     package var record: Record {
-        var record = Record(recordType: Self.recordType, recordID: eventID.uuidString)
+        var record = sessionRecord(type: Self.recordType, id: eventID.uuidString)
 
         record["name"] = name
         record["level"] = level
         record["params"] = params
         record["param_count"] = paramCount
-        record["date"] = date
         record["uuid"] = eventID.uuidString
-        record["session_id"] = sessionID?.uuidString
-        record["launch_id"] = launchID?.uuidString
-        record["install_id"] = installID?.uuidString
-        record["device_id"] = deviceID?.uuidString
-
-        record.setValues(metadata)
 
         return record
     }

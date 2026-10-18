@@ -28,20 +28,13 @@ package final class ScreenEntry: SyncableEntry, HasSession {
 
 extension ScreenEntry: RecordEncodable {
     package var record: Record {
-        var record = Record(recordType: Self.recordType, recordID: screenID.uuidString)
+        var record = sessionRecord(type: Self.recordType, id: screenID.uuidString)
 
         record["category"] = name
         record["previous"] = previous
-        record["date"] = date
         record["end_date"] = endDate
         record["uuid"] = screenID.uuidString
         record["app_version"] = session?.appVersion
-        record["session_id"] = sessionID?.uuidString
-        record["launch_id"] = launchID?.uuidString
-        record["install_id"] = installID?.uuidString
-        record["device_id"] = deviceID?.uuidString
-
-        record.setValues(metadata)
 
         return record
     }
