@@ -32,7 +32,7 @@ struct SwiftDemangler {
         private func run(input: String) throws -> String {
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
-            process.arguments = ["swift-demangle", "--simplified"]
+            process.arguments = ["--sdk", "macosx", "swift-demangle", "--simplified"]
             let inputPipe = Pipe()
             let outputPipe = Pipe()
             process.standardInput = inputPipe

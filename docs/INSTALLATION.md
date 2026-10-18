@@ -5,6 +5,7 @@
 - [Add the Package](#add-the-package)
 - [Enable CloudKit](#enable-cloudkit)
 - [Upload Your Database Schema](#upload-your-database-schema)
+- [Bundle Crash Symbols](#bundle-crash-symbols)
 
 ## Requirements
 
@@ -63,5 +64,35 @@ The CloudKit backend stores everything through [scout-db](https://github.com/kas
 2. Select the CloudKit container associated with your project.
 3. Go to the "Schema" section and use "Import Schema" to upload the schema file.
 4. Click "Deploy to Production" to apply the schema.
+
+## Bundle Crash Symbols
+
+A release build is stripped, so a crash shows offsets like `MyApp + 0x1a2f10` instead of function names. A Run Script phase can turn each build's dSYM into a compact symbol table, `scout.scoutsym`, and put it in the app bundle:
+
+1. In your app target, open **Build Phases**, add a **New Run Script Phase**, and move it to the end.
+2. Set the script to the one in the Scout checkout:
+
+   ```sh
+   "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/scout/Scripts/scout-symbols.sh"
+   ```
+
+   With a local copy of the package, point it at `Scripts/scout-symbols.sh` in that folder.
+3. Add this to **Input Files**, so the phase runs after Xcode writes the dSYM:
+
+   ```
+   ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${EXECUTABLE_NAME}
+   ```
+
+4. Add this to **Output Files**:
+
+   ```
+   ${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/scout.scoutsym
+   ```
+
+5. Set **User Script Sandboxing** (`ENABLE_USER_SCRIPT_SANDBOXING`) to **No** for the target: the script builds the `scout-symbols` tool with SwiftPM.
+
+The phase runs only when `DEBUG_INFORMATION_FORMAT` is `dwarf-with-dsym`, which is the default for Release. The first build also builds the tool and takes about half a minute; later builds add a few seconds.
+
+To read a table by hand, `scout-symbols lookup scout.scoutsym 0x1a2f10` prints the function, file, and line at an offset, innermost inlined call first.
 
 Once CloudKit is enabled and the schema is uploaded, see the [Usage Guide](USAGE.md) for creating the runtime, adding [Scout server](https://github.com/kasianov-mikhail/scout-server) backends, and writing logs and metrics.
