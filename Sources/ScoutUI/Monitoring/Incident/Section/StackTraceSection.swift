@@ -33,10 +33,19 @@ struct StackTraceSection: View {
 }
 
 extension StackTraceSection {
-    init(crash: Crash) {
+    init(frames: [String], caption: String?, detail: BacktraceDetail?) {
+        if let detail, let stack = SymbolicatedStack(detail: detail, fallback: frames) {
+            self.init(frames: stack.lines, caption: "Symbolicated")
+        } else {
+            self.init(frames: frames, caption: caption)
+        }
+    }
+
+    init(crash: Crash, detail: BacktraceDetail?) {
         self.init(
             frames: crash.stackTrace,
-            caption: crash.source == .inProcess ? nil : "Unsymbolicated"
+            caption: crash.source == .inProcess ? nil : "Unsymbolicated",
+            detail: detail
         )
     }
 }

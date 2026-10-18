@@ -91,6 +91,7 @@ let package = Package(
             name: "ScoutUI",
             dependencies: [
                 "Scout",
+                "SymbolTable",
                 .product(name: "Logging", package: "swift-log"),
             ]
         ),
@@ -166,6 +167,7 @@ let package = Package(
             name: "ScoutUITests",
             dependencies: [
                 "ScoutUI",
+                "SymbolTable",
                 "HostedConnector",
                 "ConnectorSupport",
                 "Support",

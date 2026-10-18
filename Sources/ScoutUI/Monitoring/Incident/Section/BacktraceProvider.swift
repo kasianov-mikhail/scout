@@ -8,10 +8,11 @@
 
 import Foundation
 import Scout
+import SymbolTable
 
 @MainActor
 final class BacktraceProvider: ObservableObject, RecordProvider {
-    @Published var result: ProviderResult<Backtrace?>?
+    @Published var result: ProviderResult<BacktraceDetail?>?
 
     private let incidentID: String
 
@@ -20,7 +21,7 @@ final class BacktraceProvider: ObservableObject, RecordProvider {
         self.result = result
     }
 
-    func fetch(in database: RecordReader) async throws -> Backtrace? {
+    func fetch(in database: RecordReader) async throws -> BacktraceDetail? {
         guard let id = UUID(uuidString: incidentID) else {
             return nil
         }
@@ -33,9 +34,29 @@ final class BacktraceProvider: ObservableObject, RecordProvider {
             guard let data: Data = record["backtrace"] else {
                 return nil
             }
-            return try JSONDecoder().decode(Backtrace.self, from: data)
+            let backtrace = try JSONDecoder().decode(Backtrace.self, from: data)
+            let tables = try await SymbolTableCache.shared.tables(uuids: backtrace.images.compactMap(\.uuid), database: database)
+            return BacktraceDetail(backtrace: backtrace, tables: tables)
         } catch is RecordNotFoundError {
             return nil
         }
+    }
+}
+
+extension BacktraceProvider {
+    var detail: BacktraceDetail? {
+        guard case .success(let detail) = result else {
+            return nil
+        }
+        return detail
+    }
+}
+
+struct BacktraceDetail: Equatable {
+    let backtrace: Backtrace
+    let tables: [UUID: SymbolTable]
+
+    static var sample: BacktraceDetail {
+        BacktraceDetail(backtrace: .sample, tables: [:])
     }
 }

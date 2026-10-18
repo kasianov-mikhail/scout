@@ -53,10 +53,11 @@ struct HangDetailView: View {
             )
             StackTraceSection(
                 frames: hang.stackTrace,
-                caption: nil
+                caption: nil,
+                detail: provider.detail
             )
-            if case .success(let backtrace?) = provider.result {
-                BinaryImagesSection(images: backtrace.images)
+            if let detail = provider.detail {
+                BinaryImagesSection(images: detail.backtrace.images)
             }
         }
         .navigationTint(IncidentKind.hang.color)
