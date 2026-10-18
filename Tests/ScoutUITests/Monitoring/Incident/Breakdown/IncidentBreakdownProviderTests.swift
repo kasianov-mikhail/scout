@@ -61,6 +61,23 @@ struct IncidentBreakdownProviderTests {
         #expect(breakdown.versionsBySession == [sessionA: "iOS 17.4", sessionB: "iOS 17.4"])
     }
 
+    @Test("Splits a long device ID list into several reads")
+    func fetchSplitsLongIDLists() async throws {
+        let devices = (0..<300).map { _ in UUID() }
+
+        let database = DatabaseStub()
+        for device in devices {
+            database.add(.deviceStub(deviceID: device, date: Date(), model: "iPhone15,3"))
+        }
+
+        let provider = IncidentBreakdownProvider(deviceIDs: devices, sessionIDs: [])
+        await provider.fetchIfNeeded(in: database)
+        let breakdown = try #require(try? provider.result?.get())
+
+        #expect(breakdown.modelsByDevice.count == 300)
+        #expect(database.readCount(of: Device.recordType) == 2)
+    }
+
     @Test("Skips fetching when there are no IDs to resolve")
     func fetchSkipsEmptyIDs() async throws {
         let database = DatabaseStub()
