@@ -17,6 +17,11 @@ enum EntityCatalog {
         CatalogEntry.entries.first { $0.entity == record.recordType }?.derive(record) ?? [:]
     }
 
+    static func assetFields(entity: String) -> [String] {
+        let fields = CatalogEntry.entries.first { $0.entity == entity }?.fields ?? []
+        return fields.filter { $0.type == .asset }.map(\.name)
+    }
+
     static func encodeSeriesKey(category: String, name: String) -> String {
         category.escaped + "|" + name.escaped
     }

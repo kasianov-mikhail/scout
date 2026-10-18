@@ -12,7 +12,7 @@ import ScoutDB
 
 extension CatalogEntry {
     static let entries: [CatalogEntry] = [
-        event, screen, condition, session, visit, launch, install, device, version, crash, hang, resourceException, backtrace, dailyMetric,
+        event, screen, condition, session, visit, launch, install, device, version, crash, hang, resourceException, backtrace, symbols, symbolsFile, dailyMetric,
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
@@ -138,6 +138,23 @@ extension CatalogEntry {
             .init(name: "incident_id", type: .string),
             .init(name: "backtrace", type: .bytes),
             .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+        ]
+    )
+
+    private static let symbols = CatalogEntry(
+        entity: BundledSymbols.indexType,
+        fields: [
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+        ]
+    )
+
+    private static let symbolsFile = CatalogEntry(
+        entity: BundledSymbols.fileType,
+        fields: [
+            .init(name: "image_uuid", type: .string),
+            .init(name: "file", type: .asset),
             .init(name: "date", type: .timestamp),
         ]
     )

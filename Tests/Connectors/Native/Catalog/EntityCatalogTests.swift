@@ -58,6 +58,8 @@ struct EntityCatalogTests {
             ScreenEntry.recordType,
             ConditionEntry.recordType,
             BacktraceEntry.recordType,
+            BundledSymbols.indexType,
+            BundledSymbols.fileType,
             IntMetricsEntry.recordType,
             DoubleMetricsEntry.recordType,
         ]

@@ -41,6 +41,19 @@ struct NativeDatabaseTests {
         #expect(record["param_count"] == Int64(2))
     }
 
+    @Test("A symbol file is stored as a CloudKit asset and reads back as bytes")
+    func symbolFileAsset() async throws {
+        var record = Record(recordType: BundledSymbols.fileType, recordID: "s-1")
+        record["file"] = Data([1, 2, 3])
+        record["image_uuid"] = "C8ED9CB2-606E-301A-A5F8-CAA01E39224F"
+
+        try await database.write(record: record)
+
+        let stored = try #require(try await database.resolve().fetch(uuid: "s-1"))
+        #expect(stored.values["file"] == .asset(Data([1, 2, 3])))
+        #expect(try await database.lookup(recordName: "s-1", fields: nil)["file"] == Data([1, 2, 3]))
+    }
+
     @Test("Reads honor sort and paginate through a cursor")
     func pagination() async throws {
         for (index, hour) in [12, 10, 14].enumerated() {

@@ -10,27 +10,15 @@ import Foundation
 
 package struct MalformedSymbolTableError: Error {}
 
-private let headerSize = 24
-
 extension SymbolTable {
     package init(data: Data) throws {
-        let header = [UInt8](data.prefix(headerSize))
-        guard header.count == headerSize else {
-            throw MalformedSymbolTableError()
-        }
-        guard header[0..<4].elementsEqual(formatMagic), header[4..<8].elementsEqual(formatVersion) else {
-            throw MalformedSymbolTableError()
-        }
-
-        var uuid: uuid_t = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-        withUnsafeMutableBytes(of: &uuid) { $0.copyBytes(from: header[8..<headerSize]) }
-
-        let payload = try (Data(data.dropFirst(headerSize)) as NSData).decompressed(using: .zlib) as Data
+        let header = try SymbolFileHeader(data: data)
+        let payload = try (Data(data.dropFirst(SymbolFileHeader.size)) as NSData).decompressed(using: .zlib) as Data
         var reader = ByteReader(bytes: [UInt8](payload))
         let strings = try (0..<reader.readCount()).map { _ in try reader.readString() }
 
         self.init(
-            uuid: UUID(uuid: uuid),
+            uuid: header.uuid,
             functions: try reader.functions(strings: strings),
             lines: try reader.lines(strings: strings),
             inlines: try reader.inlines(strings: strings)
