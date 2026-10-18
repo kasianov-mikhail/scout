@@ -17,7 +17,7 @@ struct MetricKitCrash: MetricKitIncident, Sendable {
     let window: DateInterval
     let frames: [MetricKitStackTree.Frame]
     let threads: [CrashThread]
-    let backtrace: Backtrace
+    let backtrace: Backtrace?
 
     struct Exception: Sendable {
         let name: String

@@ -39,6 +39,7 @@ extension SyncableEntry {
         CrashEntry.self,
         HangEntry.self,
         ResourceEntry.self,
+        BacktraceEntry.self,
         DailyMetricEntry.self,
         IntMetricsEntry.self,
         DoubleMetricsEntry.self,
