@@ -17,14 +17,14 @@ struct MainThreadBacktraceTests {
     @Test("captures the blocked main thread's stack from another thread")
     func capturesBlockedMainThread() {
         final class Box: @unchecked Sendable {
-            var frames: [String] = []
+            var addresses: [UInt64] = []
         }
         let box = Box()
         let finished = DispatchSemaphore(value: 0)
 
         Thread {
             Thread.sleep(forTimeInterval: 0.05)
-            box.frames = MainThreadBacktrace.capture()
+            box.addresses = MainThreadBacktrace.capture()
             finished.signal()
         }.start()
 
@@ -34,7 +34,9 @@ struct MainThreadBacktraceTests {
 
         finished.wait()
 
-        #expect(!box.frames.isEmpty)
-        #expect(box.frames.allSatisfy { !$0.isEmpty })
+        let frames = Backtrace(addresses: box.addresses, images: LoadedImage.loaded()).threads[0].frames
+
+        #expect(!frames.isEmpty)
+        #expect(frames.allSatisfy { $0.image != nil })
     }
 }

@@ -37,4 +37,8 @@ void scout_crash_registers(void *_Nullable context, uint64_t *_Nonnull pc, uint6
 // segment size lookup the image table needs.
 uint64_t scout_image_text_size(const struct mach_header *_Nonnull header);
 
+// Copies the image's LC_UUID into `uuid` and returns false when the image
+// carries none.
+bool scout_image_uuid(const struct mach_header *_Nonnull header, uint8_t *_Nonnull uuid);
+
 #endif

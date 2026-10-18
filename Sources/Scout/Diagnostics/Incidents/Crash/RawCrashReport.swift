@@ -6,9 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import CScoutHang
 import Foundation
-import MachO
 
 // A fatal-signal report as the handler leaves it on disk: raw return
 // addresses plus the image table snapshotted at install, everything else
@@ -17,12 +15,6 @@ import MachO
 // loaded in the current process and symbolicating there — dladdr can never
 // run inside a signal handler.
 struct RawCrashReport {
-    struct Image {
-        let name: String
-        let base: UInt64
-        let size: UInt64
-    }
-
     let signal: Int32
     let date: Date
     let sessionID: UUID
@@ -31,7 +23,7 @@ struct RawCrashReport {
     let launchID: UUID
     let deviceID: UUID
     let appVersion: String?
-    let images: [Image]
+    let images: [LoadedImage]
 
     init?(data: Data) {
         var reader = ByteReader(data: data)
@@ -39,7 +31,7 @@ struct RawCrashReport {
         guard reader.read(UInt32.self) == RawCrashFormat.magic else {
             return nil
         }
-        guard reader.read(UInt32.self) == RawCrashFormat.version else {
+        guard let version = reader.read(UInt32.self), RawCrashFormat.readableVersions.contains(version) else {
             return nil
         }
         guard let signal = reader.read(Int32.self), let time = reader.read(Int64.self) else {
@@ -57,7 +49,7 @@ struct RawCrashReport {
         guard let appVersion = reader.readString() else {
             return nil
         }
-        guard let images = reader.readImages() else {
+        guard let images = reader.readImages(hasUUID: version >= 2) else {
             return nil
         }
 
@@ -77,6 +69,7 @@ struct RawCrashReport {
             name: signalName(signal),
             reason: signalReason(signal: signal),
             stackTrace: symbolicatedStackTrace(),
+            backtrace: Backtrace(addresses: addresses, images: images),
             date: date,
             installID: installID,
             launchID: launchID,
@@ -86,10 +79,10 @@ struct RawCrashReport {
     }
 
     private func symbolicatedStackTrace() -> [String] {
-        let loaded = Image.loadedBases()
+        let loaded = LoadedImage.loadedBases()
 
         return addresses.enumerated().map { index, address in
-            guard let image = images.first(where: { address >= $0.base && address < $0.base + $0.size }) else {
+            guard let image = images.first(where: { $0.contains(address: address) }) else {
                 return StackWalker.unknownFrame(index: index, address: address)
             }
 
@@ -102,24 +95,7 @@ struct RawCrashReport {
     }
 }
 
-extension RawCrashReport.Image {
-    // The __TEXT segment is where every return address lives, so its size is
-    // all the report needs to attribute an address to an image.
-    static func loaded() -> [RawCrashReport.Image] {
-        (0..<_dyld_image_count()).compactMap { index -> RawCrashReport.Image? in
-            guard let name = _dyld_get_image_name(index), let header = _dyld_get_image_header(index) else {
-                return nil
-            }
-
-            let path = String(cString: name)
-            return RawCrashReport.Image(
-                name: path.components(separatedBy: "/").last ?? path,
-                base: UInt64(UInt(bitPattern: header)),
-                size: scout_image_text_size(header)
-            )
-        }
-    }
-
+extension LoadedImage {
     fileprivate static func loadedBases() -> [String: UInt64] {
         var bases: [String: UInt64] = [:]
         for image in loaded() where bases[image.name] == nil {
@@ -131,10 +107,11 @@ extension RawCrashReport.Image {
 
 enum RawCrashFormat {
     static let magic: UInt32 = 0x5752_4353
-    static let version: UInt32 = 1
+    static let version: UInt32 = 2
+    static let readableVersions: ClosedRange<UInt32> = 1...2
     static let pathExtension = "rawcrash"
 
-    static func trailer(identity: Identity, appVersion: String?, images: [RawCrashReport.Image]) -> [UInt8] {
+    static func trailer(identity: Identity, appVersion: String?, images: [LoadedImage]) -> [UInt8] {
         var bytes: [UInt8] = []
 
         append(identity.install.uuid, to: &bytes)
@@ -149,6 +126,7 @@ enum RawCrashFormat {
         for image in images {
             append(image.base, to: &bytes)
             append(image.size, to: &bytes)
+            append((image.uuid ?? missingUUID).uuid, to: &bytes)
 
             let name = Array(image.name.utf8)
             append(UInt32(name.count), to: &bytes)
@@ -179,6 +157,8 @@ enum RawCrashFormat {
         withUnsafeBytes(of: value) { _ = Darwin.write(fd, $0.baseAddress, $0.count) }
     }
 }
+
+private let missingUUID = UUID(uuid: (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
 
 private struct ByteReader {
     let data: Data
@@ -221,17 +201,27 @@ private struct ByteReader {
         return addresses
     }
 
-    mutating func readImages() -> [RawCrashReport.Image]? {
+    mutating func readImages(hasUUID: Bool) -> [LoadedImage]? {
         guard let count = read(UInt32.self), count <= 4096 else {
             return nil
         }
 
-        var images: [RawCrashReport.Image] = []
+        var images: [LoadedImage] = []
         for _ in 0..<count {
-            guard let base = read(UInt64.self), let size = read(UInt64.self), let name = readString() else {
+            guard let base = read(UInt64.self), let size = read(UInt64.self) else {
                 return nil
             }
-            images.append(RawCrashReport.Image(name: name, base: base, size: size))
+            var uuid: UUID?
+            if hasUUID {
+                guard let stored = readUUID() else {
+                    return nil
+                }
+                uuid = stored == missingUUID ? nil : stored
+            }
+            guard let name = readString() else {
+                return nil
+            }
+            images.append(LoadedImage(name: name, base: base, size: size, uuid: uuid))
         }
         return images
     }

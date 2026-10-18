@@ -15,8 +15,9 @@ import Testing
 @Suite("RawCrashReport")
 struct RawCrashReportTests {
     let identity = Identity.stub
+    let fakeUUID = UUID(uuidString: "4F2A1C9E-7B3D-3A11-8E5C-2D9F6B1AC19E")!
 
-    func rawReportData(signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000], images: [RawCrashReport.Image] = []) throws -> Data {
+    func rawReportData(signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000], images: [LoadedImage] = []) throws -> Data {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString).rawcrash")
         defer { try? FileManager.default.removeItem(at: url) }
 
@@ -24,7 +25,7 @@ struct RawCrashReportTests {
         return try Data(contentsOf: url)
     }
 
-    func writeRawReport(to url: URL, signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000], images: [RawCrashReport.Image] = []) throws {
+    func writeRawReport(to url: URL, signal: Int32 = SIGSEGV, addresses: [UInt64] = [0x1000, 0x2000], images: [LoadedImage] = []) throws {
         let trailer = RawCrashFormat.trailer(identity: identity, appVersion: "1.2.3", images: images)
 
         FileManager.default.createFile(atPath: url.path, contents: nil)
@@ -48,7 +49,7 @@ struct RawCrashReportTests {
 
     @Test("the handler's file round-trips through the parser")
     func roundTrip() throws {
-        let images = [RawCrashReport.Image(name: "Fake.dylib", base: 0x1000, size: 0x4000)]
+        let images = [LoadedImage(name: "Fake.dylib", base: 0x1000, size: 0x4000, uuid: fakeUUID)]
         let data = try rawReportData(addresses: [0x1010, 0x2020, 0x3030], images: images)
         let report = try #require(RawCrashReport(data: data))
 
@@ -64,6 +65,46 @@ struct RawCrashReportTests {
         #expect(report.images.first?.name == "Fake.dylib")
         #expect(report.images.first?.base == 0x1000)
         #expect(report.images.first?.size == 0x4000)
+        #expect(report.images.first?.uuid == fakeUUID)
+    }
+
+    @Test("the converted crash carries the image UUIDs and offsets")
+    func crashInfoBacktrace() throws {
+        let images = [LoadedImage(name: "Fake.dylib", base: 0x1000, size: 0x4000, uuid: fakeUUID)]
+        let data = try rawReportData(addresses: [0x1010, 0xDEAD_0000], images: images)
+        let crash = try #require(RawCrashReport(data: data)).crashInfo()
+
+        #expect(crash.backtrace?.images == [Backtrace.Image(name: "Fake.dylib", uuid: fakeUUID)])
+        #expect(crash.backtrace?.threads.first?.frames == [Backtrace.Frame(image: 0, offset: 0x10), Backtrace.Frame(image: nil, offset: 0xDEAD_0000)])
+    }
+
+    @Test("a report written before image UUIDs still parses")
+    func versionOneReport() throws {
+        var bytes: [UInt8] = []
+        func append<T>(_ value: T) {
+            withUnsafeBytes(of: value) { bytes += $0 }
+        }
+        append(RawCrashFormat.magic)
+        append(UInt32(1))
+        append(SIGSEGV)
+        append(Int64(1_700_000_000))
+        append(identity.session.current.uuid)
+        append(UInt32(1))
+        append(UInt64(0x1010))
+        append(identity.install.uuid)
+        append(identity.launch.uuid)
+        append(identity.device.uuid)
+        append(UInt32(0))
+        append(UInt32(1))
+        append(UInt64(0x1000))
+        append(UInt64(0x4000))
+        append(UInt32(4))
+        bytes += Array("Gone".utf8)
+
+        let report = try #require(RawCrashReport(data: Data(bytes)))
+
+        #expect(report.images == [LoadedImage(name: "Gone", base: 0x1000, size: 0x4000, uuid: nil)])
+        #expect(report.addresses == [0x1010])
     }
 
     @Test("truncated data is rejected instead of trapping")
@@ -77,7 +118,7 @@ struct RawCrashReportTests {
 
     @Test("an address in an image that is no longer loaded keeps its offset")
     func unloadedImageKeepsOffset() throws {
-        let images = [RawCrashReport.Image(name: "Gone.dylib", base: 0x1000, size: 0x4000)]
+        let images = [LoadedImage(name: "Gone.dylib", base: 0x1000, size: 0x4000, uuid: nil)]
         let data = try rawReportData(addresses: [0x1010, 0xDEAD_0000], images: images)
         let report = try #require(RawCrashReport(data: data))
         let crash = report.crashInfo()
@@ -94,8 +135,8 @@ struct RawCrashReportTests {
     func loadedImageIsSymbolicated() throws {
         // Pretend the crashed process had every image slid up by 0x10000:
         // rebasing must land back on the real image for dladdr to work.
-        let current = try #require(RawCrashReport.Image.loaded().first)
-        let slid = RawCrashReport.Image(name: current.name, base: current.base + 0x10000, size: current.size)
+        let current = try #require(LoadedImage.loaded().first)
+        let slid = LoadedImage(name: current.name, base: current.base + 0x10000, size: current.size, uuid: current.uuid)
         let data = try rawReportData(addresses: [slid.base + 0x100], images: [slid])
         let report = try #require(RawCrashReport(data: data))
         let crash = report.crashInfo()

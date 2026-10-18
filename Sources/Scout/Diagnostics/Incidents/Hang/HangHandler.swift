@@ -44,11 +44,13 @@ extension Identity {
 
     fileprivate func reportHang(duration: TimeInterval) {
         let isCritical = duration >= HangMonitor.criticalThreshold
+        let addresses = MainThreadBacktrace.capture()
 
         let hang = HangInfo(
             name: isCritical ? "Watchdog Termination Imminent" : "Main Thread Blocked",
             reason: "Main thread unresponsive for \(String(format: "%.1f", duration))s",
-            stackTrace: MainThreadBacktrace.capture(),
+            stackTrace: addresses.enumerated().map(StackWalker.symbolicate),
+            backtrace: Backtrace(addresses: addresses, images: LoadedImage.loaded()),
             duration: duration,
             identity: self
         )

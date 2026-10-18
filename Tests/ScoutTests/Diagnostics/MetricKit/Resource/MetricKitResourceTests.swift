@@ -69,8 +69,8 @@ struct MetricKitResourceTests {
             processID: 412,
             window: window ?? self.window,
             frames: [
-                MetricKitStackTree.Frame(binaryName: "MyApp", offsetIntoBinaryTextSegment: 4096, sampleCount: 9, subFrames: []),
-                MetricKitStackTree.Frame(binaryName: "UIKitCore", offsetIntoBinaryTextSegment: 512, sampleCount: 9, subFrames: []),
+                MetricKitStackTree.Frame(binaryName: "MyApp", binaryUUID: nil, offsetIntoBinaryTextSegment: 4096, address: nil, sampleCount: 9, subFrames: []),
+                MetricKitStackTree.Frame(binaryName: "UIKitCore", binaryUUID: nil, offsetIntoBinaryTextSegment: 512, address: nil, sampleCount: 9, subFrames: []),
             ]
         )
     }

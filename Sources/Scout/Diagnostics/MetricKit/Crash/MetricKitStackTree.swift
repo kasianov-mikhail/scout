@@ -27,12 +27,14 @@ struct MetricKitStackTree: Decodable {
 
     struct Frame: Decodable, Equatable, Sendable {
         let binaryName: String?
+        let binaryUUID: UUID?
         let offsetIntoBinaryTextSegment: UInt64?
+        let address: UInt64?
         let sampleCount: Int
         let subFrames: [Frame]
 
         private enum CodingKeys: String, CodingKey {
-            case binaryName, offsetIntoBinaryTextSegment, sampleCount, subFrames
+            case binaryName, binaryUUID, offsetIntoBinaryTextSegment, address, sampleCount, subFrames
         }
     }
 }
@@ -41,7 +43,9 @@ extension MetricKitStackTree.Frame {
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         binaryName = try container.decodeIfPresent(String.self, forKey: .binaryName)
+        binaryUUID = try container.decodeIfPresent(String.self, forKey: .binaryUUID).flatMap(UUID.init)
         offsetIntoBinaryTextSegment = try container.decodeIfPresent(UInt64.self, forKey: .offsetIntoBinaryTextSegment)
+        address = try container.decodeIfPresent(UInt64.self, forKey: .address)
         sampleCount = try container.decodeIfPresent(Int.self, forKey: .sampleCount) ?? 0
         subFrames = try container.decodeIfPresent([Self].self, forKey: .subFrames) ?? []
     }
@@ -61,11 +65,17 @@ extension MetricKitStackTree {
     }
 
     var threads: [CrashThread] {
+        keptStacks.map { CrashThread(crashed: $0.index == crashedIndex, frames: $0.frames.stackTrace) }
+    }
+
+    var backtrace: Backtrace {
+        Backtrace(stacks: keptStacks.map(\.frames), attributed: keptStacks.firstIndex { $0.index == crashedIndex } ?? 0)
+    }
+
+    private var keptStacks: [KeptStack] {
         callStacks.enumerated()
             .filter { $0.offset < threadLimit || $0.offset == crashedIndex }
-            .map { index, stack in
-                CrashThread(crashed: index == crashedIndex, frames: Array(stack.frames.prefix(threadFrameLimit)).stackTrace)
-            }
+            .map { KeptStack(index: $0.offset, frames: Array($0.element.frames.prefix(threadFrameLimit))) }
     }
 
     private var crashedIndex: Int {
@@ -103,6 +113,11 @@ extension [MetricKitStackTree.Frame] {
     fileprivate var heaviest: MetricKitStackTree.Frame? {
         self.max { $0.sampleCount < $1.sampleCount }
     }
+}
+
+private struct KeptStack {
+    let index: Int
+    let frames: [MetricKitStackTree.Frame]
 }
 
 private let threadLimit = 64

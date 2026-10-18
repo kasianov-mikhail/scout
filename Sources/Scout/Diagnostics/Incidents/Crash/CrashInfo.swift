@@ -11,17 +11,19 @@ struct CrashInfo: Codable {
     let name: String
     let reason: String?
     let stackTrace: [String]
+    let backtrace: Backtrace?
     let date: Date
     let installID: UUID
     let launchID: UUID
     let sessionID: UUID
     let appVersion: String?
 
-    init(name: String, reason: String?, stackTrace: [String], identity: Identity) {
+    init(name: String, reason: String?, stackTrace: [String], backtrace: Backtrace, identity: Identity) {
         self.init(
             name: name,
             reason: reason,
             stackTrace: stackTrace,
+            backtrace: backtrace,
             date: Date(),
             installID: identity.install,
             launchID: identity.launch,
@@ -30,10 +32,11 @@ struct CrashInfo: Codable {
         )
     }
 
-    init(name: String, reason: String?, stackTrace: [String], date: Date, installID: UUID, launchID: UUID, sessionID: UUID, appVersion: String?) {
+    init(name: String, reason: String?, stackTrace: [String], backtrace: Backtrace?, date: Date, installID: UUID, launchID: UUID, sessionID: UUID, appVersion: String?) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
+        self.backtrace = backtrace
         self.date = date
         self.installID = installID
         self.launchID = launchID
