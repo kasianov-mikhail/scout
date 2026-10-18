@@ -12,8 +12,8 @@ import SymbolTable
 
 private let usage = """
     Usage:
-      scout-symbols convert <path to .dSYM or DWARF file> [--output <directory>]
-          Writes <image UUID>.scoutsym for every arm64 image in the dSYM.
+      scout-symbols convert <path to .dSYM or DWARF file> [--output <directory or file.scoutsym>]
+          Writes <image UUID>.scoutsym for every arm64 image, or one image to the given file.
       scout-symbols lookup <path to .scoutsym> <hex offset>...
           Prints the frames at each offset, innermost first.
     """
@@ -24,8 +24,12 @@ struct ScoutSymbols {
         do {
             switch try Command(arguments: Array(CommandLine.arguments.dropFirst())) {
             case .convert(let input, let output):
-                for file in try input.dwarfFiles {
-                    print("Wrote \(try convert(file: file, directory: output).path)")
+                let files = try input.dwarfFiles
+                guard output.pathExtension != "scoutsym" || files.count == 1 else {
+                    throw UsageError(message: "The dSYM holds \(files.count) images; pass a directory to --output.")
+                }
+                for file in files {
+                    print("Wrote \(try convert(file: file, output: output).path)")
                 }
             case .lookup(let file, let offsets):
                 let table = try SymbolTable(data: Data(contentsOf: file))
@@ -42,7 +46,7 @@ struct ScoutSymbols {
         }
     }
 
-    private static func convert(file: URL, directory: URL) throws -> URL {
+    private static func convert(file: URL, output: URL) throws -> URL {
         let table = try SymbolTable(image: MachOImage(data: Data(contentsOf: file)))
         let names = try SwiftDemangler().names(mangled: table.functions.map(\.name) + table.inlines.map(\.name))
         let readable = SymbolTable(
@@ -52,10 +56,10 @@ struct ScoutSymbols {
             inlines: table.inlines.map { SymbolTable.Inline(start: $0.start, end: $0.end, depth: $0.depth, name: names[$0.name] ?? $0.name, call: $0.call) }
         )
 
-        let output = directory.appendingPathComponent("\(table.uuid.uuidString).scoutsym")
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        try readable.data.write(to: output)
-        return output
+        let destination = output.pathExtension == "scoutsym" ? output : output.appendingPathComponent("\(table.uuid.uuidString).scoutsym")
+        try FileManager.default.createDirectory(at: destination.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try readable.data.write(to: destination)
+        return destination
     }
 
     private static func lookup(table: SymbolTable, offset: UInt64) -> String {
