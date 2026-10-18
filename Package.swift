@@ -96,6 +96,12 @@ let package = Package(
             name: "SymbolTable"
         ),
         .target(
+            name: "DWARF",
+            dependencies: [
+                "SymbolTable"
+            ]
+        ),
+        .target(
             name: "DemoConnector",
             dependencies: [
                 "Scout",
@@ -166,6 +172,15 @@ let package = Package(
             name: "SymbolTableTests",
             dependencies: [
                 "SymbolTable"
+            ]
+        ),
+        .testTarget(
+            name: "DWARFTests",
+            dependencies: [
+                "DWARF"
+            ],
+            resources: [
+                .copy("Fixtures")
             ]
         ),
     ]
