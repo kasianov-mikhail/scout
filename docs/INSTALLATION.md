@@ -73,10 +73,10 @@ A release build is stripped, so a crash shows offsets like `MyApp + 0x1a2f10` in
 2. Set the script to the one in the Scout checkout:
 
    ```sh
-   "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/scout/Scripts/scout-symbols.sh"
+   "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/scout/scripts/scout-symbols.sh"
    ```
 
-   With a local copy of the package, point it at `Scripts/scout-symbols.sh` in that folder.
+   With a local copy of the package, point it at `scripts/scout-symbols.sh` in that folder.
 3. Add this to **Input Files**, so the phase runs after Xcode writes the dSYM:
 
    ```
