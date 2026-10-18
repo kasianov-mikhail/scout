@@ -93,6 +93,9 @@ let package = Package(
             name: "LookupIndex"
         ),
         .target(
+            name: "SymbolTable"
+        ),
+        .target(
             name: "DemoConnector",
             dependencies: [
                 "Scout",
@@ -158,6 +161,12 @@ let package = Package(
                 "Support",
             ],
             path: "Tests/Connectors/Demo"
+        ),
+        .testTarget(
+            name: "SymbolTableTests",
+            dependencies: [
+                "SymbolTable"
+            ]
         ),
     ]
 )
