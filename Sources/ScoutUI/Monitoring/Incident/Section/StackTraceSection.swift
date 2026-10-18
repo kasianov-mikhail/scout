@@ -34,7 +34,10 @@ struct StackTraceSection: View {
 
 extension StackTraceSection {
     init(crash: Crash) {
-        self.init(frames: crash.stackTrace, caption: crash.source == .inProcess ? nil : "Unsymbolicated")
+        self.init(
+            frames: crash.stackTrace,
+            caption: crash.source == .inProcess ? nil : "Unsymbolicated"
+        )
     }
 }
 

@@ -11,6 +11,14 @@ import SwiftUI
 struct HangDetailView: View {
     let hang: Hang
 
+    @StateObject private var provider: BacktraceProvider
+    @Environment(\.database) private var database
+
+    init(hang: Hang, provider: BacktraceProvider? = nil) {
+        self.hang = hang
+        self._provider = StateObject(wrappedValue: provider ?? BacktraceProvider(incidentID: hang.id))
+    }
+
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 0) {
@@ -39,19 +47,30 @@ struct HangDetailView: View {
             .listRowSeparator(.hidden, edges: .top)
             .padding(.bottom)
 
-            ContextSection(context: hang, timelineHighlight: IncidentKind.hang.color)
-
-            StackTraceSection(frames: hang.stackTrace, caption: nil)
+            ContextSection(
+                context: hang,
+                timelineHighlight: IncidentKind.hang.color
+            )
+            StackTraceSection(
+                frames: hang.stackTrace,
+                caption: nil
+            )
+            if case .success(let backtrace?) = provider.result {
+                BinaryImagesSection(images: backtrace.images)
+            }
         }
         .navigationTint(IncidentKind.hang.color)
         .exportToolbar(text: HangExport(hang: hang).text)
         .monospacedNavigationTitle(en: hang.name)
+        .task {
+            await provider.fetchIfNeeded(in: database)
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        HangDetailView(hang: .sample)
+        HangDetailView(hang: .sample, provider: BacktraceProvider(.success(.sample), incidentID: ""))
     }
     .environmentObject(Tint())
 }

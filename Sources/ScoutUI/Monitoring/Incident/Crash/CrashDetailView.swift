@@ -12,11 +12,13 @@ struct CrashDetailView: View {
     let crash: Crash
 
     @StateObject private var threads: CrashThreadsProvider
+    @StateObject private var backtrace: BacktraceProvider
     @Environment(\.database) private var database
 
-    init(crash: Crash, threads: CrashThreadsProvider? = nil) {
+    init(crash: Crash, threads: CrashThreadsProvider? = nil, backtrace: BacktraceProvider? = nil) {
         self.crash = crash
         self._threads = StateObject(wrappedValue: threads ?? CrashThreadsProvider(crashID: crash.id))
+        self._backtrace = StateObject(wrappedValue: backtrace ?? BacktraceProvider(incidentID: crash.id))
     }
 
     var body: some View {
@@ -45,6 +47,9 @@ struct CrashDetailView: View {
             if case .success(let threads) = threads.result {
                 CrashThreadsSection(threads: threads)
             }
+            if case .success(let loaded?) = backtrace.result {
+                BinaryImagesSection(images: loaded.images)
+            }
         }
         .navigationTint(.red)
         .exportToolbar(text: CrashExport(crash: crash).text)
@@ -53,6 +58,9 @@ struct CrashDetailView: View {
             if crash.source != .inProcess {
                 await threads.fetchIfNeeded(in: database)
             }
+        }
+        .task {
+            await backtrace.fetchIfNeeded(in: database)
         }
     }
 }
@@ -68,7 +76,8 @@ struct CrashDetailView: View {
     NavigationStack {
         CrashDetailView(
             crash: .sample(source: .metricKit(windowStart: Date(timeIntervalSinceNow: -720))),
-            threads: CrashThreadsProvider(.success(.samples), crashID: "")
+            threads: CrashThreadsProvider(.success(.samples), crashID: ""),
+            backtrace: BacktraceProvider(.success(.sample), incidentID: "")
         )
     }
     .environmentObject(Tint())

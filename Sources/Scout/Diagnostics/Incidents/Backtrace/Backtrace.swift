@@ -8,34 +8,44 @@
 
 import Foundation
 
-struct Backtrace: Codable, Equatable, Sendable {
-    let images: [Image]
-    let threads: [Thread]
+package struct Backtrace: Codable, Equatable, Sendable {
+    package let images: [Image]
+    package let threads: [Thread]
 
-    struct Image: Codable, Hashable, Sendable {
-        let name: String
-        let uuid: UUID?
+    package init(images: [Image], threads: [Thread]) {
+        self.images = images
+        self.threads = threads
     }
 
-    struct Thread: Codable, Equatable, Sendable {
-        let attributed: Bool
-        let frames: [Frame]
+    package struct Image: Codable, Hashable, Sendable {
+        package let name: String
+        package let uuid: UUID?
+
+        package init(name: String, uuid: UUID?) {
+            self.name = name
+            self.uuid = uuid
+        }
     }
 
-    struct Frame: Equatable, Sendable {
-        let image: Int?
-        let offset: UInt64
+    package struct Thread: Codable, Equatable, Sendable {
+        package let attributed: Bool
+        package let frames: [Frame]
+    }
+
+    package struct Frame: Equatable, Sendable {
+        package let image: Int?
+        package let offset: UInt64
     }
 }
 
 extension Backtrace.Frame: Codable {
-    init(from decoder: any Decoder) throws {
+    package init(from decoder: any Decoder) throws {
         var container = try decoder.unkeyedContainer()
         image = container.count == 2 ? try container.decode(Int.self) : nil
         offset = try container.decode(UInt64.self)
     }
 
-    func encode(to encoder: any Encoder) throws {
+    package func encode(to encoder: any Encoder) throws {
         var container = encoder.unkeyedContainer()
         if let image {
             try container.encode(image)

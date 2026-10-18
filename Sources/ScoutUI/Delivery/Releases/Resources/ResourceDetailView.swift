@@ -11,6 +11,14 @@ import SwiftUI
 struct ResourceDetailView: View {
     let resource: ResourceException
 
+    @StateObject private var provider: BacktraceProvider
+    @Environment(\.database) private var database
+
+    init(resource: ResourceException, provider: BacktraceProvider? = nil) {
+        self.resource = resource
+        self._provider = StateObject(wrappedValue: provider ?? BacktraceProvider(incidentID: resource.id))
+    }
+
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 0) {
@@ -28,17 +36,32 @@ struct ResourceDetailView: View {
             .listRowSeparator(.hidden, edges: .top)
             .padding(.bottom)
 
-            ContextSection(context: resource, timelineHighlight: IncidentKind.resource.color)
-            StackTraceSection(frames: resource.stackTrace, caption: nil)
+            ContextSection(
+                context: resource,
+                timelineHighlight: IncidentKind.resource.color
+            )
+            StackTraceSection(
+                frames: resource.stackTrace,
+                caption: "Unsymbolicated"
+            )
+            if case .success(let backtrace?) = provider.result {
+                BinaryImagesSection(images: backtrace.images)
+            }
         }
         .navigationTint(IncidentKind.resource.color)
         .monospacedNavigationTitle(en: resource.name)
+        .task {
+            await provider.fetchIfNeeded(in: database)
+        }
     }
 }
 
 #Preview {
     NavigationStack {
-        ResourceDetailView(resource: .sample)
+        ResourceDetailView(
+            resource: .sample,
+            provider: BacktraceProvider(.success(.sample), incidentID: "")
+        )
     }
     .environmentObject(Tint())
 }
