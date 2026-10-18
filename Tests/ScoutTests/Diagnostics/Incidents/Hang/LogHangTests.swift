@@ -19,7 +19,7 @@ struct LogHangTests {
     let deviceID = UUID()
 
     private func makeHangInfo(name: String, reason: String?, stackTrace: [String], duration: TimeInterval) -> HangInfo {
-        HangInfo(name: name, reason: reason, stackTrace: stackTrace, duration: duration, identity: .stub)
+        HangInfo(name: name, reason: reason, stackTrace: stackTrace, backtrace: Backtrace(images: [], threads: []), duration: duration, identity: .stub)
     }
 
     @Test("Creates a HangEntry with correct fields")
@@ -68,7 +68,7 @@ struct LogHangTests {
     func preservesCapturedSessionID() throws {
         let hangSessionID = UUID()
         let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(hangSessionID))
-        let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], duration: 3.5, identity: identity)
+        let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], backtrace: Backtrace(images: [], threads: []), duration: 3.5, identity: identity)
 
         #expect(Identity.stub.session.current != hangSessionID)
 

@@ -20,7 +20,8 @@
                 processID: diagnostic.processID,
                 window: window,
                 frames: tree.crashedFrames,
-                threads: tree.threads
+                threads: tree.threads,
+                backtrace: tree.backtrace
             )
         }
     }

@@ -25,6 +25,10 @@ func installExceptionHandler(identity: Identity) {
                 name: exception.name.rawValue,
                 reason: exception.reason,
                 stackTrace: exception.callStackSymbols,
+                backtrace: Backtrace(
+                    addresses: exception.callStackReturnAddresses.map(\.uint64Value),
+                    images: LoadedImage.loaded()
+                ),
                 identity: identity
             )
             IncidentArchive.crash.write(crash)

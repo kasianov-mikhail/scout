@@ -88,6 +88,25 @@ uint64_t scout_image_text_size(const struct mach_header *header) {
     return 0;
 }
 
+bool scout_image_uuid(const struct mach_header *header, uint8_t *uuid) {
+    if (header->magic != MH_MAGIC_64) {
+        return false;
+    }
+
+    const struct mach_header_64 *header64 = (const struct mach_header_64 *)header;
+    const struct load_command *command = (const struct load_command *)(header64 + 1);
+
+    for (uint32_t i = 0; i < header64->ncmds; i++) {
+        if (command->cmd == LC_UUID) {
+            memcpy(uuid, ((const struct uuid_command *)command)->uuid, 16);
+            return true;
+        }
+        command = (const struct load_command *)((const uint8_t *)command + command->cmdsize);
+    }
+
+    return false;
+}
+
 void scout_crash_registers(void *context, uint64_t *pc, uint64_t *fp) {
     *pc = 0;
     *fp = 0;

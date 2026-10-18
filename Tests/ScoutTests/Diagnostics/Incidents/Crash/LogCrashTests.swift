@@ -19,7 +19,7 @@ struct LogCrashTests {
     let deviceID = UUID()
 
     private func makeCrashInfo(name: String, reason: String?, stackTrace: [String]) -> CrashInfo {
-        CrashInfo(name: name, reason: reason, stackTrace: stackTrace, identity: .stub)
+        CrashInfo(name: name, reason: reason, stackTrace: stackTrace, backtrace: Backtrace(images: [], threads: []), identity: .stub)
     }
 
     @Test("Creates a CrashEntry with correct fields")
@@ -52,7 +52,7 @@ struct LogCrashTests {
         // log materializes keeps the captured ID intact.
         let crashedSessionID = UUID()
         let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(crashedSessionID))
-        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], identity: identity)
+        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], backtrace: Backtrace(images: [], threads: []), identity: identity)
 
         #expect(Identity.stub.session.current != crashedSessionID)
 

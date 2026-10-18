@@ -18,7 +18,7 @@ import MachO
 /// invalid address instead of trapping.
 ///
 enum MainThreadBacktrace {
-    static func capture() -> [String] {
+    static func capture() -> [UInt64] {
         guard let mainThread = mainMachThread() else {
             return []
         }
@@ -29,11 +29,7 @@ enum MainThreadBacktrace {
         // deadlock this thread forever. So resume first, then symbolicate.
         var buffer = [UInt64](repeating: 0, count: StackWalker.maximumFrameCount)
         let count = buffer.withUnsafeMutableBufferPointer { captureAddresses(of: mainThread, into: $0) }
-        guard count > 0 else {
-            return []
-        }
-
-        return buffer.prefix(count).enumerated().map(StackWalker.symbolicate)
+        return Array(buffer.prefix(count))
     }
 
     private static func captureAddresses(of thread: thread_t, into buffer: UnsafeMutableBufferPointer<UInt64>) -> Int {

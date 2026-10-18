@@ -128,11 +128,11 @@ struct IncidentArchiveTests {
     }
 
     private func makeCrash(name: String = "TestException", reason: String? = "Test reason", stackTrace: [String] = ["frame1", "frame2"]) -> CrashInfo {
-        CrashInfo(name: name, reason: reason, stackTrace: stackTrace, identity: .stub)
+        CrashInfo(name: name, reason: reason, stackTrace: stackTrace, backtrace: Backtrace(images: [], threads: []), identity: .stub)
     }
 
     private func makeHang(name: String = "Main Thread Blocked", reason: String? = "Main thread unresponsive for 4.2s", stackTrace: [String] = ["frame1", "frame2"], duration: TimeInterval = 4.2) -> HangInfo {
-        HangInfo(name: name, reason: reason, stackTrace: stackTrace, duration: duration, identity: .stub)
+        HangInfo(name: name, reason: reason, stackTrace: stackTrace, backtrace: Backtrace(images: [], threads: []), duration: duration, identity: .stub)
     }
 
     private func decode<Payload: Decodable>(_ type: Payload.Type, from file: URL) throws -> Payload {

@@ -59,7 +59,7 @@ private func prepareRawReport(identity: Identity) {
     let trailer = RawCrashFormat.trailer(
         identity: identity,
         appVersion: Bundle.main.marketingVersion,
-        images: RawCrashReport.Image.loaded()
+        images: LoadedImage.loaded()
     )
     let pointer = UnsafeMutableRawPointer.allocate(byteCount: trailer.count, alignment: 1)
     trailer.withUnsafeBytes { pointer.copyMemory(from: $0.baseAddress!, byteCount: $0.count) }

@@ -59,7 +59,7 @@ struct MetricKitResourceLogTests {
             appVersion: "3.2.0",
             processID: processID,
             window: DateInterval(start: start.addingTimeInterval(60), end: start.addingTimeInterval(1_800)),
-            frames: [MetricKitStackTree.Frame(binaryName: "MyApp", offsetIntoBinaryTextSegment: 4096, sampleCount: 9, subFrames: [])]
+            frames: [MetricKitStackTree.Frame(binaryName: "MyApp", binaryUUID: nil, offsetIntoBinaryTextSegment: 4096, address: nil, sampleCount: 9, subFrames: [])]
         )
     }
 }

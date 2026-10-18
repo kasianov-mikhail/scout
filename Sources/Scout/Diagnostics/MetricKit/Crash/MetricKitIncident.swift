@@ -11,6 +11,7 @@ protocol MetricKitIncident: IncidentContent, Sendable {
     var processID: Int32? { get }
     var window: DateInterval { get }
     var frames: [MetricKitStackTree.Frame] { get }
+    var backtrace: Backtrace { get }
 
     func log(installID: UUID, context: NSManagedObjectContext) throws
 }
@@ -18,6 +19,10 @@ protocol MetricKitIncident: IncidentContent, Sendable {
 extension MetricKitIncident {
     var stackTrace: [String] {
         frames.stackTrace
+    }
+
+    var backtrace: Backtrace {
+        Backtrace(stacks: [frames], attributed: 0)
     }
 
     var fingerprint: String {

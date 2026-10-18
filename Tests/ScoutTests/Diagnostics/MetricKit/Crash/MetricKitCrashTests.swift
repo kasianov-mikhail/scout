@@ -126,7 +126,8 @@ struct MetricKitCrashTests {
             processID: 412,
             window: window ?? self.window,
             frames: tree.crashedFrames,
-            threads: tree.threads
+            threads: tree.threads,
+            backtrace: tree.backtrace
         )
     }
 }

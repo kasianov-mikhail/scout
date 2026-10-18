@@ -11,6 +11,7 @@ struct HangInfo: Codable {
     let name: String
     let reason: String?
     let stackTrace: [String]
+    let backtrace: Backtrace?
     let duration: TimeInterval
     let date: Date
     let installID: UUID
@@ -18,10 +19,11 @@ struct HangInfo: Codable {
     let sessionID: UUID
     let appVersion: String?
 
-    init(name: String, reason: String?, stackTrace: [String], duration: TimeInterval, identity: Identity) {
+    init(name: String, reason: String?, stackTrace: [String], backtrace: Backtrace, duration: TimeInterval, identity: Identity) {
         self.name = name
         self.reason = reason
         self.stackTrace = stackTrace
+        self.backtrace = backtrace
         self.duration = duration
         self.date = Date()
         self.installID = identity.install
