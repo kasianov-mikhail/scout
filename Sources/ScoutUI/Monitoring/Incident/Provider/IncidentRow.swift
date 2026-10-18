@@ -21,10 +21,18 @@ struct IncidentRow<Element: Incident, Destination: View>: View {
                     .foregroundStyle(accent.color)
             }
 
-            Text(group.name)
-                .font(.body)
-                .lineLimit(1)
-                .monospaced()
+            VStack(alignment: .leading, spacing: 2) {
+                Text(group.name)
+                    .font(.callout)
+                    .lineLimit(1)
+                if let symbol = group.symbol {
+                    Text(verbatim: symbol)
+                        .font(.caption)
+                        .lineLimit(1)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .monospaced()
 
             if group.count > 1 {
                 if let accent {
@@ -45,4 +53,25 @@ struct IncidentRow<Element: Incident, Destination: View>: View {
             destination(group)
         }
     }
+}
+
+#Preview {
+    NavigationStack {
+        InsetList {
+            IncidentRow(group: IncidentGroup(records: [Crash].samples)) { group in
+                CrashDetailView(crash: group.representative)
+            }
+            IncidentRow(
+                group: IncidentGroup(
+                    id: "MyApp|CartViewModel.applyDiscount(_:)",
+                    records: [Crash].samples,
+                    symbol: "CartViewModel.applyDiscount(_:)"
+                )
+            ) { group in
+                CrashDetailView(crash: group.representative)
+            }
+        }
+        .navigationTitle(en: "Crashes")
+    }
+    .environmentObject(Tint())
 }

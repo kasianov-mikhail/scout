@@ -8,7 +8,7 @@
 import Foundation
 import Scout
 
-protocol Incident: Identifiable, Comparable, SessionContext {
+protocol Incident: Identifiable, Comparable, SessionContext where ID == String {
     static var kind: IncidentKind { get }
 
     var fingerprint: String { get }
@@ -33,6 +33,7 @@ extension ResourceException: Incident {
 struct IncidentGroup<Element: Incident>: Identifiable {
     let id: String
     let records: [Element]
+    let symbol: String?
 
     var name: String {
         representative.name
@@ -41,7 +42,7 @@ struct IncidentGroup<Element: Incident>: Identifiable {
 
 extension IncidentGroup {
     init(records: [Element]) {
-        self.init(id: records[0].fingerprint, records: records)
+        self.init(id: records[0].fingerprint, records: records, symbol: nil)
     }
 }
 
@@ -93,8 +94,11 @@ extension IncidentGroup: Comparable {
 
 extension IncidentGroup {
     static func groups(from records: [Element], keys: [Element.ID: String] = [:]) -> [IncidentGroup] {
-        Dictionary(grouping: records) { keys[$0.id] ?? $0.fingerprint }
-            .map { IncidentGroup(id: $0.key, records: $0.value.sorted()) }
+        let symbolicated = Set(keys.values)
+        return Dictionary(grouping: records) { keys[$0.id] ?? $0.fingerprint }
+            .map { key, records in
+                IncidentGroup(id: key, records: records.sorted(), symbol: symbolicated.contains(key) ? key.symbolName : nil)
+            }
             .sorted()
     }
 }
@@ -120,5 +124,11 @@ extension IncidentGroup {
 
     var exportTopFrame: String? {
         representative.stackTrace.first { !$0.isEmpty }
+    }
+}
+
+extension String {
+    fileprivate var symbolName: String? {
+        split(separator: "|", maxSplits: 1).last.map(String.init)
     }
 }
