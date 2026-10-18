@@ -42,10 +42,7 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
         .package(url: "https://github.com/apple/swift-metrics.git", "1.0.0"..<"3.0.0"),
-        .package(
-            url: "https://github.com/kasianov-mikhail/scout-db.git",
-            revision: "70ef2f3cf53a05994fb64c9e13c5808f4b5d8096"
-        ),
+        .package(url: "https://github.com/kasianov-mikhail/scout-db.git", from: "0.1.0"),
     ],
     targets: [
         .target(
@@ -60,7 +57,8 @@ let package = Package(
                 "SymbolTable",
             ],
             resources: [
-                .process("Persistence/ScoutModel.xcdatamodeld")
+                .process("Persistence/ScoutModel.xcdatamodeld"),
+                .copy("PrivacyInfo.xcprivacy"),
             ]
         ),
         .target(
@@ -93,6 +91,9 @@ let package = Package(
                 "Scout",
                 "SymbolTable",
                 .product(name: "Logging", package: "swift-log"),
+            ],
+            resources: [
+                .copy("PrivacyInfo.xcprivacy")
             ]
         ),
         .target(
