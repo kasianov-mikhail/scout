@@ -25,6 +25,11 @@ extension NativeDatabase: DatabaseWriter {
     private static func values(for record: Record) -> [String: ScoutDB.RecordValue] {
         var values = record.storeValues
         values.merge(EntityCatalog.derivedValues(for: record)) { _, derived in derived }
+        for name in EntityCatalog.assetFields(entity: record.recordType) {
+            if case .bytes(let data) = values[name] {
+                values[name] = .asset(data)
+            }
+        }
         return values
     }
 }

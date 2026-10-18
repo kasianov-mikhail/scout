@@ -37,7 +37,7 @@ extension Scout.RecordValue {
             self = .double(value)
         case .date(let value):
             self = .date(value)
-        case .bytes(let value):
+        case .bytes(let value), .asset(let value):
             self = .bytes(value)
         case .strings(let value):
             self = .strings(value)

@@ -26,6 +26,11 @@ extension [Backend] {
                             await backend.deliver(type, in: context)
                         }
                     }
+                    if let symbols = BundledSymbols.main {
+                        group.addTask {
+                            await backend.upload(symbols: symbols, defaults: .standard)
+                        }
+                    }
                 }
             }
             try Task.checkCancellation()
