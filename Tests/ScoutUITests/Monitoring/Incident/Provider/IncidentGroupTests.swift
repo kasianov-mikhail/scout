@@ -40,6 +40,8 @@ struct IncidentGroupTests {
 
         #expect(Set(groups.map(\.id)) == ["MyApp|Cart.apply()", "fp3"])
         #expect(groups.first { $0.id == "MyApp|Cart.apply()" }?.count == 2)
+        #expect(groups.first { $0.id == "MyApp|Cart.apply()" }?.symbol == "Cart.apply()")
+        #expect(groups.first { $0.id == "fp3" }?.symbol == nil)
     }
 
     @Test("The representative is the most recent crash in the group") func testRepresentativeIsLatest() {

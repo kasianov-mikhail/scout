@@ -20,7 +20,12 @@ struct HangListView: View {
                 description: "No unresponsive main thread has been recorded"
             )
         ) { group in
-            HangRow(group: group)
+            IncidentRow(
+                group: group,
+                accent: (group.severity.systemImage, IncidentKind.hang.color)
+            ) { group in
+                HangGroupDetailView(group: group)
+            }
         }
     }
 }
