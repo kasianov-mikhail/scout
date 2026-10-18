@@ -48,9 +48,7 @@ struct DebugInfoTests {
 
     @Test("A table built from the dSYM unwinds frames like atos -i", arguments: ["inline4", "inline5"])
     func matchesAtos(name: String) throws {
-        let image = try MachOImage(data: Data(fixture: name))
-        let info = try DebugInfo(image: image)
-        let table = SymbolTable(uuid: image.uuid, functions: info.functions, lines: try LineTable(image: image).lines, inlines: info.inlines)
+        let table = try SymbolTable(image: MachOImage(data: Data(fixture: name)))
 
         #expect(table.frames(offset: 0x328).map(\.text) == ["square (inline.c:2)", "sum_of_squares (inline.c:6)", "compute (inline.c:10)"])
         #expect(table.frames(offset: 0x32C).map(\.text) == ["sum_of_squares (inline.c:6)", "compute (inline.c:10)"])
