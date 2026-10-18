@@ -8,7 +8,6 @@
 
 import Foundation
 import Scout
-import SymbolTable
 
 @MainActor
 final class BacktraceProvider: ObservableObject, RecordProvider {
@@ -49,14 +48,5 @@ extension BacktraceProvider {
             return nil
         }
         return detail
-    }
-}
-
-struct BacktraceDetail: Equatable {
-    let backtrace: Backtrace
-    let tables: [UUID: SymbolTable]
-
-    static var sample: BacktraceDetail {
-        BacktraceDetail(backtrace: .sample, tables: [:])
     }
 }

@@ -27,6 +27,21 @@ struct IncidentGroupTests {
         #expect(groups.map(\.count).sorted() == [1, 2])
     }
 
+    @Test("A symbolicated key merges fingerprints and the rest keep their own")
+    func keyedGrouping() {
+        let first = Crash.stub(name: "A", fingerprint: "fp1")
+        let second = Crash.stub(name: "A", fingerprint: "fp2")
+        let third = Crash.stub(name: "B", fingerprint: "fp3")
+
+        let groups = IncidentGroup.groups(
+            from: [first, second, third],
+            keys: [first.id: "MyApp|Cart.apply()", second.id: "MyApp|Cart.apply()"]
+        )
+
+        #expect(Set(groups.map(\.id)) == ["MyApp|Cart.apply()", "fp3"])
+        #expect(groups.first { $0.id == "MyApp|Cart.apply()" }?.count == 2)
+    }
+
     @Test("The representative is the most recent crash in the group") func testRepresentativeIsLatest() {
         let old = Crash.stub(fingerprint: "fp", date: Date(timeIntervalSince1970: 1000))
         let new = Crash.stub(fingerprint: "fp", date: Date(timeIntervalSince1970: 2000))
