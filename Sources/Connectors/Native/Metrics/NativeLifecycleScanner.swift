@@ -25,6 +25,7 @@ struct NativeLifecycleScanner {
                 HangEntry.recordType,
                 VersionEntry.recordType,
                 ResourceEntry.recordType,
+                ScreenEntry.recordType,
             ]
 
             let isDailyMetric = !isCrash && !entities.contains(query.name)

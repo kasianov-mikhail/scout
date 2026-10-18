@@ -263,6 +263,47 @@ struct ServerContractTests {
         #expect(resources.map { $0.points.map(\.value).reduce(0, +) } == [2, 1])
     }
 
+    @Test("Screen views count per screen and version")
+    func screenSeries() async throws {
+        let database = try makeDatabase()
+        let version = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeScreen(name: "Feed", appVersion: version),
+            makeScreen(name: "Feed", appVersion: version),
+            makeScreen(name: "Profile", appVersion: version),
+        ])
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(
+                name: ScreenEntry.recordType,
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let screens = series.filter { $0.version == version }
+
+        #expect(screens.map(\.category) == ["Feed", "Profile"])
+        #expect(screens.map { $0.points.map(\.value).reduce(0, +) } == [2, 1])
+    }
+
+    @Test("A screen keeps its end date and previous screen")
+    func screenRoundTrip() async throws {
+        let database = try makeDatabase()
+        var record = makeScreen(name: "Feed", appVersion: "contract")
+        record["previous"] = "Home"
+        record["end_date"] = eventDate.addingTimeInterval(30)
+
+        try await database.write(record: record)
+        let restored = try await database.lookup(recordName: record.recordID, fields: nil)
+
+        #expect(restored.recordType == "Screen")
+        #expect(restored["category"] == "Feed")
+        #expect(restored["previous"] == "Home")
+        #expect(restored["date"] == eventDate)
+        #expect(restored["end_date"] == eventDate.addingTimeInterval(30))
+    }
+
     @Test("Exit counts sum per reason and version")
     func exitSeries() async throws {
         let database = try makeDatabase()
@@ -478,6 +519,15 @@ struct ServerContractTests {
         record["category"] = kind
         record["value"] = 92.5
         record["app_version"] = appVersion
+        record["date"] = eventDate
+        return record
+    }
+
+    private func makeScreen(name: String, appVersion: String) -> Record {
+        var record = Record(recordType: "Screen", recordID: "contract-\(UUID().uuidString)")
+        record["category"] = name
+        record["app_version"] = appVersion
+        record["session_id"] = UUID().uuidString
         record["date"] = eventDate
         return record
     }

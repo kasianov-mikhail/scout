@@ -12,7 +12,7 @@ import ScoutDB
 
 extension CatalogEntry {
     static let entries: [CatalogEntry] = [
-        event, session, visit, launch, install, device, version, crash, hang, resourceException, dailyMetric,
+        event, screen, session, visit, launch, install, device, version, crash, hang, resourceException, dailyMetric,
         metric(entity: IntMetricsEntry.recordType, valueType: .int),
         metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
     ]
@@ -28,6 +28,18 @@ extension CatalogEntry {
             .init(name: "date", type: .timestamp),
         ],
         aggregates: [.count(by: "name", at: "date")]
+    )
+
+    private static let screen = CatalogEntry(
+        entity: ScreenEntry.recordType,
+        fields: [
+            .init(name: "category", type: .string),
+            .init(name: "previous", type: .string),
+            .init(name: "session_id", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "end_date", type: .timestamp),
+        ]
     )
 
     private static let session = CatalogEntry(
