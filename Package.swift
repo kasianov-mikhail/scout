@@ -100,20 +100,23 @@ let package = Package(
             name: "LookupIndex"
         ),
         .target(
-            name: "SymbolTable"
+            name: "SymbolTable",
+            path: "Sources/ScoutSymbols/SymbolTable"
         ),
         .target(
             name: "DWARF",
             dependencies: [
                 "SymbolTable"
-            ]
+            ],
+            path: "Sources/ScoutSymbols/DWARF"
         ),
         .executableTarget(
             name: "ScoutSymbols",
             dependencies: [
                 "DWARF",
                 "SymbolTable",
-            ]
+            ],
+            path: "Sources/ScoutSymbols/CLI"
         ),
         .target(
             name: "DemoConnector",
@@ -188,13 +191,15 @@ let package = Package(
             name: "SymbolTableTests",
             dependencies: [
                 "SymbolTable"
-            ]
+            ],
+            path: "Tests/ScoutSymbols/SymbolTable"
         ),
         .testTarget(
             name: "DWARFTests",
             dependencies: [
                 "DWARF"
             ],
+            path: "Tests/ScoutSymbols/DWARF",
             resources: [
                 .copy("Fixtures")
             ]
