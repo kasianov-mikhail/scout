@@ -11,6 +11,7 @@ protocol IncidentContent {
     var name: String { get }
     var reason: String? { get }
     var stackTrace: [String] { get }
+    var backtrace: Backtrace? { get }
     var fingerprint: String { get }
     var date: Date { get }
     var appVersion: String? { get }
@@ -81,6 +82,15 @@ extension NSManagedObjectContext {
         object.fingerprint = content.fingerprint
         object.reason = content.reason
         object.stackTrace = try JSONEncoder().encode(content.stackTrace)
+
+        if let backtrace = content.backtrace {
+            let entry = insert(BacktraceEntry.self)
+            entry.date = content.date
+            entry.incidentID = id
+            entry.appVersion = content.appVersion
+            entry.payload = try JSONEncoder().encode(backtrace)
+        }
+
         return object
     }
 }

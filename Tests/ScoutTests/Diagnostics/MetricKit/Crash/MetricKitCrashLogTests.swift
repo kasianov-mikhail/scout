@@ -112,6 +112,18 @@ struct MetricKitCrashLogTests {
         #expect(try JSONDecoder().decode([CrashThread].self, from: data) == threads)
     }
 
+    @Test("A saved crash keeps its backtrace for delivery")
+    func savesBacktrace() throws {
+        let crash = makeCrash(processID: nil, signal: 9)
+
+        try crash.log(installID: Identity.stub.install, context: context)
+
+        let entry = try #require(try context.fetchAll(BacktraceEntry.self).first)
+        #expect(entry.incidentID == crash.id)
+        #expect(entry.appVersion == crash.appVersion)
+        #expect(try JSONDecoder().decode(Backtrace.self, from: entry.payload) == crash.backtrace)
+    }
+
     @Test("A crash without threads stores none")
     func noThreads() throws {
         try makeCrash(processID: nil, signal: 9).log(installID: Identity.stub.install, context: context)

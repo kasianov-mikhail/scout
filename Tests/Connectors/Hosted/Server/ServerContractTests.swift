@@ -372,6 +372,29 @@ struct ServerContractTests {
         #expect(restored["date"] == eventDate)
     }
 
+    @Test("A backtrace of every thread survives the round trip")
+    func backtraceRoundTrip() async throws {
+        let database = try makeDatabase()
+        let frames = (0..<64).map { Backtrace.Frame(image: $0 % 4, offset: UInt64($0) * 4096) }
+        let backtrace = Backtrace(
+            images: (0..<4).map { Backtrace.Image(name: "Image\($0)", uuid: UUID()) },
+            threads: (0..<64).map { Backtrace.Thread(attributed: $0 == 0, frames: frames) }
+        )
+        let incidentID = UUID()
+        let payload = try JSONEncoder().encode(backtrace)
+
+        var record = Record(recordType: "Backtrace", recordID: UUID(incidentBacktrace: incidentID).uuidString)
+        record["incident_id"] = incidentID.uuidString
+        record["backtrace"] = payload
+        record["date"] = eventDate
+
+        try await database.write(record: record)
+        let restored = try await database.lookup(recordName: record.recordID, fields: nil)
+
+        #expect(restored["incident_id"] == incidentID.uuidString)
+        #expect(restored["backtrace"] == payload)
+    }
+
     @Test("Exit counts sum per reason and version")
     func exitSeries() async throws {
         let database = try makeDatabase()

@@ -62,6 +62,43 @@ struct LogCrashTests {
         #expect(object.sessionID == crashedSessionID)
     }
 
+    @Test("Stores the backtrace for delivery under the crash id")
+    func storesBacktrace() throws {
+        let id = UUID()
+        let backtrace = Backtrace(addresses: [0x1010], images: [LoadedImage(name: "MyApp", base: 0x1000, size: 0x100, uuid: UUID())])
+        let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], backtrace: backtrace, identity: .stub)
+
+        try crash.log(id: id, deviceID: deviceID, context: context)
+        try crash.log(id: id, deviceID: deviceID, context: context)
+
+        let entries = try context.fetchAll(BacktraceEntry.self)
+        let entry = try #require(entries.first)
+        #expect(entries.count == 1)
+        #expect(entry.incidentID == id)
+        #expect(entry.date == crash.date)
+        #expect(try JSONDecoder().decode(Backtrace.self, from: entry.payload) == backtrace)
+    }
+
+    @Test("A crash archived before backtraces stores none")
+    func noBacktrace() throws {
+        let crash = CrashInfo(
+            name: "SIGSEGV",
+            reason: nil,
+            stackTrace: [],
+            backtrace: nil,
+            date: Date(),
+            installID: UUID(),
+            launchID: UUID(),
+            sessionID: UUID(),
+            appVersion: nil
+        )
+
+        try crash.log(deviceID: deviceID, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
+        #expect(try context.fetchAll(BacktraceEntry.self).isEmpty)
+    }
+
     @Test("Encodes stack trace as JSON data")
     func encodesStackTrace() throws {
         let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: ["main", "start"])
