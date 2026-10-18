@@ -72,7 +72,7 @@ struct RawCrashReportTests {
     func crashInfoBacktrace() throws {
         let images = [LoadedImage(name: "Fake.dylib", base: 0x1000, size: 0x4000, uuid: fakeUUID)]
         let data = try rawReportData(addresses: [0x1010, 0xDEAD_0000], images: images)
-        let crash = try #require(RawCrashReport(data: data)).crashInfo()
+        let crash = try #require(RawCrashReport(data: data)).crashInfo
 
         #expect(crash.backtrace?.images == [Backtrace.Image(name: "Fake.dylib", uuid: fakeUUID)])
         #expect(crash.backtrace?.threads.first?.frames == [Backtrace.Frame(image: 0, offset: 0x10), Backtrace.Frame(image: nil, offset: 0xDEAD_0000)])
@@ -121,7 +121,7 @@ struct RawCrashReportTests {
         let images = [LoadedImage(name: "Gone.dylib", base: 0x1000, size: 0x4000, uuid: nil)]
         let data = try rawReportData(addresses: [0x1010, 0xDEAD_0000], images: images)
         let report = try #require(RawCrashReport(data: data))
-        let crash = report.crashInfo()
+        let crash = report.crashInfo
 
         #expect(crash.name == "SIGSEGV")
         #expect(crash.reason == "Signal \(SIGSEGV) received")
@@ -139,11 +139,21 @@ struct RawCrashReportTests {
         let slid = LoadedImage(name: current.name, base: current.base + 0x10000, size: current.size, uuid: current.uuid)
         let data = try rawReportData(addresses: [slid.base + 0x100], images: [slid])
         let report = try #require(RawCrashReport(data: data))
-        let crash = report.crashInfo()
+        let crash = report.crashInfo
 
         #expect(crash.stackTrace.count == 1)
         #expect(crash.stackTrace[0].contains(current.name))
         #expect(!crash.stackTrace[0].contains("???"))
+    }
+
+    @Test("an image rebuilt since the crash keeps its offset instead of foreign names")
+    func changedImageKeepsOffset() throws {
+        let current = try #require(LoadedImage.loaded().first { $0.uuid != nil })
+        let rebuilt = LoadedImage(name: current.name, base: current.base + 0x10000, size: current.size, uuid: UUID())
+        let data = try rawReportData(addresses: [rebuilt.base + 0x100], images: [rebuilt])
+        let crash = try #require(RawCrashReport(data: data)).crashInfo
+
+        #expect(crash.stackTrace == ["0   \(current.name)   + 0x100"])
     }
 
     @Test("the archive converts a raw report into a decodable crash file")

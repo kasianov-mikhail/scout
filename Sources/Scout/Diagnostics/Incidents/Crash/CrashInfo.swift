@@ -62,7 +62,7 @@ extension IncidentArchive<CrashInfo> {
 
                 if let report = RawCrashReport(data: data) {
                     let id = UUID(uuidString: file.deletingPathExtension().lastPathComponent) ?? UUID()
-                    write(report.crashInfo(), id: id)
+                    write(report.crashInfo, id: id)
                 }
             } catch {
                 print("Failed to read \(file.lastPathComponent): \(error)")
