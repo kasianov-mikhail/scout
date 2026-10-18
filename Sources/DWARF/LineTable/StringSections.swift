@@ -40,7 +40,7 @@ struct StringSections {
         return nil
     }
 
-    private func string(section: ArraySlice<UInt8>, offset: UInt64) throws -> String {
+    func string(section: ArraySlice<UInt8>, offset: UInt64) throws -> String {
         guard offset < UInt64(section.count) else {
             throw MalformedDWARFError()
         }
