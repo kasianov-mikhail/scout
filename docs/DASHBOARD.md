@@ -124,4 +124,4 @@ Start with option 1. It is a few lines, it keeps one binary through the whole pi
 
 ## Cache the Dashboard Data
 
-`ScoutUI` reads through a Core Data cache, so repeated queries are served from a local store. There is nothing to set up: the dashboard loads the cache itself and keeps separate entries for each backend. Alert evaluation in `ScoutAlerts` always reads fresh data. Clear Cache in the dashboard settings empties the store. `LookupIndex.enable()` from earlier releases is deprecated and does nothing.
+`ScoutUI` reads through a Core Data cache, so repeated queries are served from a local store. There is nothing to set up: the dashboard loads the cache itself and keeps separate entries for each backend. Alert evaluation in `ScoutAlerts` always reads fresh data. Clear Cache in the dashboard settings empties the store.

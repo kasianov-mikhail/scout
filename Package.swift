@@ -27,10 +27,6 @@ let package = Package(
             targets: ["ScoutUI"]
         ),
         .library(
-            name: "LookupIndex",
-            targets: ["LookupIndex"]
-        ),
-        .library(
             name: "DemoConnector",
             targets: ["DemoConnector"]
         ),
@@ -95,9 +91,6 @@ let package = Package(
             resources: [
                 .copy("PrivacyInfo.xcprivacy")
             ]
-        ),
-        .target(
-            name: "LookupIndex"
         ),
         .target(
             name: "SymbolTable"
