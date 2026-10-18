@@ -8,13 +8,6 @@
 import CoreData
 
 extension Identity {
-    var table: ActionTable {
-        ActionTable(actions: [
-            AppLifecycle.willEnterForeground: enter,
-            AppLifecycle.didEnterBackground: leave,
-        ])
-    }
-
     func enter() async throws {
         try await persistentContainer.run(
             SessionEntry.Rotation(session: session, launchID: launch),
