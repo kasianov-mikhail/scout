@@ -42,13 +42,13 @@ struct CrashDetailView: View {
             .padding(.vertical)
 
             ContextSection(context: crash, timelineHighlight: .red)
-            StackTraceSection(crash: crash)
+            StackTraceSection(crash: crash, detail: backtrace.detail)
 
             if case .success(let threads) = threads.result {
                 CrashThreadsSection(threads: threads)
             }
-            if case .success(let loaded?) = backtrace.result {
-                BinaryImagesSection(images: loaded.images)
+            if let detail = backtrace.detail {
+                BinaryImagesSection(images: detail.backtrace.images)
             }
         }
         .navigationTint(.red)

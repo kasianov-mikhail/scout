@@ -42,10 +42,11 @@ struct ResourceDetailView: View {
             )
             StackTraceSection(
                 frames: resource.stackTrace,
-                caption: "Unsymbolicated"
+                caption: "Unsymbolicated",
+                detail: provider.detail
             )
-            if case .success(let backtrace?) = provider.result {
-                BinaryImagesSection(images: backtrace.images)
+            if let detail = provider.detail {
+                BinaryImagesSection(images: detail.backtrace.images)
             }
         }
         .navigationTint(IncidentKind.resource.color)

@@ -23,9 +23,9 @@ struct BacktraceProviderTests {
         record["backtrace"] = try JSONEncoder().encode(Backtrace.sample)
         let database = NamedRecordDatabase(record: record)
 
-        let backtrace = try await BacktraceProvider(incidentID: incidentID.uuidString).fetch(in: database)
+        let detail = try await BacktraceProvider(incidentID: incidentID.uuidString).fetch(in: database)
 
-        #expect(backtrace == .sample)
+        #expect(detail == BacktraceDetail(backtrace: .sample, tables: [:]))
     }
 
     @Test("An incident without a backtrace record gives none")
