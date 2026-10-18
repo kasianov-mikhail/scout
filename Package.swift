@@ -34,6 +34,10 @@ let package = Package(
             name: "DemoConnector",
             targets: ["DemoConnector"]
         ),
+        .executable(
+            name: "scout-symbols",
+            targets: ["ScoutSymbols"]
+        ),
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log.git", from: "1.0.0"),
@@ -99,6 +103,13 @@ let package = Package(
             name: "DWARF",
             dependencies: [
                 "SymbolTable"
+            ]
+        ),
+        .executableTarget(
+            name: "ScoutSymbols",
+            dependencies: [
+                "DWARF",
+                "SymbolTable",
             ]
         ),
         .target(
