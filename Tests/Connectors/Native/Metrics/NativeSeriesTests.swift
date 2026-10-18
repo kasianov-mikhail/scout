@@ -148,6 +148,20 @@ struct NativeSeriesTests {
         #expect(series.map { $0.points.map(\.value) } == [[2], [1]])
     }
 
+    @Test("Conditions count per kind and version, not by their value")
+    func conditionSeries() async throws {
+        try await database.write(record: makeConditionRecord(id: "c-1", kind: "memory_warning"))
+        try await database.write(record: makeConditionRecord(id: "c-2", kind: "memory_warning"))
+        try await database.write(record: makeConditionRecord(id: "c-3", kind: "thermal_serious"))
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ConditionEntry.recordType, bucket: .day, byVersion: true, range: range)
+        )
+
+        #expect(series.map(\.category) == ["memory_warning", "thermal_serious"])
+        #expect(series.map { $0.points.map(\.value) } == [[2], [1]])
+    }
+
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
         var version = Record(recordType: VersionEntry.recordType, recordID: "v-1")
@@ -264,6 +278,15 @@ struct NativeSeriesTests {
     private func makeScreenRecord(id: String, name: String) -> Record {
         var record = Record(recordType: ScreenEntry.recordType, recordID: id)
         record["category"] = name
+        record["app_version"] = "1.2.0"
+        record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
+        return record
+    }
+
+    private func makeConditionRecord(id: String, kind: String) -> Record {
+        var record = Record(recordType: ConditionEntry.recordType, recordID: id)
+        record["category"] = kind
+        record["value"] = 52_428_800.0
         record["app_version"] = "1.2.0"
         record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
         return record
