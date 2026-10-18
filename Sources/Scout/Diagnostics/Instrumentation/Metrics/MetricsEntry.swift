@@ -14,8 +14,7 @@ package protocol MetricsValued: MetricsEntry {
 }
 
 @objc(MetricsEntry)
-package class MetricsEntry: SyncableEntry, HasSession {
-    @NSManaged var session: SessionEntry?
+package class MetricsEntry: SessionScopeEntry {
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 }

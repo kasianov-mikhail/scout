@@ -112,7 +112,7 @@ struct MergePolicyTests {
         try context.performAndWait {
             let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
             let sessions = try context.fetch(request)
-            #expect(sessions.first?.metrics.count == 20)
+            #expect(sessions.first?.scopedEntries.count == 20)
         }
     }
 

@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(IncidentEntry)
-package class IncidentEntry: SyncableEntry {
+package class IncidentEntry: SessionScopeEntry {
     @NSManaged var appVersion: String?
     @NSManaged var name: String?
     @NSManaged var fingerprint: String?
@@ -18,25 +18,18 @@ package class IncidentEntry: SyncableEntry {
     @NSManaged var windowStart: Date?
 }
 
-extension HasSession where Self: IncidentEntry {
+extension IncidentEntry {
     func incident(type: String, id: UUID) -> Record {
-        var record = Record(recordType: type, recordID: id.uuidString)
+        var record = sessionRecord(type: type, id: id.uuidString)
 
         record["name"] = name
         record["fingerprint"] =
             fingerprint ?? CrashFingerprint(name: name ?? "", reason: reason, stackTrace: decodedStackTrace).value
         record["reason"] = reason
         record["stack_trace"] = stackTrace
-        record["date"] = date
         record["uuid"] = id.uuidString
         record["app_version"] = appVersion
-        record["session_id"] = sessionID?.uuidString
-        record["launch_id"] = launchID?.uuidString
-        record["install_id"] = installID?.uuidString
-        record["device_id"] = deviceID?.uuidString
         IncidentSource(entry: self).encode(into: &record)
-
-        record.setValues(metadata)
 
         return record
     }
