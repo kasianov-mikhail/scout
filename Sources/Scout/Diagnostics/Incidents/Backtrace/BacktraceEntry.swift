@@ -33,7 +33,7 @@ extension BacktraceEntry: RecordEncodable {
 }
 
 extension UUID {
-    init(incidentBacktrace: UUID) {
+    package init(incidentBacktrace: UUID) {
         self.init(digesting: [BacktraceEntry.recordType, incidentBacktrace.uuidString])
     }
 }
