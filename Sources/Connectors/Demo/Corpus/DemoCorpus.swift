@@ -25,13 +25,14 @@ extension DemoCorpus.Corpus {
         let scenario = DemoScenario(clock: clock)
         let incidents = DemoIncidents(scenario: scenario)
         let events = DemoEvents(scenario: scenario)
+        let navigation = DemoNavigation(scenario: scenario)
         let releases = DemoReleases(scenario: scenario, incidents: incidents)
         let metrics = DemoMetrics(clock: clock)
         let activity = DemoActivity(scenario: scenario, incidents: incidents)
 
         self.init(
-            records: scenario.records + incidents.records + events.records,
-            samples: releases.samples + events.samples + metrics.samples,
+            records: scenario.records + incidents.records + events.records + navigation.records,
+            samples: releases.samples + events.samples + navigation.samples + metrics.samples,
             activity: activity.points,
             retention: activity.cohorts
         )

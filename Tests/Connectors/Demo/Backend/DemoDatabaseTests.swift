@@ -74,6 +74,30 @@ import Testing
         #expect(try await resources.total == records(ResourceException.self).count)
     }
 
+    @Test func screenSeriesSplitByScreen() async throws {
+        let screens = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ScreenEntry.recordType, byVersion: true, range: range)
+        )
+        let records = database.records.filter { $0.recordType == ScreenEntry.recordType }
+
+        #expect(Set(screens.compactMap(\.category)).isSubset(of: DemoNavigation.transitions.keys))
+        #expect(screens.allSatisfy { $0.version != nil })
+        #expect(screens.total == records.count)
+    }
+
+    @Test func screensFollowEachOtherWithinASession() {
+        let records = database.records.filter { $0.recordType == ScreenEntry.recordType }
+        let sessions = Dictionary(grouping: records) { $0["session_id"] ?? "" }
+
+        for screens in sessions.values {
+            let ordered = screens.sorted { ($0["date"] ?? Date.distantPast) < ($1["date"] ?? Date.distantPast) }
+            let names: [String?] = ordered.map { $0["category"] }
+            let previous: [String?] = ordered.map { $0["previous"] }
+
+            #expect(previous == [nil] + names.dropLast())
+        }
+    }
+
     @Test func launchSeriesCoverEverySession() async throws {
         let launches = try await database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: PerformanceMetric.launchTime.rawValue, byVersion: true, range: range)
