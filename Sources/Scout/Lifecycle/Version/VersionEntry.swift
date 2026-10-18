@@ -8,12 +8,11 @@
 import CoreData
 
 @objc(VersionEntry)
-package final class VersionEntry: SyncableEntry, HasLaunch {
+package final class VersionEntry: LaunchScopeEntry {
     package static let recordType = "Version"
 
     @NSManaged var appVersion: String?
     @NSManaged var buildNumber: String?
-    @NSManaged var launch: LaunchEntry?
 
     override var isPurgeable: Bool {
         false

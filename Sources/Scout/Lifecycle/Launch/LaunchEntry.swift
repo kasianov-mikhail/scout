@@ -15,12 +15,10 @@ package final class LaunchEntry: SyncableEntry, HasInstall {
     @NSManaged var launchID: UUID
     @NSManaged var processID: Int32
     @NSManaged var install: InstallEntry?
-    @NSManaged var sessions: Set<SessionEntry>
-    @NSManaged var versions: Set<VersionEntry>
-    @NSManaged var visits: Set<VisitEntry>
+    @NSManaged var scopedEntries: Set<LaunchScopeEntry>
 
     override var references: Set<DateEntry> {
-        Set(Array(sessions) + Array(versions) + Array(visits))
+        scopedEntries
     }
 
     override var isPurgeable: Bool {

@@ -184,4 +184,70 @@ struct MigrationTests {
             #expect(session.scopedEntries.count == entities.count)
         }
     }
+
+    @Test("A ScoutModel 12 store keeps the launch of every scoped entry after migration")
+    func version12ScopedLaunchesSurvive() throws {
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+
+        let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
+        let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 12.mom")))
+
+        let launchID = UUID()
+        let sessionID = UUID()
+        let date = Date(timeIntervalSince1970: 1_750_000_000)
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
+        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        seed.persistentStoreCoordinator = coordinator
+
+        try seed.performAndWait {
+            let launch = seed.insert(LaunchEntry.self)
+            launch.launchID = launchID
+            launch.date = date
+
+            let session = seed.insert(SessionEntry.self)
+            session.sessionID = sessionID
+
+            let version = seed.insert(VersionEntry.self)
+            version.appVersion = "2.0"
+
+            let visit = seed.insert(VisitEntry.self)
+            visit.visitID = UUID()
+
+            let scopedEntries: [LaunchScopeEntry] = [session, version, visit]
+            for scopedEntry in scopedEntries {
+                scopedEntry.date = date
+                scopedEntry.launch = launch
+            }
+
+            let event = seed.insert(EventEntry.self)
+            event.eventID = UUID()
+            event.name = "purchase"
+            event.level = "info"
+            event.date = date
+            event.session = session
+
+            try seed.save()
+        }
+        try coordinator.remove(seeded)
+
+        let context = try store.container().newBackgroundContext()
+        try context.performAndWait {
+            let launch = try #require(try context.existing(LaunchEntry.self, key: "launchID", id: launchID))
+
+            let entities = ["SessionEntry", "VersionEntry", "VisitEntry"]
+            for entity in entities {
+                let scopedEntries = try context.fetch(NSFetchRequest<LaunchScopeEntry>(entityName: entity))
+                #expect(scopedEntries.count == 1, "\(entity) survives")
+                #expect(scopedEntries.allSatisfy { $0.launch == launch }, "\(entity) keeps its launch")
+            }
+
+            #expect(launch.scopedEntries.count == entities.count)
+
+            let session = try #require(try context.existing(SessionEntry.self, key: "sessionID", id: sessionID))
+            #expect(session.scopedEntries.count == 1)
+        }
+    }
 }

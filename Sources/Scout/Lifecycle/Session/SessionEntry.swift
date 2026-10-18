@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(SessionEntry)
-package final class SessionEntry: SyncableEntry, HasLaunch {
+package final class SessionEntry: LaunchScopeEntry {
     package static let recordType = "Session"
 
     @NSManaged var appVersion: String?
@@ -18,7 +18,6 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
     @NSManaged var locale: String?
     @NSManaged var channel: String?
     @NSManaged var sessionID: UUID
-    @NSManaged var launch: LaunchEntry?
     @NSManaged var scopedEntries: Set<SessionScopeEntry>
 
     override var references: Set<DateEntry> {

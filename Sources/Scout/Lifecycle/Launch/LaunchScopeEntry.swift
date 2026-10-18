@@ -5,13 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
-protocol HasLaunch {
-    var launch: LaunchEntry? { get }
-}
+@objc(LaunchScopeEntry)
+package class LaunchScopeEntry: SyncableEntry {
+    @NSManaged var launch: LaunchEntry?
 
-extension HasLaunch {
     var launchID: UUID? {
         launch?.launchID
     }
