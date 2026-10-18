@@ -8,10 +8,9 @@
 import CoreData
 
 @objc(ConditionEntry)
-package final class ConditionEntry: SyncableEntry, HasSession {
+package final class ConditionEntry: ObservationEntry {
     package static let recordType = "Condition"
 
-    @NSManaged var session: SessionEntry?
     @NSManaged var conditionID: UUID
     @NSManaged var kind: String
     @NSManaged var value: Double

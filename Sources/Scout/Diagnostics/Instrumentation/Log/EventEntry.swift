@@ -8,10 +8,9 @@
 import CoreData
 
 @objc(EventEntry)
-package final class EventEntry: SyncableEntry, HasSession {
+package final class EventEntry: ObservationEntry {
     package static let recordType = "Event"
 
-    @NSManaged var session: SessionEntry?
     @NSManaged var name: String?
     @NSManaged var eventID: UUID
     @NSManaged var level: String?

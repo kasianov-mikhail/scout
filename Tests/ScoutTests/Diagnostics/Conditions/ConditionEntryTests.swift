@@ -41,7 +41,7 @@ struct ConditionEntryTests {
         let object = makeCondition(conditionID: UUID())
         object.session = session
 
-        #expect(session.conditions == [object])
+        #expect(session.observations == [object])
         #expect(!session.isDeletable)
     }
 

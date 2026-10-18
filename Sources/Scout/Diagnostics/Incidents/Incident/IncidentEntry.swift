@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(IncidentEntry)
-package class IncidentEntry: SyncableEntry {
+package class IncidentEntry: ObservationEntry {
     @NSManaged var appVersion: String?
     @NSManaged var name: String?
     @NSManaged var fingerprint: String?
@@ -18,7 +18,7 @@ package class IncidentEntry: SyncableEntry {
     @NSManaged var windowStart: Date?
 }
 
-extension HasSession where Self: IncidentEntry {
+extension IncidentEntry {
     func incident(type: String, id: UUID) -> Record {
         var record = sessionRecord(type: type, id: id.uuidString)
 

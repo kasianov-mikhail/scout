@@ -5,13 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import CoreData
 
-protocol HasSession {
-    var session: SessionEntry? { get }
-}
+@objc(ObservationEntry)
+package class ObservationEntry: SyncableEntry {
+    @NSManaged var session: SessionEntry?
 
-extension HasSession {
     var sessionID: UUID? {
         session?.sessionID
     }
@@ -27,9 +26,7 @@ extension HasSession {
     var deviceID: UUID? {
         session?.deviceID
     }
-}
 
-extension HasSession where Self: DateEntry {
     func sessionRecord(type: String, id: String) -> Record {
         var record = Record(recordType: type, recordID: id)
 

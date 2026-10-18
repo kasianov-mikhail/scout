@@ -106,4 +106,82 @@ struct MigrationTests {
             #expect(crash.windowStart == nil)
         }
     }
+
+    @Test("A ScoutModel 11 store keeps the session of every observation after migration")
+    func version11ObservationSessionsSurvive() throws {
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+
+        let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
+        let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 11.mom")))
+
+        let sessionID = UUID()
+        let date = Date(timeIntervalSince1970: 1_750_000_000)
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
+        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        seed.persistentStoreCoordinator = coordinator
+
+        try seed.performAndWait {
+            let session = seed.insert(SessionEntry.self)
+            session.sessionID = sessionID
+            session.date = date
+
+            let event = seed.insert(EventEntry.self)
+            event.eventID = UUID()
+            event.name = "purchase"
+            event.level = "info"
+
+            let screen = seed.insert(ScreenEntry.self)
+            screen.screenID = UUID()
+            screen.name = "Home"
+
+            let condition = seed.insert(ConditionEntry.self)
+            condition.conditionID = UUID()
+            condition.kind = "thermal_state"
+
+            let metrics = seed.insert(IntMetricsEntry.self)
+            metrics.name = "requests"
+            metrics.telemetry = "counter"
+            metrics.value = 1
+
+            let crash = seed.insert(CrashEntry.self)
+            crash.crashID = UUID()
+            crash.name = "SIGSEGV"
+
+            let hang = seed.insert(HangEntry.self)
+            hang.hangID = UUID()
+            hang.name = "Hang"
+            hang.duration = 2
+
+            let resource = seed.insert(ResourceEntry.self)
+            resource.resourceID = UUID()
+            resource.name = "CPU"
+            resource.kind = "cpu"
+
+            let observations: [ObservationEntry] = [event, screen, condition, metrics, crash, hang, resource]
+            for observation in observations {
+                observation.date = date
+                observation.session = session
+            }
+
+            try seed.save()
+        }
+        try coordinator.remove(seeded)
+
+        let context = try store.container().newBackgroundContext()
+        try context.performAndWait {
+            let session = try #require(try context.existing(SessionEntry.self, key: "sessionID", id: sessionID))
+
+            let entities = ["EventEntry", "ScreenEntry", "ConditionEntry", "IntMetricsEntry", "CrashEntry", "HangEntry", "ResourceEntry"]
+            for entity in entities {
+                let observations = try context.fetch(NSFetchRequest<ObservationEntry>(entityName: entity))
+                #expect(observations.count == 1, "\(entity) survives")
+                #expect(observations.allSatisfy { $0.session == session }, "\(entity) keeps its session")
+            }
+
+            #expect(session.observations.count == entities.count)
+        }
+    }
 }

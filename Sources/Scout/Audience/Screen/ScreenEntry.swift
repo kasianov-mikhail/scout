@@ -8,10 +8,9 @@
 import CoreData
 
 @objc(ScreenEntry)
-package final class ScreenEntry: SyncableEntry, HasSession {
+package final class ScreenEntry: ObservationEntry {
     package static let recordType = "Screen"
 
-    @NSManaged var session: SessionEntry?
     @NSManaged var screenID: UUID
     @NSManaged var name: String
     @NSManaged var previous: String?

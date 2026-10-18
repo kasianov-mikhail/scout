@@ -8,10 +8,9 @@
 import CoreData
 
 @objc(CrashEntry)
-package final class CrashEntry: IncidentEntry, HasSession {
+package final class CrashEntry: IncidentEntry {
     package static let recordType = "Crash"
 
-    @NSManaged var session: SessionEntry?
     @NSManaged var crashID: UUID
     @NSManaged var threads: Data?
 }
