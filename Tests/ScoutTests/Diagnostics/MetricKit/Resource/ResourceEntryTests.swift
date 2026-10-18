@@ -45,7 +45,7 @@ struct ResourceEntryTests {
         let object = makeResource(resourceID: UUID())
         object.session = session
 
-        #expect(session.resourceExceptions == [object])
+        #expect(session.children == [object])
     }
 
     private func makeResource(resourceID: UUID) -> ResourceEntry {

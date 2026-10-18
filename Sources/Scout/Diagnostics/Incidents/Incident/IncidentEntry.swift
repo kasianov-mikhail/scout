@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(IncidentEntry)
-package class IncidentEntry: SyncableEntry {
+package class IncidentEntry: SessionChildEntry {
     @NSManaged var appVersion: String?
     @NSManaged var name: String?
     @NSManaged var fingerprint: String?
