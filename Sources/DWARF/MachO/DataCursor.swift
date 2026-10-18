@@ -105,4 +105,11 @@ struct DataCursor {
     mutating func readOffset(is64: Bool) throws -> UInt64 {
         is64 ? try read() : UInt64(try read() as UInt32)
     }
+
+    mutating func readSized(count: Int) throws -> UInt64 {
+        guard (0...8).contains(count) else {
+            throw MalformedDWARFError()
+        }
+        return try readBytes(count: count).reversed().reduce(0) { $0 << 8 | UInt64($1) }
+    }
 }
