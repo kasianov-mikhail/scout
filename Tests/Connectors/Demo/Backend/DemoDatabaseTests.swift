@@ -85,6 +85,17 @@ import Testing
         #expect(screens.total == records.count)
     }
 
+    @Test func conditionSeriesSplitByKind() async throws {
+        let conditions = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: ConditionEntry.recordType, byVersion: true, range: range)
+        )
+        let records = database.records.filter { $0.recordType == ConditionEntry.recordType }
+
+        #expect(Set(conditions.compactMap(\.category)).isSubset(of: Condition.allCases.map(\.rawValue)))
+        #expect(conditions.allSatisfy { $0.version != nil })
+        #expect(conditions.total == records.count)
+    }
+
     @Test func screensFollowEachOtherWithinASession() {
         let records = database.records.filter { $0.recordType == ScreenEntry.recordType }
         let sessions = Dictionary(grouping: records) { $0["session_id"] ?? "" }
