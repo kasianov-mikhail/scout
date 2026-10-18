@@ -17,14 +17,6 @@ package struct RecordChunk {
         self.records = records
         self.cursor = cursor
     }
-
-    package static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs + rhs
-    }
-
-    package static func + (lhs: Self, rhs: Self) -> Self {
-        RecordChunk(records: lhs.records + rhs.records, cursor: rhs.cursor)
-    }
 }
 
 package struct RecordCursor: Sendable {

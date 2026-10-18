@@ -31,9 +31,9 @@ struct InstallGroup {
         InstallGroup(installs.filter { range.contains($0.date) }.map(\.startOfDay))
     }
 
-    func retention(week: Date, sessionDays: [InstallDates], now: Date) -> [Double?] {
+    func retention(week: Date, sessionDays: InstallDates, now: Date) -> [Double?] {
         let days = installs.map {
-            (day: $0.date, active: sessionDays.dates(of: $0.id))
+            (day: $0.date, active: sessionDays[$0.id, default: []])
         }
 
         return RetentionCohort.dayOffsets.map { offset in
@@ -47,9 +47,9 @@ struct InstallGroup {
         }
     }
 
-    func affected(by dates: [InstallDates], within horizon: Int) -> Int {
+    func affected(by dates: InstallDates, within horizon: Int) -> Int {
         installs.count {
-            dates.dates(of: $0.id)
+            dates[$0.id, default: []]
                 .contains(where: ($0.date..<$0.date.addingDay(horizon)).contains)
         }
     }

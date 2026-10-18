@@ -12,9 +12,9 @@ extension RetentionCohort {
     package static func cohorts(installs: [DatedID], sessions: [InstallSession], crashes: [DatedID], hangs: [DatedID], range: Range<Date>, now: Date) -> [RetentionCohort] {
         let sessions = Dictionary(grouping: sessions, by: \.install)
         let names = sessions.compactMapValues(\.osMajor)
-        let sessionDays = sessions.map { InstallDates(install: $0.key, dates: $0.value.days) }
-        let crashes = InstallDates.grouped(crashes)
-        let hangs = InstallDates.grouped(hangs)
+        let sessionDays = sessions.mapValues(\.days)
+        let crashes = InstallDates(dated: crashes)
+        let hangs = InstallDates(dated: hangs)
         let horizon = (dayOffsets.last ?? 0) + 1
 
         return InstallGroup(installs).days(in: range).byWeek.map { week, installs in
@@ -34,7 +34,7 @@ extension RetentionCohort {
 }
 
 extension RetentionCohort {
-    fileprivate init(week: Date, installs: InstallGroup, segments: [String: InstallGroup], sessionDays: [InstallDates], crashes: [InstallDates], hangs: [InstallDates], horizon: Int, now: Date) {
+    fileprivate init(week: Date, installs: InstallGroup, segments: [String: InstallGroup], sessionDays: InstallDates, crashes: InstallDates, hangs: InstallDates, horizon: Int, now: Date) {
         self.init(
             id: week,
             size: installs.count,
@@ -57,7 +57,7 @@ extension RetentionCohort {
 }
 
 extension RetentionSegment {
-    fileprivate init(name: String, installs: InstallGroup, week: Date, sessionDays: [InstallDates], crashes: [InstallDates], hangs: [InstallDates], horizon: Int, now: Date) {
+    fileprivate init(name: String, installs: InstallGroup, week: Date, sessionDays: InstallDates, crashes: InstallDates, hangs: InstallDates, horizon: Int, now: Date) {
         self.init(
             name: name,
             size: installs.count,
@@ -65,5 +65,13 @@ extension RetentionSegment {
             crashes: installs.affected(by: crashes, within: horizon),
             hangs: installs.affected(by: hangs, within: horizon)
         )
+    }
+}
+
+typealias InstallDates = [String: Set<Date>]
+
+extension InstallDates {
+    init(dated: [DatedID]) {
+        self = [String: [DatedID]](grouping: dated, by: \.id).mapValues { Set($0.map(\.date)) }
     }
 }
