@@ -31,14 +31,17 @@ extension ResourceException: Incident {
 }
 
 struct IncidentGroup<Element: Incident>: Identifiable {
+    let id: String
     let records: [Element]
-
-    var id: String {
-        representative.fingerprint
-    }
 
     var name: String {
         representative.name
+    }
+}
+
+extension IncidentGroup {
+    init(records: [Element]) {
+        self.init(id: records[0].fingerprint, records: records)
     }
 }
 
@@ -89,10 +92,9 @@ extension IncidentGroup: Comparable {
 }
 
 extension IncidentGroup {
-    static func groups(from records: [Element]) -> [IncidentGroup] {
-        Dictionary(grouping: records, by: \.fingerprint)
-            .values
-            .map { IncidentGroup(records: $0.sorted()) }
+    static func groups(from records: [Element], keys: [Element.ID: String] = [:]) -> [IncidentGroup] {
+        Dictionary(grouping: records) { keys[$0.id] ?? $0.fingerprint }
+            .map { IncidentGroup(id: $0.key, records: $0.value.sorted()) }
             .sorted()
     }
 }

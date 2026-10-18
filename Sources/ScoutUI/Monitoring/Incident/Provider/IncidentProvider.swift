@@ -11,7 +11,7 @@ import SwiftUI
 @MainActor
 final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Refreshable {
     var groups: [IncidentGroup<Element>]? {
-        records.map(IncidentGroup.groups)
+        records.map { IncidentGroup.groups(from: $0) }
     }
 
     func fetchLatest(in database: DatabaseReader) async {
