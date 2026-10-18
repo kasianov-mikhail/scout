@@ -150,6 +150,36 @@ struct ServerContractTests {
         #expect(d0 > 0)
     }
 
+    @Test("The retention table splits a cohort by OS version")
+    func retentionSegments() async throws {
+        let database = try makeDatabase()
+        let install = UUID().uuidString
+        let installDay = eventDate.startOfDay
+        // A unique OS name isolates this segment from any shared server data.
+        let system = "contract-\(UUID().uuidString)"
+
+        var session = makeSession(installID: install, startDate: installDay.addingTimeInterval(3600))
+        session["os_version"] = "\(system).2"
+        var crash = makeCrash(appVersion: "1.0")
+        crash["install_id"] = install
+
+        try await database.write(records: [
+            makeInstall(installID: install, date: installDay),
+            session,
+            crash,
+        ])
+
+        let week = installDay.startOfWeek
+        let cohorts = try await database.retention(in: week..<week.addingDay(14))
+        let cohort = try #require(cohorts.first { $0.id == week })
+        let segment = try #require(cohort.segments.first { $0.name == system })
+
+        #expect(segment.size == 1)
+        #expect(segment.retention.first == 1)
+        #expect(segment.crashes == 1)
+        #expect(segment.hangs == 0)
+    }
+
     @Test("Sessions aggregate into a per-version series")
     func versionedSessionSeries() async throws {
         let database = try makeDatabase()
