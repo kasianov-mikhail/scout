@@ -32,6 +32,7 @@ public struct Runtime: Sendable {
     let identity: Identity
     let dispatcher: any Dispatcher
     let screens = Protected(ScreenTracker())
+    let conditions = Protected(ConditionLog())
 }
 
 extension Runtime {
@@ -88,6 +89,9 @@ extension Runtime {
 
         try await identity.bootstrap()
 
+        installConditionMonitor()
+        recordCurrentConditions()
+
         table.startListening {
             try await backends.synchronize(using: dispatcher)
         }
@@ -106,6 +110,7 @@ extension Runtime {
             AppLifecycle.willEnterForeground: {
                 try await identity.enter()
                 record { $0.resume() }
+                recordCurrentConditions()
             },
             AppLifecycle.didEnterBackground: {
                 record { $0.suspend() }
