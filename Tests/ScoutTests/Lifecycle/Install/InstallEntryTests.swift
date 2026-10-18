@@ -31,7 +31,7 @@ struct InstallEntryTests {
 
         try context.save()
 
-        let versions = install.launches.flatMap(\.versions)
+        let versions = install.launches.flatMap(\.scopedEntries).compactMap { $0 as? VersionEntry }
         #expect(versions.count == 2)
         #expect(Set(versions.compactMap(\.appVersion)) == ["1.0", "2.0"])
     }

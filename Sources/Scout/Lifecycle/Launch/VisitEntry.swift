@@ -9,11 +9,10 @@
 import CoreData
 
 @objc(VisitEntry)
-package final class VisitEntry: SyncableEntry, HasLaunch {
+package final class VisitEntry: LaunchScopeEntry {
     package static let recordType = "Visit"
 
     @NSManaged var visitID: UUID
-    @NSManaged var launch: LaunchEntry?
 }
 
 extension VisitEntry: RecordEncodable {

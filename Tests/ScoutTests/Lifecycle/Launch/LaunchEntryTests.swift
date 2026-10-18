@@ -17,7 +17,7 @@ struct LaunchEntryTests {
     let context = NSManagedObjectContext.inMemoryContext()
     let week = TestDate.reference.startOfWeek
 
-    @Test("sessions relationship holds the sessions linked to the launch")
+    @Test("Scoped entries hold the sessions linked to the launch")
     func testSessions() throws {
         let launch = LaunchEntry.stub(date: week, in: context)
 
@@ -31,11 +31,11 @@ struct LaunchEntryTests {
 
         try context.save()
 
-        #expect(launch.sessions.count == 2)
-        #expect(launch.sessions.allSatisfy { $0.launch == launch })
+        #expect(launch.scopedEntries.count == 2)
+        #expect(launch.scopedEntries.allSatisfy { $0 is SessionEntry && $0.launch == launch })
     }
 
-    @Test("versions relationship holds the versions linked to the launch")
+    @Test("Scoped entries hold the versions linked to the launch")
     func testVersions() throws {
         let launch = LaunchEntry.stub(date: week, in: context)
 
@@ -44,7 +44,8 @@ struct LaunchEntryTests {
 
         try context.save()
 
-        #expect(launch.versions.count == 1)
-        #expect(launch.versions.first?.appVersion == "2.0")
+        let versions = launch.scopedEntries.compactMap { $0 as? VersionEntry }
+        #expect(versions.count == 1)
+        #expect(versions.first?.appVersion == "2.0")
     }
 }

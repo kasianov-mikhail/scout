@@ -12,7 +12,7 @@ extension MetricKitCrash {
         let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
         let launch = try install.flatMap { try processLaunch(install: $0, context: context) }
 
-        if let launch, launch.sessions.contains(where: \.hasCrashes) {
+        if let launch, launch.scopedEntries.contains(where: { ($0 as? SessionEntry)?.hasCrashes == true }) {
             return
         }
         if launch == nil, isCaughtInProcess {
