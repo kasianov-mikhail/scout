@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24299" systemVersion="25A362" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="IncidentEntry" representedClassName="IncidentEntry" isAbstract="YES" parentEntity="ObservationEntry" syncable="YES" codeGenerationType="none">
+    <entity name="IncidentEntry" representedClassName="IncidentEntry" isAbstract="YES" parentEntity="SessionScopeEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="fingerprint" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
@@ -48,7 +48,7 @@
     <entity name="DoubleMetricsEntry" representedClassName="DoubleMetricsEntry" parentEntity="MetricsEntry" syncable="YES" codeGenerationType="none">
         <attribute name="value" attributeType="Double" usesScalarValueType="YES"/>
     </entity>
-    <entity name="EventEntry" representedClassName="EventEntry" parentEntity="ObservationEntry" syncable="YES" codeGenerationType="none">
+    <entity name="EventEntry" representedClassName="EventEntry" parentEntity="SessionScopeEntry" syncable="YES" codeGenerationType="none">
         <attribute name="eventID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="level" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
@@ -143,7 +143,7 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="MetricsEntry" representedClassName="MetricsEntry" isAbstract="YES" parentEntity="ObservationEntry" syncable="YES" codeGenerationType="none">
+    <entity name="MetricsEntry" representedClassName="MetricsEntry" isAbstract="YES" parentEntity="SessionScopeEntry" syncable="YES" codeGenerationType="none">
         <attribute name="name" attributeType="String"/>
         <attribute name="telemetry" attributeType="String"/>
     </entity>
@@ -157,7 +157,7 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="ScreenEntry" representedClassName="ScreenEntry" parentEntity="ObservationEntry" syncable="YES" codeGenerationType="none">
+    <entity name="ScreenEntry" representedClassName="ScreenEntry" parentEntity="SessionScopeEntry" syncable="YES" codeGenerationType="none">
         <attribute name="endDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="name" attributeType="String"/>
         <attribute name="previous" optional="YES" attributeType="String"/>
@@ -171,7 +171,7 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="ConditionEntry" representedClassName="ConditionEntry" parentEntity="ObservationEntry" syncable="YES" codeGenerationType="none">
+    <entity name="ConditionEntry" representedClassName="ConditionEntry" parentEntity="SessionScopeEntry" syncable="YES" codeGenerationType="none">
         <attribute name="conditionID" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="kind" attributeType="String"/>
         <attribute name="value" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
@@ -181,8 +181,8 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="ObservationEntry" representedClassName="ObservationEntry" isAbstract="YES" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
-        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="observations" inverseEntity="SessionEntry"/>
+    <entity name="SessionScopeEntry" representedClassName="SessionScopeEntry" isAbstract="YES" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
+        <relationship name="session" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="SessionEntry" inverseName="scopedEntries" inverseEntity="SessionEntry"/>
         <fetchIndex name="bySession">
             <fetchIndexElement property="session" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -197,7 +197,7 @@
         <attribute name="osVersion" optional="YES" attributeType="String"/>
         <attribute name="sessionID" attributeType="UUID" usesScalarValueType="NO"/>
         <relationship name="launch" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="LaunchEntry" inverseName="sessions" inverseEntity="LaunchEntry"/>
-        <relationship name="observations" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ObservationEntry" inverseName="session" inverseEntity="ObservationEntry"/>
+        <relationship name="scopedEntries" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="SessionScopeEntry" inverseName="session" inverseEntity="SessionScopeEntry"/>
         <fetchIndex name="bySessionID">
             <fetchIndexElement property="sessionID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>

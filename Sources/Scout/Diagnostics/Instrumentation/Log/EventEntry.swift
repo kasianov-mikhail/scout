@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(EventEntry)
-package final class EventEntry: ObservationEntry {
+package final class EventEntry: SessionScopeEntry {
     package static let recordType = "Event"
 
     @NSManaged var name: String?

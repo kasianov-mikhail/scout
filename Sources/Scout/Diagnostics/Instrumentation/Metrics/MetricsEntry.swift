@@ -14,7 +14,7 @@ package protocol MetricsValued: MetricsEntry {
 }
 
 @objc(MetricsEntry)
-package class MetricsEntry: ObservationEntry {
+package class MetricsEntry: SessionScopeEntry {
     @NSManaged var name: String?
     @NSManaged var telemetry: String?
 }

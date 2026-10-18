@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(ScreenEntry)
-package final class ScreenEntry: ObservationEntry {
+package final class ScreenEntry: SessionScopeEntry {
     package static let recordType = "Screen"
 
     @NSManaged var screenID: UUID

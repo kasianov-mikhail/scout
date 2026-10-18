@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(IncidentEntry)
-package class IncidentEntry: ObservationEntry {
+package class IncidentEntry: SessionScopeEntry {
     @NSManaged var appVersion: String?
     @NSManaged var name: String?
     @NSManaged var fingerprint: String?

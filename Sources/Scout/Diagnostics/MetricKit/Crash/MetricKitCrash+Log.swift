@@ -34,6 +34,6 @@ extension MetricKitCrash {
 
 extension SessionEntry {
     fileprivate var hasCrashes: Bool {
-        observations.contains { $0 is CrashEntry }
+        scopedEntries.contains { $0 is CrashEntry }
     }
 }

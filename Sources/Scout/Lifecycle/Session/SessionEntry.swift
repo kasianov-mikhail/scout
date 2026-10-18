@@ -19,10 +19,10 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
     @NSManaged var channel: String?
     @NSManaged var sessionID: UUID
     @NSManaged var launch: LaunchEntry?
-    @NSManaged var observations: Set<ObservationEntry>
+    @NSManaged var scopedEntries: Set<SessionScopeEntry>
 
     override var references: Set<DateEntry> {
-        observations
+        scopedEntries
     }
 
     // A session spans an interval, so the launch that owns it only ends once the

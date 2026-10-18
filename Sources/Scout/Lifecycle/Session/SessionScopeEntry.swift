@@ -7,8 +7,8 @@
 
 import CoreData
 
-@objc(ObservationEntry)
-package class ObservationEntry: SyncableEntry {
+@objc(SessionScopeEntry)
+package class SessionScopeEntry: SyncableEntry {
     @NSManaged var session: SessionEntry?
 
     var sessionID: UUID? {

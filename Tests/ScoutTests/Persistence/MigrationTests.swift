@@ -107,8 +107,8 @@ struct MigrationTests {
         }
     }
 
-    @Test("A ScoutModel 11 store keeps the session of every observation after migration")
-    func version11ObservationSessionsSurvive() throws {
+    @Test("A ScoutModel 11 store keeps the session of every scoped entry after migration")
+    func version11ScopedSessionsSurvive() throws {
         let store = try TemporaryStore()
         defer { store.tearDown() }
 
@@ -160,10 +160,10 @@ struct MigrationTests {
             resource.name = "CPU"
             resource.kind = "cpu"
 
-            let observations: [ObservationEntry] = [event, screen, condition, metrics, crash, hang, resource]
-            for observation in observations {
-                observation.date = date
-                observation.session = session
+            let scopedEntries: [SessionScopeEntry] = [event, screen, condition, metrics, crash, hang, resource]
+            for scopedEntry in scopedEntries {
+                scopedEntry.date = date
+                scopedEntry.session = session
             }
 
             try seed.save()
@@ -176,12 +176,12 @@ struct MigrationTests {
 
             let entities = ["EventEntry", "ScreenEntry", "ConditionEntry", "IntMetricsEntry", "CrashEntry", "HangEntry", "ResourceEntry"]
             for entity in entities {
-                let observations = try context.fetch(NSFetchRequest<ObservationEntry>(entityName: entity))
-                #expect(observations.count == 1, "\(entity) survives")
-                #expect(observations.allSatisfy { $0.session == session }, "\(entity) keeps its session")
+                let scopedEntries = try context.fetch(NSFetchRequest<SessionScopeEntry>(entityName: entity))
+                #expect(scopedEntries.count == 1, "\(entity) survives")
+                #expect(scopedEntries.allSatisfy { $0.session == session }, "\(entity) keeps its session")
             }
 
-            #expect(session.observations.count == entities.count)
+            #expect(session.scopedEntries.count == entities.count)
         }
     }
 }

@@ -114,7 +114,7 @@ struct MigrationDedupeTests {
             #expect(session.appVersion == "2.0")
             #expect(session.osVersion == "26.0")
             #expect(session.date == earlyDate)
-            #expect(session.observations.count == 1)
+            #expect(session.scopedEntries.count == 1)
 
             let delivery = try #require(session.deliveries.first)
             #expect(delivery.isPending)

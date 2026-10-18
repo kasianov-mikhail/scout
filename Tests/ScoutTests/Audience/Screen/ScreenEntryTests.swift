@@ -44,7 +44,7 @@ struct ScreenEntryTests {
         let object = makeScreen(screenID: UUID())
         object.session = session
 
-        #expect(session.observations == [object])
+        #expect(session.scopedEntries == [object])
         #expect(!object.isPurgeable)
         #expect(!session.isDeletable)
     }

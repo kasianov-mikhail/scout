@@ -8,7 +8,7 @@
 import CoreData
 
 @objc(ConditionEntry)
-package final class ConditionEntry: ObservationEntry {
+package final class ConditionEntry: SessionScopeEntry {
     package static let recordType = "Condition"
 
     @NSManaged var conditionID: UUID
