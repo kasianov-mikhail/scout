@@ -334,6 +334,44 @@ struct ServerContractTests {
         #expect(restored["end_date"] == eventDate.addingTimeInterval(30))
     }
 
+    @Test("Conditions count per kind and version")
+    func conditionSeries() async throws {
+        let database = try makeDatabase()
+        let version = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeCondition(kind: "memory_warning", appVersion: version),
+            makeCondition(kind: "memory_warning", appVersion: version),
+            makeCondition(kind: "thermal_serious", appVersion: version),
+        ])
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(
+                name: ConditionEntry.recordType,
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let conditions = series.filter { $0.version == version }
+
+        #expect(conditions.map(\.category) == ["memory_warning", "thermal_serious"])
+        #expect(conditions.map { $0.points.map(\.value).reduce(0, +) } == [2, 1])
+    }
+
+    @Test("A condition keeps its kind and value")
+    func conditionRoundTrip() async throws {
+        let database = try makeDatabase()
+        let record = makeCondition(kind: "memory_critical", appVersion: "contract")
+
+        try await database.write(record: record)
+        let restored = try await database.lookup(recordName: record.recordID, fields: nil)
+
+        #expect(restored.recordType == "Condition")
+        #expect(restored["category"] == "memory_critical")
+        #expect(restored["value"] == 52_428_800.0)
+        #expect(restored["date"] == eventDate)
+    }
+
     @Test("Exit counts sum per reason and version")
     func exitSeries() async throws {
         let database = try makeDatabase()
@@ -556,6 +594,16 @@ struct ServerContractTests {
     private func makeScreen(name: String, appVersion: String) -> Record {
         var record = Record(recordType: "Screen", recordID: "contract-\(UUID().uuidString)")
         record["category"] = name
+        record["app_version"] = appVersion
+        record["session_id"] = UUID().uuidString
+        record["date"] = eventDate
+        return record
+    }
+
+    private func makeCondition(kind: String, appVersion: String) -> Record {
+        var record = Record(recordType: "Condition", recordID: "contract-\(UUID().uuidString)")
+        record["category"] = kind
+        record["value"] = 52_428_800.0
         record["app_version"] = appVersion
         record["session_id"] = UUID().uuidString
         record["date"] = eventDate

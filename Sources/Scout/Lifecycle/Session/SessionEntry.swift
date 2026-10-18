@@ -26,9 +26,10 @@ package final class SessionEntry: SyncableEntry, HasLaunch {
     @NSManaged var events: Set<EventEntry>
     @NSManaged var metrics: Set<MetricsEntry>
     @NSManaged var screens: Set<ScreenEntry>
+    @NSManaged var conditions: Set<ConditionEntry>
 
     override var references: Set<DateEntry> {
-        let children: [Set<DateEntry>] = [crashes, hangs, events, metrics, screens]
+        let children: [Set<DateEntry>] = [crashes, hangs, events, metrics, screens, conditions]
         return Set(children.joined())
     }
 

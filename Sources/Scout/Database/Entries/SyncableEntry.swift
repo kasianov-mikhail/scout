@@ -29,6 +29,7 @@ extension SyncableEntry {
     static let deliverableTypes: [any DeliverableEntry.Type] = [
         EventEntry.self,
         ScreenEntry.self,
+        ConditionEntry.self,
         SessionEntry.self,
         VisitEntry.self,
         LaunchEntry.self,

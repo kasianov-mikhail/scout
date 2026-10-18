@@ -56,6 +56,7 @@ struct EntityCatalogTests {
             VersionEntry.recordType,
             CrashEntry.recordType,
             ScreenEntry.recordType,
+            ConditionEntry.recordType,
             IntMetricsEntry.recordType,
             DoubleMetricsEntry.recordType,
         ]
