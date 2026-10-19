@@ -51,28 +51,6 @@ extension CachingDatabase: SeriesReader {
 
         return MetricSeries.combined(cached: cached?.records ?? [], fetched: fetched)
     }
-
-    private func cachedSpan(for fingerprint: String, in frozen: Range<Date>) async -> CoveredSpan? {
-        guard let covered = await cache.coveredRange(for: fingerprint) else {
-            return nil
-        }
-        guard covered.lowerBound <= frozen.lowerBound, covered.upperBound > frozen.lowerBound else {
-            return nil
-        }
-
-        let upper = min(covered.upperBound, frozen.upperBound)
-
-        guard let records = await cache.records(for: fingerprint, in: frozen.lowerBound..<upper) else {
-            return nil
-        }
-
-        return CoveredSpan(records: records, upper: upper)
-    }
-}
-
-private struct CoveredSpan {
-    let records: [Record]
-    let upper: Date
 }
 
 private struct CachedPoint {

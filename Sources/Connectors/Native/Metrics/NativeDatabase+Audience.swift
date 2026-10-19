@@ -15,20 +15,14 @@ extension NativeDatabase: AudienceReader {
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
         let window = lookback..<range.upperBound
 
-        async let markers = store.datedIDs(
+        let visits = try await store.datedIDs(
             entity: VisitEntry.recordType,
             dateField: "date",
             idField: "device_id",
             in: window
         )
-        async let sessions = store.datedIDs(
-            entity: SessionEntry.recordType,
-            dateField: "start_date",
-            idField: "device_id",
-            in: window
-        )
 
-        return try await ActivityPoint.points(visits: markers + sessions, in: range)
+        return ActivityPoint.points(visits: visits, in: range)
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {

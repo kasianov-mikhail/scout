@@ -97,6 +97,26 @@ struct CachingDatabaseTests {
         #expect(second.first?.points.map(\.value) == [4, 7])
     }
 
+    @Test("A repeated activity request reads closed days from the cache and fetches the rest")
+    func activityFetchesRemainderOnly() async throws {
+        let base = SpyDatabase()
+        let database = try makeDatabase(base: base)
+        let early = lower.addingTimeInterval(.day)
+        let late = cutoff.addingTimeInterval(.day)
+        base.points = [
+            ActivityPoint(date: early.millisecondsSince1970, dau: 3, wau: 5, mau: 8),
+            ActivityPoint(date: late.millisecondsSince1970, dau: 2, wau: 4, mau: 9),
+        ]
+
+        let first = try await database.activity(in: lower..<upper)
+        let second = try await database.activity(in: lower..<upper)
+
+        #expect(base.activityRanges == [lower..<upper, cutoff..<upper])
+        #expect(first.map(\.date) == [early.millisecondsSince1970, late.millisecondsSince1970])
+        #expect(second.map(\.date) == first.map(\.date))
+        #expect(second.map(\.mau) == [8, 9])
+    }
+
     @Test("Series caches are split by scalar type and category")
     func seriesSeparatesFingerprints() async throws {
         let base = SpyDatabase()
@@ -218,6 +238,8 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var lookups: [String] = []
     var series: [MetricSeries] = []
     var seriesRanges: [Range<Date>] = []
+    var points: [ActivityPoint] = []
+    var activityRanges: [Range<Date>] = []
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         queries.append(query)
@@ -243,7 +265,8 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     }
 
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
-        []
+        activityRanges.append(range)
+        return points.filter { range.lowerBound.startOfDay.millisecondsSince1970 <= $0.date && $0.date < range.upperBound.millisecondsSince1970 }
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
