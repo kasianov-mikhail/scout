@@ -132,6 +132,25 @@ struct EntityCatalogTests {
         #expect(decoded.name == "renew")
     }
 
+    @Test("A lifecycle key splits back into name, category and version, separators included")
+    func lifecycleKeyRoundTrip() {
+        var record = Record(recordType: DailyMetricEntry.recordType, recordID: "m-1")
+        record["name"] = "exit|reason"
+        record["category"] = "watch\\dog"
+        record["app_version"] = "1.2.0"
+
+        guard case .string(let encoded)? = CatalogEntry.metricLifecycleKey(for: record)[CatalogEntry.lifecycleKey] else {
+            Issue.record("The metric carries no lifecycle key")
+            return
+        }
+        let key = LifecycleKey(encoded)
+
+        #expect(key.name == "exit|reason")
+        #expect(key.category == "watch\\dog")
+        #expect(key.version == "1.2.0")
+        #expect(LifecycleKey("||1.0").category == nil)
+    }
+
     @Test("Legacy separator-free keys decode unchanged")
     func seriesKeyDecodesLegacyValues() throws {
         let decoded = try #require(CatalogEntry.decodeSeriesKey("timer|checkout"))

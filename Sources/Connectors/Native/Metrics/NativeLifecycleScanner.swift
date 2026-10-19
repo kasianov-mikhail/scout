@@ -17,77 +17,94 @@ struct NativeLifecycleScanner {
 
     var series: [MetricSeries] {
         get async throws {
-            let isCrash = query.name == MarkerEntry.crashName
-            let dateField = query.name == SessionEntry.recordType ? "start_date" : "date"
+            let range = query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
 
-            let entities = [
-                SessionEntry.recordType,
-                CrashEntry.recordType,
-                HangEntry.recordType,
-                VersionEntry.recordType,
-                ResourceEntry.recordType,
-                ScreenEntry.recordType,
-                ConditionEntry.recordType,
-            ]
-
-            let isDailyMetric = !isCrash && !entities.contains(query.name)
-            let entity = isCrash ? CrashEntry.recordType : isDailyMetric ? DailyMetricEntry.recordType : query.name
-
-            let key = ScanKey(
-                entity: entity,
-                dateField: dateField,
-                name: isDailyMetric ? query.name : nil,
-                range: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
-            )
-
-            let records = try await scans.records(key: key) { [store] in
-                try await store.records(
-                    entity: key.entity,
-                    dateField: key.dateField,
-                    name: key.name,
-                    fields: [key.dateField, "name", "app_version", "install_id", "category", "value"],
-                    in: key.range
-                )
+            guard query.name != MarkerEntry.crashName else {
+                return try await crashedInstalls(range: range).series
             }
 
-            let visits = records.compactMap { LifecycleVisit(record: $0, dateField: dateField, summed: isDailyMetric) }
-
-            let counted = isCrash ? visits.firstPerInstall : visits
+            let source = LifecycleSource(name: query.name)
+            let points = try await store.query(source.entity)
+                .series(source.field, metric: .sum, group: CatalogEntry.lifecycleKey, in: range)
 
             var totals = SeriesTotals()
 
-            for visit in counted {
-                let key = SeriesKey(
+            for point in points {
+                let key = LifecycleKey(point.group)
+
+                guard source.field == nil || key.name == query.name else {
+                    continue
+                }
+
+                let series = SeriesKey(
                     name: query.name,
-                    category: visit.category,
-                    version: query.byVersion ? visit.version : nil
+                    category: key.category,
+                    version: query.byVersion ? key.version : nil
                 )
 
-                totals.add(Double(visit.count), key: key, start: query.bucket.start(of: visit.date))
+                totals.add(point.value, key: series, start: query.bucket.start(of: point.date))
             }
 
             return totals.series
         }
     }
+
+    private func crashedInstalls(range: Range<Date>) async throws -> SeriesTotals {
+        let key = ScanKey(entity: CrashEntry.recordType, dateField: "date", range: range)
+
+        let records = try await scans.records(key: key) { [store] in
+            try await store.records(
+                entity: key.entity,
+                dateField: key.dateField,
+                fields: [key.dateField, "app_version", "install_id"],
+                in: key.range
+            )
+        }
+
+        var totals = SeriesTotals()
+
+        for crash in records.compactMap(CrashVisit.init).firstPerInstall {
+            let key = SeriesKey(name: query.name, category: nil, version: query.byVersion ? crash.version : nil)
+            totals.add(1, key: key, start: query.bucket.start(of: crash.date))
+        }
+
+        return totals
+    }
 }
 
-private struct LifecycleVisit {
+private struct LifecycleSource {
+    let entity: String
+    let field: String?
+
+    init(name: String) {
+        let counted = [
+            SessionEntry.recordType,
+            CrashEntry.recordType,
+            HangEntry.recordType,
+            VersionEntry.recordType,
+            ResourceEntry.recordType,
+            ScreenEntry.recordType,
+            ConditionEntry.recordType,
+        ]
+
+        entity = counted.contains(name) ? name : DailyMetricEntry.recordType
+        field = counted.contains(name) ? nil : "value"
+    }
+}
+
+private struct CrashVisit {
     let date: Date
     let version: String?
     let install: String?
-    let category: String?
-    let count: Int
 
-    init?(record: EntityRecord, dateField: String, summed: Bool) {
-        guard case .date(let date)? = record.values[dateField] else {
+    init?(record: EntityRecord) {
+        guard case .date(let date)? = record.values["date"] else {
             return nil
         }
 
         self.date = date
         self.version = record["app_version"]
         self.install = record["install_id"]
-        self.category = record["category"]
-        self.count = summed ? record["value"] ?? 1 : 1
     }
 }
 
@@ -96,8 +113,8 @@ private struct InstallVersion: Hashable {
     let version: String
 }
 
-extension [LifecycleVisit] {
-    fileprivate var firstPerInstall: [LifecycleVisit] {
+extension [CrashVisit] {
+    fileprivate var firstPerInstall: [CrashVisit] {
         Dictionary(grouping: self) { InstallVersion(install: $0.install ?? "", version: $0.version ?? "") }
             .values
             .compactMap { $0.min { $0.date < $1.date } }

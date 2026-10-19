@@ -63,11 +63,11 @@ extension CatalogEntry {
 }
 
 extension String {
-    fileprivate var escaped: String {
+    var escaped: String {
         replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "|", with: "\\|")
     }
 
-    fileprivate var unescaped: String {
+    var unescaped: String {
         var result = ""
         var isEscaped = false
         for character in self {

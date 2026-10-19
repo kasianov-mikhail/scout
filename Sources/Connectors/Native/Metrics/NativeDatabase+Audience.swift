@@ -37,7 +37,6 @@ extension NativeDatabase: AudienceReader {
         async let sessions = store.records(
             entity: SessionEntry.recordType,
             dateField: "start_date",
-            name: nil,
             fields: ["start_date", "install_id", "os_version"],
             in: range
         )

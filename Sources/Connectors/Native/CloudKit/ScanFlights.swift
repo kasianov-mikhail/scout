@@ -30,6 +30,5 @@ actor ScanFlights {
 struct ScanKey: Hashable {
     let entity: String
     let dateField: String
-    let name: String?
     let range: Range<Date>
 }
