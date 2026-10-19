@@ -9,11 +9,11 @@
 import Foundation
 import SymbolTable
 
-package struct DebugInfo {
-    package let functions: [SymbolTable.Function]
-    package let inlines: [SymbolTable.Inline]
+struct DebugInfo {
+    let functions: [SymbolTable.Function]
+    let inlines: [SymbolTable.Inline]
 
-    package init(image: MachOImage) throws {
+    init(image: MachOImage) throws {
         let sections = DebugSections(image: image)
         var units: [CompileUnit] = []
         var cursor = DataCursor(bytes: sections.info)

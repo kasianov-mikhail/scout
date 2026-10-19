@@ -8,7 +8,7 @@
 import CoreData
 
 extension SessionEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let session: Protected<UUID>
         let launchID: UUID
         var bundle: Bundle = .main

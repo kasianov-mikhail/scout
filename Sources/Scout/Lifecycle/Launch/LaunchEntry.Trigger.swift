@@ -8,7 +8,7 @@
 import CoreData
 
 extension LaunchEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let launchID: UUID
         let installID: UUID
         let processID: Int32

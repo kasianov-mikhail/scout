@@ -8,7 +8,7 @@
 import CoreData
 
 extension InstallEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let installID: UUID
         let deviceID: UUID
 

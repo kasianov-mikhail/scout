@@ -8,7 +8,7 @@
 
 import Foundation
 
-package struct MalformedDWARFError: Error {}
+struct MalformedDWARFError: Error {}
 
 struct DataCursor {
     let bytes: ArraySlice<UInt8>

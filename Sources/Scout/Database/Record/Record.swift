@@ -12,7 +12,7 @@ package struct Record: Equatable, Sendable, Codable {
     package let recordID: String
 
     package var fields: [String: RecordValue] = [:]
-    package var metadata: Data?
+    var metadata: Data?
 
     package init(recordType: String, recordID: String, fields: [String: RecordValue] = [:], metadata: Data? = nil) {
         self.recordType = recordType

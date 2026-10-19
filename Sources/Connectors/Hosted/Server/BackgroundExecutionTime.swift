@@ -15,7 +15,7 @@ import Scout
 
 private let minimumBackgroundTime: TimeInterval = 15
 
-package func requireBackgroundTime() async throws {
+func requireBackgroundTime() async throws {
     #if os(iOS)
         guard await UIApplication.shared.backgroundTimeRemaining > minimumBackgroundTime else {
             throw InsufficientBackgroundTimeError()

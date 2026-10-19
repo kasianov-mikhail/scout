@@ -16,8 +16,8 @@ package struct Crash {
     package let source: IncidentSource
     package let id: String
     package let deviceID: UUID?
-    package let installID: UUID?
-    package let launchID: UUID?
+    let installID: UUID?
+    let launchID: UUID?
     package let sessionID: UUID?
 
     package init(name: String, fingerprint: String, reason: String?, stackTrace: [String], date: Date?, source: IncidentSource, id: String, deviceID: UUID?, installID: UUID?, launchID: UUID?, sessionID: UUID?) {

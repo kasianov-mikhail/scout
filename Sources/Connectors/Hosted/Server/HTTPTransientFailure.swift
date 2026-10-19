@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 extension HTTPDatabaseError: TransientFailure {
-    package var isTransient: Bool {
+    var isTransient: Bool {
         status == 429 || status >= 500
     }
 }

@@ -8,9 +8,9 @@
 import Foundation
 
 package struct SeriesKey: Hashable, Comparable, Sendable {
-    package let name: String
-    package let category: String?
-    package let version: String?
+    let name: String
+    let category: String?
+    let version: String?
 
     package init(name: String, category: String?, version: String?) {
         self.name = name

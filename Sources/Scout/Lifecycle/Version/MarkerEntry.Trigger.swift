@@ -8,7 +8,7 @@
 import CoreData
 
 extension MarkerEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let installID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {

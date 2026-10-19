@@ -9,8 +9,8 @@ import Foundation
 import Scout
 
 package struct DatedID {
-    package let date: Date
-    package let id: String
+    let date: Date
+    let id: String
 
     package init(date: Date, id: String) {
         self.date = date

@@ -12,7 +12,7 @@ package struct Event: Identifiable {
     package let level: EventLevel?
     package let date: Date?
     package let paramCount: Int?
-    package let uuid: UUID?
+    let uuid: UUID?
     package let id: String
     package let installID: UUID?
     package let sessionID: UUID?
