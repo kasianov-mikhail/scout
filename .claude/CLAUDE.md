@@ -8,6 +8,12 @@
 
 - Scout UI strings must always render in source English: use `Text(verbatim: …)` for literals (or `.navigationTitle(en: …)` for titles) so they don't resolve through the host app's `LocalizedStringKey` catalog.
 
+## Dynamic Type
+
+- All Scout UI renders at a fixed text size and does not support Dynamic Type. `HomeView` pins it with `.dynamicTypeSize(.large)` at the root. The single public entry point `scoutHome(isPresented:backends:)` presents `HomeView`.
+- Keep this cap. A new public view or entry point that does not go through `HomeView` gets the same cap.
+- Do not propose Dynamic Type support or removing the cap in plans, reviews, or audits.
+
 ## Lists
 
 - Use only `.listStyle(.plain)` for `List`s; section titles are `Header(title:)` rows (not `Section` headers/footers), with `.listRowSeparator(.hidden)` on non-row content.
