@@ -26,11 +26,11 @@ private func signature(name: String, reason: String?, stackTrace: [String]) -> S
     let normalizedFrames =
         stackTrace
         .lazy
-        .map(\.normalizedFrame)
+        .map(\.normalizedDetail)
         .filter { !$0.isEmpty }
         .prefix(maximumFrameCount)
 
-    return ([name.normalizedText, (reason ?? "").normalizedText] + normalizedFrames)
+    return ([name.normalizedText, (reason ?? "").normalizedDetail] + normalizedFrames)
         .joined(separator: "\n")
 }
 
@@ -39,7 +39,7 @@ extension String {
         SHA256.hash(data: Data(utf8)).map { String(format: "%02x", $0) }.joined()
     }
 
-    fileprivate var normalizedFrame: String {
+    fileprivate var normalizedDetail: String {
         normalizedText
             .replacingOccurrences(of: #"0x[0-9a-f]+"#, with: "0x", options: .regularExpression)
             .replacingOccurrences(of: #"\b\d+\b"#, with: "#", options: .regularExpression)
