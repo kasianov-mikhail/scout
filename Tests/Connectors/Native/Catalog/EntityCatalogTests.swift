@@ -97,7 +97,7 @@ struct EntityCatalogTests {
         record["category"] = "timer"
 
         #expect(
-            EntityCatalog.derivedValues(for: record) == [EntityCatalog.metricSeriesKey: .string("timer|checkout")])
+            EntityCatalog.derivedValues(for: record) == [CatalogEntry.metricSeriesKey: .string("timer|checkout")])
     }
 
     @Test("Entities without a declared derivation derive nothing")
@@ -118,23 +118,23 @@ struct EntityCatalogTests {
         ]
     )
     func seriesKeyRoundTrip(category: String, name: String) throws {
-        let key = EntityCatalog.encodeSeriesKey(category: category, name: name)
-        let decoded = try #require(EntityCatalog.decodeSeriesKey(key))
+        let key = CatalogEntry.encodeSeriesKey(category: category, name: name)
+        let decoded = try #require(CatalogEntry.decodeSeriesKey(key))
         #expect(decoded.category == category)
         #expect(decoded.name == name)
     }
 
     @Test("A packed pipe no longer truncates the category")
     func seriesKeyDoesNotSplitOnPackedPipe() throws {
-        let key = EntityCatalog.encodeSeriesKey(category: "billing|eu", name: "renew")
-        let decoded = try #require(EntityCatalog.decodeSeriesKey(key))
+        let key = CatalogEntry.encodeSeriesKey(category: "billing|eu", name: "renew")
+        let decoded = try #require(CatalogEntry.decodeSeriesKey(key))
         #expect(decoded.category == "billing|eu")
         #expect(decoded.name == "renew")
     }
 
     @Test("Legacy separator-free keys decode unchanged")
     func seriesKeyDecodesLegacyValues() throws {
-        let decoded = try #require(EntityCatalog.decodeSeriesKey("timer|checkout"))
+        let decoded = try #require(CatalogEntry.decodeSeriesKey("timer|checkout"))
         #expect(decoded.category == "timer")
         #expect(decoded.name == "checkout")
     }

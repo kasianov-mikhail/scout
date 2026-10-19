@@ -42,14 +42,14 @@ struct NativeMetricScanner {
         let points = try await store.query(values.metricsEntity).series(
             "value",
             metric: .sum,
-            group: EntityCatalog.metricSeriesKey,
+            group: CatalogEntry.metricSeriesKey,
             in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
         )
 
         var totals = SeriesTotals()
 
         for point in points {
-            guard let (category, metric) = EntityCatalog.decodeSeriesKey(point.group) else {
+            guard let (category, metric) = CatalogEntry.decodeSeriesKey(point.group) else {
                 continue
             }
             guard let key = query.key(metric: metric, category: category) else {
