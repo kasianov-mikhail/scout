@@ -10,7 +10,7 @@ import Scout
 
 extension NativeDatabase: RecordReader {
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
-        try await resolve().page(matching: query, limit: limit, after: nil)
+        try await resolve().page(matching: query, fields: fields, limit: limit, after: nil)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {

@@ -28,26 +28,29 @@ extension QueryBuilder {
 }
 
 extension EntityStore {
-    func page(matching query: RecordQuery, limit: Int, after cursor: FieldCursor?) async throws -> RecordChunk {
+    func page(matching query: RecordQuery, fields: [String]?, limit: Int, after cursor: FieldCursor?) async throws -> RecordChunk {
         let sort = query.primarySort
+        let entity = query.recordType.recordType
 
-        let page = try await query.filters.reduce(self.query(query.recordType.recordType)) { $0.filter($1) }
+        let page = try await query.filters.reduce(self.query(entity)) { $0.filter($1) }
             .sort(sort.field, sort.ascending ? .forward : .reverse)
+            .select(entity: entity, fields: fields)
             .page(size: limit, after: cursor)
 
         return RecordChunk(
             records: page.records.map(Record.init(entityRecord:)),
             cursor: page.cursor.map { next in
                 RecordCursor { _ in
-                    try await self.page(matching: query, limit: limit, after: next)
+                    try await self.page(matching: query, fields: fields, limit: limit, after: next)
                 }
             }
         )
     }
 
-    func records(entity: String, dateField: String, in range: Range<Date>) async throws -> [EntityRecord] {
+    func records(entity: String, dateField: String, fields: [String], in range: Range<Date>) async throws -> [EntityRecord] {
         try await query(entity)
             .filter(dateField, in: range)
+            .select(entity: entity, fields: fields)
             .records(orderedBy: dateField, ascending: true)
     }
 
@@ -55,6 +58,7 @@ extension EntityStore {
         let records = try await records(
             entity: entity,
             dateField: dateField,
+            fields: [dateField, idField],
             in: range
         )
 
@@ -70,6 +74,11 @@ extension EntityStore {
 }
 
 extension QueryBuilder {
+    fileprivate func select(entity: String, fields: [String]?) -> QueryBuilder {
+        guard let fields else { return self }
+        return select(EntityCatalog.fields(entity: entity, names: fields))
+    }
+
     fileprivate func filter(_ filter: RecordQuery.Filter) -> QueryBuilder {
         self.filter(filter.field, filter.storeMatch, filter.value.storeValue)
     }
