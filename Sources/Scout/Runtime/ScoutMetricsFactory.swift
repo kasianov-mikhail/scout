@@ -18,10 +18,13 @@ import Metrics
 /// MetricsSystem.bootstrap(
 ///     MultiplexMetricsHandler(factories: [
 ///         ScoutMetricsFactory(runtime: scout),
-///         StreamMetricsFactory(),
+///         StreamMetricsFactory.standardOutput(),
 ///     ])
 /// )
 /// ```
+///
+/// `StreamMetricsFactory` prints every metric to the console while debugging. It ships
+/// in the `MetricsTestKit` product of swift-metrics 2.11 or later.
 ///
 /// The factory shares the ``Runtime`` it is given, so build the runtime once and pass
 /// the same one here and to ``ScoutLogHandler``.
