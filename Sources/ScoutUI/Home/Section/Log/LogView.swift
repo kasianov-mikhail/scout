@@ -26,18 +26,24 @@ struct LogView: View {
             VStack(spacing: 24) {
                 SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
 
-                LazyVGrid(columns: columns, spacing: 36) {
-                    ForEach(LogCategory.allCases) { category in
-                        NavigationLink {
-                            LogDestination(category: category)
-                        } label: {
-                            TrendCard(
-                                title: category.title,
-                                color: category.color,
-                                trend: log.report?[category] ?? .loading
-                            )
+                if let error = log.error {
+                    ErrorView(description: error.localizedDescription) {
+                        await log.fetchAgain(in: database)
+                    }
+                } else {
+                    LazyVGrid(columns: columns, spacing: 36) {
+                        ForEach(LogCategory.allCases) { category in
+                            NavigationLink {
+                                LogDestination(category: category)
+                            } label: {
+                                TrendCard(
+                                    title: category.title,
+                                    color: category.color,
+                                    trend: log.report?[category] ?? .loading
+                                )
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
