@@ -10,7 +10,12 @@ import Scout
 
 extension HTTPDatabaseError: TransientFailure {
     var isTransient: Bool {
-        status == 429 || status >= 500
+        switch status {
+        case 401, 403, 404, 408, 429, 500...:
+            true
+        default:
+            false
+        }
     }
 }
 
