@@ -10,7 +10,9 @@
 
 ## Dynamic Type
 
-- The dashboard does not support Dynamic Type: `HomeView` pins it with `.dynamicTypeSize(.large)`. Keep this cap, and do not propose Dynamic Type support or removing the cap in plans, reviews, or audits.
+- All Scout UI renders at a fixed text size and does not support Dynamic Type. `HomeView` pins it with `.dynamicTypeSize(.large)` at the root. The single public entry point `scoutHome(isPresented:backends:)` presents `HomeView`.
+- Keep this cap. A new public view or entry point that does not go through `HomeView` gets the same cap.
+- Do not propose Dynamic Type support or removing the cap in plans, reviews, or audits.
 
 ## Lists
 
