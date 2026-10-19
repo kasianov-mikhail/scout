@@ -13,7 +13,7 @@ package struct Session: Identifiable {
     package let id: String
     package let sessionID: UUID?
     package let launchID: UUID?
-    package let installID: UUID?
+    let installID: UUID?
 
     package init(startDate: Date?, endDate: Date?, id: String, sessionID: UUID?, launchID: UUID?, installID: UUID?) {
         self.startDate = startDate

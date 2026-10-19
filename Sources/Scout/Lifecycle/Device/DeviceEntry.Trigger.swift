@@ -8,7 +8,7 @@
 import CoreData
 
 extension DeviceEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let deviceID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {

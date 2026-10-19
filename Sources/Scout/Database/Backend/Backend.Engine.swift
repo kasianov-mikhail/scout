@@ -22,7 +22,7 @@ extension Backend {
                 self.isSecure = isSecure
             }
 
-            package var setupWarning: String? {
+            var setupWarning: String? {
                 guard hasAPIKey, !isSecure else {
                     return nil
                 }

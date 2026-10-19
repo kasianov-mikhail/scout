@@ -15,8 +15,8 @@ private let segmentCommand: UInt32 = 0x19
 private let uuidCommand: UInt32 = 0x1B
 
 package struct MachOImage {
-    package let uuid: UUID
-    package let textAddress: UInt64
+    let uuid: UUID
+    let textAddress: UInt64
     private let sections: [String: ArraySlice<UInt8>]
 
     package init(data: Data) throws {
@@ -67,7 +67,7 @@ package struct MachOImage {
         self.sections = sections
     }
 
-    package func section(name: String) -> ArraySlice<UInt8> {
+    func section(name: String) -> ArraySlice<UInt8> {
         sections[name] ?? []
     }
 

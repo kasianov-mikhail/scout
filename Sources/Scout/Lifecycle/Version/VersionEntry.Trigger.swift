@@ -8,7 +8,7 @@
 import CoreData
 
 extension VersionEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let installID: UUID
         let launchID: UUID
         var bundle: Bundle = .main

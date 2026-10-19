@@ -9,10 +9,10 @@
 import Foundation
 import SymbolTable
 
-package struct LineTable {
-    package let lines: [SymbolTable.Line]
+struct LineTable {
+    let lines: [SymbolTable.Line]
 
-    package init(image: MachOImage) throws {
+    init(image: MachOImage) throws {
         let strings = StringSections(
             debugStrings: image.section(name: "__debug_str"),
             lineStrings: image.section(name: "__debug_line_str")

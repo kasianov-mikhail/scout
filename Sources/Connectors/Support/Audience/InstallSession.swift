@@ -9,9 +9,9 @@ import Foundation
 import Scout
 
 package struct InstallSession: Comparable {
-    package let install: String
-    package let date: Date
-    package let os: String?
+    let install: String
+    let date: Date
+    let os: String?
 
     package init(install: String, date: Date, os: String?) {
         self.install = install

@@ -9,7 +9,7 @@ import Foundation
 
 package struct Launch {
     package let startDate: Date?
-    package let endDate: Date?
+    let endDate: Date?
     package let id: String
     package let launchID: UUID?
     package let installID: UUID?

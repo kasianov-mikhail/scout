@@ -8,7 +8,7 @@
 
 import Foundation
 
-package struct MalformedSymbolTableError: Error {}
+struct MalformedSymbolTableError: Error {}
 
 extension SymbolTable {
     package init(data: Data) throws {

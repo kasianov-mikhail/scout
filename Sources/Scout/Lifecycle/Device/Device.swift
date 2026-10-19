@@ -8,7 +8,7 @@
 import Foundation
 
 package struct Device {
-    package let date: Date?
+    let date: Date?
     package let id: String
     package let deviceID: UUID?
 

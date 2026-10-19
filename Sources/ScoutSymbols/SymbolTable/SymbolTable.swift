@@ -48,7 +48,7 @@ package struct SymbolTable: Equatable, Sendable {
     }
 
     package struct Line: Comparable, Sendable {
-        package let address: UInt64
+        let address: UInt64
         package let location: Location?
 
         package init(address: UInt64, location: Location?) {

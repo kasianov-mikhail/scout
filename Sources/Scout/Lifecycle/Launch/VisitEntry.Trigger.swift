@@ -9,7 +9,7 @@
 import CoreData
 
 extension VisitEntry {
-    package struct Trigger: Command {
+    struct Trigger: Command {
         let launchID: UUID
         var date: Date = Date()
 
