@@ -82,6 +82,7 @@ struct MergePolicyTests {
                                 identity: identity,
                                 context
                             )
+                            try context.save()
                         }
                     } catch {
                         failures.mutate { $0.append(error.localizedDescription) }

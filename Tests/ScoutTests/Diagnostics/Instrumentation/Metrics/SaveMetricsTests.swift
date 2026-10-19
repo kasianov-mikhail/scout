@@ -48,11 +48,4 @@ struct SaveMetricsTests {
         #expect(object.telemetry == "timer")
         #expect(object.value == 1.5)
     }
-
-    @Test("Saves to the context")
-    func savesToContext() throws {
-        try saveMetrics("metric", date: date, category: "counter", value: 1, identity: Identity.stub.snapshot, context)
-
-        #expect(!context.hasChanges)
-    }
 }
