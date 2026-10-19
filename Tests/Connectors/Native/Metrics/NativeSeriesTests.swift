@@ -265,6 +265,67 @@ struct NativeSeriesTests {
         #expect(renew.points.map(\.value) == [2.5])
     }
 
+    @Test("Concurrent crash and crashed-install series share one scan of the crashes")
+    func sharedCrashScan() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = probedDatabase(cloud: cloud)
+
+        for (id, install) in [("c-1", "install-a"), ("c-2", "install-a"), ("c-3", "install-b")] {
+            var crash = Record(recordType: CrashEntry.recordType, recordID: id)
+            crash["name"] = "SIGSEGV"
+            crash["date"] = TestDate.reference.addingTimeInterval(2 * .hour)
+            crash["app_version"] = "1.2.0"
+            crash["install_id"] = install
+            try await database.write(record: crash)
+        }
+        _ = try await database.lifecycleSeries(matching: lifecycleQuery(name: CrashEntry.recordType))
+        cloud.resetRequests()
+
+        async let crashes = database.lifecycleSeries(matching: lifecycleQuery(name: CrashEntry.recordType))
+        async let crashed = database.lifecycleSeries(matching: lifecycleQuery(name: MarkerEntry.crashName))
+
+        #expect(try await crashes.first?.points.map(\.value) == [3])
+        #expect(try await crashed.first?.points.map(\.value) == [2])
+        #expect(cloud.requests[.query] == 1)
+    }
+
+    @Test("A daily metric scan downloads only the records of its own name")
+    func dailyMetricByName() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = probedDatabase(cloud: cloud)
+
+        try await database.write(record: makeExitRecord(id: "x-1", reason: "watchdog", count: 2))
+        try await database.write(record: makeExitRecord(id: "x-2", reason: "normal", count: 3))
+
+        var launch = makeExitRecord(id: "x-3", reason: "400", count: 7)
+        launch["name"] = "launch_time"
+        try await database.write(record: launch)
+
+        _ = try await database.lifecycleSeries(matching: lifecycleQuery(name: ExitReason.metricName))
+        cloud.resetRequests()
+
+        let series = try await database.lifecycleSeries(matching: lifecycleQuery(name: ExitReason.metricName))
+
+        #expect(series.map(\.category) == ["normal", "watchdog"])
+        #expect(cloud.requests.records == 2)
+    }
+
+    private func probedDatabase(cloud: ScoutDBTesting.InMemoryDatabase) -> NativeDatabase {
+        let probe = ConcurrencyProbe(cloud)
+        let registry = SchemaRegistry(database: probe)
+        let store = EntityStore(database: probe, registry: registry)
+        let registration = Task { try await CatalogEntry.publishAll(into: store, registry: registry) }
+
+        return NativeDatabase {
+            try await registration.value
+            return store
+        }
+    }
+
+    private func lifecycleQuery(name: String) -> LifecycleSeriesQuery {
+        LifecycleSeriesQuery(name: name, bucket: .day, byVersion: true, range: range)
+    }
+
     private func makeResourceRecord(id: String, kind: String) -> Record {
         var record = Record(recordType: ResourceEntry.recordType, recordID: id)
         record["name"] = "CPU Exception"

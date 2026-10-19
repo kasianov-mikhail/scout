@@ -13,6 +13,7 @@ private let stores = LazyTable<EntityStore>()
 
 struct NativeDatabase: Sendable {
     let resolve: @Sendable () async throws -> EntityStore
+    let scans = ScanFlights()
 }
 
 extension Backend {

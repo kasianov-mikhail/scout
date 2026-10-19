@@ -13,6 +13,7 @@ import ScoutDB
 struct NativeLifecycleScanner {
     let query: LifecycleSeriesQuery
     let store: EntityStore
+    let scans: ScanFlights
 
     var series: [MetricSeries] {
         get async throws {
@@ -32,17 +33,24 @@ struct NativeLifecycleScanner {
             let isDailyMetric = !isCrash && !entities.contains(query.name)
             let entity = isCrash ? CrashEntry.recordType : isDailyMetric ? DailyMetricEntry.recordType : query.name
 
-            let records = try await store.records(
+            let key = ScanKey(
                 entity: entity,
                 dateField: dateField,
-                fields: [dateField, "name", "app_version", "install_id", "category", "value"],
-                in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
+                name: isDailyMetric ? query.name : nil,
+                range: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             )
 
-            let visits =
-                records
-                .filter { !isDailyMetric || $0["name"] == query.name }
-                .compactMap { LifecycleVisit(record: $0, dateField: dateField, summed: isDailyMetric) }
+            let records = try await scans.records(key: key) { [store] in
+                try await store.records(
+                    entity: key.entity,
+                    dateField: key.dateField,
+                    name: key.name,
+                    fields: [key.dateField, "name", "app_version", "install_id", "category", "value"],
+                    in: key.range
+                )
+            }
+
+            let visits = records.compactMap { LifecycleVisit(record: $0, dateField: dateField, summed: isDailyMetric) }
 
             let counted = isCrash ? visits.firstPerInstall : visits
 
