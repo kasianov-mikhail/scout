@@ -289,8 +289,8 @@ struct NativeSeriesTests {
         #expect(cloud.requests[.query] == 1)
     }
 
-    @Test("A daily metric scan downloads only the records of its own name")
-    func dailyMetricByName() async throws {
+    @Test("A daily metric series reads the sum aggregate, not the records")
+    func dailyMetricFromAggregate() async throws {
         let cloud = ScoutDBTesting.InMemoryDatabase()
         let database = probedDatabase(cloud: cloud)
 
@@ -307,7 +307,8 @@ struct NativeSeriesTests {
         let series = try await database.lifecycleSeries(matching: lifecycleQuery(name: ExitReason.metricName))
 
         #expect(series.map(\.category) == ["normal", "watchdog"])
-        #expect(cloud.requests.records == 2)
+        #expect(series.map { $0.points.map(\.value) } == [[3], [2]])
+        #expect(cloud.requests[.query] == 0)
     }
 
     private func probedDatabase(cloud: ScoutDBTesting.InMemoryDatabase) -> NativeDatabase {

@@ -37,7 +37,10 @@ extension CatalogEntry {
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
             .init(name: "end_date", type: .timestamp),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: lifecycleKey
     )
 
     private static let condition = CatalogEntry(
@@ -48,7 +51,10 @@ extension CatalogEntry {
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: lifecycleKey
     )
 
     private static let session = CatalogEntry(
@@ -62,7 +68,10 @@ extension CatalogEntry {
             .init(name: "os_version", type: .string),
             .init(name: "locale", type: .string),
             .init(name: "channel", type: .string),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "start_date")],
+        derive: lifecycleKey
     )
 
     private static let visit = CatalogEntry(
@@ -97,7 +106,10 @@ extension CatalogEntry {
             .init(name: "date", type: .timestamp),
             .init(name: "app_version", type: .string),
             .init(name: "build_number", type: .string),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: lifecycleKey
     )
 
     private static let incidentFields: [Field] = [
@@ -116,7 +128,10 @@ extension CatalogEntry {
             .init(name: "date", type: .timestamp),
             .init(name: "date_start", type: .timestamp),
             .init(name: "source", type: .string),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: lifecycleKey
     )
 
     private static let hang = CatalogEntry(
@@ -126,7 +141,10 @@ extension CatalogEntry {
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: lifecycleKey
     )
 
     private static let resourceException = CatalogEntry(
@@ -139,7 +157,10 @@ extension CatalogEntry {
             .init(name: "date", type: .timestamp),
             .init(name: "date_start", type: .timestamp),
             .init(name: "source", type: .string),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: lifecycleKey
     )
 
     private static let backtrace = CatalogEntry(
@@ -178,6 +199,9 @@ extension CatalogEntry {
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
             .init(name: "date_start", type: .timestamp),
-        ]
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.sum("value", by: lifecycleKey, at: "date")],
+        derive: metricLifecycleKey
     )
 }
