@@ -19,7 +19,7 @@ extension TelemetryPersisting {
         let label = self.label
         let date = Date()
         let identity = runtime.identity.snapshot
-        persistMetrics { context in
+        runtime.enqueue(urgent: false) { context in
             try saveMetrics(label, date: date, category: category, value: value, identity: identity, context)
         }
     }
@@ -30,7 +30,7 @@ extension TelemetryPersisting {
         let label = self.label
         let date = Date()
         let identity = runtime.identity.snapshot
-        persistMetrics { context in
+        runtime.enqueue(urgent: false) { context in
             try saveMetrics(
                 label, date: date, category: Telemetry.Export.timer.rawValue, value: seconds, identity: identity,
                 context)
@@ -50,30 +50,13 @@ extension TelemetryPersisting {
         let label = self.label
         let date = Date()
         let identity = runtime.identity.snapshot
-        persistMetrics { context in
+        runtime.enqueue(urgent: false) { context in
             try saveMetrics(
                 label, date: date, category: Telemetry.Export.recorder.rawValue, value: value, identity: identity,
                 context)
             try saveMetrics(
                 label, date: date, category: RecorderBuckets.category(for: value), value: 1, identity: identity,
                 context)
-        }
-    }
-
-    private func persistMetrics(_ save: @escaping @Sendable (NSManagedObjectContext) throws -> Void) {
-        let backends = runtime.backends
-        let dispatcher = runtime.dispatcher
-
-        Task {
-            do {
-                try await persistentContainer.performBackgroundTask { context in
-                    context.mergePolicy = NSMergePolicy.scout
-                    try save(context)
-                }
-                try await backends.synchronize(using: dispatcher)
-            } catch {
-                print("Failed to save metrics: \(error)")
-            }
         }
     }
 }
@@ -86,6 +69,4 @@ func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, 
     metrics.date = date
     metrics.name = name
     metrics.session = try context.linkedSession(identity, date: date)
-
-    try context.save()
 }

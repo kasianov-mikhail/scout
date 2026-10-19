@@ -33,6 +33,7 @@ public struct Runtime: Sendable {
     let dispatcher: any Dispatcher
     let screens = Protected(ScreenTracker())
     let conditions = Protected(ConditionLog())
+    let pendingWrites = Protected(PendingWrites())
 }
 
 extension Runtime {
@@ -113,6 +114,7 @@ extension Runtime {
                 recordCurrentConditions()
             },
             AppLifecycle.didEnterBackground: {
+                try await persistentContainer.save(writes: drainPendingWrites())
                 record { $0.suspend() }
                 try await identity.leave()
             },
