@@ -13,10 +13,10 @@ final class IncidentGroupsProvider<Element: RecordDecodable & Incident>: Observa
     @Published var result: ProviderResult<[IncidentGroup<Element>]>?
 
     func fetch(in database: RecordReader) async throws -> [IncidentGroup<Element>] {
-        let chunk = try await database.read(
+        let records: [Element] = try await database.readAll(
             matching: Element.query(),
             fields: Element.desiredKeys
         )
-        return IncidentGroup.groups(from: try chunk.records.map(Element.init))
+        return IncidentGroup.groups(from: records)
     }
 }
