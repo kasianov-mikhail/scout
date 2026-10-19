@@ -77,11 +77,11 @@ struct CatalogPublishTests {
 private actor Outage: CloudDatabase {
     private(set) var saves = 0
 
-    func records(matching query: CKQuery, resultsLimit: Int) async throws -> QueryPage {
+    func records(matching query: CKQuery, desiredKeys: [String]?, resultsLimit: Int) async throws -> QueryPage {
         throw CKError(.networkUnavailable)
     }
 
-    func records(continuingMatchFrom cursor: QueryCursor, resultsLimit: Int) async throws -> QueryPage {
+    func records(continuingMatchFrom cursor: QueryCursor, desiredKeys: [String]?, resultsLimit: Int) async throws -> QueryPage {
         throw CKError(.networkUnavailable)
     }
 
@@ -109,12 +109,12 @@ private actor Outage: CloudDatabase {
 private struct FetchOutage: CloudDatabase {
     let database: any CloudDatabase
 
-    func records(matching query: CKQuery, resultsLimit: Int) async throws -> QueryPage {
-        try await database.records(matching: query, resultsLimit: resultsLimit)
+    func records(matching query: CKQuery, desiredKeys: [String]?, resultsLimit: Int) async throws -> QueryPage {
+        try await database.records(matching: query, desiredKeys: desiredKeys, resultsLimit: resultsLimit)
     }
 
-    func records(continuingMatchFrom cursor: QueryCursor, resultsLimit: Int) async throws -> QueryPage {
-        try await database.records(continuingMatchFrom: cursor, resultsLimit: resultsLimit)
+    func records(continuingMatchFrom cursor: QueryCursor, desiredKeys: [String]?, resultsLimit: Int) async throws -> QueryPage {
+        try await database.records(continuingMatchFrom: cursor, desiredKeys: desiredKeys, resultsLimit: resultsLimit)
     }
 
     func modifyRecords(saving: [CKRecord], deleting: [CKRecord.ID]) async throws {
@@ -148,12 +148,12 @@ final class ConcurrencyProbe: CloudDatabase, @unchecked Sendable {
         get async { await flight.peak }
     }
 
-    func records(matching query: CKQuery, resultsLimit: Int) async throws -> QueryPage {
-        try await tracked { try await database.records(matching: query, resultsLimit: resultsLimit) }
+    func records(matching query: CKQuery, desiredKeys: [String]?, resultsLimit: Int) async throws -> QueryPage {
+        try await tracked { try await database.records(matching: query, desiredKeys: desiredKeys, resultsLimit: resultsLimit) }
     }
 
-    func records(continuingMatchFrom cursor: QueryCursor, resultsLimit: Int) async throws -> QueryPage {
-        try await tracked { try await database.records(continuingMatchFrom: cursor, resultsLimit: resultsLimit) }
+    func records(continuingMatchFrom cursor: QueryCursor, desiredKeys: [String]?, resultsLimit: Int) async throws -> QueryPage {
+        try await tracked { try await database.records(continuingMatchFrom: cursor, desiredKeys: desiredKeys, resultsLimit: resultsLimit) }
     }
 
     func modifyRecords(saving: [CKRecord], deleting: [CKRecord.ID]) async throws {

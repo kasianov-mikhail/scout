@@ -35,6 +35,7 @@ struct NativeLifecycleScanner {
             let records = try await store.records(
                 entity: entity,
                 dateField: dateField,
+                fields: [dateField, "name", "app_version", "install_id", "category", "value"],
                 in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             )
 

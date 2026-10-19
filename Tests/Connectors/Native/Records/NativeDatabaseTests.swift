@@ -41,6 +41,18 @@ struct NativeDatabaseTests {
         #expect(record["param_count"] == Int64(2))
     }
 
+    @Test("A read fetches only the asked fields and the sort field, and skips names the entity does not define")
+    func selectedFields() async throws {
+        try await database.write(record: makeEventRecord(id: "e-1", name: "purchase"))
+
+        let chunk = try await database.read(matching: RecordQuery(recordType: Event.self), fields: ["name", "uuid", "ghost"])
+        let record = try #require(chunk.records.first)
+
+        #expect(Set(record.fields.keys) == ["name", "uuid", "date"])
+        #expect(record["name"] == "purchase")
+        #expect(record["uuid"] == "e-1")
+    }
+
     @Test("A symbol file is stored as a CloudKit asset and reads back as bytes")
     func symbolFileAsset() async throws {
         var record = Record(recordType: BundledSymbols.fileType, recordID: "s-1")

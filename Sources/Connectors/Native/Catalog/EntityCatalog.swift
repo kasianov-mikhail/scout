@@ -19,4 +19,9 @@ enum EntityCatalog {
         let fields = CatalogEntry.entries.first { $0.entity == entity }?.fields ?? []
         return fields.filter { $0.type == .asset }.map(\.name)
     }
+
+    static func fields(entity: String, names: [String]) -> [String] {
+        let known = Set(CatalogEntry.entries.first { $0.entity == entity }?.fields.map(\.name) ?? [])
+        return names.filter(known.contains)
+    }
 }
