@@ -36,7 +36,59 @@ extension CachingDatabase: AudienceReader {
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
-        try await base.retention(in: range)
+        let lower = range.lowerBound.startOfWeek
+        let horizon = TimeInterval((RetentionCohort.dayOffsets.last ?? 0) + 1) * .day
+        let frozenUpper = min(range.upperBound, now().startOfWeek.addingWeek(-1).addingTimeInterval(-horizon).startOfWeek)
+
+        guard lower < frozenUpper else {
+            return try await base.retention(in: lower..<range.upperBound)
+        }
+
+        let fingerprint = [scope, "retention"].joined(separator: "|")
+        let cached = await cachedSpan(for: fingerprint, in: lower..<frozenUpper)
+        let cachedUpper = cached?.upper ?? lower
+        let cohorts = cached?.records.compactMap(RetentionCohort.init(record:)) ?? []
+
+        guard cachedUpper < range.upperBound else {
+            return cohorts.sorted()
+        }
+
+        let fetched = try await base.retention(in: cachedUpper..<range.upperBound)
+
+        if cachedUpper < frozenUpper {
+            await cache.store(fetched.compactMap(\.record), for: fingerprint, covering: cachedUpper..<frozenUpper)
+        }
+
+        return (cohorts + fetched).sorted()
+    }
+}
+
+extension RetentionCohort {
+    fileprivate init?(record: Record) {
+        let payload: Data? = record["payload"]
+
+        guard let payload else {
+            return nil
+        }
+
+        do {
+            self = try JSONDecoder().decode(RetentionCohort.self, from: payload)
+        } catch {
+            print("Failed to decode a cached retention cohort: \(error)")
+            return nil
+        }
+    }
+
+    fileprivate var record: Record? {
+        do {
+            var record = Record(recordType: "RetentionCohort", recordID: UUID().uuidString)
+            record["date"] = id
+            record["payload"] = try JSONEncoder().encode(self)
+            return record
+        } catch {
+            print("Failed to encode a retention cohort for the cache: \(error)")
+            return nil
+        }
     }
 }
 
