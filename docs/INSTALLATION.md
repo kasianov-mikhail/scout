@@ -24,7 +24,7 @@ https://github.com/kasianov-mikhail/scout.git
 Or add it to your `Package.swift`:
 
 ```swift
-.package(url: "https://github.com/kasianov-mikhail/scout.git", from: "0.3.0")
+.package(url: "https://github.com/kasianov-mikhail/scout.git", from: "0.4.0")
 ```
 
 Then add the products your target needs. `Scout` carries the runtime and the handlers; the backend it syncs to comes from a connector, so a CloudKit setup takes `NativeConnector` too:
