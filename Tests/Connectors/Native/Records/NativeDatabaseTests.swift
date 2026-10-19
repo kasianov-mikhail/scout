@@ -221,11 +221,11 @@ struct NativeDatabaseTests {
         #expect(record["model"] == "iPhone16,1")
     }
 
-    @Test("Activity derives DAU, WAU, and MAU from sessions")
+    @Test("Activity derives DAU, WAU, and MAU from visit markers")
     func activity() async throws {
-        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
-        try await database.write(record: makeSessionRecord(id: "s-2", device: "b", day: 0))
-        try await database.write(record: makeSessionRecord(id: "s-3", device: "a", day: 1))
+        try await database.write(record: makeVisitRecord(device: "a", day: 0))
+        try await database.write(record: makeVisitRecord(device: "b", day: 0))
+        try await database.write(record: makeVisitRecord(device: "a", day: 1))
 
         let range = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
         let points = try await database.activity(in: range)
@@ -237,21 +237,13 @@ struct NativeDatabaseTests {
         #expect(points.last?.mau == 2)
     }
 
-    @Test("Activity merges visit markers with sessions without double counting")
-    func activityFromMarkers() async throws {
-        try await database.write(record: makeVisitRecord(device: "a", day: 0))
-        try await database.write(record: makeVisitRecord(device: "b", day: 0))
+    @Test("Activity reads visit markers only, not sessions")
+    func activityIgnoresSessions() async throws {
         try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
-        try await database.write(record: makeVisitRecord(device: "a", day: 1))
 
         let range = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
-        let points = try await database.activity(in: range)
 
-        #expect(points.count == 2)
-        #expect(points.first?.dau == 2)
-        #expect(points.last?.dau == 1)
-        #expect(points.last?.wau == 2)
-        #expect(points.last?.mau == 2)
+        #expect(try await database.activity(in: range).isEmpty)
     }
 }
 
