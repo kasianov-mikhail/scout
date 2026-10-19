@@ -65,6 +65,7 @@ runs:
           -scheme Scout-Package \
           -configuration ${{ inputs.configuration }} \
           ENABLE_TESTABILITY=YES \
+          COPY_PHASE_STRIP=NO \
           -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
           -clonedSourcePackagesDirPath /tmp/spm \
           -skipMacroValidation \
@@ -77,6 +78,7 @@ runs:
           -scheme Scout-Package \
           -configuration ${{ inputs.configuration }} \
           ENABLE_TESTABILITY=YES \
+          COPY_PHASE_STRIP=NO \
           -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
           -clonedSourcePackagesDirPath /tmp/spm \
           -skipMacroValidation \
