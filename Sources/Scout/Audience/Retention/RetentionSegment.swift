@@ -7,7 +7,7 @@
 
 import Foundation
 
-package struct RetentionSegment: Identifiable, Hashable, Sendable {
+package struct RetentionSegment: Identifiable, Hashable, Codable, Sendable {
     package let name: String
     package let size: Int
     package let retention: [Double?]

@@ -117,6 +117,24 @@ struct CachingDatabaseTests {
         #expect(second.map(\.mau) == [8, 9])
     }
 
+    @Test("A repeated retention request reads closed cohorts from the cache and fetches the rest from a week start")
+    func retentionFetchesRemainderOnly() async throws {
+        let base = SpyDatabase()
+        let now = Date(timeIntervalSince1970: 20_000_000)
+        let database = CachingDatabase(base: base, scope: "test", cache: try makeRecordCache(), now: { now }, types: [])
+        let frozenUpper = now.startOfWeek.addingWeek(-1).addingTimeInterval(-31 * .day).startOfWeek
+        let closed = RetentionCohort(id: lower.startOfWeek.addingWeek(2), size: 4, retention: [1, 0.5, nil], segments: [])
+        let open = RetentionCohort(id: frozenUpper.addingWeek(1), size: 2, retention: [1, nil, nil], segments: [])
+        base.cohorts = [closed, open]
+
+        let first = try await database.retention(in: lower..<now)
+        let second = try await database.retention(in: lower..<now)
+
+        #expect(base.retentionRanges == [lower.startOfWeek..<now, frozenUpper..<now])
+        #expect(first == [closed, open])
+        #expect(second == [closed, open])
+    }
+
     @Test("Series caches are split by scalar type and category")
     func seriesSeparatesFingerprints() async throws {
         let base = SpyDatabase()
@@ -240,6 +258,8 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var seriesRanges: [Range<Date>] = []
     var points: [ActivityPoint] = []
     var activityRanges: [Range<Date>] = []
+    var cohorts: [RetentionCohort] = []
+    var retentionRanges: [Range<Date>] = []
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         queries.append(query)
@@ -270,7 +290,8 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
-        []
+        retentionRanges.append(range)
+        return cohorts.filter { range.contains($0.id) }
     }
 
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
