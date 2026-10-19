@@ -22,6 +22,11 @@ enum EntityCatalog {
         return fields.filter { $0.type == .asset }.map(\.name)
     }
 
+    static func fields(entity: String, names: [String]) -> [String] {
+        let known = Set(CatalogEntry.entries.first { $0.entity == entity }?.fields.map(\.name) ?? [])
+        return names.filter(known.contains)
+    }
+
     static func encodeSeriesKey(category: String, name: String) -> String {
         category.escaped + "|" + name.escaped
     }

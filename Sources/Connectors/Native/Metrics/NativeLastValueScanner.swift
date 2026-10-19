@@ -18,6 +18,7 @@ struct NativeLastValueScanner {
         let records = try await store.records(
             entity: values.metricsEntity,
             dateField: "date",
+            fields: ["date", "name", "category", "value"],
             in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
         )
 
