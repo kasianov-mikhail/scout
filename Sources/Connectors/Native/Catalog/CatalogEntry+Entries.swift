@@ -12,9 +12,7 @@ import ScoutDB
 
 extension CatalogEntry {
     static let entries: [CatalogEntry] = [
-        event, screen, condition, session, visit, launch, install, device, version, crash, hang, resourceException, backtrace, symbols, symbolsFile, dailyMetric,
-        metric(entity: IntMetricsEntry.recordType, valueType: .int),
-        metric(entity: DoubleMetricsEntry.recordType, valueType: .double),
+        event, screen, condition, session, visit, launch, install, device, version, crash, hang, resourceException, backtrace, symbols, symbolsFile, dailyMetric, intMetric, doubleMetric,
     ]
 
     private static let event = CatalogEntry(
@@ -102,13 +100,16 @@ extension CatalogEntry {
         ]
     )
 
+    private static let incidentFields: [Field] = [
+        .init(name: "name", type: .text),
+        .init(name: "fingerprint", type: .string),
+        .init(name: "reason", type: .string),
+        .init(name: "stack_trace", type: .bytes),
+    ]
+
     private static let crash = CatalogEntry(
         entity: CrashEntry.recordType,
-        fields: [
-            .init(name: "name", type: .text),
-            .init(name: "fingerprint", type: .string),
-            .init(name: "reason", type: .string),
-            .init(name: "stack_trace", type: .bytes),
+        fields: incidentFields + [
             .init(name: "threads", type: .bytes),
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
@@ -120,15 +121,24 @@ extension CatalogEntry {
 
     private static let hang = CatalogEntry(
         entity: HangEntry.recordType,
-        fields: [
-            .init(name: "name", type: .text),
-            .init(name: "fingerprint", type: .string),
-            .init(name: "reason", type: .string),
-            .init(name: "stack_trace", type: .bytes),
+        fields: incidentFields + [
             .init(name: "duration", type: .double),
             .init(name: "session_id", type: .string),
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
+        ]
+    )
+
+    private static let resourceException = CatalogEntry(
+        entity: ResourceEntry.recordType,
+        fields: incidentFields + [
+            .init(name: "category", type: .string),
+            .init(name: "value", type: .double),
+            .init(name: "session_id", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "date_start", type: .timestamp),
+            .init(name: "source", type: .string),
         ]
     )
 
@@ -159,23 +169,6 @@ extension CatalogEntry {
         ]
     )
 
-    private static let resourceException = CatalogEntry(
-        entity: ResourceEntry.recordType,
-        fields: [
-            .init(name: "name", type: .text),
-            .init(name: "fingerprint", type: .string),
-            .init(name: "reason", type: .string),
-            .init(name: "stack_trace", type: .bytes),
-            .init(name: "category", type: .string),
-            .init(name: "value", type: .double),
-            .init(name: "session_id", type: .string),
-            .init(name: "app_version", type: .string),
-            .init(name: "date", type: .timestamp),
-            .init(name: "date_start", type: .timestamp),
-            .init(name: "source", type: .string),
-        ]
-    )
-
     private static let dailyMetric = CatalogEntry(
         entity: DailyMetricEntry.recordType,
         fields: [
@@ -187,28 +180,4 @@ extension CatalogEntry {
             .init(name: "date_start", type: .timestamp),
         ]
     )
-
-    private static func metric(entity: String, valueType: FieldType) -> CatalogEntry {
-        CatalogEntry(
-            entity: entity,
-            fields: [
-                .init(name: "name", type: .text),
-                .init(name: "category", type: .string),
-                .init(name: "session_id", type: .string),
-                .init(name: EntityCatalog.metricSeriesKey, type: .string),
-                .init(name: "value", type: valueType),
-                .init(name: "date", type: .timestamp),
-            ],
-            aggregates: [.sum("value", by: EntityCatalog.metricSeriesKey, at: "date")],
-            derive: seriesKey
-        )
-    }
-
-    private static func seriesKey(for record: Record) -> [String: ScoutDB.RecordValue] {
-        let category: String? = record["category"]
-        let name: String? = record["name"]
-        let key = EntityCatalog.encodeSeriesKey(category: category ?? "", name: name ?? "")
-
-        return [EntityCatalog.metricSeriesKey: .string(key)]
-    }
 }
