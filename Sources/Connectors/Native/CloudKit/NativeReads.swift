@@ -47,8 +47,9 @@ extension EntityStore {
         )
     }
 
-    func records(entity: String, dateField: String, fields: [String], in range: Range<Date>) async throws -> [EntityRecord] {
+    func records(entity: String, dateField: String, name: String?, fields: [String], in range: Range<Date>) async throws -> [EntityRecord] {
         try await query(entity)
+            .named(name)
             .filter(dateField, in: range)
             .select(entity: entity, fields: fields)
             .records(orderedBy: dateField, ascending: true)
@@ -58,6 +59,7 @@ extension EntityStore {
         let records = try await records(
             entity: entity,
             dateField: dateField,
+            name: nil,
             fields: [dateField, idField],
             in: range
         )
@@ -74,6 +76,11 @@ extension EntityStore {
 }
 
 extension QueryBuilder {
+    fileprivate func named(_ name: String?) -> QueryBuilder {
+        guard let name else { return self }
+        return filter("name", .equals, .string(name))
+    }
+
     fileprivate func select(entity: String, fields: [String]?) -> QueryBuilder {
         guard let fields else { return self }
         return select(EntityCatalog.fields(entity: entity, names: fields))

@@ -14,7 +14,7 @@ extension NativeDatabase: SeriesReader {
     }
 
     func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
-        try await NativeLifecycleScanner(query: query, store: resolve()).series
+        try await NativeLifecycleScanner(query: query, store: resolve(), scans: scans).series
     }
 
     func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
