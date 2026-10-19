@@ -33,6 +33,33 @@ struct CrashFingerprintTests {
         #expect(first.value == second.value)
     }
 
+    @Test("Normalizes addresses and numbers in the reason")
+    func normalizesUnstableReasonParts() {
+        let first = CrashFingerprint(
+            name: "NSInvalidArgumentException",
+            reason: "-[NSNull length]: unrecognized selector sent to instance 0x600001A2C0F0",
+            stackTrace: ["functionA"]
+        )
+        let second = CrashFingerprint(
+            name: "NSInvalidArgumentException",
+            reason: "-[NSNull length]: unrecognized selector sent to instance 0x6000039F1E40",
+            stackTrace: ["functionA"]
+        )
+        let third = CrashFingerprint(
+            name: "NSRangeException",
+            reason: "index 7 beyond bounds [0 .. 3]",
+            stackTrace: ["functionA"]
+        )
+        let fourth = CrashFingerprint(
+            name: "NSRangeException",
+            reason: "index 12 beyond bounds [0 .. 9]",
+            stackTrace: ["functionA"]
+        )
+
+        #expect(first.value == second.value)
+        #expect(third.value == fourth.value)
+    }
+
     @Test("Separates different crash signatures")
     func separatesDifferentSignatures() {
         let first = CrashFingerprint(name: "SIGABRT", reason: "Fatal error", stackTrace: ["functionA"])
