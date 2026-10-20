@@ -30,11 +30,9 @@ extension NSManagedObjectModel {
         guard let modelURL = Bundle.module.url(forResource: "ScoutModel", withExtension: "momd") else {
             fatalError("Failed to find data model")
         }
-
         guard let model = NSManagedObjectModel(contentsOf: modelURL) else {
             fatalError("Failed to create model from file: \(modelURL)")
         }
-
         return model
     }()
 }
@@ -61,11 +59,6 @@ extension NSPersistentContainer {
         }
 
         viewContext.mergePolicy = NSMergePolicy.scout
-
-        // Delivery runs on the view context while every record is written on a
-        // background one, so without merging those saves the sender compares
-        // stale snapshots: a record filled in mid-send counts as delivered and
-        // a requeue from a background context is never seen again.
         viewContext.automaticallyMergesChangesFromParent = true
     }
 }

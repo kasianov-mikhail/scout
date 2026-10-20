@@ -7,7 +7,7 @@
 
 import CoreData
 
-@MainActor extension Backend {
+extension Backend {
     func deliver<T: DeliverableEntry>(_ type: T.Type, in context: NSManagedObjectContext) async {
         do {
             try await RecordSender<T>(backend: self).deliver(in: context)

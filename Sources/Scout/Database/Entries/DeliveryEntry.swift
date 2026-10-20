@@ -10,6 +10,7 @@ import CoreData
 @objc(DeliveryEntry)
 final class DeliveryEntry: NSManagedObject {
     static let maxAttempts = 10
+    static let pageSize = 400
 
     @NSManaged var backendID: String
     @NSManaged var isPending: Bool

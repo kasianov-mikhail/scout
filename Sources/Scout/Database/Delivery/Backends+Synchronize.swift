@@ -10,14 +10,16 @@
 extension [Backend] {
     @MainActor
     func synchronize(using dispatcher: Dispatcher) async throws {
-        let context = persistentContainer.viewContext
-
         try await dispatcher.performEnsuringBackground {
             try await persistentContainer.performBackgroundTask { context in
                 context.mergePolicy = NSMergePolicy.scout
                 try SyncableEntry.plan(backends: self, in: context)
                 try DateEntry.cleanup(backends: self, in: context)
             }
+
+            let context = persistentContainer.newBackgroundContext()
+            context.mergePolicy = NSMergePolicy.scout
+            context.automaticallyMergesChangesFromParent = true
 
             await withTaskGroup(of: Void.self) { group in
                 for backend in await available {
