@@ -40,6 +40,11 @@ struct CacheSection: View {
             } label: {
                 Text(verbatim: "Clear Cache")
             }
+
+            Button(role: .cancel) {
+            } label: {
+                Text(verbatim: "Cancel")
+            }
         } message: {
             Text(verbatim: "Charts and lists will reload from the backend on their next refresh.")
         }
