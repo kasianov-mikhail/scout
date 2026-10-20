@@ -5,7 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
+@preconcurrency import CoreData
 import Foundation
 import Testing
 
@@ -81,6 +81,20 @@ struct DeliverTests {
 
         #expect(cloud.records.count(of: "Event") == 1)
         #expect(server.records.count(of: "Event") == 1)
+    }
+
+    @Test("A backlog larger than a page goes out in one pass")
+    func backlogDrainsInPages() async throws {
+        for _ in 0...DeliveryEntry.pageSize {
+            EventEntry.stub(name: "login", in: context)
+        }
+        try context.save()
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+
+        try await deliver(EventEntry.self, to: cloudBackend)
+
+        #expect(cloud.records.count(of: "Event") == DeliveryEntry.pageSize + 1)
+        #expect(cloud.writeCount == 2)
     }
 
     @Test("A failing backend leaves its row outstanding without blocking the others")
