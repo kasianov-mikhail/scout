@@ -105,9 +105,7 @@ private struct RangeSheetPreviewHost: View {
             .buttonStyle(.borderedProminent)
 
             if let selection {
-                let lower = selection.lowerBound.formatted(date: .abbreviated, time: .omitted)
-                let upper = selection.upperBound.formatted(date: .abbreviated, time: .omitted)
-                Text(verbatim: "\(lower) – \(upper)")
+                Text(verbatim: selection.label(using: rangeDateFormatter))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
