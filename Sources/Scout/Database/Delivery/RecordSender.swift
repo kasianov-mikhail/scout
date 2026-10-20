@@ -23,26 +23,19 @@ package protocol TransientFailure: Error {
     var isTransient: Bool { get }
 }
 
+private struct Outcome {
+    var delivered: [Int] = []
+    var rejected: [Int: any Error] = [:]
+    var error: (any Error)?
+}
+
 extension RecordSender {
     func deliver(in context: NSManagedObjectContext) async throws {
-        let request = NSFetchRequest<T>(entityName: String(describing: T.self))
+        let request = NSFetchRequest<T>(entityName: String(describing: T.self), pendingBackendID: id)
+        var count = DeliveryEntry.pageSize
 
-        request.predicate = NSPredicate(
-            format: """
-                SUBQUERY(deliveries, $d, \
-                $d.backendID == %@ AND $d.isPending == YES AND $d.attempts < %d\
-                ).@count > 0
-                """,
-            id,
-            DeliveryEntry.maxAttempts
-        )
-        request.relationshipKeyPathsForPrefetching = ["deliveries"]
-        request.fetchLimit = DeliveryEntry.pageSize
-
-        var objects: [T] = []
-
-        repeat {
-            objects = try await context.perform {
+        while count == DeliveryEntry.pageSize {
+            let objects = try await context.perform {
                 try context.fetch(request).filter {
                     $0.delivery(for: id)?.isPending == true
                 }
@@ -50,79 +43,63 @@ extension RecordSender {
 
             guard !objects.isEmpty else { return }
 
-            do {
-                try await send(objects, in: context)
-            } catch {
-                try await save(context: context)
-                throw error
+            let records = await context.perform {
+                objects.map(\.record)
+            }
+            let outcome = await send(records)
+
+            try await context.perform {
+                for index in outcome.delivered where objects[index].record == records[index] {
+                    objects[index].delivery(for: id)?.isPending = false
+                }
+                for (index, error) in outcome.rejected {
+                    guard let delivery = objects[index].delivery(for: id) else {
+                        continue
+                    }
+                    delivery.attempts += 1
+
+                    if delivery.attempts >= DeliveryEntry.maxAttempts {
+                        print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
+                    }
+                }
+                if context.hasChanges {
+                    try context.save()
+                }
+                if let error = outcome.error {
+                    throw error
+                }
             }
 
-            try await save(context: context)
-        } while objects.count == DeliveryEntry.pageSize
-    }
-
-    private func save(context: NSManagedObjectContext) async throws {
-        try await context.perform {
-            if context.hasChanges {
-                try context.save()
-            }
+            count = objects.count
         }
     }
 
-    private func send(_ objects: [T], in context: NSManagedObjectContext) async throws {
-        var batches = [objects]
+    private func send(_ records: [Record]) async -> Outcome {
+        var outcome = Outcome()
+        var batches = [records[...]]
         var probes = 32
-        var rejection: (any Error)?
 
         while probes > 0, let batch = batches.popLast() {
             probes -= 1
 
             do {
-                try await write(batch, in: context)
-            } catch let error as CancellationError {
-                throw error
-            } catch let error as any TransientFailure where error.isTransient {
-                throw error
+                try await database.write(records: Array(batch))
+                outcome.delivered += batch.indices
             } catch {
-                rejection = error
-                batches += await narrow(batch, after: error, in: context)
+                outcome.error = error
+
+                if error is CancellationError || (error as? any TransientFailure)?.isTransient == true {
+                    return outcome
+                }
+                if batch.count == 1 {
+                    outcome.rejected[batch.startIndex] = error
+                } else {
+                    let half = batch.startIndex + batch.count / 2
+                    batches += [batch[half...], batch[..<half]]
+                }
             }
         }
 
-        if let rejection {
-            throw rejection
-        }
-    }
-
-    private func narrow(_ batch: [T], after error: any Error, in context: NSManagedObjectContext) async -> [[T]] {
-        guard batch.count == 1 else {
-            let half = batch.count / 2
-            return [Array(batch[half...]), Array(batch[..<half])]
-        }
-
-        await context.perform {
-            let delivery = batch[0].delivery(for: id)
-            delivery?.attempts += 1
-
-            if let delivery, delivery.attempts >= DeliveryEntry.maxAttempts {
-                print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
-            }
-        }
-
-        return []
-    }
-
-    private func write(_ objects: [T], in context: NSManagedObjectContext) async throws {
-        let records = await context.perform {
-            objects.map(\.record)
-        }
-
-        try await database.write(records: records)
-
-        await context.perform {
-            for (object, record) in zip(objects, records) where object.record == record {
-                object.delivery(for: id)?.isPending = false
-            }
-        }
+        return outcome
     }
 }
