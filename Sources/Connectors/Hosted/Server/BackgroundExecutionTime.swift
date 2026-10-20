@@ -17,7 +17,10 @@ private let minimumBackgroundTime: TimeInterval = 15
 
 func requireBackgroundTime() async throws {
     #if os(iOS)
-        guard await UIApplication.shared.backgroundTimeRemaining > minimumBackgroundTime else {
+        let isStarved = await MainActor.run {
+            UIApplication.shared.applicationState == .background && UIApplication.shared.backgroundTimeRemaining <= minimumBackgroundTime
+        }
+        guard !isStarved else {
             throw InsufficientBackgroundTimeError()
         }
     #endif

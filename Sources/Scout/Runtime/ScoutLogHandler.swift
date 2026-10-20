@@ -5,11 +5,13 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import CoreData
 import Foundation
 import Logging
 
 /// A `swift-log` handler that records every log event and syncs it to the given backends.
+///
+/// Events are saved and synced in batches about once a second, so a burst of log lines
+/// costs one write. An error or a critical event saves the batch right away.
 ///
 /// Bootstrap it on its own, or multiplex it with handlers of your own — Scout claims no
 /// exclusive hold on the logging system:
@@ -58,16 +60,8 @@ public struct ScoutLogHandler: LogHandler {
         let date = Date()
         let identity = runtime.identity.snapshot
 
-        Task {
-            do {
-                try await persistentContainer.performBackgroundTask { context in
-                    context.mergePolicy = NSMergePolicy.scout
-                    try event.log(date: date, identity: identity, context: context)
-                }
-                try await runtime.backends.synchronize(using: runtime.dispatcher)
-            } catch {
-                print("Failed to save log: \(error)")
-            }
+        runtime.enqueue(urgent: event.level >= .error) { context in
+            try event.log(date: date, identity: identity, context: context)
         }
     }
 }

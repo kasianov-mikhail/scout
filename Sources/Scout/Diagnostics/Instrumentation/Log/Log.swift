@@ -22,8 +22,6 @@ extension LogEvent {
             object.params = try JSONEncoder().encode(params)
             object.paramCount = Int64(params.count)
         }
-
-        try context.save()
     }
 }
 

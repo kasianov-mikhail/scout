@@ -13,6 +13,7 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
     let extent: ChartExtent<Period>
     let formatter: KeyPath<Double, String>
 
+    @Environment(\.database) private var database
     @StateObject var provider: MetricDistributionProvider<H>
 
     init(name: String, categories: [String], extent: ChartExtent<Period>, formatter: KeyPath<Double, String>, provider: MetricDistributionProvider<H>? = nil) {
@@ -34,7 +35,11 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
                         formatter: formatter
                     )
                 }
-            default:
+            case .failure(let error):
+                ErrorRow(description: error.localizedDescription) {
+                    await provider.fetchAgain(in: database)
+                }
+            case nil:
                 EmptyView()
             }
         }
@@ -82,5 +87,26 @@ struct MetricDistributionSection<H: QuantileHistogram>: View {
             )
         }
         .monospacedNavigationTitle(en: "payload_size")
+    }
+}
+
+#Preview("Failure") {
+    let provider = MetricDistributionProvider<LatencyHistogram>(
+        .failure(URLError(.timedOut)),
+        name: "http_request",
+        categories: []
+    )
+
+    return NavigationStack {
+        InsetList {
+            MetricDistributionSection(
+                name: "http_request",
+                categories: [],
+                extent: ChartExtent(period: .today),
+                formatter: \TimeInterval.duration,
+                provider: provider
+            )
+        }
+        .monospacedNavigationTitle(en: "http_request")
     }
 }
