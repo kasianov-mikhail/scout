@@ -30,7 +30,7 @@ final class CacheStatus: ObservableObject {
         case 0:
             "Empty"
         case let bytes?:
-            bytes.formatted(.byteCount(style: .file))
+            bytes.formatted(.byteCount(style: .file).locale(Locale(identifier: "en_US")))
         }
     }
 
