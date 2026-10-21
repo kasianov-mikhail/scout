@@ -19,7 +19,7 @@ struct MetricsContent<T: ChartNumeric>: View {
         self.period = period
         self.formatter = formatter
         self.telemetry = telemetry
-        self._provider = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
+        self._provider = StateObject(wrappedValue: MetricsProvider(name: nil, telemetry: telemetry))
     }
 
     var body: some View {
@@ -52,7 +52,7 @@ struct MetricsContent<T: ChartNumeric>: View {
     private func destination(group: PointGroup<T>) -> some View {
         switch telemetry {
         case .timer:
-            MetricsView(group: group, formatter: formatter, period: period) { extent in
+            MetricsView(group: group, formatter: formatter, period: period, telemetry: telemetry) { extent in
                 MetricDistributionSection<LatencyHistogram>(
                     name: group.name,
                     categories: LatencyBuckets.categories,
@@ -61,7 +61,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                 )
             }
         case .recorder:
-            MetricsView(group: group, formatter: formatter, period: period) { extent in
+            MetricsView(group: group, formatter: formatter, period: period, telemetry: telemetry) { extent in
                 MetricDistributionSection<RecorderHistogram>(
                     name: group.name,
                     categories: RecorderBuckets.categories,
@@ -70,7 +70,7 @@ struct MetricsContent<T: ChartNumeric>: View {
                 )
             }
         default:
-            MetricsView(group: group, formatter: formatter, period: period, tracksResets: telemetry.hasResets)
+            MetricsView(group: group, formatter: formatter, period: period, telemetry: telemetry)
         }
     }
 

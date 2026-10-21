@@ -9,6 +9,7 @@ import Foundation
 
 package struct RetentionCohort: Identifiable, Hashable, Codable, Sendable {
     package static let dayOffsets = [0, 1, 3, 7, 14, 30]
+    package static let horizon = (dayOffsets.last ?? 0) + 1
 
     package let id: Date
     package let size: Int

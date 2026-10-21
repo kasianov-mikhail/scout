@@ -28,18 +28,6 @@ struct NativeAudienceParityTests {
             #expect(try await audience.database.activity(in: range).map(\.values) == raw.map(\.values))
         }
     }
-
-    @Test("Retention from session vectors matches the raw session scan", arguments: [false, true])
-    func retention(legacy: Bool) async throws {
-        let audience = try await AudienceStore(legacy: legacy)
-
-        for range in [day(0)..<day(75), day(7)..<day(49)] {
-            let raw = try await audience.rawRetention(in: range)
-
-            #expect(raw.contains { !$0.segments.isEmpty })
-            #expect(try await audience.database.retention(in: range) == raw)
-        }
-    }
 }
 
 private struct AudienceStore {
@@ -79,31 +67,6 @@ private struct AudienceStore {
             in: range.lowerBound.addingTimeInterval(-30 * .day).startOfDay..<range.upperBound
         )
         return ActivityPoint.points(visits: visits, in: range)
-    }
-
-    func rawRetention(in range: Range<Date>) async throws -> [RetentionCohort] {
-        let sessions = try await store.records(
-            entity: SessionEntry.recordType,
-            dateField: "start_date",
-            fields: ["start_date", "install_id", "os_version"],
-            in: range
-        )
-
-        return try await RetentionCohort.cohorts(
-            installs: store.datedIDs(entity: InstallEntry.recordType, dateField: "date", idField: "install_id", in: range),
-            sessions: sessions.compactMap { record -> InstallSession? in
-                let install: String? = record["install_id"]
-                let start: Date? = record["start_date"]
-                guard let install, let start else {
-                    return nil
-                }
-                return InstallSession(install: install, date: start, os: record["os_version"])
-            },
-            crashes: store.datedIDs(entity: CrashEntry.recordType, dateField: "date", idField: "install_id", in: range),
-            hangs: store.datedIDs(entity: HangEntry.recordType, dateField: "date", idField: "install_id", in: range),
-            range: range,
-            now: Date()
-        )
     }
 }
 

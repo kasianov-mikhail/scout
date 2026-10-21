@@ -23,6 +23,7 @@ struct CatalogEntry {
     enum Aggregate {
         case count(by: String, at: String, parts: Int? = nil)
         case sum(String, by: String, at: String)
+        case max(String, by: String, at: String)
     }
 
     init(entity: String, fields: [Field], aggregates: [Aggregate] = [], derive: @escaping @Sendable (Record) -> [String: ScoutDB.RecordValue] = { _ in [:] }) {

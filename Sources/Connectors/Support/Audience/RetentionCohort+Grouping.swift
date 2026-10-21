@@ -15,7 +15,7 @@ extension RetentionCohort {
         let sessionDays = sessions.mapValues(\.days)
         let crashes = InstallDates(dated: crashes)
         let hangs = InstallDates(dated: hangs)
-        let horizon = (dayOffsets.last ?? 0) + 1
+        let horizon = Self.horizon
 
         return InstallGroup(installs).days(in: range).byWeek.map { week, installs in
             RetentionCohort(

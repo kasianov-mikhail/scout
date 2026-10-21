@@ -35,7 +35,7 @@ struct MetricsProviderTests {
             ),
         ])
 
-        let provider = MetricsProvider<Int>(telemetry: .counter)
+        let provider = MetricsProvider<Int>(name: nil, telemetry: .counter)
         await provider.fetchIfNeeded(in: database)
         let series = try #require(try provider.result?.get())
 

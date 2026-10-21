@@ -163,6 +163,24 @@ struct NativeDatabaseTests {
         }
     }
 
+    @Test("A read by uuid membership fetches those records of the entity by identifier")
+    func readByUUIDs() async throws {
+        for id in ["e-1", "e-2", "e-3"] {
+            try await database.write(record: makeEventRecord(id: id, name: "open"))
+        }
+        try await database.write(record: makeMetricRecord(id: "m-1", name: "checkout", value: 3))
+
+        let query = RecordQuery(
+            recordType: Event.self,
+            filters: [RecordQuery.Filter(field: "uuid", op: .in, value: .strings(["e-3", "e-1", "m-1", "ghost"]))]
+        )
+        let chunk = try await database.read(matching: query, fields: Event.desiredKeys)
+
+        #expect(chunk.records.map(\.recordID) == ["e-1", "e-3"])
+        #expect(chunk.records.first?["name"] == "open")
+        #expect(chunk.cursor == nil)
+    }
+
     @Test("Metric series come back per name within a category")
     func metricSeries() async throws {
         try await database.write(record: makeMetricRecord(id: "m-1", name: "checkout", value: 3))

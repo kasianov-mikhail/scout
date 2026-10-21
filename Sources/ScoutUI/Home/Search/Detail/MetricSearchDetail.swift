@@ -35,7 +35,7 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
         self.name = name
         self.telemetry = telemetry
         self.formatter = formatter
-        self._provider = StateObject(wrappedValue: MetricsProvider(telemetry: telemetry))
+        self._provider = StateObject(wrappedValue: MetricsProvider(name: name, telemetry: telemetry))
     }
 
     var body: some View {
@@ -45,7 +45,7 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
             if let group = groups.first(where: { $0.name == name }) {
                 switch telemetry {
                 case .timer:
-                    MetricsView(group: group, formatter: formatter, period: .today) { extent in
+                    MetricsView(group: group, formatter: formatter, period: .today, telemetry: telemetry) { extent in
                         MetricDistributionSection<LatencyHistogram>(
                             name: group.name,
                             categories: LatencyBuckets.categories,
@@ -54,7 +54,7 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
                         )
                     }
                 case .recorder:
-                    MetricsView(group: group, formatter: formatter, period: .today) { extent in
+                    MetricsView(group: group, formatter: formatter, period: .today, telemetry: telemetry) { extent in
                         MetricDistributionSection<RecorderHistogram>(
                             name: group.name,
                             categories: RecorderBuckets.categories,
@@ -63,8 +63,7 @@ private struct MetricSearchContent<T: ChartNumeric>: View {
                         )
                     }
                 default:
-                    MetricsView(
-                        group: group, formatter: formatter, period: .today, tracksResets: telemetry.hasResets)
+                    MetricsView(group: group, formatter: formatter, period: .today, telemetry: telemetry)
                 }
             } else {
                 Placeholder(
