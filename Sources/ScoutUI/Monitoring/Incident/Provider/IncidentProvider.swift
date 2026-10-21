@@ -18,21 +18,30 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
 
     func fetchLatest(in database: DatabaseReader) async {
         await fetchLatest(matching: Element.query(), in: database)
-        await loadKeys(in: database)
+        await loadKeys(incidents: records ?? [], in: database)
     }
 
     func fetchAgain(in database: DatabaseReader) async {
         await fetchAgain(matching: Element.query(), in: database)
-        await loadKeys(in: database)
+        await loadKeys(incidents: records ?? [], in: database)
     }
 
-    private func loadKeys(in database: DatabaseReader) async {
-        let dates = records?.compactMap(\.date) ?? []
+    @discardableResult
+    override func fetchMore(cursor: RecordCursor, in database: RecordReader) async -> Bool {
+        let loaded = Set(records?.map(\.id) ?? [])
+        let succeeded = await super.fetchMore(cursor: cursor, in: database)
+        await loadKeys(incidents: records?.filter { !loaded.contains($0.id) } ?? [], in: database)
+        return succeeded
+    }
+
+    private func loadKeys(incidents: [Element], in database: RecordReader) async {
+        let dates = incidents.compactMap(\.date)
         guard let first = dates.min(), let last = dates.max() else {
             return
         }
         do {
-            keys = try await IncidentBacktraces(range: first..<last.addingTimeInterval(1), database: database).groupKeys
+            let loaded = try await IncidentBacktraces(range: first..<last.addingTimeInterval(1), database: database).groupKeys
+            keys.merge(loaded) { $1 }
         } catch {
             print("Failed to load incident backtraces: \(error)")
         }
