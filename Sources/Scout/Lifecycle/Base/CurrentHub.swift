@@ -29,7 +29,6 @@ extension NSManagedObjectContext {
             $0.installID = identity.install
             $0.date = date
             $0.device = device
-            $0.startCohort()
         }
         let launch = try fetchOrCreate(LaunchEntry.self, key: "launchID", id: identity.launch) {
             $0.launchID = identity.launch
