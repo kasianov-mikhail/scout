@@ -7,6 +7,7 @@
 //
 
 import Charts
+import Scout
 import SwiftUI
 
 struct MetricsView<T: ChartNumeric, Extra: View>: View {
@@ -19,13 +20,13 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
 
     @StateObject private var resets: ResetMarkerProvider
 
-    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false, @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra) {
+    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, telemetry: Telemetry.Export, @ViewBuilder extra: @escaping (ChartExtent<Period>) -> Extra) {
         self.group = group
         self.formatter = formatter
         self.extra = extra
-        self._extent = State(wrappedValue: ChartExtent(period: period))
+        self._extent = State(wrappedValue: ChartExtent(period: period, fold: telemetry.fold))
         self._resets = StateObject(
-            wrappedValue: ResetMarkerProvider(name: group.name, isEnabled: tracksResets))
+            wrappedValue: ResetMarkerProvider(name: group.name, isEnabled: telemetry.hasResets))
     }
 
     var body: some View {
@@ -87,13 +88,19 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
 }
 
 extension MetricsView where Extra == EmptyView {
-    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, tracksResets: Bool = false) {
+    init(group: PointGroup<T>, formatter: KeyPath<T, String>, period: Period, telemetry: Telemetry.Export) {
         self.init(
             group: group,
             formatter: formatter,
             period: period,
-            tracksResets: tracksResets
+            telemetry: telemetry
         ) { _ in EmptyView() }
+    }
+}
+
+extension Telemetry.Export {
+    fileprivate var fold: ChartFold {
+        self == .meter ? .peak : .total
     }
 }
 
@@ -102,7 +109,8 @@ extension MetricsView where Extra == EmptyView {
         MetricsView(
             group: .init(name: "Group", points: .sample),
             formatter: \.plain,
-            period: .yesterday
+            period: .yesterday,
+            telemetry: .counter
         )
     }
 }

@@ -12,15 +12,17 @@ struct ChartExtent<T: ChartTimeScale> {
         didSet { domain = period.initialRange }
     }
     var domain: Range<Date>
+    var fold = ChartFold.total
 }
 
 extension ChartExtent {
-    init(period: T) {
+    init(period: T, fold: ChartFold = .total) {
         self.period = period
         self.domain = period.initialRange
+        self.fold = fold
     }
 
     func segment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        points.bucket(in: domain, component: period.pointComponent)
+        points.bucket(in: domain, component: period.pointComponent, fold: fold)
     }
 }

@@ -47,6 +47,8 @@ extension CatalogEntry {
                 builder = builder.count(by: group, at: date, parts: parts)
             case .sum(let field, let group, let date):
                 builder = builder.sum(field, by: group, at: date)
+            case .max(let field, let group, let date):
+                builder = builder.max(field, by: group, at: date)
             }
         }
 
@@ -74,6 +76,8 @@ extension CatalogEntry.Aggregate {
             published.group == group && published.date == date && published.field == nil && published.parts == parts
         case .sum(let field, let group, let date):
             published.group == group && published.date == date && published.field == field && published.metric == .sum
+        case .max(let field, let group, let date):
+            published.group == group && published.date == date && published.field == field && published.metric == .max
         }
     }
 }
