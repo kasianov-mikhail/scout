@@ -25,9 +25,10 @@ final class MetricDistributionProvider<H: QuantileHistogram>: ObservableObject, 
     func fetch(in database: SeriesReader) async throws -> MetricDistribution<H> {
         let series = try await database.metricSeries(
             Int.self,
+            name: name,
             categories: categories,
             in: Date().trailingYear
         )
-        return MetricDistribution(series: series.filter { $0.name == name })
+        return MetricDistribution(series: series)
     }
 }

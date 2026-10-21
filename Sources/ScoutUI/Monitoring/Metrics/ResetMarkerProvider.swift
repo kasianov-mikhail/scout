@@ -26,13 +26,13 @@ final class ResetMarkerProvider: ObservableObject, SeriesProvider {
 
         let series = try await database.metricSeries(
             Int.self,
+            name: name,
             category: ResetMarker.category,
             in: Date().trailingYear
         )
 
         return
             series
-            .filter { $0.name == name }
             .flatMap(\.points)
             .map(\.date)
             .sorted()
