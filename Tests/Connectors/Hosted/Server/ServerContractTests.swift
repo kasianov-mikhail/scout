@@ -469,6 +469,34 @@ struct ServerContractTests {
         #expect(restored["backtrace"] == payload)
     }
 
+    @Test("Backtraces filter by the uuid derived from their incidents")
+    func backtracesByUUID() async throws {
+        let database = try makeDatabase()
+        let incidents = (0..<3).map { _ in UUID() }
+
+        try await database.write(
+            records: incidents.map { incidentID in
+                let id = UUID(incidentBacktrace: incidentID).uuidString
+                var record = Record(recordType: "Backtrace", recordID: id)
+                record["uuid"] = id
+                record["incident_id"] = incidentID.uuidString
+                record["backtrace"] = Data([0x01])
+                record["date"] = eventDate
+                return record
+            }
+        )
+
+        let wanted = incidents.prefix(2).map { UUID(incidentBacktrace: $0).uuidString }
+        let query = RecordQuery(
+            recordType: BacktraceRecordStub.self,
+            filters: [RecordQuery.Filter(field: "uuid", op: .in, value: .strings(wanted))]
+        )
+        let records = try await database.read(matching: query, fields: BacktraceRecordStub.desiredKeys).records
+
+        #expect(Set(records.map(\.recordID)) == Set(wanted))
+        #expect(Set(records.compactMap { record -> String? in record["incident_id"] }) == Set(incidents.prefix(2).map(\.uuidString)))
+    }
+
     @Test("Exit counts sum per reason and version")
     func exitSeries() async throws {
         let database = try makeDatabase()
@@ -730,4 +758,11 @@ struct ServerContractTests {
     private func paramCounts(in records: [Record]) -> [Int64] {
         records.compactMap { $0["param_count"] }
     }
+}
+
+private struct BacktraceRecordStub: RecordDecodable {
+    static let recordType = "Backtrace"
+    static let desiredKeys = ["incident_id", "backtrace", "date"]
+
+    let record: Record
 }
