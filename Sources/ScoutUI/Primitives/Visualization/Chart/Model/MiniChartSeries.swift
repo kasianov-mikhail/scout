@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Scout
 
 struct MiniChartSeries {
     static let sliceCount = 7

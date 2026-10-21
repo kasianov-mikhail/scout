@@ -6,6 +6,5 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 let rangeDateFormatter = DateFormatter(format: "MMM d, y")

@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 protocol Ratio: ExpressibleByFloatLiteral {
     var value: Double { get }

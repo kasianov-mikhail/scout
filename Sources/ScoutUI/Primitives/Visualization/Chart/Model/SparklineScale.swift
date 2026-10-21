@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 struct SparklineScale: Equatable {
     static let padding = 0.15

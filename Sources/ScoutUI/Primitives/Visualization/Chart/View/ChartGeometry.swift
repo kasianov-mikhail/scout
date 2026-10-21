@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Scout
 
 enum ChartGeometry {
     // Fraction of its slot a bar occupies.

@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension MetricReading {
     init(points: [ChartPoint<Int>], period: some ChartTimeScale) {

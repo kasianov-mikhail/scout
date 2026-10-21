@@ -7,7 +7,6 @@
 //
 
 import Charts
-import Scout
 import SwiftUI
 
 extension [Segment] {

@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import Testing
 
 @testable import ConnectorSupport
-@testable import Scout
 @testable import ScoutUI
 
 struct RecordReaderPagesTests {

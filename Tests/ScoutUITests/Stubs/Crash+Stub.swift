@@ -6,8 +6,8 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
-@testable import Scout
 @testable import ScoutUI
 
 extension Crash {

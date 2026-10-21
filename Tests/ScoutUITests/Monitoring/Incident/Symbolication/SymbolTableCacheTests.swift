@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 //
 import Foundation
+import Scout
 import SymbolTable
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 @Suite("SymbolTableCache")

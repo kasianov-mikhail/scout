@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 enum ActivityPeriod: String, Identifiable, CaseIterable {
     case daily = "DAU"

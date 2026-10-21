@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import Scout
 import SwiftUI
 
 /// A capsule naming the recognized scalar kind.

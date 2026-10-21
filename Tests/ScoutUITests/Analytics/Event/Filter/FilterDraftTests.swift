@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import SwiftUI
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 @MainActor

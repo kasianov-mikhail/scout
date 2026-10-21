@@ -6,9 +6,9 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 struct ChartTimingTests {

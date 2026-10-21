@@ -7,8 +7,8 @@
 
 import ConnectorSupport
 import Foundation
+import Scout
 
-@testable import Scout
 @testable import ScoutUI
 @testable import Support
 
