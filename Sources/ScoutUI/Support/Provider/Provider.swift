@@ -20,6 +20,10 @@ protocol Provider: ObservableObject, Refreshable {
 }
 
 extension Provider {
+    var isLoading: Bool {
+        result == nil
+    }
+
     func fetchAgain(in database: DatabaseReader) async {
         if ProcessInfo.processInfo.isPreview {
             return

@@ -41,22 +41,24 @@ private struct FetchTaskModifier: ViewModifier {
 extension [any Refreshable] {
     @MainActor
     func fetchLatest(in database: DatabaseReader) async {
-        await fetch { provider in
+        await concurrentForEach { provider in
             await provider.fetchLatest(in: database)
         }
     }
 
     @MainActor
     func fetchAgain(in database: DatabaseReader) async {
-        await fetch { provider in
+        await concurrentForEach { provider in
             await provider.fetchAgain(in: database)
         }
     }
+}
 
+extension Sequence {
     @MainActor
-    private func fetch(_ operation: @escaping @MainActor (any Refreshable) async -> Void) async {
-        let actions: [@MainActor () async -> Void] = map { provider in
-            { await operation(provider) }
+    func concurrentForEach(_ operation: @escaping @MainActor (Element) async -> Void) async {
+        let actions: [@MainActor () async -> Void] = map { element in
+            { await operation(element) }
         }
 
         await withTaskGroup(of: Void.self) { group in

@@ -25,9 +25,3 @@ private struct LoadingGateModifier: ViewModifier {
         }
     }
 }
-
-extension Provider {
-    fileprivate var isLoading: Bool {
-        result == nil
-    }
-}

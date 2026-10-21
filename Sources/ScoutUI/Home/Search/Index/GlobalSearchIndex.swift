@@ -15,18 +15,6 @@ struct GlobalSearchIndex {
     let crashes: [IncidentGroup<Crash>]
     let hangs: [IncidentGroup<Hang>]
 
-    init?(series: [MetricSeries]?, devices: [DeviceSummary]?, releases: [ReleaseHealth]?, crashes: [IncidentGroup<Crash>]?, hangs: [IncidentGroup<Hang>]?) {
-        guard let series, let devices, let releases, let crashes, let hangs else {
-            return nil
-        }
-
-        self.series = series
-        self.devices = devices
-        self.releases = releases
-        self.crashes = crashes
-        self.hangs = hangs
-    }
-
     static let telemetries: [Telemetry.Export] = [.counter, .floatingCounter, .timer, .recorder, .meter]
 
     private static let endpointCategories = Set(LatencyBuckets.categories + StatusBuckets.categories)
