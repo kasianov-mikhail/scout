@@ -120,7 +120,7 @@ struct CachingDatabaseTests {
     @Test("A repeated retention request reads closed cohorts from the cache and fetches the rest from a week start")
     func retentionFetchesRemainderOnly() async throws {
         let base = SpyDatabase()
-        let now = Date(timeIntervalSince1970: 20_000_000)
+        let now = Date(timeIntervalSince1970: 10_000_000)
         let database = try makeDatabase(base: base, types: [], now: now)
         let frozenUpper = now.startOfWeek.addingWeek(-1).addingTimeInterval(-31 * .day).startOfWeek
         let closed = RetentionCohort(id: lower.startOfWeek.addingWeek(2), size: 4, retention: [1, 0.5, nil], segments: [])
