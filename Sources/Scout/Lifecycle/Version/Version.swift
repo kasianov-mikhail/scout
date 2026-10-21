@@ -10,7 +10,6 @@ import Foundation
 package struct Version {
     package static let installMarker = "VersionInstall"
     package static let crashMarker = "VersionCrash"
-    static let hangMarker = "VersionHang"
 
     let appVersion: String?
     let buildNumber: String?

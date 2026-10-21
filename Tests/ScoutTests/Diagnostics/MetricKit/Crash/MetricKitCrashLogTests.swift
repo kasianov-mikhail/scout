@@ -187,8 +187,8 @@ struct MetricKitCrashLogTests {
 
         try makeCrash(processID: nil, signal: 9).log(installID: Identity.stub.install, context: context)
 
-        let marker = try #require(try context.fetchAll(MarkerEntry.self).first)
-        #expect(marker.name == MarkerEntry.crashName)
+        let marker = try #require(try context.fetchAll(FirstSeenEntry.self).first)
+        #expect(marker.name == Version.crashMarker)
         #expect(marker.appVersion == "3.2.0")
     }
 

@@ -64,16 +64,15 @@ struct SyncableEntryPlanTests {
         #expect(event.delivery(for: "cloud")?.isAbandoned == true)
     }
 
-    @Test("Ignores local-only objects")
-    func skipsLocalOnly() throws {
-        let marker = context.insert(MarkerEntry.self)
-        marker.markerID = UUID()
-        marker.name = MarkerEntry.installName
+    @Test("Seeds a pending delivery for a marker")
+    func seedsMarkerDelivery() throws {
+        let marker = context.insert(FirstSeenEntry.self)
+        marker.name = Version.installMarker
         marker.date = Date()
         try context.save()
 
         try SyncableEntry.plan(backends: [makeBackend(id: "cloud")], in: context)
 
-        #expect(try context.fetchAll(DeliveryEntry.self).isEmpty)
+        #expect(marker.delivery(for: "cloud")?.isPending == true)
     }
 }

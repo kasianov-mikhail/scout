@@ -34,6 +34,7 @@ extension SyncableEntry {
         VisitEntry.self,
         LaunchEntry.self,
         VersionEntry.self,
+        FirstSeenEntry.self,
         InstallEntry.self,
         DeviceEntry.self,
         CrashEntry.self,

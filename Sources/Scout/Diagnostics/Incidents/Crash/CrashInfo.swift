@@ -78,10 +78,10 @@ extension CrashInfo {
             id: id,
             deviceID: deviceID,
             idKey: "crashID",
-            markerName: MarkerEntry.crashName,
             context: context
         ) { (entry: CrashEntry, session) in
             entry.session = session
+            try session.launch?.install?.mark(name: Version.crashMarker, appVersion: appVersion)
         }
     }
 }

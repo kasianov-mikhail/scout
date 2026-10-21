@@ -39,7 +39,7 @@ extension Identity {
             InstallEntry.Trigger(installID: install, deviceID: device),
             LaunchEntry.Trigger(launchID: launch, installID: install, processID: ProcessInfo.processInfo.processIdentifier),
             VersionEntry.Trigger(installID: install, launchID: launch, bundle: bundle),
-            MarkerEntry.Trigger(installID: install),
+            FirstSeenEntry.Trigger(installID: install),
         ]
     }
 }

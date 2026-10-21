@@ -14,10 +14,10 @@ package final class InstallEntry: SyncableEntry, HasDevice {
     @NSManaged var installID: UUID
     @NSManaged var device: DeviceEntry?
     @NSManaged var launches: Set<LaunchEntry>
-    @NSManaged var markers: Set<MarkerEntry>
+    @NSManaged var firstSeen: Set<FirstSeenEntry>
 
     override var references: Set<DateEntry> {
-        Set(Array(launches) + Array(markers))
+        Set(Array(launches) + Array(firstSeen))
     }
 
     override var isPurgeable: Bool {

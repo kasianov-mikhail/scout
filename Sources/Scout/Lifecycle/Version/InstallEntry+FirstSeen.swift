@@ -14,7 +14,7 @@ extension InstallEntry {
             return
         }
 
-        let request = NSFetchRequest<MarkerEntry>(entityName: "MarkerEntry")
+        let request = NSFetchRequest<FirstSeenEntry>(entityName: "FirstSeenEntry")
         request.predicate = NSPredicate(
             format: "install == %@ AND name == %@ AND appVersion == %@",
             self,
@@ -27,11 +27,10 @@ extension InstallEntry {
             return
         }
 
-        let marker = context.insert(MarkerEntry.self)
-        marker.markerID = UUID()
-        marker.name = name
-        marker.appVersion = appVersion
-        marker.date = Date()
-        marker.install = self
+        let entry = context.insert(FirstSeenEntry.self)
+        entry.name = name
+        entry.appVersion = appVersion
+        entry.date = Date()
+        entry.install = self
     }
 }

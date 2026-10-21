@@ -141,4 +141,26 @@ struct LogCrashTests {
 
         #expect(try context.fetchAll(CrashEntry.self).count == 1)
     }
+
+    @Test("Marks the install as crashed on the crash's version")
+    func marksCrashedInstall() throws {
+        let crash = CrashInfo(
+            name: "SIGSEGV",
+            reason: nil,
+            stackTrace: [],
+            backtrace: nil,
+            date: Date(),
+            installID: UUID(),
+            launchID: UUID(),
+            sessionID: UUID(),
+            appVersion: "2.0"
+        )
+
+        try crash.log(deviceID: deviceID, context: context)
+
+        let marker = try #require(context.fetchAll(FirstSeenEntry.self).first)
+        #expect(marker.name == Version.crashMarker)
+        #expect(marker.appVersion == "2.0")
+        #expect(marker.install?.installID == crash.installID)
+    }
 }

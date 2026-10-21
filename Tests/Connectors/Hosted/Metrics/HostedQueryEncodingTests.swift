@@ -69,11 +69,11 @@ struct HostedQueryEncodingTests {
     @Test("A lifecycle query is sent with the lifecycle source and the counter name")
     func lifecycleSourceIsEncoded() throws {
         let url = try #require(
-            database.seriesEndpoint(for: LifecycleSeriesQuery(name: MarkerEntry.crashName, range: day..<day.addingDay()))
+            database.seriesEndpoint(for: LifecycleSeriesQuery(name: Version.crashMarker, range: day..<day.addingDay()))
         )
 
         #expect(queryItems(of: url)["source"] == "lifecycle")
-        #expect(queryItems(of: url)["name"] == MarkerEntry.crashName)
+        #expect(queryItems(of: url)["name"] == Version.crashMarker)
     }
 
     @Test("A metric query is sent with the metric source")

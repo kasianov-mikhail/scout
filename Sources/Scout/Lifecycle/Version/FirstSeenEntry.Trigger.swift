@@ -7,13 +7,13 @@
 
 import CoreData
 
-extension MarkerEntry {
+extension FirstSeenEntry {
     struct Trigger: Command {
         let installID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
             let install = try context.existing(InstallEntry.self, key: "installID", id: installID)
-            try install?.mark(name: MarkerEntry.installName, appVersion: Bundle.main.marketingVersion)
+            try install?.mark(name: Version.installMarker, appVersion: Bundle.main.marketingVersion)
 
             if context.hasChanges {
                 try context.save()

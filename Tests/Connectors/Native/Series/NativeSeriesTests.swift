@@ -162,57 +162,48 @@ struct NativeSeriesTests {
         #expect(series.map { $0.points.map(\.value) } == [[2], [1]])
     }
 
-    @Test("Version installs and crashed installs synthesize from raw records")
+    @Test("Version installs and crashed installs count markers per version")
     func versionMarkers() async throws {
-        try await database.write(record: makeVersionRecord(id: "v-1", install: "install-a", build: "42", date: TestDate.reference.addingTimeInterval(.hour)))
-
-        for (id, install) in [("c-1", "install-a"), ("c-2", "install-a"), ("c-3", "install-b")] {
-            var crash = Record(recordType: CrashEntry.recordType, recordID: id)
-            crash["name"] = "SIGSEGV"
-            crash["date"] = TestDate.reference.addingTimeInterval(2 * .hour)
-            crash["app_version"] = "1.2.0"
-            crash["install_id"] = install
-            crash["session_id"] = "session-1"
-            try await database.write(record: crash)
+        for (install, version) in [("install-a", "1.2.0"), ("install-b", "1.2.0"), ("install-a", "1.3.0")] {
+            try await database.write(record: makeFirstSeenRecord(name: Version.installMarker, install: install, version: version))
         }
+        try await database.write(record: makeFirstSeenRecord(name: Version.crashMarker, install: "install-a", version: "1.2.0"))
 
-        let installs = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
-        )
-        #expect(installs.first?.points.map(\.value) == [1])
-        #expect(installs.first?.version == "1.2.0")
+        let installs = try await database.lifecycleSeries(matching: lifecycleQuery(name: Version.installMarker))
+        #expect(installs.map(\.version) == ["1.2.0", "1.3.0"])
+        #expect(installs.map { $0.points.map(\.value) } == [[2], [1]])
 
-        let crashed = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)
-        )
-        #expect(crashed.first?.points.map(\.value) == [2])
-        #expect(crashed.first?.version == "1.2.0")
+        let crashed = try await database.lifecycleSeries(matching: lifecycleQuery(name: Version.crashMarker))
+        #expect(crashed.map(\.version) == ["1.2.0"])
+        #expect(crashed.map { $0.points.map(\.value) } == [[1]])
     }
 
-    @Test("Version installs count each install once across the builds of a version")
-    func versionInstallsAcrossBuilds() async throws {
-        for (id, install, build) in [("v-1", "install-a", "45"), ("v-2", "install-a", "46"), ("v-3", "install-b", "46")] {
-            try await database.write(record: makeVersionRecord(id: id, install: install, build: build, date: TestDate.reference.addingTimeInterval(.hour)))
-        }
+    @Test("A marker written again for the same install and version counts once")
+    func markerRewrite() async throws {
+        try await database.write(record: makeFirstSeenRecord(name: Version.installMarker, install: "install-a", version: "1.2.0"))
 
-        let installs = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
-        )
+        var later = makeFirstSeenRecord(name: Version.installMarker, install: "install-a", version: "1.2.0")
+        later["date"] = TestDate.reference.addingTimeInterval(.day + .hour)
+        try await database.write(record: later)
 
-        #expect(installs.map { $0.points.map(\.value) } == [[2]])
-    }
-
-    @Test("Version installs skip installs first seen before the range")
-    func versionInstallsBeforeRange() async throws {
-        try await database.write(record: makeVersionRecord(id: "v-1", install: "install-a", build: "45", date: TestDate.reference.addingTimeInterval(-.day)))
-        try await database.write(record: makeVersionRecord(id: "v-2", install: "install-a", build: "46", date: TestDate.reference.addingTimeInterval(.hour)))
-        try await database.write(record: makeVersionRecord(id: "v-3", install: "install-b", build: "46", date: TestDate.reference.addingTimeInterval(.hour)))
-
-        let installs = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
-        )
+        let installs = try await database.lifecycleSeries(matching: lifecycleQuery(name: Version.installMarker))
 
         #expect(installs.map { $0.points.map(\.value) } == [[1]])
+    }
+
+    @Test("Version installs read the marker aggregate, not the records")
+    func versionInstallsFromAggregate() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = probedDatabase(cloud: cloud)
+
+        try await database.write(record: makeFirstSeenRecord(name: Version.installMarker, install: "install-a", version: "1.2.0"))
+        _ = try await database.lifecycleSeries(matching: lifecycleQuery(name: Version.installMarker))
+        cloud.resetRequests()
+
+        let installs = try await database.lifecycleSeries(matching: lifecycleQuery(name: Version.installMarker))
+
+        #expect(installs.map { $0.points.map(\.value) } == [[1]])
+        #expect(cloud.requests[.query] == 0)
     }
 
     @Test("An explicit event source reaches a custom event named like a lifecycle counter")
@@ -286,30 +277,6 @@ struct NativeSeriesTests {
         #expect(renew.points.map(\.value) == [2.5])
     }
 
-    @Test("Concurrent crash and crashed-install series share one scan of the crashes")
-    func sharedCrashScan() async throws {
-        let cloud = ScoutDBTesting.InMemoryDatabase()
-        let database = probedDatabase(cloud: cloud)
-
-        for (id, install) in [("c-1", "install-a"), ("c-2", "install-a"), ("c-3", "install-b")] {
-            var crash = Record(recordType: CrashEntry.recordType, recordID: id)
-            crash["name"] = "SIGSEGV"
-            crash["date"] = TestDate.reference.addingTimeInterval(2 * .hour)
-            crash["app_version"] = "1.2.0"
-            crash["install_id"] = install
-            try await database.write(record: crash)
-        }
-        _ = try await database.lifecycleSeries(matching: lifecycleQuery(name: CrashEntry.recordType))
-        cloud.resetRequests()
-
-        async let crashes = database.lifecycleSeries(matching: lifecycleQuery(name: CrashEntry.recordType))
-        async let crashed = database.lifecycleSeries(matching: lifecycleQuery(name: MarkerEntry.crashName))
-
-        #expect(try await crashes.first?.points.map(\.value) == [3])
-        #expect(try await crashed.first?.points.map(\.value) == [2])
-        #expect(cloud.requests[.query] == 1)
-    }
-
     @Test("A daily metric series reads the sum aggregate, not the records")
     func dailyMetricFromAggregate() async throws {
         let cloud = ScoutDBTesting.InMemoryDatabase()
@@ -348,12 +315,12 @@ struct NativeSeriesTests {
         LifecycleSeriesQuery(name: name, bucket: .day, byVersion: true, range: range)
     }
 
-    private func makeVersionRecord(id: String, install: String, build: String, date: Date) -> Record {
-        var record = Record(recordType: VersionEntry.recordType, recordID: id)
-        record["date"] = date
-        record["app_version"] = "1.2.0"
-        record["build_number"] = build
+    private func makeFirstSeenRecord(name: String, install: String, version: String) -> Record {
+        var record = Record(recordType: FirstSeenEntry.recordType, recordID: "\(install)-\(name)-\(version)")
+        record["name"] = name
+        record["app_version"] = version
         record["install_id"] = install
+        record["date"] = TestDate.reference.addingTimeInterval(.hour)
         return record
     }
 

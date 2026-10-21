@@ -141,31 +141,15 @@ struct DateEntryCleanupTests {
         #expect(try context.fetchAll(SessionEntry.self).isEmpty)
     }
 
-    @Test("Deletes local-only objects older than 7 days")
-    func deletesOldLocalOnly() throws {
-        let old = Date(timeIntervalSinceNow: -8 * 86400)
-        let marker = context.insert(MarkerEntry.self)
-        marker.markerID = UUID()
-        marker.name = MarkerEntry.installName
-        marker.date = old
+    @Test("Keeps markers regardless of age")
+    func keepsOldMarkers() throws {
+        let marker = context.insert(FirstSeenEntry.self)
+        marker.name = Version.installMarker
+        marker.date = Date(timeIntervalSinceNow: -8 * 86400)
         try context.save()
 
         try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
 
-        #expect(try context.fetchAll(MarkerEntry.self).isEmpty)
-    }
-
-    @Test("Keeps local-only objects newer than 7 days")
-    func keepsRecentLocalOnly() throws {
-        let recent = Date(timeIntervalSinceNow: -6 * 86400)
-        let marker = context.insert(MarkerEntry.self)
-        marker.markerID = UUID()
-        marker.name = MarkerEntry.installName
-        marker.date = recent
-        try context.save()
-
-        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
-
-        #expect(try context.fetchAll(MarkerEntry.self).count == 1)
+        #expect(try context.fetchAll(FirstSeenEntry.self).count == 1)
     }
 }
