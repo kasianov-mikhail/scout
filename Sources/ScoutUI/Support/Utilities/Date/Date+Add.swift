@@ -21,4 +21,9 @@ extension Date {
         let today = startOfDay
         return today.addingYear(-1).addingWeek(-1)..<today.addingDay()
     }
+
+    var trailingTwoWeeks: Range<Date> {
+        let today = startOfDay
+        return today.addingDay(-13)..<today.addingDay()
+    }
 }

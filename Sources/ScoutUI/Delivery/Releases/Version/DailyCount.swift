@@ -13,21 +13,22 @@ struct DailyCount: Equatable {
     let count: Int
 }
 
-extension DailyCount {
-    static func series(from records: [some Incident], days: Int = 14, calendar: Calendar = .utc, endingOn today: Date = Date()) -> [DailyCount] {
-        let start = calendar.startOfDay(for: today)
+extension [DailyCount] {
+    init(counts: [Date: Int] = [:], window: Range<Date>) {
+        self = sequence(first: window.lowerBound) { $0.addingDay() }
+            .prefix { $0 < window.upperBound }
+            .map { day in DailyCount(date: day, count: counts[day] ?? 0) }
+    }
+}
 
+extension [MetricSeries] {
+    func dailyCounts(version: String, window: Range<Date>) -> [DailyCount] {
         var counts: [Date: Int] = [:]
-        for record in records {
-            guard let date = record.date else {
-                continue
+        for series in self where series.version == version {
+            for point in series.points where window.contains(point.date) {
+                counts[point.date.startOfDay, default: 0] += Int(point.value)
             }
-            counts[calendar.startOfDay(for: date), default: 0] += 1
         }
-
-        return (0..<days).reversed().map { offset in
-            let day = calendar.date(byAdding: .day, value: -offset, to: start) ?? start
-            return DailyCount(date: day, count: counts[day] ?? 0)
-        }
+        return [DailyCount](counts: counts, window: window)
     }
 }

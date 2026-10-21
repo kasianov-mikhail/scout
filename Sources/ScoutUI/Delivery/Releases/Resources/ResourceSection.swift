@@ -10,16 +10,14 @@ import SwiftUI
 
 struct ResourceSection: View {
     let summary: ResourceSummary
-    let records: [ResourceException]
+    let days: [DailyCount]
     let showAll: () -> Void
 
     @ViewBuilder
     var body: some View {
-        if summary.total > 0 || !records.isEmpty {
-            IncidentTrendSection(records: records) {
-                if !records.isEmpty {
-                    AllButton(action: showAll)
-                }
+        if summary.total > 0 || days.contains(where: { $0.count > 0 }) {
+            IncidentTrendSection(kind: .resource, days: days) {
+                AllButton(action: showAll)
             }
 
             HStack(spacing: 28) {
@@ -34,6 +32,6 @@ struct ResourceSection: View {
 
 #Preview {
     InsetList {
-        ResourceSection(summary: .sample, records: .samples) {}
+        ResourceSection(summary: .sample, days: VersionTrend.sample.resources) {}
     }
 }

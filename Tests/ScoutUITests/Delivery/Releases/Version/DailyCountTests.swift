@@ -10,53 +10,55 @@ import Scout
 import Testing
 
 @testable import ScoutUI
-@testable import Support
 
 struct DailyCountTests {
-    private let calendar = Calendar.current
+    private let window = Date().trailingTwoWeeks
+    private let today = Date().startOfDay
 
-    @Test("Records bucket into per-day counts across the window") func testDailyBuckets() {
-        let today = calendar.startOfDay(for: Date())
-        let yesterday = calendar.date(byAdding: .day, value: -1, to: today)!
+    @Test("The window covers fourteen UTC days ending today")
+    func testWindow() {
+        let days = [DailyCount](window: window)
 
-        let crashes = [
-            Crash.stub(date: today.addingTimeInterval(3600)),
-            Crash.stub(date: today.addingTimeInterval(7200)),
-            Crash.stub(date: yesterday.addingTimeInterval(60)),
+        #expect(days.count == 14)
+        #expect(days.last?.date == today)
+        #expect(days.allSatisfy { $0.date == $0.date.startOfDay && $0.count == 0 })
+    }
+
+    @Test("Points of the version bucket into per-day counts across categories")
+    func testDailyBuckets() {
+        let series = [
+            series(category: "cpu", points: [today.addingTimeInterval(3600): 2, today.addingDay(-1): 1]),
+            series(category: "disk_write", points: [today: 3]),
         ]
 
-        let series = DailyCount.series(from: crashes, days: 14, calendar: calendar, endingOn: today)
+        let days = series.dailyCounts(version: "2.0", window: window)
 
-        #expect(series.count == 14)
-        #expect(series.last?.date == today)
-        #expect(series.last?.count == 2)
-        #expect(series[12].count == 1)
-        #expect(series.dropLast(2).allSatisfy { $0.count == 0 })
+        #expect(days.count == 14)
+        #expect(days.last?.count == 5)
+        #expect(days[12].count == 1)
+        #expect(days.dropLast(2).allSatisfy { $0.count == 0 })
     }
 
-    @Test("The default series buckets days in UTC") func testUTCByDefault() {
-        let today = Calendar.utc.startOfDay(for: Date())
-        let lateEvening = today.addingTimeInterval(23 * 3600 + 30 * 60)
+    @Test("Other versions, versionless series and points outside the window are ignored")
+    func testFiltersVersionAndWindow() {
+        let series = [
+            series(version: "1.0", points: [today: 4]),
+            series(version: nil, points: [today: 6]),
+            series(points: [today.addingDay(-30): 7, today.addingDay(): 8]),
+        ]
 
-        let series = DailyCount.series(from: [Crash.stub(date: lateEvening)], endingOn: lateEvening)
+        let days = series.dailyCounts(version: "2.0", window: window)
 
-        #expect(series.allSatisfy { $0.date == Calendar.utc.startOfDay(for: $0.date) })
-        #expect(series.last?.date == today)
-        #expect(series.last?.count == 1)
+        #expect(days.count == 14)
+        #expect(days.allSatisfy { $0.count == 0 })
     }
 
-    @Test("Records outside the window and nil dates are ignored") func testOutOfWindow() {
-        let today = calendar.startOfDay(for: Date())
-        let old = calendar.date(byAdding: .day, value: -30, to: today)!
-
-        let series = DailyCount.series(
-            from: [Crash.stub(date: old), Crash.stub(date: nil)],
-            days: 14,
-            calendar: calendar,
-            endingOn: today
+    private func series(category: String? = nil, version: String? = "2.0", points: [Date: Int]) -> MetricSeries {
+        MetricSeries(
+            name: ResourceException.recordType,
+            category: category,
+            version: version,
+            points: points.map { MetricSeriesPoint(date: $0.key, value: Double($0.value)) }
         )
-
-        #expect(series.count == 14)
-        #expect(series.allSatisfy { $0.count == 0 })
     }
 }
