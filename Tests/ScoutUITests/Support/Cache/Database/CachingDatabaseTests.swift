@@ -19,8 +19,8 @@ struct CachingDatabaseTests {
         upper.startOfWeek.addingWeek(-1)
     }
 
-    func makeDatabase(base: SpyDatabase, types: Set<String> = [Event.recordType]) throws -> CachingDatabase {
-        let now = upper
+    func makeDatabase(base: SpyDatabase, types: Set<String> = [Event.recordType], now: Date? = nil) throws -> CachingDatabase {
+        let now = now ?? upper
 
         return CachingDatabase(
             base: base,
@@ -120,8 +120,8 @@ struct CachingDatabaseTests {
     @Test("A repeated retention request reads closed cohorts from the cache and fetches the rest from a week start")
     func retentionFetchesRemainderOnly() async throws {
         let base = SpyDatabase()
-        let now = Date(timeIntervalSince1970: 20_000_000)
-        let database = CachingDatabase(base: base, scope: "test", cache: try makeRecordCache(), now: { now }, types: [])
+        let now = Date(timeIntervalSince1970: 10_000_000)
+        let database = try makeDatabase(base: base, types: [], now: now)
         let frozenUpper = now.startOfWeek.addingWeek(-1).addingTimeInterval(-31 * .day).startOfWeek
         let closed = RetentionCohort(id: lower.startOfWeek.addingWeek(2), size: 4, retention: [1, 0.5, nil], segments: [])
         let open = RetentionCohort(id: frozenUpper.addingWeek(1), size: 2, retention: [1, nil, nil], segments: [])
@@ -133,6 +133,68 @@ struct CachingDatabaseTests {
         #expect(base.retentionRanges == [lower.startOfWeek..<now, frozenUpper..<now])
         #expect(first == [closed, open])
         #expect(second == [closed, open])
+    }
+
+    @Test("An interrupted activity load keeps its finished quarters and the next load fetches only the rest")
+    func activityResumesAfterInterruptedLoad() async throws {
+        let base = SpyDatabase()
+        let now = lower.addingTimeInterval(400 * .day)
+        let database = try makeDatabase(base: base, now: now)
+        let quarters = (0...4).map { lower.addingWeek(13 * $0) }
+        base.points = quarters.map { ActivityPoint(date: $0.addingTimeInterval(.day).millisecondsSince1970, dau: 1, wau: 2, mau: 3) }
+        base.callsBeforeFailure = 2
+
+        await #expect(throws: CancellationError.self) {
+            try await database.activity(in: lower..<now)
+        }
+
+        base.callsBeforeFailure = .max
+        let resumed = try await database.activity(in: lower..<now)
+        let warm = try await database.activity(in: lower..<now)
+
+        #expect(
+            base.activityRanges == [
+                quarters[0]..<quarters[1],
+                quarters[1]..<quarters[2],
+                quarters[2]..<quarters[3],
+                quarters[2]..<quarters[3],
+                quarters[3]..<quarters[4],
+                quarters[4]..<now,
+                now.startOfWeek.addingWeek(-1)..<now,
+            ]
+        )
+        #expect(resumed.map(\.date) == base.points.map(\.date))
+        #expect(warm.map(\.date) == base.points.map(\.date))
+    }
+
+    @Test("A retention load reads each quarter with the retention horizon and keeps only that quarter's cohorts")
+    func retentionResumesAfterInterruptedLoad() async throws {
+        let base = SpyDatabase()
+        let now = lower.addingTimeInterval(400 * .day)
+        let database = try makeDatabase(base: base, now: now)
+        let start = lower.startOfWeek
+        let horizon = 31 * TimeInterval.day
+        let quarters = (0...4).map { start.addingWeek(13 * $0) }
+        base.cohorts = quarters.map { RetentionCohort(id: $0, size: 1, retention: [1], segments: []) }
+        base.callsBeforeFailure = 1
+
+        await #expect(throws: CancellationError.self) {
+            try await database.retention(in: lower..<now)
+        }
+
+        base.callsBeforeFailure = .max
+        let resumed = try await database.retention(in: lower..<now)
+
+        #expect(
+            base.retentionRanges == [
+                quarters[0]..<quarters[1].addingTimeInterval(horizon),
+                quarters[1]..<quarters[2].addingTimeInterval(horizon),
+                quarters[1]..<quarters[2].addingTimeInterval(horizon),
+                quarters[2]..<quarters[3].addingTimeInterval(horizon),
+                quarters[3]..<now,
+            ]
+        )
+        #expect(resumed == base.cohorts)
     }
 
     @Test("Series caches are split by scalar type and category")
@@ -260,6 +322,7 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var activityRanges: [Range<Date>] = []
     var cohorts: [RetentionCohort] = []
     var retentionRanges: [Range<Date>] = []
+    var callsBeforeFailure = Int.max
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         queries.append(query)
@@ -286,12 +349,21 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
 
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         activityRanges.append(range)
+        try countCall()
         return points.filter { range.lowerBound.startOfDay.millisecondsSince1970 <= $0.date && $0.date < range.upperBound.millisecondsSince1970 }
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         retentionRanges.append(range)
+        try countCall()
         return cohorts.filter { range.contains($0.id) }
+    }
+
+    private func countCall() throws {
+        guard callsBeforeFailure > 0 else {
+            throw CancellationError()
+        }
+        callsBeforeFailure -= 1
     }
 
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] {

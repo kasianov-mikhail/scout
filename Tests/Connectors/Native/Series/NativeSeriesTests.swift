@@ -299,6 +299,41 @@ struct NativeSeriesTests {
         #expect(cloud.requests[.query] == 0)
     }
 
+    @Test("Daily metric names read together share one aggregate read and keep their own series")
+    func dailyMetricsShareOneRead() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = probedDatabase(cloud: cloud)
+        let names = [ExitReason.metricName] + PerformanceMetric.allCases.map(\.rawValue)
+        let queries = names.map(lifecycleQuery)
+
+        for (index, name) in names.enumerated() {
+            try await database.write(record: makeDailyMetricRecord(id: "d-\(index)", name: name, category: "400", value: index + 1))
+        }
+
+        _ = try await database.lifecycleSeries(matching: queries[0])
+        cloud.resetRequests()
+
+        var expected: [[SeriesShape]] = []
+        for query in queries {
+            expected.append(try await database.lifecycleSeries(matching: query).map(SeriesShape.init))
+        }
+        let sequential = cloud.requests.total
+        cloud.resetRequests()
+
+        async let exits = database.lifecycleSeries(matching: queries[0])
+        async let launches = database.lifecycleSeries(matching: queries[1])
+        async let hangs = database.lifecycleSeries(matching: queries[2])
+        async let foregrounds = database.lifecycleSeries(matching: queries[3])
+        async let memory = database.lifecycleSeries(matching: queries[4])
+        let shared = try await [exits, launches, hangs, foregrounds, memory]
+
+        #expect(expected.map { $0.map(\.name) } == names.map { [$0] })
+        #expect(expected.map { $0.flatMap(\.values) } == [[1], [2], [3], [4], [5]])
+        #expect(shared.map { $0.map(SeriesShape.init) } == expected)
+        #expect(sequential > 0)
+        #expect(cloud.requests.total * names.count == sequential)
+    }
+
     func probedDatabase(cloud: ScoutDBTesting.InMemoryDatabase) -> NativeDatabase {
         let probe = ConcurrencyProbe(cloud)
         let registry = SchemaRegistry(database: probe)
@@ -352,12 +387,32 @@ struct NativeSeriesTests {
     }
 
     private func makeExitRecord(id: String, reason: String, count: Int) -> Record {
+        makeDailyMetricRecord(id: id, name: ExitReason.metricName, category: reason, value: count)
+    }
+
+    private func makeDailyMetricRecord(id: String, name: String, category: String, value: Int) -> Record {
         var record = Record(recordType: DailyMetricEntry.recordType, recordID: id)
-        record["name"] = ExitReason.metricName
-        record["category"] = reason
-        record["value"] = count
+        record["name"] = name
+        record["category"] = category
+        record["value"] = value
         record["app_version"] = "1.2.0"
         record["date"] = TestDate.reference.addingTimeInterval(3 * .hour)
         return record
+    }
+}
+
+private struct SeriesShape: Equatable {
+    let name: String
+    let category: String?
+    let version: String?
+    let dates: [Date]
+    let values: [Double]
+
+    init(series: MetricSeries) {
+        name = series.name
+        category = series.category
+        version = series.version
+        dates = series.points.map(\.date)
+        values = series.points.map(\.value)
     }
 }

@@ -39,14 +39,12 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
     }
 
     private func loadKeys(incidents: [Element], in database: RecordReader) async {
-        let dates = incidents.compactMap(\.date)
-
-        guard let first = dates.min(), let last = dates.max() else {
+        guard !incidents.isEmpty else {
             return
         }
         do {
             let loaded = try await IncidentBacktraces(
-                range: first..<last.addingTimeInterval(1),
+                incidentIDs: incidents.map(\.id),
                 database: database
             )
             .groupKeys
