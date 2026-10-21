@@ -37,7 +37,7 @@ extension CachingDatabase: AudienceReader {
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         let lower = range.lowerBound.startOfWeek
-        let horizon = TimeInterval((RetentionCohort.dayOffsets.last ?? 0) + 1) * .day
+        let horizon = TimeInterval(RetentionCohort.horizon) * .day
         let frozenUpper = min(range.upperBound, now().startOfWeek.addingWeek(-1).addingTimeInterval(-horizon).startOfWeek)
 
         guard lower < frozenUpper else {

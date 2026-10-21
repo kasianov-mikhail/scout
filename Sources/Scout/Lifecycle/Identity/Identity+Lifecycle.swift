@@ -12,6 +12,7 @@ extension Identity {
         [
             SessionEntry.Rotation(session: session, launchID: launch),
             VisitEntry.Trigger(launchID: launch),
+            RetentionMarkEntry.Trigger(installID: install),
             FirstSeenEntry.Trigger(installID: install),
         ]
     }

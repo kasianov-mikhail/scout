@@ -82,6 +82,7 @@ extension CrashInfo {
         ) { (entry: CrashEntry, session) in
             entry.session = session
             try session.launch?.install?.mark(name: Version.crashMarker, appVersion: appVersion)
+            try session.launch?.install?.markIncident(milestone: .crash, date: entry.date)
         }
     }
 }

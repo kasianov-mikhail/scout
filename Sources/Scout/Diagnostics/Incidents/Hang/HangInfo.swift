@@ -49,6 +49,7 @@ extension HangInfo {
         ) { (entry: HangEntry, session) in
             entry.session = session
             entry.duration = duration
+            try session.launch?.install?.markIncident(milestone: .hang, date: entry.date)
         }
     }
 }
