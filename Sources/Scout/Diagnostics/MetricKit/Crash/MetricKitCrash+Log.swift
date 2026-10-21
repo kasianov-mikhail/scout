@@ -15,7 +15,7 @@ extension MetricKitCrash {
         if let launch, launch.scopedEntries.contains(where: { ($0 as? SessionEntry)?.hasCrashes == true }) {
             return
         }
-        if launch == nil, isCaughtInProcess {
+        if launch == nil, let install, try isCaughtInProcess(install: install, context: context) {
             return
         }
 
@@ -23,6 +23,7 @@ extension MetricKitCrash {
             return
         }
         entry.session = try launch?.lastSession(date: date, context: context)
+        entry.install = install
         source.apply(to: entry)
         entry.threads = threads.isEmpty ? nil : try JSONEncoder().encode(threads)
 

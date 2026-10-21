@@ -62,10 +62,6 @@ extension MetricKitCrash {
         exception?.message ?? terminationReason ?? signal.map(signalReason)
     }
 
-    var isCaughtInProcess: Bool {
-        exception != nil || fatalSignals.contains { $0.signal == signal }
-    }
-
     var id: UUID {
         UUID(
             digesting: [
