@@ -86,6 +86,10 @@ extension IncidentGroup {
         }
         return loaded
     }
+
+    func replacing(records: [Element]) -> IncidentGroup {
+        IncidentGroup(id: id, records: records, symbol: symbol, count: count, firstDate: firstDate, isPartial: isPartial)
+    }
 }
 
 extension IncidentGroup {

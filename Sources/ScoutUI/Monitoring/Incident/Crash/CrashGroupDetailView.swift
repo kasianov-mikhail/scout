@@ -11,11 +11,13 @@ import SwiftUI
 struct CrashGroupDetailView: View {
     let group: IncidentGroup<Crash>
 
+    @StateObject private var occurrences: IncidentOccurrencesProvider<Crash>
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
 
     init(group: IncidentGroup<Crash>, breakdown: IncidentBreakdownProvider? = nil) {
         self.group = group
+        self._occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
         self._breakdown = StateObject(
             wrappedValue: breakdown
                 ?? IncidentBreakdownProvider(
@@ -29,18 +31,18 @@ struct CrashGroupDetailView: View {
         InsetList {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 24) {
-                    Readout(title: "Occurrences", value: group.occurrencesText)
-                    Readout(title: "Devices", value: group.devicesText)
-                    Readout(title: "Sessions", value: group.sessionsText)
+                    Readout(title: "Occurrences", value: occurrences.group.occurrencesText)
+                    Readout(title: "Devices", value: occurrences.group.devicesText)
+                    Readout(title: "Sessions", value: occurrences.group.sessionsText)
                 }
 
-                if let reason = group.representative.reason {
+                if let reason = occurrences.group.representative.reason {
                     Text(verbatim: "REASON:   ").fontWeight(.bold)
                         + Text(reason).fontWeight(.bold).foregroundColor(.red)
                 }
 
-                if let first = group.firstDate, let last = group.lastDate {
-                    Text(verbatim: "\(group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
+                if let first = occurrences.group.firstDate, let last = occurrences.group.lastDate {
+                    Text(verbatim: "\(occurrences.group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
                         .font(.system(size: 14))
                         .padding(.bottom)
                         .foregroundStyle(Color.gray)
@@ -51,20 +53,31 @@ struct CrashGroupDetailView: View {
             if let value = try? breakdown.result?.get() {
                 IncidentBreakdownSection(
                     breakdown: value,
-                    records: group.records,
+                    records: occurrences.group.records,
                     row: occurrenceRow
                 )
             }
 
             Header(title: "Occurrences")
 
-            ForEach(group.records, content: occurrenceRow)
+            ForEach(occurrences.group.records, content: occurrenceRow)
+
+            if let cursor = occurrences.cursor {
+                PaginationFooter {
+                    await occurrences.fetchMore(cursor: cursor, in: database)
+                }
+            }
         }
         .navigationTint(.red)
-        .exportToolbar(text: CrashGroupExport(group: group).text, tint: .primary)
+        .exportToolbar(text: CrashGroupExport(group: occurrences.group).text, tint: .primary)
         .monospacedNavigationTitle(en: group.name)
         .task {
-            await breakdown.fetchIfNeeded(in: database)
+            await occurrences.fetchIfNeeded(in: database)
+        }
+        .task(id: occurrences.records?.map(\.id)) {
+            if occurrences.records != nil {
+                await breakdown.fetch(deviceIDs: occurrences.group.deviceIDs, sessionIDs: occurrences.group.sessionIDs, in: database)
+            }
         }
     }
 

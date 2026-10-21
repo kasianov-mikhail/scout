@@ -13,13 +13,25 @@ import SwiftUI
 final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<IncidentBreakdown>?
 
-    private let deviceIDs: [UUID]
-    private let sessionIDs: [UUID]
+    private var deviceIDs: [UUID]
+    private var sessionIDs: [UUID]
 
     init(_ result: ProviderResult<Output>? = nil, deviceIDs: [UUID], sessionIDs: [UUID]) {
         self.deviceIDs = deviceIDs
         self.sessionIDs = sessionIDs
         self.result = result
+    }
+
+    func fetch(deviceIDs: [UUID], sessionIDs: [UUID], in database: DatabaseReader) async {
+        let unchanged = Set(deviceIDs) == Set(self.deviceIDs) && Set(sessionIDs) == Set(self.sessionIDs)
+
+        guard result == nil || !unchanged else {
+            return
+        }
+
+        self.deviceIDs = deviceIDs
+        self.sessionIDs = sessionIDs
+        await fetchLatest(in: database)
     }
 
     func fetch(in database: RecordReader) async throws -> IncidentBreakdown {
