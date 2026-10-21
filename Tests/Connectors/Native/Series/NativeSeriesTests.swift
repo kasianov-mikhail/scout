@@ -332,7 +332,7 @@ struct NativeSeriesTests {
         #expect(cloud.requests[.query] == 0)
     }
 
-    private func probedDatabase(cloud: ScoutDBTesting.InMemoryDatabase) -> NativeDatabase {
+    func probedDatabase(cloud: ScoutDBTesting.InMemoryDatabase) -> NativeDatabase {
         let probe = ConcurrencyProbe(cloud)
         let registry = SchemaRegistry(database: probe)
         let store = EntityStore(database: probe, registry: registry)
