@@ -39,4 +39,29 @@ struct MainThreadBacktraceTests {
         #expect(!frames.isEmpty)
         #expect(frames.allSatisfy { $0.image != nil })
     }
+
+    @Test("leaves the main thread's send rights unchanged")
+    func keepsSendRights() {
+        let port = mach_thread_self()
+        defer { mach_port_deallocate(mach_task_self_, port) }
+        let before = sendRights(port: port)
+        let finished = DispatchSemaphore(value: 0)
+
+        Thread {
+            for _ in 0..<10 {
+                _ = MainThreadBacktrace.capture()
+            }
+            finished.signal()
+        }.start()
+
+        finished.wait()
+
+        #expect(sendRights(port: port) == before)
+    }
+}
+
+private func sendRights(port: mach_port_t) -> mach_port_urefs_t {
+    var refs: mach_port_urefs_t = 0
+    mach_port_get_refs(mach_task_self_, port, MACH_PORT_RIGHT_SEND, &refs)
+    return refs
 }
