@@ -135,7 +135,10 @@ extension CatalogEntry {
             .init(name: "source", type: .string),
             .init(name: lifecycleKey, type: .string),
         ],
-        aggregates: [.count(by: lifecycleKey, at: "date")],
+        aggregates: [
+            .count(by: lifecycleKey, at: "date"),
+            .count(by: "device_id", at: "date", parts: devicePageParts),
+        ],
         derive: lifecycleKey
     )
 

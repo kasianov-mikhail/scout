@@ -12,11 +12,11 @@ import ScoutDB
 struct DeviceFold {
     let sessions: [SeriesPoint]
     let systems: [SeriesPoint]
-    let crashes: [String]
+    let crashes: [SeriesPoint]
     let models: [String: String]
 
     var activities: [DeviceActivity] {
-        let crashCounts = Dictionary(crashes.map { ($0, 1) }, uniquingKeysWith: +)
+        let crashCounts = Dictionary(crashes.map { ($0.group, Int($0.value)) }, uniquingKeysWith: +)
         let latestSystems = latestSystems
 
         return Dictionary(grouping: sessions, by: \.group).compactMap { device, points in
