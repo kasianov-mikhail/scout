@@ -13,11 +13,6 @@ extension NativeDatabase: DeviceReader {
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
         let store = try await resolve()
 
-        async let sessions = store.query(SessionEntry.recordType).series(
-            metric: .sum,
-            group: "device_id",
-            in: range
-        )
         async let systems = store.query(SessionEntry.recordType).series(
             metric: .sum,
             group: CatalogEntry.deviceSystem,
@@ -28,11 +23,14 @@ extension NativeDatabase: DeviceReader {
             group: "device_id",
             in: range
         )
-        async let devices = store.records(
+        let sessions = try await store.query(SessionEntry.recordType).series(
+            metric: .sum,
+            group: "device_id",
+            in: range
+        )
+        let devices = try await store.fetch(
             entity: DeviceEntry.recordType,
-            dateField: "date",
-            fields: ["date", "device_id", "model"],
-            in: .distantPast..<range.upperBound
+            uuids: Array(Set(sessions.map(\.group)))
         )
 
         return try await DeviceFold(

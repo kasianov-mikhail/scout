@@ -221,6 +221,34 @@ struct NativeDatabaseTests {
         #expect(record["model"] == "iPhone16,1")
     }
 
+    @Test("Devices carry the model of a device first seen long before the range")
+    func deviceModelBeforeRange() async throws {
+        var device = makeDeviceRecord(id: "a", model: "iPhone16,1")
+        device["date"] = TestDate.reference.addingTimeInterval(-400 * .day)
+        try await database.write(record: device)
+        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
+
+        let range = TestDate.reference..<TestDate.reference.addingTimeInterval(.day)
+        let devices = try await database.devices(in: range)
+
+        #expect(devices.map(\.deviceID) == ["a"])
+        #expect(devices.first?.model == "iPhone16,1")
+    }
+
+    @Test("Devices read the model only for devices active in the range")
+    func deviceModelsInRange() async throws {
+        try await database.write(record: makeDeviceRecord(id: "a", model: "iPhone16,1"))
+        try await database.write(record: makeDeviceRecord(id: "b", model: "iPad14,1"))
+        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
+        try await database.write(record: makeSessionRecord(id: "s-2", device: "c", day: 0))
+
+        let range = TestDate.reference..<TestDate.reference.addingTimeInterval(.day)
+        let devices = try await database.devices(in: range)
+
+        #expect(devices.map(\.deviceID) == ["a", "c"])
+        #expect(devices.map(\.model) == ["iPhone16,1", nil])
+    }
+
     @Test("Activity derives DAU, WAU, and MAU from visit markers")
     func activity() async throws {
         try await database.write(record: makeVisitRecord(device: "a", day: 0))
