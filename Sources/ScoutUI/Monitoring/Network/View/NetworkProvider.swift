@@ -22,7 +22,7 @@ final class NetworkProvider: ObservableObject, SeriesProvider {
         let series = try await database.metricSeries(
             Int.self,
             categories: categories,
-            in: Date().trailingYear
+            in: Period.today.initialRange
         )
         return NetworkReport(series: series)
     }
