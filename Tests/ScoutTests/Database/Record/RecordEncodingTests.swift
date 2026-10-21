@@ -115,6 +115,28 @@ struct RecordEncodingTests {
         #expect(record.fields["date"] != nil)
     }
 
+    @Test("Visit gap records share the visit's device-day name and carry the gap")
+    func visitGapRecord() throws {
+        let device = DeviceEntry.stub(date: Date(), in: context)
+        let install = InstallEntry.stub(date: Date(), device: device, in: context)
+        let launch = LaunchEntry.stub(date: Date(), install: install, in: context)
+
+        let gap = context.insert(VisitGapEntry.self)
+        gap.date = Date()
+        gap.gap = 7
+        gap.appVersion = "2.0"
+        gap.launch = launch
+        try context.save()
+
+        let record = gap.record
+
+        #expect(record.recordType == "VisitGap")
+        #expect(record.recordID == "\(device.deviceID.uuidString)-\(gap.day?.millisecondsSince1970 ?? 0)")
+        #expect(record["gap"] == "7")
+        #expect(record["app_version"] == "2.0")
+        #expect(record["device_id"] == device.deviceID.uuidString)
+    }
+
     @Test("Crash records carry the app version")
     func crashAppVersionRecord() throws {
         let crash = CrashEntry(

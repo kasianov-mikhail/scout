@@ -47,4 +47,35 @@ struct VisitEntryMonitorTests {
 
         #expect(try context.fetchAll(VisitEntry.self).count == 2)
     }
+
+    @Test("Each new visit day stamps the days since the device's previous visit")
+    func triggerStampsGaps() throws {
+        let device = DeviceEntry.stub(date: Date(year: 2026, month: 1, day: 1), in: context)
+        let install = InstallEntry.stub(date: Date(year: 2026, month: 1, day: 1), device: device, in: context)
+        let launch = LaunchEntry.stub(date: Date(year: 2026, month: 1, day: 1), install: install, in: context)
+
+        for day in [1, 1, 4, 5] {
+            try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: day, hour: 9), appVersion: "2.0")
+                .execute(in: context)
+        }
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 3, day: 1), appVersion: "2.1")
+            .execute(in: context)
+
+        let gaps = try context.fetchAll(VisitGapEntry.self).sorted { ($0.date ?? .distantPast) < ($1.date ?? .distantPast) }
+
+        #expect(gaps.map(\.gap) == [30, 3, 1, 30])
+        #expect(gaps.map(\.appVersion) == ["2.0", "2.0", "2.0", "2.1"])
+        #expect(gaps.allSatisfy { $0.launch == launch })
+        #expect(device.lastVisitDay == Date(year: 2026, month: 3, day: 1))
+    }
+
+    @Test("A visit without a known device stamps the longest gap")
+    func triggerWithoutDevice() throws {
+        let launch = makeLaunch()
+
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 1)).execute(in: context)
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 2)).execute(in: context)
+
+        #expect(try context.fetchAll(VisitGapEntry.self).map(\.gap) == [30, 30])
+    }
 }

@@ -17,6 +17,7 @@ extension CatalogEntry {
         condition,
         session,
         visit,
+        visitGap,
         launch,
         install,
         device,
@@ -103,6 +104,19 @@ extension CatalogEntry {
         entity: VisitEntry.recordType,
         fields: [.init(name: "date", type: .timestamp)],
         aggregates: [.count(by: "device_id", at: "date", parts: devicePageParts)]
+    )
+
+    private static let visitGap = CatalogEntry(
+        entity: VisitGapEntry.recordType,
+        fields: [
+            .init(name: "date", type: .timestamp),
+            .init(name: "gap", type: .string),
+            .init(name: "app_version", type: .string),
+        ],
+        aggregates: [
+            .count(by: "gap", at: "date"),
+            .count(by: "app_version", at: "date"),
+        ]
     )
 
     private static let launch = CatalogEntry(
