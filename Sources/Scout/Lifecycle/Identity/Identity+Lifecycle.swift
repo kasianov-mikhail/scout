@@ -8,12 +8,16 @@
 import CoreData
 
 extension Identity {
-    func enter() async throws {
-        try await persistentContainer.run(
+    var foregroundCommands: [any Command] {
+        [
             SessionEntry.Rotation(session: session, launchID: launch),
             VisitEntry.Trigger(launchID: launch),
-            MarkerEntry.Trigger(installID: install)
-        )
+            MarkerEntry.Trigger(installID: install),
+        ]
+    }
+
+    func enter() async throws {
+        try await persistentContainer.run(foregroundCommands)
     }
 
     func leave() async throws {

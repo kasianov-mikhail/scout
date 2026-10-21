@@ -13,7 +13,9 @@ extension SessionEntry {
         let launchID: UUID
 
         func execute(in context: NSManagedObjectContext) throws {
-            session.current = UUID()
+            if try context.existing(SessionEntry.self, key: "sessionID", id: session.current)?.endDate != nil {
+                session.current = UUID()
+            }
 
             try Trigger(session: session, launchID: launchID).execute(in: context)
         }

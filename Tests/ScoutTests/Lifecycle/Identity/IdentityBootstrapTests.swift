@@ -24,13 +24,41 @@ struct IdentityBootstrapTests {
         }
     }
 
-    @Test("startup links the whole identity chain in one pass")
+    private func enterForeground(_ identity: Identity) throws {
+        for command in identity.foregroundCommands {
+            try command.execute(in: context)
+        }
+    }
+
+    @Test("startup links the launch, install and device in one pass")
     func startupLinksChain() throws {
         try startup(identity)
 
+        let launch = try #require(try context.fetchAll(LaunchEntry.self).first)
+        #expect(launch.launchID == identity.launch)
+        #expect(launch.install?.installID == identity.install)
+        #expect(launch.install?.device?.deviceID == identity.device)
+    }
+
+    @Test("startup opens no session and no visit, so a background launch is not counted")
+    func startupOpensNoSession() throws {
+        try startup(identity)
+
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
+        #expect(try context.fetchAll(VisitEntry.self).isEmpty)
+    }
+
+    @Test("entering the foreground after startup opens one session and one visit for the launch")
+    func foregroundAfterStartupOpensSession() throws {
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()))
+        let first = identity.session.current
+
+        try startup(identity)
+        try enterForeground(identity)
+
         let session = try #require(try context.fetchAll(SessionEntry.self).first)
-        #expect(session.launch?.launchID == identity.launch)
-        #expect(session.launch?.install?.installID == identity.install)
+        #expect(try context.fetchAll(SessionEntry.self).count == 1)
+        #expect(session.sessionID == first)
         #expect(session.launch?.install?.device?.deviceID == identity.device)
 
         let visit = try #require(try context.fetchAll(VisitEntry.self).first)

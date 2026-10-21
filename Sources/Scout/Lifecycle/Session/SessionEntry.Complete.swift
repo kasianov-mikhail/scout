@@ -15,7 +15,7 @@ extension SessionEntry {
             let predicate = NSPredicate(format: "launch.launchID == %@", launchID as CVarArg)
 
             guard let session = try context.latest(type: SessionEntry.self, predicate: predicate) else {
-                throw LifecycleError()
+                return
             }
 
             if session.endDate == nil {
@@ -25,8 +25,4 @@ extension SessionEntry {
             }
         }
     }
-}
-
-private struct LifecycleError: LocalizedError {
-    let errorDescription: String? = "LifecycleError not found in the context"
 }

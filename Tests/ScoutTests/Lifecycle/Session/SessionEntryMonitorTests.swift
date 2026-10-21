@@ -76,11 +76,11 @@ struct SessionEntryMonitorTests {
         #expect(delivery.attempts == 0)
     }
 
-    @Test("complete throws notFound when no session exists for the current launch")
-    func completeWithoutSessionThrows() throws {
-        #expect(throws: (any Error).self) {
-            try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
-        }
+    @Test("complete is a no-op when the launch never opened a session")
+    func completeWithoutSessionIsNoop() throws {
+        try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
+
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
     }
 
     @Test("trigger records the session identifier it was handed")
@@ -105,15 +105,42 @@ struct SessionEntryMonitorTests {
         #expect(sessions.first?.appVersion == Bundle.main.marketingVersion)
     }
 
-    @Test("rotation opens a session under a fresh identifier")
-    func rotationOpensNewSession() throws {
+    @Test("rotation opens the current session when the launch has none yet")
+    func rotationOpensCurrentSession() throws {
         let session = Protected(UUID())
         let first = session.current
 
         try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
 
+        #expect(session.current == first)
+        #expect(try context.fetchAll(SessionEntry.self).map(\.sessionID) == [first])
+    }
+
+    @Test("rotation keeps the current session while it is still open")
+    func rotationKeepsOpenSession() throws {
+        let session = Protected(UUID())
+        let first = session.current
+        LaunchEntry.stub(date: Date(), in: context)
+
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+
+        #expect(session.current == first)
+        #expect(try context.fetchAll(SessionEntry.self).count == 1)
+    }
+
+    @Test("rotation opens a session under a fresh identifier after the current one closed")
+    func rotationOpensNewSession() throws {
+        let session = Protected(UUID())
+        let first = session.current
+        LaunchEntry.stub(date: Date(), in: context)
+
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+        try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+
         #expect(session.current != first)
-        #expect(try context.fetchAll(SessionEntry.self).map(\.sessionID) == [session.current])
+        #expect(Set(try context.fetchAll(SessionEntry.self).map(\.sessionID)) == [first, session.current])
     }
 
     @Test("trigger queues a delivered session again after stamping it")
