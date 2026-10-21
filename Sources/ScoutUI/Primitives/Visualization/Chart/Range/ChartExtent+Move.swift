@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension ChartExtent {
     var isLeftEnabled: Bool {

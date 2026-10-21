@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 struct DevicesExport {
     let devices: [DeviceSummary]

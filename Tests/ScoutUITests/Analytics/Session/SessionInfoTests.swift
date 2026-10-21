@@ -9,7 +9,6 @@ import Foundation
 import SwiftUI
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 @Suite("SessionInfo")

@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Scout
 
 struct ChartExportFile {
     let data: Data

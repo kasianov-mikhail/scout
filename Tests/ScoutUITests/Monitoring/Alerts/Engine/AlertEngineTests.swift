@@ -6,10 +6,10 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import Testing
 import UserNotifications
 
-@testable import Scout
 @testable import ScoutUI
 @testable import Support
 

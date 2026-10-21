@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Scout
 import SwiftUI
 
 // A gray relative-time label ("2m ago") that refreshes every second, anchored

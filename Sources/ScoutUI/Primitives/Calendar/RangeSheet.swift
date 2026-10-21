@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Scout
 import SwiftUI
 
 // Design-exploration primitive: a modal range picker. Not yet wired into the app.

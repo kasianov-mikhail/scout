@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension ChartExtent {
     /// The same window one `rangeComponent` earlier than the current domain.

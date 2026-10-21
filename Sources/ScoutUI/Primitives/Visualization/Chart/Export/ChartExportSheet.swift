@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import Scout
 import SwiftUI
 
 struct ChartExportSheet<ChartContent: View>: View {

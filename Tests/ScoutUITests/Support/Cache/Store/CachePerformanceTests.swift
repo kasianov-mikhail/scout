@@ -6,9 +6,9 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import XCTest
 
-@testable import Scout
 @testable import ScoutUI
 
 final class CachedSeriesPerformanceTests: XCTestCase {

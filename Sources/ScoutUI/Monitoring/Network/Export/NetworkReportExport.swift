@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Scout
 
 struct NetworkReportExport {
     let report: NetworkReport

@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 struct IncidentExport<Element: Incident> {
     let incident: Element

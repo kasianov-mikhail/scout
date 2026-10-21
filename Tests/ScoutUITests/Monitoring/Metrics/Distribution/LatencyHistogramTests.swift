@@ -7,9 +7,9 @@
 //
 
 import Foundation
+import Scout
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 @Suite("LatencyHistogram")

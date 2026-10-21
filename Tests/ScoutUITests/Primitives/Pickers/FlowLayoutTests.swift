@@ -8,7 +8,6 @@
 import CoreGraphics
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 @Suite("FlowLayout.arrange")

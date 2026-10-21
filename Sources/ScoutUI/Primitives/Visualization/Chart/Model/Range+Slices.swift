@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension Range where Bound == Date {
     func slices(count: Int) -> [Range<Date>] {

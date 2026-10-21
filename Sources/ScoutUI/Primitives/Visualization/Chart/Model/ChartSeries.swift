@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 protocol ChartSeries: HasValue {
     var date: Date { get }

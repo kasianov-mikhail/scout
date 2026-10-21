@@ -9,7 +9,6 @@
 import Foundation
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 
 struct ParamValueTests {

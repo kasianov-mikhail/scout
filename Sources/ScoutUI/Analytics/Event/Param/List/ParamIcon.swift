@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 //
 
-import Scout
 import SwiftUI
 
 /// The colored kind icon of a value.

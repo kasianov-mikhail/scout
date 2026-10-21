@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension Calendar.Component {
     var chartFormat: Date.FormatStyle {

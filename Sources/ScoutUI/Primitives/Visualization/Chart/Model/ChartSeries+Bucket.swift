@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension Collection where Element: ChartSeries {
     func bucket(on period: some ChartTimeScale) -> [Element] {

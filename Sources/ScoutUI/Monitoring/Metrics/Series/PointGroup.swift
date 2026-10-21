@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 struct PointGroup<T: ChartNumeric>: PointSeries, Identifiable {
     let name: String

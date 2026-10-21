@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 enum Period: String, CaseIterable, Identifiable {
     case today

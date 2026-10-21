@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Scout
 
 enum ExportFormat {
     /// An ISO 8601 timestamp, e.g. `2023-11-14T22:14:00Z`.

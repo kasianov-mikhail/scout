@@ -8,9 +8,9 @@
 
 import Foundation
 import HostedConnector
+import Scout
 import Testing
 
-@testable import Scout
 @testable import ScoutUI
 @testable import Support
 

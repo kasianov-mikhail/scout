@@ -6,7 +6,6 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
-import Scout
 
 extension TimelineItem {
     /// Whether the rail of `kind` is continuous between this row and `other`.
