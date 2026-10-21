@@ -52,7 +52,9 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
         )
         self.crashes = crashes.map(\.record)
         self.backtraces = try crashes.map { crash in
-            var record = Record(recordType: BacktraceRecord.recordType, recordID: UUID().uuidString)
+            let id = UUID(incidentBacktrace: try #require(UUID(uuidString: crash.id))).uuidString
+            var record = Record(recordType: BacktraceRecord.recordType, recordID: id)
+            record["uuid"] = id
             record["incident_id"] = crash.id
             record["date"] = crash.date
             record["backtrace"] = try JSONEncoder().encode(backtrace)
