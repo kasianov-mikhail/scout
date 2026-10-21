@@ -13,18 +13,28 @@ import ScoutDB
 struct NativeLifecycleScanner {
     let query: LifecycleSeriesQuery
     let store: EntityStore
+    let flights: SeriesFlights
 
     var series: [MetricSeries] {
         get async throws {
             let range = query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             let source = LifecycleSource(name: query.name)
 
-            let points = try await store.query(source.entity).series(
-                source.field,
-                metric: .sum,
+            let read = SeriesRead(
+                entity: source.entity,
+                field: source.field,
                 group: CatalogEntry.lifecycleKey,
-                in: range
+                range: range
             )
+
+            let points = try await flights.points(read: read) { [store] in
+                try await store.query(read.entity).series(
+                    read.field,
+                    metric: .sum,
+                    group: read.group,
+                    in: read.range
+                )
+            }
 
             var totals = SeriesTotals()
 
