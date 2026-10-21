@@ -29,9 +29,9 @@ struct CrashGroupDetailView: View {
         InsetList {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 24) {
-                    Readout(title: "Occurrences", value: "\(group.count)")
-                    Readout(title: "Devices", value: "\(group.affectedDevices)")
-                    Readout(title: "Sessions", value: "\(group.affectedSessions)")
+                    Readout(title: "Occurrences", value: group.occurrencesText)
+                    Readout(title: "Devices", value: group.devicesText)
+                    Readout(title: "Sessions", value: group.sessionsText)
                 }
 
                 if let reason = group.representative.reason {
@@ -40,7 +40,7 @@ struct CrashGroupDetailView: View {
                 }
 
                 if let first = group.firstDate, let last = group.lastDate {
-                    Text(verbatim: "First seen \(first.relativeString) · Last seen \(last.relativeString)")
+                    Text(verbatim: "\(group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
                         .font(.system(size: 14))
                         .padding(.bottom)
                         .foregroundStyle(Color.gray)

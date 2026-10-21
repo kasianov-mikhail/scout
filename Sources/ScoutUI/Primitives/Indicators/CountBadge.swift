@@ -10,10 +10,11 @@ import SwiftUI
 struct CountBadge: View {
     let count: Int
     var prefix: String = ""
+    var suffix: String = ""
     var color: Color = .red
 
     var body: some View {
-        Text(verbatim: "\(prefix)\(count)")
+        Text(verbatim: "\(prefix)\(count)\(suffix)")
             .font(.caption.weight(.semibold))
             .monospacedDigit()
             .foregroundStyle(color)

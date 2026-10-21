@@ -34,11 +34,11 @@ struct IncidentRow<Element: Incident, Destination: View>: View {
             }
             .monospaced()
 
-            if group.count > 1 {
+            if group.count > 1 || group.isPartial {
                 if let accent {
-                    CountBadge(count: group.count, prefix: "×", color: accent.color)
+                    CountBadge(count: group.count, prefix: "×", suffix: group.countSuffix, color: accent.color)
                 } else {
-                    CountBadge(count: group.count, prefix: "×")
+                    CountBadge(count: group.count, prefix: "×", suffix: group.countSuffix)
                 }
             }
 
