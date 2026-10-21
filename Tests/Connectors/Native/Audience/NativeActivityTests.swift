@@ -22,8 +22,8 @@ struct NativeActivityTests {
         let visits = makeVisits()
         let database = try await makeDatabase(records: visits.flatMap { [$0.session(version: "2.0"), $0.gapRecord] })
 
-        for range in [day(0)..<day(90), day(40)..<day(75, hour: 6)] {
-            let expected = ActivityPoint.points(visits: visits.map(\.datedID), in: range)
+        for range in [day(30)..<day(90), day(40)..<day(75, hour: 6)] {
+            let expected = ActivityPoint.points(visits: visits.filter { $0.date < range.upperBound }.map(\.datedID), in: range)
 
             #expect(!expected.isEmpty)
             #expect(try await database.activity(in: range).map(\.values) == expected.map(\.values))

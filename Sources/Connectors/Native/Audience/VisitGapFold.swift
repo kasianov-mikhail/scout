@@ -11,7 +11,7 @@ import ScoutDB
 
 struct VisitGapFold {
     private let gaps: [Date: [Int: Int]]
-    private let unstampedDays: Set<Date>
+    private let legacyDays: Set<Date>
 
     init(gaps: [SeriesPoint], versions: [SeriesPoint], sessions: [SeriesPoint]) {
         self.gaps = gaps.reduce(into: [:]) { days, point in
@@ -22,7 +22,7 @@ struct VisitGapFold {
         let stamped = Set(versions.map(DayVersion.init(gap:)))
         let sessionDays = Set(sessions.map(DayVersion.init(session:)))
 
-        self.unstampedDays = Set(sessionDays.subtracting(stamped).map(\.day))
+        self.legacyDays = Set(sessionDays.subtracting(stamped).map(\.day))
     }
 
     func points(in range: Range<Date>) -> [ActivityPoint] {
@@ -45,7 +45,7 @@ struct VisitGapFold {
     }
 
     private func isStamped(day: Date) -> Bool {
-        (0..<monthWindow).allSatisfy { !unstampedDays.contains(day.addingDay(-$0)) }
+        (0..<monthWindow).map { day.addingDay(-$0) }.allSatisfy { gaps[$0] != nil && !legacyDays.contains($0) }
     }
 
     private func point(day: Date) -> ActivityPoint? {
