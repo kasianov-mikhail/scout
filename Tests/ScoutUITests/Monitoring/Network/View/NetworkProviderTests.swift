@@ -37,6 +37,19 @@ struct NetworkProviderTests {
         #expect(report.distributions["plain_timer"] == nil)
     }
 
+    @Test("fetchIfNeeded requests only today's hourly points")
+    func requestsTodayOnly() async throws {
+        let database = CategoryDatabaseStub(series: [])
+
+        let provider = NetworkProvider()
+        await provider.fetchIfNeeded(in: database)
+
+        let categories = LatencyBuckets.categories + StatusBuckets.categories
+        #expect(Set(database.queries.compactMap(\.category)) == Set(categories))
+        #expect(database.queries.allSatisfy { $0.range == Period.today.initialRange })
+        #expect(database.queries.allSatisfy { $0.bucket == .hour })
+    }
+
     @Test("fetchIfNeeded surfaces database errors")
     func surfacesErrors() async {
         let provider = NetworkProvider()
@@ -61,6 +74,13 @@ struct NetworkProviderTests {
 
 private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
     let series: [MetricSeries]
+
+    private let lock = NSLock()
+    private var recorded: [MetricSeriesQuery] = []
+
+    var queries: [MetricSeriesQuery] {
+        lock.withLock { recorded }
+    }
 
     init(series: [MetricSeries]) {
         self.series = series
@@ -91,7 +111,8 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
     }
 
     func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
-        series.filter { $0.category == query.category }
+        lock.withLock { recorded.append(query) }
+        return series.filter { $0.category == query.category }
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
