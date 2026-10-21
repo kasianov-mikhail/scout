@@ -53,6 +53,23 @@ struct ReleaseHealthProviderTests {
         #expect(releases[0].sessions == 4)
     }
 
+    @Test("Crash-free users count each install once across the builds of a version")
+    func freeUsersCountDistinctInstalls() async throws {
+        let database = DatabaseStub()
+        database.add(
+            series: sessionSeries(version: "3.2.0", count: 300),
+            series(name: VersionEntry.recordType, version: "3.2.0", count: 200),
+            series(name: MarkerEntry.installName, version: "3.2.0", count: 100),
+            series(name: MarkerEntry.crashName, version: "3.2.0", count: 1)
+        )
+
+        let provider = ReleaseHealthProvider()
+        await provider.fetchIfNeeded(in: database)
+        let releases = try #require(provider.result).get()
+
+        #expect(releases.first?.freeUsers?.value == 0.99)
+    }
+
     private func sessionSeries(version: String?, count: Int) -> MetricSeries {
         series(name: SessionEntry.recordType, version: version, count: count)
     }

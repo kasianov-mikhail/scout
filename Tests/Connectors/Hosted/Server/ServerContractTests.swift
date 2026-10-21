@@ -306,6 +306,30 @@ struct ServerContractTests {
         #expect(crashes.points.map(\.value).reduce(0, +) == 1)
     }
 
+    @Test("Installs aggregate once per version under the VersionInstall series")
+    func versionInstallSeries() async throws {
+        let database = try makeDatabase()
+        let version = "contract-\(UUID().uuidString)"
+        let install = UUID().uuidString
+
+        try await database.write(records: [
+            makeVersion(installID: install, appVersion: version, build: "45"),
+            makeVersion(installID: install, appVersion: version, build: "46"),
+            makeVersion(installID: UUID().uuidString, appVersion: version, build: "46"),
+        ])
+
+        let series = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(
+                name: MarkerEntry.installName,
+                byVersion: true,
+                range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
+            )
+        )
+        let installs = try #require(series.first { $0.version == version })
+
+        #expect(installs.points.map(\.value).reduce(0, +) == 2)
+    }
+
     @Test("Crash threads survive the round trip")
     func crashThreads() async throws {
         let database = try makeDatabase()
@@ -641,6 +665,16 @@ struct ServerContractTests {
         record["app_version"] = appVersion
         record["session_id"] = UUID().uuidString
         record["date"] = eventDate
+        return record
+    }
+
+    private func makeVersion(installID: String, appVersion: String, build: String) -> Record {
+        var record = Record(recordType: VersionEntry.recordType, recordID: "\(installID)-\(appVersion)-\(build)")
+        record["date"] = eventDate
+        record["app_version"] = appVersion
+        record["build_number"] = build
+        record["launch_id"] = UUID().uuidString
+        record["install_id"] = installID
         return record
     }
 

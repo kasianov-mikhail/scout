@@ -9,7 +9,7 @@ import CoreData
 
 @objc(MarkerEntry)
 package final class MarkerEntry: DateEntry {
-    static let installName = "VersionInstall"
+    package static let installName = "VersionInstall"
     package static let crashName = "VersionCrash"
     static let hangName = "VersionHang"
 
