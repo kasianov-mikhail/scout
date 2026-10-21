@@ -198,7 +198,7 @@ func makeMeterRecord(id: String, name: String, value: Double, date: Date) -> Rec
     return record
 }
 
-private struct SeriesSnapshot: Equatable {
+struct SeriesSnapshot: Equatable {
     let key: SeriesKey
     let points: [Date: Double]
 

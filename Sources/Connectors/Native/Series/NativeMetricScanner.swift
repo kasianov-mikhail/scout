@@ -39,7 +39,10 @@ struct NativeMetricScanner {
     }
 
     private func totals(values: MetricSeriesQuery.Values) async throws -> SeriesTotals {
-        let points = try await store.query(values.metricsEntity).series(
+        let metrics = store.query(values.metricsEntity)
+        let keyed = query.seriesKey.map { metrics.filter(CatalogEntry.metricSeriesKey, .equals, .string($0)) } ?? metrics
+
+        let points = try await keyed.series(
             "value",
             metric: .sum,
             group: CatalogEntry.metricSeriesKey,
@@ -79,6 +82,13 @@ extension MetricSeriesQuery.Values {
 }
 
 extension MetricSeriesQuery {
+    var seriesKey: String? {
+        guard let name, let category else {
+            return nil
+        }
+        return CatalogEntry.encodeSeriesKey(category: category, name: name)
+    }
+
     func key(metric: String, category: String?) -> SeriesKey? {
         guard name == nil || name == metric else {
             return nil
