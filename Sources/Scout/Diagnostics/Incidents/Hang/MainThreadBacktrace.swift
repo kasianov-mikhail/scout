@@ -22,6 +22,7 @@ enum MainThreadBacktrace {
         guard let mainThread = mainMachThread() else {
             return []
         }
+        defer { mach_port_deallocate(mach_task_self_, mainThread) }
 
         // Only raw return addresses are collected while the main thread is
         // suspended — no malloc, no dyld lock. If the thread is suspended
@@ -62,7 +63,11 @@ enum MainThreadBacktrace {
             )
         }
 
-        return threadCount > 0 ? threadList[0] : nil
+        let threads = UnsafeBufferPointer(start: threadList, count: Int(threadCount))
+        for thread in threads.dropFirst() {
+            mach_port_deallocate(mach_task_self_, thread)
+        }
+        return threads.first
     }
 }
 
