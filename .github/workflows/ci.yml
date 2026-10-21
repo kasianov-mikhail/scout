@@ -39,7 +39,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_SHA: ${{ github.event.before }}
-          PATTERN: ^(Sources/|Tests/|Package\.swift$|\.swift-format$|\.github/)
+          PATTERN: ^(Sources/|Tests/|Package(@swift-[0-9.]+)?\.swift$|\.swift-format$|\.github/)
           OUTPUT: code
         run: .github/scripts/detect-changes.sh
 
@@ -50,7 +50,7 @@ jobs:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           BEFORE_SHA: ${{ github.event.before }}
-          PATTERN: ^(Sources/|Package\.swift$|\.github/)
+          PATTERN: ^(Sources/|Package(@swift-[0-9.]+)?\.swift$|\.github/)
           OUTPUT: api
         run: .github/scripts/detect-changes.sh
 
@@ -253,19 +253,6 @@ jobs:
             echo "LABELS"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Cache Swift package checkouts
-        uses: actions/cache@v6
-        with:
-          path: /tmp/spm
-          key: spm-${{ hashFiles('Package.resolved') }}
-          restore-keys: spm-
-
-      - name: Dump current API
-        run: |
-          set -eo pipefail
-          .github/scripts/build-library-schemes.sh /tmp/dd-current
-          .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
-
       - name: Identify the toolchain
         id: toolchain
         run: |
@@ -277,6 +264,19 @@ jobs:
           fi
           echo "Toolchain: $id"
           echo "id=$id" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Swift package checkouts
+        uses: actions/cache@v6
+        with:
+          path: /tmp/spm
+          key: spm-${{ steps.toolchain.outputs.id }}-${{ hashFiles('Package.swift', 'Package@swift-*.swift') }}
+          restore-keys: spm-${{ steps.toolchain.outputs.id }}-
+
+      - name: Dump current API
+        run: |
+          set -eo pipefail
+          .github/scripts/build-library-schemes.sh /tmp/dd-current
+          .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
 
       - name: Acknowledge an unbuildable baseline
         id: baseline-ack
