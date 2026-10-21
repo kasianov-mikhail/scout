@@ -46,3 +46,15 @@
 - scout and scout-server (`kasianov-mikhail/scout-server`) share an HTTP wire-format contract, so changes to the two repos are often interrelated: a change to request/response shapes, field names, the queryable-field set, or endpoints on the scout side (the `Core/Database/Backend` layer — `HTTPQueryCoding`, `HTTPRecordCoding`, `HTTPDatabase`) usually needs a matching change in scout-server, and vice versa.
 - They are separate repos, so a contract change normally ships as a PR in each — link the matching PR in the other repo from both descriptions.
 - `ServerContractTests` (run by the `Server` workflow in `.github/workflows/server.yml`, which boots a real scout-server) guards the wire format, so extend and run it when you touch either side rather than assuming the contract still holds.
+
+## Aggregated reads
+
+- Dashboard charts, readouts, counts and search indexes read pre-aggregated data, never a page-by-page scan of raw records over a date range.
+  - Native: declare a scout-db aggregate in the catalog (`CatalogEntry+Entries.swift`) and read it with `store.query(...).series(...)`.
+  - Hosted: compute it on the server behind `GET /metrics/series` or a dedicated endpoint (a contract change — see "Server contract"). Don't reintroduce grid/matrix records.
+- Don't add a new `store.records(...)` or `datedIDs(...)` (Native) or `readAll(...)` (ScoutUI) over a date range to build an aggregate on the client. Raw reads are fine only when something else bounds them: one device, session or install, one page of a paginated feed, or one incident's detail.
+- Never widen a raw scan to `.distantPast` or the whole history; such reads grow every day the app is live.
+- An aggregate added to an already published entity starts at the next hour (`since`); scout-db folds older records with `RecordFold`, so no backfill is needed. A derived key (`derive:`) is absent on records written before it existed — handle the empty group.
+- A catalog change republishes the CloudKit schema; clients on other SDK versions compare it for equality (`CatalogEntry+Publish.swift`), so check that the change is additive.
+- If an aggregate needs a new scout-db feature, ask before changing scout-db or creating a scout-db tag.
+- In a plan or review, flag any read whose cost grows with the number of events, sessions or installs, and estimate it at a realistic audience (e.g. 1k DAU, 400 records per CloudKit page).
