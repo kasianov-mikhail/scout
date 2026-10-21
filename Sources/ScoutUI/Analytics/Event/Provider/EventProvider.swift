@@ -24,7 +24,7 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
 
     @discardableResult
     func fetchLatest(for filter: EventQuery, in database: RecordReader) async -> Bool {
-        await fetchLatest(matching: query(for: filter), in: database)
+        await fetchLatest(matching: query(for: filter.criteria), in: database)
     }
 
     func fetchLatest(in database: DatabaseReader) async {
