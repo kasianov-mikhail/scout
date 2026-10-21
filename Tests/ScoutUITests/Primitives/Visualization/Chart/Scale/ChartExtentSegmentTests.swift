@@ -10,6 +10,7 @@ import Foundation
 import Testing
 
 @testable import ScoutUI
+@testable import Support
 
 struct ChartExtentSegmentTests {
     let date: Date
@@ -31,5 +32,19 @@ struct ChartExtentSegmentTests {
         let points = extent.segment(from: points)
 
         #expect(points.map(\.value) == [10])
+    }
+
+    @Test("A peak fold keeps the largest hourly value of each day, not the sum")
+    func peakFold() {
+        let day = Date(year: 2026, month: 6, day: 10)
+        let points = [3, 9, 4].enumerated().map { hour, value in
+            ChartPoint(date: day.addingTimeInterval(Double(hour) * 3600), value: value)
+        }
+
+        let total = ChartExtent(period: Period.week, domain: day..<day.addingTimeInterval(86400))
+        let peak = ChartExtent(period: Period.week, domain: day..<day.addingTimeInterval(86400), fold: .peak)
+
+        #expect(total.segment(from: points).map(\.value) == [16])
+        #expect(peak.segment(from: points).map(\.value) == [9])
     }
 }

@@ -23,6 +23,7 @@ extension CatalogEntry {
         device,
         version,
         firstSeen,
+        retentionMark,
         crash,
         hang,
         resourceException,
@@ -159,6 +160,19 @@ extension CatalogEntry {
         ],
         aggregates: [.count(by: lifecycleKey, at: "date")],
         derive: metricLifecycleKey
+    )
+
+    private static let retentionMark = CatalogEntry(
+        entity: RetentionMarkEntry.recordType,
+        fields: [
+            .init(name: "name", type: .string),
+            .init(name: "os_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "install_date", type: .timestamp),
+            .init(name: retentionKey, type: .string),
+        ],
+        aggregates: [.count(by: retentionKey, at: "install_date")],
+        derive: retentionKey(for:)
     )
 
     private static let incidentFields: [Field] = [

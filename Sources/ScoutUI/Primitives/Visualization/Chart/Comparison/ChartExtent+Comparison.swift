@@ -40,6 +40,6 @@ extension ChartExtent {
 
     /// Buckets `points` into the previous window.
     private func previousSegment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        points.bucket(in: previousDomain, component: period.pointComponent)
+        points.bucket(in: previousDomain, component: period.pointComponent, fold: fold)
     }
 }

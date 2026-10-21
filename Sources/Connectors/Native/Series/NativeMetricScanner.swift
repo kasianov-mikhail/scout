@@ -30,43 +30,73 @@ struct NativeMetricScanner {
     }
 
     private func series(values: MetricSeriesQuery.Values) async throws -> [MetricSeries] {
+        let points = try await points(values: values)
+
         switch query.reduce {
         case .last:
-            try await NativeLastValueScanner(query: query, store: store).series(values: values)
+            var peaks = SeriesPeaks()
+
+            for point in points {
+                peaks.add(point.value, key: point.key, start: point.start)
+            }
+
+            return peaks.series
+
         case .sum:
-            try await totals(values: values).series
+            var totals = SeriesTotals()
+
+            for point in points {
+                totals.add(point.value, key: point.key, start: point.start)
+            }
+
+            return totals.series
         }
     }
 
-    private func totals(values: MetricSeriesQuery.Values) async throws -> SeriesTotals {
+    private func points(values: MetricSeriesQuery.Values) async throws -> [KeyedPoint] {
         let metrics = store.query(values.metricsEntity)
         let keyed = query.seriesKey.map { metrics.filter(CatalogEntry.metricSeriesKey, .equals, .string($0)) } ?? metrics
 
         let points = try await keyed.series(
             "value",
-            metric: .sum,
+            metric: query.reduce.metric,
             group: CatalogEntry.metricSeriesKey,
             in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
         )
 
-        var totals = SeriesTotals()
+        return points.compactMap {
+            KeyedPoint(point: $0, query: query)
+        }
+    }
 
-        for point in points {
+    private struct KeyedPoint {
+        let key: SeriesKey
+        let start: Date
+        let value: Double
+
+        init?(point: SeriesPoint, query: MetricSeriesQuery) {
             guard let (category, metric) = CatalogEntry.decodeSeriesKey(point.group) else {
-                continue
+                return nil
             }
             guard let key = query.key(metric: metric, category: category) else {
-                continue
+                return nil
             }
 
-            totals.add(
-                point.value,
-                key: key,
-                start: query.bucket.start(of: point.date)
-            )
+            self.key = key
+            self.start = query.bucket.start(of: point.date)
+            self.value = point.value
         }
+    }
+}
 
-        return totals
+extension MetricSeriesQuery.Reduce {
+    fileprivate var metric: ScoutDB.Metric {
+        switch self {
+        case .sum:
+            .sum
+        case .last:
+            .max
+        }
     }
 }
 

@@ -86,7 +86,6 @@
     </entity>
     <entity name="DeviceEntry" representedClassName="DeviceEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="deviceID" attributeType="UUID" usesScalarValueType="NO"/>
-        <attribute name="lastVisitDay" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="model" optional="YES" attributeType="String"/>
         <relationship name="installs" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="InstallEntry" inverseName="device" inverseEntity="InstallEntry"/>
         <fetchIndex name="byDeviceID">
@@ -110,10 +109,12 @@
     </entity>
     <entity name="InstallEntry" representedClassName="InstallEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="installID" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="osVersion" optional="YES" attributeType="String"/>
         <relationship name="device" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DeviceEntry" inverseName="installs" inverseEntity="DeviceEntry"/>
         <relationship name="firstSeen" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="FirstSeenEntry" inverseName="install" inverseEntity="FirstSeenEntry"/>
         <relationship name="incidents" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="IncidentEntry" inverseName="install" inverseEntity="IncidentEntry"/>
         <relationship name="launches" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="LaunchEntry" inverseName="install" inverseEntity="LaunchEntry"/>
+        <relationship name="retentionMarks" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="RetentionMarkEntry" inverseName="install" inverseEntity="RetentionMarkEntry"/>
         <fetchIndex name="byInstallID">
             <fetchIndexElement property="installID" type="Binary" order="ascending"/>
             <fetchIndexElement property="datePrimitive" type="Binary" order="ascending"/>
@@ -246,10 +247,6 @@
             </uniquenessConstraint>
         </uniquenessConstraints>
     </entity>
-    <entity name="VisitGapEntry" representedClassName="VisitGapEntry" parentEntity="LaunchScopeEntry" syncable="YES" codeGenerationType="none">
-        <attribute name="appVersion" optional="YES" attributeType="String"/>
-        <attribute name="gap" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-    </entity>
     <entity name="FirstSeenEntry" representedClassName="FirstSeenEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
         <attribute name="appVersion" optional="YES" attributeType="String"/>
         <attribute name="name" attributeType="String"/>
@@ -258,6 +255,14 @@
             <fetchIndexElement property="install" type="Binary" order="ascending"/>
             <fetchIndexElement property="name" type="Binary" order="ascending"/>
             <fetchIndexElement property="appVersion" type="Binary" order="ascending"/>
+        </fetchIndex>
+    </entity>
+    <entity name="RetentionMarkEntry" representedClassName="RetentionMarkEntry" parentEntity="SyncableEntry" syncable="YES" codeGenerationType="none">
+        <attribute name="name" attributeType="String"/>
+        <relationship name="install" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="InstallEntry" inverseName="retentionMarks" inverseEntity="InstallEntry"/>
+        <fetchIndex name="byInstallName">
+            <fetchIndexElement property="install" type="Binary" order="ascending"/>
+            <fetchIndexElement property="name" type="Binary" order="ascending"/>
         </fetchIndex>
     </entity>
 </model>

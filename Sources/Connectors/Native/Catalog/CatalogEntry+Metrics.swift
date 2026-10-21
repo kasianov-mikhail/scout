@@ -48,7 +48,10 @@ extension CatalogEntry {
                 .init(name: "value", type: valueType),
                 .init(name: "date", type: .timestamp),
             ],
-            aggregates: [.sum("value", by: metricSeriesKey, at: "date")],
+            aggregates: [
+                .sum("value", by: metricSeriesKey, at: "date"),
+                .max("value", by: metricSeriesKey, at: "date"),
+            ],
             derive: seriesKey
         )
     }

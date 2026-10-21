@@ -163,4 +163,15 @@ struct LogCrashTests {
         #expect(marker.appVersion == "2.0")
         #expect(marker.install?.installID == crash.installID)
     }
+
+    @Test("Marks a crash in a new install's first month for its retention cohort")
+    func marksRetentionCrash() throws {
+        let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [])
+        try InstallEntry.Trigger(installID: crash.installID, deviceID: deviceID).execute(in: context)
+
+        try crash.log(deviceID: deviceID, context: context)
+
+        let names = Set(try context.fetchAll(RetentionMarkEntry.self).map(\.name))
+        #expect(names == ["install", "crash"])
+    }
 }

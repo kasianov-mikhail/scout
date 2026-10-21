@@ -18,13 +18,13 @@ import Testing
 private let window = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
 
 extension NativeSeriesTests {
-    @Test("A meter series keeps the last value in each bucket, not the sum")
-    func meterLastValue() async throws {
+    @Test("A meter series keeps the peak value in each bucket, not the sum")
+    func meterPeak() async throws {
         let hour = TestDate.reference.addingTimeInterval(10 * .hour)
         try await database.write(
-            record: makeMeterRecord(id: "g-1", name: "queue_depth", value: 5, date: hour.addingTimeInterval(60)))
+            record: makeMeterRecord(id: "g-1", name: "queue_depth", value: 8, date: hour.addingTimeInterval(60)))
         try await database.write(
-            record: makeMeterRecord(id: "g-2", name: "queue_depth", value: 8, date: hour.addingTimeInterval(120)))
+            record: makeMeterRecord(id: "g-2", name: "queue_depth", value: 5, date: hour.addingTimeInterval(120)))
 
         var foreign = makeMeterRecord(id: "g-3", name: "queue_depth", value: 100, date: hour.addingTimeInterval(180))
         foreign["category"] = "timer"
@@ -37,7 +37,7 @@ extension NativeSeriesTests {
         #expect(gauge.points.map(\.value) == [8])
     }
 
-    @Test("A meter resolves the last value per bucket independently")
+    @Test("A meter resolves the peak per bucket independently")
     func meterBuckets() async throws {
         let first = TestDate.reference.addingTimeInterval(10 * .hour)
         let second = TestDate.reference.addingTimeInterval(11 * .hour)
@@ -51,14 +51,14 @@ extension NativeSeriesTests {
         let series = try await database.metricSeries(matching: meters)
 
         let gauge = try #require(series.first { $0.name == "queue_depth" })
-        #expect(gauge.points.map(\.value) == [2, 9])
+        #expect(gauge.points.map(\.value) == [5, 9])
     }
 
-    @Test("A meter keeps a zero as its latest value")
+    @Test("A meter keeps a zero as its peak")
     func meterZero() async throws {
         let hour = TestDate.reference.addingTimeInterval(10 * .hour)
         try await database.write(
-            record: makeMeterRecord(id: "g-1", name: "queue_depth", value: 7, date: hour.addingTimeInterval(60)))
+            record: makeMeterRecord(id: "g-1", name: "queue_depth", value: -7, date: hour.addingTimeInterval(60)))
         try await database.write(
             record: makeMeterRecord(id: "g-2", name: "queue_depth", value: 0, date: hour.addingTimeInterval(120)))
 
@@ -68,8 +68,8 @@ extension NativeSeriesTests {
         #expect(gauge.points.map(\.value) == [0])
     }
 
-    @Test("A meter scan reads only the records of its category")
-    func meterScanFiltersCategory() async throws {
+    @Test("A meter series reads the peak aggregate, not the records")
+    func meterFromAggregate() async throws {
         let cloud = ScoutDBTesting.InMemoryDatabase()
         let database = probedDatabase(cloud: cloud)
 
@@ -88,11 +88,19 @@ extension NativeSeriesTests {
         let series = try await database.metricSeries(matching: meters)
 
         #expect(series.map { $0.points.map(\.value) } == [[5]])
-        #expect(cloud.requests.records == 1)
+        #expect(cloud.requests[.query] == 0)
+    }
+
+    @Test("A named meter reads only its own group")
+    func namedMeterReadsOneGroup() async throws {
+        let alone = try await queueDepthReads(besides: [])
+        let crowded = try await queueDepthReads(besides: ["cache_size", "pool_size", "backlog", "inflight"])
+
+        #expect(crowded == alone)
     }
 
     @Test(
-        "A filtered last-value scan matches the full scan it replaces",
+        "The peak aggregate matches a full scan of the records",
         arguments: [
             MetricSeriesQuery(category: "meter", values: .double, bucket: .hour, reduce: .last, range: window),
             MetricSeriesQuery(category: "meter", values: .double, bucket: .day, reduce: .last, range: window),
@@ -102,11 +110,11 @@ extension NativeSeriesTests {
             MetricSeriesQuery(category: "missing", bucket: .hour, reduce: .last, range: window),
         ]
     )
-    func filteredScanMatchesFullScan(query: MetricSeriesQuery) async throws {
+    func aggregateMatchesFullScan(query: MetricSeriesQuery) async throws {
         let base = TestDate.reference.addingTimeInterval(10 * .hour)
         let rows: [(name: String, category: String?, value: Double, minutes: Double)] = [
-            ("queue_depth", "meter", 5, 1),
-            ("queue_depth", "meter", 8, 2),
+            ("queue_depth", "meter", 8, 1),
+            ("queue_depth", "meter", 5, 2),
             ("queue_depth", "meter", 3, 70),
             ("queue_depth", "meter", 4, 26 * 60),
             ("cache_size", "meter", 11, 3),
@@ -152,7 +160,7 @@ extension NativeSeriesTests {
                 in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             )
 
-            var latest = LatestValues()
+            var peaks = SeriesPeaks()
 
             for record in records {
                 let date: Date? = record["date"]
@@ -163,18 +171,37 @@ extension NativeSeriesTests {
 
                 switch record.values["value"] {
                 case .double(let raw):
-                    latest.add(raw, key: key, date: date, start: query.bucket.start(of: date))
+                    peaks.add(raw, key: key, start: query.bucket.start(of: date))
                 case .int(let raw):
-                    latest.add(Double(raw), key: key, date: date, start: query.bucket.start(of: date))
+                    peaks.add(Double(raw), key: key, start: query.bucket.start(of: date))
                 default:
                     continue
                 }
             }
 
-            series += latest.series
+            series += peaks.series
         }
 
         return series.sorted { $0.key < $1.key }
+    }
+
+    private func queueDepthReads(besides names: [String]) async throws -> Int {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = probedDatabase(cloud: cloud)
+        let hour = TestDate.reference.addingTimeInterval(10 * .hour)
+
+        for (index, name) in (["queue_depth"] + names).enumerated() {
+            try await database.write(record: makeMeterRecord(id: "g-\(index)", name: name, value: 1, date: hour))
+        }
+
+        let query = MetricSeriesQuery(name: "queue_depth", category: "meter", values: .double, bucket: .hour, reduce: .last, range: range)
+        _ = try await database.metricSeries(matching: query)
+        cloud.resetRequests()
+
+        let series = try await database.metricSeries(matching: query)
+
+        #expect(series.map(\.name) == ["queue_depth"])
+        return cloud.requests.records
     }
 
     private var meters: MetricSeriesQuery {

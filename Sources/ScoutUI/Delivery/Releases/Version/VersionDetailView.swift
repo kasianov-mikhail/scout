@@ -5,25 +5,22 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Charts
 import Scout
 import SwiftUI
 
 struct VersionDetailView: View {
     let release: ReleaseHealth
-    @StateObject var crashes: VersionIncidentProvider<Crash>
-    @StateObject var hangs: VersionIncidentProvider<Hang>
-    @StateObject var resources: VersionIncidentProvider<ResourceException>
+
+    @Environment(\.database) private var database
+    @StateObject var provider: VersionTrendProvider
 
     @State private var showAllCrashes = false
     @State private var showAllHangs = false
     @State private var showAllResources = false
 
-    init(release: ReleaseHealth, crashes: VersionIncidentProvider<Crash>? = nil, hangs: VersionIncidentProvider<Hang>? = nil, resources: VersionIncidentProvider<ResourceException>? = nil) {
+    init(release: ReleaseHealth, provider: VersionTrendProvider? = nil) {
         self.release = release
-        self._crashes = StateObject(wrappedValue: crashes ?? VersionIncidentProvider(version: release.id))
-        self._hangs = StateObject(wrappedValue: hangs ?? VersionIncidentProvider(version: release.id))
-        self._resources = StateObject(wrappedValue: resources ?? VersionIncidentProvider(version: release.id))
+        self._provider = StateObject(wrappedValue: provider ?? VersionTrendProvider(version: release.id))
     }
 
     var body: some View {
@@ -47,19 +44,25 @@ struct VersionDetailView: View {
             .padding(.bottom, 4)
             .listRowSeparator(.hidden, edges: .top)
 
-            IncidentTrendSection(records: crashRecords) {
-                if !crashRecords.isEmpty {
+            if let error = provider.error {
+                ErrorRow(description: error.localizedDescription) {
+                    await provider.fetchAgain(in: database)
+                }
+            }
+
+            IncidentTrendSection(kind: .crash, days: trend.crashes) {
+                if release.crashes > 0 {
                     AllButton { showAllCrashes = true }
                 }
             }
 
-            IncidentTrendSection(records: hangRecords) {
-                if !hangRecords.isEmpty {
+            IncidentTrendSection(kind: .hang, days: trend.hangs) {
+                if release.hangs > 0 {
                     AllButton { showAllHangs = true }
                 }
             }
 
-            ResourceSection(summary: release.resources, records: resourceRecords) {
+            ResourceSection(summary: release.resources, days: trend.resources) {
                 showAllResources = true
             }
 
@@ -67,142 +70,44 @@ struct VersionDetailView: View {
             PerformanceSection(release: release)
         }
         .navigationDestination(isPresented: $showAllCrashes) {
-            VersionIncidentsView(issuesTitle: "Top crash issues", records: crashRecords) { group in
+            VersionIncidentsView(
+                issuesTitle: "Top crash issues",
+                days: trend.crashes,
+                provider: VersionIncidentProvider<Crash>(version: release.id)
+            ) { group in
                 CrashGroupDetailView(group: group)
             }
         }
         .navigationDestination(isPresented: $showAllHangs) {
-            VersionIncidentsView(issuesTitle: "Top hang issues", records: hangRecords) { group in
+            VersionIncidentsView(
+                issuesTitle: "Top hang issues",
+                days: trend.hangs,
+                provider: VersionIncidentProvider<Hang>(version: release.id)
+            ) { group in
                 HangGroupDetailView(group: group)
             }
         }
         .navigationDestination(isPresented: $showAllResources) {
-            VersionIncidentsView(issuesTitle: "Top resource issues", records: resourceRecords) { group in
+            VersionIncidentsView(
+                issuesTitle: "Top resource issues",
+                days: trend.resources,
+                provider: VersionIncidentProvider<ResourceException>(version: release.id)
+            ) { group in
                 ResourceGroupDetailView(group: group)
             }
         }
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .monospacedNavigationTitle(en: release.id)
-        .message($crashes.message)
-        .message($hangs.message)
-        .message($resources.message)
-        .refreshes([crashes, hangs, resources])
+        .refreshes([provider])
     }
 
-    private var crashRecords: [Crash] {
-        crashes.records ?? []
-    }
-
-    private var hangRecords: [Hang] {
-        hangs.records ?? []
-    }
-
-    private var resourceRecords: [ResourceException] {
-        resources.records ?? []
-    }
-}
-
-private struct VersionIncidentsView<Element: Incident, Destination: View>: View {
-    let issuesTitle: String
-    let records: [Element]
-
-    @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
-
-    var body: some View {
-        InsetList {
-            IncidentTrendChart(records: records)
-                .padding(.top)
-
-            IncidentIssuesSection(
-                title: issuesTitle,
-                groups: IncidentGroup.groups(from: records),
-                destination: destination
-            )
-        }
-        .navigationTitle(en: Element.kind.title)
-        .largeNavigationTitle()
-    }
-}
-
-struct IncidentTrendSection<Element: Incident, Trailing: View>: View {
-    let records: [Element]
-
-    @ViewBuilder let trailing: () -> Trailing
-
-    var body: some View {
-        Header(title: Element.kind.title, trailing: trailing)
-
-        IncidentTrendChart(records: records)
-    }
-}
-
-struct IncidentTrendChart<Element: Incident>: View {
-    let records: [Element]
-
-    private var days: [DailyCount] {
-        DailyCount.series(from: records)
-    }
-
-    var body: some View {
-        let isEmpty = !days.contains(where: { $0.count > 0 })
-
-        Chart(days, id: \.date) { day in
-            BarMark(
-                x: .value("Day", day.date, unit: .day),
-                y: .value("Count", day.count),
-                width: .ratio(0.6)
-            )
-            .foregroundStyle(Element.kind.color.gradient)
-            .cornerRadius(3)
-        }
-        .chartXAxis {
-            AxisMarks(values: .stride(by: .day, count: 3)) { _ in
-                AxisGridLine()
-                AxisTick()
-                AxisValueLabel(format: Calendar.Component.day.chartFormat)
-            }
-        }
-        .chartYAxis {
-            AxisMarks(position: .leading)
-        }
-        .placeholderAxis(active: isEmpty)
-        .chartBackground { _ in
-            if isEmpty {
-                ChartPlaceholder().offset(y: -12)
-            }
-        }
-        .frame(height: 170)
-        .environment(\.calendar, .utc)
-        .environment(\.timeZone, Calendar.utc.timeZone)
-        .listRowSeparator(.hidden)
-    }
-}
-
-private struct IncidentIssuesSection<Element: Incident, Destination: View>: View {
-    let title: String
-    let groups: [IncidentGroup<Element>]
-    @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
-
-    @ViewBuilder
-    var body: some View {
-        if !groups.isEmpty {
-            Header(title: title)
-
-            ForEach(groups) { group in
-                Row {
-                    Text(verbatim: group.name)
-                        .font(.callout)
-                        .monospaced()
-                        .lineLimit(1)
-
-                    Spacer()
-
-                    CountBadge(count: group.count, color: Element.kind.color)
-                } destination: {
-                    destination(group)
-                }
-            }
+    private var trend: VersionTrend {
+        switch provider.result {
+        case .success(let trend):
+            trend
+        case .failure, nil:
+            .empty
         }
     }
 }
@@ -211,9 +116,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     NavigationStack {
         VersionDetailView(
             release: [ReleaseHealth].samples[0],
-            crashes: .init(.samples, version: "3.2.0"),
-            hangs: .init(.samples, version: "3.2.0"),
-            resources: .init(.samples, version: "3.2.0")
+            provider: .init(.success(.sample), version: "3.2.0")
         )
     }
     .environmentObject(Tint())
@@ -225,9 +128,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     return NavigationStack {
         VersionDetailView(
             release: release,
-            crashes: .init([], version: release.id),
-            hangs: .init([], version: release.id),
-            resources: .init([], version: release.id)
+            provider: .init(.success(.empty), version: release.id)
         )
     }
     .environmentObject(Tint())

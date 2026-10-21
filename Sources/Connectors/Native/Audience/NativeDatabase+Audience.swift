@@ -43,49 +43,13 @@ extension NativeDatabase: AudienceReader {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         let store = try await resolve()
 
-        async let installs = store.records(
-            entity: InstallEntry.recordType,
-            dateField: "date",
-            fields: ["date", "install_id", "device_id"],
-            in: range
-        )
-        async let sessions = store.query(SessionEntry.recordType).series(
+        let marks = try await store.query(RetentionMarkEntry.recordType).series(
             metric: .sum,
-            group: "install_id",
-            in: range
-        )
-        async let systems = store.query(SessionEntry.recordType).series(
-            metric: .sum,
-            group: CatalogEntry.deviceSystem,
-            in: range
-        )
-        async let crashes = store.datedIDs(
-            entity: CrashEntry.recordType,
-            dateField: "date",
-            idField: "install_id",
-            in: range
-        )
-        async let hangs = store.datedIDs(
-            entity: HangEntry.recordType,
-            dateField: "date",
-            idField: "install_id",
+            group: CatalogEntry.retentionKey,
             in: range
         )
 
-        let fold = try await RetentionFold(
-            installs: installs,
-            sessions: sessions,
-            systems: systems
-        )
-
-        return try await RetentionCohort.cohorts(
-            installs: fold.installIDs,
-            sessions: fold.installSessions,
-            crashes: crashes,
-            hangs: hangs,
-            range: range,
-            now: Date()
-        )
+        return [RetentionCohort](tallies: marks.compactMap(RetentionTally.init), now: Date())
     }
 }
 

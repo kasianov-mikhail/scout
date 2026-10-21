@@ -96,6 +96,7 @@ struct EntityCatalogTests {
             DeviceEntry.recordType,
             VersionEntry.recordType,
             FirstSeenEntry.recordType,
+            RetentionMarkEntry.recordType,
             CrashEntry.recordType,
             ScreenEntry.recordType,
             ConditionEntry.recordType,
