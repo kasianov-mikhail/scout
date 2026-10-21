@@ -102,6 +102,10 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         ranges.map { _ in 0 }
     }
 
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        []
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         []
     }
@@ -140,6 +144,10 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
     }
 
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
+        throw Failure()
+    }
+
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
         throw Failure()
     }
 

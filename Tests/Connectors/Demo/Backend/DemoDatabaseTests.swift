@@ -32,6 +32,17 @@ import Testing
         #expect(try await !records(Event.self).isEmpty)
     }
 
+    @Test func incidentTalliesMatchTheGroupedRecords() async throws {
+        let crashes = try await records(Crash.self).map(Crash.init(record:)).filter { $0.date.map(range.contains) == true }
+        let hangs = try await records(Hang.self).map(Hang.init(record:)).filter { $0.date.map(range.contains) == true }
+
+        let crashTallies = try await database.incidentTallies(recordType: Crash.recordType, in: range)
+        let hangTallies = try await database.incidentTallies(recordType: Hang.recordType, in: range)
+
+        #expect(Dictionary(crashTallies.map { ($0.fingerprint, $0.count) }) { $1 } == Dictionary(grouping: crashes, by: \.fingerprint).mapValues(\.count))
+        #expect(Dictionary(hangTallies.map { ($0.fingerprint, $0.count) }) { $1 } == Dictionary(grouping: hangs, by: \.fingerprint).mapValues(\.count))
+    }
+
     @Test func lifecycleSeriesPopulateWithAndWithoutVersions() async throws {
         for name in [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType] {
             let byVersion = try await database.lifecycleSeries(

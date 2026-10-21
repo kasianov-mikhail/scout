@@ -86,4 +86,5 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { [] }
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] { [] }
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] { [] }
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] { [] }
 }

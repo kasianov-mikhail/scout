@@ -131,6 +131,10 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         stored(Session.recordType).deviceCounts(in: ranges)
     }
 
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        []
+    }
+
     private func stored(_ type: String) -> [Record] {
         lock.lock()
         defer { lock.unlock() }

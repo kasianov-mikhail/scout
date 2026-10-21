@@ -9,7 +9,7 @@ import Foundation
 
 package typealias Database = DatabaseReader & DatabaseWriter
 
-package typealias DatabaseReader = SeriesReader & AudienceReader & DeviceReader & RecordReader
+package typealias DatabaseReader = SeriesReader & AudienceReader & DeviceReader & IncidentReader & RecordReader
 
 package protocol DatabaseWriter: Sendable {
     func write(record: Record) async throws
@@ -30,6 +30,10 @@ package protocol AudienceReader: Sendable {
 package protocol DeviceReader: Sendable {
     func devices(in range: Range<Date>) async throws -> [DeviceActivity]
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int]
+}
+
+package protocol IncidentReader: Sendable {
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally]
 }
 
 package protocol RecordReader: Sendable {
