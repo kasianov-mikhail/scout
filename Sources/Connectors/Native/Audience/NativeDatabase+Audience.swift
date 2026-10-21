@@ -8,22 +8,36 @@
 import ConnectorSupport
 import Foundation
 import Scout
+import ScoutDB
 
 extension NativeDatabase: AudienceReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         let store = try await resolve()
-        let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
+        let span = range.lookback..<range.upperBound
 
-        let visits = try await store.query(VisitEntry.recordType).series(
+        async let gaps = store.query(VisitGapEntry.recordType).series(
             metric: .sum,
-            group: "device_id",
-            in: lookback..<range.upperBound
+            group: "gap",
+            in: span
+        )
+        async let versions = store.query(VisitGapEntry.recordType).series(
+            metric: .sum,
+            group: "app_version",
+            in: span
+        )
+        async let sessions = store.query(SessionEntry.recordType).series(
+            metric: .sum,
+            group: CatalogEntry.lifecycleKey,
+            in: span
         )
 
-        return ActivityPoint.points(
-            visits: visits.filter { !$0.group.isEmpty }.map { DatedID(date: $0.date, id: $0.group) },
-            in: range
-        )
+        let fold = try await VisitGapFold(gaps: gaps, versions: versions, sessions: sessions)
+
+        var points = fold.points(in: range)
+        for unstamped in fold.unstampedSpans(in: range) {
+            points += try await store.deviceActivity(in: unstamped)
+        }
+        return points.sorted { $0.date < $1.date }
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
@@ -72,5 +86,26 @@ extension NativeDatabase: AudienceReader {
             range: range,
             now: Date()
         )
+    }
+}
+
+extension EntityStore {
+    fileprivate func deviceActivity(in range: Range<Date>) async throws -> [ActivityPoint] {
+        let visits = try await query(VisitEntry.recordType).series(
+            metric: .sum,
+            group: "device_id",
+            in: range.lookback..<range.upperBound
+        )
+
+        return ActivityPoint.points(
+            visits: visits.filter { !$0.group.isEmpty }.map { DatedID(date: $0.date, id: $0.group) },
+            in: range
+        )
+    }
+}
+
+extension Range<Date> {
+    fileprivate var lookback: Date {
+        lowerBound.addingTimeInterval(-30 * .day).startOfDay
     }
 }

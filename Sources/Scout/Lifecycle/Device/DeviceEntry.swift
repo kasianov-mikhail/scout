@@ -13,6 +13,7 @@ package final class DeviceEntry: SyncableEntry {
 
     @NSManaged var deviceID: UUID
     @NSManaged var model: String?
+    @NSManaged var lastVisitDay: Date?
     @NSManaged var installs: Set<InstallEntry>
 
     override var references: Set<DateEntry> {

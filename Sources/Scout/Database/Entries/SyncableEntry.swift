@@ -32,6 +32,7 @@ extension SyncableEntry {
         ConditionEntry.self,
         SessionEntry.self,
         VisitEntry.self,
+        VisitGapEntry.self,
         LaunchEntry.self,
         VersionEntry.self,
         FirstSeenEntry.self,

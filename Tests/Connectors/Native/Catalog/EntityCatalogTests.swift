@@ -90,6 +90,7 @@ struct EntityCatalogTests {
             EventEntry.recordType,
             SessionEntry.recordType,
             VisitEntry.recordType,
+            VisitGapEntry.recordType,
             LaunchEntry.recordType,
             InstallEntry.recordType,
             DeviceEntry.recordType,
