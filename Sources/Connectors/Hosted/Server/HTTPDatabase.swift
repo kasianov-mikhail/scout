@@ -57,9 +57,13 @@ extension HTTPDatabase {
 
     func perform(_ request: URLRequest) async throws -> Data {
         try await requireBackgroundTime()
-        let (data, response) = try await URLSession.shared.data(for: request)
-        try check(response, data: data)
-        return data
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            try check(response, data: data)
+            return data
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
+        }
     }
 
     func request(for endpoint: URL, method: String) -> URLRequest {
