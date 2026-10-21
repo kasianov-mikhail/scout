@@ -20,19 +20,19 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
         let range = Date().trailingYear
 
         async let sessions = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: Session.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let crashes = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: CrashEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: Crash.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let hangs = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: HangEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: Hang.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let installs = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: Version.installMarker, bucket: .day, byVersion: true, range: range)
         )
         async let crashedInstalls = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: Version.crashMarker, bucket: .day, byVersion: true, range: range)
         )
         async let exits = database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: ExitReason.metricName, bucket: .day, byVersion: true, range: range)
@@ -48,7 +48,7 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
             matching: LifecycleSeriesQuery(name: PerformanceMetric.foregroundTime.rawValue, bucket: .day, byVersion: true, range: range)
         )
         async let resources = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: ResourceEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: ResourceException.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let peakMemory = database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: PerformanceMetric.peakMemory.rawValue, bucket: .day, byVersion: true, range: range)

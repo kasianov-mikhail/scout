@@ -9,7 +9,7 @@ import CoreData
 
 @objc(InstallEntry)
 package final class InstallEntry: SyncableEntry, HasDevice {
-    package static let recordType = "Install"
+    package static let recordType = Install.recordType
 
     @NSManaged var installID: UUID
     @NSManaged var device: DeviceEntry?

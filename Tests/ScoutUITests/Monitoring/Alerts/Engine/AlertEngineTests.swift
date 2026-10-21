@@ -40,8 +40,8 @@ struct AlertEngineTests {
         let database = DatabaseStub()
         database.add(
             series: makeSeries(
-                name: SessionEntry.recordType, counts: [(hoursAgo: 1, count: 10), (hoursAgo: 2, count: 10)]),
-            makeSeries(name: CrashEntry.recordType, counts: [(hoursAgo: 1, count: 1), (hoursAgo: 2, count: 1)])
+                name: Session.recordType, counts: [(hoursAgo: 1, count: 10), (hoursAgo: 2, count: 10)]),
+            makeSeries(name: Crash.recordType, counts: [(hoursAgo: 1, count: 1), (hoursAgo: 2, count: 1)])
         )
 
         let engine = try makeEngine(rules: [crashFreeRule])
@@ -104,7 +104,7 @@ struct AlertEngineTests {
     @Test("A healthy metric stays armed")
     func healthy() async throws {
         let database = DatabaseStub()
-        database.add(series: makeSeries(name: SessionEntry.recordType, counts: [(hoursAgo: 1, count: 10)]))
+        database.add(series: makeSeries(name: Session.recordType, counts: [(hoursAgo: 1, count: 10)]))
 
         let engine = try makeEngine(rules: [crashFreeRule])
         let statuses = try await engine.run(in: database)

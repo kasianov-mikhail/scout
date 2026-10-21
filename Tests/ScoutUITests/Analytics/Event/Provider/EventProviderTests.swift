@@ -25,7 +25,7 @@ struct EventProviderTests {
         await provider.fetchLatest(for: EventQuery(), in: database)
 
         #expect(provider.records?.count == 2)
-        #expect(database.readCount(of: EventEntry.recordType) == 1)
+        #expect(database.readCount(of: Event.recordType) == 1)
     }
 
     @Test("fetchLatest does not duplicate events already loaded")
@@ -38,7 +38,7 @@ struct EventProviderTests {
         await provider.fetchLatest(for: EventQuery(), in: database)
 
         #expect(provider.records?.count == 1)
-        #expect(database.readCount(of: EventEntry.recordType) == 2)
+        #expect(database.readCount(of: Event.recordType) == 2)
     }
 
     @Test("fetchLatest ignores the search text")

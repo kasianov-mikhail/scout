@@ -9,7 +9,7 @@ import CoreData
 
 @objc(HangEntry)
 package final class HangEntry: IncidentEntry {
-    package static let recordType = "Hang"
+    package static let recordType = Hang.recordType
 
     @NSManaged var hangID: UUID
     @NSManaged var duration: Double

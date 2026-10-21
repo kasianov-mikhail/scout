@@ -9,7 +9,7 @@ import CoreData
 
 @objc(CrashEntry)
 package final class CrashEntry: IncidentEntry {
-    package static let recordType = "Crash"
+    package static let recordType = Crash.recordType
 
     @NSManaged var crashID: UUID
     @NSManaged var threads: Data?

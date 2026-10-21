@@ -20,8 +20,8 @@ struct LogSeriesTests {
             series: [
                 makeSeries(name: "login", value: 3),
                 makeSeries(name: "purchase", value: 4),
-                makeSeries(name: CrashEntry.recordType, value: 2),
-                makeSeries(name: HangEntry.recordType, value: 1),
+                makeSeries(name: Crash.recordType, value: 2),
+                makeSeries(name: Hang.recordType, value: 1),
             ]
         )
 

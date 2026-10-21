@@ -19,7 +19,7 @@ struct CachingDatabaseTests {
         upper.startOfWeek.addingWeek(-1)
     }
 
-    func makeDatabase(base: SpyDatabase, types: Set<String> = [EventEntry.recordType]) throws -> CachingDatabase {
+    func makeDatabase(base: SpyDatabase, types: Set<String> = [Event.recordType]) throws -> CachingDatabase {
         let now = upper
 
         return CachingDatabase(
@@ -179,7 +179,7 @@ struct CachingDatabaseTests {
                 points: [MetricSeriesPoint(date: Date(millisecondsSince1970: 1_000_000_000), value: 4)]
             )
         ]
-        let query = LifecycleSeriesQuery(name: SessionEntry.recordType, byVersion: true, range: lower..<upper)
+        let query = LifecycleSeriesQuery(name: Session.recordType, byVersion: true, range: lower..<upper)
 
         let first = try await database.lifecycleSeries(matching: query)
         let second = try await database.lifecycleSeries(matching: query)
@@ -194,7 +194,7 @@ struct CachingDatabaseTests {
     func cachesEventLookup() async throws {
         let base = SpyDatabase()
         let database = try makeDatabase(base: base)
-        var event = Record(recordType: EventEntry.recordType, recordID: "event-1")
+        var event = Record(recordType: Event.recordType, recordID: "event-1")
         event.fields["params"] = .bytes(Data("payload".utf8))
         base.records = [event]
 
@@ -202,7 +202,7 @@ struct CachingDatabaseTests {
         let second = try await database.lookup(recordName: "event-1", fields: ["params"])
 
         #expect(first.fields == second.fields)
-        #expect(second.recordType == EventEntry.recordType)
+        #expect(second.recordType == Event.recordType)
         #expect(base.lookups == ["event-1"])
     }
 
@@ -210,7 +210,7 @@ struct CachingDatabaseTests {
     func skipsMutableLookup() async throws {
         let base = SpyDatabase()
         let database = try makeDatabase(base: base)
-        base.records = [Record(recordType: SessionEntry.recordType, recordID: "session-1")]
+        base.records = [Record(recordType: Session.recordType, recordID: "session-1")]
 
         _ = try await database.lookup(recordName: "session-1", fields: nil)
         _ = try await database.lookup(recordName: "session-1", fields: nil)
@@ -221,10 +221,10 @@ struct CachingDatabaseTests {
     @Test("The immutable record types decide which lookups are cached")
     func honorsImmutableRecordTypes() async throws {
         let base = SpyDatabase()
-        let database = try makeDatabase(base: base, types: [SessionEntry.recordType])
+        let database = try makeDatabase(base: base, types: [Session.recordType])
         base.records = [
-            Record(recordType: SessionEntry.recordType, recordID: "session-1"),
-            Record(recordType: EventEntry.recordType, recordID: "event-1"),
+            Record(recordType: Session.recordType, recordID: "session-1"),
+            Record(recordType: Event.recordType, recordID: "event-1"),
         ]
 
         _ = try await database.lookup(recordName: "session-1", fields: nil)
@@ -239,7 +239,7 @@ struct CachingDatabaseTests {
     func separatesLookupFields() async throws {
         let base = SpyDatabase()
         let database = try makeDatabase(base: base)
-        base.records = [Record(recordType: EventEntry.recordType, recordID: "event-1")]
+        base.records = [Record(recordType: Event.recordType, recordID: "event-1")]
 
         _ = try await database.lookup(recordName: "event-1", fields: ["params"])
         _ = try await database.lookup(recordName: "event-1", fields: nil)

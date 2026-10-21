@@ -9,7 +9,7 @@ import CoreData
 
 @objc(ResourceEntry)
 package final class ResourceEntry: IncidentEntry {
-    package static let recordType = "ResourceException"
+    package static let recordType = ResourceException.recordType
 
     @NSManaged var resourceID: UUID
     @NSManaged var kind: String

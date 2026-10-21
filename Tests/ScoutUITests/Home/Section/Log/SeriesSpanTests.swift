@@ -24,7 +24,7 @@ struct SeriesSpanTests {
             makeSeries(name: "api_calls", category: "counter", date: Date(year: 2026, month: 6, day: 2), value: 7),
         ])
 
-        #expect(span.points { $0 != CrashEntry.recordType }.total == 7)
+        #expect(span.points { $0 != Crash.recordType }.total == 7)
     }
 
     @Test("Count keeps points inside the range only")
@@ -35,7 +35,7 @@ struct SeriesSpanTests {
             makeSeries(name: "login", date: Date(year: 2026, month: 6, day: 8), value: 5),
         ])
 
-        #expect(span.points { $0 != CrashEntry.recordType }.total == 3)
+        #expect(span.points { $0 != Crash.recordType }.total == 3)
     }
 
     @Test("Count sums the Crash series")
@@ -46,7 +46,7 @@ struct SeriesSpanTests {
             makeSeries(name: "login", date: Date(year: 2026, month: 6, day: 2), value: 3),
         ])
 
-        #expect(span.points { $0 == CrashEntry.recordType }.total == 2)
+        #expect(span.points { $0 == Crash.recordType }.total == 2)
     }
 
     @Test("Metric count tallies distinct metrics across value flavors")
@@ -89,7 +89,7 @@ struct SeriesSpanTests {
             makeSeries(name: "api_calls", category: "counter", date: Date(year: 2026, month: 6, day: 2), value: 7),
         ])
 
-        let points = span.points { $0 != CrashEntry.recordType }
+        let points = span.points { $0 != Crash.recordType }
 
         #expect(points.map(\.value) == [3])
     }

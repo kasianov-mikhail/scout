@@ -40,12 +40,12 @@ struct LogSeries {
             values: slices.map(count)
         )
 
-        let incidents: Set = [CrashEntry.recordType, HangEntry.recordType]
+        let incidents: Set = [Crash.recordType, Hang.recordType]
 
         return [
             .events: Trend(total: span.points { !incidents.contains($0) }, period: period),
-            .crashes: Trend(total: span.points { $0 == CrashEntry.recordType }, period: period),
-            .hangs: Trend(total: span.points { $0 == HangEntry.recordType }, period: period),
+            .crashes: Trend(total: span.points { $0 == Crash.recordType }, period: period),
+            .hangs: Trend(total: span.points { $0 == Hang.recordType }, period: period),
             .network: Trend(total: span.points(inCategories: Set(StatusBuckets.categories)), period: period),
             .metrics: metrics,
             .devices: deviceTrend,

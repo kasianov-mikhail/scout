@@ -9,7 +9,7 @@ import CoreData
 
 @objc(EventEntry)
 package final class EventEntry: SessionScopeEntry {
-    package static let recordType = "Event"
+    package static let recordType = Event.recordType
 
     @NSManaged var name: String?
     @NSManaged var eventID: UUID

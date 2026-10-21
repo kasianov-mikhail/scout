@@ -80,10 +80,10 @@ final class CachingDatabasePerformanceTests: XCTestCase {
             scope: "perf",
             cache: try makeRecordCache(),
             now: { now },
-            types: [EventEntry.recordType]
+            types: [Event.recordType]
         )
         let query = LifecycleSeriesQuery(
-            name: SessionEntry.recordType,
+            name: Session.recordType,
             byVersion: true,
             range: Date(timeIntervalSince1970: 0)..<Date(timeIntervalSince1970: 4_000_000)
         )

@@ -8,6 +8,10 @@
 import Foundation
 
 package struct Version {
+    package static let installMarker = "VersionInstall"
+    package static let crashMarker = "VersionCrash"
+    static let hangMarker = "VersionHang"
+
     let appVersion: String?
     let buildNumber: String?
     let launchID: UUID?
@@ -24,7 +28,7 @@ package struct Version {
 }
 
 extension Version: RecordDecodable {
-    package static let recordType = VersionEntry.recordType
+    package static let recordType = "Version"
 
     package static let desiredKeys = [
         "app_version",

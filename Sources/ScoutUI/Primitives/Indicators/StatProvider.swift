@@ -21,7 +21,7 @@ final class StatProvider: ObservableObject, SeriesProvider {
             case .event(let name):
                 name
             case .sessions:
-                SessionEntry.recordType
+                Session.recordType
             }
         }
     }
@@ -44,7 +44,7 @@ final class StatProvider: ObservableObject, SeriesProvider {
                 )
             case .sessions:
                 try await database.lifecycleSeries(
-                    matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, range: range)
+                    matching: LifecycleSeriesQuery(name: Session.recordType, bucket: .hour, range: range)
                 )
             }
 

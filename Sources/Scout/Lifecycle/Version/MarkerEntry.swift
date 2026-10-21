@@ -9,9 +9,9 @@ import CoreData
 
 @objc(MarkerEntry)
 package final class MarkerEntry: DateEntry {
-    package static let installName = "VersionInstall"
-    package static let crashName = "VersionCrash"
-    static let hangName = "VersionHang"
+    package static let installName = Version.installMarker
+    package static let crashName = Version.crashMarker
+    static let hangName = Version.hangMarker
 
     @NSManaged var appVersion: String?
     @NSManaged var markerID: UUID

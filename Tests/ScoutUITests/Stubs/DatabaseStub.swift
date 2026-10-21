@@ -117,18 +117,18 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
 
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
         [DeviceActivity](
-            devices: stored(DeviceEntry.recordType),
-            sessions: stored(SessionEntry.recordType).filter { record in
+            devices: stored(Device.recordType),
+            sessions: stored(Session.recordType).filter { record in
                 (record["start_date"] as Date?).map(range.contains) ?? false
             },
-            crashes: stored(CrashEntry.recordType).filter { record in
+            crashes: stored(Crash.recordType).filter { record in
                 (record["date"] as Date?).map(range.contains) ?? false
             }
         )
     }
 
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
-        stored(SessionEntry.recordType).deviceCounts(in: ranges)
+        stored(Session.recordType).deviceCounts(in: ranges)
     }
 
     private func stored(_ type: String) -> [Record] {
@@ -258,7 +258,7 @@ private enum SeriesKind {
     init(series: MetricSeries) {
         if series.category != nil {
             self = .metric
-        } else if [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType, VersionEntry.recordType, MarkerEntry.installName, MarkerEntry.crashName].contains(series.name) {
+        } else if [Session.recordType, Crash.recordType, Hang.recordType, Version.recordType, Version.installMarker, Version.crashMarker].contains(series.name) {
             self = .lifecycle
         } else {
             self = .event
