@@ -100,6 +100,31 @@ struct EntityCatalogTests {
             EntityCatalog.derivedValues(for: record) == [CatalogEntry.metricSeriesKey: .string("timer|checkout")])
     }
 
+    @Test("A session derives its device and system key next to its lifecycle key")
+    func derivedDeviceSystem() throws {
+        var record = Record(recordType: SessionEntry.recordType, recordID: "s-1")
+        record["device_id"] = "D1"
+        record["os_version"] = "iOS 17.4"
+
+        let derived = EntityCatalog.derivedValues(for: record)
+        let key = try #require(derived[CatalogEntry.deviceSystem])
+
+        #expect(key == .string("D1|iOS 17.4"))
+        #expect(derived[CatalogEntry.lifecycleKey] != nil)
+    }
+
+    @Test("A device and system key splits back, with a missing system read as nil")
+    func deviceSystemRoundTrip() throws {
+        let full = try #require(DeviceSystem(key: DeviceSystem(device: "D1", system: "iOS 17.4").key))
+        let bare = try #require(DeviceSystem(key: DeviceSystem(device: "D2", system: nil).key))
+
+        #expect(full.device == "D1")
+        #expect(full.system == "iOS 17.4")
+        #expect(bare.device == "D2")
+        #expect(bare.system == nil)
+        #expect(DeviceSystem(key: "") == nil)
+    }
+
     @Test("Entities without a declared derivation derive nothing")
     func noDerivation() {
         let record = Record(recordType: EventEntry.recordType, recordID: "e-1")

@@ -180,6 +180,56 @@ struct ServerContractTests {
         #expect(segment.hangs == 0)
     }
 
+    @Test("The device summary counts a written device's sessions, crashes and model")
+    func deviceSummary() async throws {
+        let database = try makeDatabase()
+        let device = UUID().uuidString
+        let day = eventDate.startOfDay
+        let system = "contract-\(UUID().uuidString)"
+
+        var first = makeSession(installID: UUID().uuidString, startDate: day.addingTimeInterval(3600))
+        first["device_id"] = device
+        var latest = makeSession(installID: UUID().uuidString, startDate: day.addingTimeInterval(7200))
+        latest["device_id"] = device
+        latest["os_version"] = system
+        var crash = makeCrash(appVersion: "1.0")
+        crash["device_id"] = device
+        var model = Record(recordType: "Device", recordID: "contract-\(device)")
+        model["device_id"] = device
+        model["model"] = "iPhone15,3"
+        model["date"] = day
+
+        try await database.write(records: [first, latest, crash, model])
+
+        let devices = try await database.devices(in: day..<day.addingDay())
+        let summary = try #require(devices.first { $0.deviceID == device })
+
+        #expect(summary.model == "iPhone15,3")
+        #expect(summary.osVersion == system)
+        #expect(summary.lastSeen == day.addingTimeInterval(7200))
+        #expect(summary.sessions == 2)
+        #expect(summary.crashes == 1)
+    }
+
+    @Test("Device counts count a written device in its range and not in the next one")
+    func deviceCounts() async throws {
+        let database = try makeDatabase()
+        let start = eventDate.startOfDay.addingTimeInterval(10_000 + TimeInterval(Int.random(in: 0..<50_000)))
+        var session = makeSession(installID: UUID().uuidString, startDate: start)
+        session["device_id"] = UUID().uuidString
+
+        try await database.write(record: session)
+
+        let counts = try await database.deviceCounts(
+            in: [
+                start..<start.addingTimeInterval(1),
+                start.addingTimeInterval(1)..<start.addingTimeInterval(2),
+            ]
+        )
+
+        #expect(counts == [1, 0])
+    }
+
     @Test("Sessions aggregate into a per-version series")
     func versionedSessionSeries() async throws {
         let database = try makeDatabase()

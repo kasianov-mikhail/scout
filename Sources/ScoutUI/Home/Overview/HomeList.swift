@@ -19,7 +19,6 @@ struct HomeList: View {
     @StateObject var sessions = StatProvider(subject: .sessions)
     @StateObject var releases = ReleaseHealthProvider()
     @StateObject var logs = HomeLogProvider()
-    @StateObject var devices = DevicesProvider()
     @StateObject var alerts = AlertProvider(permission: NotificationPermission(center: UNUserNotificationCenter.current()))
 
     var body: some View {
@@ -44,7 +43,6 @@ struct HomeList: View {
             HomeLogSection(
                 period: period,
                 log: logs,
-                devices: devices,
                 path: $path
             )
             HomeReleaseSection(
@@ -59,7 +57,7 @@ struct HomeList: View {
         .scrollContentBackground(.hidden)
         .refreshingProviders(
             first: [alerts, releases, retention],
-            later: [sessions, activities, logs, devices]
+            later: [sessions, activities, logs]
         )
         .globalSearch()
         .navigationDestination(for: HomeDestination.self) { destination in
@@ -71,7 +69,7 @@ struct HomeList: View {
             case .sessions:
                 statView
             case .log:
-                LogView(period: period, log: logs, devices: devices)
+                LogView(period: period, log: logs)
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
             case .alerts:
@@ -96,7 +94,6 @@ struct HomeList: View {
             sessions: .init(subject: .sessions),
             releases: .init(.success(.samples)),
             logs: .init(),
-            devices: .init(),
             alerts: .init(.success([.firingSample, .armedSample]))
         )
         .navigationTitle(en: "Home")
@@ -112,8 +109,7 @@ struct HomeList: View {
             retention: .init(.success(.samples)),
             sessions: .init(.success(.samples), subject: .sessions),
             releases: .init(.success(.samples)),
-            logs: .init(acrossAllPeriods: MetricSeries.samples(for: .today)),
-            devices: .init(.success(.sample)),
+            logs: .init(acrossAllPeriods: .sample(for: .today)),
             alerts: .init(.success([.firingSample, .armedSample]))
         )
         .navigationTitle(en: "Home")
@@ -129,8 +125,7 @@ struct HomeList: View {
             retention: .init(.success([])),
             sessions: .init(.success([]), subject: .sessions),
             releases: .init(.success([])),
-            logs: .init(acrossAllPeriods: []),
-            devices: .init(.success(.empty)),
+            logs: .init(acrossAllPeriods: LogSnapshot(series: [], deviceCounts: [])),
             alerts: .init(.success([]))
         )
         .navigationTitle(en: "Home")

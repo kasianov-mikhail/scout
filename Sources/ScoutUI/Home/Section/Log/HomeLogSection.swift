@@ -14,7 +14,6 @@ struct HomeLogSection: View {
     let period: Period
 
     @ObservedObject var log: HomeLogProvider
-    @ObservedObject var devices: DevicesProvider
 
     @Binding var path: [HomeDestination]
 
@@ -23,8 +22,6 @@ struct HomeLogSection: View {
             AllButton { path.append(.log) }
         }
         .task(id: period) {
-            log.visits = visits
-
             guard log.period != period else {
                 return
             }
@@ -32,7 +29,6 @@ struct HomeLogSection: View {
             log.period = period
             await log.fetchIfNeeded(in: database)
         }
-        .onChange(of: visits) { log.visits = $0 }
 
         ForEach(Array(LogCategory.allCases.enumerated()), id: \.element) { index, category in
             Row {
@@ -50,18 +46,13 @@ struct HomeLogSection: View {
             }
         }
     }
-
-    private var visits: [DeviceVisit] {
-        (try? devices.result?.get().visits) ?? []
-    }
 }
 
 extension HomeLogSection {
     init(period: Period) {
         self.init(
             period: period,
-            log: .init(acrossAllPeriods: MetricSeries.samples(for: period)),
-            devices: .init(.success(.sample)),
+            log: .init(acrossAllPeriods: .sample(for: period)),
             path: .constant([])
         )
     }

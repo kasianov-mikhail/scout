@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import Testing
 
@@ -19,7 +20,7 @@ struct DeviceSummaryTests {
         let older = Date(timeIntervalSinceNow: -3600)
         let newer = Date()
 
-        let summaries = DeviceSummary.summaries(
+        let summaries = summaries(
             devices: [.deviceStub(deviceID: deviceID, date: older, model: "iPhone15,3")],
             sessions: [
                 .sessionStub(
@@ -45,7 +46,7 @@ struct DeviceSummaryTests {
     func summariesExcludeSessionlessDevices() {
         let deviceID = UUID()
 
-        let summaries = DeviceSummary.summaries(
+        let summaries = summaries(
             devices: [.deviceStub(deviceID: deviceID, date: Date(), model: "iPhone15,3")],
             sessions: [],
             crashes: []
@@ -59,7 +60,7 @@ struct DeviceSummaryTests {
         let deviceID = UUID()
         let date = Date()
 
-        let summaries = DeviceSummary.summaries(
+        let summaries = summaries(
             devices: [],
             sessions: [
                 .sessionStub(
@@ -83,7 +84,7 @@ struct DeviceSummaryTests {
     func summariesKeepModellessDevices() throws {
         let deviceID = UUID()
 
-        let summaries = DeviceSummary.summaries(
+        let summaries = summaries(
             devices: [.deviceStub(deviceID: deviceID, date: Date(), model: nil)],
             sessions: [
                 .sessionStub(
@@ -103,7 +104,7 @@ struct DeviceSummaryTests {
         let deviceA = UUID()
         let deviceB = UUID()
 
-        let summaries = DeviceSummary.summaries(
+        let summaries = summaries(
             devices: [
                 .deviceStub(deviceID: deviceA, date: Date(), model: "iPhone15,3"),
                 .deviceStub(deviceID: deviceB, date: Date(), model: "iPad13,1"),
@@ -120,5 +121,9 @@ struct DeviceSummaryTests {
         let byID = Dictionary(uniqueKeysWithValues: summaries.map { ($0.id, $0) })
         #expect(byID[deviceA]?.crashes == 1)
         #expect(byID[deviceB]?.crashes == 0)
+    }
+
+    private func summaries(devices: [Record], sessions: [Record], crashes: [Record]) -> [DeviceSummary] {
+        [DeviceActivity](devices: devices, sessions: sessions, crashes: crashes).compactMap(DeviceSummary.init(activity:))
     }
 }

@@ -14,7 +14,6 @@ struct LogView: View {
     @State var period: Period
 
     @ObservedObject var log: HomeLogProvider
-    @ObservedObject var devices: DevicesProvider
 
     private let columns = [
         GridItem(.flexible(), spacing: 24),
@@ -51,16 +50,10 @@ struct LogView: View {
         }
         .task(id: period) {
             log.period = period
-            log.visits = visits
             await log.fetchIfNeeded(in: database)
         }
-        .onChange(of: visits) { log.visits = $0 }
         .refreshOnPull([log])
         .navigationTitle(en: "Log")
-    }
-
-    private var visits: [DeviceVisit] {
-        (try? devices.result?.get().visits) ?? []
     }
 }
 
@@ -68,8 +61,7 @@ struct LogView: View {
     NavigationStack {
         LogView(
             period: .week,
-            log: .init(acrossAllPeriods: MetricSeries.samples(for: .week)),
-            devices: .init(.success(.sample))
+            log: .init(acrossAllPeriods: .sample(for: .week))
         )
     }
 }

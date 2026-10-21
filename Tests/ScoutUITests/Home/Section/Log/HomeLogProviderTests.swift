@@ -28,7 +28,7 @@ struct HomeLogProviderTests {
         let provider = HomeLogProvider()
         provider.period = .today
         await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
+        let result = try #require(try provider.result?.get().series)
 
         let span = SeriesSpan(series: result, range: allTime)
 
@@ -50,7 +50,7 @@ struct HomeLogProviderTests {
         let provider = HomeLogProvider()
         provider.period = .today
         await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
+        let result = try #require(try provider.result?.get().series)
 
         #expect(Set(result.map(\.name)) == ["login", "Crash"])
     }
@@ -67,7 +67,7 @@ struct HomeLogProviderTests {
         let provider = HomeLogProvider()
         provider.period = .today
         await provider.fetchIfNeeded(in: database)
-        let result = try #require(try provider.result?.get())
+        let result = try #require(try provider.result?.get().series)
 
         #expect(Set(result.map(\.name)) == ["login"])
     }
@@ -84,11 +84,11 @@ struct HomeLogProviderTests {
         let provider = HomeLogProvider()
         provider.period = .month
         await provider.fetchIfNeeded(in: database)
-        let month = try #require(try provider.result?.get())
+        let month = try #require(try provider.result?.get().series)
 
         provider.period = .year
         await provider.fetchIfNeeded(in: database)
-        let year = try #require(try provider.result?.get())
+        let year = try #require(try provider.result?.get().series)
 
         #expect(Set(month.map(\.name)) == ["recent", "previous"])
         #expect(Set(year.map(\.name)) == ["recent", "previous", "old"])

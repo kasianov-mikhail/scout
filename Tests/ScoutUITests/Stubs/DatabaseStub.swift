@@ -114,6 +114,28 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         []
     }
+
+    func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
+        [DeviceActivity](
+            devices: stored(DeviceEntry.recordType),
+            sessions: stored(SessionEntry.recordType).filter { record in
+                (record["start_date"] as Date?).map(range.contains) ?? false
+            },
+            crashes: stored(CrashEntry.recordType).filter { record in
+                (record["date"] as Date?).map(range.contains) ?? false
+            }
+        )
+    }
+
+    func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
+        stored(SessionEntry.recordType).deviceCounts(in: ranges)
+    }
+
+    private func stored(_ type: String) -> [Record] {
+        lock.lock()
+        defer { lock.unlock() }
+        return storage[type] ?? []
+    }
 }
 
 /// A reusable async latch: `wait()` suspends until `open()` is called; once

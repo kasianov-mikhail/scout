@@ -82,7 +82,7 @@ private struct GlobalSearchModifier: ViewModifier {
         get throws {
             try GlobalSearchIndex(
                 series: names.result?.get(),
-                devices: devices.result?.get().summaries,
+                devices: devices.result?.get(),
                 releases: releases.result?.get(),
                 crashes: crashes.result?.get(),
                 hangs: hangs.result?.get()

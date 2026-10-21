@@ -9,31 +9,14 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class DevicesProvider: ObservableObject, RecordProvider {
-    @Published var result: ProviderResult<DevicesReport>?
+final class DevicesProvider: ObservableObject, DeviceProvider {
+    @Published var result: ProviderResult<[DeviceSummary]>?
 
     init(_ result: ProviderResult<Output>? = nil) {
         self.result = result
     }
 
-    func fetch(in database: RecordReader) async throws -> DevicesReport {
-        let range = Date().trailingYear
-
-        async let devices: [Record] = database.readAll(
-            matching: RecordQuery(recordType: Device.self),
-            fields: ["device_id", "model"]
-        )
-
-        async let sessions: [Record] = database.readAll(
-            matching: RecordQuery(recordType: Session.self, filters: range.dateFilters(on: "start_date")),
-            fields: ["device_id", "os_version", "start_date"]
-        )
-
-        async let crashes: [Record] = database.readAll(
-            matching: RecordQuery(recordType: Crash.self, filters: range.dateFilters),
-            fields: ["device_id"]
-        )
-
-        return try await DevicesReport(devices: devices, sessions: sessions, crashes: crashes)
+    func fetch(in database: DeviceReader) async throws -> [DeviceSummary] {
+        try await database.devices(in: Date().trailingYear).compactMap(DeviceSummary.init(activity:))
     }
 }

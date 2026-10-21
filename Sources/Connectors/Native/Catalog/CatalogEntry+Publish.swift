@@ -43,8 +43,8 @@ extension CatalogEntry {
         }
         for aggregate in aggregates {
             switch aggregate {
-            case .count(let group, let date):
-                builder = builder.count(by: group, at: date)
+            case .count(let group, let date, let parts):
+                builder = builder.count(by: group, at: date, parts: parts)
             case .sum(let field, let group, let date):
                 builder = builder.sum(field, by: group, at: date)
             }

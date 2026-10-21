@@ -13,9 +13,9 @@ struct DevicesView: View {
     @State private var showAllDevices = false
 
     var body: some View {
-        ProviderView(provider: provider) { report in
-            if !report.summaries.isEmpty {
-                content(report.summaries)
+        ProviderView(provider: provider) { devices in
+            if !devices.isEmpty {
+                content(devices)
             } else {
                 Placeholder(
                     text: "No devices",
@@ -64,12 +64,12 @@ struct DevicesView: View {
 
 #Preview("Devices") {
     NavigationStack {
-        DevicesView(provider: .init(.success(.sample)))
+        DevicesView(provider: .init(.success(.samples)))
     }
 }
 
 #Preview("Devices — Empty") {
     NavigationStack {
-        DevicesView(provider: .init(.success(.empty)))
+        DevicesView(provider: .init(.success([])))
     }
 }
