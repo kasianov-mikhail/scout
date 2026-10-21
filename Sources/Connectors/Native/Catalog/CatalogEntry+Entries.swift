@@ -75,13 +75,15 @@ extension CatalogEntry {
             .count(by: lifecycleKey, at: "start_date"),
             .count(by: "device_id", at: "start_date", parts: devicePageParts),
             .count(by: deviceSystem, at: "start_date", parts: devicePageParts),
+            .count(by: "install_id", at: "start_date", parts: devicePageParts),
         ],
         derive: { lifecycleKey(for: $0).merging(deviceSystem(for: $0)) { key, _ in key } }
     )
 
     private static let visit = CatalogEntry(
         entity: VisitEntry.recordType,
-        fields: [.init(name: "date", type: .timestamp)]
+        fields: [.init(name: "date", type: .timestamp)],
+        aggregates: [.count(by: "device_id", at: "date", parts: devicePageParts)]
     )
 
     private static let launch = CatalogEntry(
