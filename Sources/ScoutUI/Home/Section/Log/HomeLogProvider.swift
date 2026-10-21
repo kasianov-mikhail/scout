@@ -9,8 +9,8 @@ import Foundation
 import Scout
 
 @MainActor
-final class HomeLogProvider: ObservableObject, SeriesProvider {
-    typealias Output = [MetricSeries]
+final class HomeLogProvider: ObservableObject, Provider {
+    typealias Output = LogSnapshot
 
     @Published var period: Period {
         didSet {
@@ -23,16 +23,12 @@ final class HomeLogProvider: ObservableObject, SeriesProvider {
         didSet { rebuildReport() }
     }
 
-    @Published var visits: [DeviceVisit] = [] {
-        didSet { rebuildReport() }
-    }
-
     private(set) var report: [LogCategory: Trend]?
 
-    init(acrossAllPeriods series: Output? = nil) {
+    init(acrossAllPeriods snapshot: Output? = nil) {
         period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
-        if let series {
-            results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(series)) })
+        if let snapshot {
+            results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(snapshot)) })
             rebuildReport()
         }
     }
@@ -43,14 +39,14 @@ final class HomeLogProvider: ObservableObject, SeriesProvider {
     }
 
     private func rebuildReport() {
-        guard let series = try? result?.get() else {
+        guard let snapshot = try? result?.get() else {
             report = nil
             return
         }
-        report = LogSeries(series: series, visits: visits, period: period).report
+        report = LogSeries(snapshot: snapshot, period: period).report
     }
 
-    func fetch(in database: SeriesReader) async throws -> Output {
+    func fetch(in database: DatabaseReader) async throws -> Output {
         let period = period
         let window = period.previousRange.lowerBound..<period.initialRange.upperBound
         let bucket = period.logBucket
@@ -67,14 +63,15 @@ final class HomeLogProvider: ObservableObject, SeriesProvider {
         async let metrics = database.metricSeries(
             matching: MetricSeriesQuery(bucket: bucket, range: window)
         )
+        async let devices = database.deviceCounts(in: period.deviceRanges)
 
-        let series = try await events + crashes + hangs + metrics
+        let snapshot = try await LogSnapshot(series: events + crashes + hangs + metrics, deviceCounts: devices)
 
         guard period == self.period else {
             throw CancellationError()
         }
 
-        return series
+        return snapshot
     }
 }
 

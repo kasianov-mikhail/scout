@@ -21,7 +21,7 @@ struct CatalogEntry {
     }
 
     enum Aggregate {
-        case count(by: String, at: String)
+        case count(by: String, at: String, parts: Int? = nil)
         case sum(String, by: String, at: String)
     }
 

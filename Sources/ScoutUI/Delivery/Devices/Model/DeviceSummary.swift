@@ -26,49 +26,19 @@ struct DeviceSummary: Identifiable, Equatable {
 }
 
 extension DeviceSummary {
-    static func summaries(devices: [Record], sessions: [Record], crashes: [Record]) -> [DeviceSummary] {
-        let sessionsByDevice = Dictionary(grouping: sessions.compactMap(SessionFields.init), by: \.deviceID)
-        let crashCounts = Dictionary(
-            crashes.compactMap { (record: Record) -> String? in record["device_id"] }.map { ($0, 1) },
-            uniquingKeysWith: +)
-        let models: [String: String] = devices.reduce(into: [:]) { models, device in
-            if let deviceID: String = device["device_id"], let model: String = device["model"] {
-                models[deviceID] = model
-            }
+    init?(activity: DeviceActivity) {
+        guard let id = UUID(uuidString: activity.deviceID) else {
+            return nil
         }
 
-        return sessionsByDevice.compactMap { deviceID, sessions -> DeviceSummary? in
-            guard let uuid = UUID(uuidString: deviceID) else {
-                return nil
-            }
-            guard let latest = sessions.max(by: { $0.startDate < $1.startDate }) else {
-                return nil
-            }
-
-            return DeviceSummary(
-                id: uuid,
-                model: models[deviceID],
-                osVersion: latest.osVersion,
-                lastSeen: latest.startDate,
-                sessions: sessions.count,
-                crashes: crashCounts[deviceID] ?? 0
-            )
-        }
-    }
-
-    private struct SessionFields {
-        let deviceID: String
-        let osVersion: String
-        let startDate: Date
-
-        init?(record: Record) {
-            guard let deviceID: String = record["device_id"], let startDate: Date = record["start_date"] else {
-                return nil
-            }
-            self.deviceID = deviceID
-            self.osVersion = record["os_version"] ?? "—"
-            self.startDate = startDate
-        }
+        self.init(
+            id: id,
+            model: activity.model,
+            osVersion: activity.osVersion ?? "—",
+            lastSeen: activity.lastSeen,
+            sessions: activity.sessions,
+            crashes: activity.crashes
+        )
     }
 }
 

@@ -26,6 +26,14 @@ struct DefaultDatabase: Database {
         []
     }
 
+    func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
+        []
+    }
+
+    func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
+        ranges.map { _ in 0 }
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         []
     }

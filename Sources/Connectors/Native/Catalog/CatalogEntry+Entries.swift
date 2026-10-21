@@ -69,9 +69,14 @@ extension CatalogEntry {
             .init(name: "locale", type: .string),
             .init(name: "channel", type: .string),
             .init(name: lifecycleKey, type: .string),
+            .init(name: deviceSystem, type: .string),
         ],
-        aggregates: [.count(by: lifecycleKey, at: "start_date")],
-        derive: lifecycleKey
+        aggregates: [
+            .count(by: lifecycleKey, at: "start_date"),
+            .count(by: "device_id", at: "start_date", parts: devicePageParts),
+            .count(by: deviceSystem, at: "start_date", parts: devicePageParts),
+        ],
+        derive: { lifecycleKey(for: $0).merging(deviceSystem(for: $0)) { key, _ in key } }
     )
 
     private static let visit = CatalogEntry(

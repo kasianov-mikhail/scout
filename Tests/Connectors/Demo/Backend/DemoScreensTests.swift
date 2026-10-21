@@ -32,8 +32,8 @@ import Testing
     }
 
     @Test func devicesLightUp() async throws {
-        let report = try await DevicesProvider().fetch(in: database)
-        #expect(!report.summaries.isEmpty)
+        let devices = try await DevicesProvider().fetch(in: database)
+        #expect(!devices.isEmpty)
     }
 
     @Test func networkLightsUp() async throws {
@@ -69,8 +69,9 @@ import Testing
     }
 
     @Test func homeLogLightsUp() async throws {
-        let series = try await HomeLogProvider().fetch(in: database)
-        #expect(!series.isEmpty)
+        let snapshot = try await HomeLogProvider().fetch(in: database)
+        #expect(!snapshot.series.isEmpty)
+        #expect(snapshot.deviceCounts.count == Period.today.deviceRanges.count)
     }
 
     @Test func deviceTimelineLightsUp() async throws {

@@ -215,4 +215,6 @@ private final class FailingDatabase: DatabaseReader, @unchecked Sendable {
     func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] { throw RefreshFailure() }
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] { throw RefreshFailure() }
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw RefreshFailure() }
+    func devices(in range: Range<Date>) async throws -> [DeviceActivity] { throw RefreshFailure() }
+    func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] { throw RefreshFailure() }
 }

@@ -74,6 +74,14 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
+    func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
+        []
+    }
+
+    func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
+        ranges.map { _ in 0 }
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         []
     }
@@ -103,6 +111,14 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
+        throw Failure()
+    }
+
+    func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
+        throw Failure()
+    }
+
+    func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
         throw Failure()
     }
 

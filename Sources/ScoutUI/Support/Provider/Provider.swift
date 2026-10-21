@@ -83,6 +83,16 @@ extension AudienceProvider {
     }
 }
 
+protocol DeviceProvider: Provider {
+    func fetch(in database: DeviceReader) async throws -> Output
+}
+
+extension DeviceProvider {
+    func fetch(in database: DatabaseReader) async throws -> Output {
+        try await fetch(in: database as DeviceReader)
+    }
+}
+
 protocol RecordProvider: Provider {
     func fetch(in database: RecordReader) async throws -> Output
 }

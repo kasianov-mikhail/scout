@@ -56,26 +56,25 @@ struct LogSeriesTests {
         #expect(report[.metrics]?.count == 2)
     }
 
-    @Test("Devices count the distinct devices seen in the period")
-    func devices() {
-        let device = UUID().uuidString
-        let report = makeReport(
-            visits: [
-                DeviceVisit(deviceID: device, date: today.addingTimeInterval(3600)),
-                DeviceVisit(deviceID: device, date: today.addingTimeInterval(7200)),
-                DeviceVisit(deviceID: UUID().uuidString, date: today.addingTimeInterval(7200)),
-                DeviceVisit(deviceID: UUID().uuidString, date: today.addingTimeInterval(-7 * 86400)),
-            ]
-        )
+    @Test("Devices read the period, the previous period and one count per slice")
+    func devices() throws {
+        let report = makeReport(deviceCounts: [2, 1, 0, 1, 2, 0, 0, 1, 2])
+        let devices = try #require(report[.devices])
 
-        #expect(report[.devices]?.count == 2)
+        #expect(devices.count == 2)
+        #expect(devices.series?.values == [0, 1, 2, 0, 0, 1, 2])
+    }
+
+    @Test("Devices read as zero when the counts do not match the slices")
+    func devicesWithoutCounts() {
+        #expect(makeReport(deviceCounts: [])[.devices]?.count == 0)
     }
 
     @Test("Every category draws a sparkline with one value per slice")
     func sliceCount() throws {
         let report = makeReport(
             series: [makeSeries(name: "login", value: 3)],
-            visits: [DeviceVisit(deviceID: UUID().uuidString, date: today.addingTimeInterval(3600))]
+            deviceCounts: [1, 0, 1, 0, 0, 0, 0, 0, 0]
         )
 
         for category in LogCategory.allCases {
@@ -84,10 +83,9 @@ struct LogSeriesTests {
         }
     }
 
-    private func makeReport(series: [MetricSeries] = [], visits: [DeviceVisit] = []) -> [LogCategory: Trend] {
+    private func makeReport(series: [MetricSeries] = [], deviceCounts: [Int] = []) -> [LogCategory: Trend] {
         LogSeries(
-            series: series,
-            visits: visits,
+            snapshot: LogSnapshot(series: series, deviceCounts: deviceCounts),
             period: .today
         )
         .report
