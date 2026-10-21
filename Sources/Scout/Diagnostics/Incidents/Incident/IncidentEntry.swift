@@ -16,6 +16,15 @@ package class IncidentEntry: SessionScopeEntry {
     @NSManaged var source: String?
     @NSManaged var stackTrace: Data?
     @NSManaged var windowStart: Date?
+    @NSManaged var install: InstallEntry?
+
+    override var installID: UUID? {
+        super.installID ?? install?.installID
+    }
+
+    override var deviceID: UUID? {
+        super.deviceID ?? install?.deviceID
+    }
 }
 
 extension IncidentEntry {

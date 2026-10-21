@@ -18,6 +18,7 @@ extension MetricKitResource {
         entry.kind = kind.rawValue
         entry.value = amount
         entry.session = try launch?.lastSession(date: date, context: context)
+        entry.install = install
         source.apply(to: entry)
 
         try context.save()

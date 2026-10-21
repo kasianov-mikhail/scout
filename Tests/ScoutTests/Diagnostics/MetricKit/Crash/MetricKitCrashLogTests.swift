@@ -70,13 +70,50 @@ struct MetricKitCrashLogTests {
         #expect(crash.session == nil)
     }
 
-    @Test("Without its launch, a crash Scout catches in process is skipped")
-    func skipsUnlinkedCatchableCrash() throws {
+    @Test("Without its launch, a crash Scout caught in process in the same window is skipped")
+    func skipsUnlinkedCaughtCrash() throws {
+        makeCaughtCrash(name: "SIGSEGV", date: start.addingTimeInterval(500))
+
+        try makeCrash(processID: nil, signal: 11).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
+    }
+
+    @Test("Without its launch, an abort skips an exception Scout caught in the same window")
+    func skipsUnlinkedCaughtException() throws {
+        makeCaughtCrash(name: "NSInvalidArgumentException", date: start.addingTimeInterval(500))
+
+        try makeCrash(processID: nil, signal: SIGABRT).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
+    }
+
+    @Test("Without its launch, a catchable crash Scout never caught is kept")
+    func keepsUncaughtCatchableCrash() throws {
         makeInstall()
 
         try makeCrash(processID: nil, signal: 11).log(installID: Identity.stub.install, context: context)
 
-        #expect(try context.fetchAll(CrashEntry.self).isEmpty)
+        let crash = try #require(try context.fetchAll(CrashEntry.self).first)
+        #expect(crash.source == "metrickit")
+    }
+
+    @Test("A crash Scout caught outside the window doesn't hide a catchable crash")
+    func keepsCrashOutsideCaughtWindow() throws {
+        makeCaughtCrash(name: "SIGSEGV", date: start.addingTimeInterval(7_200))
+
+        try makeCrash(processID: nil, signal: 11).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 2)
+    }
+
+    @Test("A crash Scout caught with another signal doesn't hide a catchable crash")
+    func keepsCrashWithOtherCaughtSignal() throws {
+        makeCaughtCrash(name: "SIGTRAP", date: start.addingTimeInterval(500))
+
+        try makeCrash(processID: nil, signal: 11).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 2)
     }
 
     @Test("Without its launch, a crash Scout can't catch is kept")
@@ -88,6 +125,18 @@ struct MetricKitCrashLogTests {
         let crash = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(crash.session == nil)
         #expect(crash.appVersion == "3.2.0")
+    }
+
+    @Test("Without a session, a crash takes its install and device from the install")
+    func linksUnlinkedCrashToInstall() throws {
+        InstallEntry.stub(date: start, device: DeviceEntry.stub(date: start, in: context), in: context)
+
+        try makeCrash(processID: nil, signal: 9).log(installID: Identity.stub.install, context: context)
+
+        let crash = try #require(try context.fetchAll(CrashEntry.self).first)
+        #expect(crash.installID == Identity.stub.install)
+        #expect(crash.deviceID == Identity.stub.device)
+        #expect(crash.record["device_id"] == Identity.stub.device.uuidString)
     }
 
     @Test("The same report saved twice stays one crash")
@@ -145,6 +194,15 @@ struct MetricKitCrashLogTests {
 
     @discardableResult private func makeInstall() -> InstallEntry {
         InstallEntry.stub(date: start, in: context)
+    }
+
+    private func makeCaughtCrash(name: String, date: Date) {
+        let launch = LaunchEntry.stub(date: start, install: makeInstall(), in: context)
+        let caught = context.insert(CrashEntry.self)
+        caught.crashID = UUID()
+        caught.name = name
+        caught.date = date
+        caught.session = makeSession(launch: launch, date: start)
     }
 
     private func makeLaunch(processID: Int32, date: Date) -> LaunchEntry {

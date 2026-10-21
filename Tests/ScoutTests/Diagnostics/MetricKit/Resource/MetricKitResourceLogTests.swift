@@ -41,6 +41,18 @@ struct MetricKitResourceLogTests {
         #expect(entry.session == session)
     }
 
+    @Test("Without a session, a resource exception takes its install and device from the install")
+    func linksToInstall() throws {
+        InstallEntry.stub(date: start, device: DeviceEntry.stub(date: start, in: context), in: context)
+
+        try makeResource(processID: nil).log(installID: Identity.stub.install, context: context)
+
+        let entry = try #require(try context.fetchAll(ResourceEntry.self).first)
+        #expect(entry.session == nil)
+        #expect(entry.installID == Identity.stub.install)
+        #expect(entry.deviceID == Identity.stub.device)
+    }
+
     @Test("A redelivered exception adds no row")
     func redeliveryIsIgnored() throws {
         let resource = makeResource(processID: nil)
