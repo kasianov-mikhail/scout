@@ -31,7 +31,10 @@ struct DeviceFoldTests {
                 SeriesPoint(group: "a|iOS 17.4", date: later, value: 1),
                 SeriesPoint(group: "", date: start, value: 1),
             ],
-            crashes: ["a", "a"],
+            crashes: [
+                SeriesPoint(group: "a", date: start, value: 1),
+                SeriesPoint(group: "a", date: later, value: 1),
+            ],
             models: ["a": "iPhone15,3"]
         )
 
@@ -45,7 +48,12 @@ struct DeviceFoldTests {
 
     @Test("A device seen only in crashes or models is left out")
     func sessionlessDevicesAreLeftOut() {
-        let fold = DeviceFold(sessions: [], systems: [], crashes: ["a"], models: ["a": "iPhone15,3"])
+        let fold = DeviceFold(
+            sessions: [],
+            systems: [],
+            crashes: [SeriesPoint(group: "a", date: start, value: 1)],
+            models: ["a": "iPhone15,3"]
+        )
 
         #expect(fold.activities.isEmpty)
     }

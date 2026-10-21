@@ -23,10 +23,9 @@ extension NativeDatabase: DeviceReader {
             group: CatalogEntry.deviceSystem,
             in: range
         )
-        async let crashes = store.records(
-            entity: CrashEntry.recordType,
-            dateField: "date",
-            fields: ["date", "device_id"],
+        async let crashes = store.query(CrashEntry.recordType).series(
+            metric: .sum,
+            group: "device_id",
             in: range
         )
         async let devices = store.records(
@@ -39,7 +38,7 @@ extension NativeDatabase: DeviceReader {
         return try await DeviceFold(
             sessions: sessions,
             systems: systems,
-            crashes: crashes.compactMap { $0["device_id"] },
+            crashes: crashes,
             models: devices.reduce(into: [:]) { models, record in
                 if let device: String = record["device_id"], let model: String = record["model"] {
                     models[device] = model

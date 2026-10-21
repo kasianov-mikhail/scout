@@ -44,6 +44,46 @@ struct EntityCatalogTests {
         #expect(entry.matches(try await registry.schema(for: entry.entity)))
     }
 
+    @Test("Republishing the whole catalog writes nothing, aggregates included")
+    func idempotentCatalog() async throws {
+        let database = InMemoryDatabase()
+        let registry = SchemaRegistry(database: database)
+        let store = EntityStore(database: database, registry: registry)
+
+        try await CatalogEntry.publishAll(into: store, registry: SchemaRegistry(database: database))
+        database.resetRequests()
+
+        try await CatalogEntry.publishAll(into: store, registry: SchemaRegistry(database: database))
+
+        #expect(database.requests[.conditionalSave] == 0)
+        #expect(database.requests[.modify] == 0)
+    }
+
+    @Test("An aggregate added to unchanged fields republishes the entity")
+    func addedAggregateRepublishes() async throws {
+        let database = InMemoryDatabase()
+        let registry = SchemaRegistry(database: database)
+        let store = EntityStore(database: database, registry: registry)
+        let fields = [CatalogEntry.Field(name: "date", type: .timestamp)]
+        let before = CatalogEntry(entity: "Probe", fields: fields, aggregates: [.count(by: "device_id", at: "date")])
+        let after = CatalogEntry(
+            entity: "Probe",
+            fields: fields,
+            aggregates: [
+                .count(by: "device_id", at: "date"),
+                .count(by: "install_id", at: "date", parts: 4),
+            ]
+        )
+
+        try await before.publish(into: store, registry: registry)
+
+        #expect(!after.matches(try await registry.schema(for: "Probe")))
+
+        try await after.publish(into: store, registry: SchemaRegistry(database: database))
+
+        #expect(after.matches(try await SchemaRegistry(database: database).schema(for: "Probe")))
+    }
+
     @Test("Definitions exist for every syncable record type")
     func coverage() {
         let entities = [

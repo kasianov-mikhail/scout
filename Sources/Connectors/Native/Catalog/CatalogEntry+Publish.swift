@@ -57,8 +57,23 @@ extension CatalogEntry {
         guard schema.fields.count == fields.count else {
             return false
         }
-        return zip(schema.fields, fields).allSatisfy {
+        let sameFields = zip(schema.fields, fields).allSatisfy {
             $0.name == $1.name && $0.type == $1.type
+        }
+        let sameAggregates = aggregates.allSatisfy { aggregate in
+            schema.aggregates.contains(where: aggregate.matches)
+        }
+        return sameFields && sameAggregates
+    }
+}
+
+extension CatalogEntry.Aggregate {
+    fileprivate func matches(_ published: EntitySchema.Aggregate) -> Bool {
+        switch self {
+        case .count(let group, let date, let parts):
+            published.group == group && published.date == date && published.field == nil && published.parts == parts
+        case .sum(let field, let group, let date):
+            published.group == group && published.date == date && published.field == field && published.metric == .sum
         }
     }
 }
