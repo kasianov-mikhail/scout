@@ -296,7 +296,7 @@ struct ServerContractTests {
 
         let series = try await database.lifecycleSeries(
             matching: LifecycleSeriesQuery(
-                name: MarkerEntry.crashName,
+                name: Version.crashMarker,
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )
@@ -320,7 +320,7 @@ struct ServerContractTests {
 
         let series = try await database.lifecycleSeries(
             matching: LifecycleSeriesQuery(
-                name: MarkerEntry.installName,
+                name: Version.installMarker,
                 byVersion: true,
                 range: eventDate.startOfDay..<eventDate.startOfDay.addingDay()
             )

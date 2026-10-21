@@ -45,7 +45,6 @@ extension HangInfo {
             id: id,
             deviceID: deviceID,
             idKey: "hangID",
-            markerName: MarkerEntry.hangName,
             context: context
         ) { (entry: HangEntry, session) in
             entry.session = session

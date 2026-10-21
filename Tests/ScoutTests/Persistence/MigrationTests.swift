@@ -9,6 +9,7 @@ import CoreData
 import Testing
 
 @testable import Scout
+@testable import Support
 
 @Suite("ScoutModel migrations")
 struct MigrationTests {
@@ -248,6 +249,48 @@ struct MigrationTests {
 
             let session = try #require(try context.existing(SessionEntry.self, key: "sessionID", id: sessionID))
             #expect(session.scopedEntries.count == 1)
+        }
+    }
+
+    @Test("A ScoutModel 15 store drops its local markers and keeps the install after migration")
+    func version15MarkersDropped() throws {
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+
+        let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
+        let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 15.mom")))
+
+        let installID = UUID()
+        let date = Date(timeIntervalSince1970: 1_750_000_000)
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
+        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        seed.persistentStoreCoordinator = coordinator
+
+        try seed.performAndWait {
+            let install = seed.insert(InstallEntry.self)
+            install.installID = installID
+            install.date = date
+
+            let marker = NSEntityDescription.insertNewObject(forEntityName: "MarkerEntry", into: seed)
+            marker.setValue(UUID(), forKey: "markerID")
+            marker.setValue(Version.installMarker, forKey: "name")
+            marker.setValue("2.0", forKey: "appVersion")
+            for key in ["datePrimitive", "hour", "day", "week", "month"] {
+                marker.setValue(date, forKey: key)
+            }
+            marker.setValue(install, forKey: "install")
+
+            try seed.save()
+        }
+        try coordinator.remove(seeded)
+
+        let context = try store.container().newBackgroundContext()
+        try context.performAndWait {
+            let install = try #require(try context.existing(InstallEntry.self, key: "installID", id: installID))
+            #expect(install.firstSeen.isEmpty)
+            #expect(try context.fetchAll(FirstSeenEntry.self).isEmpty)
         }
     }
 }

@@ -12,7 +12,25 @@ import ScoutDB
 
 extension CatalogEntry {
     static let entries: [CatalogEntry] = [
-        event, screen, condition, session, visit, launch, install, device, version, crash, hang, resourceException, backtrace, symbols, symbolsFile, dailyMetric, intMetric, doubleMetric,
+        event,
+        screen,
+        condition,
+        session,
+        visit,
+        launch,
+        install,
+        device,
+        version,
+        firstSeen,
+        crash,
+        hang,
+        resourceException,
+        backtrace,
+        symbols,
+        symbolsFile,
+        dailyMetric,
+        intMetric,
+        doubleMetric,
     ]
 
     private static let event = CatalogEntry(
@@ -114,9 +132,19 @@ extension CatalogEntry {
             .init(name: "app_version", type: .string),
             .init(name: "build_number", type: .string),
             .init(name: lifecycleKey, type: .string),
+        ]
+    )
+
+    private static let firstSeen = CatalogEntry(
+        entity: FirstSeenEntry.recordType,
+        fields: [
+            .init(name: "name", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: lifecycleKey, type: .string),
         ],
         aggregates: [.count(by: lifecycleKey, at: "date")],
-        derive: lifecycleKey
+        derive: metricLifecycleKey
     )
 
     private static let incidentFields: [Field] = [

@@ -12,8 +12,8 @@ import Testing
 @testable import Support
 
 @MainActor
-@Suite("MarkerEntry+Monitor")
-struct MarkerEntryMonitorTests {
+@Suite("FirstSeenEntry+Monitor")
+struct FirstSeenEntryMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
     private func makeInstall() -> InstallEntry {
@@ -26,10 +26,10 @@ struct MarkerEntryMonitorTests {
     func markIsIdempotent() throws {
         let install = makeInstall()
 
-        try install.mark(name: MarkerEntry.installName, appVersion: "2.0")
-        try install.mark(name: MarkerEntry.installName, appVersion: "2.0")
+        try install.mark(name: Version.installMarker, appVersion: "2.0")
+        try install.mark(name: Version.installMarker, appVersion: "2.0")
 
-        let markers = try context.fetchAll(MarkerEntry.self)
+        let markers = try context.fetchAll(FirstSeenEntry.self)
         #expect(markers.count == 1)
         #expect(markers.first?.install == install)
         #expect(markers.first?.appVersion == "2.0")
@@ -40,17 +40,17 @@ struct MarkerEntryMonitorTests {
         let install = makeInstall()
         let other = makeInstall()
 
-        try install.mark(name: MarkerEntry.installName, appVersion: "2.0")
-        try install.mark(name: MarkerEntry.installName, appVersion: "3.0")
-        try install.mark(name: MarkerEntry.crashName, appVersion: "2.0")
-        try other.mark(name: MarkerEntry.installName, appVersion: "2.0")
+        try install.mark(name: Version.installMarker, appVersion: "2.0")
+        try install.mark(name: Version.installMarker, appVersion: "3.0")
+        try install.mark(name: Version.crashMarker, appVersion: "2.0")
+        try other.mark(name: Version.installMarker, appVersion: "2.0")
 
-        #expect(try context.fetchAll(MarkerEntry.self).count == 4)
+        #expect(try context.fetchAll(FirstSeenEntry.self).count == 4)
     }
 
     @Test("mark ignores a missing version")
     func markSkipsNilVersion() throws {
-        try makeInstall().mark(name: MarkerEntry.installName, appVersion: nil)
-        #expect(try context.fetchAll(MarkerEntry.self).isEmpty)
+        try makeInstall().mark(name: Version.installMarker, appVersion: nil)
+        #expect(try context.fetchAll(FirstSeenEntry.self).isEmpty)
     }
 }

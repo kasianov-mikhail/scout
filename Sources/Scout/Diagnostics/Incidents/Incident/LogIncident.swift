@@ -40,7 +40,7 @@ extension HangInfo: IncidentInfo {
 }
 
 extension IncidentInfo {
-    func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, markerName: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) -> Void) throws {
+    func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) throws -> Void) throws {
         // The id doubles as the archive file's UUID, so a flush interrupted
         // between the save and the file removal doesn't insert a duplicate
         // on the next launch.
@@ -57,9 +57,7 @@ extension IncidentInfo {
             session: sessionID
         )
         let session = try context.linkedSession(identity, date: date)
-        configure(object, session)
-
-        try session.launch?.install?.mark(name: markerName, appVersion: appVersion)
+        try configure(object, session)
 
         try context.save()
     }
