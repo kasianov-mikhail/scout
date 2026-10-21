@@ -91,10 +91,14 @@ extension Runtime {
         try await identity.bootstrap()
 
         installConditionMonitor()
-        recordCurrentConditions()
 
         table.startListening {
             try await backends.synchronize(using: dispatcher)
+        }
+
+        if AppLifecycle.isInForeground {
+            try await identity.enter()
+            recordCurrentConditions()
         }
 
         Task {

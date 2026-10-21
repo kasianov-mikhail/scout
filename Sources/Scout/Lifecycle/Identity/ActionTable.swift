@@ -45,6 +45,15 @@ package enum AppLifecycle {
         #endif
     }
 
+    @MainActor
+    static var isInForeground: Bool {
+        #if canImport(UIKit)
+            UIApplication.shared.applicationState != .background
+        #else
+            true
+        #endif
+    }
+
     static var didEnterBackground: Notification.Name {
         #if canImport(UIKit)
             UIApplication.didEnterBackgroundNotification
