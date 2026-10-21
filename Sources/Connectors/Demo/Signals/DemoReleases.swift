@@ -29,7 +29,7 @@ struct DemoReleases {
             }
         }
         samples += scenario.adoption.map {
-            DemoSample(name: VersionEntry.recordType, version: $0.version, source: .lifecycle, date: $0.date)
+            DemoSample(name: MarkerEntry.installName, version: $0.version, source: .lifecycle, date: $0.date)
         }
 
         samples += DemoReleases.crashedInstalls(incidents.crashes)

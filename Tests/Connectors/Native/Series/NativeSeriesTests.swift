@@ -164,12 +164,7 @@ struct NativeSeriesTests {
 
     @Test("Version installs and crashed installs synthesize from raw records")
     func versionMarkers() async throws {
-        var version = Record(recordType: VersionEntry.recordType, recordID: "v-1")
-        version["date"] = TestDate.reference.addingTimeInterval(.hour)
-        version["app_version"] = "1.2.0"
-        version["build_number"] = "42"
-        version["install_id"] = "install-a"
-        try await database.write(record: version)
+        try await database.write(record: makeVersionRecord(id: "v-1", install: "install-a", build: "42", date: TestDate.reference.addingTimeInterval(.hour)))
 
         for (id, install) in [("c-1", "install-a"), ("c-2", "install-a"), ("c-3", "install-b")] {
             var crash = Record(recordType: CrashEntry.recordType, recordID: id)
@@ -182,7 +177,7 @@ struct NativeSeriesTests {
         }
 
         let installs = try await database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: VersionEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
         )
         #expect(installs.first?.points.map(\.value) == [1])
         #expect(installs.first?.version == "1.2.0")
@@ -192,6 +187,32 @@ struct NativeSeriesTests {
         )
         #expect(crashed.first?.points.map(\.value) == [2])
         #expect(crashed.first?.version == "1.2.0")
+    }
+
+    @Test("Version installs count each install once across the builds of a version")
+    func versionInstallsAcrossBuilds() async throws {
+        for (id, install, build) in [("v-1", "install-a", "45"), ("v-2", "install-a", "46"), ("v-3", "install-b", "46")] {
+            try await database.write(record: makeVersionRecord(id: id, install: install, build: build, date: TestDate.reference.addingTimeInterval(.hour)))
+        }
+
+        let installs = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
+        )
+
+        #expect(installs.map { $0.points.map(\.value) } == [[2]])
+    }
+
+    @Test("Version installs skip installs first seen before the range")
+    func versionInstallsBeforeRange() async throws {
+        try await database.write(record: makeVersionRecord(id: "v-1", install: "install-a", build: "45", date: TestDate.reference.addingTimeInterval(-.day)))
+        try await database.write(record: makeVersionRecord(id: "v-2", install: "install-a", build: "46", date: TestDate.reference.addingTimeInterval(.hour)))
+        try await database.write(record: makeVersionRecord(id: "v-3", install: "install-b", build: "46", date: TestDate.reference.addingTimeInterval(.hour)))
+
+        let installs = try await database.lifecycleSeries(
+            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
+        )
+
+        #expect(installs.map { $0.points.map(\.value) } == [[1]])
     }
 
     @Test("An explicit event source reaches a custom event named like a lifecycle counter")
@@ -325,6 +346,15 @@ struct NativeSeriesTests {
 
     private func lifecycleQuery(name: String) -> LifecycleSeriesQuery {
         LifecycleSeriesQuery(name: name, bucket: .day, byVersion: true, range: range)
+    }
+
+    private func makeVersionRecord(id: String, install: String, build: String, date: Date) -> Record {
+        var record = Record(recordType: VersionEntry.recordType, recordID: id)
+        record["date"] = date
+        record["app_version"] = "1.2.0"
+        record["build_number"] = build
+        record["install_id"] = install
+        return record
     }
 
     private func makeResourceRecord(id: String, kind: String) -> Record {

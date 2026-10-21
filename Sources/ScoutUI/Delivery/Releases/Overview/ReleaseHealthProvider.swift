@@ -29,7 +29,7 @@ final class ReleaseHealthProvider: ObservableObject, SeriesProvider {
             matching: LifecycleSeriesQuery(name: HangEntry.recordType, bucket: .day, byVersion: true, range: range)
         )
         async let installs = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: VersionEntry.recordType, bucket: .day, byVersion: true, range: range)
+            matching: LifecycleSeriesQuery(name: MarkerEntry.installName, bucket: .day, byVersion: true, range: range)
         )
         async let crashedInstalls = database.lifecycleSeries(
             matching: LifecycleSeriesQuery(name: MarkerEntry.crashName, bucket: .day, byVersion: true, range: range)

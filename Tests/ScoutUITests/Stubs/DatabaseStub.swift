@@ -258,7 +258,7 @@ private enum SeriesKind {
     init(series: MetricSeries) {
         if series.category != nil {
             self = .metric
-        } else if [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType, VersionEntry.recordType, MarkerEntry.crashName].contains(series.name) {
+        } else if [SessionEntry.recordType, CrashEntry.recordType, HangEntry.recordType, VersionEntry.recordType, MarkerEntry.installName, MarkerEntry.crashName].contains(series.name) {
             self = .lifecycle
         } else {
             self = .event

@@ -260,7 +260,7 @@ struct ReleaseReportTests {
     }
 
     private func installSeries(_ version: String, count: Int) -> MetricSeries {
-        series(name: VersionEntry.recordType, version: version, count: count)
+        series(name: MarkerEntry.installName, version: version, count: count)
     }
 
     private func crashedInstallSeries(_ version: String, count: Int) -> MetricSeries {

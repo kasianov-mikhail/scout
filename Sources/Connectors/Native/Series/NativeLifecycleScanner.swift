@@ -19,8 +19,8 @@ struct NativeLifecycleScanner {
         get async throws {
             let range = query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
 
-            guard query.name != MarkerEntry.crashName else {
-                return try await crashedInstalls(range: range).series
+            if let entity = firstSeenEntities[query.name] {
+                return try await firstSeen(entity: entity, range: range).series
             }
 
             let source = LifecycleSource(name: query.name)
@@ -49,8 +49,8 @@ struct NativeLifecycleScanner {
         }
     }
 
-    private func crashedInstalls(range: Range<Date>) async throws -> SeriesTotals {
-        let key = ScanKey(entity: CrashEntry.recordType, dateField: "date", range: range)
+    private func firstSeen(entity: String, range: Range<Date>) async throws -> SeriesTotals {
+        let key = ScanKey(entity: entity, dateField: "date", range: .distantPast..<range.upperBound)
 
         let records = try await scans.records(key: key) { [store] in
             try await store.records(
@@ -63,14 +63,19 @@ struct NativeLifecycleScanner {
 
         var totals = SeriesTotals()
 
-        for crash in records.compactMap(CrashVisit.init).firstPerInstall {
-            let key = SeriesKey(name: query.name, category: nil, version: query.byVersion ? crash.version : nil)
-            totals.add(1, key: key, start: query.bucket.start(of: crash.date))
+        for visit in records.compactMap(VersionVisit.init).firstPerInstall where range.contains(visit.date) {
+            let key = SeriesKey(name: query.name, category: nil, version: query.byVersion ? visit.version : nil)
+            totals.add(1, key: key, start: query.bucket.start(of: visit.date))
         }
 
         return totals
     }
 }
+
+private let firstSeenEntities = [
+    MarkerEntry.crashName: CrashEntry.recordType,
+    MarkerEntry.installName: VersionEntry.recordType,
+]
 
 private struct LifecycleSource {
     let entity: String
@@ -92,7 +97,7 @@ private struct LifecycleSource {
     }
 }
 
-private struct CrashVisit {
+private struct VersionVisit {
     let date: Date
     let version: String?
     let install: String?
@@ -113,8 +118,8 @@ private struct InstallVersion: Hashable {
     let version: String
 }
 
-extension [CrashVisit] {
-    fileprivate var firstPerInstall: [CrashVisit] {
+extension [VersionVisit] {
+    fileprivate var firstPerInstall: [VersionVisit] {
         Dictionary(grouping: self) { InstallVersion(install: $0.install ?? "", version: $0.version ?? "") }
             .values
             .compactMap { $0.min { $0.date < $1.date } }
