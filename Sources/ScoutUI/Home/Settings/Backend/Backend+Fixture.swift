@@ -16,8 +16,7 @@ extension Backend: Fixture {
                 database: DefaultDatabase(),
                 displayName: "Production",
                 engine: .cloudKit,
-                checkAccess: {},
-                cache: CacheSample()
+                checkAccess: {}
             ),
             Backend(
                 id: "https://staging.scout.app",

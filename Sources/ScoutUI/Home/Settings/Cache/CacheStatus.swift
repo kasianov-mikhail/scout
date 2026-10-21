@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Scout
 
 @MainActor
 final class CacheStatus: ObservableObject {
