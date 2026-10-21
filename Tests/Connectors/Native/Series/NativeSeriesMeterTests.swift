@@ -5,13 +5,17 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import ScoutDB
+import ScoutDBTesting
 import Testing
 
 @testable import NativeConnector
 @testable import Scout
 @testable import Support
+
+private let window = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
 
 extension NativeSeriesTests {
     @Test("A meter series keeps the last value in each bucket, not the sum")
@@ -64,6 +68,115 @@ extension NativeSeriesTests {
         #expect(gauge.points.map(\.value) == [0])
     }
 
+    @Test("A meter scan reads only the records of its category")
+    func meterScanFiltersCategory() async throws {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = probedDatabase(cloud: cloud)
+
+        let hour = TestDate.reference.addingTimeInterval(10 * .hour)
+        try await database.write(record: makeMeterRecord(id: "g-1", name: "queue_depth", value: 5, date: hour))
+
+        for (id, category) in [("r-1", "recorder"), ("t-1", "timer"), ("f-1", "floating_counter")] {
+            var other = makeMeterRecord(id: id, name: "queue_depth", value: 1, date: hour)
+            other["category"] = category
+            try await database.write(record: other)
+        }
+
+        _ = try await database.metricSeries(matching: meters)
+        cloud.resetRequests()
+
+        let series = try await database.metricSeries(matching: meters)
+
+        #expect(series.map { $0.points.map(\.value) } == [[5]])
+        #expect(cloud.requests.records == 1)
+    }
+
+    @Test(
+        "A filtered last-value scan matches the full scan it replaces",
+        arguments: [
+            MetricSeriesQuery(category: "meter", values: .double, bucket: .hour, reduce: .last, range: window),
+            MetricSeriesQuery(category: "meter", values: .double, bucket: .day, reduce: .last, range: window),
+            MetricSeriesQuery(name: "queue_depth", bucket: .hour, reduce: .last, range: window),
+            MetricSeriesQuery(name: "retries", category: "timer", values: .int, bucket: .hour, reduce: .last, range: window),
+            MetricSeriesQuery(bucket: .hour, reduce: .last, range: window),
+            MetricSeriesQuery(category: "missing", bucket: .hour, reduce: .last, range: window),
+        ]
+    )
+    func filteredScanMatchesFullScan(query: MetricSeriesQuery) async throws {
+        let base = TestDate.reference.addingTimeInterval(10 * .hour)
+        let rows: [(name: String, category: String?, value: Double, minutes: Double)] = [
+            ("queue_depth", "meter", 5, 1),
+            ("queue_depth", "meter", 8, 2),
+            ("queue_depth", "meter", 3, 70),
+            ("queue_depth", "meter", 4, 26 * 60),
+            ("cache_size", "meter", 11, 3),
+            ("queue_depth", "recorder", 100, 4),
+            ("queue_depth", "timer", 0.5, 5),
+            ("queue_depth", nil, 9, 6),
+            ("latency", "recorder", 1.5, 7),
+        ]
+
+        for (index, row) in rows.enumerated() {
+            var record = makeMeterRecord(id: "d-\(index)", name: row.name, value: row.value, date: base.addingTimeInterval(row.minutes * 60))
+            record["category"] = row.category
+            try await database.write(record: record)
+        }
+
+        for (index, value) in [4, 6, 2].enumerated() {
+            var record = Record(recordType: IntMetricsEntry.recordType, recordID: "i-\(index)")
+            record["name"] = "retries"
+            record["category"] = index == 2 ? "counter" : "timer"
+            record["value"] = value
+            record["date"] = base.addingTimeInterval(Double(index + 1) * 60)
+            record["session_id"] = "session-1"
+            try await database.write(record: record)
+        }
+
+        let filtered = try await database.metricSeries(matching: query)
+        let full = try await fullScan(query: query)
+
+        #expect(filtered.map(SeriesSnapshot.init) == full.map(SeriesSnapshot.init))
+    }
+
+    private func fullScan(query: MetricSeriesQuery) async throws -> [MetricSeries] {
+        let store = try await database.resolve()
+        let entities: [MetricSeriesQuery.Values] = query.values.map { [$0] } ?? [.int, .double]
+
+        var series: [MetricSeries] = []
+
+        for values in entities {
+            let records = try await store.records(
+                entity: values.metricsEntity,
+                dateField: "date",
+                fields: ["date", "name", "category", "value"],
+                in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
+            )
+
+            var latest = LatestValues()
+
+            for record in records {
+                let date: Date? = record["date"]
+                let name: String? = record["name"]
+                guard let date, let name, let key = query.key(metric: name, category: record["category"]) else {
+                    continue
+                }
+
+                switch record.values["value"] {
+                case .double(let raw):
+                    latest.add(raw, key: key, date: date, start: query.bucket.start(of: date))
+                case .int(let raw):
+                    latest.add(Double(raw), key: key, date: date, start: query.bucket.start(of: date))
+                default:
+                    continue
+                }
+            }
+
+            series += latest.series
+        }
+
+        return series.sorted { $0.key < $1.key }
+    }
+
     private var meters: MetricSeriesQuery {
         MetricSeriesQuery(
             category: "meter",
@@ -83,4 +196,14 @@ func makeMeterRecord(id: String, name: String, value: Double, date: Date) -> Rec
     record["date"] = date
     record["session_id"] = "session-1"
     return record
+}
+
+private struct SeriesSnapshot: Equatable {
+    let key: SeriesKey
+    let points: [Date: Double]
+
+    init(series: MetricSeries) {
+        key = series.key
+        points = Dictionary(uniqueKeysWithValues: series.points.map { ($0.date, $0.value) })
+    }
 }

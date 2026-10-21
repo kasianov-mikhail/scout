@@ -15,12 +15,15 @@ struct NativeLastValueScanner {
     let store: EntityStore
 
     func series(values: MetricSeriesQuery.Values) async throws -> [MetricSeries] {
-        let records = try await store.records(
-            entity: values.metricsEntity,
-            dateField: "date",
-            fields: ["date", "name", "category", "value"],
-            in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
-        )
+        let records = try await store.query(values.metricsEntity)
+            .filter(field: "name", value: query.name)
+            .filter(field: "category", value: query.category)
+            .records(
+                entity: values.metricsEntity,
+                dateField: "date",
+                fields: ["date", "name", "category", "value"],
+                in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
+            )
 
         let samples = records.compactMap {
             Sample(record: $0, query: query)
@@ -69,5 +72,12 @@ struct NativeLastValueScanner {
             self.date = date
             self.key = key
         }
+    }
+}
+
+extension QueryBuilder {
+    fileprivate func filter(field: String, value: String?) -> QueryBuilder {
+        guard let value else { return self }
+        return filter(field, .equals, .string(value))
     }
 }
