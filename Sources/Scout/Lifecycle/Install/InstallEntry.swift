@@ -12,9 +12,11 @@ package final class InstallEntry: SyncableEntry, HasDevice {
     package static let recordType = Install.recordType
 
     @NSManaged var installID: UUID
+    @NSManaged var osVersion: String?
     @NSManaged var device: DeviceEntry?
     @NSManaged var launches: Set<LaunchEntry>
     @NSManaged var firstSeen: Set<FirstSeenEntry>
+    @NSManaged var retentionMarks: Set<RetentionMarkEntry>
 
     override var references: Set<DateEntry> {
         Set(Array(launches) + Array(firstSeen))

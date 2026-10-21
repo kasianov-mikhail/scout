@@ -14,6 +14,9 @@ extension InstallEntry {
 
         func execute(in context: NSManagedObjectContext) throws {
             try context.upsert(InstallEntry.self, key: "installID", id: installID) { install in
+                if install.isInserted {
+                    install.startCohort()
+                }
                 if install.device == nil {
                     install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
                 }

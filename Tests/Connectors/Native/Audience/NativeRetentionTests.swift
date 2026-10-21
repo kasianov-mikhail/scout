@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import ScoutDB
 import ScoutDBTesting
@@ -14,7 +15,7 @@ import Testing
 @testable import Scout
 @testable import Support
 
-@Suite("Native retention segments")
+@Suite("Native retention from milestone marks")
 struct NativeRetentionTests {
     let database: NativeDatabase
     let range = TestDate.reference.addingDay(-7)..<TestDate.reference.addingDay(40)
@@ -24,28 +25,23 @@ struct NativeRetentionTests {
     }
 
     private func writeCohort() async throws {
-        for device in ["a", "b", "c"] {
-            try await database.write(record: makeInstallRecord(device: device, day: 0))
+        let installs = [("a", "iOS 18.0", ["day0", "day7"]), ("b", "iOS 18.1", ["day0", "crash"]), ("c", "iOS 17.5", ["day0", "day7", "hang"])]
+
+        for (install, os, names) in installs {
+            for name in ["install"] + names {
+                try await database.write(record: makeMark(install: install, name: name, os: os))
+            }
         }
-
-        try await database.write(record: makeSessionRecord(id: "a-0", device: "a", day: 0, os: "iOS 18.0"))
-        try await database.write(record: makeSessionRecord(id: "a-7", device: "a", day: 7, os: "iOS 18.1"))
-        try await database.write(record: makeSessionRecord(id: "b-0", device: "b", day: 0, os: "iOS 18.1"))
-        try await database.write(record: makeSessionRecord(id: "c-0", device: "c", day: 0, os: "iOS 17.5"))
-        try await database.write(record: makeSessionRecord(id: "c-7", device: "c", day: 7, os: "iOS 17.6"))
-
-        try await database.write(record: makeIncidentRecord(entity: CrashEntry.recordType, install: "install-b", day: 0))
-        try await database.write(record: makeIncidentRecord(entity: HangEntry.recordType, install: "install-c", day: 7))
     }
 
-    @Test("Segments bucket installs by the major version of their first session")
+    @Test("Segments bucket installs by the major version they installed on")
     func segmentsFollowOSVersion() async throws {
         try await writeCohort()
 
-        let cohorts = try await database.retention(in: range)
-        let cohort = try #require(cohorts.first)
+        let cohort = try #require(try await database.retention(in: range).first)
 
         #expect(cohort.size == 3)
+        #expect(cohort.retention[0] == 1)
         #expect(cohort.segments.map(\.name) == ["iOS 18", "iOS 17"])
         #expect(cohort.segments.map(\.size) == [2, 1])
 
@@ -53,14 +49,12 @@ struct NativeRetentionTests {
         #expect(latest.retention[3] == 0.5)
     }
 
-    @Test("Crashes and hangs land in the segment of the install that saw them within 30 days, session or not")
+    @Test("Crashes and hangs land in the segment of the install that saw them")
     func incidentsFollowTheirInstall() async throws {
         try await writeCohort()
-        try await database.write(record: makeIncidentRecord(entity: CrashEntry.recordType, install: "install-a", day: 20))
-        try await database.write(record: makeIncidentRecord(entity: HangEntry.recordType, install: "install-a", day: 35))
+        try await database.write(record: makeMark(install: "a", name: "crash", os: "iOS 18.0"))
 
-        let cohorts = try await database.retention(in: range)
-        let cohort = try #require(cohorts.first)
+        let cohort = try #require(try await database.retention(in: range).first)
 
         let latest = try #require(cohort.segments.first)
         #expect(latest.crashes == 2)
@@ -71,31 +65,149 @@ struct NativeRetentionTests {
         #expect(older.hangs == 1)
     }
 
-    @Test("A session without an OS version leaves its install unsegmented")
-    func sessionWithoutOSVersion() async throws {
-        try await database.write(record: makeInstallRecord(device: "a", day: 0))
-        try await database.write(record: makeSessionRecord(id: "a-0", device: "a", day: 0))
+    @Test("A re-sent mark counts once")
+    func resentMark() async throws {
+        try await writeCohort()
+        try await database.write(record: makeMark(install: "a", name: "day7", os: "iOS 18.0"))
+
+        let cohort = try #require(try await database.retention(in: range).first)
+
+        #expect(cohort.retention[3] == 2.0 / 3.0)
+    }
+
+    @Test("An install without an OS version counts in the cohort but in no segment")
+    func installWithoutOSVersion() async throws {
+        try await database.write(record: makeMark(install: "a", name: "install", os: nil))
+        try await database.write(record: makeMark(install: "a", name: "day0", os: nil))
 
         let cohort = try #require(try await database.retention(in: range).first)
 
         #expect(cohort.size == 1)
+        #expect(cohort.retention[0] == 1)
         #expect(cohort.segments.isEmpty)
+    }
+
+    @Test("A week whose install marks have not arrived yet has no cohort")
+    func weekWithoutInstalls() async throws {
+        try await database.write(record: makeMark(install: "a", name: "day1", os: "iOS 18.0"))
+
+        #expect(try await database.retention(in: range).isEmpty)
+    }
+
+    @Test("Marks outside the range leave their cohort out")
+    func outsideRange() async throws {
+        try await writeCohort()
+
+        let later = TestDate.reference.addingDay(7)..<TestDate.reference.addingDay(40)
+
+        #expect(try await database.retention(in: later).isEmpty)
+    }
+
+    @Test("The read costs the same however many installs a week has")
+    func boundedRead() async throws {
+        let small = try await requests(installs: 5)
+        let large = try await requests(installs: 60)
+
+        #expect(small.total == large.total)
+        #expect(small.records == large.records)
+    }
+
+    @Test("Retention from marks matches the per-install build", arguments: [false, true])
+    func parity(segmented: Bool) async throws {
+        let scenario = RetentionScenario(segmented: segmented)
+
+        for record in scenario.marks {
+            try await database.write(record: record)
+        }
+
+        for range in [day(0)..<day(75), day(7)..<day(49)] {
+            let expected = scenario.cohorts(in: range)
+
+            #expect(expected.contains { $0.segments.isEmpty != segmented })
+            #expect(try await database.retention(in: range) == expected)
+        }
+    }
+
+    private func requests(installs: Int) async throws -> RequestTally {
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let registry = SchemaRegistry(database: cloud)
+        let store = EntityStore(database: cloud, registry: registry)
+        try await CatalogEntry.publishAll(into: store, registry: registry)
+
+        let database = NativeDatabase { store }
+        for index in 0..<installs {
+            for name in ["install", "day0", "day1", "crash"] {
+                try await database.write(record: makeMark(install: "\(index)", name: name, os: "iOS 18.\(index % 3)"))
+            }
+        }
+
+        cloud.resetRequests()
+        _ = try await database.retention(in: range)
+        return cloud.requests
     }
 }
 
-private func makeInstallRecord(device: String, day: Int) -> Record {
-    var record = Record(recordType: InstallEntry.recordType, recordID: "install-\(device)")
-    record["date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + .hour)
-    record["install_id"] = "install-\(device)"
-    record["device_id"] = device
-    return record
+private struct RetentionScenario {
+    struct Install {
+        let id: String
+        let day: Int
+        let os: String?
+        let activeDays: [Int]
+        let crashDays: [Int]
+        let hangDays: [Int]
+    }
+
+    let installs: [Install]
+
+    init(segmented: Bool) {
+        installs = (0..<24).map { index in
+            Install(
+                id: "install-\(index)",
+                day: (index * 5) % 60,
+                os: segmented || index.isMultiple(of: 3) ? "iOS \(16 + index % 3).\(index % 2)" : nil,
+                activeDays: [0] + (1..<45).filter { ($0 * 7 + index) % 4 == 0 },
+                crashDays: index.isMultiple(of: 3) ? [2, 40] : [],
+                hangDays: index % 4 == 1 ? [10, 31] : []
+            )
+        }
+    }
+
+    var marks: [Record] {
+        installs.flatMap { install in
+            let days = install.activeDays.filter(RetentionCohort.dayOffsets.contains).map { "day\($0)" }
+            let crashes = install.crashDays.contains { $0 < RetentionCohort.horizon } ? ["crash"] : []
+            let hangs = install.hangDays.contains { $0 < RetentionCohort.horizon } ? ["hang"] : []
+
+            return (["install"] + days + crashes + hangs).map { name in
+                makeMark(install: install.id, name: name, os: install.os, day: install.day)
+            }
+        }
+    }
+
+    func cohorts(in range: Range<Date>) -> [RetentionCohort] {
+        RetentionCohort.cohorts(
+            installs: installs.map { DatedID(date: day($0.day, hour: 1), id: $0.id) },
+            sessions: installs.flatMap { install in
+                install.activeDays.map { InstallSession(install: install.id, date: day(install.day + $0, hour: 9), os: install.os) }
+            },
+            crashes: installs.flatMap { install in install.crashDays.map { DatedID(date: day(install.day + $0, hour: 12), id: install.id) } },
+            hangs: installs.flatMap { install in install.hangDays.map { DatedID(date: day(install.day + $0, hour: 12), id: install.id) } },
+            range: range,
+            now: Date()
+        )
+    }
 }
 
-private func makeIncidentRecord(entity: String, install: String, day: Int) -> Record {
-    var record = Record(recordType: entity, recordID: "\(entity)-\(install)-\(day)")
-    record["date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + 3 * .hour)
-    record["name"] = "EXC_BAD_ACCESS"
-    record["fingerprint"] = "fingerprint"
+private func day(_ index: Int, hour: Int = 0) -> Date {
+    TestDate.reference.addingDay(index).addingTimeInterval(TimeInterval(hour) * .hour)
+}
+
+private func makeMark(install: String, name: String, os: String?, day installDay: Int = 0) -> Record {
+    var record = Record(recordType: RetentionMarkEntry.recordType, recordID: "\(install)-\(name)")
+    record["date"] = day(installDay, hour: 2)
+    record["name"] = name
+    record["install_date"] = day(installDay, hour: 1)
+    record["os_version"] = os
     record["install_id"] = install
     return record
 }

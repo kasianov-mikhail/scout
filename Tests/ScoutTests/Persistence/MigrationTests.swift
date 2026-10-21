@@ -293,4 +293,40 @@ struct MigrationTests {
             #expect(try context.fetchAll(FirstSeenEntry.self).isEmpty)
         }
     }
+
+    @Test("A ScoutModel 16 install migrates without an OS stamp or retention marks")
+    func version16InstallsStayOutOfCohorts() throws {
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+
+        let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
+        let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 16.mom")))
+
+        let installID = UUID()
+        let date = Date(timeIntervalSince1970: 1_750_000_000)
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
+        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        seed.persistentStoreCoordinator = coordinator
+
+        try seed.performAndWait {
+            let install = seed.insert(InstallEntry.self)
+            install.installID = installID
+            install.date = date
+            try seed.save()
+        }
+        try coordinator.remove(seeded)
+
+        let context = try store.container().newBackgroundContext()
+        try context.performAndWait {
+            let install = try #require(try context.existing(InstallEntry.self, key: "installID", id: installID))
+            #expect(install.date == date)
+            #expect(install.osVersion == nil)
+            #expect(install.retentionMarks.isEmpty)
+
+            try install.markVisit(date: date.addingDay())
+            #expect(try context.fetchAll(RetentionMarkEntry.self).isEmpty)
+        }
+    }
 }
