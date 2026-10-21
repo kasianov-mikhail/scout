@@ -25,7 +25,7 @@ struct NativeRetentionTests {
 
     private func writeCohort() async throws {
         for device in ["a", "b", "c"] {
-            try await database.write(record: makeInstallRecord(install: "install-\(device)", day: 0))
+            try await database.write(record: makeInstallRecord(device: device, day: 0))
         }
 
         try await database.write(record: makeSessionRecord(id: "a-0", device: "a", day: 0, os: "iOS 18.0"))
@@ -73,7 +73,7 @@ struct NativeRetentionTests {
 
     @Test("A session without an OS version leaves its install unsegmented")
     func sessionWithoutOSVersion() async throws {
-        try await database.write(record: makeInstallRecord(install: "install-a", day: 0))
+        try await database.write(record: makeInstallRecord(device: "a", day: 0))
         try await database.write(record: makeSessionRecord(id: "a-0", device: "a", day: 0))
 
         let cohort = try #require(try await database.retention(in: range).first)
@@ -83,10 +83,11 @@ struct NativeRetentionTests {
     }
 }
 
-private func makeInstallRecord(install: String, day: Int) -> Record {
-    var record = Record(recordType: InstallEntry.recordType, recordID: install)
+private func makeInstallRecord(device: String, day: Int) -> Record {
+    var record = Record(recordType: InstallEntry.recordType, recordID: "install-\(device)")
     record["date"] = TestDate.reference.addingTimeInterval(TimeInterval(day) * .day + .hour)
-    record["install_id"] = install
+    record["install_id"] = "install-\(device)"
+    record["device_id"] = device
     return record
 }
 

@@ -13,31 +13,36 @@ extension NativeDatabase: AudienceReader {
     func activity(in range: Range<Date>) async throws -> [ActivityPoint] {
         let store = try await resolve()
         let lookback = range.lowerBound.addingTimeInterval(-30 * .day).startOfDay
-        let window = lookback..<range.upperBound
 
-        let visits = try await store.datedIDs(
-            entity: VisitEntry.recordType,
-            dateField: "date",
-            idField: "device_id",
-            in: window
+        let visits = try await store.query(VisitEntry.recordType).series(
+            metric: .sum,
+            group: "device_id",
+            in: lookback..<range.upperBound
         )
 
-        return ActivityPoint.points(visits: visits, in: range)
+        return ActivityPoint.points(
+            visits: visits.filter { !$0.group.isEmpty }.map { DatedID(date: $0.date, id: $0.group) },
+            in: range
+        )
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
         let store = try await resolve()
 
-        async let installs = store.datedIDs(
+        async let installs = store.records(
             entity: InstallEntry.recordType,
             dateField: "date",
-            idField: "install_id",
+            fields: ["date", "install_id", "device_id"],
             in: range
         )
-        async let sessions = store.records(
-            entity: SessionEntry.recordType,
-            dateField: "start_date",
-            fields: ["start_date", "install_id", "os_version"],
+        async let sessions = store.query(SessionEntry.recordType).series(
+            metric: .sum,
+            group: "install_id",
+            in: range
+        )
+        async let systems = store.query(SessionEntry.recordType).series(
+            metric: .sum,
+            group: CatalogEntry.deviceSystem,
             in: range
         )
         async let crashes = store.datedIDs(
@@ -53,16 +58,15 @@ extension NativeDatabase: AudienceReader {
             in: range
         )
 
-        return try await RetentionCohort.cohorts(
+        let fold = try await RetentionFold(
             installs: installs,
-            sessions: sessions.compactMap { record -> InstallSession? in
-                let install: String? = record["install_id"]
-                let start: Date? = record["start_date"]
-                guard let install, let start else {
-                    return nil
-                }
-                return InstallSession(install: install, date: start, os: record["os_version"])
-            },
+            sessions: sessions,
+            systems: systems
+        )
+
+        return try await RetentionCohort.cohorts(
+            installs: fold.installIDs,
+            sessions: fold.installSessions,
             crashes: crashes,
             hangs: hangs,
             range: range,
