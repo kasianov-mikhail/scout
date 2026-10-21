@@ -54,7 +54,7 @@ struct CacheStatusTests {
         let status = await makeStatus(size: 12_582_912)
 
         #expect(!status.isEmpty)
-        #expect(status.sizeLabel == Int64(12_582_912).formatted(.byteCount(style: .file)))
+        #expect(status.sizeLabel == "12.6 MB")
     }
 
     @Test("A larger cache reads differently from a smaller one")
