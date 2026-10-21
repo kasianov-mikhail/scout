@@ -9,14 +9,15 @@ import Scout
 import SwiftUI
 
 extension View {
-    func connectionToolbar(backends: [Backend], activeID: Binding<String>) -> some View {
-        modifier(ConnectionToolbar(backends: backends, activeID: activeID))
+    func connectionToolbar(backends: [Backend], activeID: Binding<String>, cache: any CacheClearing) -> some View {
+        modifier(ConnectionToolbar(backends: backends, activeID: activeID, cache: cache))
     }
 }
 
 private struct ConnectionToolbar: ViewModifier {
     let backends: [Backend]
     @Binding var activeID: String
+    let cache: any CacheClearing
 
     @State private var isSettingsPresented = false
 
@@ -43,7 +44,8 @@ private struct ConnectionToolbar: ViewModifier {
                 NavigationStack {
                     SettingsOverviewView(
                         backends: backends,
-                        activeID: $activeID
+                        activeID: $activeID,
+                        cache: cache
                     )
                 }
                 .opaquePresentation()
@@ -57,6 +59,6 @@ private struct ConnectionToolbar: ViewModifier {
     NavigationStack {
         Text(verbatim: "Content")
             .navigationTitle(en: "Home")
-            .connectionToolbar(backends: .samples, activeID: $activeID)
+            .connectionToolbar(backends: .samples, activeID: $activeID, cache: CacheSample())
     }
 }

@@ -8,26 +8,19 @@
 package typealias StatusProbe = @Sendable () async -> Backend.Status
 package typealias AccessCheck = @Sendable () async throws -> Void
 
-package protocol CacheClearing: Actor {
-    var size: Int64 { get }
-    func removeAll()
-}
-
 public struct Backend: Sendable {
     package let id: String
     package var database: any Database
     package let displayName: String
     package let engine: Engine
     package let checkAccess: AccessCheck?
-    package var cache: (any CacheClearing)?
 
-    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, cache: (any CacheClearing)? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil) {
         self.id = id
         self.database = database
         self.displayName = displayName
         self.engine = engine
         self.checkAccess = checkAccess
-        self.cache = cache
     }
 }
 

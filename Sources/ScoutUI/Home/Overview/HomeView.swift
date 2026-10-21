@@ -16,10 +16,13 @@ struct HomeView: View {
 
     @StateObject private var tint = Tint()
 
+    @State private var cache: RecordCache
+
     init(backends: [Backend]) {
         let storage = RecordCacheStorage()
         let cache = RecordCache(storage: storage)
 
+        self._cache = State(initialValue: cache)
         self._backends = State(
             initialValue: backends.map { backend in
                 var backend = backend
@@ -30,7 +33,6 @@ struct HomeView: View {
                     now: { Date() },
                     types: [EventEntry.recordType]
                 )
-                backend.cache = cache
                 return backend
             }
         )
@@ -62,7 +64,7 @@ struct HomeView: View {
             .navigationTitle(en: "Home")
             .dismissable()
             .id(backend?.id)
-            .connectionToolbar(backends: backends, activeID: active)
+            .connectionToolbar(backends: backends, activeID: active, cache: cache)
         }
         .background {
             Rectangle().fill(.background).ignoresSafeArea()
