@@ -9,7 +9,7 @@ import CoreData
 
 @objc(SessionEntry)
 package final class SessionEntry: LaunchScopeEntry {
-    package static let recordType = "Session"
+    package static let recordType = Session.recordType
 
     @NSManaged var appVersion: String?
     @NSManaged var buildNumber: String?

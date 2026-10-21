@@ -32,8 +32,8 @@ struct HomeLogProviderTests {
 
         let span = SeriesSpan(series: result, range: allTime)
 
-        #expect(span.points { $0 != CrashEntry.recordType }.total == 3)
-        #expect(span.points { $0 == CrashEntry.recordType }.total == 2)
+        #expect(span.points { $0 != Crash.recordType }.total == 3)
+        #expect(span.points { $0 == Crash.recordType }.total == 2)
         #expect(span.metricCount == 2)
         #expect(database.seriesReadCount == 4)
     }
@@ -60,8 +60,8 @@ struct HomeLogProviderTests {
         let database = DatabaseStub()
         database.add(
             series: makeSeries(name: "login", value: 3),
-            makeSeries(name: VersionEntry.recordType, value: 1),
-            makeSeries(name: MarkerEntry.crashName, value: 1)
+            makeSeries(name: Version.recordType, value: 1),
+            makeSeries(name: Version.crashMarker, value: 1)
         )
 
         let provider = HomeLogProvider()

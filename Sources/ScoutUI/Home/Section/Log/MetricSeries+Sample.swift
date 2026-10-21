@@ -21,17 +21,17 @@ extension MetricSeries {
 
         return [
             MetricSeries(
-                name: EventEntry.recordType,
+                name: Event.recordType,
                 category: nil,
                 points: [point(hour: 0, value: 48)]
             ),
             MetricSeries(
-                name: CrashEntry.recordType,
+                name: Crash.recordType,
                 category: nil,
                 points: [point(hour: 1, value: 3)]
             ),
             MetricSeries(
-                name: HangEntry.recordType,
+                name: Hang.recordType,
                 category: nil,
                 points: [point(hour: 4, value: 6)]
             ),

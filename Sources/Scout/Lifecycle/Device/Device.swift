@@ -20,7 +20,7 @@ package struct Device {
 }
 
 extension Device: RecordDecodable {
-    package static let recordType = DeviceEntry.recordType
+    package static let recordType = "Device"
 
     package static let desiredKeys = [
         "date",

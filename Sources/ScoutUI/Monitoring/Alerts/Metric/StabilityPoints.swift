@@ -24,10 +24,10 @@ struct StabilityPoints {
 extension StabilityPoints {
     init(database: SeriesReader, range: Range<Date>) async throws {
         async let sessions = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: SessionEntry.recordType, bucket: .hour, range: range)
+            matching: LifecycleSeriesQuery(name: Session.recordType, bucket: .hour, range: range)
         )
         async let crashes = database.lifecycleSeries(
-            matching: LifecycleSeriesQuery(name: CrashEntry.recordType, bucket: .hour, range: range)
+            matching: LifecycleSeriesQuery(name: Crash.recordType, bucket: .hour, range: range)
         )
 
         self.sessions = try await sessions.flatMap { $0.chartPoints() }

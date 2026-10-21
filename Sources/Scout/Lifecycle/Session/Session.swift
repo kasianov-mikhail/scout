@@ -26,7 +26,7 @@ package struct Session: Identifiable {
 }
 
 extension Session: RecordDecodable {
-    package static let recordType = SessionEntry.recordType
+    package static let recordType = "Session"
 
     package static let desiredKeys = [
         "start_date",

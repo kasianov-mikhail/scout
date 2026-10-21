@@ -22,7 +22,7 @@ package struct Install {
 }
 
 extension Install: RecordDecodable {
-    package static let recordType = InstallEntry.recordType
+    package static let recordType = "Install"
 
     package static let desiredKeys = [
         "date",

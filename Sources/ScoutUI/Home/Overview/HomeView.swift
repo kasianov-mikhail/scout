@@ -28,7 +28,7 @@ struct HomeView: View {
                     scope: backend.id,
                     cache: cache,
                     now: { Date() },
-                    types: [EventEntry.recordType]
+                    types: [Event.recordType]
                 )
                 backend.cache = cache
                 return backend

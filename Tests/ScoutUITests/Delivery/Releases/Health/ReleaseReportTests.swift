@@ -83,7 +83,7 @@ struct ReleaseReportTests {
         let start = Date(timeIntervalSince1970: 0)
 
         let crashes = MetricSeries(
-            name: CrashEntry.recordType,
+            name: Crash.recordType,
             category: nil,
             version: "5.0",
             points: [
@@ -113,7 +113,7 @@ struct ReleaseReportTests {
         let start = Date(timeIntervalSince1970: 0)
 
         let sessions = MetricSeries(
-            name: SessionEntry.recordType,
+            name: Session.recordType,
             category: nil,
             version: "5.0",
             points: [
@@ -132,7 +132,7 @@ struct ReleaseReportTests {
     @Test("Series without a version are left out of the report")
     func testUnversionedSeriesIgnored() {
         let unversioned = MetricSeries(
-            name: SessionEntry.recordType,
+            name: Session.recordType,
             category: nil,
             points: [MetricSeriesPoint(date: range.lowerBound, value: 5)]
         )
@@ -229,13 +229,13 @@ struct ReleaseReportTests {
             performance: [],
             resources: [
                 MetricSeries(
-                    name: ResourceEntry.recordType,
+                    name: ResourceException.recordType,
                     category: "cpu",
                     version: "2.0",
                     points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: 3)]
                 ),
                 MetricSeries(
-                    name: ResourceEntry.recordType,
+                    name: ResourceException.recordType,
                     category: "gpu",
                     version: "2.0",
                     points: [MetricSeriesPoint(date: Date(timeIntervalSince1970: 0), value: 9)]
@@ -248,23 +248,23 @@ struct ReleaseReportTests {
     }
 
     private func sessionSeries(_ version: String, count: Int) -> MetricSeries {
-        series(name: SessionEntry.recordType, version: version, count: count)
+        series(name: Session.recordType, version: version, count: count)
     }
 
     private func crashSeries(_ version: String, count: Int) -> MetricSeries {
-        series(name: CrashEntry.recordType, version: version, count: count)
+        series(name: Crash.recordType, version: version, count: count)
     }
 
     private func hangSeries(_ version: String, count: Int) -> MetricSeries {
-        series(name: HangEntry.recordType, version: version, count: count)
+        series(name: Hang.recordType, version: version, count: count)
     }
 
     private func installSeries(_ version: String, count: Int) -> MetricSeries {
-        series(name: MarkerEntry.installName, version: version, count: count)
+        series(name: Version.installMarker, version: version, count: count)
     }
 
     private func crashedInstallSeries(_ version: String, count: Int) -> MetricSeries {
-        series(name: MarkerEntry.crashName, version: version, count: count)
+        series(name: Version.crashMarker, version: version, count: count)
     }
 
     private func performanceSeries(_ version: String, metric: PerformanceMetric, category: String, count: Int) -> MetricSeries {

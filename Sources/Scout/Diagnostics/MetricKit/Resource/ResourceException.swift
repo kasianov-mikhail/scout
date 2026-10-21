@@ -42,7 +42,7 @@ extension ResourceException: Comparable {
 }
 
 extension ResourceException: RecordDecodable {
-    package static let recordType = ResourceEntry.recordType
+    package static let recordType = "ResourceException"
 
     package static let desiredKeys = [
         "name",

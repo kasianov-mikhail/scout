@@ -9,7 +9,7 @@ import CoreData
 
 @objc(DeviceEntry)
 package final class DeviceEntry: SyncableEntry {
-    package static let recordType = "Device"
+    package static let recordType = Device.recordType
 
     @NSManaged var deviceID: UUID
     @NSManaged var model: String?

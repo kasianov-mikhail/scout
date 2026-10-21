@@ -58,9 +58,9 @@ struct ReleaseHealthProviderTests {
         let database = DatabaseStub()
         database.add(
             series: sessionSeries(version: "3.2.0", count: 300),
-            series(name: VersionEntry.recordType, version: "3.2.0", count: 200),
-            series(name: MarkerEntry.installName, version: "3.2.0", count: 100),
-            series(name: MarkerEntry.crashName, version: "3.2.0", count: 1)
+            series(name: Version.recordType, version: "3.2.0", count: 200),
+            series(name: Version.installMarker, version: "3.2.0", count: 100),
+            series(name: Version.crashMarker, version: "3.2.0", count: 1)
         )
 
         let provider = ReleaseHealthProvider()
@@ -71,11 +71,11 @@ struct ReleaseHealthProviderTests {
     }
 
     private func sessionSeries(version: String?, count: Int) -> MetricSeries {
-        series(name: SessionEntry.recordType, version: version, count: count)
+        series(name: Session.recordType, version: version, count: count)
     }
 
     private func crashSeries(version: String?, count: Int) -> MetricSeries {
-        series(name: CrashEntry.recordType, version: version, count: count)
+        series(name: Crash.recordType, version: version, count: count)
     }
 
     private func series(name: String, version: String?, count: Int) -> MetricSeries {

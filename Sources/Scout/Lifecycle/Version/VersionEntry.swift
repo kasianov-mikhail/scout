@@ -9,7 +9,7 @@ import CoreData
 
 @objc(VersionEntry)
 package final class VersionEntry: LaunchScopeEntry {
-    package static let recordType = "Version"
+    package static let recordType = Version.recordType
 
     @NSManaged var appVersion: String?
     @NSManaged var buildNumber: String?

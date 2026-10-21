@@ -9,7 +9,7 @@ import CoreData
 
 @objc(LaunchEntry)
 package final class LaunchEntry: SyncableEntry, HasInstall {
-    package static let recordType = "Launch"
+    package static let recordType = Launch.recordType
 
     @NSManaged var endDate: Date?
     @NSManaged var launchID: UUID
