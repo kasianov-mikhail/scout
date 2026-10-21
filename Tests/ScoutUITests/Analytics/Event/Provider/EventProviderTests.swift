@@ -40,4 +40,18 @@ struct EventProviderTests {
         #expect(provider.records?.count == 1)
         #expect(database.readCount(of: EventEntry.recordType) == 2)
     }
+
+    @Test("fetchLatest ignores the search text")
+    func fetchLatestIgnoresSearchText() async throws {
+        let database = DatabaseStub()
+        database.add(
+            Record.eventStub(name: "purchase", sessionID: UUID(), date: Date()),
+            Record.eventStub(name: "login", sessionID: UUID(), date: Date())
+        )
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(text: "pur"), in: database)
+
+        #expect(provider.records?.map(\.name).sorted() == ["login", "purchase"])
+    }
 }
