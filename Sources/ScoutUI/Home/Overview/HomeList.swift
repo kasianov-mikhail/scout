@@ -58,7 +58,7 @@ struct HomeList: View {
             first: [alerts, releases, retention],
             later: [sessions, activities, logs]
         )
-        .globalSearch()
+        .globalSearch(releases: releases)
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:

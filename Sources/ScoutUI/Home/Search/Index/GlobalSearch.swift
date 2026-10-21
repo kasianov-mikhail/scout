@@ -9,23 +9,19 @@ import Scout
 import SwiftUI
 
 extension View {
-    func globalSearch() -> some View {
-        modifier(GlobalSearchModifier())
+    func globalSearch(releases: ReleaseHealthProvider) -> some View {
+        modifier(GlobalSearchModifier(releases: releases))
     }
 }
 
 private struct GlobalSearchModifier: ViewModifier {
-    enum LoadState {
-        case loading
-        case ready(GlobalSearchIndex)
-        case failed(Error)
-    }
+    @ObservedObject var releases: ReleaseHealthProvider
 
     @State private var query = ""
+    @State private var hasStartedLoading = false
 
     @StateObject private var names = SearchSeriesProvider()
     @StateObject private var devices = DevicesProvider()
-    @StateObject private var releases = ReleaseHealthProvider()
     @StateObject private var crashes = IncidentGroupsProvider<Crash>()
     @StateObject private var hangs = IncidentGroupsProvider<Hang>()
 
@@ -35,18 +31,30 @@ private struct GlobalSearchModifier: ViewModifier {
         [names, devices, releases, crashes, hangs]
     }
 
+    private var hasQuery: Bool {
+        !query.trimmingCharacters(in: .whitespaces).isEmpty
+    }
+
     func body(content: Content) -> some View {
         Group {
-            if query.trimmingCharacters(in: .whitespaces).isEmpty {
-                content
+            if hasQuery {
+                GlobalSearchList(
+                    query: query,
+                    index: index,
+                    isLoading: providers.contains(where: \.isLoading),
+                    error: providers.compactMap(\.error).first
+                ) {
+                    await providers.fetchIfFailed(in: database)
+                }
             } else {
-                results
+                content
             }
         }
         .searchable(text: $query, placement: .navigationBar, prompt: Text(verbatim: "Search"))
         .autocorrectionDisabled(true)
-        .onChange(of: query) { text in
-            if !text.trimmingCharacters(in: .whitespaces).isEmpty {
+        .onChange(of: hasQuery) { hasQuery in
+            if hasQuery && !hasStartedLoading {
+                hasStartedLoading = true
                 Task {
                     await providers.fetchIfNeeded(in: database)
                 }
@@ -54,39 +62,24 @@ private struct GlobalSearchModifier: ViewModifier {
         }
     }
 
-    @ViewBuilder private var results: some View {
-        switch state {
-        case .ready(let index):
-            GlobalSearchList(query: query, index: index)
-        case .loading:
-            RingIndicator().frame(maxHeight: .infinity)
-        case .failed(let error):
-            ErrorView(description: Text(verbatim: error.localizedDescription)) {
-                await providers.fetchIfFailed(in: database)
-            }
-        }
+    private var index: GlobalSearchIndex {
+        GlobalSearchIndex(
+            series: names.output ?? [],
+            devices: devices.output ?? [],
+            releases: releases.output ?? [],
+            crashes: crashes.output ?? [],
+            hangs: hangs.output ?? []
+        )
     }
+}
 
-    private var state: LoadState {
-        do {
-            guard let index = try index else {
-                return .loading
-            }
-            return .ready(index)
-        } catch {
-            return .failed(error)
-        }
-    }
-
-    private var index: GlobalSearchIndex? {
-        get throws {
-            try GlobalSearchIndex(
-                series: names.result?.get(),
-                devices: devices.result?.get(),
-                releases: releases.result?.get(),
-                crashes: crashes.result?.get(),
-                hangs: hangs.result?.get()
-            )
+extension Provider {
+    fileprivate var output: Output? {
+        switch result {
+        case .success(let output)?:
+            output
+        case .failure?, nil:
+            nil
         }
     }
 }
@@ -94,13 +87,13 @@ private struct GlobalSearchModifier: ViewModifier {
 @MainActor
 extension Sequence where Element == any Provider {
     func fetchIfNeeded(in database: DatabaseReader) async {
-        for provider in self {
+        await concurrentForEach { provider in
             await provider.fetchIfNeeded(in: database)
         }
     }
 
     func fetchIfFailed(in database: DatabaseReader) async {
-        for provider in self {
+        await concurrentForEach { provider in
             await provider.fetchIfFailed(in: database)
         }
     }

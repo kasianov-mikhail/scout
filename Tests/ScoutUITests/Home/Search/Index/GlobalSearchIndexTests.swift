@@ -13,7 +13,7 @@ import Testing
 
 struct GlobalSearchIndexTests {
     private func makeIndex(series: [MetricSeries] = [], devices: [DeviceSummary] = [], releases: [ReleaseHealth] = [], crashes: [IncidentGroup<Crash>] = [], hangs: [IncidentGroup<Hang>] = []) -> GlobalSearchIndex {
-        GlobalSearchIndex(series: series, devices: devices, releases: releases, crashes: crashes, hangs: hangs)!
+        GlobalSearchIndex(series: series, devices: devices, releases: releases, crashes: crashes, hangs: hangs)
     }
 
     private func makeSeries(_ name: String, category: String? = nil) -> MetricSeries {

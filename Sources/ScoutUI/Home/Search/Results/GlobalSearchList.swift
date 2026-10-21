@@ -11,6 +11,9 @@ import SwiftUI
 struct GlobalSearchList: View {
     let query: String
     let index: GlobalSearchIndex
+    let isLoading: Bool
+    let error: Error?
+    let retry: () async -> Void
 
     var body: some View {
         let hits = index.hits(matching: query)
@@ -21,7 +24,22 @@ struct GlobalSearchList: View {
                     GlobalSearchRow(hit: hit, query: query)
                         .listRowSeparator(hit.id == hits.first?.id ? .hidden : .automatic, edges: .top)
                 }
+
+                if let error {
+                    ErrorRow(description: error.localizedDescription, retry: retry)
+                }
+
+                if isLoading {
+                    RingIndicator(size: 22)
+                        .frame(height: 68)
+                        .frame(maxWidth: .infinity)
+                        .listRowSeparator(.hidden, edges: .bottom)
+                }
             }
+        } else if isLoading {
+            RingIndicator().frame(maxHeight: .infinity)
+        } else if let error {
+            ErrorView(description: error.localizedDescription, retry: retry)
         } else {
             Placeholder(
                 text: "No results",
@@ -32,24 +50,33 @@ struct GlobalSearchList: View {
     }
 }
 
-#Preview {
-    let index = GlobalSearchIndex(
-        series: [
-            MetricSeries(name: "session_start", category: nil, points: []),
-            MetricSeries(name: "session_end", category: nil, points: []),
-            MetricSeries(name: "session_duration", category: Telemetry.Export.timer.rawValue, points: []),
-            MetricSeries(name: "GET /v1/sessions", category: StatusBuckets.categories[0], points: []),
-        ],
-        devices: .samples,
-        releases: .samples,
-        crashes: IncidentGroup.groups(from: .samples),
-        hangs: IncidentGroup.groups(from: .samples)
-    )
+extension GlobalSearchIndex {
+    fileprivate static var sample: GlobalSearchIndex {
+        GlobalSearchIndex(
+            series: [
+                MetricSeries(name: "session_start", category: nil, points: []),
+                MetricSeries(name: "session_end", category: nil, points: []),
+                MetricSeries(name: "session_duration", category: Telemetry.Export.timer.rawValue, points: []),
+                MetricSeries(name: "GET /v1/sessions", category: StatusBuckets.categories[0], points: []),
+            ],
+            devices: .samples,
+            releases: .samples,
+            crashes: IncidentGroup.groups(from: .samples),
+            hangs: IncidentGroup.groups(from: .samples)
+        )
+    }
+}
 
-    return NavigationStack {
-        if let index {
-            GlobalSearchList(query: "ses", index: index)
-        }
+#Preview("Loaded") {
+    NavigationStack {
+        GlobalSearchList(query: "ses", index: .sample, isLoading: false, error: nil) {}
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Partial") {
+    NavigationStack {
+        GlobalSearchList(query: "ses", index: .sample, isLoading: true, error: URLError(.timedOut)) {}
     }
     .environmentObject(Tint())
 }
