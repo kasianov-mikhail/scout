@@ -51,28 +51,17 @@ struct MetricsList: View {
                 formatter: \Int.plain,
                 telemetry: scope.telemetry
             )
-        case .double:
+        case .double, .recorder, .meter:
             MetricsContent(
                 period: period,
                 formatter: \Double.decimal,
                 telemetry: scope.telemetry
             )
+            .id(scope)
         case .timer:
             MetricsContent(
                 period: period,
                 formatter: \TimeInterval.duration,
-                telemetry: scope.telemetry
-            )
-        case .recorder:
-            MetricsContent(
-                period: period,
-                formatter: \Double.decimal,
-                telemetry: scope.telemetry
-            )
-        case .meter:
-            MetricsContent(
-                period: period,
-                formatter: \Double.decimal,
                 telemetry: scope.telemetry
             )
         }
