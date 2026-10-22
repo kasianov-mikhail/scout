@@ -15,7 +15,7 @@ import CoreData
             format: """
                 SUBQUERY(deliveries, $d, \
                 $d.backendID == %@ AND $d.isPending == YES AND $d.attempts < %d \
-                AND ($d.nextAttemptDate == nil OR $d.nextAttemptDate <= %@)\
+                AND ($d.attempts == 0 OR $d.nextAttemptDate == nil OR $d.nextAttemptDate <= %@)\
                 ).@count > 0
                 """,
             pendingBackendID,

@@ -326,7 +326,6 @@ struct DeliverTests {
         try await deliver(SessionEntry.self, to: cloudBackend)
 
         #expect(session.delivery(for: "cloud")?.isDelivered == true)
-        #expect(session.delivery(for: "cloud")?.nextAttemptDate == nil)
     }
 
     @Test("A rejected record burns its own budget, not the whole batch")

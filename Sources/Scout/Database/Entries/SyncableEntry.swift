@@ -19,7 +19,6 @@ package class SyncableEntry: DateEntry {
         for delivery in deliveries {
             delivery.isPending = true
             delivery.attempts = 0
-            delivery.nextAttemptDate = nil
         }
     }
 }
