@@ -18,11 +18,13 @@ final class NetworkProvider: ObservableObject, SeriesProvider {
     }
 
     func fetch(in database: SeriesReader) async throws -> NetworkReport {
-        let categories = LatencyBuckets.categories + StatusBuckets.categories
+        // One read of every int series; NetworkReport keeps the latency and status categories.
         let series = try await database.metricSeries(
-            Int.self,
-            categories: categories,
-            in: Period.today.initialRange
+            matching: MetricSeriesQuery(
+                values: .int,
+                bucket: .hour,
+                range: Period.today.initialRange
+            )
         )
         return NetworkReport(series: series)
     }
