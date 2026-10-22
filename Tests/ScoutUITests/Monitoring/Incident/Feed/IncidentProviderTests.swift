@@ -20,7 +20,7 @@ struct IncidentProviderTests {
         let app = UUID()
         let newer = Crash.stub(fingerprint: "A", date: Date())
         let older = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-3600))
-        let database = try PagedIncidentDatabase(crashes: [newer, older], app: app, tallies: [])
+        let database = try PagedIncidentDatabase(crashes: [newer, older], app: app)
 
         let provider = IncidentProvider<Crash>()
         await provider.fetchLatest(in: database)
@@ -33,30 +33,10 @@ struct IncidentProviderTests {
         #expect(groups.first?.id == "MyApp|handle")
     }
 
-    @Test("Backend tallies give the group total before older pages load")
-    func talliedTotals() async throws {
-        let first = Date().addingTimeInterval(-40 * .day)
+    @Test("A group stays partial until the last page loads")
+    func partialUntilLastPage() async throws {
         let crashes = [Crash.stub(fingerprint: "A", date: Date()), Crash.stub(fingerprint: "A", date: Date().addingTimeInterval(-.hour))]
-        let database = try PagedIncidentDatabase(
-            crashes: crashes,
-            app: UUID(),
-            tallies: [IncidentTally(fingerprint: "A", count: 7, firstHour: first)]
-        )
-
-        let provider = IncidentProvider<Crash>()
-        await provider.fetchLatest(in: database)
-
-        let group = try #require(provider.groups?.first)
-        #expect(provider.cursor != nil)
-        #expect(group.count == 7)
-        #expect(group.firstDate == first)
-        #expect(!group.isPartial)
-    }
-
-    @Test("Without tallies a group stays partial until the last page loads")
-    func partialWithoutTallies() async throws {
-        let crashes = [Crash.stub(fingerprint: "A", date: Date()), Crash.stub(fingerprint: "A", date: Date().addingTimeInterval(-.hour))]
-        let database = try PagedIncidentDatabase(crashes: crashes, app: UUID(), tallies: [])
+        let database = try PagedIncidentDatabase(crashes: crashes, app: UUID())
 
         let provider = IncidentProvider<Crash>()
         await provider.fetchLatest(in: database)
@@ -75,10 +55,8 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
     private let crashes: [Record]
     private let backtraces: [Record]
     private let symbols: Record
-    private let tallies: [IncidentTally]
 
-    init(crashes: [Crash], app: UUID, tallies: [IncidentTally]) throws {
-        self.tallies = tallies
+    init(crashes: [Crash], app: UUID) throws {
         let backtrace = Backtrace(
             images: [Backtrace.Image(name: "MyApp", uuid: app)],
             threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
@@ -125,5 +103,8 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { [] }
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] { [] }
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] { [] }
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] { tallies }
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        Issue.record("The incident list must not read the tallies")
+        return []
+    }
 }
