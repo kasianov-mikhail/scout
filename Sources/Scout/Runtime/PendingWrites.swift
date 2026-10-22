@@ -7,7 +7,7 @@
 
 import CoreData
 
-private let flushDelay: UInt64 = 1_000_000_000
+private let flushDelay: Duration = .seconds(1)
 
 struct PendingWrites: Sendable {
     typealias Write = @Sendable (NSManagedObjectContext) throws -> Void
@@ -38,7 +38,7 @@ extension Runtime {
 
         Task {
             if !urgent {
-                try? await Task.sleep(nanoseconds: flushDelay)
+                try? await Task.sleep(for: flushDelay)
             }
 
             let writes = drainPendingWrites()
