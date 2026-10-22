@@ -14,8 +14,8 @@ enum GlobalSearchHit: Identifiable {
     case endpoint(name: String)
     case device(DeviceSummary)
     case release(ReleaseHealth)
-    case crash(IncidentGroup<Crash>)
-    case hang(IncidentGroup<Hang>)
+    case crash(IncidentSearchEntry<Crash>)
+    case hang(IncidentSearchEntry<Hang>)
 
     var category: GlobalSearchCategory {
         switch self {
@@ -44,10 +44,10 @@ enum GlobalSearchHit: Identifiable {
             device.modelName
         case .release(let release):
             release.id
-        case .crash(let group):
-            group.name
-        case .hang(let group):
-            group.name
+        case .crash(let entry):
+            entry.name
+        case .hang(let entry):
+            entry.name
         }
     }
 
@@ -55,10 +55,10 @@ enum GlobalSearchHit: Identifiable {
         switch self {
         case .device(let device):
             "\(category.rawValue):\(device.id)"
-        case .crash(let group):
-            "\(category.rawValue):\(group.id)"
-        case .hang(let group):
-            "\(category.rawValue):\(group.id)"
+        case .crash(let entry):
+            "\(category.rawValue):\(entry.id)"
+        case .hang(let entry):
+            "\(category.rawValue):\(entry.id)"
         default:
             "\(category.rawValue):\(title)"
         }

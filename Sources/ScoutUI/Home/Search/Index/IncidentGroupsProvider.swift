@@ -9,12 +9,28 @@ import Scout
 import SwiftUI
 
 @MainActor
-final class IncidentGroupsProvider<Element: RecordDecodable & Incident>: ObservableObject, RecordProvider {
-    @Published var result: ProviderResult<[IncidentGroup<Element>]>?
+final class IncidentGroupsProvider<Element: RecordDecodable & Incident>: ObservableObject, Provider {
+    @Published var result: ProviderResult<[IncidentSearchEntry<Element>]>?
 
-    func fetch(in database: RecordReader) async throws -> [IncidentGroup<Element>] {
+    func fetch(in database: DatabaseReader) async throws -> [IncidentSearchEntry<Element>] {
+        try await entries(in: Date().trailingYear, from: database).sorted { $0.name < $1.name }
+    }
+
+    private func entries(in range: Range<Date>, from database: DatabaseReader) async throws -> [IncidentSearchEntry<Element>] {
+        guard let index = try await database.incidentIndex(recordType: Element.recordType, in: range) else {
+            return try await groups(in: range, from: database).map(IncidentSearchEntry.group)
+        }
+        guard let unkeyed = index.unkeyed else {
+            return index.tallies.map(IncidentSearchEntry.tally)
+        }
+
+        let groups = try await groups(in: range.lowerBound..<min(unkeyed.upperBound, range.upperBound), from: database)
+        return IncidentSearchEntry.entries(tallies: index.tallies, unkeyed: groups)
+    }
+
+    private func groups(in range: Range<Date>, from database: RecordReader) async throws -> [IncidentGroup<Element>] {
         let records: [Element] = try await database.readAll(
-            matching: Element.query(),
+            matching: Element.query(in: range),
             fields: Element.desiredKeys
         )
         return IncidentGroup.groups(from: records)

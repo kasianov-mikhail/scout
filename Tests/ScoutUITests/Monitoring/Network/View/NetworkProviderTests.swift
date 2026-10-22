@@ -139,6 +139,10 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
         []
     }
 
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
+        nil
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         []
     }
@@ -181,6 +185,10 @@ private final class ThrowingDatabaseStub: DatabaseReader, @unchecked Sendable {
     }
 
     func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        throw Failure()
+    }
+
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
         throw Failure()
     }
 

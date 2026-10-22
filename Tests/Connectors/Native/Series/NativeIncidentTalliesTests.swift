@@ -29,22 +29,52 @@ struct NativeIncidentTalliesTests {
 
         #expect(
             tallies.sorted { $0.fingerprint < $1.fingerprint } == [
-                IncidentTally(fingerprint: "A", count: 2, firstHour: TestDate.reference.addingTimeInterval(10 * .hour)),
-                IncidentTally(fingerprint: "B", count: 1, firstHour: TestDate.reference.addingTimeInterval(12 * .hour)),
+                IncidentTally(fingerprint: "A", name: "NSRangeException", count: 2, firstHour: TestDate.reference.addingTimeInterval(10 * .hour)),
+                IncidentTally(fingerprint: "B", name: "NSRangeException", count: 1, firstHour: TestDate.reference.addingTimeInterval(12 * .hour)),
             ]
         )
     }
 
-    @Test("A record without a fingerprint has no tally")
+    @Test("A crash without a stored fingerprint is tallied under the one it decodes to")
     func missingFingerprint() async throws {
-        try await database.write(record: makeCrash(id: "c-1", fingerprint: nil, at: 10 * .hour))
+        let record = makeCrash(id: "c-1", fingerprint: nil, at: 10 * .hour)
+        try await database.write(record: record)
 
         let tallies = try await database.incidentTallies(recordType: CrashEntry.recordType, in: range)
 
-        #expect(tallies == [])
+        let crash = try Crash(record: record)
+        #expect(tallies.map(\.fingerprint) == [crash.fingerprint])
     }
 
-    @Test("Hangs are tallied apart from crashes")
+    @Test("The index names each fingerprint and keys a name that holds a bar")
+    func names() async throws {
+        var record = makeCrash(id: "c-1", fingerprint: "A", at: 10 * .hour)
+        record["name"] = "Fatal error | index out of range"
+        try await database.write(record: record)
+
+        let index = try await database.incidentIndex(recordType: CrashEntry.recordType, in: range)
+
+        #expect(index?.tallies.map(\.name) == ["Fatal error | index out of range"])
+        #expect(index?.tallies.map(\.fingerprint) == ["A"])
+        #expect(index?.unkeyed == nil)
+    }
+
+    @Test("Records written without the key mark the hours a raw read must cover")
+    func unkeyedHours() async throws {
+        try await database.write(record: makeCrash(id: "c-1", fingerprint: "A", at: 30 * .hour))
+        let store = try await database.resolve()
+        let legacy = [10 * .hour + 5 * .minute, 20 * .hour].enumerated().map { offset, time in
+            EntityWrite(values: ["date": .date(TestDate.reference.addingTimeInterval(time))], uuid: "legacy-\(offset)")
+        }
+        try await store.write(legacy, entity: CrashEntry.recordType)
+
+        let index = try await database.incidentIndex(recordType: CrashEntry.recordType, in: range)
+
+        #expect(index?.tallies.map(\.fingerprint) == ["A"])
+        #expect(index?.unkeyed == TestDate.reference.addingTimeInterval(10 * .hour)..<TestDate.reference.addingTimeInterval(21 * .hour))
+    }
+
+    @Test("Hangs are tallied apart from crashes under the fingerprint the feed groups by")
     func hangs() async throws {
         try await database.write(record: makeCrash(id: "c-1", fingerprint: "A", at: 10 * .hour))
         var hang = Record(recordType: HangEntry.recordType, recordID: "h-1")
@@ -55,7 +85,9 @@ struct NativeIncidentTalliesTests {
 
         let tallies = try await database.incidentTallies(recordType: HangEntry.recordType, in: range)
 
-        #expect(tallies.map(\.fingerprint) == ["H"])
+        let decoded = try Hang(record: hang)
+        #expect(tallies.map(\.fingerprint) == [decoded.fingerprint])
+        #expect(tallies.map(\.name) == ["Main Thread Blocked"])
     }
 
     private func makeCrash(id: String, fingerprint: String?, at offset: TimeInterval) -> Record {

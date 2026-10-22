@@ -12,8 +12,8 @@ struct GlobalSearchIndex {
     let series: [MetricSeries]
     let devices: [DeviceSummary]
     let releases: [ReleaseHealth]
-    let crashes: [IncidentGroup<Crash>]
-    let hangs: [IncidentGroup<Hang>]
+    let crashes: [IncidentSearchEntry<Crash>]
+    let hangs: [IncidentSearchEntry<Hang>]
 
     static let telemetries: [Telemetry.Export] = [.counter, .floatingCounter, .timer, .recorder, .meter]
 

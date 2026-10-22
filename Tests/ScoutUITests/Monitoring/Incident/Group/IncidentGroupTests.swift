@@ -118,7 +118,7 @@ struct IncidentGroupTests {
 
         let group = IncidentGroup.groups(
             from: crashes,
-            tallies: ["fp": IncidentTally(fingerprint: "fp", count: 10, firstHour: firstHour)],
+            tallies: ["fp": IncidentTally(fingerprint: "fp", name: "NSRangeException", count: 10, firstHour: firstHour)],
             hasMore: true
         )[0]
 
@@ -137,7 +137,7 @@ struct IncidentGroupTests {
 
         let group = IncidentGroup.groups(
             from: [crash],
-            tallies: ["fp": IncidentTally(fingerprint: "fp", count: 1, firstHour: firstHour)]
+            tallies: ["fp": IncidentTally(fingerprint: "fp", name: "NSRangeException", count: 1, firstHour: firstHour)]
         )[0]
 
         #expect(group.firstDate == crash.date)
@@ -167,8 +167,8 @@ struct IncidentGroupTests {
             from: [first, second],
             keys: [first.id: "MyApp|Cart.apply()", second.id: "MyApp|Cart.apply()"],
             tallies: [
-                "fp1": IncidentTally(fingerprint: "fp1", count: 5, firstHour: earliest),
-                "fp2": IncidentTally(fingerprint: "fp2", count: 7, firstHour: earliest.addingTimeInterval(.day)),
+                "fp1": IncidentTally(fingerprint: "fp1", name: "NSRangeException", count: 5, firstHour: earliest),
+                "fp2": IncidentTally(fingerprint: "fp2", name: "NSRangeException", count: 7, firstHour: earliest.addingTimeInterval(.day)),
             ]
         )[0]
 
@@ -184,7 +184,7 @@ struct IncidentGroupTests {
         let groups = IncidentGroup.groups(
             from: [keyed, raw],
             keys: [keyed.id: "MyApp|Cart.apply()"],
-            tallies: ["fp": IncidentTally(fingerprint: "fp", count: 50, firstHour: Date(timeIntervalSince1970: 0))]
+            tallies: ["fp": IncidentTally(fingerprint: "fp", name: "NSRangeException", count: 50, firstHour: Date(timeIntervalSince1970: 0))]
         )
 
         #expect(groups.map(\.count) == [1, 1])
@@ -201,7 +201,7 @@ struct IncidentGroupTests {
 
         let groups = IncidentGroup.groups(
             from: crashes,
-            tallies: ["tallied": IncidentTally(fingerprint: "tallied", count: 9, firstHour: Date(timeIntervalSince1970: 0))]
+            tallies: ["tallied": IncidentTally(fingerprint: "tallied", name: "NSRangeException", count: 9, firstHour: Date(timeIntervalSince1970: 0))]
         )
 
         #expect(groups.map(\.id) == ["tallied", "loaded"])
@@ -213,7 +213,7 @@ struct IncidentGroupTests {
 
         let group = IncidentGroup.groups(
             from: [crash],
-            tallies: ["fp": IncidentTally(fingerprint: "fp", count: 3, firstHour: Date(timeIntervalSince1970: 0))]
+            tallies: ["fp": IncidentTally(fingerprint: "fp", name: "NSRangeException", count: 3, firstHour: Date(timeIntervalSince1970: 0))]
         )[0]
         let loaded = group.replacing(records: [crash, Crash.stub(fingerprint: "fp"), Crash.stub(fingerprint: "fp")])
 

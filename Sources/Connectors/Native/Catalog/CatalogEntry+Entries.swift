@@ -191,13 +191,14 @@ extension CatalogEntry {
             .init(name: "date_start", type: .timestamp),
             .init(name: "source", type: .string),
             .init(name: lifecycleKey, type: .string),
+            .init(name: incidentKey, type: .string),
         ],
         aggregates: [
             .count(by: lifecycleKey, at: "date"),
             .count(by: "device_id", at: "date", parts: devicePageParts),
-            .count(by: "fingerprint", at: "date"),
+            .count(by: incidentKey, at: "date"),
         ],
-        derive: lifecycleKey
+        derive: { lifecycleKey(for: $0).merging(crashKey(for: $0)) { key, _ in key } }
     )
 
     private static let hang = CatalogEntry(
@@ -208,12 +209,13 @@ extension CatalogEntry {
             .init(name: "app_version", type: .string),
             .init(name: "date", type: .timestamp),
             .init(name: lifecycleKey, type: .string),
+            .init(name: incidentKey, type: .string),
         ],
         aggregates: [
             .count(by: lifecycleKey, at: "date"),
-            .count(by: "fingerprint", at: "date"),
+            .count(by: incidentKey, at: "date"),
         ],
-        derive: lifecycleKey
+        derive: { lifecycleKey(for: $0).merging(hangKey(for: $0)) { key, _ in key } }
     )
 
     private static let resourceException = CatalogEntry(

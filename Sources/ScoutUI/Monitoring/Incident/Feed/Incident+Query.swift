@@ -10,9 +10,13 @@ import Scout
 
 extension Incident where Self: RecordDecodable {
     static func query(filters extra: [RecordQuery.Filter] = []) -> RecordQuery {
+        query(in: Date().trailingYear, filters: extra)
+    }
+
+    static func query(in range: Range<Date>, filters extra: [RecordQuery.Filter] = []) -> RecordQuery {
         RecordQuery(
             recordType: Self.self,
-            filters: Date().trailingYear.dateFilters + extra,
+            filters: range.dateFilters + extra,
             sort: [RecordQuery.Sort(field: "date", ascending: false)]
         )
     }

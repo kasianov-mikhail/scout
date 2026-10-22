@@ -9,11 +9,13 @@ import Foundation
 
 package struct IncidentTally: Equatable, Sendable {
     package let fingerprint: String
+    package let name: String
     package let count: Int
     package let firstHour: Date
 
-    package init(fingerprint: String, count: Int, firstHour: Date) {
+    package init(fingerprint: String, name: String, count: Int, firstHour: Date) {
         self.fingerprint = fingerprint
+        self.name = name
         self.count = count
         self.firstHour = firstHour
     }
