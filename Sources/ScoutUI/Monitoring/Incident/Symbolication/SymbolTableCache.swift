@@ -9,8 +9,6 @@ import Foundation
 import Scout
 import SymbolTable
 
-private let membershipLimit = 250
-
 actor SymbolTableCache {
     static let shared = SymbolTableCache()
 
@@ -20,24 +18,18 @@ actor SymbolTableCache {
     func tables(uuids: [UUID], database: RecordReader) async -> [UUID: SymbolTable] {
         let unknown = Array(Set(uuids).subtracting(tables.keys).subtracting(missing))
 
-        let loaded = await withTaskGroup(of: LoadedTables.self) { group in
-            for start in stride(from: 0, to: unknown.count, by: membershipLimit) {
-                let chunk = Array(unknown[start..<min(start + membershipLimit, unknown.count)])
-                group.addTask {
-                    do {
-                        return LoadedTables(requested: chunk, found: try await database.symbolTables(uuids: chunk))
-                    } catch {
-                        print("Failed to load symbol tables: \(error)")
-                        return LoadedTables(requested: [], found: [:])
-                    }
-                }
-            }
-            return await group.reduce(into: []) { $0.append($1) }
+        let loaded = await unknown.readInMembershipChunks { chunk in
+            LoadedTables(requested: chunk, found: try await database.symbolTables(uuids: chunk))
         }
 
         for result in loaded {
-            tables.merge(result.found) { $1 }
-            missing.formUnion(Set(result.requested).subtracting(result.found.keys))
+            switch result {
+            case .success(let result):
+                tables.merge(result.found) { $1 }
+                missing.formUnion(Set(result.requested).subtracting(result.found.keys))
+            case .failure(let error):
+                print("Failed to load symbol tables: \(error)")
+            }
         }
         return tables.filter { uuids.contains($0.key) }
     }

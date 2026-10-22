@@ -9,15 +9,20 @@
 import Foundation
 import Scout
 
-private let membershipLimit = 250
-
 struct IncidentLabelLookup<Item: RecordDecodable> {
     let database: RecordReader
     let idField: String
     let labelField: String
 
     func labels(ids: [UUID]) async throws -> [UUID: String] {
-        let pairs = try await records(ids: ids).compactMap { (record: Record) -> (UUID, String)? in
+        let records = try await database.readAll(
+            type: Item.self,
+            field: idField,
+            values: ids.map(\.uuidString),
+            fields: [idField, labelField]
+        )
+
+        let pairs = records.compactMap { (record: Record) -> (UUID, String)? in
             guard let id = record[idField].flatMap(UUID.init) else {
                 return nil
             }
@@ -26,35 +31,7 @@ struct IncidentLabelLookup<Item: RecordDecodable> {
             }
             return (id, label)
         }
+
         return Dictionary(pairs, uniquingKeysWith: { first, _ in first })
-    }
-
-    private func records(ids: [UUID]) async throws -> [Record] {
-        let values = ids.map(\.uuidString)
-        let fields = [idField, labelField]
-
-        return try await withThrowingTaskGroup(of: [Record].self) { group in
-            for start in stride(from: 0, to: values.count, by: membershipLimit) {
-                let query = RecordQuery(
-                    recordType: Item.self,
-                    filters: [
-                        RecordQuery.Filter(
-                            field: idField,
-                            op: .in,
-                            value: .strings(Array(values[start..<min(start + membershipLimit, values.count)]))
-                        )
-                    ]
-                )
-                group.addTask {
-                    try await database.readAll(matching: query, fields: fields)
-                }
-            }
-
-            var records: [Record] = []
-            for try await chunk in group {
-                records += chunk
-            }
-            return records
-        }
     }
 }
