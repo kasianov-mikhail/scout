@@ -8,12 +8,6 @@
 
 import Foundation
 
-// A fatal-signal report as the handler leaves it on disk: raw return
-// addresses plus the image table snapshotted at install, everything else
-// pre-rendered before the signal ever fires. The next launch turns it into
-// a regular CrashInfo by rebasing each address against the same image
-// loaded in the current process and symbolicating there — dladdr can never
-// run inside a signal handler.
 struct RawCrashReport {
     let signal: Int32
     let date: Date

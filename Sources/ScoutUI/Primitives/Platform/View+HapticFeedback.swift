@@ -15,9 +15,6 @@ enum HapticFeedback {
 }
 
 extension View {
-    /// Plays haptic feedback when `trigger` changes, degrading to no feedback
-    /// on the iOS 16 / macOS 13 floor where `sensoryFeedback` is unavailable.
-    ///
     @ViewBuilder
     func hapticFeedback<T: Equatable>(_ feedback: HapticFeedback, trigger: T) -> some View {
         if #available(iOS 17.0, macOS 14.0, *) {

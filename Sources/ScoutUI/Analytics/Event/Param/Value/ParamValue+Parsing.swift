@@ -9,7 +9,6 @@
 import Foundation
 
 extension ParamValue {
-    /// Parses a raw parameter string into its display classification.
     init(parsing raw: String) {
         let trimmed = raw.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -59,7 +58,6 @@ extension ParamValue {
 }
 
 extension ParamValue.Convertible {
-    /// Recognizes a typed scalar from its textual shape, or fails for plain text.
     init?(parsing text: String) {
         if text == "true" || text == "false" {
             self = .boolean(text == "true")
@@ -76,8 +74,6 @@ extension ParamValue.Convertible {
         }
     }
 
-    /// Characters of a decimal or scientific-notation number; excludes look-alikes
-    /// that `Double.init` would also accept, such as hex literals or "inf".
     private static let numberScalars = CharacterSet(charactersIn: "0123456789+-.eE")
 
     private static func isNumber(_ text: String) -> Bool {
@@ -101,7 +97,6 @@ extension ParamValue.Convertible {
 }
 
 extension NSNumber {
-    /// Whether the number wraps a JSON boolean rather than a numeric value.
     fileprivate var isBoolean: Bool {
         CFGetTypeID(self) == CFBooleanGetTypeID()
     }

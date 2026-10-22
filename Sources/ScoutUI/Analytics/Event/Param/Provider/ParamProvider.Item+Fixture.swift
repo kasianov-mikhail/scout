@@ -8,7 +8,6 @@
 import Foundation
 
 extension ParamProvider.Item {
-    /// An in-app purchase where every value is a typed scalar.
     static var samplePurchase: [ParamProvider.Item] {
         [
             ParamProvider.Item(key: "product_id", value: "com.scout.pro.yearly"),
@@ -21,7 +20,6 @@ extension ParamProvider.Item {
         ]
     }
 
-    /// An experiment assignment with plain and structured array values.
     static var sampleExperiments: [ParamProvider.Item] {
         [
             ParamProvider.Item(key: "cohort", value: "B"),
@@ -42,7 +40,6 @@ extension ParamProvider.Item {
         ]
     }
 
-    /// A user profile with deeply nested preferences.
     static var sampleProfile: [ParamProvider.Item] {
         [
             ParamProvider.Item(key: "user_id", value: "C0FFEE00-1234-4ABC-9DEF-567890ABCDEF"),
@@ -70,7 +67,6 @@ extension ParamProvider.Item {
         ]
     }
 
-    /// A crash report with a long multi-line stack trace string.
     static var sampleCrash: [ParamProvider.Item] {
         [
             ParamProvider.Item(key: "signal", value: "SIGSEGV"),
@@ -96,7 +92,6 @@ extension ParamProvider.Item {
         ]
     }
 
-    /// A performance metric with numeric samples and a histogram.
     static var sampleMetrics: [ParamProvider.Item] {
         [
             ParamProvider.Item(key: "name", value: "chart_render"),

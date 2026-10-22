@@ -73,8 +73,6 @@ extension Hang: RecordDecodable {
         } else {
             stackTrace = []
         }
-        // Stored fingerprints from older builds hashed the reason, which embeds
-        // the per-occurrence duration — recompute so legacy records group too.
         fingerprint = CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value
     }
 }

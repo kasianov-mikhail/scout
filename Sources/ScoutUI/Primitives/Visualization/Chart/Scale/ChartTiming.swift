@@ -13,24 +13,12 @@ protocol ChartTiming {
     var tickValues: [Date]? { get }
 }
 
-/// The time slot a bucket occupies on the x axis.
-///
-/// Series data is UTC-bucketed and the axis labels are formatted in UTC, so
-/// bar slots, domains, and ticks are derived with `Calendar.utc` to name the
-/// right bucket in any time zone. The chart views set the same UTC calendar
-/// and time zone in their environment so `BarMark`'s own unit-binning agrees
-/// and the marks stay pixel-aligned with these bins.
-///
 func binRange(of date: Date, unit: Calendar.Component) -> Range<Date> {
     let interval = Calendar.utc.dateInterval(of: unit, for: date)!
     return interval.start..<interval.end
 }
 
 extension ChartTiming {
-    /// Explicit x-axis ticks for `segment`: the scale's own `tickValues`
-    /// when defined, otherwise bucket bin starts thinned to at most four —
-    /// the dates the automatic axis picks for binned bar charts.
-    ///
     func tickDates(for segment: [ChartPoint<some ChartNumeric>]) -> [Date] {
         if let values = tickValues {
             return values
@@ -46,11 +34,6 @@ extension ChartExtent: ChartTiming {
         period.pointComponent
     }
 
-    /// Explicit x‑axis tick positions for monthly charts.
-    ///
-    /// The default system behavior places ticks on Mondays.
-    /// This implementation overrides that behavior to mark exactly 1, 2, 3, and 4 weeks ago
-    ///
     var tickValues: [Date]? {
         if case .month = period.rangeComponent {
             [-28, -21, -14, -7].map(domain.upperBound.addingDay)

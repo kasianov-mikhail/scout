@@ -7,10 +7,6 @@
 
 import CoreData
 
-// Lightweight migration fails outright when existing rows violate a uniqueness
-// constraint the destination model introduces, so stores written before the
-// constraints existed must be deduplicated with their source model before
-// `loadPersistentStores` runs.
 struct MigrationDedupe {
     static let uniqueKeys: [(entity: String, key: String)] = [
         ("DeviceEntry", "deviceID"),
@@ -95,9 +91,6 @@ struct MigrationDedupe {
             }
         }
 
-        // The duplicate may have delivered last, leaving its bare version on
-        // the server, so the merged survivor re-sends regardless of whether
-        // the merge changed it locally.
         if let syncable = survivor as? SyncableEntry {
             syncable.requeue()
         }

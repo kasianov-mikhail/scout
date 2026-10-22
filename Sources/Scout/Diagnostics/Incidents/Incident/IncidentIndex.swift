@@ -10,8 +10,6 @@ import Foundation
 package struct IncidentIndex: Equatable, Sendable {
     package let tallies: [IncidentTally]
 
-    /// The hours that hold records written before the aggregate keyed them,
-    /// which only a raw read can name.
     package let unkeyed: Range<Date>?
 
     package init(tallies: [IncidentTally], unkeyed: Range<Date>?) {

@@ -34,7 +34,7 @@ struct RawCrashReportTests {
 
         addresses.withUnsafeBufferPointer { frames in
             trailer.withUnsafeBytes { trailerBytes in
-                RawCrashFormat.write(
+                RawCrashFormat.writeFromSignalHandler(
                     fd: fd,
                     signal: signal,
                     time: 1_700_000_000,

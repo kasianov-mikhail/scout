@@ -7,9 +7,6 @@
 
 import SwiftUI
 
-/// A button that copies `text` to the system pasteboard, confirming the copy
-/// with a success message presented by the enclosing screen.
-///
 struct CopyButton: View {
     let text: String
 

@@ -7,10 +7,6 @@
 
 import CoreData
 
-// Plain object-trump resolution lets a bare duplicate insert blank the
-// attributes it never set, so a racing `linkedSession` row would erase a
-// filled one. Backfilling nils from the other side of the conflict first
-// keeps every populated value while the trump merge still dedupes the rows.
 final class ScoutMergePolicy: NSMergePolicy {
     init() {
         super.init(merge: .mergeByPropertyObjectTrumpMergePolicyType)

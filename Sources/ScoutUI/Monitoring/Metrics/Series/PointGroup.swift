@@ -31,8 +31,6 @@ extension Collection where Element: PointSeries {
     }
 
     func latest(in range: Range<Date>) -> [Element] {
-        // A gauge reads zero or below just as meaningfully as it reads high, so any
-        // element carrying a point survives and ranks on its newest value.
         filter { group in
             group.points.contains { range.contains($0.date) }
         }

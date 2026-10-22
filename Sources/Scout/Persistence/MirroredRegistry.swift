@@ -7,12 +7,6 @@
 
 import Foundation
 
-// The keychain owns the device ID because it survives a reinstall, but it cannot
-// be read before the first unlock after a reboot — where iOS still prewarms and
-// background-launches apps. A read that fails there is indistinguishable from a
-// missing item, and minting a replacement would attribute the whole launch to a
-// device that never appears again. The mirror answers instead, and either side
-// heals the other once it can be written.
 struct MirroredRegistry: Registry {
     let store: any Registry
     let mirror: any Registry

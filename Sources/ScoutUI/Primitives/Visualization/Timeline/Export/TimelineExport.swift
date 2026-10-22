@@ -9,17 +9,9 @@
 import Foundation
 import Scout
 
-/// Builds the Markdown document exported by the timeline's share and copy actions.
-///
-/// The document mirrors the rail hierarchy: a title with the device ID and a
-/// summary of counts, then a section per install, launch, and session, with
-/// events and crashes as chronological list rows under their session. Dates
-/// and identifiers are rendered through ``ExportFormat``.
-///
 struct TimelineExport {
     let rail: Rail
 
-    /// The exported document, or `nil` when the rail has no installs.
     var text: String? {
         guard !rail.installs.isEmpty else { return nil }
 

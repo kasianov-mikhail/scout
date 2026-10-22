@@ -8,13 +8,6 @@
 import Foundation
 import Scout
 
-/// One bucket of the comparison: the current value and the previous-period
-/// value it is compared against, both on the current bucket's date.
-///
-/// `reference` is nil when the previous window has no counterpart bucket —
-/// calendar months differ in length, so the oldest buckets of a longer
-/// current window have nothing to compare against.
-///
 struct ComparisonPair<T: ChartNumeric>: Identifiable {
     let date: Date
     let bin: Range<Date>
@@ -25,16 +18,12 @@ struct ComparisonPair<T: ChartNumeric>: Identifiable {
 }
 
 extension ComparisonPair {
-    /// Date of the bar's leading edge within the bucket slot.
     var barStart: Date { slotDate(at: ChartGeometry.barStart) }
 
-    /// Date of the bar's trailing edge within the bucket slot.
     var barEnd: Date { slotDate(at: ChartGeometry.barEnd) }
 
-    /// Date at the center of the bucket slot.
     var binCenter: Date { slotDate(at: 0.5) }
 
-    /// The date lying at `fraction` of the way across the bucket slot.
     private func slotDate(at fraction: Double) -> Date {
         let length = bin.upperBound.timeIntervalSince(bin.lowerBound)
         return bin.lowerBound.addingTimeInterval(length * fraction)
@@ -42,10 +31,6 @@ extension ComparisonPair {
 }
 
 extension Collection {
-    /// Pairs each bucket of the current segment with the reference value
-    /// sitting on the same date; buckets missing from `reference` get a nil
-    /// reference and draw no comparison marks.
-    ///
     func paired<T>(with reference: [ChartPoint<T>], unit: Calendar.Component) -> [ComparisonPair<T>] where Element == ChartPoint<T> {
         let values = Dictionary(reference.map { ($0.date, $0.value) }, uniquingKeysWith: +)
         return map { point in
@@ -58,9 +43,6 @@ extension Collection {
         }
     }
 
-    /// Full bucket bands, so the edge bars are inset from the plot edges the
-    /// same way binned `BarMark` charts are.
-    ///
     func xDomain<T>() -> ClosedRange<Date> where Element == ComparisonPair<T> {
         guard let first = map(\.bin.lowerBound).min(), let last = map(\.bin.upperBound).max() else {
             return Date().startOfDay...Date().startOfDay.addingDay()

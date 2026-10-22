@@ -9,31 +9,12 @@ import Foundation
 import Scout
 
 extension Int {
-    /// Returns a string representation of the integer.
-    ///
-    /// Examples:
-    /// - `1` -> `"1"`
-    /// - `123456` -> `"123 456"`
-    ///
     var plain: String {
         "\(self)"
     }
 }
 
 extension Double {
-    /// Returns a non-localized, human-friendly decimal string for the double value.
-    ///
-    /// Examples:
-    /// - `0.009`   -> `"0.009"`
-    /// - `0.0094`  -> `"0.009"`
-    /// - `0.0096`  -> `"0.010"`
-    /// - `12.3`    -> `"12.3"`
-    /// - `12.345`  -> `"12.35"`
-    /// - `999.995` -> `"1 000.0"`
-    /// - `1234.56` -> `"1 234.6"`
-    ///
-    /// - Important: The output is intentionally non-localized to ensure consistent decimal and grouping separators.
-    ///
     var decimal: String {
         let formatter: NumberFormatter
         switch self {
@@ -51,18 +32,6 @@ extension Double {
 }
 
 extension TimeInterval {
-    /// Returns a concise, human-readable duration string for the time interval (in seconds).
-    ///
-    /// Examples:
-    /// - `0.00045`    -> `"450 µs"`
-    /// - `0.123`      -> `"123 ms"`
-    /// - `12.34`      -> `"12.3 s"`
-    /// - `125`        -> `"2 min 5 s"`
-    /// - `7200`       -> `"2 h"`
-    /// - `172800    ` -> `"2 d"`
-    /// - `5_184_000`  -> `"2 mo"`
-    /// - `47_304_000` -> `"1.5 y"`
-    ///
     var duration: String {
         if self == 0 {
             return "0"

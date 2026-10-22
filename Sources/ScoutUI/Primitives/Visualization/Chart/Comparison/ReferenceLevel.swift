@@ -8,23 +8,16 @@
 import Charts
 import SwiftUI
 
-/// Bar-aligned geometry of one bucket's reference level, in overlay
-/// coordinates.
-///
 struct ReferenceLevel {
     let x: ClosedRange<CGFloat>
     let value: CGFloat
     let reference: CGFloat
     let isClamped: Bool
 
-    /// Whether the previous level lies above the bar (the value dropped).
     var isDrop: Bool { reference < value }
 }
 
 extension ReferenceLevel {
-    /// Geometry for one bucket; nil for buckets without comparison data,
-    /// empty in both periods, or falling outside the plot.
-    ///
     init?<T: ChartNumeric>(pair: ComparisonPair<T>, proxy: ChartProxy, plotFrame: CGRect) {
         guard let referenceValue = pair.reference else {
             return nil
@@ -51,13 +44,10 @@ extension ReferenceLevel {
 }
 
 extension [ReferenceLevel] {
-    /// Levels where the value grew or held its ground.
     var gains: Self { filter { !$0.isDrop } }
 
-    /// Levels where the value dropped below the previous period.
     var drops: Self { filter(\.isDrop) }
 
-    /// Rectangles between the two periods' levels.
     var slices: Path {
         Path { path in
             for level in self {
@@ -75,9 +65,6 @@ extension [ReferenceLevel] {
         }
     }
 
-    /// Lines across the bars at the previous level, for buckets where the
-    /// value grew.
-    ///
     var lines: Path {
         Path { path in
             for level in self {
@@ -87,12 +74,6 @@ extension [ReferenceLevel] {
         }
     }
 
-    /// Contours rising above the bars to the previous level, for buckets
-    /// where the value dropped.
-    ///
-    /// A contour clipped by the plot's top edge is left without its cap to
-    /// show that the previous level lies beyond the visible scale.
-    ///
     var contours: Path {
         Path { path in
             for level in self {

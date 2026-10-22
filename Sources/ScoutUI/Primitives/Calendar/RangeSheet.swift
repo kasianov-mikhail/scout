@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// Design-exploration primitive: a modal range picker. Not yet wired into the app.
-
 struct RangeSheet: View {
     var style: CalendarStyle = .capsule
 

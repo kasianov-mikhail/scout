@@ -44,8 +44,6 @@ struct NetworkReport {
             }
         }
 
-        // Latency-only timers count as endpoints only when their name reads
-        // like an HTTP request, so generic app timers stay off the screen.
         self.init(
             distributions:
                 latency

@@ -8,7 +8,6 @@
 #if os(macOS)
     import AppKit
 
-    // Stand-ins for the iOS-only tiered system grays, matching their light and dark values.
     extension NSColor {
         static var systemGray3: NSColor {
             NSColor(name: nil) { appearance in

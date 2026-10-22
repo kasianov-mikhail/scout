@@ -14,8 +14,6 @@ extension View {
     }
 }
 
-// `contentMargins` is not animatable on its own; routing the inset through
-// `animatableData` lets an animation feed it frame by frame.
 @available(iOS 17.0, macOS 14.0, *)
 private struct TopContentMarginModifier: ViewModifier, Animatable {
     var inset: CGFloat

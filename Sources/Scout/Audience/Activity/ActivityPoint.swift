@@ -7,9 +7,6 @@
 
 import Foundation
 
-/// A single day of active-user counts — the point a ``Database`` returns from
-/// its activity query.
-///
 package struct ActivityPoint: Decodable, Sendable {
     package let date: Int64
     package let dau: Int

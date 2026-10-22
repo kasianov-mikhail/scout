@@ -32,8 +32,6 @@ enum IncidentSearchEntry<Element: Incident>: Identifiable {
 }
 
 extension IncidentSearchEntry {
-    // A raw group of records written before the aggregate keyed them joins the
-    // tally of its fingerprint, so a group seen on both sides of the change counts once.
     static func entries(tallies: [IncidentTally], unkeyed groups: [IncidentGroup<Element>]) -> [IncidentSearchEntry] {
         let unkeyed = Dictionary(groups.map { ($0.id, $0) }) { first, _ in first }
 

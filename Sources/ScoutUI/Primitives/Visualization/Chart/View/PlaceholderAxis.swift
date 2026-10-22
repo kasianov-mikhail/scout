@@ -9,9 +9,6 @@ import Charts
 import SwiftUI
 
 extension View {
-    // Swift Charts drops the Y axis when there is no data, so an empty chart
-    // loses the top and bottom lines that frame it when data is present. Pin a
-    // fixed 0...1 domain and draw gridlines at both bounds to keep that framing.
     @ViewBuilder
     func placeholderAxis(active: Bool) -> some View {
         if active {

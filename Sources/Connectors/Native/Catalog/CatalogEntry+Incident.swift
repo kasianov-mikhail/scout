@@ -12,7 +12,6 @@ import ScoutDB
 extension CatalogEntry {
     static let incidentKey = "incident_key"
 
-    // Decoding gives the fingerprint the feeds group by: a hang's is recomputed from its stack.
     static func crashKey(for record: Record) -> [String: ScoutDB.RecordValue] {
         guard let crash = try? Crash(record: record) else {
             return [:]
@@ -38,7 +37,6 @@ struct IncidentKey: Hashable {
 }
 
 extension IncidentKey {
-    // A fingerprint is a hash and never holds a `|`, so the name keeps any it has.
     init?(key: String) {
         let parts = key.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
 

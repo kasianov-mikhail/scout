@@ -9,14 +9,6 @@
 import CScoutHang
 import Foundation
 
-// A fatal signal can arrive while the crashing thread holds the malloc,
-// dyld, or Objective-C runtime lock — anything the handler touches beyond
-// async-signal-safe calls can deadlock the process instead of letting it
-// die. So everything the handler needs is prepared here, in a safe context:
-// the report path, the identity and image-table trailer, and the frame
-// buffer all live in plain malloc'd memory the handler only reads. The
-// handler itself walks the frame-pointer chain and calls open/write/close —
-// nothing else.
 private nonisolated(unsafe) var isInstalled = false
 private nonisolated(unsafe) var reportPath: UnsafeMutablePointer<CChar>?
 private nonisolated(unsafe) var reportTrailer: UnsafeMutableRawPointer?
@@ -95,7 +87,7 @@ private func writeRawReport(signal: Int32, context: UnsafeMutableRawPointer?) {
     }
 
     let session = reportSession?.raw.uuid ?? (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-    RawCrashFormat.write(
+    RawCrashFormat.writeFromSignalHandler(
         fd: fd,
         signal: signal,
         time: Int64(time(nil)),
