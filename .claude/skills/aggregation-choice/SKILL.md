@@ -5,6 +5,8 @@ description: Decide whether a Scout dashboard read should use a pre-aggregated s
 
 The "Aggregated reads" rules in `.claude/CLAUDE.md` say what is allowed. This skill says when an aggregate is worth its cost. An aggregate is not free. It moves cost from the read on one dashboard to the write on every user device.
 
+Decide by the read. Check the write. One aggregate costs about three background requests per synced batch, and the user does not see them. The write matters only because it adds up: every aggregate on an entity adds its own slots to every batch, a shared key makes all devices write the same vector, and an aggregate nobody reads is pure write cost.
+
 ## Variables
 
 | Name | Meaning |
@@ -71,14 +73,15 @@ Hosted:
    - Compare the raw pages with the head, the index and the vector batches.
    - Compute `RATIO` per tier, for the cold open of the screen.
    - During a transition (`RecordFold`, chunked loads), compute `RATIO` for the transition period and after it.
-4. Price the write side of a new aggregate.
-   - Take `WRITES` and the number of aggregates already on the entity.
-   - Count the extra vectors per synced batch.
-   - Note whether the key is shared by all devices, which means conflicts, or private to one device.
-5. Check the transition.
+4. Decide from the read: is there a screen that reads the aggregate, and is the key bounded? The tables below give the cases.
+5. Check the write. It is a check, not a factor in the decision. It blocks an aggregate in three cases.
+   - **Too many on one entity.** Count the aggregates the entity already has. Each one adds slots to every synced batch: two aggregates cost about ×3 on the write, six about ×7. Session has 4 and the metrics have 2.
+   - **A shared key under load.** Name, category, version and series key are vectors that every device writes. At 10k DAU a popular vector is saved thousands of times an hour, `saveIfUnchanged` retries with a backoff of up to 2 s, and a sync grows from a second to several. A key private to one device, such as `device_id`, has no conflicts.
+   - **No reader.** An aggregate that no screen reads must not be added, and must be removed when its last reader goes away.
+   - Weigh the check by `WRITES`: Event and the metrics are hot, Crash and Visit are not.
+6. Check the transition.
    - Is the entity already published? Then `RecordFold` runs on every read for up to a year.
    - Is the key derived? Then old records land in the group `""`.
-6. Decide with the tables below.
 7. For Hosted, check the server side.
    - The endpoint must not scan the whole history.
    - An index must cover every filter. For example, `uuid IN` needs an index on `(record_type, uuid)`.
@@ -132,7 +135,7 @@ Hosted:
 ```
 
 - Below the table, for each read: the pages, vectors and times behind the ratios, and the peak memory when it changes.
-- The write cost: extra vectors per synced batch, and whether the key is shared.
+- The write check: the number of aggregates on the entity after the change, whether the key is shared, and whether a reader exists.
 - The transition cost: `RecordFold` and the empty derived group, with a `RATIO` for the transition period when it is below 1.
 - The speed gain for the chosen tier as `(1 / (1 − saved) − 1) × 100%` with the multiplier, when the user's rules ask for it.
 - A line that the numbers are estimates, not measurements, and that the "before" times above 10k DAU are a lower bound because of throttling.
