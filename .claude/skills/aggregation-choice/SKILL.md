@@ -1,6 +1,6 @@
 ---
 name: aggregation-choice
-description: Decide whether a Scout dashboard read should use a pre-aggregated source (a scout-db aggregate in the Native catalog, or a scout-server endpoint for Hosted) or stay a raw record read, and show the gain or loss of that choice at 1k, 10k and 100k DAU while the feature is planned, written and reviewed. Use when adding or changing a dashboard screen or provider, a Native or Hosted read, a catalog aggregate (`CatalogEntry+Entries.swift`, `CatalogEntry+Metrics.swift`), the record cache, or a scout-server metrics endpoint.
+description: Price a Scout dashboard read: whether it should use a pre-aggregated source (a scout-db aggregate in the Native catalog, or a scout-server endpoint for Hosted) or stay a raw record read, which other read patterns make it grow with data (repeated identical reads, one request per ID, a full readAll, a cache that only forwards), and the gain or loss of the change at 1k, 10k and 100k DAU, ranked by seconds saved. Use when adding or changing any dashboard screen, provider or read on Native or Hosted, a catalog aggregate (`CatalogEntry+Entries.swift`, `CatalogEntry+Metrics.swift`), the record cache, or a scout-server metrics endpoint.
 ---
 
 The "Aggregated reads" rules in `.claude/CLAUDE.md` say what is allowed. This skill says when an aggregate is worth its cost. An aggregate is not free. It moves cost from the read on one dashboard to the write on every user device.
@@ -23,6 +23,8 @@ Show the gain or the loss while the work happens, not only at the end. Every pla
 | `WRITES` | Records per day that the entity syncs from all devices. |
 | `TIERS` | The three audiences every estimate is given for: 1k, 10k and 100k DAU. |
 | `RATIO` | Time before the change divided by time after it, per tier. Above 1 is faster, below 1 is slower. |
+| `TARGET` | The tier the ranking is for. Ask the user when it is not known; the default is 1k DAU. |
+| `SAVED` | Seconds saved per cold open at `TARGET`: the time before minus the time after. |
 
 ## Audience tiers
 
@@ -68,25 +70,28 @@ Hosted:
 ## Steps
 
 1. Find what bounds `READ`.
-   - It is bounded by one device, session, install, incident, or one feed page: keep the raw read and stop.
+   - It is bounded by one device, session, install, incident, or one feed page: keep the raw read, run step 2, and stop.
    - It is bounded only by a date range, or by nothing: continue.
-2. Count `RECORDS`, `GROUPS`, `VECTORS` and `DENSITY` for each tier in `TIERS`.
-3. Price the read both ways with the cost model, for each tier.
+2. Check the read against "Read patterns beyond aggregation". A pattern there can cost more than the missing aggregate, and its fix is usually cheaper.
+3. Name every product choice the fix forces, before you price it. Examples: "N+" counts instead of an exact ranking, old records missing during a transition, a threshold that trades accuracy for speed, a period that changes meaning. Ask the user and wait; do not hide the choice in the code.
+4. Count `RECORDS`, `GROUPS`, `VECTORS` and `DENSITY` for each tier in `TIERS`.
+5. Price the read both ways with the cost model, for each tier.
    - Compare the raw pages with the head, the index and the vector batches.
    - Compute `RATIO` per tier, for the cold open of the screen.
    - During a transition (`RecordFold`, chunked loads), compute `RATIO` for the transition period and after it.
-4. Decide from the read: is there a screen that reads the aggregate, and is the key bounded? The tables below give the cases.
-5. Check the write. It is a check, not a factor in the decision. It blocks an aggregate in three cases.
+6. Decide from the read: is there a screen that reads the aggregate, and is the key bounded? The tables below give the cases.
+7. Check the write. It is a check, not a factor in the decision. It blocks an aggregate in three cases.
    - **Too many on one entity.** Count the aggregates the entity already has. Each one adds slots to every synced batch: two aggregates cost about ×3 on the write, six about ×7. Session has 4 and the metrics have 2.
    - **A shared key under load.** Name, category, version and series key are vectors that every device writes. At 10k DAU a popular vector is saved thousands of times an hour, `saveIfUnchanged` retries with a backoff of up to 2 s, and a sync grows from a second to several. A key private to one device, such as `device_id`, has no conflicts.
    - **No reader.** An aggregate that no screen reads must not be added, and must be removed when its last reader goes away.
    - Weigh the check by `WRITES`: Event and the metrics are hot, Crash and Visit are not.
-6. Check the transition.
+8. Check the transition.
    - Is the entity already published? Then `RecordFold` runs on every read for up to a year.
    - Is the key derived? Then old records land in the group `""`.
-7. For Hosted, check the server side.
+9. For Hosted, check the server side, and check that a change in shared ScoutUI code does not add Hosted requests.
    - The endpoint must not scan the whole history.
    - An index must cover every filter. For example, `uuid IN` needs an index on `(record_type, uuid)`.
+10. Measure what the code can count. When the fix changes the number of reads, add a test with a counting database (a spy over the backend) that asserts the number of calls and the result. Mark that ratio as measured in the table.
 
 ## Impact table
 
@@ -117,6 +122,8 @@ When the table appears:
 | PR description | The final table in three to four lines, under the PR rules. A significant loss is a risk the reviewer must know, so state how long it lasts. |
 | Review | The table for the diff. Flag a significant loss and a write-only row. |
 
+Rank the rows by `SAVED` × how often the screen opens ÷ the cost of the fix, not by `RATIO`. A ratio that grows 10× per tier looks large at 100k DAU and can still save half a second at `TARGET`; a constant ratio of 3 on a Home screen can save minutes. Add a `Saved at TARGET` column when rows are ranked, and say which tier `TARGET` is.
+
 A loss below 1 is significant only in one of these cases. Otherwise list the row, mark it "minor", and do not open a fix for it.
 
 - The ratio is below 0.5 on any tier.
@@ -135,6 +142,20 @@ Rules for the cells:
 - Mark a ratio that comes from a measurement, such as a call count from a test harness, and keep it apart from a modeled one. A modeled ratio counts records only; when several calls run one after another, say that the latency between them is not included.
 - A ratio that is equal across the tiers is expected when both sides grow linearly with DAU. Do not read it as a measured constant: the profile value behind it still varies between apps.
 - Below the table, give the pages, vectors and seconds behind each ratio, once.
+
+## Read patterns beyond aggregation
+
+These patterns grow with data or repeat work even when every aggregate is right. Price them in the same impact table.
+
+| Pattern | Sign in the code | Fix | Example |
+|---|---|---|---|
+| Identical reads | Several calls send the same query and filter the result on the client. | One read, split on the client, or a shared in-flight read. | Network: 19 category reads of all IntMetric series. |
+| One request per ID | A loop or task group calls `lookup` for each ID. | One `uuid IN` read per 250 IDs; remember misses. | Symbol tables per image UUID. |
+| Full `readAll` for a list | `fetchAll` or `readAll` feeds a list or a ranking. | One page, `fetchMore`, and "N+" counts. | Version "All" incidents. |
+| Cache that forwards | A `CachingDatabase` extension calls `base` directly for an expensive read. | Cache frozen periods and fetch only the tail. | Devices list. |
+| Sequential awaits | Independent providers run one after another. | Run them together; show partial results. | Global search providers. |
+| Reload on every input | A `.task` or `.onChange` starts a full load per change. | An in-flight guard, or one task per screen. | Search keystrokes. |
+| Peak memory | Records with large fields, such as `stack_trace`, are held for a whole year. | Read only the needed fields, or page. | Search incident index. |
 
 ## Aggregate when
 
@@ -167,14 +188,15 @@ Rules for the cells:
 
 ## If a step fails
 
-- The volume is unknown: use the assumptions in step 2 and say that the numbers are estimates.
+- The volume is unknown: use the assumptions in "Audience tiers" and say that the numbers are estimates.
 - The read and write costs are close: keep the current design. Note the open question in the plan or the review.
 - The decision needs a scout-db feature or a scout-server contract change: stop and ask the user.
 
 ## Final report
 
-- `READ`, its bound, and the decision: aggregate, raw, or redesign.
-- The impact table from "Impact table", with the pages, vectors, seconds and peak memory behind each ratio below it.
+- `READ`, its bound, the patterns from "Read patterns beyond aggregation" it has, and the decision: aggregate, raw, or redesign.
+- The product choices the fix forces, and what the user chose.
+- The impact table from "Impact table", ranked by `SAVED` at `TARGET`, with the pages, vectors, seconds and peak memory behind each ratio below it, and the measured ratios marked.
 - The write check: the number of aggregates on the entity after the change, whether the key is shared, and whether a reader exists.
 - The transition cost: `RecordFold` and the empty derived group, with a `RATIO` for the transition period when it is below 1, marked significant or minor.
 - The speed gain for the chosen tier as `(1 / (1 − saved) − 1) × 100%` with the multiplier, when the user's rules ask for it.
