@@ -98,6 +98,95 @@ struct CachingDatabaseTests {
         #expect(second.first?.points.map(\.value) == [4, 7])
     }
 
+    @Test("A week series over a mid-week range keeps the first week on cold and warm loads")
+    func seriesKeepsFirstPartialBucket() async throws {
+        let base = SpyDatabase()
+        let now = Date(timeIntervalSince1970: 20_000_000)
+        let database = CachingDatabase(base: base, scope: "test", cache: try makeRecordCache(), now: { now }, types: [])
+        let firstWeek = now.startOfWeek.addingWeek(-10)
+        let lower = firstWeek.addingDay(3)
+        let cutoff = now.startOfWeek.addingWeek(-1)
+        base.series = [
+            MetricSeries(
+                name: "Purchase",
+                category: nil,
+                points: [
+                    MetricSeriesPoint(date: firstWeek, value: 5),
+                    MetricSeriesPoint(date: firstWeek.addingWeek(2), value: 7),
+                ]
+            )
+        ]
+
+        let query = EventSeriesQuery(bucket: .week, range: lower..<now)
+        let cold = try await database.eventSeries(matching: query)
+        let warm = try await database.eventSeries(matching: query)
+
+        #expect(base.seriesRanges == [firstWeek..<now, cutoff..<now])
+        #expect(cold.first?.points.map(\.date) == [firstWeek, firstWeek.addingWeek(2)])
+        #expect(warm.first?.points.map(\.date) == [firstWeek, firstWeek.addingWeek(2)])
+        #expect(warm.first?.points.map(\.value) == [5, 7])
+    }
+
+    @Test("A series span cached from a mid-bucket lower bound is refetched from the bucket start")
+    func seriesReplacesUnalignedLowerSpan() async throws {
+        let base = SpyDatabase()
+        let now = Date(timeIntervalSince1970: 20_000_000)
+        let cache = try makeRecordCache()
+        let database = CachingDatabase(base: base, scope: "test", cache: cache, now: { now }, types: [])
+        let firstWeek = now.startOfWeek.addingWeek(-10)
+        let lower = firstWeek.addingDay(3)
+        let cutoff = now.startOfWeek.addingWeek(-1)
+        let query = EventSeriesQuery(bucket: .week, range: lower..<now)
+        let later = [MetricSeries(name: "Purchase", category: nil, points: [MetricSeriesPoint(date: firstWeek.addingWeek(2), value: 7)])]
+        await cache.store(later.cacheRecords, for: "test|series|" + query.fingerprint, covering: lower..<cutoff)
+        base.series = [
+            MetricSeries(
+                name: "Purchase",
+                category: nil,
+                points: [
+                    MetricSeriesPoint(date: firstWeek, value: 5),
+                    MetricSeriesPoint(date: firstWeek.addingWeek(2), value: 7),
+                ]
+            )
+        ]
+
+        let first = try await database.eventSeries(matching: query)
+        let second = try await database.eventSeries(matching: query)
+
+        #expect(base.seriesRanges == [firstWeek..<now, cutoff..<now])
+        #expect(first.first?.points.map(\.value) == [5, 7])
+        #expect(second.first?.points.map(\.value) == [5, 7])
+    }
+
+    @Test("A series span cached up to a mid-bucket upper bound drops its partial last bucket")
+    func seriesRefetchesUnalignedUpperBucket() async throws {
+        let base = SpyDatabase()
+        let now = Date(timeIntervalSince1970: 20_000_000)
+        let cache = try makeRecordCache()
+        let database = CachingDatabase(base: base, scope: "test", cache: cache, now: { now }, types: [])
+        let firstWeek = now.startOfWeek.addingWeek(-10)
+        let partialWeek = firstWeek.addingWeek(2)
+        let query = EventSeriesQuery(bucket: .week, range: firstWeek..<now)
+        let stale = [
+            MetricSeries(
+                name: "Purchase",
+                category: nil,
+                points: [
+                    MetricSeriesPoint(date: firstWeek, value: 5),
+                    MetricSeriesPoint(date: partialWeek, value: 1),
+                ]
+            )
+        ]
+        await cache.store(stale.cacheRecords, for: "test|series|" + query.fingerprint, covering: firstWeek..<partialWeek.addingDay(3))
+        base.series = [MetricSeries(name: "Purchase", category: nil, points: [MetricSeriesPoint(date: partialWeek, value: 7)])]
+
+        let series = try await database.eventSeries(matching: query)
+
+        #expect(base.seriesRanges == [partialWeek..<now])
+        #expect(series.first?.points.map(\.date) == [firstWeek, partialWeek])
+        #expect(series.first?.points.map(\.value) == [5, 7])
+    }
+
     @Test("A repeated activity request reads closed days from the cache and fetches the rest")
     func activityFetchesRemainderOnly() async throws {
         let base = SpyDatabase()
@@ -327,19 +416,21 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     }
 
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
-        series(in: query.range)
+        series(matching: query)
     }
 
     func lifecycleSeries(matching query: LifecycleSeriesQuery) async throws -> [MetricSeries] {
-        series(in: query.range)
+        series(matching: query)
     }
 
     func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
-        series(in: query.range)
+        series(matching: query)
     }
 
-    private func series(in range: Range<Date>) -> [MetricSeries] {
-        seriesRanges.append(range)
+    private func series(matching query: some SeriesQuery) -> [MetricSeries] {
+        seriesRanges.append(query.range)
+        // Like the real backends, widen the read to the start of the first bucket.
+        let range = query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
         return series.compactMap { series in
             let points = series.points.filter { range.contains($0.date) }
             guard !points.isEmpty else { return nil }

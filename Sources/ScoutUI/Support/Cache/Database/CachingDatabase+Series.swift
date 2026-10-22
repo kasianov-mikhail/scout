@@ -22,19 +22,20 @@ extension CachingDatabase: SeriesReader {
     }
 
     private func series<Query: CacheableQuery>(matching query: Query, fetch: (Query) async throws -> [MetricSeries]) async throws -> [MetricSeries] {
-        let frozenUpper = min(query.range.upperBound, now().startOfWeek.addingWeek(-1))
+        let lower = query.bucket.start(of: query.range.lowerBound)
+        let frozenUpper = query.bucket.start(of: min(query.range.upperBound, now().startOfWeek.addingWeek(-1)))
 
-        guard query.range.lowerBound < frozenUpper else {
+        guard lower < frozenUpper else {
             return try await fetch(query)
         }
 
         let fingerprint = [scope, "series", query.fingerprint].joined(separator: "|")
-        let frozen = query.range.lowerBound..<frozenUpper
-        let cached = await cachedSpan(for: fingerprint, in: frozen)
-        let cachedUpper = cached?.upper ?? frozen.lowerBound
+        let cached = await cachedSpan(for: fingerprint, in: lower..<frozenUpper)
+        let cachedUpper = cached.map { query.bucket.start(of: $0.upper) } ?? lower
+        let records = cached?.records.filter { $0.isDated(before: cachedUpper) } ?? []
 
         guard cachedUpper < query.range.upperBound else {
-            return MetricSeries.combined(cached: cached?.records ?? [], fetched: [])
+            return MetricSeries.combined(cached: records, fetched: [])
         }
 
         var remainder = query
@@ -49,7 +50,14 @@ extension CachingDatabase: SeriesReader {
             )
         }
 
-        return MetricSeries.combined(cached: cached?.records ?? [], fetched: fetched)
+        return MetricSeries.combined(cached: records, fetched: fetched)
+    }
+}
+
+extension Record {
+    fileprivate func isDated(before upper: Date) -> Bool {
+        let date: Date? = self["date"]
+        return date.map { $0 < upper } ?? false
     }
 }
 
