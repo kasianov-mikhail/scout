@@ -55,10 +55,6 @@ struct DemoScenario {
     let installs: [InstallInfo]
     let sessions: [SessionInfo]
 
-    var devices: [DeviceInfo] {
-        installs.map(\.device)
-    }
-
     var adoption: [(version: String, date: Date)] {
         var seen: Set<String> = []
         return sessions.compactMap { session in

@@ -42,8 +42,7 @@ struct CalendarMonthTests {
         #expect(inMonth.count == 31)
     }
 
-    @Test("Titles render in source English") func titles() {
-        #expect(month.title == "July 2026")
+    @Test("Title renders in source English") func shortTitle() {
         #expect(month.shortTitle == "JUL 2026")
     }
 }

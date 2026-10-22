@@ -10,23 +10,6 @@ import Foundation
 import Scout
 import ScoutDB
 
-extension QueryBuilder {
-    func records(orderedBy field: String, ascending: Bool) async throws -> [EntityRecord] {
-        let ordered = sort(field, ascending ? .forward : .reverse)
-
-        var records: [EntityRecord] = []
-        var cursor: FieldCursor?
-
-        repeat {
-            let page = try await ordered.page(size: defaultRecordPageSize, after: cursor)
-            records += page.records
-            cursor = page.cursor
-        } while cursor != nil
-
-        return records
-    }
-}
-
 extension EntityStore {
     func page(matching query: RecordQuery, fields: [String]?, limit: Int, after cursor: FieldCursor?) async throws -> RecordChunk {
         let sort = query.primarySort
@@ -46,37 +29,9 @@ extension EntityStore {
             }
         )
     }
-
-    func records(entity: String, dateField: String, fields: [String], in range: Range<Date>) async throws -> [EntityRecord] {
-        try await query(entity).records(entity: entity, dateField: dateField, fields: fields, in: range)
-    }
-
-    func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws -> [DatedID] {
-        let records = try await records(
-            entity: entity,
-            dateField: dateField,
-            fields: [dateField, idField],
-            in: range
-        )
-
-        return records.compactMap { record -> DatedID? in
-            let date: Date? = record[dateField]
-            let id: String? = record[idField]
-            guard let date, let id else {
-                return nil
-            }
-            return DatedID(date: date, id: id)
-        }
-    }
 }
 
 extension QueryBuilder {
-    func records(entity: String, dateField: String, fields: [String], in range: Range<Date>) async throws -> [EntityRecord] {
-        try await filter(dateField, in: range)
-            .select(entity: entity, fields: fields)
-            .records(orderedBy: dateField, ascending: true)
-    }
-
     fileprivate func select(entity: String, fields: [String]?) -> QueryBuilder {
         guard let fields else { return self }
         return select(EntityCatalog.fields(entity: entity, names: fields))
@@ -84,11 +39,6 @@ extension QueryBuilder {
 
     fileprivate func filter(_ filter: RecordQuery.Filter) -> QueryBuilder {
         self.filter(filter.field, filter.storeMatch, filter.value.storeValue)
-    }
-
-    fileprivate func filter(_ field: String, in range: Range<Date>) -> QueryBuilder {
-        filter(field, .greaterThanOrEquals, .date(range.lowerBound))
-            .filter(field, .lessThan, .date(range.upperBound))
     }
 }
 

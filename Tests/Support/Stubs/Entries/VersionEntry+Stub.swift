@@ -10,11 +10,10 @@ import CoreData
 @testable import Scout
 
 extension VersionEntry {
-    @discardableResult static func stub(date: Date, synced: Bool = false, appVersion: String = "1.0", buildNumber: String? = nil, launch: LaunchEntry? = nil, in context: NSManagedObjectContext) -> VersionEntry {
+    @discardableResult static func stub(date: Date, appVersion: String = "1.0", buildNumber: String? = nil, launch: LaunchEntry? = nil, in context: NSManagedObjectContext) -> VersionEntry {
         let version = context.insert(VersionEntry.self)
 
         version.date = date
-        version.setSynced(synced, in: context)
         version.appVersion = appVersion
         version.buildNumber = buildNumber
         version.launch = launch

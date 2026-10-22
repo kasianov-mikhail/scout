@@ -90,10 +90,6 @@ struct NetworkReport {
         combined.trend(in: range, component: component)
     }
 
-    func requestsPerMinute(in range: Range<Date>, until now: Date = .now) -> Int {
-        requestsPerMinute(endpoints(in: range), in: range, until: now)
-    }
-
     func requestsPerMinute(_ endpoints: [NetworkEndpoint], in range: Range<Date>, until now: Date = .now) -> Int {
         let end = min(now, range.upperBound)
         let minutes = max(1.0, end.timeIntervalSince(range.lowerBound) / .minute)

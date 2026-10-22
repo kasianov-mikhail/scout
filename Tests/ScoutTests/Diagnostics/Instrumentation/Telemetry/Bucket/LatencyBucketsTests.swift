@@ -30,13 +30,6 @@ struct LatencyBucketsTests {
         #expect(LatencyBuckets.category(for: 31) == "timer_le_inf")
     }
 
-    @Test("upperBound(of:) parses finite bucket categories only")
-    func upperBound() {
-        #expect(LatencyBuckets.upperBound(of: "timer_le_250") == 0.25)
-        #expect(LatencyBuckets.upperBound(of: "timer_le_inf") == nil)
-        #expect(LatencyBuckets.upperBound(of: "counter") == nil)
-    }
-
     @Test("index(of:) maps categories to histogram slots")
     func index() {
         #expect(LatencyBuckets.index(of: "timer_le_1") == 0)

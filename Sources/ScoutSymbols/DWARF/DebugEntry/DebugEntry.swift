@@ -9,7 +9,6 @@
 import Foundation
 
 struct DebugEntry {
-    let offset: Int
     let tag: Tag?
     let hasChildren: Bool
     private let attributes: [UInt64: AttributeValue]
@@ -39,7 +38,6 @@ struct DebugEntry {
     }
 
     init?(cursor: inout DataCursor, header: UnitHeader, abbreviations: [UInt64: Abbreviation]) throws {
-        let offset = cursor.offset
         let code = try cursor.readULEB()
         guard code != 0 else {
             return nil
@@ -53,7 +51,6 @@ struct DebugEntry {
             attributes[spec.name] = try AttributeValue(form: spec.form, implicitValue: spec.implicitValue, cursor: &cursor, unit: header)
         }
 
-        self.offset = offset
         self.tag = Tag(rawValue: abbreviation.tag)
         self.hasChildren = abbreviation.hasChildren
         self.attributes = attributes

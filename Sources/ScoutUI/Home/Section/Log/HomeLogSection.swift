@@ -29,7 +29,7 @@ struct HomeLogSection: View {
             await log.fetchIfNeeded(in: database)
         }
 
-        ForEach(Array(LogCategory.allCases.enumerated()), id: \.element) { index, category in
+        ForEach(LogCategory.allCases, id: \.self) { category in
             Row {
                 Image(systemName: category.systemImage)
                     .foregroundStyle(category.color)

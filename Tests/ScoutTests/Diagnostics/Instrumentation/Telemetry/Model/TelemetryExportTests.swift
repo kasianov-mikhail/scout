@@ -11,43 +11,6 @@ import Testing
 @testable import Scout
 
 struct TelemetryExportTests {
-    @Test("Init with counter name creates counter")
-    func initCounter() throws {
-        let telemetry = try Telemetry(name: "counter", value: 5.0)
-        #expect(telemetry.export == .counter)
-    }
-
-    @Test("Init with floating_counter name creates floatingCounter")
-    func initFloatingCounter() throws {
-        let telemetry = try Telemetry(name: "floating_counter", value: 3.14)
-        #expect(telemetry.export == .floatingCounter)
-    }
-
-    @Test("Init with meter name creates meter")
-    func initMeter() throws {
-        let telemetry = try Telemetry(name: "meter", value: 1.0)
-        #expect(telemetry.export == .meter)
-    }
-
-    @Test("Init with recorder name creates recorder")
-    func initRecorder() throws {
-        let telemetry = try Telemetry(name: "recorder", value: 42.0)
-        #expect(telemetry.export == .recorder)
-    }
-
-    @Test("Init with timer name creates timer")
-    func initTimer() throws {
-        let telemetry = try Telemetry(name: "timer", value: 100.0)
-        #expect(telemetry.export == .timer)
-    }
-
-    @Test("Init with invalid name throws ExportError")
-    func initInvalidName() {
-        #expect(throws: Telemetry.ExportError.self) {
-            try Telemetry(name: "invalid", value: 0.0)
-        }
-    }
-
     @Test("Export raw values match expected strings")
     func exportRawValues() {
         #expect(Telemetry.Export.counter.rawValue == "counter")
@@ -60,30 +23,5 @@ struct TelemetryExportTests {
     @Test("Export allCases contains all five types")
     func exportAllCases() {
         #expect(Telemetry.Export.allCases.count == 5)
-    }
-
-    @Test("ExportError description lists all valid names")
-    func exportErrorDescription() {
-        let error = Telemetry.ExportError.invalidName
-        let description = error.errorDescription ?? ""
-        #expect(description.contains("counter"))
-        #expect(description.contains("timer"))
-    }
-}
-
-extension Telemetry {
-    fileprivate var export: Export {
-        switch self {
-        case .counter:
-            .counter
-        case .floatingCounter:
-            .floatingCounter
-        case .meter:
-            .meter
-        case .recorder:
-            .recorder
-        case .timer:
-            .timer
-        }
     }
 }

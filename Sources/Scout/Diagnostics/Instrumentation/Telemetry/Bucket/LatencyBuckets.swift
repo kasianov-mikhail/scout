@@ -25,14 +25,6 @@ package enum LatencyBuckets {
         return categoryPrefix + String(bound)
     }
 
-    static func upperBound(of category: String) -> TimeInterval? {
-        guard category.hasPrefix(categoryPrefix) else { return nil }
-        guard let milliseconds = Int(category.dropFirst(categoryPrefix.count)) else {
-            return nil
-        }
-        return TimeInterval(milliseconds) / 1_000
-    }
-
     package static func index(of category: String) -> Int? {
         categories.firstIndex(of: category)
     }
