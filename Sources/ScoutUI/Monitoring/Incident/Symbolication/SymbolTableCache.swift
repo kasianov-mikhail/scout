@@ -9,48 +9,41 @@ import Foundation
 import Scout
 import SymbolTable
 
+private let membershipLimit = 250
+
 actor SymbolTableCache {
     static let shared = SymbolTableCache()
 
     private var tables: [UUID: SymbolTable] = [:]
     private var missing: Set<UUID> = []
 
-    func tables(uuids: [UUID], database: RecordReader) async throws -> [UUID: SymbolTable] {
-        let unknown = Set(uuids).subtracting(tables.keys).subtracting(missing)
+    func tables(uuids: [UUID], database: RecordReader) async -> [UUID: SymbolTable] {
+        let unknown = Array(Set(uuids).subtracting(tables.keys).subtracting(missing))
 
-        let loaded = try await withThrowingTaskGroup(of: LoadedTable.self) { group in
-            for uuid in unknown {
+        let loaded = await withTaskGroup(of: LoadedTables.self) { group in
+            for start in stride(from: 0, to: unknown.count, by: membershipLimit) {
+                let chunk = Array(unknown[start..<min(start + membershipLimit, unknown.count)])
                 group.addTask {
-                    LoadedTable(uuid: uuid, table: try await Self.table(uuid: uuid, database: database))
+                    do {
+                        return LoadedTables(requested: chunk, found: try await database.symbolTables(uuids: chunk))
+                    } catch {
+                        print("Failed to load symbol tables: \(error)")
+                        return LoadedTables(requested: [], found: [:])
+                    }
                 }
             }
-            return try await group.reduce(into: []) { $0.append($1) }
+            return await group.reduce(into: []) { $0.append($1) }
         }
 
         for result in loaded {
-            if let table = result.table {
-                tables[result.uuid] = table
-            } else {
-                missing.insert(result.uuid)
-            }
+            tables.merge(result.found) { $1 }
+            missing.formUnion(Set(result.requested).subtracting(result.found.keys))
         }
         return tables.filter { uuids.contains($0.key) }
     }
-
-    private static func table(uuid: UUID, database: RecordReader) async throws -> SymbolTable? {
-        do {
-            let record = try await database.lookup(recordName: UUID(symbolsFile: uuid).uuidString, fields: ["file"])
-            guard let data: Data = record["file"] else {
-                return nil
-            }
-            return try SymbolTable(data: data)
-        } catch is RecordNotFoundError {
-            return nil
-        }
-    }
 }
 
-private struct LoadedTable: Sendable {
-    let uuid: UUID
-    let table: SymbolTable?
+private struct LoadedTables: Sendable {
+    let requested: [UUID]
+    let found: [UUID: SymbolTable]
 }

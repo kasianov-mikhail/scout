@@ -42,7 +42,9 @@ package struct BundledSymbols: Sendable {
     }
 
     var file: Record {
-        var record = Record(recordType: Self.fileType, recordID: UUID(symbolsFile: uuid).uuidString)
+        let id = UUID(symbolsFile: uuid)
+        var record = Record(recordType: Self.fileType, recordID: id.uuidString)
+        record["uuid"] = id.uuidString
         record["image_uuid"] = uuid.uuidString
         record["file"] = data
         record["date"] = Date()

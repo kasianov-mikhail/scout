@@ -34,7 +34,7 @@ final class BacktraceProvider: ObservableObject, RecordProvider {
                 return nil
             }
             let backtrace = try JSONDecoder().decode(Backtrace.self, from: data)
-            let tables = try await SymbolTableCache.shared.tables(uuids: backtrace.images.compactMap(\.uuid), database: database)
+            let tables = await SymbolTableCache.shared.tables(uuids: backtrace.images.compactMap(\.uuid), database: database)
             return BacktraceDetail(backtrace: backtrace, tables: tables)
         } catch is RecordNotFoundError {
             return nil
