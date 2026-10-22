@@ -49,48 +49,118 @@ struct IncidentProviderTests {
         #expect(!group.isPartial)
         #expect(group.count == 2)
     }
+
+    @Test("A second fetchLatest looks up the backtrace of the new crash only")
+    func fetchLatestLooksUpNewCrashes() async throws {
+        let older = Crash.stub(fingerprint: "A", date: Date().addingTimeInterval(-.hour))
+        let database = try PagedIncidentDatabase(crashes: [older], app: UUID(), limit: 10)
+
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchLatest(in: database)
+
+        let newer = Crash.stub(fingerprint: "B", date: Date())
+        try database.insert(newer)
+        await provider.fetchLatest(in: database)
+
+        #expect(database.backtraceLookups == [[older.backtraceID], [newer.backtraceID]])
+        #expect(provider.groups?.count == 1)
+        #expect(provider.groups?.first?.count == 2)
+    }
+
+    @Test("fetchAgain skips crashes already looked up, with or without a backtrace")
+    func fetchAgainSkipsResolvedCrashes() async throws {
+        let symbolicated = Crash.stub(fingerprint: "A", date: Date())
+        let unsymbolicated = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-.hour))
+        let database = try PagedIncidentDatabase(crashes: [symbolicated], app: UUID(), limit: 10)
+        try database.insert(unsymbolicated, symbolicated: false)
+
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchAgain(in: database)
+        await provider.fetchAgain(in: database)
+
+        #expect(database.backtraceLookups.count == 1)
+        #expect(provider.keys.keys.sorted() == [symbolicated.id])
+    }
+
+    @Test("fetchAgain drops the key of a crash that left the feed")
+    func fetchAgainDropsRemovedKeys() async throws {
+        let kept = Crash.stub(fingerprint: "A", date: Date())
+        let removed = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-.hour))
+        let database = try PagedIncidentDatabase(crashes: [kept, removed], app: UUID(), limit: 10)
+
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchAgain(in: database)
+        #expect(provider.keys.count == 2)
+
+        database.remove(removed)
+        await provider.fetchAgain(in: database)
+
+        #expect(provider.keys.keys.sorted() == [kept.id])
+        #expect(database.backtraceLookups.count == 1)
+    }
 }
 
 private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
-    private let crashes: [Record]
-    private let backtraces: [Record]
+    private let backtrace: Backtrace
+    private let limit: Int
+    private var crashes: [Record]
+    private var backtraces: [Record]
     private let symbols: Record
 
-    init(crashes: [Crash], app: UUID) throws {
-        let backtrace = Backtrace(
-            images: [Backtrace.Image(name: "MyApp", uuid: app)],
-            threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
-        )
+    private(set) var backtraceLookups: [[String]] = []
+
+    init(crashes: [Crash], app: UUID, limit: Int = 1) throws {
         let table = SymbolTable(
             uuid: app,
             functions: [SymbolTable.Function(start: 0, end: 0x100, name: "handle")],
             lines: [],
             inlines: []
         )
-        self.crashes = crashes.map(\.record)
-        self.backtraces = try crashes.map { crash in
-            let id = UUID(incidentBacktrace: try #require(UUID(uuidString: crash.id))).uuidString
-            var record = Record(recordType: BacktraceRecord.recordType, recordID: id)
-            record["uuid"] = id
-            record["incident_id"] = crash.id
-            record["date"] = crash.date
-            record["backtrace"] = try JSONEncoder().encode(backtrace)
-            return record
-        }
+        self.backtrace = Backtrace(
+            images: [Backtrace.Image(name: "MyApp", uuid: app)],
+            threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
+        )
+        self.limit = limit
+        self.crashes = []
+        self.backtraces = []
         var symbols = Record(recordType: BundledSymbols.fileType, recordID: UUID(symbolsFile: app).uuidString)
         symbols["uuid"] = symbols.recordID
         symbols["file"] = try table.data
         self.symbols = symbols
+
+        for crash in crashes {
+            try insert(crash)
+        }
+    }
+
+    func insert(_ crash: Crash, symbolicated: Bool = true) throws {
+        crashes.append(crash.record)
+        guard symbolicated else {
+            return
+        }
+        var record = Record(recordType: BacktraceRecord.recordType, recordID: crash.backtraceID)
+        record["uuid"] = crash.backtraceID
+        record["incident_id"] = crash.id
+        record["date"] = crash.date
+        record["backtrace"] = try JSONEncoder().encode(backtrace)
+        backtraces.append(record)
+    }
+
+    func remove(_ crash: Crash) {
+        crashes.removeAll { $0.recordID == crash.id }
     }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         if query.recordType.recordType == BacktraceRecord.recordType {
+            if case .strings(let values) = query.filters.first?.value {
+                backtraceLookups.append(values)
+            }
             return RecordChunk(records: backtraces.matching(query), cursor: nil)
         }
         if query.recordType.recordType == BundledSymbols.fileType {
             return RecordChunk(records: [symbols].matching(query), cursor: nil)
         }
-        return RecordChunk(page: crashes, limit: 1)
+        return RecordChunk(page: crashes, limit: limit)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
@@ -108,5 +178,11 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
         Issue.record("The incident list must not read the index")
         return nil
+    }
+}
+
+extension Crash {
+    fileprivate var backtraceID: String {
+        UUID(incidentBacktrace: UUID(uuidString: id)!).uuidString
     }
 }
