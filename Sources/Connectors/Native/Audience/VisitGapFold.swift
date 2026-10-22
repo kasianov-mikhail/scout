@@ -46,9 +46,25 @@ struct VisitGapFold {
         return spans
     }
 
+    func devices(in range: Range<Date>) -> Int? {
+        let days = range.startingDays
+
+        guard let last = days.last else {
+            return nil
+        }
+        guard days.count <= monthWindow, days.allSatisfy(hasStampedVisits) else {
+            return nil
+        }
+        return users(day: last, window: days.count)
+    }
+
     private func isStamped(day: Date) -> Bool {
         let window = (0..<monthWindow).map { day.addingDay(-$0) }
         return window.allSatisfy { gaps[$0] != nil } && window.reduce(0) { $0 + (legacyBalance[$1] ?? 0) } <= 0
+    }
+
+    private func hasStampedVisits(day: Date) -> Bool {
+        gaps[day] != nil && !legacyDays.contains(day)
     }
 
     private func point(day: Date) -> ActivityPoint? {
@@ -80,5 +96,10 @@ private let legacyPercent = 1
 extension Range<Date> {
     fileprivate var days: [Date] {
         Array(stride(from: lowerBound.startOfDay, to: upperBound, by: .day))
+    }
+
+    fileprivate var startingDays: [Date] {
+        let start = lowerBound.startOfDay
+        return Array(stride(from: start < lowerBound ? start.addingDay() : start, to: upperBound, by: .day))
     }
 }

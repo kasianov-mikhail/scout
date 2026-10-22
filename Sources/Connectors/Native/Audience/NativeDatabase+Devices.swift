@@ -45,24 +45,4 @@ extension NativeDatabase: DeviceReader {
         )
         .activities
     }
-
-    func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
-        guard let lower = ranges.map(\.lowerBound).min() else {
-            return []
-        }
-        guard let upper = ranges.map(\.upperBound).max() else {
-            return []
-        }
-
-        let store = try await resolve()
-        let points = try await store.query(SessionEntry.recordType).series(
-            metric: .sum,
-            group: "device_id",
-            in: lower..<upper
-        )
-
-        return ranges.map { range in
-            Set(points.filter { range.contains($0.date) }.map(\.group)).count
-        }
-    }
 }
