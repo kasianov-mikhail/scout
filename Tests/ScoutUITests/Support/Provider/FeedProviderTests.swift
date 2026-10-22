@@ -217,6 +217,5 @@ private final class FailingDatabase: DatabaseReader, @unchecked Sendable {
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] { throw RefreshFailure() }
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] { throw RefreshFailure() }
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] { throw RefreshFailure() }
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] { throw RefreshFailure() }
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? { throw RefreshFailure() }
 }
