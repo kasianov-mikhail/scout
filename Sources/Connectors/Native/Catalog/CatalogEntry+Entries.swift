@@ -95,7 +95,6 @@ extension CatalogEntry {
             .count(by: lifecycleKey, at: "start_date"),
             .count(by: "device_id", at: "start_date", parts: devicePageParts),
             .count(by: deviceSystem, at: "start_date", parts: devicePageParts),
-            .count(by: "install_id", at: "start_date", parts: devicePageParts),
         ],
         derive: { lifecycleKey(for: $0).merging(deviceSystem(for: $0)) { key, _ in key } }
     )
