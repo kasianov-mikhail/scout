@@ -10,6 +10,12 @@ import SwiftUI
 
 @MainActor
 final class AlertProvider: ObservableObject, SeriesProvider {
+    struct DuplicateRuleError: LocalizedError {
+        var errorDescription: String? {
+            "An identical rule already exists"
+        }
+    }
+
     @Published var result: ProviderResult<[AlertStatus]>?
 
     @Published private(set) var notificationsDenied = false
@@ -23,19 +29,17 @@ final class AlertProvider: ObservableObject, SeriesProvider {
         self.result = result
     }
 
-    func add(_ rule: AlertRule) async {
-        do {
-            let rules = try registry.rules()
+    func add(_ rule: AlertRule) async throws {
+        let rules = try registry.rules()
 
-            guard !rules.contains(rule) else { return }
-
-            try registry.save(rules + [rule])
-
-            await permission?.requestIfUndetermined()
-            await refreshNotificationStatus()
-        } catch {
-            result = .failure(error)
+        guard !rules.contains(rule) else {
+            throw DuplicateRuleError()
         }
+
+        try registry.save(rules + [rule])
+
+        await permission?.requestIfUndetermined()
+        await refreshNotificationStatus()
     }
 
     func refreshNotificationStatus() async {
