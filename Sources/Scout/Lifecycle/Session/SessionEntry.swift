@@ -32,7 +32,7 @@ package final class SessionEntry: LaunchScopeEntry {
     }
 
     override var isPurgeable: Bool {
-        endDate != nil
+        endDate != nil && launch?.isPurgeable != false
     }
 }
 

@@ -143,6 +143,43 @@ struct SessionEntryMonitorTests {
         #expect(Set(try context.fetchAll(SessionEntry.self).map(\.sessionID)) == [first, session.current])
     }
 
+    @Test("rotation opens a fresh session after the closed one was delivered, and leaves the closed one as it was")
+    func rotationAfterDeliveryOpensNewSession() throws {
+        let session = Protected(UUID())
+        let first = session.current
+        LaunchEntry.stub(date: Date(), in: context)
+
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+        try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
+        let closed = try #require(try context.fetchAll(SessionEntry.self).first)
+        let closedDate = closed.date
+        try purgeDelivered(closed)
+
+        try SessionEntry.Rotation(session: session, launchID: identity.launch).execute(in: context)
+
+        #expect(session.current != first)
+        #expect(Set(try context.fetchAll(SessionEntry.self).map(\.sessionID)) == [first, session.current])
+        #expect(closed.date == closedDate)
+        #expect(closed.endDate != nil)
+        #expect(closed.delivery(for: "cloud")?.isPending == false)
+    }
+
+    @Test("a record written after the session closed and was delivered links to it without reopening it")
+    func linkedSessionKeepsDeliveredSessionClosed() throws {
+        LaunchEntry.stub(date: Date(), in: context)
+        try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
+        try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
+        let closed = try #require(try context.fetchAll(SessionEntry.self).first)
+        try purgeDelivered(closed)
+
+        let linked = try context.linkedSession(identity.snapshot, date: Date())
+
+        #expect(linked == closed)
+        #expect(linked.endDate != nil)
+        #expect(linked.delivery(for: "cloud")?.isPending == false)
+        #expect(try context.fetchAll(SessionEntry.self).count == 1)
+    }
+
     @Test("trigger queues a delivered session again after stamping it")
     func triggerRequeuesStampedSession() throws {
         let launch = LaunchEntry.stub(date: Date(), in: context)
@@ -154,5 +191,12 @@ struct SessionEntryMonitorTests {
 
         #expect(delivery.isPending)
         #expect(delivery.attempts == 0)
+    }
+
+    private func purgeDelivered(_ session: SessionEntry) throws {
+        session.seedDelivery(pending: false, for: "cloud", in: context)
+        try context.save()
+        try SyncableEntry.purge(to: ["cloud"], in: context)
+        try context.save()
     }
 }
