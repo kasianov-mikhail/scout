@@ -58,3 +58,14 @@
 - A catalog change republishes the CloudKit schema; clients on other SDK versions compare it for equality (`CatalogEntry+Publish.swift`), so check that the change is additive.
 - If an aggregate needs a new scout-db feature, ask before changing scout-db or creating a scout-db tag.
 - In a plan or review, flag any read whose cost grows with the number of events, sessions or installs, and estimate it at a realistic audience (e.g. 1k DAU, 400 records per CloudKit page).
+
+## Release names
+
+- A GitHub release title is `X.Y.Z — Theme`. The theme names the headline change in 12 characters or fewer, so the release sidebar does not truncate it.
+- The theme is a noun or a short noun phrase: no "and", no verbs, no lists. Every other change goes to the release notes.
+- A breaking change does not go into the title. Mark it with **Breaking:** in the release notes.
+
+```
+✗ 0.4.0 — MetricKit diagnostics and on-device symbolication
+✓ 0.4.0 — MetricKit
+```
