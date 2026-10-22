@@ -17,6 +17,29 @@ The "Aggregated reads" rules in `.claude/CLAUDE.md` say what is allowed. This sk
 | `PARTS` | `parts:` of the aggregate. The index costs `RANGE_WEEKS × PARTS` index records. |
 | `DENSITY` | `RECORDS / VECTORS`: raw records folded into one vector. |
 | `WRITES` | Records per day that the entity syncs from all devices. |
+| `TIERS` | The three audiences every estimate is given for: 1k, 10k and 100k DAU. |
+| `RATIO` | Time before the change divided by time after it, per tier. Above 1 is faster, below 1 is slower. |
+
+## Audience tiers
+
+Give every estimate for all three tiers. One tier hides how a read scales.
+
+| Tier | What it stands for |
+|---|---|
+| 1k DAU | A typical indie app. Heavy screens take 10–30 s before aggregation. |
+| 10k DAU | The timeout and jetsam line. Some screens do not open at all before aggregation. |
+| 100k DAU | The line past which every read keyed by an ID stops working, even after aggregation. |
+
+Per tier: 2 sessions per device per day, 30 events per session, WAU of about 2.5 × DAU, and 5k crashes per year at 1k DAU, scaled linearly. Above 10k DAU CloudKit throttles, so the "before" times are a lower bound.
+
+How `RATIO` behaves tells the class of the read:
+
+| `RATIO` across tiers | Meaning |
+|---|---|
+| Grows about 10× per tier | After the change the cost no longer depends on the audience. A bounded key. |
+| Constant | Both sides grow with the audience. A key by ID, a page, or parallelism. The screen still hits a ceiling. |
+| Constant and independent of DAU | The cost depends on names, versions or weeks, not on users. |
+| Below 1 | The change made the read slower. Say for how long, for example the transition year before `since`. |
 
 ## Cost model
 
@@ -43,10 +66,11 @@ Hosted:
 1. Find what bounds `READ`.
    - It is bounded by one device, session, install, incident, or one feed page: keep the raw read and stop.
    - It is bounded only by a date range, or by nothing: continue.
-2. Count `RECORDS`, `GROUPS`, `VECTORS` and `DENSITY` at 1k DAU and at 10k DAU.
-   - Use 2 sessions per device per day, 30 events per session, 5k crashes per year, and WAU of about 2.5 × DAU.
-3. Price the read both ways with the cost model.
+2. Count `RECORDS`, `GROUPS`, `VECTORS` and `DENSITY` for each tier in `TIERS`.
+3. Price the read both ways with the cost model, for each tier.
    - Compare the raw pages with the head, the index and the vector batches.
+   - Compute `RATIO` per tier, for the cold open of the screen.
+   - During a transition (`RecordFold`, chunked loads), compute `RATIO` for the transition period and after it.
 4. Price the write side of a new aggregate.
    - Take `WRITES` and the number of aggregates already on the entity.
    - Count the extra vectors per synced batch.
@@ -97,8 +121,18 @@ Hosted:
 ## Final report
 
 - `READ`, its bound, and the decision: aggregate, raw, or redesign.
-- The read cost both ways at 1k and 10k DAU: pages, vectors, and time.
+- One table with a row per read and a column per tier. Each cell holds `RATIO` only. Add a column with the class of the read, taken from the `RATIO` pattern.
+
+```
+| Read | 1k DAU | 10k DAU | 100k DAU | Class |
+|---|---|---|---|---|
+| Activity, cold open | 23 | 230 | 2300 | bounded key |
+| Devices, cold open | 8 | 8 | 8 | key by ID, ceiling near 30k DAU |
+| Meter, transition year | 0.75 | 0.75 | 0.75 | slower until `since` passes |
+```
+
+- Below the table, for each read: the pages, vectors and times behind the ratios, and the peak memory when it changes.
 - The write cost: extra vectors per synced batch, and whether the key is shared.
-- The transition cost: `RecordFold` and the empty derived group.
-- The speed gain as `(1 / (1 − saved) − 1) × 100%` with the multiplier, and the memory change when it differs.
-- A line that the numbers are estimates, not measurements.
+- The transition cost: `RecordFold` and the empty derived group, with a `RATIO` for the transition period when it is below 1.
+- The speed gain for the chosen tier as `(1 / (1 − saved) − 1) × 100%` with the multiplier, when the user's rules ask for it.
+- A line that the numbers are estimates, not measurements, and that the "before" times above 10k DAU are a lower bound because of throttling.
