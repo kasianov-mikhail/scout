@@ -43,7 +43,7 @@ How `RATIO` behaves tells the class of the read:
 | Grows about 10× per tier | After the change the cost no longer depends on the audience. A bounded key. |
 | Constant | Both sides grow with the audience. A key by ID, a page, or parallelism. The screen still hits a ceiling. |
 | Constant and independent of DAU | The cost depends on names, versions or weeks, not on users. |
-| Below 1 | The change made the read slower. Say for how long, for example the transition year before `since`. |
+| Below 1 | The change made the read slower. Say for how long, for example the transition year before `since`. A small loss that ends by itself is minor; see the rule under "Impact table". |
 
 ## Cost model
 
@@ -114,8 +114,17 @@ When the table appears:
 |---|---|
 | Plan, before code | Both designs for each read. Pick the design with the larger ratios, and name the ceiling of a key by ID. |
 | During the work | The table of the chosen design. Update it when the read changes, for example when a filter or a cache is added. |
-| PR description | The final table in three to four lines, under the PR rules. A ratio below 1 is a risk the reviewer must know, so state how long it lasts. |
-| Review | The table for the diff. Flag a row below 1 without an end date, and a write-only row. |
+| PR description | The final table in three to four lines, under the PR rules. A significant loss is a risk the reviewer must know, so state how long it lasts. |
+| Review | The table for the diff. Flag a significant loss and a write-only row. |
+
+A loss below 1 is significant only in one of these cases. Otherwise list the row, mark it "minor", and do not open a fix for it.
+
+- The ratio is below 0.5 on any tier.
+- The loss has no end date. A transition that ends by itself is not this case.
+- The screen was usable before, under about 10 s, and the loss pushes it past that. A screen that was already unusable before, such as a raw scan of hours, does not become worse in any way the user sees.
+- The change is on a shared ScoutUI path and makes Hosted slower.
+
+Example: a transition ratio of 0.75 to 0.8 that ends when `since` passes is minor, and the gain after it is what counts.
 
 Rules for the cells:
 
@@ -167,6 +176,6 @@ Rules for the cells:
 - `READ`, its bound, and the decision: aggregate, raw, or redesign.
 - The impact table from "Impact table", with the pages, vectors, seconds and peak memory behind each ratio below it.
 - The write check: the number of aggregates on the entity after the change, whether the key is shared, and whether a reader exists.
-- The transition cost: `RecordFold` and the empty derived group, with a `RATIO` for the transition period when it is below 1.
+- The transition cost: `RecordFold` and the empty derived group, with a `RATIO` for the transition period when it is below 1, marked significant or minor.
 - The speed gain for the chosen tier as `(1 / (1 − saved) − 1) × 100%` with the multiplier, when the user's rules ask for it.
 - A line that the numbers are estimates, not measurements, and that the "before" times above 10k DAU are a lower bound because of throttling.
