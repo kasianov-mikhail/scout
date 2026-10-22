@@ -11,6 +11,7 @@ import SwiftUI
 struct EventView: View {
     let event: Event
 
+    @Environment(\.database) private var database
     @StateObject var param: ParamProvider
     @StateObject var stat: StatProvider
     @State private var isParamPresented = false
@@ -41,8 +42,15 @@ struct EventView: View {
         .navigationTint(color)
         .monospacedNavigationTitle(en: event.name)
         .navigationDestination(isPresented: $isParamPresented) {
-            if let items = try? param.result?.get() {
+            switch param.result {
+            case .success(let items):
                 ParamList(items: items)
+            case .failure(let error):
+                ErrorView(description: error.localizedDescription) {
+                    await param.fetchAgain(in: database)
+                }
+            case nil:
+                RingIndicator().frame(maxHeight: .infinity)
             }
         }
         .refreshes([stat, param])

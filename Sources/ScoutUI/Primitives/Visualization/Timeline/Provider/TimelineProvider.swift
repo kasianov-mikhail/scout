@@ -13,9 +13,14 @@ import SwiftUI
 final class TimelineProvider: ObservableObject {
     @Published var result: Result<Rail, Error>? {
         didSet {
-            let rail = try? result?.get()
-            items = rail.map(TimelineItem.items(from:)) ?? []
-            exportText = rail.flatMap { TimelineExport(rail: $0).text }
+            switch result {
+            case .success(let rail):
+                items = TimelineItem.items(from: rail)
+                exportText = TimelineExport(rail: rail).text
+            case .failure, nil:
+                items = []
+                exportText = nil
+            }
         }
     }
 

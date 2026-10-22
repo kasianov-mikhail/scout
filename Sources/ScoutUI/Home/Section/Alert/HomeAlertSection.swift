@@ -18,7 +18,8 @@ struct HomeAlertSection: View {
     var body: some View {
         Header(title: "Alerts") {
             HStack(spacing: 8) {
-                if let statuses = try? alerts.result?.get() {
+                switch alerts.result {
+                case .success(let statuses):
                     if statuses.firingCount > 0 {
                         CountBadge(count: statuses.firingCount)
                     }
@@ -26,7 +27,7 @@ struct HomeAlertSection: View {
                     if !statuses.isEmpty {
                         AllButton { path.append(.alerts) }
                     }
-                } else {
+                case .failure, nil:
                     AllButton { path.append(.alerts) }
                 }
             }
@@ -58,7 +59,7 @@ struct HomeAlertSection: View {
             }
             .buttonStyle(.plain)
 
-        default:
+        case .failure, nil:
             ForEach(0..<2, id: \.self) { _ in
                 AlertRowPlaceholder()
             }
