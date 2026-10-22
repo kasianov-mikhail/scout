@@ -48,7 +48,7 @@ struct VisitGapFoldTests {
         #expect(fold.points(in: day(0)..<day(60)).count == 30)
     }
 
-    @Test("A day with sessions of a version that stamps no gaps leaves its windows unstamped")
+    @Test("Only sessions of a version with no gaps in the read leave their windows unstamped")
     func unstampedSpans() {
         let fold = VisitGapFold(
             gaps: dailyGaps(days: -29...99),
@@ -60,8 +60,46 @@ struct VisitGapFoldTests {
             ]
         )
 
-        #expect(fold.unstampedSpans(in: day(0)..<day(100)) == [day(5)..<day(35), day(90)..<day(100)])
-        #expect(fold.points(in: day(0)..<day(100)).count == 60)
+        #expect(fold.unstampedSpans(in: day(0)..<day(100)) == [day(5)..<day(35)])
+        #expect(fold.points(in: day(0)..<day(100)).count == 70)
+    }
+
+    @Test("A window stays stamped while old versions hold at most 1% of its sessions")
+    func legacyShareBoundary() {
+        let atLimit = VisitGapFold(
+            gaps: dailyGaps(days: -29...99),
+            versions: [SeriesPoint(group: "2.0", date: day(5), value: 1)],
+            sessions: [
+                SeriesPoint(group: "||2.0", date: day(5), value: 99),
+                SeriesPoint(group: "||1.0", date: day(5), value: 1),
+            ]
+        )
+        let overLimit = VisitGapFold(
+            gaps: dailyGaps(days: -29...99),
+            versions: [SeriesPoint(group: "2.0", date: day(5), value: 1)],
+            sessions: [
+                SeriesPoint(group: "||2.0", date: day(5), value: 98),
+                SeriesPoint(group: "||1.0", date: day(5), value: 2),
+            ]
+        )
+
+        #expect(atLimit.unstampedSpans(in: day(0)..<day(100)).isEmpty)
+        #expect(overLimit.unstampedSpans(in: day(0)..<day(100)) == [day(5)..<day(35)])
+    }
+
+    @Test("A rare device on an old version leaves the year stamped")
+    func rareLegacyDevice() {
+        let fold = VisitGapFold(
+            gaps: dailyGaps(days: -29...364),
+            versions: [SeriesPoint(group: "2.0", date: day(0), value: 1)],
+            sessions: (-29...364).flatMap { index in
+                [SeriesPoint(group: "||2.0", date: day(index), value: 200)]
+                    + (index.isMultiple(of: 60) ? [SeriesPoint(group: "||1.0", date: day(index), value: 1)] : [])
+            }
+        )
+
+        #expect(fold.unstampedSpans(in: day(0)..<day(365)).isEmpty)
+        #expect(fold.points(in: day(0)..<day(365)).count == 365)
     }
 
     @Test("Spans closer than a window apart merge into one read")
