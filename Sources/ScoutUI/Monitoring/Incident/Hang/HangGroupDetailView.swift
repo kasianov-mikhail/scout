@@ -11,11 +11,13 @@ import SwiftUI
 struct HangGroupDetailView: View {
     let group: IncidentGroup<Hang>
 
+    @StateObject private var occurrences: IncidentOccurrencesProvider<Hang>
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
 
     init(group: IncidentGroup<Hang>, breakdown: IncidentBreakdownProvider? = nil) {
         self.group = group
+        self._occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
         self._breakdown = StateObject(
             wrappedValue: breakdown
                 ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
@@ -25,14 +27,14 @@ struct HangGroupDetailView: View {
         InsetList {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 16) {
-                    Readout(title: "Duration", value: group.durationText, color: IncidentKind.hang.color)
-                    Readout(title: "Occurrences", value: group.occurrencesText)
-                    Readout(title: "Devices", value: group.devicesText)
-                    Readout(title: "Sessions", value: group.sessionsText)
+                    Readout(title: "Duration", value: occurrences.group.durationText, color: IncidentKind.hang.color)
+                    Readout(title: "Occurrences", value: occurrences.group.occurrencesText)
+                    Readout(title: "Devices", value: occurrences.group.devicesText)
+                    Readout(title: "Sessions", value: occurrences.group.sessionsText)
                 }
 
-                if let first = group.firstDate, let last = group.lastDate {
-                    Text(verbatim: "\(group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
+                if let first = occurrences.group.firstDate, let last = occurrences.group.lastDate {
+                    Text(verbatim: "\(occurrences.group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
                         .font(.system(size: 14))
                         .foregroundStyle(Color.gray)
                 }
@@ -40,18 +42,29 @@ struct HangGroupDetailView: View {
             .padding(.bottom)
 
             if let value = try? breakdown.result?.get() {
-                IncidentBreakdownSection(breakdown: value, records: group.records, row: occurrenceRow)
+                IncidentBreakdownSection(breakdown: value, records: occurrences.group.records, row: occurrenceRow)
             }
 
             Header(title: "Occurrences")
 
-            ForEach(group.records, content: occurrenceRow)
+            ForEach(occurrences.group.records, content: occurrenceRow)
+
+            if let cursor = occurrences.cursor {
+                PaginationFooter {
+                    await occurrences.fetchMore(cursor: cursor, in: database)
+                }
+            }
         }
         .navigationTint(IncidentKind.hang.color)
-        .exportToolbar(text: HangGroupExport(group: group).text, tint: .primary)
+        .exportToolbar(text: HangGroupExport(group: occurrences.group).text, tint: .primary)
         .monospacedNavigationTitle(en: group.name)
         .task {
-            await breakdown.fetchIfNeeded(in: database)
+            await occurrences.fetchIfNeeded(in: database)
+        }
+        .task(id: occurrences.records?.map(\.id)) {
+            if occurrences.records != nil {
+                await breakdown.fetch(deviceIDs: occurrences.group.deviceIDs, sessionIDs: occurrences.group.sessionIDs, in: database)
+            }
         }
     }
 

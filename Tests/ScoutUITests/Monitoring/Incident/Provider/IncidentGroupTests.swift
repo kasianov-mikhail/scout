@@ -215,9 +215,12 @@ struct IncidentGroupTests {
             from: [crash],
             tallies: ["fp": IncidentTally(fingerprint: "fp", count: 3, firstHour: Date(timeIntervalSince1970: 0))]
         )[0]
+        let loaded = group.replacing(records: [crash, Crash.stub(fingerprint: "fp"), Crash.stub(fingerprint: "fp")])
 
         #expect(!group.hasAllRecords)
         #expect(group.devicesText == "1+")
         #expect(group.sessionsText == "1+")
+        #expect(loaded.hasAllRecords)
+        #expect(loaded.devicesText == "1")
     }
 }
