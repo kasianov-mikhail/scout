@@ -48,6 +48,21 @@ struct NativeActivityTests {
         }
     }
 
+    @Test("Stamped days inside a merged fallback span get one point each")
+    func mergedSpanActivity() async throws {
+        let visits = makeVisits()
+        let legacy = [30, 75].map { Visit(device: 10, offset: $0, gap: 1) }
+        let records = visits.flatMap { [$0.visitRecord, $0.session(version: "2.0"), $0.gapRecord] } + legacy.flatMap { [$0.visitRecord, $0.session(version: "1.0")] }
+        let database = try await makeDatabase(cloud: ScoutDBTesting.InMemoryDatabase(), records: records)
+
+        for range in [day(0)..<day(90), day(30)..<day(90)] {
+            let expected = ActivityPoint.points(visits: (visits + legacy).map(\.datedID), in: range)
+
+            #expect(!expected.isEmpty)
+            #expect(try await database.activity(in: range).map(\.values) == expected.map(\.values))
+        }
+    }
+
     @Test("Sessions are read only from the first day with visit gaps")
     func sessionReadStartsAtFirstGap() async throws {
         let stamped = try await requests(legacyDays: 0..<0, gapDays: 60..<90)
