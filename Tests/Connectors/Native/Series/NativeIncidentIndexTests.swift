@@ -14,8 +14,8 @@ import Testing
 @testable import Scout
 @testable import Support
 
-@Suite("Native incident tallies")
-struct NativeIncidentTalliesTests {
+@Suite("Native incident index")
+struct NativeIncidentIndexTests {
     let database = NativeDatabase.inMemory()
     let range = TestDate.reference..<TestDate.reference.addingTimeInterval(2 * .day)
 
@@ -25,7 +25,7 @@ struct NativeIncidentTalliesTests {
         try await database.write(record: makeCrash(id: "c-2", fingerprint: "A", at: 30 * .hour))
         try await database.write(record: makeCrash(id: "c-3", fingerprint: "B", at: 12 * .hour))
 
-        let tallies = try await database.incidentTallies(recordType: CrashEntry.recordType, in: range)
+        let tallies = try #require(try await database.incidentIndex(recordType: CrashEntry.recordType, in: range)).tallies
 
         #expect(
             tallies.sorted { $0.fingerprint < $1.fingerprint } == [
@@ -40,7 +40,7 @@ struct NativeIncidentTalliesTests {
         let record = makeCrash(id: "c-1", fingerprint: nil, at: 10 * .hour)
         try await database.write(record: record)
 
-        let tallies = try await database.incidentTallies(recordType: CrashEntry.recordType, in: range)
+        let tallies = try #require(try await database.incidentIndex(recordType: CrashEntry.recordType, in: range)).tallies
 
         let crash = try Crash(record: record)
         #expect(tallies.map(\.fingerprint) == [crash.fingerprint])
@@ -83,7 +83,7 @@ struct NativeIncidentTalliesTests {
         hang["date"] = TestDate.reference.addingTimeInterval(11 * .hour)
         try await database.write(record: hang)
 
-        let tallies = try await database.incidentTallies(recordType: HangEntry.recordType, in: range)
+        let tallies = try #require(try await database.incidentIndex(recordType: HangEntry.recordType, in: range)).tallies
 
         let decoded = try Hang(record: hang)
         #expect(tallies.map(\.fingerprint) == [decoded.fingerprint])

@@ -10,10 +10,6 @@ import Scout
 import ScoutDB
 
 extension NativeDatabase: IncidentReader {
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
-        try await incidentIndex(recordType: recordType, in: range)?.tallies ?? []
-    }
-
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
         let points = try await resolve().query(recordType).series(metric: .sum, group: CatalogEntry.incidentKey, in: range)
         let grouped = Dictionary(grouping: points) { IncidentKey(key: $0.group) }

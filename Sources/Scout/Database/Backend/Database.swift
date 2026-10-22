@@ -33,8 +33,6 @@ package protocol DeviceReader: Sendable {
 }
 
 package protocol IncidentReader: Sendable {
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally]
-
     /// Returns `nil` when the backend keeps no incident aggregate.
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex?
 }

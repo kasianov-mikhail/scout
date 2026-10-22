@@ -9,10 +9,6 @@ import Foundation
 import Scout
 
 extension DemoDatabase: IncidentReader {
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
-        try await incidentIndex(recordType: recordType, in: range)?.tallies ?? []
-    }
-
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
         let matching = records.filter { record in
             let date: Date? = record["date"]
