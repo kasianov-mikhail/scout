@@ -26,13 +26,13 @@ struct HangGroupDetailView: View {
             VStack(alignment: .leading, spacing: 12) {
                 HStack(spacing: 16) {
                     Readout(title: "Duration", value: group.durationText, color: IncidentKind.hang.color)
-                    Readout(title: "Occurrences", value: "\(group.count)")
-                    Readout(title: "Devices", value: "\(group.affectedDevices)")
-                    Readout(title: "Sessions", value: "\(group.affectedSessions)")
+                    Readout(title: "Occurrences", value: group.occurrencesText)
+                    Readout(title: "Devices", value: group.devicesText)
+                    Readout(title: "Sessions", value: group.sessionsText)
                 }
 
                 if let first = group.firstDate, let last = group.lastDate {
-                    Text(verbatim: "First seen \(first.relativeString) · Last seen \(last.relativeString)")
+                    Text(verbatim: "\(group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
                         .font(.system(size: 14))
                         .foregroundStyle(Color.gray)
                 }

@@ -95,4 +95,16 @@ struct CrashExportTests {
         let older = try #require(text.range(of: ExportFormat.timestamp(at(0))))
         #expect(newer.lowerBound < older.lowerBound)
     }
+
+    @Test("A partial group marks its counts and first date as lower bounds")
+    func testPartialGroupExport() {
+        let crashes = [
+            Crash.stub(name: "E", fingerprint: "fp", deviceID: UUID(), sessionID: UUID(), date: at(0)),
+            Crash.stub(name: "E", fingerprint: "fp", date: at(3600)),
+        ]
+        let text = CrashGroupExport(group: IncidentGroup.groups(from: crashes, hasMore: true)[0]).text
+
+        #expect(text.contains("2+ occurrences · 1+ devices · 1+ sessions"))
+        #expect(text.contains("Earliest loaded \(ExportFormat.minute(at(0)))"))
+    }
 }
