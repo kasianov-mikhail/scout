@@ -25,9 +25,15 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
             if let records = provider.records {
                 IncidentIssuesSection(
                     title: issuesTitle,
-                    groups: IncidentGroup.groups(from: records),
+                    groups: IncidentGroup.groups(from: records, hasMore: provider.cursor != nil),
                     destination: destination
                 )
+
+                if let cursor = provider.cursor {
+                    PaginationFooter {
+                        await provider.fetchMore(cursor: cursor, in: database)
+                    }
+                }
             } else if let error = provider.error {
                 ErrorRow(description: error.localizedDescription) {
                     await provider.fetchAgain(in: database)
@@ -65,7 +71,11 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
 
                     Spacer()
 
-                    CountBadge(count: group.count, color: Element.kind.color)
+                    CountBadge(
+                        count: group.count,
+                        suffix: group.countSuffix,
+                        color: Element.kind.color
+                    )
                 } destination: {
                     destination(group)
                 }

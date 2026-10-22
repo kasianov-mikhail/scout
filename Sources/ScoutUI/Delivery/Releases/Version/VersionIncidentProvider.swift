@@ -28,10 +28,10 @@ final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedPr
     }
 
     func fetchLatest(in database: DatabaseReader) async {
-        await fetchAll(matching: query, in: database)
+        await fetchLatest(matching: query, in: database)
     }
 
     func fetchAgain(in database: DatabaseReader) async {
-        await fetchAll(matching: query, in: database)
+        await fetchAgain(matching: query, in: database)
     }
 }

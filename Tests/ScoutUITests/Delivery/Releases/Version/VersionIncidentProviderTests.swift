@@ -70,14 +70,64 @@ struct VersionIncidentProviderTests {
         #expect(provider.records?.isEmpty == true)
     }
 
+    @Test("Reads one page of the version and the next page on demand")
+    func fetchReadsOnePage() async throws {
+        let database = DatabaseStub()
+        for _ in 0...defaultRecordPageSize {
+            database.add(crashRecord(appVersion: "2.0"))
+        }
+
+        let provider = VersionIncidentProvider<Crash>(version: "2.0")
+        await provider.fetchLatest(in: database)
+
+        #expect(provider.records?.count == defaultRecordPageSize)
+        #expect(database.readCount(of: Crash.recordType) == 1)
+
+        let cursor = try #require(provider.cursor)
+        await provider.fetchMore(cursor: cursor, in: database)
+
+        #expect(provider.records?.count == defaultRecordPageSize + 1)
+        #expect(provider.cursor == nil)
+    }
+
+    @Test("Refresh reads only the first page")
+    func fetchAgainReadsOnePage() async throws {
+        let database = DatabaseStub()
+        for _ in 0...defaultRecordPageSize {
+            database.add(crashRecord(appVersion: "2.0"))
+        }
+
+        let provider = VersionIncidentProvider<Crash>(version: "2.0")
+        await provider.fetchAgain(in: database)
+
+        #expect(provider.records?.count == defaultRecordPageSize)
+        #expect(provider.cursor != nil)
+        #expect(database.readCount(of: Crash.recordType) == 1)
+    }
+
+    @Test("Hangs with different stacks stay in separate groups")
+    func hangsGroupByStack() async throws {
+        let database = DatabaseStub()
+        database.add(
+            hangRecord(appVersion: "2.0", stackTrace: ["main", "draw"]),
+            hangRecord(appVersion: "2.0", stackTrace: ["main", "layout"])
+        )
+
+        let provider = VersionIncidentProvider<Hang>(version: "2.0")
+        await provider.fetchLatest(in: database)
+        let hangs = try #require(provider.records)
+
+        #expect(IncidentGroup.groups(from: hangs).count == 2)
+    }
+
     private func crashRecord(appVersion: String?) -> Record {
         var record = Crash.stub(name: "SIGSEGV", sessionID: UUID(), date: date).record
         record["app_version"] = appVersion
         return record
     }
 
-    private func hangRecord(appVersion: String?) -> Record {
-        var record = Hang.stub(name: "Main Thread Blocked", sessionID: UUID(), date: date).record
+    private func hangRecord(appVersion: String?, stackTrace: [String] = []) -> Record {
+        var record = Hang.stub(name: "Main Thread Blocked", stackTrace: stackTrace, sessionID: UUID(), date: date).record
         record["app_version"] = appVersion
         return record
     }

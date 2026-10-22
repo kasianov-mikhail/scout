@@ -55,31 +55,6 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         }
     }
 
-    @discardableResult
-    func fetchAll(matching query: RecordQuery, in database: RecordReader) async -> Bool {
-        if ProcessInfo.processInfo.isPreview {
-            return true
-        }
-        let generation = generation
-        do {
-            let results: [Element] = try await database.readAll(matching: query, fields: Element.desiredKeys)
-            guard generation == self.generation else {
-                return true
-            }
-            records = results
-            error = nil
-            return true
-        } catch is CancellationError {
-            return true
-        } catch {
-            if records == nil {
-                self.error = error
-                message = Message(error.localizedDescription, level: .error)
-            }
-            return false
-        }
-    }
-
     func fetchAgain(matching query: RecordQuery, in database: RecordReader) async {
         if ProcessInfo.processInfo.isPreview {
             return
