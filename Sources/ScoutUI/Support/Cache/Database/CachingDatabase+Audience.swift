@@ -17,7 +17,22 @@ extension CachingDatabase: AudienceReader {
             return try await base.activity(in: range)
         }
 
-        return try await cached(name: "activity", range: lower..<range.upperBound, frozenUpper: frozenUpper, fetch: base.activity)
+        let fingerprint = [scope, "activity"].joined(separator: "|")
+        let cached = await cachedSpan(for: fingerprint, in: lower..<frozenUpper)
+        let cachedUpper = cached?.upper ?? lower
+        let points = cached?.records.compactMap(ActivityPoint.init(record:)) ?? []
+
+        guard cachedUpper < range.upperBound else {
+            return points
+        }
+
+        let fetched = try await base.activity(in: cachedUpper..<range.upperBound)
+
+        if cachedUpper < frozenUpper {
+            await cache.store(fetched.map(\.record), for: fingerprint, covering: cachedUpper..<frozenUpper)
+        }
+
+        return points + fetched
     }
 
     func retention(in range: Range<Date>) async throws -> [RetentionCohort] {
@@ -29,10 +44,74 @@ extension CachingDatabase: AudienceReader {
             return try await base.retention(in: lower..<range.upperBound)
         }
 
-        let cohorts = try await cached(name: "retention", range: lower..<range.upperBound, frozenUpper: frozenUpper) { chunk in
-            try await base.retention(in: chunk.lowerBound..<min(chunk.upperBound.addingTimeInterval(horizon), range.upperBound)).filter { chunk.contains($0.id) }
+        let fingerprint = [scope, "retention"].joined(separator: "|")
+        let cached = await cachedSpan(for: fingerprint, in: lower..<frozenUpper)
+        let cachedUpper = cached?.upper ?? lower
+        let cohorts = cached?.records.compactMap(RetentionCohort.init(record:)) ?? []
+
+        guard cachedUpper < range.upperBound else {
+            return cohorts.sorted()
         }
 
-        return cohorts.sorted()
+        let fetched = try await base.retention(in: cachedUpper..<range.upperBound)
+
+        if cachedUpper < frozenUpper {
+            await cache.store(fetched.compactMap(\.record), for: fingerprint, covering: cachedUpper..<frozenUpper)
+        }
+
+        return (cohorts + fetched).sorted()
+    }
+}
+
+extension RetentionCohort {
+    fileprivate init?(record: Record) {
+        let payload: Data? = record["payload"]
+
+        guard let payload else {
+            return nil
+        }
+
+        do {
+            self = try JSONDecoder().decode(RetentionCohort.self, from: payload)
+        } catch {
+            print("Failed to decode a cached retention cohort: \(error)")
+            return nil
+        }
+    }
+
+    fileprivate var record: Record? {
+        do {
+            var record = Record(recordType: "RetentionCohort", recordID: UUID().uuidString)
+            record["date"] = id
+            record["payload"] = try JSONEncoder().encode(self)
+            return record
+        } catch {
+            print("Failed to encode a retention cohort for the cache: \(error)")
+            return nil
+        }
+    }
+}
+
+extension ActivityPoint {
+    fileprivate init?(record: Record) {
+        let date: Date? = record["date"]
+        let dau: Int? = record["dau"]
+        let wau: Int? = record["wau"]
+        let mau: Int? = record["mau"]
+
+        guard let date, let dau, let wau, let mau else {
+            return nil
+        }
+
+        self.init(date: date.millisecondsSince1970, dau: dau, wau: wau, mau: mau)
+    }
+
+    fileprivate var record: Record {
+        var record = Record(recordType: "ActivityPoint", recordID: UUID().uuidString)
+        record["date"] = Date(millisecondsSince1970: date)
+        record["dau"] = dau
+        record["wau"] = wau
+        record["mau"] = mau
+        return record
     }
 }
