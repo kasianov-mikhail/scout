@@ -24,14 +24,6 @@ package enum RecorderBuckets {
         return categoryPrefix + String(bound)
     }
 
-    static func upperBound(of category: String) -> Double? {
-        guard category.hasPrefix(categoryPrefix) else { return nil }
-        guard let value = Int(category.dropFirst(categoryPrefix.count)) else {
-            return nil
-        }
-        return Double(value)
-    }
-
     package static func index(of category: String) -> Int? {
         categories.firstIndex(of: category)
     }

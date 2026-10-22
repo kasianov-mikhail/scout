@@ -10,12 +10,11 @@ import CoreData
 @testable import Scout
 
 extension DeviceEntry {
-    @discardableResult static func stub(date: Date, synced: Bool = false, in context: NSManagedObjectContext) -> DeviceEntry {
+    @discardableResult static func stub(date: Date, in context: NSManagedObjectContext) -> DeviceEntry {
         let device = context.insert(DeviceEntry.self)
 
         device.deviceID = Identity.stub.device
         device.date = date
-        device.setSynced(synced, in: context)
 
         return device
     }

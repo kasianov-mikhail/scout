@@ -12,7 +12,6 @@ import Scout
 protocol MetricHistogram {
     init()
     var counts: [Int] { get set }
-    static var bucketCount: Int { get }
     static func bucketIndex(of category: String) -> Int?
 }
 

@@ -70,6 +70,26 @@ private struct AudienceStore {
     }
 }
 
+extension EntityStore {
+    fileprivate func datedIDs(entity: String, dateField: String, idField: String, in range: Range<Date>) async throws -> [DatedID] {
+        let records = try await records(
+            entity: entity,
+            dateField: dateField,
+            fields: [dateField, idField],
+            in: range
+        )
+
+        return records.compactMap { record -> DatedID? in
+            let date: Date? = record[dateField]
+            let id: String? = record[idField]
+            guard let date, let id else {
+                return nil
+            }
+            return DatedID(date: date, id: id)
+        }
+    }
+}
+
 extension CatalogEntry {
     fileprivate var legacy: CatalogEntry {
         let metadata = Set(CatalogEntry(entity: entity, fields: []).fields.map(\.name))

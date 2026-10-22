@@ -84,7 +84,7 @@ struct RecorderHistogramTests {
         let summary = try #require(distribution.summary(in: base..<base.adding(.day)))
 
         #expect(summary.p50 == 0.5)
-        #expect(distribution.total(in: base..<base.adding(.day)) == 100)
+        #expect(distribution.histogram(in: base..<base.adding(.day)).total == 100)
     }
 
     private func makeSeries(category: String, date: Date, count: Int) -> MetricSeries {

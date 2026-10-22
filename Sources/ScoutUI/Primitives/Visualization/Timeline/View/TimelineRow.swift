@@ -69,7 +69,7 @@ extension TimelineRow {
     let items = [TimelineItem].samples
 
     VStack(spacing: 0) {
-        ForEach(Array(items.enumerated()), id: \.element) { index, row in
+        ForEach(items.indices, id: \.self) { index in
             TimelineRow(
                 items: items,
                 index: index,

@@ -101,9 +101,3 @@ extension InMemoryDatabase {
         []
     }
 }
-
-extension InMemoryDatabase {
-    var events: [Record] {
-        records.filter { $0.recordType == EventEntry.recordType }
-    }
-}

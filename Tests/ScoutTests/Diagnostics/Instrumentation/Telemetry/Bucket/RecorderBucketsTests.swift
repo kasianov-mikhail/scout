@@ -30,13 +30,6 @@ struct RecorderBucketsTests {
         #expect(RecorderBuckets.category(for: 2_000_000) == "recorder_le_inf")
     }
 
-    @Test("upperBound(of:) parses finite bucket categories only")
-    func upperBound() {
-        #expect(RecorderBuckets.upperBound(of: "recorder_le_500") == 500)
-        #expect(RecorderBuckets.upperBound(of: "recorder_le_inf") == nil)
-        #expect(RecorderBuckets.upperBound(of: "recorder") == nil)
-    }
-
     @Test("index(of:) maps categories to histogram slots")
     func index() {
         #expect(RecorderBuckets.index(of: "recorder_le_1") == 0)

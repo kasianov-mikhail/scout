@@ -9,8 +9,9 @@ import Foundation
 import Scout
 
 extension Device: Fixture {
-    static func sample(minutesAgo: Double = 0, deviceID: UUID = UUID()) -> Device {
-        Device(
+    static func sample(minutesAgo: Double) -> Device {
+        let deviceID = UUID()
+        return Device(
             date: Date(timeIntervalSinceNow: -minutesAgo * 60),
             id: deviceID.uuidString,
             deviceID: deviceID

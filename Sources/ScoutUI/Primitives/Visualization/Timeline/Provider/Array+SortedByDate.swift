@@ -8,11 +8,9 @@
 import Foundation
 
 extension Array {
-    func sorted(byDate keyPath: KeyPath<Element, Date?>, ascending: Bool = true) -> [Element] {
+    func sorted(byDate keyPath: KeyPath<Element, Date?>) -> [Element] {
         sorted {
-            let lhs = $0[keyPath: keyPath] ?? .distantPast
-            let rhs = $1[keyPath: keyPath] ?? .distantPast
-            return ascending ? lhs < rhs : lhs > rhs
+            ($0[keyPath: keyPath] ?? .distantPast) < ($1[keyPath: keyPath] ?? .distantPast)
         }
     }
 }

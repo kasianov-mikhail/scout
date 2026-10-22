@@ -45,7 +45,7 @@ struct NetworkReportTests {
         #expect(endpoint.requests == 5)
         #expect(endpoint.successRate == nil)
         #expect(endpoint.p99 != nil)
-        #expect(report.requestsPerMinute(in: range, until: base.adding(.hour)) == 0)
+        #expect(report.requestsPerMinute(report.endpoints(in: range), in: range, until: base.adding(.hour)) == 0)
     }
 
     @Test("Endpoints carry requests, success rate, and p99 for the range")
@@ -136,8 +136,10 @@ struct NetworkReportTests {
             makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 120)])
         ])
 
-        #expect(report.requestsPerMinute(in: range, until: base.adding(.hour)) == 2)
-        #expect(report.requestsPerMinute(in: range, until: base) == 120)
+        let endpoints = report.endpoints(in: range)
+
+        #expect(report.requestsPerMinute(endpoints, in: range, until: base.adding(.hour)) == 2)
+        #expect(report.requestsPerMinute(endpoints, in: range, until: base) == 120)
     }
 
     @Test("isEmpty reflects endpoint presence")

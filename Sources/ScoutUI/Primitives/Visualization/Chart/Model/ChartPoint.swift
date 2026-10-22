@@ -38,10 +38,6 @@ extension ChartPoint {
     static func + (lhs: ChartPoint, rhs: ChartPoint) -> ChartPoint {
         ChartPoint(date: lhs.date, value: lhs.value + rhs.value)
     }
-
-    static func += (lhs: inout ChartPoint, rhs: ChartPoint) {
-        lhs = lhs + rhs
-    }
 }
 
 extension [ChartPoint<Int>] {

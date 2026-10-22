@@ -19,11 +19,8 @@ struct CalendarMonth {
 
     static let weekdaySymbols = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
-    private static let monthYear = DateFormatter(format: "LLLL yyyy")
-
     private static let shortMonthYear = DateFormatter(format: "MMM yyyy")
 
-    var title: String { Self.monthYear.string(from: month).capitalized }
     var shortTitle: String { Self.shortMonthYear.string(from: month).uppercased() }
 
     struct Day: Identifiable {

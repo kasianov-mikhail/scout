@@ -32,8 +32,4 @@ struct DemoClock {
         let floor = min(earliest.addingTimeInterval(30), ceiling)
         return min(max(middayDaysAgo(daysAgo).addingTimeInterval(spread), floor), ceiling)
     }
-
-    func minutesAgo(_ minutes: Int) -> Date {
-        now.addingTimeInterval(-TimeInterval(minutes) * 60)
-    }
 }

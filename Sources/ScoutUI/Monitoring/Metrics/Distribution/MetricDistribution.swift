@@ -34,10 +34,6 @@ struct MetricDistribution<H: QuantileHistogram>: Equatable {
             .reduce(H(), +)
     }
 
-    func total(in range: Range<Date>) -> Int {
-        histogram(in: range).total
-    }
-
     func summary(in range: Range<Date>) -> Percentiles? {
         let combined = histogram(in: range)
 
