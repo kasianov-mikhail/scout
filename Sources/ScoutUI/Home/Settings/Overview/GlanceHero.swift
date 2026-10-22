@@ -11,35 +11,53 @@ import SwiftUI
 
 struct GlanceSummary {
     let reachable: Int
+    let pending: Int
     let total: Int
     let averageLatency: Int?
 
     init(backends: [BackendHealth]) {
         reachable = backends.filter { $0.status == .reachable }.count
+        pending = backends.filter { $0.status == nil && $0.probe != nil }.count
         total = backends.count
         let latencies = backends.compactMap(\.latency)
         averageLatency = latencies.isEmpty ? nil : latencies.reduce(0, +) / latencies.count
     }
 
-    var allOperational: Bool {
-        reachable == total
+    var state: GlanceState {
+        if total == 0 {
+            .empty
+        } else if pending > 0 {
+            .checking
+        } else if reachable == total {
+            .operational
+        } else {
+            .degraded
+        }
     }
 
     var title: String {
-        allOperational ? "All Systems Operational" : "\(reachable) of \(total) Backends Reachable"
+        switch state {
+        case .empty:
+            "No Backends Configured"
+        case .checking:
+            "Checking Backends…"
+        case .operational:
+            "All Systems Operational"
+        case .degraded:
+            "\(reachable) of \(total) Backends Reachable"
+        }
     }
 
     var detail: String {
         let count = ExportFormat.counted(total, .backend)
-        return averageLatency.map { "\(count) · \($0) ms average latency" } ?? count
-    }
-
-    var color: Color {
-        allOperational ? .green : .orange
-    }
-
-    var icon: String {
-        allOperational ? "checkmark.seal.fill" : "exclamationmark.triangle.fill"
+        return switch state {
+        case .empty:
+            "Pass at least one backend to scoutHome"
+        case .checking:
+            "\(count) · \(pending) pending"
+        case .operational, .degraded:
+            averageLatency.map { "\(count) · \($0) ms average latency" } ?? count
+        }
     }
 }
 
@@ -48,9 +66,9 @@ struct GlanceHero: View {
 
     var body: some View {
         VStack(spacing: 10) {
-            Image(systemName: summary.icon)
+            Image(systemName: summary.state.icon)
                 .font(.system(size: 42))
-                .foregroundStyle(summary.color)
+                .foregroundStyle(summary.state.color)
 
             Text(verbatim: summary.title)
                 .font(.title3.weight(.semibold))
@@ -66,7 +84,7 @@ struct GlanceHero: View {
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [summary.color.opacity(0.18), summary.color.opacity(0.04)],
+                        colors: [summary.state.color.opacity(0.18), summary.state.color.opacity(0.04)],
                         startPoint: .top,
                         endPoint: .bottom
                     )
@@ -82,5 +100,15 @@ struct GlanceHero: View {
 
 #Preview("Degraded") {
     GlanceHero(summary: GlanceSummary(backends: .samples))
+        .padding()
+}
+
+#Preview("Checking") {
+    GlanceHero(summary: GlanceSummary(backends: [Backend].samples.map(BackendHealth.init)))
+        .padding()
+}
+
+#Preview("No Backends") {
+    GlanceHero(summary: GlanceSummary(backends: []))
         .padding()
 }
