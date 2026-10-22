@@ -10,7 +10,13 @@ import CoreData
 extension InstallEntry {
     func startCohort() {
         osVersion = SystemInfo.osVersion
-        insertMark(milestone: .install, date: date)
+    }
+
+    func markInstall() throws {
+        guard cohortDay != nil, let date else {
+            return
+        }
+        try mark(milestone: .install, date: date)
     }
 
     func markVisit(date: Date) throws {
@@ -47,13 +53,6 @@ extension InstallEntry {
         request.fetchLimit = 1
 
         guard try context.count(for: request) == 0 else {
-            return
-        }
-        insertMark(milestone: milestone, date: date)
-    }
-
-    private func insertMark(milestone: RetentionMilestone, date: Date?) {
-        guard let context = managedObjectContext else {
             return
         }
 
