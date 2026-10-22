@@ -11,11 +11,18 @@ import CoreData
 final class DeliveryEntry: NSManagedObject {
     static let maxAttempts = 10
     static let pageSize = 400
+    static let retryDelay: TimeInterval = 30
 
     @NSManaged var backendID: String
     @NSManaged var isPending: Bool
     @NSManaged var attempts: Int16
+    @NSManaged var nextAttemptDate: Date?
     @NSManaged var object: SyncableEntry
+
+    func reject(now: Date) {
+        attempts += 1
+        nextAttemptDate = now.addingTimeInterval(Self.retryDelay * pow(2, Double(attempts - 1)))
+    }
 
     static func retainedIDs(to backendIDs: Set<String>, in context: NSManagedObjectContext) throws -> Set<NSManagedObjectID> {
         let request = NSFetchRequest<NSDictionary>(entityName: "DeliveryEntry")

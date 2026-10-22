@@ -91,6 +91,18 @@ struct DateEntryCleanupTests {
         #expect(try context.fetchAll(EventEntry.self).count == 1)
     }
 
+    @Test("Keeps an old event while its delivery waits out a retry pause")
+    func keepsPausedEvent() throws {
+        let old = Date(timeIntervalSinceNow: -8 * 86400)
+        let event = EventEntry.stub(name: "paused", date: old, in: context)
+        event.seedDelivery(attempts: 1, for: "cloud", in: context).nextAttemptDate = Date(timeIntervalSinceNow: 60)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(EventEntry.self).count == 1)
+    }
+
     @Test("Deletes an event delivered to every backend before it ages out")
     func deletesDeliveredEvent() throws {
         let recent = Date(timeIntervalSinceNow: -60)
