@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension View {
-    /// English-only navigation title; bypasses host-app `LocalizedStringKey` resolution.
     func navigationTitle(en title: String) -> some View {
         navigationTitle(Text(verbatim: title))
     }

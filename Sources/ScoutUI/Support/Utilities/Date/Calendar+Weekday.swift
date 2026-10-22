@@ -8,8 +8,6 @@
 import Foundation
 
 extension Calendar {
-    // Maps the calendar weekday (1 = Sunday … 7 = Saturday) to a Monday-based
-    // index (0 = Monday … 6 = Sunday) used by the grid and calendar layouts.
     func mondayBasedWeekday(from date: Date) -> Int {
         (component(.weekday, from: date) + 5) % 7
     }

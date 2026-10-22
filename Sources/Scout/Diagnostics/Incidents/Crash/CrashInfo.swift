@@ -50,11 +50,6 @@ extension IncidentArchive<CrashInfo> {
         IncidentArchive(folder: "Crashes", pathExtension: "crash")
     }
 
-    // The signal handler leaves raw reports behind — symbolicating them is
-    // not signal-safe, so it happens here, on the launch that finds them.
-    // The converted file keeps the raw file's UUID stem: if the process dies
-    // between write and remove, the next launch overwrites the same crash
-    // instead of duplicating it.
     func convertRawReports() {
         for file in files where file.pathExtension == RawCrashFormat.pathExtension {
             do {

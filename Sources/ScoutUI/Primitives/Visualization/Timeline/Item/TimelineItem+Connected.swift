@@ -8,11 +8,6 @@
 import Foundation
 
 extension TimelineItem {
-    /// Whether the rail of `kind` is continuous between this row and `other`.
-    ///
-    /// True only when both rows belong to the same (non-nil) install / launch /
-    /// session group, so the rail breaks at section boundaries.
-    ///
     func isConnected(other: TimelineItem?, kind: LegendKind) -> Bool {
         guard let other, active.contains(kind), other.active.contains(kind) else {
             return false

@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-/// "No results" placeholder shown over an empty chart's plot area.
 struct ChartPlaceholder: View {
     var body: some View {
         Text(verbatim: "No results")

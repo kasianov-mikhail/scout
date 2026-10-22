@@ -66,8 +66,6 @@ private struct PullToRefreshModifier: ViewModifier {
         }
     }
 
-    // Detached from the view lifecycle on purpose: `.task(id:)` would restart
-    // the action on every reappearance and cancel it mid-flight on disappear.
     private func refresh() {
         generation += 1
 

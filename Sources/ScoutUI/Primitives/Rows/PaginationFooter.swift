@@ -10,9 +10,6 @@ import SwiftUI
 struct PaginationFooter: View {
     let action: () async -> Bool
 
-    // Counts the pages this footer has loaded. Bumping it re-runs the task so the
-    // next page loads while the footer stays visible; leaving it alone after a
-    // failure keeps the error in place instead of re-requesting on every redraw.
     @State private var page = 0
     @State private var hasFailed = false
 
@@ -46,8 +43,6 @@ struct PaginationFooter: View {
 
 #Preview("Loading") {
     InsetList {
-        // A page that never arrives: an action that returned right away would re-arm
-        // the task on every success and spin the preview.
         PaginationFooter {
             try? await Task.sleep(for: .seconds(60))
             return true

@@ -9,12 +9,6 @@
 import Foundation
 import MachO
 
-// Walks a frame-pointer chain into a caller-supplied buffer and renders
-// addresses into report lines. Both halves are shared by the hang watchdog
-// and the fatal-signal handler, so `walk` must stay async-signal-safe: no
-// allocation, no locks — every memory read goes through
-// `vm_read_overwrite`, which fails gracefully on an invalid address
-// instead of trapping.
 enum StackWalker {
     static let maximumFrameCount = 64
 

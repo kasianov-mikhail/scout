@@ -10,15 +10,9 @@ import Foundation
 struct HangMonitor {
     static let pingInterval: TimeInterval = 1
 
-    // In the spirit of MetricKit's hang buckets: a first report once the main
-    // thread has been unresponsive for 3s, and a more severe one at 8s — around
-    // where the system watchdog would otherwise kill the app.
     static let warningThreshold: TimeInterval = 3
     static let criticalThreshold: TimeInterval = 8
 
-    // A check arriving this late means the watchdog queue itself stopped running:
-    // the process was suspended in the background or the device slept. The gap
-    // then measures the freeze, not an unresponsive main thread.
     static let stallThreshold = pingInterval * 1.5
 
     private var pingDate: TimeInterval

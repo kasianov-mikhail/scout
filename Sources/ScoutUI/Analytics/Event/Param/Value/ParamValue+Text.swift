@@ -9,9 +9,6 @@
 import Foundation
 
 extension ParamValue {
-    /// A shareable text form of the value: scalars verbatim, containers as
-    /// pretty-printed JSON with sorted keys.
-    ///
     var text: String {
         switch self {
         case .string(let string):
@@ -42,7 +39,6 @@ extension ParamValue {
 }
 
 extension ParamValue.Convertible {
-    /// The Foundation representation used to rebuild JSON from parsed values.
     fileprivate var jsonObject: Any {
         switch self {
         case .boolean(let value):

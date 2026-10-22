@@ -10,11 +10,6 @@ import SwiftUI
 private struct AnchoredScroll<ID: Hashable>: ViewModifier {
     let id: ID?
 
-    /// The anchor's position in the list (rows above it).
-    ///
-    /// It only changes when pagination inserts rows above the anchor, which is
-    /// exactly when the anchor needs re-centering to absorb the layout shift.
-    ///
     let revision: Int
 
     @State private var anchorFrame: CGRect?
@@ -44,10 +39,6 @@ private struct AnchoredScroll<ID: Hashable>: ViewModifier {
                     center(with: proxy)
                 }
                 .onChange(of: revision) { _ in
-                    // Rows were prepended above the anchor. While the anchor is
-                    // still on screen, re-center so the inserted chunk doesn't
-                    // push it away; once the user has scrolled it off, leave
-                    // the list alone.
                     if let anchorFrame, RecenterDirection(frame: anchorFrame, viewport: viewport) == nil {
                         center(with: proxy)
                     }
@@ -59,20 +50,12 @@ private struct AnchoredScroll<ID: Hashable>: ViewModifier {
 
                     anchorFrame = frame
 
-                    // The first reported frame means the anchor row has just
-                    // been laid out; the `onAppear` scroll only aimed at
-                    // estimated lazy-row positions, so finish the initial
-                    // centering with one precise pass.
                     if isFirst {
                         center(with: proxy)
                     }
                 }
             }
             .environment(\.scrollViewport, viewport)
-            // Footers must not self-load while the list still sits at its
-            // initial offset — the top one is momentarily "visible" there and
-            // would push the anchor away. The flag flips once the anchor lands
-            // (or right away when there is no anchor to land).
             .environment(\.isScrollSettled, anchorFrame != nil || id == nil)
         }
     }
@@ -101,8 +84,6 @@ struct AnchorFrameKey: PreferenceKey {
 extension EnvironmentValues {
     @Entry var scrollViewport: CGRect = .infinite
 
-    /// Whether the anchored scroll has finished its initial positioning;
-    /// pagination footers hold off self-loading until it has.
     @Entry var isScrollSettled = true
 }
 

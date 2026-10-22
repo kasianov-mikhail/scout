@@ -17,7 +17,6 @@ extension IncidentGroup where Element == Hang {
         peak.duration.duration
     }
 
-    // The longest hang in the group; groups always hold at least one record.
     private var peak: Hang {
         records.max { $0.duration < $1.duration } ?? representative
     }

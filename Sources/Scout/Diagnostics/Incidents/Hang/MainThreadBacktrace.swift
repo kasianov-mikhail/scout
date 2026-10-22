@@ -10,13 +10,6 @@ import CScoutHang
 import Foundation
 import MachO
 
-/// Captures the main thread's call stack from a different thread by briefly
-/// suspending it and manually walking its frame-pointer chain.
-///
-/// This is only safe because the suspend window is short and every memory
-/// read goes through `mach_vm_read_overwrite`, which fails gracefully on an
-/// invalid address instead of trapping.
-///
 enum MainThreadBacktrace {
     static func capture() -> [UInt64] {
         guard let mainThread = mainMachThread() else {
@@ -24,10 +17,6 @@ enum MainThreadBacktrace {
         }
         defer { mach_port_deallocate(mach_task_self_, mainThread) }
 
-        // Only raw return addresses are collected while the main thread is
-        // suspended — no malloc, no dyld lock. If the thread is suspended
-        // mid-hang while holding one of those locks, symbolicating here would
-        // deadlock this thread forever. So resume first, then symbolicate.
         var buffer = [UInt64](repeating: 0, count: StackWalker.maximumFrameCount)
         let count = buffer.withUnsafeMutableBufferPointer { captureAddresses(of: mainThread, into: $0) }
         return Array(buffer.prefix(count))
@@ -46,8 +35,6 @@ enum MainThreadBacktrace {
         return StackWalker.walk(pc: pc, fp: fp, into: buffer)
     }
 
-    // task_threads returns threads in creation order and the main thread is
-    // always created first — there's no documented API to ask for it directly.
     private static func mainMachThread() -> thread_t? {
         var threadList: thread_act_array_t?
         var threadCount: mach_msg_type_number_t = 0

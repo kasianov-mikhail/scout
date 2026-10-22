@@ -40,9 +40,7 @@ enum RawCrashFormat {
         return bytes
     }
 
-    // Runs inside the signal handler: nothing here may allocate or lock,
-    // only plain memory reads and write(2).
-    static func write(fd: Int32, signal: Int32, time: Int64, session: uuid_t, frames: UnsafeBufferPointer<UInt64>, trailer: UnsafeRawBufferPointer) {
+    static func writeFromSignalHandler(fd: Int32, signal: Int32, time: Int64, session: uuid_t, frames: UnsafeBufferPointer<UInt64>, trailer: UnsafeRawBufferPointer) {
         writeValue(magic, to: fd)
         writeValue(version, to: fd)
         writeValue(signal, to: fd)

@@ -20,9 +20,6 @@ final class RailLane: ObservableObject {
         }
     }
 
-    /// Bounds session chunks to this lane's side of the anchor event, so both
-    /// lanes grow strictly outward from the anchor instead of spending early
-    /// chunks on sessions far past it.
     var anchorDate: Date?
 
     let ascending: Bool
@@ -36,25 +33,15 @@ final class RailLane: ObservableObject {
 
     private var cursor: RecordCursor?
 
-    // Renewed by every reset; an in-flight load compares against it after each
-    // suspension and bails out instead of mixing a stale chunk (or a wiped
-    // cursor) into the fresh timeline.
     private var generation = Epoch()
 
-    // Whether a load currently holds the cursor; concurrent `loadMore` calls
-    // wait for it instead of racing the cursor and dropping a chunk.
     private var isFetching = false
 
-    // Continuations of `loadMore` calls parked behind an in-flight load.
     private var waiters: [CheckedContinuation<Void, Never>] = []
 
     func loadMore(in database: RecordReader) async throws -> (sessions: [Session], events: [Event]) {
-        // Snapshot before parking: a reset that lands while this call waits
-        // means the chunk now belongs to a newer timeline, not this caller.
         let generation = generation
 
-        // A stale in-flight load (e.g. from a superseded `start`) may still
-        // advance the cursor; wait for it to land instead of racing it.
         while isFetching {
             await withCheckedContinuation { waiters.append($0) }
         }
@@ -107,9 +94,6 @@ final class RailLane: ObservableObject {
         return (sessions, events)
     }
 
-    // Sessions per chunk: a filtered timeline keeps only the matching events,
-    // so it needs a bigger net per round to reach the seed target without a
-    // long tail of follow-up requests.
     private var chunkLimit: Int { eventName == nil ? 25 : 100 }
 
     private func chunk(in database: RecordReader) async throws -> RecordChunk {

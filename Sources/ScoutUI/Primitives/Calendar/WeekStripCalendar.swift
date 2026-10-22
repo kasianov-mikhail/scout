@@ -8,9 +8,6 @@
 import Scout
 import SwiftUI
 
-// Design-exploration primitive: a week strip that expands out of a RangeControl
-// bar. Not yet wired into the app.
-
 struct WeekStripCalendar: View {
     var style: CalendarStyle = .capsule
 

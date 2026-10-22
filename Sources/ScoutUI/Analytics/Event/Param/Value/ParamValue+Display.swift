@@ -9,7 +9,6 @@
 import SwiftUI
 
 extension ParamValue {
-    /// Whether the value is a dictionary or an array.
     var isContainer: Bool {
         switch self {
         case .dictionary, .array: true
@@ -17,7 +16,6 @@ extension ParamValue {
         }
     }
 
-    /// A one-line digest of the value, used where space is limited.
     var summary: String {
         switch self {
         case .string(let string):
@@ -31,9 +29,6 @@ extension ParamValue {
         }
     }
 
-    /// The glyph of the value's kind: an SF Symbol where one fits, literal
-    /// text for arrays, which SF Symbols has no bracket glyph for.
-    ///
     var icon: Icon {
         switch self {
         case .string:
@@ -47,13 +42,11 @@ extension ParamValue {
         }
     }
 
-    /// A kind glyph: either an SF Symbol name or text drawn verbatim.
     enum Icon: Hashable {
         case symbol(String)
         case text(String)
     }
 
-    /// The accent color of the value's kind.
     var color: Color {
         switch self {
         case .string:
@@ -69,7 +62,6 @@ extension ParamValue {
 }
 
 extension ParamValue.Convertible {
-    /// The verbatim text of the scalar.
     var text: String {
         switch self {
         case .number(let text), .uuid(let text), .url(let text), .date(let text):
@@ -79,7 +71,6 @@ extension ParamValue.Convertible {
         }
     }
 
-    /// A short name of the scalar kind, shown in the value badge.
     var label: String {
         switch self {
         case .number:
@@ -95,7 +86,6 @@ extension ParamValue.Convertible {
         }
     }
 
-    /// An SF Symbol of the scalar kind.
     var iconName: String {
         switch self {
         case .number:
@@ -113,7 +103,6 @@ extension ParamValue.Convertible {
         }
     }
 
-    /// The accent color of the scalar kind.
     var color: Color {
         switch self {
         case .number:

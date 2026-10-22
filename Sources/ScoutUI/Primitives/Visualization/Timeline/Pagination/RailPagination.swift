@@ -46,8 +46,6 @@ struct RailPagination: View {
     }
 
     private func loadMore() async {
-        // A reload may have replaced the result since this footer scheduled
-        // the load; bail out before consuming a chunk the new timeline needs.
         guard case .success = result else {
             lane.isLoading = false
             return
@@ -60,8 +58,6 @@ struct RailPagination: View {
             }
             result = .success(rail.merged(sessions: sessions, events: events))
         } catch is CancellationError {
-            // The lane was reset while this load was in flight; drop it, and
-            // release the spinner `loadIfVisible` raised for this load.
             lane.isLoading = false
         } catch {
             result = .failure(error)

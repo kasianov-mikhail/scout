@@ -9,22 +9,18 @@
 import Foundation
 
 enum ExportFormat {
-    /// An ISO 8601 timestamp, e.g. `2023-11-14T22:14:00Z`.
     static func timestamp(_ date: Date) -> String {
         Self.iso8601.format(date)
     }
 
-    /// A calendar day, e.g. `2023-11-14`.
     static func day(_ date: Date) -> String {
         Self.dayStyle.format(date)
     }
 
-    /// A time of day with minute precision, e.g. `22:14`.
     static func time(_ date: Date) -> String {
         Self.timeStyle.format(date)
     }
 
-    /// A day and time with minute precision, e.g. `2023-11-14 22:14`.
     static func minute(_ date: Date) -> String {
         "\(day(date)) \(time(date))"
     }
@@ -38,19 +34,16 @@ enum ExportFormat {
         return "\(minute(start))–\(suffix)"
     }
 
-    /// The first eight characters of the identifier, lowercased.
     static func shortID(_ id: UUID) -> String {
         String(id.uuidString.lowercased().prefix(8))
     }
 
-    /// A count with its pluralized noun, e.g. `1 install` or `3 installs`.
     static func counted(_ count: Int, _ noun: Noun) -> String {
         "\(count) \(count == 1 ? noun.singular : noun.plural)"
     }
 }
 
 extension ExportFormat {
-    /// A noun with its singular and plural forms, used by ``counted(_:_:)``.
     struct Noun {
         let singular: String
         let plural: String

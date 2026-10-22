@@ -10,9 +10,6 @@ import SwiftUI
 
 private let referenceDash = StrokeStyle(lineWidth: 1.5, dash: [4, 4])
 
-/// Draws the previous-period levels over the plot area using chart-proxy
-/// coordinates, since bar marks cannot render dashed strokes.
-///
 struct ReferenceOverlay<T: ChartNumeric>: View {
     let pairs: [ComparisonPair<T>]
     let proxy: ChartProxy
