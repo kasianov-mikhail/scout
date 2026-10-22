@@ -87,6 +87,31 @@ struct VisitGapFoldTests {
         #expect(overLimit.unstampedSpans(in: day(0)..<day(100)) == [day(5)..<day(35)])
     }
 
+    @Test("A range counts devices while old versions hold at most 1% of its sessions")
+    func devicesLegacyShare() {
+        let atLimit = VisitGapFold(
+            gaps: dailyGaps(days: 0...6),
+            versions: [SeriesPoint(group: "2.0", date: day(0), value: 1)],
+            sessions: [
+                SeriesPoint(group: "||2.0", date: day(3), value: 9),
+                SeriesPoint(group: "||1.0", date: day(3), value: 1),
+                SeriesPoint(group: "||2.0", date: day(5), value: 90),
+            ]
+        )
+        let overLimit = VisitGapFold(
+            gaps: dailyGaps(days: 0...6),
+            versions: [SeriesPoint(group: "2.0", date: day(0), value: 1)],
+            sessions: [
+                SeriesPoint(group: "||2.0", date: day(3), value: 8),
+                SeriesPoint(group: "||1.0", date: day(3), value: 2),
+                SeriesPoint(group: "||2.0", date: day(5), value: 90),
+            ]
+        )
+
+        #expect(atLimit.devices(in: day(0)..<day(7)) == 1)
+        #expect(overLimit.devices(in: day(0)..<day(7)) == nil)
+    }
+
     @Test("A rare device on an old version leaves the year stamped")
     func rareLegacyDevice() {
         let fold = VisitGapFold(
