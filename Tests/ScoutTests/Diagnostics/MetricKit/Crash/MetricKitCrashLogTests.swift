@@ -36,16 +36,53 @@ struct MetricKitCrashLogTests {
     @Test("A crash its launch already recorded in process is skipped")
     func skipsDuplicateOfInProcessCrash() throws {
         let launch = makeLaunch(processID: 412, date: start)
-        let session = makeSession(launch: launch, date: start)
-        let caught = context.insert(CrashEntry.self)
-        caught.crashID = UUID()
-        caught.name = "SIGSEGV"
-        caught.date = start.addingTimeInterval(500)
-        caught.session = session
+        makeCaughtCrash(name: "SIGSEGV", date: start.addingTimeInterval(500), session: makeSession(launch: launch, date: start))
 
         try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
 
         #expect(try context.fetchAll(CrashEntry.self).count == 1)
+    }
+
+    @Test("A launch with many events and one recorded crash skips the report")
+    func skipsLaunchWithEventsAndCrash() throws {
+        let launch = makeLaunch(processID: 412, date: start)
+        let first = makeSession(launch: launch, date: start)
+        let second = makeSession(launch: launch, date: start.addingTimeInterval(300))
+        for index in 0..<200 {
+            EventEntry.stub(name: "event", date: start.addingTimeInterval(Double(index)), session: index.isMultiple(of: 2) ? first : second, in: context)
+        }
+        makeCaughtCrash(name: "SIGSEGV", date: start.addingTimeInterval(500), session: second)
+
+        try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
+    }
+
+    @Test("A launch with events but no crash keeps the report")
+    func keepsLaunchWithEventsOnly() throws {
+        let launch = makeLaunch(processID: 412, date: start)
+        let session = makeSession(launch: launch, date: start)
+        for index in 0..<200 {
+            EventEntry.stub(name: "event", date: start.addingTimeInterval(Double(index)), session: session, in: context)
+        }
+
+        try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
+
+        let crash = try #require(try context.fetchAll(CrashEntry.self).first)
+        #expect(crash.session == session)
+        #expect(crash.source == "metrickit")
+    }
+
+    @Test("A crash in another launch of the same install doesn't hide the report")
+    func keepsCrashWhenOtherLaunchCrashed() throws {
+        let launch = makeLaunch(processID: 412, date: start.addingTimeInterval(60))
+        let earlier = LaunchEntry.stub(date: start, install: launch.install, in: context)
+        makeCaughtCrash(name: "SIGTRAP", date: start.addingTimeInterval(30), session: makeSession(launch: earlier, date: start))
+        makeSession(launch: launch, date: start.addingTimeInterval(60))
+
+        try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 2)
     }
 
     @Test("A launch with the same process ID from another install doesn't match")
@@ -198,11 +235,15 @@ struct MetricKitCrashLogTests {
 
     private func makeCaughtCrash(name: String, date: Date) {
         let launch = LaunchEntry.stub(date: start, install: makeInstall(), in: context)
+        makeCaughtCrash(name: name, date: date, session: makeSession(launch: launch, date: start))
+    }
+
+    private func makeCaughtCrash(name: String, date: Date, session: SessionEntry) {
         let caught = context.insert(CrashEntry.self)
         caught.crashID = UUID()
         caught.name = name
         caught.date = date
-        caught.session = makeSession(launch: launch, date: start)
+        caught.session = session
     }
 
     private func makeLaunch(processID: Int32, date: Date) -> LaunchEntry {
