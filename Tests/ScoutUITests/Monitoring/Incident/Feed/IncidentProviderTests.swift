@@ -78,6 +78,7 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
             return record
         }
         var symbols = Record(recordType: BundledSymbols.fileType, recordID: UUID(symbolsFile: app).uuidString)
+        symbols["uuid"] = symbols.recordID
         symbols["file"] = try table.data
         self.symbols = symbols
     }
@@ -86,14 +87,14 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
         if query.recordType.recordType == BacktraceRecord.recordType {
             return RecordChunk(records: backtraces.matching(query), cursor: nil)
         }
+        if query.recordType.recordType == BundledSymbols.fileType {
+            return RecordChunk(records: [symbols].matching(query), cursor: nil)
+        }
         return RecordChunk(page: crashes, limit: 1)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        guard recordName == symbols.recordID else {
-            throw RecordNotFoundError()
-        }
-        return symbols
+        throw RecordNotFoundError()
     }
 
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] { [] }

@@ -24,6 +24,7 @@ struct BundledSymbolsTests {
         #expect(symbols.index.recordID == uuid.uuidString)
         #expect(symbols.file.recordType == "SymbolsFile")
         #expect(symbols.file.recordID == UUID(symbolsFile: uuid).uuidString)
+        #expect(symbols.file["uuid"] == UUID(symbolsFile: uuid).uuidString)
         #expect(symbols.file["image_uuid"] == uuid.uuidString)
         #expect(symbols.file["file"] == symbols.data)
     }

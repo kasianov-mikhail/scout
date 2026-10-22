@@ -22,7 +22,7 @@ struct IncidentBacktraces {
         }
 
         let uuids = Array(Set(backtraces.values.flatMap(\.images).compactMap(\.uuid)))
-        let tables = try await SymbolTableCache.shared.tables(uuids: uuids, database: database)
+        let tables = await SymbolTableCache.shared.tables(uuids: uuids, database: database)
         details = backtraces.mapValues { BacktraceDetail(backtrace: $0, tables: tables) }
     }
 

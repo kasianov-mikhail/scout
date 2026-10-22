@@ -73,6 +73,7 @@ struct IncidentBacktracesTests {
             inlines: []
         )
         var record = Record(recordType: BundledSymbols.fileType, recordID: UUID(symbolsFile: app).uuidString)
+        record["uuid"] = record.recordID
         record["file"] = try table.data
         return record
     }
@@ -88,14 +89,11 @@ private struct IncidentDatabase: RecordReader {
                 throw MembershipLimitError()
             }
         }
-        return RecordChunk(records: backtraces.matching(query), cursor: nil)
+        return RecordChunk(records: (backtraces + symbols).matching(query), cursor: nil)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
-        guard let record = symbols.first(where: { $0.recordID == recordName }) else {
-            throw RecordNotFoundError()
-        }
-        return record
+        throw RecordNotFoundError()
     }
 }
 
