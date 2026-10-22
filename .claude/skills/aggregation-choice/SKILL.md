@@ -1,11 +1,13 @@
 ---
 name: aggregation-choice
-description: Decide whether a Scout dashboard read should use a pre-aggregated source (a scout-db aggregate in the Native catalog, or a scout-server endpoint for Hosted) or stay a raw record read, and price both sides, including the write cost on user devices. Use when planning, reviewing, or changing a Native or Hosted read, a catalog aggregate (`CatalogEntry+Entries.swift`, `CatalogEntry+Metrics.swift`), the record cache, or a scout-server metrics endpoint.
+description: Decide whether a Scout dashboard read should use a pre-aggregated source (a scout-db aggregate in the Native catalog, or a scout-server endpoint for Hosted) or stay a raw record read, and show the gain or loss of that choice at 1k, 10k and 100k DAU while the feature is planned, written and reviewed. Use when adding or changing a dashboard screen or provider, a Native or Hosted read, a catalog aggregate (`CatalogEntry+Entries.swift`, `CatalogEntry+Metrics.swift`), the record cache, or a scout-server metrics endpoint.
 ---
 
 The "Aggregated reads" rules in `.claude/CLAUDE.md` say what is allowed. This skill says when an aggregate is worth its cost. An aggregate is not free. It moves cost from the read on one dashboard to the write on every user device.
 
 Decide by the read. Check the write. One aggregate costs about three background requests per synced batch, and the user does not see them. The write matters only because it adds up: every aggregate on an entity adds its own slots to every batch, a shared key makes all devices write the same vector, and an aggregate nobody reads is pure write cost.
+
+Show the gain or the loss while the work happens, not only at the end. Every plan, every PR description and every review of a read that this skill covers carries the impact table from "Impact table" below. A read without the table is not planned, and a PR without it is not ready.
 
 ## Variables
 
@@ -86,6 +88,42 @@ Hosted:
    - The endpoint must not scan the whole history.
    - An index must cover every filter. For example, `uuid IN` needs an index on `(record_type, uuid)`.
 
+## Impact table
+
+The table compares the read with aggregation on and off, per tier. It is the same table whether the aggregate is being added, changed or removed.
+
+| Column | Content |
+|---|---|
+| Read | The screen and the call, one row per read the change touches. |
+| 1k / 10k / 100k DAU | `RATIO` per tier: the time with aggregation off divided by the time with it on, for a cold open. Above 1 is a gain, below 1 is a loss. |
+| Transition | `RATIO` for the transition period when it differs: the year before `since` passes, or a chunked cold load. |
+| Class | Bounded key, key by ID, page, parallelism, or write-only. Read it from the `RATIO` pattern in "Audience tiers". |
+
+```
+| Read | 1k DAU | 10k DAU | 100k DAU | Transition | Class |
+|---|---|---|---|---|---|
+| Activity, cold open | 23 | 230 | 2300 | — | bounded key |
+| Devices, cold open | 8 | 8 | 8 | — | key by ID, ceiling near 30k DAU |
+| Crashes list, cold open | 1 | 1 | 1 | 0.2 / 0.03 / 0.003 | tallies without a cache |
+| IntMetric `.max`, any read | 1 | 1 | 1 | — | write-only, remove |
+```
+
+When the table appears:
+
+| Moment | What the table shows |
+|---|---|
+| Plan, before code | Both designs for each read. Pick the design with the larger ratios, and name the ceiling of a key by ID. |
+| During the work | The table of the chosen design. Update it when the read changes, for example when a filter or a cache is added. |
+| PR description | The final table in three to four lines, under the PR rules. A ratio below 1 is a risk the reviewer must know, so state how long it lasts. |
+| Review | The table for the diff. Flag a row below 1 without an end date, and a write-only row. |
+
+Rules for the cells:
+
+- The time with aggregation off is the raw read of the same records with the same filters. For a published entity with no history before `since`, both sides cost the same, so the ratio is 1.
+- A removed aggregate flips the sides: the ratio is the time with the aggregate divided by the time without it. A write-only aggregate gives 1 on every read, and its row says "remove".
+- Round to two significant digits. Keep the ratios, not the percentages, in the table.
+- Below the table, give the pages, vectors and seconds behind each ratio, once.
+
 ## Aggregate when
 
 | Case | Why | Example |
@@ -124,17 +162,7 @@ Hosted:
 ## Final report
 
 - `READ`, its bound, and the decision: aggregate, raw, or redesign.
-- One table with a row per read and a column per tier. Each cell holds `RATIO` only. Add a column with the class of the read, taken from the `RATIO` pattern.
-
-```
-| Read | 1k DAU | 10k DAU | 100k DAU | Class |
-|---|---|---|---|---|
-| Activity, cold open | 23 | 230 | 2300 | bounded key |
-| Devices, cold open | 8 | 8 | 8 | key by ID, ceiling near 30k DAU |
-| Meter, transition year | 0.75 | 0.75 | 0.75 | slower until `since` passes |
-```
-
-- Below the table, for each read: the pages, vectors and times behind the ratios, and the peak memory when it changes.
+- The impact table from "Impact table", with the pages, vectors, seconds and peak memory behind each ratio below it.
 - The write check: the number of aggregates on the entity after the change, whether the key is shared, and whether a reader exists.
 - The transition cost: `RecordFold` and the empty derived group, with a `RATIO` for the transition period when it is below 1.
 - The speed gain for the chosen tier as `(1 / (1 − saved) − 1) × 100%` with the multiplier, when the user's rules ask for it.
