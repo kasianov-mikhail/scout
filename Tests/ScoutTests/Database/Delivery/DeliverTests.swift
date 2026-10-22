@@ -45,8 +45,8 @@ struct DeliverTests {
 
     /// Run the delivery engine for a type the way `synchronize` does: send its raw
     /// records and let the send itself count the attempt on failure.
-    func deliver<T: DeliverableEntry>(_ type: T.Type, to backend: Backend) async throws {
-        try await RecordSender<T>(backend: backend).deliver(in: context)
+    func deliver<T: DeliverableEntry>(_ type: T.Type, to backend: Backend, now: Date = Date()) async throws {
+        try await RecordSender<T>(backend: backend).deliver(in: context, now: now)
     }
 
     /// End a session and requeue it on a private-queue sibling, the way the real
@@ -167,7 +167,7 @@ struct DeliverTests {
         }
 
         // Second cycle: only the recovered server engine runs.
-        try await deliver(EventEntry.self, to: serverBackend)
+        try await deliver(EventEntry.self, to: serverBackend, now: Date().addingTimeInterval(DeliveryEntry.retryDelay))
 
         #expect(event.delivery(for: "server")?.isDelivered == true)
         #expect(server.records.count(of: "Event") == 1)
@@ -227,9 +227,11 @@ struct DeliverTests {
             server.writeErrors.append(Self.testError)
         }
 
-        for _ in 0..<DeliveryEntry.maxAttempts {
+        let start = Date()
+
+        for pass in 0..<DeliveryEntry.maxAttempts {
             await #expect(throws: (any Error).self) {
-                try await deliver(EventEntry.self, to: serverBackend)
+                try await deliver(EventEntry.self, to: serverBackend, now: start.addingDay(pass))
             }
         }
 
@@ -240,8 +242,91 @@ struct DeliverTests {
         #expect(event.delivery(for: "server")?.isAbandoned == true)
 
         // Once abandoned, no further write is attempted.
-        try await deliver(EventEntry.self, to: serverBackend)
+        try await deliver(EventEntry.self, to: serverBackend, now: start.addingDay(DeliveryEntry.maxAttempts))
         #expect(server.records.count(of: "Event") == 0)
+    }
+
+    @Test("Passes inside the retry pause don't spend more attempts")
+    func pauseHoldsRejectedRecord() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        server.reject = { _ in true }
+        let start = Date()
+
+        await #expect(throws: (any Error).self) {
+            try await deliver(EventEntry.self, to: serverBackend, now: start)
+        }
+        for second in 1..<DeliveryEntry.maxAttempts {
+            try await deliver(EventEntry.self, to: serverBackend, now: start.addingTimeInterval(TimeInterval(second)))
+        }
+
+        #expect(server.writeCount == 1)
+        #expect(event.delivery(for: "server")?.attempts == 1)
+        #expect(event.delivery(for: "server")?.isPending == true)
+    }
+
+    @Test("A rejected record is sent again once its pause is over")
+    func retryAfterPause() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        server.writeErrors.append(Self.testError)
+        let start = Date()
+
+        await #expect(throws: (any Error).self) {
+            try await deliver(EventEntry.self, to: serverBackend, now: start)
+        }
+        try await deliver(EventEntry.self, to: serverBackend, now: start.addingTimeInterval(DeliveryEntry.retryDelay))
+
+        #expect(server.writeCount == 2)
+        #expect(event.delivery(for: "server")?.isDelivered == true)
+        #expect(server.records.count(of: "Event") == 1)
+    }
+
+    @Test("Each rejection doubles the retry pause")
+    func pauseDoubles() async throws {
+        let event = EventEntry.stub(name: "login", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        server.reject = { _ in true }
+        let start = Date()
+        let retry = start.addingTimeInterval(DeliveryEntry.retryDelay)
+
+        for now in [start, retry] {
+            await #expect(throws: (any Error).self) {
+                try await deliver(EventEntry.self, to: serverBackend, now: now)
+            }
+        }
+        try await deliver(EventEntry.self, to: serverBackend, now: retry.addingTimeInterval(DeliveryEntry.retryDelay))
+        #expect(server.writeCount == 2)
+
+        server.reject = nil
+        try await deliver(EventEntry.self, to: serverBackend, now: retry.addingTimeInterval(2 * DeliveryEntry.retryDelay))
+        #expect(event.delivery(for: "server")?.isDelivered == true)
+    }
+
+    @Test("A requeue lifts the retry pause")
+    func requeueLiftsPause() async throws {
+        let session = SessionEntry.stub(date: Date(), in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [cloudBackend], in: context)
+
+        cloud.writeErrors.append(Self.testError)
+        await #expect(throws: (any Error).self) {
+            try await deliver(SessionEntry.self, to: cloudBackend)
+        }
+
+        session.endDate = Date()
+        session.requeue()
+        try context.save()
+        try await deliver(SessionEntry.self, to: cloudBackend)
+
+        #expect(session.delivery(for: "cloud")?.isDelivered == true)
+        #expect(session.delivery(for: "cloud")?.nextAttemptDate == nil)
     }
 
     @Test("A rejected record burns its own budget, not the whole batch")

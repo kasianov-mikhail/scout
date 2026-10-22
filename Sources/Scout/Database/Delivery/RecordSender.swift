@@ -30,8 +30,8 @@ private struct Outcome {
 }
 
 extension RecordSender {
-    func deliver(in context: NSManagedObjectContext) async throws {
-        let request = NSFetchRequest<T>(entityName: String(describing: T.self), pendingBackendID: id)
+    func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws {
+        let request = NSFetchRequest<T>(entityName: String(describing: T.self), pendingBackendID: id, now: now)
         var count = DeliveryEntry.pageSize
 
         while count == DeliveryEntry.pageSize {
@@ -56,7 +56,7 @@ extension RecordSender {
                     guard let delivery = objects[index].delivery(for: id) else {
                         continue
                     }
-                    delivery.attempts += 1
+                    delivery.reject(now: now)
 
                     if delivery.attempts >= DeliveryEntry.maxAttempts {
                         print("Giving up on a \(T.self) record for backend \(id) after \(delivery.attempts) failed attempts: \(error)")
