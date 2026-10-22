@@ -1,6 +1,6 @@
 ---
 name: aggregation-choice
-description: Price a Scout dashboard read: whether it should use a pre-aggregated source (a scout-db aggregate in the Native catalog, or a scout-server endpoint for Hosted) or stay a raw record read, which other read patterns make it grow with data (repeated identical reads, one request per ID, a full readAll, a cache that only forwards), and the gain or loss of the change at 1k, 10k and 100k DAU, ranked by seconds saved. Use when adding or changing any dashboard screen, provider or read on Native or Hosted, a catalog aggregate (`CatalogEntry+Entries.swift`, `CatalogEntry+Metrics.swift`), the record cache, or a scout-server metrics endpoint.
+description: "Price a Scout dashboard read: whether it should use a pre-aggregated source (a scout-db aggregate in the Native catalog, or a scout-server endpoint for Hosted) or stay a raw record read, which other read patterns make it grow with data (repeated identical reads, one request per ID, a full readAll, a cache that only forwards), and the gain or loss of the change at 1k, 10k and 100k DAU, ranked by seconds saved. Use when adding or changing any dashboard screen, provider or read on Native or Hosted, a catalog aggregate (`CatalogEntry+Entries.swift`, `CatalogEntry+Metrics.swift`), the record cache, or a scout-server metrics endpoint."
 ---
 
 The "Aggregated reads" rules in `.claude/CLAUDE.md` say what is allowed. This skill says when an aggregate is worth its cost. An aggregate is not free. It moves cost from the read on one dashboard to the write on every user device.
