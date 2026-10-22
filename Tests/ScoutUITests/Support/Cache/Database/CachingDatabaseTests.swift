@@ -374,6 +374,10 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
         ranges.map { _ in 0 }
     }
 
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        []
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         series(in: query.range)
     }

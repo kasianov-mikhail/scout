@@ -34,6 +34,10 @@ struct DefaultDatabase: Database {
         ranges.map { _ in 0 }
     }
 
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        []
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         []
     }

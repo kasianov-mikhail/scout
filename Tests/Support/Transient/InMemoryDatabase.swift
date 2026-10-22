@@ -96,6 +96,10 @@ extension InMemoryDatabase {
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
         ranges.map { _ in 0 }
     }
+
+    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+        []
+    }
 }
 
 extension InMemoryDatabase {

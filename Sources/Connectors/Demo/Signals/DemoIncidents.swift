@@ -175,7 +175,7 @@ struct DemoIncidents {
                     session.versioned(
                         Hang(
                             name: signature.name,
-                            fingerprint: "hang-\(signature.reason)",
+                            fingerprint: CrashFingerprint(name: signature.name, reason: nil, stackTrace: signature.frames).value,
                             reason: signature.reason,
                             stackTrace: signature.frames,
                             duration: random.double(in: 0.3...6),

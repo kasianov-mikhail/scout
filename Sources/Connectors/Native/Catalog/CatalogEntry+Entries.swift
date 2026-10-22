@@ -196,6 +196,7 @@ extension CatalogEntry {
         aggregates: [
             .count(by: lifecycleKey, at: "date"),
             .count(by: "device_id", at: "date", parts: devicePageParts),
+            .count(by: "fingerprint", at: "date"),
         ],
         derive: lifecycleKey
     )
@@ -209,7 +210,10 @@ extension CatalogEntry {
             .init(name: "date", type: .timestamp),
             .init(name: lifecycleKey, type: .string),
         ],
-        aggregates: [.count(by: lifecycleKey, at: "date")],
+        aggregates: [
+            .count(by: lifecycleKey, at: "date"),
+            .count(by: "fingerprint", at: "date"),
+        ],
         derive: lifecycleKey
     )
 
