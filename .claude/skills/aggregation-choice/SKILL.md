@@ -122,6 +122,9 @@ Rules for the cells:
 - The time with aggregation off is the raw read of the same records with the same filters. For a published entity with no history before `since`, both sides cost the same, so the ratio is 1.
 - A removed aggregate flips the sides: the ratio is the time with the aggregate divided by the time without it. A write-only aggregate gives 1 on every read, and its row says "remove".
 - Round to two significant digits. Keep the ratios, not the percentages, in the table.
+- Give a range, not one number, when the ratio depends on the app's profile rather than on DAU. Examples: the share of meter samples among double metrics, the number of timers per session, the number of event names or fingerprints. Write the range for a light and a heavy profile, such as `0.1–0.9`, and name the profile value that moves it.
+- Mark a ratio that comes from a measurement, such as a call count from a test harness, and keep it apart from a modeled one. A modeled ratio counts records only; when several calls run one after another, say that the latency between them is not included.
+- A ratio that is equal across the tiers is expected when both sides grow linearly with DAU. Do not read it as a measured constant: the profile value behind it still varies between apps.
 - Below the table, give the pages, vectors and seconds behind each ratio, once.
 
 ## Aggregate when
