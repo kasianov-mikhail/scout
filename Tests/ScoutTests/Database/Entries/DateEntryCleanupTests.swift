@@ -141,6 +141,32 @@ struct DateEntryCleanupTests {
         #expect(try context.fetchAll(SessionEntry.self).isEmpty)
     }
 
+    @Test("Keeps a delivered closed session while its launch runs")
+    func keepsClosedSessionOfRunningLaunch() throws {
+        let recent = Date(timeIntervalSinceNow: -60)
+        let launch = LaunchEntry.stub(date: recent, in: context)
+        let session = SessionEntry.stub(date: recent, endDate: recent, launch: launch, in: context)
+        session.seedDelivery(pending: false, for: "cloud", in: context)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(SessionEntry.self).count == 1)
+    }
+
+    @Test("Deletes a delivered closed session once its launch ended")
+    func deletesClosedSessionOfEndedLaunch() throws {
+        let recent = Date(timeIntervalSinceNow: -60)
+        let launch = LaunchEntry.stub(date: recent, endDate: recent, in: context)
+        let session = SessionEntry.stub(date: recent, endDate: recent, launch: launch, in: context)
+        session.seedDelivery(pending: false, for: "cloud", in: context)
+        try context.save()
+
+        try DateEntry.cleanup(backends: [makeBackend(id: "cloud")], in: context)
+
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
+    }
+
     @Test("Keeps markers regardless of age")
     func keepsOldMarkers() throws {
         let marker = context.insert(FirstSeenEntry.self)
