@@ -37,17 +37,50 @@ struct NetworkProviderTests {
         #expect(report.distributions["plain_timer"] == nil)
     }
 
-    @Test("fetchIfNeeded requests only today's hourly points")
-    func requestsTodayOnly() async throws {
+    @Test("fetchIfNeeded requests today's hourly int points in one read")
+    func requestsTodayOnce() async throws {
         let database = CategoryDatabaseStub(series: [])
 
         let provider = NetworkProvider()
         await provider.fetchIfNeeded(in: database)
 
-        let categories = LatencyBuckets.categories + StatusBuckets.categories
-        #expect(Set(database.queries.compactMap(\.category)) == Set(categories))
-        #expect(database.queries.allSatisfy { $0.range == Period.today.initialRange })
-        #expect(database.queries.allSatisfy { $0.bucket == .hour })
+        let query = try #require(database.queries.first)
+        #expect(database.queries.count == 1)
+        #expect(query.name == nil)
+        #expect(query.category == nil)
+        #expect(query.values == .int)
+        #expect(query.reduce == .sum)
+        #expect(query.range == Period.today.initialRange)
+        #expect(query.bucket == .hour)
+    }
+
+    @Test("fetchIfNeeded ignores series outside the latency and status categories")
+    func ignoresOtherCategories() async throws {
+        let network = [
+            makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 10)]),
+            makeSeries(name: "GET /a", category: "status_4xx", points: [(base, 3)]),
+            makeSeries(name: "GET /a", category: "timer_le_100", points: [(base, 13)]),
+            makeSeries(name: "POST /b", category: "status_5xx", points: [(base, 2)]),
+        ]
+        let other = [
+            makeSeries(name: "GET /a", category: "recorder_le_10", points: [(base, 7)]),
+            makeSeries(name: "GET /a", category: nil, points: [(base, 40)]),
+            makeSeries(name: "POST /b", category: "counter_reset", points: [(base, 1)]),
+        ]
+        let database = CategoryDatabaseStub(series: network + other)
+
+        let provider = NetworkProvider()
+        await provider.fetchIfNeeded(in: database)
+
+        let report = try #require(try provider.result?.get())
+        let expected = NetworkReport(series: network)
+        let range = base..<base.adding(.day)
+
+        #expect(database.queries.count == 1)
+        #expect(report.endpoints(in: range).map(\.name) == expected.endpoints(in: range).map(\.name))
+        #expect(report.endpoints(in: range).map(\.requests) == expected.endpoints(in: range).map(\.requests))
+        #expect(report.summary(in: range) == expected.summary(in: range))
+        #expect(report.percentiles(in: range) == expected.percentiles(in: range))
     }
 
     @Test("fetchIfNeeded surfaces database errors")
@@ -61,7 +94,7 @@ struct NetworkProviderTests {
         }
     }
 
-    private func makeSeries(name: String, category: String, points: [(Date, Int)]) -> MetricSeries {
+    private func makeSeries(name: String, category: String?, points: [(Date, Int)]) -> MetricSeries {
         MetricSeries(
             name: name,
             category: category,
@@ -116,7 +149,7 @@ private final class CategoryDatabaseStub: DatabaseReader, @unchecked Sendable {
 
     func metricSeries(matching query: MetricSeriesQuery) async throws -> [MetricSeries] {
         lock.withLock { recorded.append(query) }
-        return series.filter { $0.category == query.category }
+        return series.filter { query.category == nil || $0.category == query.category }
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
