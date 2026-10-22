@@ -18,7 +18,7 @@ import Scout
 /// that match its filters, truncated to the requested limit (without a
 /// continuation cursor). Reads can be suspended behind a `Gate` to freeze a
 /// fetch mid-flight, and are counted per record type so tests can assert how
-/// many queries a flow issued.
+/// many queries a flow issued and what they asked for.
 ///
 final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private let lock = NSLock()
@@ -26,10 +26,14 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private var seriesStorage: [MetricSeries] = []
     private var indexes: [String: IncidentIndex] = [:]
     private var counts: [String: Int] = [:]
+    private var queries: [RecordQuery] = []
     private var seriesCalls = 0
 
     /// When set, every read suspends until the gate opens.
     var gate: Gate?
+
+    /// When set, every record read throws it.
+    var failure: (any Error)?
 
     func add(_ records: Record...) {
         lock.lock()
@@ -57,6 +61,12 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         return counts[recordType] ?? 0
     }
 
+    func queries(of recordType: String) -> [RecordQuery] {
+        lock.lock()
+        defer { lock.unlock() }
+        return queries.filter { $0.recordType.recordType == recordType }
+    }
+
     var seriesReadCount: Int {
         lock.lock()
         defer { lock.unlock() }
@@ -69,6 +79,9 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         await gate?.wait()
+        if let failure {
+            throw failure
+        }
         return chunk(matching: query, limit: limit)
     }
 
@@ -76,6 +89,7 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         counts[query.recordType.recordType, default: 0] += 1
+        queries.append(query)
 
         return RecordChunk(page: (storage[query.recordType.recordType] ?? []).matching(query), limit: limit)
     }
