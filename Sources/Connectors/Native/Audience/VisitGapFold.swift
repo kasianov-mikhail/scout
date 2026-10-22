@@ -11,7 +11,7 @@ import ScoutDB
 
 struct VisitGapFold {
     private let gaps: [Date: [Int: Int]]
-    private let legacyDays: Set<Date>
+    private let legacyBalance: [Date: Int]
 
     init(gaps: [SeriesPoint], versions: [SeriesPoint], sessions: [SeriesPoint]) {
         self.gaps = gaps.reduce(into: [:]) { days, point in
@@ -19,10 +19,12 @@ struct VisitGapFold {
             days[point.date.startOfDay, default: [:]][gap, default: 0] += Int(point.value)
         }
 
-        let stamped = Set(versions.map(DayVersion.init(gap:)))
-        let sessionDays = Set(sessions.map(DayVersion.init(session:)))
+        let stamped = Set(versions.map(\.group))
 
-        self.legacyDays = Set(sessionDays.subtracting(stamped).map(\.day))
+        self.legacyBalance = sessions.reduce(into: [:]) { days, point in
+            let isLegacy = !stamped.contains(LifecycleKey(point.group).version ?? "")
+            days[point.date.startOfDay, default: 0] += Int(point.value) * (isLegacy ? 100 - legacyPercent : -legacyPercent)
+        }
     }
 
     func points(in range: Range<Date>) -> [ActivityPoint] {
@@ -45,7 +47,8 @@ struct VisitGapFold {
     }
 
     private func isStamped(day: Date) -> Bool {
-        (0..<monthWindow).map { day.addingDay(-$0) }.allSatisfy { gaps[$0] != nil && !legacyDays.contains($0) }
+        let window = (0..<monthWindow).map { day.addingDay(-$0) }
+        return window.allSatisfy { gaps[$0] != nil } && window.reduce(0) { $0 + (legacyBalance[$1] ?? 0) } <= 0
     }
 
     private func point(day: Date) -> ActivityPoint? {
@@ -72,21 +75,7 @@ struct VisitGapFold {
 }
 
 private let monthWindow = 30
-
-private struct DayVersion: Hashable {
-    let day: Date
-    let version: String
-}
-
-extension DayVersion {
-    fileprivate init(gap: SeriesPoint) {
-        self.init(day: gap.date.startOfDay, version: gap.group)
-    }
-
-    fileprivate init(session: SeriesPoint) {
-        self.init(day: session.date.startOfDay, version: LifecycleKey(session.group).version ?? "")
-    }
-}
+private let legacyPercent = 1
 
 extension Range<Date> {
     fileprivate var days: [Date] {

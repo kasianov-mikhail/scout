@@ -20,7 +20,7 @@ struct NativeActivityTests {
     @Test("Activity of devices that stamp gaps comes from the gap series alone")
     func stampedActivity() async throws {
         let visits = makeVisits()
-        let database = try await makeDatabase(records: visits.flatMap { [$0.session(version: "2.0"), $0.gapRecord] })
+        let database = try await makeDatabase(cloud: ScoutDBTesting.InMemoryDatabase(), records: visits.flatMap { [$0.session(version: "2.0"), $0.gapRecord] })
 
         for range in [day(30)..<day(90), day(40)..<day(75, hour: 6)] {
             let expected = ActivityPoint.points(visits: visits.filter { $0.date < range.upperBound }.map(\.datedID), in: range)
@@ -38,7 +38,7 @@ struct NativeActivityTests {
             let session = visit.session(version: isStamped ? "2.0" : "1.0")
             return isStamped ? [visit.visitRecord, session, visit.upgradedGapRecord(visits: visits)] : [visit.visitRecord, session]
         }
-        let database = try await makeDatabase(records: records)
+        let database = try await makeDatabase(cloud: ScoutDBTesting.InMemoryDatabase(), records: records)
 
         for range in [day(0)..<day(90), day(20)..<day(60), day(70)..<day(90)] {
             let expected = ActivityPoint.points(visits: visits.map(\.datedID), in: range)
@@ -46,6 +46,36 @@ struct NativeActivityTests {
             #expect(!expected.isEmpty)
             #expect(try await database.activity(in: range).map(\.values) == expected.map(\.values))
         }
+    }
+
+    @Test("Sessions are read only from the first day with visit gaps")
+    func sessionReadStartsAtFirstGap() async throws {
+        let stamped = try await requests(legacyDays: 0..<0, gapDays: 60..<90)
+        let early = try await requests(legacyDays: 0..<50, gapDays: 60..<90)
+
+        #expect(early.total == stamped.total)
+        #expect(early.records == stamped.records)
+    }
+
+    @Test("Without visit gaps no session is read")
+    func sessionReadSkippedWithoutGaps() async throws {
+        let empty = try await requests(legacyDays: 0..<0, gapDays: 0..<0)
+        let sessions = try await requests(legacyDays: 0..<90, gapDays: 0..<0)
+
+        #expect(sessions.total == empty.total)
+        #expect(sessions.records == empty.records)
+    }
+
+    private func requests(legacyDays: Range<Int>, gapDays: Range<Int>) async throws -> RequestTally {
+        let legacy = legacyDays.map { Visit(device: 0, offset: $0, gap: 1).session(version: "1.0") }
+        let stamped = gapDays.map { Visit(device: 1, offset: $0, gap: 1) }.flatMap { [$0.session(version: "2.0"), $0.gapRecord] }
+
+        let cloud = ScoutDBTesting.InMemoryDatabase()
+        let database = try await makeDatabase(cloud: cloud, records: legacy + stamped)
+
+        cloud.resetRequests()
+        _ = try await database.activity(in: day(70)..<day(90))
+        return cloud.requests
     }
 }
 
@@ -126,8 +156,7 @@ private func isVisit(device: Int, day: Int) -> Bool {
     }
 }
 
-private func makeDatabase(records: [Record]) async throws -> NativeDatabase {
-    let cloud = ScoutDBTesting.InMemoryDatabase()
+private func makeDatabase(cloud: ScoutDBTesting.InMemoryDatabase, records: [Record]) async throws -> NativeDatabase {
     let registry = SchemaRegistry(database: cloud)
     let store = EntityStore(database: cloud, registry: registry)
 

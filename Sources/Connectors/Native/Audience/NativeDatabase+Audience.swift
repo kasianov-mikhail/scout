@@ -25,12 +25,8 @@ extension NativeDatabase: AudienceReader {
             group: "app_version",
             in: span
         )
-        async let sessions = store.query(SessionEntry.recordType).series(
-            metric: .sum,
-            group: CatalogEntry.lifecycleKey,
-            in: span
-        )
 
+        let sessions = try await store.sessionVersions(from: gaps, in: span)
         let fold = try await VisitGapFold(gaps: gaps, versions: versions, sessions: sessions)
 
         var points = fold.points(in: range)
@@ -54,6 +50,18 @@ extension NativeDatabase: AudienceReader {
 }
 
 extension EntityStore {
+    fileprivate func sessionVersions(from gaps: [SeriesPoint], in span: Range<Date>) async throws -> [SeriesPoint] {
+        guard let first = gaps.map(\.date).min()?.startOfDay else {
+            return []
+        }
+
+        return try await query(SessionEntry.recordType).series(
+            metric: .sum,
+            group: CatalogEntry.lifecycleKey,
+            in: first..<span.upperBound
+        )
+    }
+
     fileprivate func deviceActivity(in range: Range<Date>) async throws -> [ActivityPoint] {
         let visits = try await query(VisitEntry.recordType).series(
             metric: .sum,
