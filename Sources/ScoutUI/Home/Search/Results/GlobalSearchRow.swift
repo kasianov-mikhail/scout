@@ -49,10 +49,14 @@ struct GlobalSearchRow: View {
             DeviceDetailView(device: device)
         case .release(let release):
             VersionDetailView(release: release)
-        case .crash(let group):
+        case .crash(.group(let group)):
             CrashGroupDetailView(group: group)
-        case .hang(let group):
+        case .crash(.tally(let tally)):
+            IncidentGroupLoader(tally: tally, content: CrashGroupDetailView.init(occurrences:))
+        case .hang(.group(let group)):
             HangGroupDetailView(group: group)
+        case .hang(.tally(let tally)):
+            IncidentGroupLoader(tally: tally, content: HangGroupDetailView.init(occurrences:))
         }
     }
 }
@@ -84,10 +88,10 @@ struct GlobalSearchBadge: View {
                 GlobalSearchRow(hit: .release(release), query: "3.2")
             }
             if let group = IncidentGroup.groups(from: [Crash].samples).first {
-                GlobalSearchRow(hit: .crash(group), query: "range")
+                GlobalSearchRow(hit: .crash(.group(group)), query: "range")
             }
             if let group = IncidentGroup.groups(from: [Hang].samples).first {
-                GlobalSearchRow(hit: .hang(group), query: "main")
+                GlobalSearchRow(hit: .hang(.group(group)), query: "main")
             }
         }
         .environmentObject(Tint())

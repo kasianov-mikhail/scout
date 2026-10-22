@@ -9,11 +9,11 @@ import Foundation
 import Scout
 
 extension Version: Fixture {
-    static func sample(appVersion: String = "2.4.1", buildNumber: String = "214", minutesAgo: Double = 0, launchID: UUID = UUID()) -> Version {
+    static func sample(appVersion: String, buildNumber: String, minutesAgo: Double) -> Version {
         Version(
             appVersion: appVersion,
             buildNumber: buildNumber,
-            launchID: launchID,
+            launchID: UUID(),
             date: Date(timeIntervalSinceNow: -minutesAgo * 60),
             id: UUID().uuidString
         )

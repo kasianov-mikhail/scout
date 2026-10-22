@@ -19,7 +19,7 @@ struct DateEntryCleanupTests {
     @Test("Deletes synced events older than 7 days")
     func deletesSyncedOldEvent() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        EventEntry.stub(name: "old", date: old, synced: true, in: context)
+        EventEntry.stub(name: "old", date: old, in: context)
         try context.save()
 
         try DateEntry.cleanup(backends: [], in: context)
@@ -30,7 +30,7 @@ struct DateEntryCleanupTests {
     @Test("Deletes synced launches older than 7 days")
     func deletesSyncedOldLaunch() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        LaunchEntry.stub(date: old, synced: true, endDate: old, in: context)
+        LaunchEntry.stub(date: old, endDate: old, in: context)
         try context.save()
 
         try DateEntry.cleanup(backends: [], in: context)
@@ -41,9 +41,9 @@ struct DateEntryCleanupTests {
     @Test("Keeps delivered one-shot entries regardless of age")
     func keepsOneShotEntries() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        DeviceEntry.stub(date: old, synced: true, in: context)
-        InstallEntry.stub(date: old, synced: true, in: context)
-        VersionEntry.stub(date: old, synced: true, in: context)
+        DeviceEntry.stub(date: old, in: context)
+        InstallEntry.stub(date: old, in: context)
+        VersionEntry.stub(date: old, in: context)
         try context.save()
 
         try DateEntry.cleanup(backends: [], in: context)
@@ -56,7 +56,7 @@ struct DateEntryCleanupTests {
     @Test("Keeps synced objects newer than 7 days")
     func keepsSyncedRecent() throws {
         let recent = Date(timeIntervalSinceNow: -6 * 86400)
-        EventEntry.stub(name: "recent", date: recent, synced: true, in: context)
+        EventEntry.stub(name: "recent", date: recent, in: context)
         try context.save()
 
         try DateEntry.cleanup(backends: [], in: context)
@@ -67,7 +67,7 @@ struct DateEntryCleanupTests {
     @Test("Keeps a synced old launch still referenced by another record")
     func keepsReferencedLaunch() throws {
         let old = Date(timeIntervalSinceNow: -8 * 86400)
-        let launch = LaunchEntry.stub(date: old, synced: true, in: context)
+        let launch = LaunchEntry.stub(date: old, in: context)
         let session = SessionEntry.stub(date: old, launch: launch, in: context)
         EventEntry.stub(name: "child", session: session, in: context)
         try context.save()

@@ -52,19 +52,18 @@ struct VisitGapFold {
         guard let last = days.last else {
             return nil
         }
-        guard days.count <= monthWindow, days.allSatisfy(hasStampedVisits) else {
+        guard days.count <= monthWindow, isStamped(days: days) else {
             return nil
         }
         return users(day: last, window: days.count)
     }
 
     private func isStamped(day: Date) -> Bool {
-        let window = (0..<monthWindow).map { day.addingDay(-$0) }
-        return window.allSatisfy { gaps[$0] != nil } && window.reduce(0) { $0 + (legacyBalance[$1] ?? 0) } <= 0
+        isStamped(days: (0..<monthWindow).map { day.addingDay(-$0) })
     }
 
-    private func hasStampedVisits(day: Date) -> Bool {
-        gaps[day] != nil && !legacyDays.contains(day)
+    private func isStamped(days: [Date]) -> Bool {
+        days.allSatisfy { gaps[$0] != nil } && days.reduce(0) { $0 + (legacyBalance[$1] ?? 0) } <= 0
     }
 
     private func point(day: Date) -> ActivityPoint? {

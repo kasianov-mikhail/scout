@@ -19,31 +19,4 @@ extension Telemetry {
             self == .counter || self == .floatingCounter
         }
     }
-
-    enum ExportError: LocalizedError {
-        case invalidName
-
-        var errorDescription: String? {
-            "Invalid telemetry name. Expected one of: " + Export.allCases.map(\.rawValue).joined(separator: ", ")
-        }
-    }
-
-    init(name: String, value: Double) throws {
-        guard let type = Export(rawValue: name) else {
-            throw ExportError.invalidName
-        }
-
-        switch type {
-        case .counter:
-            self = .counter(Int(value))
-        case .floatingCounter:
-            self = .floatingCounter(value)
-        case .meter:
-            self = .meter(value)
-        case .recorder:
-            self = .recorder(value)
-        case .timer:
-            self = .timer(value)
-        }
-    }
 }

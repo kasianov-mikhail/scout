@@ -20,12 +20,6 @@ extension SyncableEntry {
         row.attempts = attempts
         return row
     }
-
-    func setSynced(_ synced: Bool, in context: NSManagedObjectContext) {
-        for row in deliveries {
-            context.delete(row)
-        }
-    }
 }
 
 extension DeliveryEntry {

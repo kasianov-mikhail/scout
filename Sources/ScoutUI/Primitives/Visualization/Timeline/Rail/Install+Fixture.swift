@@ -9,8 +9,9 @@ import Foundation
 import Scout
 
 extension Install: Fixture {
-    static func sample(minutesAgo: Double = 0, installID: UUID = UUID(), deviceID: UUID = UUID()) -> Install {
-        Install(
+    static func sample(minutesAgo: Double, deviceID: UUID) -> Install {
+        let installID = UUID()
+        return Install(
             date: Date(timeIntervalSinceNow: -minutesAgo * 60),
             id: installID.uuidString,
             installID: installID,

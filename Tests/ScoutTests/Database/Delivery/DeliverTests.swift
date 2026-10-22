@@ -138,7 +138,7 @@ struct DeliverTests {
 
     @Test("A backend abandoned after too many attempts is no longer retried")
     func abandonedBackendSettles() async throws {
-        let event = EventEntry.stub(name: "login", synced: true, in: context)
+        let event = EventEntry.stub(name: "login", in: context)
         event.seedDelivery(for: "cloud", in: context)
         // The server is already at the attempt ceiling and still owes its raw record.
         event.seedDelivery(attempts: Int16(DeliveryEntry.maxAttempts), for: "server", in: context)

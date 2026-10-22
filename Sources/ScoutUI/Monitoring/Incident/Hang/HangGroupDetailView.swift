@@ -9,18 +9,21 @@ import Scout
 import SwiftUI
 
 struct HangGroupDetailView: View {
-    let group: IncidentGroup<Hang>
-
     @StateObject private var occurrences: IncidentOccurrencesProvider<Hang>
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
 
     init(group: IncidentGroup<Hang>, breakdown: IncidentBreakdownProvider? = nil) {
-        self.group = group
-        self._occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
-        self._breakdown = StateObject(
+        _occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
+        _breakdown = StateObject(
             wrappedValue: breakdown
                 ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+    }
+
+    init(occurrences: IncidentOccurrencesProvider<Hang>) {
+        _occurrences = StateObject(wrappedValue: occurrences)
+        _breakdown = StateObject(
+            wrappedValue: IncidentBreakdownProvider(deviceIDs: occurrences.group.deviceIDs, sessionIDs: occurrences.group.sessionIDs))
     }
 
     var body: some View {
@@ -57,7 +60,7 @@ struct HangGroupDetailView: View {
         }
         .navigationTint(IncidentKind.hang.color)
         .exportToolbar(text: HangGroupExport(group: occurrences.group).text, tint: .primary)
-        .monospacedNavigationTitle(en: group.name)
+        .monospacedNavigationTitle(en: occurrences.group.name)
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }

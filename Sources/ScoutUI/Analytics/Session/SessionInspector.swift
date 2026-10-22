@@ -8,15 +8,10 @@
 import SwiftUI
 
 struct SessionInspector: View {
-    let sessionID: UUID
-    let deviceID: UUID?
-
     @StateObject private var events: EventProvider
     @StateObject private var info: SessionInfoProvider
 
     init(sessionID: UUID, deviceID: UUID?, events: EventProvider? = nil, info: SessionInfoProvider? = nil) {
-        self.sessionID = sessionID
-        self.deviceID = deviceID
         self._events = StateObject(wrappedValue: events ?? EventProvider(filter: EventQuery(sessionID: sessionID)))
         self._info = StateObject(wrappedValue: info ?? SessionInfoProvider(sessionID: sessionID, deviceID: deviceID))
     }

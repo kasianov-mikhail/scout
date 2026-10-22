@@ -32,12 +32,12 @@ import Testing
         #expect(try await !records(Event.self).isEmpty)
     }
 
-    @Test func incidentTalliesMatchTheGroupedRecords() async throws {
+    @Test func incidentIndexMatchesTheGroupedRecords() async throws {
         let crashes = try await records(Crash.self).map(Crash.init(record:)).filter { $0.date.map(range.contains) == true }
         let hangs = try await records(Hang.self).map(Hang.init(record:)).filter { $0.date.map(range.contains) == true }
 
-        let crashTallies = try await database.incidentTallies(recordType: Crash.recordType, in: range)
-        let hangTallies = try await database.incidentTallies(recordType: Hang.recordType, in: range)
+        let crashTallies = try #require(try await database.incidentIndex(recordType: Crash.recordType, in: range)).tallies
+        let hangTallies = try #require(try await database.incidentIndex(recordType: Hang.recordType, in: range)).tallies
 
         #expect(Dictionary(crashTallies.map { ($0.fingerprint, $0.count) }) { $1 } == Dictionary(grouping: crashes, by: \.fingerprint).mapValues(\.count))
         #expect(Dictionary(hangTallies.map { ($0.fingerprint, $0.count) }) { $1 } == Dictionary(grouping: hangs, by: \.fingerprint).mapValues(\.count))

@@ -9,13 +9,13 @@ import Foundation
 import Scout
 
 extension DemoDatabase: IncidentReader {
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
         let matching = records.filter { record in
             let date: Date? = record["date"]
             return record.recordType == recordType && date.map(range.contains) == true
         }
 
-        return Dictionary(grouping: matching) { $0["fingerprint"] ?? "" }.compactMap { fingerprint, records in
+        let tallies = Dictionary(grouping: matching) { $0["fingerprint"] ?? "" }.compactMap { fingerprint, records -> IncidentTally? in
             let dates = records.compactMap { $0["date"] as Date? }
 
             guard !fingerprint.isEmpty, let first = dates.min() else {
@@ -23,9 +23,12 @@ extension DemoDatabase: IncidentReader {
             }
             return IncidentTally(
                 fingerprint: fingerprint,
+                name: records[0]["name"] ?? "",
                 count: records.count,
                 firstHour: Calendar.utc.dateInterval(of: .hour, for: first)?.start ?? first
             )
         }
+
+        return IncidentIndex(tallies: tallies, unkeyed: nil)
     }
 }

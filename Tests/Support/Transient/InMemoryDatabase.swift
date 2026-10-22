@@ -97,13 +97,7 @@ extension InMemoryDatabase {
         ranges.map { _ in 0 }
     }
 
-    func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
-        []
-    }
-}
-
-extension InMemoryDatabase {
-    var events: [Record] {
-        records.filter { $0.recordType == EventEntry.recordType }
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
+        nil
     }
 }

@@ -12,7 +12,7 @@ import Testing
 @testable import ScoutUI
 
 struct GlobalSearchIndexTests {
-    private func makeIndex(series: [MetricSeries] = [], devices: [DeviceSummary] = [], releases: [ReleaseHealth] = [], crashes: [IncidentGroup<Crash>] = [], hangs: [IncidentGroup<Hang>] = []) -> GlobalSearchIndex {
+    private func makeIndex(series: [MetricSeries] = [], devices: [DeviceSummary] = [], releases: [ReleaseHealth] = [], crashes: [IncidentSearchEntry<Crash>] = [], hangs: [IncidentSearchEntry<Hang>] = []) -> GlobalSearchIndex {
         GlobalSearchIndex(series: series, devices: devices, releases: releases, crashes: crashes, hangs: hangs)
     }
 
@@ -107,16 +107,27 @@ struct GlobalSearchIndexTests {
 
     @Test("Crash groups match on name") func crashMatch() {
         let crashes = [Crash.stub(name: "NSRangeException"), Crash.stub(name: "SIGSEGV")]
-        let index = makeIndex(crashes: IncidentGroup.groups(from: crashes))
+        let index = makeIndex(crashes: IncidentGroup.groups(from: crashes).map(IncidentSearchEntry.group))
         let hits = index.hits(matching: "range")
 
         #expect(hits.map(\.title) == ["NSRangeException"])
         #expect(hits.map(\.category) == [.crashes])
     }
 
+    @Test("Tallied crashes match on name and keep their fingerprint") func tallyMatch() {
+        let index = makeIndex(crashes: [
+            .tally(IncidentTally(fingerprint: "range", name: "NSRangeException", count: 4, firstHour: Date())),
+            .tally(IncidentTally(fingerprint: "segv", name: "SIGSEGV", count: 1, firstHour: Date())),
+        ])
+        let hits = index.hits(matching: "range")
+
+        #expect(hits.map(\.title) == ["NSRangeException"])
+        #expect(hits.map(\.id) == ["\(GlobalSearchCategory.crashes.rawValue):range"])
+    }
+
     @Test("Hang groups match on name") func hangMatch() {
         let hangs = [Hang.stub(name: "MainThreadStall"), Hang.stub(name: "DiskWriteStall")]
-        let index = makeIndex(hangs: IncidentGroup.groups(from: hangs))
+        let index = makeIndex(hangs: IncidentGroup.groups(from: hangs).map(IncidentSearchEntry.group))
         let hits = index.hits(matching: "mainthread")
 
         #expect(hits.map(\.title) == ["MainThreadStall"])
@@ -132,8 +143,8 @@ struct GlobalSearchIndexTests {
             ],
             devices: [makeDevice(model: "iPhone SE")],
             releases: [makeRelease("1.0-session")],
-            crashes: IncidentGroup.groups(from: [Crash.stub(name: "SessionStoreCrash")]),
-            hangs: IncidentGroup.groups(from: [Hang.stub(name: "SessionSaveStall")])
+            crashes: IncidentGroup.groups(from: [Crash.stub(name: "SessionStoreCrash")]).map(IncidentSearchEntry.group),
+            hangs: [.tally(IncidentTally(fingerprint: "stall", name: "SessionSaveStall", count: 1, firstHour: Date()))]
         )
         let hits = index.hits(matching: "se")
 
