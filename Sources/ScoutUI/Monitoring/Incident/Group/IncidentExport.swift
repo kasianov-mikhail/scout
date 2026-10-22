@@ -80,3 +80,31 @@ struct IncidentGroupExport<Element: Incident> {
         return .bullet(ids.isEmpty ? row : "\(row)  (\(ids.joined(separator: ", ")))")
     }
 }
+
+extension IncidentGroup {
+    fileprivate var exportSummary: String {
+        var parts = [Self.counted(count: count, noun: .occurrence, isExact: !isPartial)]
+        if affectedDevices > 0 {
+            parts.append(Self.counted(count: affectedDevices, noun: .device, isExact: hasAllRecords))
+        }
+        if affectedSessions > 0 {
+            parts.append(Self.counted(count: affectedSessions, noun: .session, isExact: hasAllRecords))
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    fileprivate var exportSeenLine: String? {
+        guard let first = firstDate, let last = lastDate else {
+            return nil
+        }
+        return "\(firstSeenLabel) \(ExportFormat.minute(first)) · Last seen \(ExportFormat.minute(last))"
+    }
+
+    private static func counted(count: Int, noun: ExportFormat.Noun, isExact: Bool) -> String {
+        isExact ? ExportFormat.counted(count, noun) : "\(count)+ \(noun.plural)"
+    }
+
+    fileprivate var exportTopFrame: String? {
+        representative.stackTrace.first { !$0.isEmpty }
+    }
+}

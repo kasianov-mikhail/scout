@@ -8,28 +8,6 @@
 import Foundation
 import Scout
 
-protocol Incident: Identifiable, Comparable, SessionContext where ID == String {
-    static var kind: IncidentKind { get }
-
-    var fingerprint: String { get }
-    var name: String { get }
-    var reason: String? { get }
-    var stackTrace: [String] { get }
-    var date: Date? { get }
-}
-
-extension Crash: Incident {
-    static let kind = IncidentKind.crash
-}
-
-extension Hang: Incident {
-    static let kind = IncidentKind.hang
-}
-
-extension ResourceException: Incident {
-    static let kind = IncidentKind.resource
-}
-
 struct IncidentGroup<Element: Incident>: Identifiable {
     let id: String
     let records: [Element]
@@ -153,67 +131,5 @@ extension IncidentGroup: Comparable {
             return lhs.count > rhs.count
         }
         return lhs.name < rhs.name
-    }
-}
-
-extension IncidentGroup {
-    static func groups(from records: [Element], keys: [Element.ID: String] = [:], tallies: [String: IncidentTally] = [:], hasMore: Bool = false) -> [IncidentGroup] {
-        let symbolicated = Set(keys.values)
-        let grouped = Dictionary(grouping: records) { keys[$0.id] ?? $0.fingerprint }
-
-        var owners: [String: Set<String>] = [:]
-        for (key, records) in grouped {
-            for record in records {
-                owners[record.fingerprint, default: []].insert(key)
-            }
-        }
-        let owned = tallies.filter { owners[$0.key]?.count == 1 }
-
-        return
-            grouped
-            .map { key, records in
-                IncidentGroup(
-                    id: key,
-                    records: records.sorted(),
-                    symbol: symbolicated.contains(key) ? key.symbolName : nil,
-                    tallies: owned,
-                    hasMore: hasMore
-                )
-            }
-            .sorted()
-    }
-}
-
-extension IncidentGroup {
-    var exportSummary: String {
-        var parts = [Self.counted(count: count, noun: .occurrence, isExact: !isPartial)]
-        if affectedDevices > 0 {
-            parts.append(Self.counted(count: affectedDevices, noun: .device, isExact: hasAllRecords))
-        }
-        if affectedSessions > 0 {
-            parts.append(Self.counted(count: affectedSessions, noun: .session, isExact: hasAllRecords))
-        }
-        return parts.joined(separator: " · ")
-    }
-
-    var exportSeenLine: String? {
-        guard let first = firstDate, let last = lastDate else {
-            return nil
-        }
-        return "\(firstSeenLabel) \(ExportFormat.minute(first)) · Last seen \(ExportFormat.minute(last))"
-    }
-
-    private static func counted(count: Int, noun: ExportFormat.Noun, isExact: Bool) -> String {
-        isExact ? ExportFormat.counted(count, noun) : "\(count)+ \(noun.plural)"
-    }
-
-    var exportTopFrame: String? {
-        representative.stackTrace.first { !$0.isEmpty }
-    }
-}
-
-extension String {
-    fileprivate var symbolName: String? {
-        split(separator: "|", maxSplits: 1).last.map(String.init)
     }
 }
