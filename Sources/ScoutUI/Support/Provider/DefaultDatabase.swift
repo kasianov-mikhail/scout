@@ -38,6 +38,10 @@ struct DefaultDatabase: Database {
         []
     }
 
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
+        nil
+    }
+
     func eventSeries(matching query: EventSeriesQuery) async throws -> [MetricSeries] {
         []
     }

@@ -61,8 +61,8 @@ extension GlobalSearchIndex {
             ],
             devices: .samples,
             releases: .samples,
-            crashes: IncidentGroup.groups(from: .samples),
-            hangs: IncidentGroup.groups(from: .samples)
+            crashes: IncidentGroup.groups(from: .samples).map(IncidentSearchEntry.group),
+            hangs: IncidentGroup.groups(from: .samples).map(IncidentSearchEntry.group)
         )
     }
 }

@@ -108,4 +108,9 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
         Issue.record("The incident list must not read the tallies")
         return []
     }
+
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
+        Issue.record("The incident list must not read the index")
+        return nil
+    }
 }

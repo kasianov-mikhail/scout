@@ -9,21 +9,28 @@ import Scout
 import SwiftUI
 
 struct CrashGroupDetailView: View {
-    let group: IncidentGroup<Crash>
-
     @StateObject private var occurrences: IncidentOccurrencesProvider<Crash>
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
 
     init(group: IncidentGroup<Crash>, breakdown: IncidentBreakdownProvider? = nil) {
-        self.group = group
-        self._occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
-        self._breakdown = StateObject(
+        _occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
+        _breakdown = StateObject(
             wrappedValue: breakdown
                 ?? IncidentBreakdownProvider(
                     deviceIDs: group.deviceIDs,
                     sessionIDs: group.sessionIDs
                 )
+        )
+    }
+
+    init(occurrences: IncidentOccurrencesProvider<Crash>) {
+        _occurrences = StateObject(wrappedValue: occurrences)
+        _breakdown = StateObject(
+            wrappedValue: IncidentBreakdownProvider(
+                deviceIDs: occurrences.group.deviceIDs,
+                sessionIDs: occurrences.group.sessionIDs
+            )
         )
     }
 
@@ -70,7 +77,7 @@ struct CrashGroupDetailView: View {
         }
         .navigationTint(.red)
         .exportToolbar(text: CrashGroupExport(group: occurrences.group).text, tint: .primary)
-        .monospacedNavigationTitle(en: group.name)
+        .monospacedNavigationTitle(en: occurrences.group.name)
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }

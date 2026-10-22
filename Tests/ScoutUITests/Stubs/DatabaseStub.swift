@@ -24,6 +24,7 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
     private let lock = NSLock()
     private var storage: [String: [Record]] = [:]
     private var seriesStorage: [MetricSeries] = []
+    private var indexes: [String: IncidentIndex] = [:]
     private var counts: [String: Int] = [:]
     private var seriesCalls = 0
 
@@ -42,6 +43,12 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         seriesStorage += series
+    }
+
+    func add(index: IncidentIndex, for recordType: String) {
+        lock.lock()
+        defer { lock.unlock() }
+        indexes[recordType] = index
     }
 
     func readCount(of recordType: String) -> Int {
@@ -133,6 +140,16 @@ final class DatabaseStub: DatabaseReader, @unchecked Sendable {
 
     func incidentTallies(recordType: String, in range: Range<Date>) async throws -> [IncidentTally] {
         []
+    }
+
+    func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
+        storedIndex(recordType)
+    }
+
+    private func storedIndex(_ type: String) -> IncidentIndex? {
+        lock.lock()
+        defer { lock.unlock() }
+        return indexes[type]
     }
 
     private func stored(_ type: String) -> [Record] {
