@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SessionInspector: View {
+    @Environment(\.database) private var database
     @StateObject private var events: EventProvider
     @StateObject private var info: SessionInfoProvider
 
@@ -18,8 +19,15 @@ struct SessionInspector: View {
 
     var body: some View {
         EventList(provider: events) {
-            if let info = try? info.result?.get() {
-                SessionHeader(info: info)
+            switch info.result {
+            case .success(let value):
+                SessionHeader(info: value)
+            case .failure(let error):
+                ErrorRow(description: error.localizedDescription) {
+                    await info.fetchAgain(in: database)
+                }
+            case nil:
+                EmptyView()
             }
         }
         .refreshes([events, info])

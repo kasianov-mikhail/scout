@@ -14,8 +14,11 @@ struct HomeReleaseSection: View {
 
     var body: some View {
         Header(title: "Releases") {
-            if let releases = try? releases.result?.get(), !releases.isEmpty {
+            switch releases.result {
+            case .success(let releases) where !releases.isEmpty:
                 AllButton { path.append(.releaseHealth) }
+            case .success, .failure, nil:
+                EmptyView()
             }
         }
 
@@ -32,7 +35,7 @@ struct HomeReleaseSection: View {
                 .frame(maxWidth: .infinity)
                 .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
-        default:
+        case .failure, nil:
             ForEach(0..<3, id: \.self) { _ in
                 ReleaseRowPlaceholder()
             }

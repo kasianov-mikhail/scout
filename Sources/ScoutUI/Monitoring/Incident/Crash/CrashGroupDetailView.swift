@@ -57,13 +57,11 @@ struct CrashGroupDetailView: View {
             }
             .padding(.vertical, 4)
 
-            if let value = try? breakdown.result?.get() {
-                IncidentBreakdownSection(
-                    breakdown: value,
-                    records: occurrences.group.records,
-                    row: occurrenceRow
-                )
-            }
+            IncidentBreakdownSection(
+                breakdown: breakdown,
+                records: occurrences.group.records,
+                row: occurrenceRow
+            )
 
             Header(title: "Occurrences")
 

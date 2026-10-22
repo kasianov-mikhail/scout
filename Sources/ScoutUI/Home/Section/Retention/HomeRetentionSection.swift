@@ -14,8 +14,11 @@ struct HomeRetentionSection: View {
 
     var body: some View {
         Header(title: "Retention") {
-            if let cohorts = try? retention.result?.get(), !cohorts.isEmpty {
+            switch retention.result {
+            case .success(let cohorts) where !cohorts.isEmpty:
                 AllButton { path.append(.retention) }
+            case .success, .failure, nil:
+                EmptyView()
             }
         }
 
@@ -57,7 +60,7 @@ struct HomeRetentionSection: View {
                 .padding(.vertical, 20)
                 .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
-        default:
+        case .failure, nil:
             HomeRetentionRow(series: .empty) {}
 
             ForEach(summaryOffsets, id: \.self) { day in

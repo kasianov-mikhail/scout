@@ -19,24 +19,25 @@ extension EventView {
         @Binding var isParamPresented: Bool
 
         var body: some View {
-            let items = try? param.result?.get()
-            let canSeeAll = items != nil && count > Self.previewLimit
-
             Header(title: "Params") {
-                if canSeeAll {
+                switch param.result {
+                case .success where count > Self.previewLimit:
                     AllButton { isParamPresented = true }
+                case .success, .failure, nil:
+                    EmptyView()
                 }
             }
 
-            if let items {
+            switch param.result {
+            case .success(let items):
                 ForEach(items.prefix(Self.previewLimit)) { item in
                     ParamRow(item: item)
                 }
-            } else if let error = param.error {
+            case .failure(let error):
                 ErrorRow(description: error.localizedDescription) {
                     await param.fetchAgain(in: database)
                 }
-            } else {
+            case nil:
                 ForEach(0..<min(Self.previewLimit, count), id: \.self) { _ in
                     ParamRow(item: nil)
                 }
@@ -47,24 +48,33 @@ extension EventView {
 
 extension EventView {
     struct StatSection: View {
+        @Environment(\.database) private var database
         @ObservedObject var stat: StatProvider
 
         var body: some View {
             Header(title: "Stats")
-            ForEach(Period.allCases) { period in
-                StatRow(
-                    color: .blue,
-                    period: period,
-                    systemImage: "calendar",
-                    stat: stat
-                ) {
-                    StatView(
-                        showList: true,
-                        extent: ChartExtent(period: period),
+
+            switch stat.result {
+            case .success, nil:
+                ForEach(Period.allCases) { period in
+                    StatRow(
+                        color: .blue,
+                        period: period,
+                        systemImage: "calendar",
                         stat: stat
-                    )
-                    .navigationTitle(en: "Stats")
-                    .largeNavigationTitle()
+                    ) {
+                        StatView(
+                            showList: true,
+                            extent: ChartExtent(period: period),
+                            stat: stat
+                        )
+                        .navigationTitle(en: "Stats")
+                        .largeNavigationTitle()
+                    }
+                }
+            case .failure(let error):
+                ErrorRow(description: error.localizedDescription) {
+                    await stat.fetchAgain(in: database)
                 }
             }
         }

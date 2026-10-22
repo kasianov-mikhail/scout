@@ -40,7 +40,12 @@ struct StatRow<Destination: View>: View {
     }
 
     private var points: [ChartPoint<Int>]? {
-        try? stat.result?.get()
+        switch stat.result {
+        case .success(let points):
+            points
+        case .failure, nil:
+            nil
+        }
     }
 }
 

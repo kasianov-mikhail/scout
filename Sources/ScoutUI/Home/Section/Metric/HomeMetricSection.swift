@@ -44,17 +44,21 @@ struct HomeMetricSection: View {
     }
 
     private var activityTrend: Trend {
-        guard let points = try? activities.result?.get() else {
-            return .loading
+        switch activities.result {
+        case .success(let points):
+            Trend(latest: points, period: period)
+        case .failure, nil:
+            .loading
         }
-        return Trend(latest: points, period: period)
     }
 
     private var sessionTrend: Trend {
-        guard let points = try? sessions.result?.get() else {
-            return .loading
+        switch sessions.result {
+        case .success(let points):
+            Trend(total: points, period: period)
+        case .failure, nil:
+            .loading
         }
-        return Trend(total: points, period: period)
     }
 }
 
