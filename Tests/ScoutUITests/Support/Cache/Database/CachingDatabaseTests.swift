@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import Scout
 import Testing
@@ -260,6 +261,15 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     var activityRanges: [Range<Date>] = []
     var cohorts: [RetentionCohort] = []
     var retentionRanges: [Range<Date>] = []
+    var deviceSessions: [Record] = []
+    var deviceCrashes: [Record] = []
+    var deviceRecords: [Record] = []
+    private let deviceLock = NSLock()
+    private var recordedDeviceRanges: [Range<Date>] = []
+
+    var deviceRanges: [Range<Date>] {
+        deviceLock.withLock { recordedDeviceRanges }
+    }
 
     func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
         queries.append(query)
@@ -295,7 +305,17 @@ final class SpyDatabase: DatabaseReader, DatabaseWriter, @unchecked Sendable {
     }
 
     func devices(in range: Range<Date>) async throws -> [DeviceActivity] {
-        []
+        deviceLock.withLock { recordedDeviceRanges.append(range) }
+
+        return [DeviceActivity](
+            devices: deviceRecords,
+            sessions: deviceSessions.filter { range.contains($0["start_date"] ?? .distantPast) },
+            crashes: deviceCrashes.filter { range.contains($0["date"] ?? .distantPast) }
+        )
+    }
+
+    func resetDeviceRanges() {
+        deviceLock.withLock { recordedDeviceRanges.removeAll() }
     }
 
     func deviceCounts(in ranges: [Range<Date>]) async throws -> [Int] {
