@@ -53,7 +53,7 @@ struct IncidentProviderTests {
     @Test("A second fetchLatest looks up the backtrace of the new crash only")
     func fetchLatestLooksUpNewCrashes() async throws {
         let older = Crash.stub(fingerprint: "A", date: Date().addingTimeInterval(-.hour))
-        let database = try PagedIncidentDatabase(crashes: [older], app: UUID(), limit: 10)
+        let database = try PagedIncidentDatabase(crashes: [older], app: UUID(), pageSize: 10)
 
         let provider = IncidentProvider<Crash>()
         await provider.fetchLatest(in: database)
@@ -71,7 +71,7 @@ struct IncidentProviderTests {
     func fetchAgainSkipsResolvedCrashes() async throws {
         let symbolicated = Crash.stub(fingerprint: "A", date: Date())
         let unsymbolicated = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-.hour))
-        let database = try PagedIncidentDatabase(crashes: [symbolicated], app: UUID(), limit: 10)
+        let database = try PagedIncidentDatabase(crashes: [symbolicated], app: UUID(), pageSize: 10)
         try database.insert(unsymbolicated, symbolicated: false)
 
         let provider = IncidentProvider<Crash>()
@@ -86,7 +86,7 @@ struct IncidentProviderTests {
     func fetchAgainDropsRemovedKeys() async throws {
         let kept = Crash.stub(fingerprint: "A", date: Date())
         let removed = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-.hour))
-        let database = try PagedIncidentDatabase(crashes: [kept, removed], app: UUID(), limit: 10)
+        let database = try PagedIncidentDatabase(crashes: [kept, removed], app: UUID(), pageSize: 10)
 
         let provider = IncidentProvider<Crash>()
         await provider.fetchAgain(in: database)
@@ -102,14 +102,14 @@ struct IncidentProviderTests {
 
 private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
     private let backtrace: Backtrace
-    private let limit: Int
+    private let pageSize: Int
     private var crashes: [Record]
     private var backtraces: [Record]
     private let symbols: Record
 
     private(set) var backtraceLookups: [[String]] = []
 
-    init(crashes: [Crash], app: UUID, limit: Int = 1) throws {
+    init(crashes: [Crash], app: UUID, pageSize: Int = 1) throws {
         let table = SymbolTable(
             uuid: app,
             functions: [SymbolTable.Function(start: 0, end: 0x100, name: "handle")],
@@ -120,7 +120,7 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
             images: [Backtrace.Image(name: "MyApp", uuid: app)],
             threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
         )
-        self.limit = limit
+        self.pageSize = pageSize
         self.crashes = []
         self.backtraces = []
         var symbols = Record(recordType: BundledSymbols.fileType, recordID: UUID(symbolsFile: app).uuidString)
@@ -160,7 +160,7 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
         if query.recordType.recordType == BundledSymbols.fileType {
             return RecordChunk(records: [symbols].matching(query), cursor: nil)
         }
-        return RecordChunk(page: crashes, limit: limit)
+        return RecordChunk(page: crashes, limit: pageSize)
     }
 
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
