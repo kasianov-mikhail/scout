@@ -92,6 +92,8 @@ A release build is stripped, so a crash shows offsets like `MyApp + 0x1a2f10` in
 
 The phase runs only when `DEBUG_INFORMATION_FORMAT` is `dwarf-with-dsym`, which is the default for Release. The first build also builds the tool and takes about half a minute; later builds add a few seconds.
 
+Scout also reads the table on the launch after a crash or hang to name the app's frames before it groups the incident. Without the table, crashes in a stripped build that differ only in app frames share one issue.
+
 To read a table by hand, `scout-symbols lookup scout.scoutsym 0x1a2f10` prints the function, file, and line at an offset, innermost inlined call first.
 
 Once CloudKit is enabled and the schema is uploaded, see the [Usage Guide](USAGE.md) for creating the runtime, adding [Scout server](https://github.com/kasianov-mikhail/scout-server) backends, and writing logs and metrics.

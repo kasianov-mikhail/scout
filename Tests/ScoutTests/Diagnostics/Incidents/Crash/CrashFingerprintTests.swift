@@ -78,6 +78,17 @@ struct CrashFingerprintTests {
         #expect(fingerprint.value.allSatisfy { $0.isHexDigit && !$0.isUppercase })
     }
 
+    @Test("Merges stripped app frames and separates the same frames named by the symbol table")
+    func namedFramesStayDistinct() {
+        let first = CrashFingerprint(name: "SIGSEGV", reason: "Signal 11 received", stackTrace: ["0   MyApp   0x0000000100abc110 __mh_execute_header + 712976"])
+        let second = CrashFingerprint(name: "SIGSEGV", reason: "Signal 11 received", stackTrace: ["0   MyApp   0x0000000100abc210 __mh_execute_header + 713232"])
+        let firstNamed = CrashFingerprint(name: "SIGSEGV", reason: "Signal 11 received", stackTrace: ["0   MyApp   $s5MyApp5alphayyF"])
+        let secondNamed = CrashFingerprint(name: "SIGSEGV", reason: "Signal 11 received", stackTrace: ["0   MyApp   $s5MyApp4betayyF"])
+
+        #expect(first.value == second.value)
+        #expect(firstNamed.value != secondNamed.value)
+    }
+
     @Test("Keeps the offsets of unsymbolicated frames apart")
     func offsetsStayDistinct() {
         let first = CrashFingerprint(name: "EXC_BAD_ACCESS", offsets: ["MyApp + 0x1a2f0"])

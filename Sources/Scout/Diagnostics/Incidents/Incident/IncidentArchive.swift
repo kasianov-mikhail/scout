@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import SymbolTable
 
 struct IncidentArchive<Payload: IncidentInfo & Codable & Sendable> {
     let folder: String
@@ -55,10 +56,14 @@ struct IncidentArchive<Payload: IncidentInfo & Codable & Sendable> {
     }
 
     func flush(deviceID: UUID) async {
+        let pending = files.filter { $0.pathExtension == pathExtension }
+        guard !pending.isEmpty else { return }
+
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
+        let symbols = BundledSymbols.main.flatMap(SymbolTable.init(bundled:))
 
-        for file in files where file.pathExtension == pathExtension {
+        for file in pending {
             let data: Data
             do {
                 data = try Data(contentsOf: file)
@@ -70,7 +75,8 @@ struct IncidentArchive<Payload: IncidentInfo & Codable & Sendable> {
 
             let payload: Payload
             do {
-                payload = try decoder.decode(Payload.self, from: data)
+                let decoded = try decoder.decode(Payload.self, from: data)
+                payload = symbols.map(decoded.symbolicated(symbols:)) ?? decoded
             } catch {
                 print("Failed to decode \(file.lastPathComponent), removing it: \(error)")
                 remove(file: file)
@@ -87,6 +93,17 @@ struct IncidentArchive<Payload: IncidentInfo & Codable & Sendable> {
             } catch {
                 print("Failed to process \(pathExtension): \(error)")
             }
+        }
+    }
+}
+
+extension SymbolTable {
+    fileprivate init?(bundled: BundledSymbols) {
+        do {
+            try self.init(data: bundled.data)
+        } catch {
+            print("Failed to decode the bundled symbols: \(error)")
+            return nil
         }
     }
 }

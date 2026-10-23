@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SymbolTable
 import Testing
 
 @testable import Scout
@@ -156,6 +157,49 @@ struct RawCrashReportTests {
         #expect(crash.stackTrace == ["0   \(current.name)   + 0x100"])
     }
 
+    @Test("the bundled table names app frames, so crash sites in a stripped build stay apart")
+    func symbolicatedSitesStayApart() throws {
+        let image = LoadedImage(name: "MyApp", base: 0x10_0000, size: 0x1000, uuid: fakeUUID)
+        let symbols = makeSymbols(uuid: fakeUUID, start: 0x100)
+        let first = try makeCrash(addresses: [image.base + 0x110, image.base + 0x310, 0xDEAD_0000], images: [image])
+        let second = try makeCrash(addresses: [image.base + 0x210, image.base + 0x310, 0xDEAD_0000], images: [image])
+
+        #expect(first.fingerprint == second.fingerprint)
+        #expect(first.symbolicated(symbols: symbols).stackTrace == ["0   MyApp   alpha", "1   MyApp   main", first.stackTrace[2]])
+        #expect(first.symbolicated(symbols: symbols).fingerprint != second.symbolicated(symbols: symbols).fingerprint)
+    }
+
+    @Test("a return address at a function start is named after the caller")
+    func returnAddressNamesCaller() throws {
+        let image = LoadedImage(name: "MyApp", base: 0x10_0000, size: 0x1000, uuid: fakeUUID)
+        let crash = try makeCrash(addresses: [image.base + 0x200, image.base + 0x200], images: [image])
+
+        #expect(crash.symbolicated(symbols: makeSymbols(uuid: fakeUUID, start: 0x100)).stackTrace == ["0   MyApp   beta", "1   MyApp   alpha"])
+    }
+
+    @Test("a crash site keeps its fingerprint across launches and rebuilds")
+    func symbolicatedSiteSurvivesRebuild() throws {
+        let rebuiltUUID = UUID()
+        let original = LoadedImage(name: "MyApp", base: 0x10_0000, size: 0x2000, uuid: fakeUUID)
+        let relaunched = LoadedImage(name: "MyApp", base: 0x30_0000, size: 0x2000, uuid: fakeUUID)
+        let rebuilt = LoadedImage(name: "MyApp", base: 0x20_0000, size: 0x2000, uuid: rebuiltUUID)
+        let first = try makeCrash(addresses: [original.base + 0x110, original.base + 0x310], images: [original])
+        let second = try makeCrash(addresses: [relaunched.base + 0x1f0, relaunched.base + 0x3a0], images: [relaunched])
+        let third = try makeCrash(addresses: [rebuilt.base + 0x1180, rebuilt.base + 0x1340], images: [rebuilt])
+
+        let fingerprint = first.symbolicated(symbols: makeSymbols(uuid: fakeUUID, start: 0x100)).fingerprint
+        #expect(second.symbolicated(symbols: makeSymbols(uuid: fakeUUID, start: 0x100)).fingerprint == fingerprint)
+        #expect(third.symbolicated(symbols: makeSymbols(uuid: rebuiltUUID, start: 0x1100)).fingerprint == fingerprint)
+    }
+
+    @Test("a table from another build leaves the stack trace as it was")
+    func otherBuildTableIsIgnored() throws {
+        let image = LoadedImage(name: "MyApp", base: 0x10_0000, size: 0x1000, uuid: fakeUUID)
+        let crash = try makeCrash(addresses: [image.base + 0x110], images: [image])
+
+        #expect(crash.symbolicated(symbols: makeSymbols(uuid: UUID(), start: 0x100)).stackTrace == crash.stackTrace)
+    }
+
     @Test("the archive converts a raw report into a decodable crash file")
     func archiveConvertsRawReport() throws {
         let fileManager = TemporaryFileManager()
@@ -197,6 +241,17 @@ struct RawCrashReportTests {
 
         let files = try fileManager.storedFiles("Crashes")
         #expect(files.isEmpty)
+    }
+
+    private func makeCrash(addresses: [UInt64], images: [LoadedImage]) throws -> CrashInfo {
+        try #require(RawCrashReport(data: rawReportData(addresses: addresses, images: images))).crashInfo
+    }
+
+    private func makeSymbols(uuid: UUID, start: UInt64) -> SymbolTable {
+        let functions = ["alpha", "beta", "main"].enumerated().map { index, name in
+            SymbolTable.Function(start: start + UInt64(index) * 0x100, end: start + UInt64(index + 1) * 0x100, name: name)
+        }
+        return SymbolTable(uuid: uuid, functions: functions, lines: [], inlines: [])
     }
 
     private func crashArchive(_ fileManager: FileManager) -> IncidentArchive<CrashInfo> {

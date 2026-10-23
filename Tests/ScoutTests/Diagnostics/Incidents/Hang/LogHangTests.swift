@@ -7,6 +7,7 @@
 
 import CoreData
 import Foundation
+import SymbolTable
 import Testing
 
 @testable import Scout
@@ -62,6 +63,42 @@ struct LogHangTests {
         let fingerprints = try context.fetchAll(HangEntry.self).map(\.fingerprint)
         #expect(fingerprints.count == 2)
         #expect(Set(fingerprints).count == 1)
+    }
+
+    @Test("Hangs at different sites of a stripped build get fingerprints that decoding keeps")
+    func symbolicatedSitesStayApart() throws {
+        let uuid = UUID()
+        let image = LoadedImage(name: "MyApp", base: 0x10_0000, size: 0x1000, uuid: uuid)
+        let symbols = SymbolTable(
+            uuid: uuid,
+            functions: [
+                SymbolTable.Function(start: 0x100, end: 0x200, name: "alpha"),
+                SymbolTable.Function(start: 0x200, end: 0x300, name: "beta"),
+            ],
+            lines: [],
+            inlines: []
+        )
+        let hangs = [UInt64(0x110), 0x210].map { offset in
+            HangInfo(
+                name: "Main Thread Blocked",
+                reason: nil,
+                stackTrace: ["0   MyApp   0x\(String(image.base + offset, radix: 16)) __mh_execute_header + \(offset)"],
+                backtrace: Backtrace(addresses: [image.base + offset], images: [image]),
+                duration: 3.5,
+                identity: .stub
+            )
+        }
+
+        #expect(hangs[0].fingerprint == hangs[1].fingerprint)
+
+        for hang in hangs {
+            try hang.symbolicated(symbols: symbols).log(deviceID: deviceID, context: context)
+        }
+
+        let entries = try context.fetchAll(HangEntry.self)
+        let fingerprints = entries.compactMap(\.fingerprint)
+        #expect(Set(fingerprints).count == 2)
+        #expect(try entries.map { try Hang(record: $0.record).fingerprint } == fingerprints)
     }
 
     @Test("Preserves sessionID captured at hang time, not the recovery session")
