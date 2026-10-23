@@ -109,6 +109,29 @@ struct VisitEntryMonitorTests {
         #expect(try context.fetchAll(VisitGapEntry.self).map(\.gap) == [3])
     }
 
+    @Test("A clock set back skips the visit and keeps the last visit day")
+    func triggerAfterClockRollback() throws {
+        let device = DeviceEntry.stub(date: Date(year: 2026, month: 1, day: 1), in: context)
+        let launch = makeLaunch(device: device)
+
+        for day in [1, 4, 3] {
+            try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: day, hour: 9))
+                .execute(in: context)
+        }
+        #expect(device.lastVisitDay == Date(year: 2026, month: 1, day: 4))
+
+        for day in [4, 5] {
+            try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: day, hour: 17))
+                .execute(in: context)
+        }
+
+        let gaps = try context.fetchAll(VisitGapEntry.self).sorted { ($0.date ?? .distantPast) < ($1.date ?? .distantPast) }
+
+        #expect(gaps.map(\.day) == [1, 4, 5].map { Date(year: 2026, month: 1, day: $0) })
+        #expect(gaps.map(\.gap) == [30, 3, 1])
+        #expect(device.lastVisitDay == Date(year: 2026, month: 1, day: 5))
+    }
+
     @Test("A visit without a known device stamps the longest gap")
     func triggerWithoutDevice() throws {
         let launch = makeLaunch()
@@ -117,5 +140,19 @@ struct VisitEntryMonitorTests {
         try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 2)).execute(in: context)
 
         #expect(try context.fetchAll(VisitGapEntry.self).map(\.gap) == [30, 30])
+    }
+
+    @Test("A visit without a known device skips a day before a stored visit")
+    func triggerWithoutDeviceAfterClockRollback() throws {
+        let launch = makeLaunch()
+
+        for day in [1, 4, 3] {
+            try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: day)).execute(in: context)
+        }
+
+        let days = try context.fetchAll(VisitEntry.self).compactMap(\.day).sorted()
+
+        #expect(days == [1, 4].map { Date(year: 2026, month: 1, day: $0) })
+        #expect(try context.fetchAll(VisitGapEntry.self).count == 2)
     }
 }

@@ -19,12 +19,12 @@ extension VisitEntry {
             let device = launch?.install?.device
 
             if let device {
-                guard device.lastVisitDay != date.startOfDay else {
+                guard (device.lastVisitDay ?? .distantPast) < date.startOfDay else {
                     return
                 }
             } else {
                 let request = NSFetchRequest<VisitEntry>(entityName: "VisitEntry")
-                request.predicate = NSPredicate(format: "day == %@", date.startOfDay as NSDate)
+                request.predicate = NSPredicate(format: "day >= %@", date.startOfDay as NSDate)
                 request.fetchLimit = 1
 
                 guard try context.fetch(request).isEmpty else {
