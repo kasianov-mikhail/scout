@@ -10,6 +10,7 @@ import Scout
 
 struct IncidentBacktraces {
     let details: [String: BacktraceDetail]
+    let found: Set<String>
 
     init(incidentIDs: [String], database: RecordReader) async throws {
         let values = incidentIDs.compactMap(UUID.init).map { UUID(incidentBacktrace: $0).uuidString }
@@ -22,9 +23,15 @@ struct IncidentBacktraces {
         )
         .map(BacktraceRecord.init)
 
+        found = Set(records.map(\.incidentID))
+
         var backtraces: [String: Backtrace] = [:]
         for record in records {
-            backtraces[record.incidentID] = try JSONDecoder().decode(Backtrace.self, from: record.payload)
+            do {
+                backtraces[record.incidentID] = try JSONDecoder().decode(Backtrace.self, from: record.payload)
+            } catch {
+                print("Failed to decode backtrace \(record.id): \(error)")
+            }
         }
 
         let uuids = Array(Set(backtraces.values.flatMap(\.images).compactMap(\.uuid)))
