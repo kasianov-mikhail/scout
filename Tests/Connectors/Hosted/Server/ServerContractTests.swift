@@ -633,9 +633,14 @@ struct ServerContractTests {
         #expect(matched.points.map(\.value).reduce(0, +) == 2)
     }
 
-    @Test("A reachability ping succeeds against a live server")
+    @Test("A reachability ping succeeds against a live server that holds devices")
     func reachabilityPing() async throws {
         let database = try makeDatabase()
+        var device = Record(recordType: "Device", recordID: "contract-\(UUID().uuidString)")
+        device["device_id"] = UUID().uuidString
+        device["date"] = eventDate
+
+        try await database.write(record: device)
         try await database.ping()
     }
 
