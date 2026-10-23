@@ -36,10 +36,10 @@ runs:
           fi
         fi
         runtime=$(xcrun simctl list runtimes --json \
-          | jq -r '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ inputs.ios }}."))) | .identifier' \
+          | jq -r --arg d "${{ inputs.device }}" '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ inputs.ios }}.")) and any(.supportedDeviceTypes[]?; .name == $d)) | .identifier' \
           | tail -1)
         if [ -z "$runtime" ]; then
-          echo "No iOS ${{ inputs.ios }} simulator runtime is available."
+          echo "No iOS ${{ inputs.ios }} simulator runtime supports ${{ inputs.device }}."
           xcrun simctl list runtimes
           exit 1
         fi
