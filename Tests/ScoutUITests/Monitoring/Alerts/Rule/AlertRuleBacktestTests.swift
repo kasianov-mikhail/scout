@@ -51,6 +51,18 @@ struct AlertRuleBacktestTests {
         #expect(rule.backtestFireCount(over: Array(repeating: 4, count: 48) + [20]) == 1)
     }
 
+    @Test("A spike over a zero baseline fires, while single events stay quiet")
+    func zeroBaselineSpike() {
+        let rule = AlertRule(
+            metric: .eventCount(name: "Crash"),
+            condition: AlertCondition(comparison: .above, reference: .baselineFactor(2))
+        )
+        let quiet = Array(repeating: 0.0, count: 48)
+
+        #expect(rule.backtestFireCount(over: quiet + [50]) == 1)
+        #expect(rule.backtestFireCount(over: quiet + [1, 0, 2, 0, 1]) == 0)
+    }
+
     @Test("Summaries phrase zero, one, and many fires")
     func summaries() {
         let none = Array(repeating: 10.0, count: 96)
