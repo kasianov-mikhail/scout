@@ -73,17 +73,33 @@ jobs:
     runs-on: macos-26
     timeout-minutes: 5
 
+    # swift-format ships with Xcode: pin it so a runner image update cannot change the formatting rules
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
     steps:
       - uses: actions/checkout@v7
+
+      - name: Check the pinned Xcode
+        run: |
+          if [ ! -d "$DEVELOPER_DIR" ]; then
+            echo "::error::The runner has no $DEVELOPER_DIR. Pin the lint job to an Xcode from the macos-26 image readme in actions/runner-images."
+            ls -d /Applications/Xcode*.app
+            exit 1
+          fi
+          xcodebuild -version
+          version="$(xcrun swift-format --version)"
+          echo "swift-format $version"
 
       - name: Lint
         run: |
           if ! xcrun swift-format lint --strict --recursive Sources Tests; then
+            xcode="$(xcodebuild -version | head -n 1)"
             fix="xcrun swift-format format --in-place --recursive Sources Tests"
-            echo "::error::swift-format found formatting issues. Fix them locally with: $fix"
+            echo "::error::swift-format from $xcode found formatting issues. Fix them locally with $xcode: $fix"
             {
               echo "### swift-format failed"
-              echo "Run this locally and commit the result:"
+              echo "Run this locally with $xcode and commit the result:"
               echo '```'
               echo "$fix"
               echo '```'
