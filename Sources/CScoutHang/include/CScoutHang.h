@@ -23,6 +23,12 @@ uint64_t scout_arm_thread_state64_pc(arm_thread_state64_t state);
 uint64_t scout_arm_thread_state64_fp(arm_thread_state64_t state);
 #endif
 
+// arm64e system code signs the return address it saves in a frame record,
+// even inside an arm64 process, so the high bits carry a pointer
+// authentication code that image lookups and dladdr reject. This strips it
+// back to a plain code address and is async-signal-safe.
+uint64_t scout_strip_return_address(uint64_t address);
+
 // Fatal-signal bookkeeping lives in C so the handler touches no Swift
 // runtime structures: previous sigactions sit in a fixed static array
 // written once at install, and every function here is async-signal-safe.

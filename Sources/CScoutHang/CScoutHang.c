@@ -8,6 +8,7 @@
 
 #include "CScoutHang.h"
 
+#include <ptrauth.h>
 #include <stdatomic.h>
 #include <string.h>
 #include <sys/ucontext.h>
@@ -23,6 +24,21 @@ uint64_t scout_arm_thread_state64_fp(arm_thread_state64_t state) {
 }
 
 #endif
+
+// Code loads below 64 GiB on Apple platforms, and the signature never starts
+// below bit 36, so the low 36 bits keep the address and drop the signature
+// whatever address size the device uses. PLCrashReporter uses the same mask.
+#define SCOUT_RETURN_ADDRESS_MASK 0x0000000FFFFFFFFFULL
+
+uint64_t scout_strip_return_address(uint64_t address) {
+#if __has_feature(ptrauth_calls)
+    return (uint64_t)(uintptr_t)ptrauth_strip((void *)(uintptr_t)address, ptrauth_key_return_address);
+#elif defined(__arm64__) || defined(__aarch64__)
+    return address & SCOUT_RETURN_ADDRESS_MASK;
+#else
+    return address;
+#endif
+}
 
 #define SCOUT_CRASH_MAX_SIGNALS 8
 

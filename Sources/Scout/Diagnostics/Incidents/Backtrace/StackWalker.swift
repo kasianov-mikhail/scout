@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import CScoutHang
 import Foundation
 import MachO
 
@@ -56,7 +57,7 @@ enum StackWalker {
             return nil
         }
 
-        return Frame(previousFP: pair.previousFP, returnAddress: pair.returnAddress)
+        return Frame(previousFP: pair.previousFP, returnAddress: scout_strip_return_address(pair.returnAddress))
     }
 
     static func unknownFrame(index: Int, address: UInt64) -> String {
