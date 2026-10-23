@@ -38,25 +38,25 @@ struct AlertProviderTests {
         let registry = AlertRegistry(defaults: defaults)
         let provider = AlertProvider(registry: registry, permission: NotificationPermission(center: center))
 
-        await provider.add(errorRule)
+        try await provider.add(errorRule)
 
         #expect(center.authorizationRequests == 1)
         #expect(try registry.rules() == [errorRule])
 
-        await provider.add(crashFreeRule)
+        try await provider.add(crashFreeRule)
 
         #expect(center.authorizationRequests == 1)
         #expect(try registry.rules().count == 2)
     }
 
     @Test("A refused prompt makes the provider report that notifications are denied")
-    func refusedPrompt() async {
+    func refusedPrompt() async throws {
         let center = NotificationCenterStub()
         center.status = .notDetermined
         center.grant = false
         let provider = AlertProvider(registry: AlertRegistry(defaults: defaults), permission: NotificationPermission(center: center))
 
-        await provider.add(errorRule)
+        try await provider.add(errorRule)
 
         #expect(provider.notificationsDenied)
     }
@@ -69,7 +69,7 @@ struct AlertProviderTests {
         try registry.save([errorRule])
         let provider = AlertProvider(registry: registry, permission: NotificationPermission(center: center))
 
-        await provider.add(crashFreeRule)
+        try await provider.add(crashFreeRule)
 
         #expect(center.authorizationRequests == 1)
     }
@@ -118,10 +118,39 @@ struct AlertProviderTests {
         defaults.set(blob, forKey: "scout_alert_rules")
         let provider = AlertProvider(registry: AlertRegistry(defaults: defaults))
 
-        await provider.add(errorRule)
+        await #expect(throws: AlertRegistry.UnreadableStoreError.self) {
+            try await provider.add(errorRule)
+        }
 
-        #expect(provider.error is AlertRegistry.UnreadableStoreError)
+        #expect(provider.result == nil)
         #expect(defaults.data(forKey: "scout_alert_rules") == blob)
+    }
+
+    @Test("Adding a new rule saves it next to the existing ones")
+    func addNewRule() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let provider = AlertProvider(registry: registry)
+
+        try await provider.add(crashFreeRule)
+
+        #expect(try registry.rules() == [errorRule, crashFreeRule])
+    }
+
+    @Test("Adding a rule that already exists fails and skips the permission prompt")
+    func addDuplicateRule() async throws {
+        let center = NotificationCenterStub()
+        center.status = .notDetermined
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let provider = AlertProvider(registry: registry, permission: NotificationPermission(center: center))
+
+        await #expect(throws: AlertProvider.DuplicateRuleError.self) {
+            try await provider.add(errorRule)
+        }
+
+        #expect(try registry.rules() == [errorRule])
+        #expect(center.authorizationRequests == 0)
     }
 
     private var errorRule: AlertRule {

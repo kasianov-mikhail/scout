@@ -38,9 +38,7 @@ struct ResourceGroupDetailView: View {
             }
             .padding(.bottom)
 
-            if let value = try? breakdown.result?.get() {
-                IncidentBreakdownSection(breakdown: value, records: group.records, row: occurrenceRow)
-            }
+            IncidentBreakdownSection(breakdown: breakdown, records: group.records, row: occurrenceRow)
 
             Header(title: "Occurrences")
 

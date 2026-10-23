@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// The colored kind icon of a value.
 struct ParamIcon: View {
     let value: ParamValue
 

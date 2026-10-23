@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-/// A capsule naming the recognized scalar kind.
 struct ParamBadge: View {
     let convertible: ParamValue.Convertible
 

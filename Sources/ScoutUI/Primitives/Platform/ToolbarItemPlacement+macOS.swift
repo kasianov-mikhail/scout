@@ -8,9 +8,6 @@
 #if os(macOS)
     import SwiftUI
 
-    /// Stand-ins for the iOS-only placements, mapped to their closest macOS equivalents
-    /// so call sites stay platform-agnostic.
-    ///
     extension ToolbarItemPlacement {
         static var topBarLeading: ToolbarItemPlacement { .navigation }
         static var topBarTrailing: ToolbarItemPlacement { .primaryAction }

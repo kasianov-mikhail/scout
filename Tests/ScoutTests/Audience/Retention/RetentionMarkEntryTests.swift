@@ -16,10 +16,11 @@ import Testing
 struct RetentionMarkEntryTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
-    private func makeInstall() -> InstallEntry {
+    private func makeInstall() throws -> InstallEntry {
         let install = InstallEntry.stub(date: TestDate.reference.addingTimeInterval(5 * .hour), in: context)
         install.installID = UUID()
         install.startCohort()
+        try install.markInstall()
         return install
     }
 
@@ -36,6 +37,38 @@ struct RetentionMarkEntryTests {
         #expect(try names() == ["install"])
     }
 
+    @Test("An install first written by a linked session starts its cohort once")
+    func linkedSessionInstall() throws {
+        let identity = Identity.stub
+        _ = try context.linkedSession(identity.snapshot, date: Date())
+        try context.save()
+
+        let trigger = InstallEntry.Trigger(installID: identity.install, deviceID: identity.device)
+        try trigger.execute(in: context)
+        try trigger.execute(in: context)
+
+        let install = try #require(try context.fetchAll(InstallEntry.self).first)
+        #expect(install.osVersion == SystemInfo.osVersion)
+        #expect(try context.fetchAll(RetentionMarkEntry.self).count == 1)
+        #expect(try names() == ["install"])
+    }
+
+    @Test("An install first written by an incident flush starts its cohort")
+    func incidentFlushInstall() throws {
+        let identity = Identity.stub
+        let crash = CrashInfo(name: "SIGABRT", reason: nil, stackTrace: [], backtrace: Backtrace(images: [], threads: []), identity: identity)
+
+        try crash.log(deviceID: identity.device, context: context)
+
+        let install = try #require(try context.fetchAll(InstallEntry.self).first)
+        #expect(install.osVersion == SystemInfo.osVersion)
+        #expect(try names() == ["crash"])
+
+        try InstallEntry.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)
+
+        #expect(try names() == ["install", "crash"])
+    }
+
     @Test("A known install starts no cohort when the trigger runs again")
     func knownInstall() throws {
         let install = InstallEntry.stub(date: TestDate.reference, in: context)
@@ -50,7 +83,7 @@ struct RetentionMarkEntryTests {
 
     @Test("The record carries the milestone, the install day and the install's OS")
     func record() throws {
-        let install = makeInstall()
+        let install = try makeInstall()
         install.osVersion = "iOS 18.2"
 
         let mark = try #require(try context.fetchAll(RetentionMarkEntry.self).first)
@@ -66,7 +99,7 @@ struct RetentionMarkEntryTests {
 
     @Test("Visits mark the retention days once and skip the days between them")
     func visits() throws {
-        let install = makeInstall()
+        let install = try makeInstall()
 
         for day in [0, 0, 1, 2, 3, 3, 8, 30, 31] {
             try install.markVisit(date: TestDate.reference.addingDay(day).addingTimeInterval(20 * .hour))
@@ -89,7 +122,7 @@ struct RetentionMarkEntryTests {
 
     @Test("Crashes and hangs count once within the first 31 days")
     func incidents() throws {
-        let install = makeInstall()
+        let install = try makeInstall()
 
         try install.markIncident(milestone: .crash, date: TestDate.reference.addingDay(2))
         try install.markIncident(milestone: .crash, date: TestDate.reference.addingDay(4))

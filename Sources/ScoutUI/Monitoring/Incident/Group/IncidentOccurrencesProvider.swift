@@ -30,7 +30,6 @@ final class IncidentOccurrencesProvider<Element: RecordDecodable & Incident>: Fe
         super.init(nil)
     }
 
-    // Holds at least one record once a tallied group's first page is in.
     var group: IncidentGroup<Element> {
         regroup(records ?? loaded)
     }

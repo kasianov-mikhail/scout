@@ -12,43 +12,52 @@ import SwiftUI
 final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Refreshable {
     @Published private(set) var keys: [String: String] = [:]
 
+    // IDs whose backtrace lookup finished, with or without a key, so a refresh skips them.
+    private var resolved: Set<String> = []
+
     var groups: [IncidentGroup<Element>]? {
         records.map { IncidentGroup.groups(from: $0, keys: keys, hasMore: cursor != nil) }
     }
 
     func fetchLatest(in database: DatabaseReader) async {
         await fetchLatest(matching: Element.query(), in: database)
-        await loadKeys(incidents: records ?? [], in: database)
+        await loadKeys(in: database)
     }
 
     func fetchAgain(in database: DatabaseReader) async {
         await fetchAgain(matching: Element.query(), in: database)
-        await loadKeys(incidents: records ?? [], in: database)
+        await loadKeys(in: database)
     }
 
     @discardableResult
     override func fetchMore(cursor: RecordCursor, in database: RecordReader) async -> Bool {
-        let loaded = Set(records?.map(\.id) ?? [])
         let succeeded = await super.fetchMore(cursor: cursor, in: database)
-
-        await loadKeys(
-            incidents: records?.filter { !loaded.contains($0.id) } ?? [],
-            in: database
-        )
+        await loadKeys(in: database)
         return succeeded
     }
 
-    private func loadKeys(incidents: [Element], in database: RecordReader) async {
-        guard !incidents.isEmpty else {
+    private func loadKeys(in database: RecordReader) async {
+        let ids = records?.map(\.id) ?? []
+        let present = Set(ids)
+        resolved.formIntersection(present)
+
+        if keys.keys.contains(where: { !present.contains($0) }) {
+            keys = keys.filter { present.contains($0.key) }
+        }
+
+        let missing = ids.filter { !resolved.contains($0) }
+        guard !missing.isEmpty else {
             return
         }
+
         do {
             let loaded = try await IncidentBacktraces(
-                incidentIDs: incidents.map(\.id),
+                incidentIDs: missing,
                 database: database
             )
             .groupKeys
 
+            resolved.formUnion(missing)
             keys.merge(loaded) { $1 }
         } catch {
             print("Failed to load incident backtraces: \(error)")

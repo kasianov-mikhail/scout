@@ -12,14 +12,12 @@ struct ParamView: View {
     private let value: ParamValue
     private let raw: String
 
-    /// Shows a fetched parameter, keeping its raw text for sharing.
     init(item: ParamProvider.Item) {
         key = item.key
         value = ParamValue(parsing: item.value)
         raw = item.value
     }
 
-    /// Shows a nested value reached by drilling into a container.
     init(node: ParamValue.Node) {
         key = node.label
         value = node.value
@@ -48,9 +46,6 @@ struct ParamView: View {
     }
 }
 
-/// The scalar layout of a parameter value: a kind badge for recognized scalars
-/// above the verbatim text.
-///
 private struct ParamScalarView: View {
     let raw: String
     let value: ParamValue

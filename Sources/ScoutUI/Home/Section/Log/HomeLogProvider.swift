@@ -39,11 +39,12 @@ final class HomeLogProvider: ObservableObject, Provider {
     }
 
     private func rebuildReport() {
-        guard let snapshot = try? result?.get() else {
+        switch result {
+        case .success(let snapshot):
+            report = LogSeries(snapshot: snapshot, period: period).report
+        case .failure, nil:
             report = nil
-            return
         }
-        report = LogSeries(snapshot: snapshot, period: period).report
     }
 
     func fetch(in database: DatabaseReader) async throws -> Output {

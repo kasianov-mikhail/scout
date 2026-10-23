@@ -12,15 +12,16 @@ import SymbolTable
 extension RecordReader {
     func symbolTables(uuids: [UUID]) async throws -> [UUID: SymbolTable] {
         let images = Dictionary(uniqueKeysWithValues: uuids.map { (UUID(symbolsFile: $0).uuidString, $0) })
-        let query = RecordQuery(
-            recordType: SymbolsFileRecord.self,
-            filters: [
-                RecordQuery.Filter(field: "uuid", op: .in, value: .strings(Array(images.keys)))
-            ]
+        var tables: [UUID: SymbolTable] = [:]
+
+        let records = try await readAll(
+            type: SymbolsFileRecord.self,
+            field: "uuid",
+            values: Array(images.keys),
+            fields: SymbolsFileRecord.desiredKeys
         )
 
-        var tables: [UUID: SymbolTable] = [:]
-        for record in try await readAll(matching: query, fields: SymbolsFileRecord.desiredKeys) {
+        for record in records {
             guard let image = images[record.recordID] else {
                 continue
             }
@@ -30,6 +31,7 @@ extension RecordReader {
                 print("Failed to decode symbol table \(record.recordID): \(error)")
             }
         }
+
         return tables
     }
 }

@@ -11,19 +11,12 @@ private let watchdogQueue = DispatchQueue(label: "scout.hang.watchdog")
 
 private nonisolated(unsafe) var isInstalled = false
 
-// Touched only from closures scheduled on `watchdogQueue`, which is serial —
-// that queue is the sole synchronization for this, not the `unsafe` opt-out.
 private nonisolated(unsafe) var monitor = HangMonitor(now: uptime)
 
-// Wall-clock time counts a backgrounded process and a corrected clock as time
-// the main thread spent unresponsive; uptime stops while the device sleeps and
-// never jumps.
 private var uptime: TimeInterval {
     ProcessInfo.processInfo.systemUptime
 }
 
-// Installs a watchdog that detects an unresponsive main thread and captures
-// its stack trace before the system watchdog can kill the app.
 extension Identity {
     func installHangHandler() {
         guard !isInstalled else { return }

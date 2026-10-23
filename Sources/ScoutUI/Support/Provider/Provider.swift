@@ -31,7 +31,7 @@ extension Provider {
         do {
             result = .success(try await fetch(in: database))
         } catch is CancellationError {
-            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
+            return
         } catch {
             result = .failure(error)
         }
@@ -58,7 +58,7 @@ extension Provider {
         do {
             result = .success(try await fetch(in: database))
         } catch is CancellationError {
-            // A cancelled task (e.g. the view was recreated) leaves the result untouched so it retries.
+            return
         } catch {
             if result == nil {
                 result = .failure(error)

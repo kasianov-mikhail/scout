@@ -39,9 +39,13 @@ struct StatRow<Destination: View>: View {
         }
     }
 
-    /// All fetched points; `nil` while the provider is still loading.
     private var points: [ChartPoint<Int>]? {
-        try? stat.result?.get()
+        switch stat.result {
+        case .success(let points):
+            points
+        case .failure, nil:
+            nil
+        }
     }
 }
 

@@ -10,6 +10,28 @@ import Scout
 import SwiftUI
 
 struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
+    @ObservedObject var breakdown: IncidentBreakdownProvider
+    let records: [Element]
+    @ViewBuilder let row: (Element) -> RowContent
+
+    @Environment(\.database) private var database
+
+    var body: some View {
+        switch breakdown.result {
+        case .success(let value):
+            IncidentBreakdownCharts(breakdown: value, records: records, row: row)
+        case .failure(let error):
+            Header(title: "Breakdown")
+            ErrorRow(description: error.localizedDescription) {
+                await breakdown.fetchAgain(in: database)
+            }
+        case nil:
+            EmptyView()
+        }
+    }
+}
+
+private struct IncidentBreakdownCharts<Element: Incident, RowContent: View>: View {
     let breakdown: IncidentBreakdown
     let records: [Element]
     @ViewBuilder let row: (Element) -> RowContent
@@ -66,7 +88,10 @@ struct IncidentBreakdownSection<Element: Incident, RowContent: View>: View {
 #Preview {
     NavigationStack {
         InsetList {
-            IncidentBreakdownSection(breakdown: .sample, records: [Crash].samples) { crash in
+            IncidentBreakdownSection(
+                breakdown: IncidentBreakdownProvider(.success(.sample), deviceIDs: [], sessionIDs: []),
+                records: [Crash].samples
+            ) { crash in
                 Row {
                     if let date = crash.date {
                         UTCTimestampText(date: date, size: 14)

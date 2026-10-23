@@ -54,8 +54,6 @@ extension Record {
         fields["uuid"] = .string(entityRecord.uuid)
     }
 
-    // The `uuid` field lives in the Item envelope, not in a slot, so it is
-    // stripped before encoding and re-injected from the envelope on decode.
     var storeValues: [String: ScoutDB.RecordValue] {
         var values = fields
         values["uuid"] = nil

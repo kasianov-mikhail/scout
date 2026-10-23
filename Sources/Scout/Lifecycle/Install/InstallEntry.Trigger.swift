@@ -17,6 +17,7 @@ extension InstallEntry {
                 if install.isInserted {
                     install.startCohort()
                 }
+                try install.markInstall()
                 if install.device == nil {
                     install.device = try context.existing(DeviceEntry.self, key: "deviceID", id: deviceID)
                 }

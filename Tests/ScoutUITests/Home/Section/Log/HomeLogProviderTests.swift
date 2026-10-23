@@ -141,6 +141,16 @@ struct HomeLogProviderTests {
         #expect(try provider.result?.get() != nil)
     }
 
+    @Test("A failed fetch clears the report of the period")
+    func failureClearsReport() {
+        let provider = HomeLogProvider(acrossAllPeriods: LogSnapshot(series: [], deviceCounts: []))
+        #expect(provider.report != nil)
+
+        provider.result = .failure(LogFailure())
+
+        #expect(provider.report == nil)
+    }
+
     private func makeSeries(name: String, category: String? = nil, date: Date = Date(), value: Double) -> MetricSeries {
         MetricSeries(
             name: name,
@@ -149,3 +159,5 @@ struct HomeLogProviderTests {
         )
     }
 }
+
+private struct LogFailure: Error {}

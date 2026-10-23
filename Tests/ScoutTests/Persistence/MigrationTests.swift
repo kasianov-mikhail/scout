@@ -329,4 +329,38 @@ struct MigrationTests {
             #expect(try context.fetchAll(RetentionMarkEntry.self).isEmpty)
         }
     }
+
+    @Test("A ScoutModel 18 pending delivery stays due after migration")
+    func version18DeliveriesStayDue() throws {
+        let store = try TemporaryStore()
+        defer { store.tearDown() }
+
+        let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
+        let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 18.mom")))
+
+        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
+        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
+        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        seed.persistentStoreCoordinator = coordinator
+
+        try seed.performAndWait {
+            EventEntry.stub(name: "login", in: seed).seedDelivery(attempts: 1, for: "cloud", in: seed)
+            try seed.save()
+        }
+        try coordinator.remove(seeded)
+
+        let context = try store.container().newBackgroundContext()
+        try context.performAndWait {
+            let now = Date()
+            let request = NSFetchRequest<EventEntry>(entityName: "EventEntry", pendingBackendID: "cloud", now: now)
+            let event = try #require(try context.fetch(request).first)
+            let delivery = try #require(event.delivery(for: "cloud"))
+            #expect(delivery.attempts == 1)
+            #expect(delivery.nextAttemptDate == nil)
+
+            delivery.reject(now: now)
+            try context.save()
+            #expect(try context.fetch(request).isEmpty)
+        }
+    }
 }

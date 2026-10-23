@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-// A gray relative-time label ("2m ago") that refreshes every second, anchored
-// to a shared `timeline` so rows in the same list tick together.
 struct RelativeTimeText: View {
     let date: Date
     let timeline: Date

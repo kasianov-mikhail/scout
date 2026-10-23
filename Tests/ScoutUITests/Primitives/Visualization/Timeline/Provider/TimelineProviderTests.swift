@@ -88,4 +88,19 @@ struct TimelineProviderTests {
         _ = try #require(provider.result).get()
         #expect(provider.items.isEmpty)
     }
+
+    @Test("A failure clears the items and the export text of the earlier result")
+    func testFailureClearsDerivedState() async throws {
+        let provider = TimelineProvider()
+        await start(provider, database: makeDatabase(), anchorEvent: nil)
+        #expect(!provider.items.isEmpty)
+        #expect(provider.exportText != nil)
+
+        provider.result = .failure(TimelineFailure())
+
+        #expect(provider.items.isEmpty)
+        #expect(provider.exportText == nil)
+    }
 }
+
+private struct TimelineFailure: Error {}

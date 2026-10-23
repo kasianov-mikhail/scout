@@ -14,8 +14,6 @@ struct PullState: Equatable {
         case retracting
     }
 
-    // Content insets can settle a fraction of a point off their rest offset,
-    // which must not read as a lingering pull.
     static let slack: CGFloat = 1
 
     let threshold: CGFloat
@@ -44,8 +42,6 @@ struct PullState: Equatable {
         phase == .idle ? min(pull / threshold, 1) : nil
     }
 
-    // While retracting the ring follows the animated inset rather than the
-    // measured pull, which UIKit clamps to zero the moment the inset shrinks.
     func ringOffset(size: CGFloat) -> CGFloat {
         (phase == .retracting ? inset : pull) - (threshold + size) / 2
     }

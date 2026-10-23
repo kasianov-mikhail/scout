@@ -15,15 +15,22 @@ extension VisitEntry {
         var appVersion: String? = Bundle.main.marketingVersion
 
         func execute(in context: NSManagedObjectContext) throws {
-            let request = NSFetchRequest<VisitEntry>(entityName: "VisitEntry")
-            request.predicate = NSPredicate(format: "day == %@", date.startOfDay as NSDate)
-            request.fetchLimit = 1
-
-            guard try context.fetch(request).first == nil else {
-                return
-            }
-
             let launch = try context.existing(LaunchEntry.self, key: "launchID", id: launchID)
+            let device = launch?.install?.device
+
+            if let device {
+                guard device.lastVisitDay != date.startOfDay else {
+                    return
+                }
+            } else {
+                let request = NSFetchRequest<VisitEntry>(entityName: "VisitEntry")
+                request.predicate = NSPredicate(format: "day == %@", date.startOfDay as NSDate)
+                request.fetchLimit = 1
+
+                guard try context.fetch(request).isEmpty else {
+                    return
+                }
+            }
 
             let visit = context.insert(VisitEntry.self)
             visit.visitID = UUID()
@@ -32,7 +39,7 @@ extension VisitEntry {
 
             let gap = context.insert(VisitGapEntry.self)
             gap.date = date
-            gap.gap = launch?.install?.device?.visit(day: date.startOfDay) ?? Int16(VisitGapEntry.cap)
+            gap.gap = device?.visit(day: date.startOfDay) ?? Int16(VisitGapEntry.cap)
             gap.appVersion = appVersion
             gap.launch = launch
 

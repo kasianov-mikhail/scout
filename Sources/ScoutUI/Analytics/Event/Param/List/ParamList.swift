@@ -10,7 +10,6 @@ import SwiftUI
 struct ParamList: View {
     let items: [ParamProvider.Item]
 
-    /// All parameters as `key: value` lines, used for sharing and copying.
     private var text: String {
         items.map(\.description).joined(separator: "\n")
     }

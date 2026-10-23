@@ -47,10 +47,6 @@ struct ComparisonChartView<T: ChartNumeric>: View {
         .environment(\.timeZone, Calendar.utc.timeZone)
     }
 
-    /// The bar for the current value, plus an invisible mark at the previous
-    /// level so the y scale grows to a rounded maximum that fits reference
-    /// contours rising above the bars.
-    ///
     @ChartContentBuilder func marks(for pair: ComparisonPair<T>) -> some ChartContent {
         RectangleMark(
             xStart: .value("Start", pair.barStart),

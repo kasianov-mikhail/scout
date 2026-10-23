@@ -17,16 +17,6 @@ struct NativeDatabase: Sendable {
 }
 
 extension Backend {
-    /// A CloudKit backend that stores records through scout-db's frozen Entity/Vector
-    /// schema.
-    ///
-    /// Raw records are delivered to every entity; chart aggregates are maintained by
-    /// scout-db vectors on write, so no client-side matrix upload happens.
-    ///
-    /// - Throws: An error when the container carries no identifier, which is
-    ///   what a default container resolves to in an app without an iCloud
-    ///   container entitlement.
-    ///
     struct UnidentifiedContainerError: LocalizedError {
         let errorDescription: String? = "The CloudKit container carries no identifier"
     }

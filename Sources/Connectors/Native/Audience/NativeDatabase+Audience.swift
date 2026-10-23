@@ -30,8 +30,9 @@ extension NativeDatabase: AudienceReader {
         let fold = try await VisitGapFold(gaps: gaps, versions: versions, sessions: sessions)
 
         var points = fold.points(in: range)
+        let folded = Set(points.map(\.date))
         for unstamped in fold.unstampedSpans(in: range) {
-            points += try await store.deviceActivity(in: unstamped)
+            points += try await store.deviceActivity(in: unstamped).filter { !folded.contains($0.date) }
         }
         return points.sorted { $0.date < $1.date }
     }

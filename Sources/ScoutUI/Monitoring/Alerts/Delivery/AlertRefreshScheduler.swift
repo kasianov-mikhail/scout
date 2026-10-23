@@ -14,7 +14,6 @@
         func submit(_ taskRequest: BGTaskRequest) throws
     }
 
-    // BGTaskScheduler and BGTask are thread-safe but not annotated Sendable in the SDK.
     extension BGTaskScheduler: @retroactive @unchecked Sendable {}
     extension BGTask: @retroactive @unchecked Sendable {}
 

@@ -7,22 +7,14 @@
 //
 
 extension ParamValue {
-    /// A direct child of a container value, used to render drill-down lists.
     struct Node: Identifiable {
-        /// The dictionary key or array index leading to the node.
         let label: String
 
-        /// The value at this node.
         let value: ParamValue
 
         var id: String { label }
     }
 
-    /// The direct children of a container.
-    ///
-    /// Dictionary entries are keyed by name, array elements by index.
-    /// Scalars have none.
-    ///
     var nodes: [Node] {
         switch self {
         case .dictionary(let entries):

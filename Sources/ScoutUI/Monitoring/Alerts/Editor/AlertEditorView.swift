@@ -12,6 +12,7 @@ struct AlertEditorView: View {
 
     @StateObject private var backtest = AlertBacktestProvider(metric: .crashFreeSessions)
     @State private var draft = AlertDraft()
+    @State private var message: Message?
 
     @Environment(\.database) private var database
     @Environment(\.dismiss) private var dismiss
@@ -54,14 +55,12 @@ struct AlertEditorView: View {
 
             backtestRow
         }
+        .message($message)
         .navigationTitle(en: "New Rule")
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button {
-                    Task {
-                        await provider.add(draft.rule)
-                        dismiss()
-                    }
+                    Task { await save() }
                 } label: {
                     Text(verbatim: "Save")
                 }
@@ -75,6 +74,17 @@ struct AlertEditorView: View {
 
             backtest.metric = draft.metric
             await backtest.fetchAgain(in: database)
+        }
+    }
+
+    private func save() async {
+        do {
+            try await provider.add(draft.rule)
+            dismiss()
+        } catch let error as AlertProvider.DuplicateRuleError {
+            message = Message(error.localizedDescription, level: .warning)
+        } catch {
+            message = Message(error.localizedDescription, level: .error)
         }
     }
 

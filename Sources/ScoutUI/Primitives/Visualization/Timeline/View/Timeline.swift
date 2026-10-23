@@ -68,12 +68,6 @@ struct Timeline: View {
         }
     }
 
-    /// Whether the timeline list is on screen.
-    ///
-    /// The legend toggled by the info button floats over the list, so the
-    /// button is only shown in this state — it has nothing to reveal while
-    /// loading or on an error or empty result.
-    ///
     private var showsList: Bool {
         if case .success = provider.result, !provider.items.isEmpty {
             return true
@@ -85,11 +79,6 @@ struct Timeline: View {
         let items = provider.items
         let anchorIndex = event.flatMap { event in items.firstIndex { $0.id == event.id } }
 
-        // The legend floats over the top of the list instead of sitting above
-        // it in a `VStack`: pushing the scroll view down resizes its viewport,
-        // and `scrollPosition(anchor: .center)` then re-anchors the centered row,
-        // so the whole list visibly scrolls (and scrolls back when hidden). An
-        // overlay leaves the scroll view's size untouched, so nothing moves.
         return TimelineList(
             items: items,
             highlightedID: event?.id,

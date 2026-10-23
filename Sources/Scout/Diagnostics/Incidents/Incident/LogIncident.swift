@@ -32,8 +32,6 @@ extension CrashInfo: IncidentInfo {
 }
 
 extension HangInfo: IncidentInfo {
-    // A hang's reason embeds the per-occurrence duration, which would make
-    // every fingerprint unique — identity comes from the name and stack alone.
     var fingerprint: String {
         CrashFingerprint(name: name, reason: nil, stackTrace: stackTrace).value
     }
@@ -41,15 +39,10 @@ extension HangInfo: IncidentInfo {
 
 extension IncidentInfo {
     func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) throws -> Void) throws {
-        // The id doubles as the archive file's UUID, so a flush interrupted
-        // between the save and the file removal doesn't insert a duplicate
-        // on the next launch.
         guard let object = try context.insertIncident(type: Entry.self, content: self, idKey: idKey, id: id) else {
             return
         }
 
-        // Reattach to the session/launch/install chain captured at incident time,
-        // materializing any hub the faulted run didn't persist.
         let identity = Identity.Snapshot(
             install: installID,
             launch: launchID,

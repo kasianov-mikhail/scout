@@ -35,57 +35,52 @@ struct DeviceDetailView: View {
                 Spacer()
             }
 
-            if let error = incidents.error {
+            switch incidents.result {
+            case .success(let recent):
+                if !recent.crashes.isEmpty {
+                    Header(title: "Recent Crashes")
+                    ForEach(recent.crashes) { crash in
+                        Row {
+                            if let date = crash.date {
+                                UTCTimestampText(date: date, size: 14)
+                            }
+                            Spacer()
+                            Text(verbatim: crash.name)
+                                .font(.footnote)
+                                .foregroundStyle(Color.gray)
+                        } destination: {
+                            CrashDetailView(crash: crash)
+                        }
+                    }
+                }
+
+                if !recent.hangs.isEmpty {
+                    Header(title: "Recent Hangs")
+                    ForEach(recent.hangs) { hang in
+                        Row {
+                            if let date = hang.date {
+                                UTCTimestampText(date: date, size: 14)
+                            }
+                            Spacer()
+                            Text(verbatim: hang.duration.duration)
+                                .font(.footnote)
+                                .foregroundStyle(Color.gray)
+                        } destination: {
+                            HangDetailView(hang: hang)
+                        }
+                    }
+                }
+            case .failure(let error):
                 Header(title: "Incidents")
                 ErrorRow(description: error.localizedDescription) {
                     await incidents.fetchAgain(in: database)
                 }
-            }
-
-            if !crashes.isEmpty {
-                Header(title: "Recent Crashes")
-                ForEach(crashes) { crash in
-                    Row {
-                        if let date = crash.date {
-                            UTCTimestampText(date: date, size: 14)
-                        }
-                        Spacer()
-                        Text(verbatim: crash.name)
-                            .font(.footnote)
-                            .foregroundStyle(Color.gray)
-                    } destination: {
-                        CrashDetailView(crash: crash)
-                    }
-                }
-            }
-
-            if !hangs.isEmpty {
-                Header(title: "Recent Hangs")
-                ForEach(hangs) { hang in
-                    Row {
-                        if let date = hang.date {
-                            UTCTimestampText(date: date, size: 14)
-                        }
-                        Spacer()
-                        Text(verbatim: hang.duration.duration)
-                            .font(.footnote)
-                            .foregroundStyle(Color.gray)
-                    } destination: {
-                        HangDetailView(hang: hang)
-                    }
-                }
+            case nil:
+                EmptyView()
             }
         }
         .navigationTitle(en: device.modelName)
         .refreshes([incidents])
-    }
-
-    private var crashes: [Crash] {
-        (try? incidents.result?.get().crashes) ?? []
-    }
-
-    private var hangs: [Hang] {
-        (try? incidents.result?.get().hangs) ?? []
     }
 }
 

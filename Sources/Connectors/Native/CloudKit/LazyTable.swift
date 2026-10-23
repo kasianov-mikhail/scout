@@ -17,8 +17,6 @@ actor LazyTable<Value: Sendable> {
         do {
             return try await entry.value
         } catch {
-            // Only the failed task is evicted: a concurrent caller may have
-            // already installed a fresh attempt under the same id.
             if entries[id] == entry {
                 entries[id] = nil
             }

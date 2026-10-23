@@ -89,4 +89,101 @@ struct IncidentBreakdownProviderTests {
         #expect(breakdown.devices.isEmpty)
         #expect(breakdown.osVersions.isEmpty)
     }
+
+    @Test("Looks up only the IDs that a new page adds")
+    func fetchLooksUpOnlyNewIDs() async throws {
+        let deviceA = UUID()
+        let deviceB = UUID()
+        let sessionA = UUID()
+        let sessionB = UUID()
+
+        let database = DatabaseStub()
+        database.add(
+            .deviceStub(deviceID: deviceA, date: Date(), model: "iPhone15,3"),
+            .deviceStub(deviceID: deviceB, date: Date(), model: "iPhone14,2"),
+            .sessionStub(
+                sessionID: sessionA, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
+            .sessionStub(
+                sessionID: sessionB, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 16.7")
+        )
+
+        let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
+        await provider.fetch(deviceIDs: [deviceA], sessionIDs: [sessionA], in: database)
+        await provider.fetch(deviceIDs: [deviceA, deviceB], sessionIDs: [sessionA, sessionB], in: database)
+        let breakdown = try #require(try? provider.result?.get())
+
+        #expect(database.queriedIDs(of: Device.recordType) == [[deviceA], [deviceB]])
+        #expect(database.queriedIDs(of: Session.recordType) == [[sessionA], [sessionB]])
+        #expect(breakdown.modelsByDevice == [deviceA: "iPhone15,3", deviceB: "iPhone14,2"])
+        #expect(breakdown.versionsBySession == [sessionA: "iOS 17.4", sessionB: "iOS 16.7"])
+        #expect(Set(breakdown.devices.map(\.label)) == ["iPhone15,3", "iPhone14,2"])
+        #expect(Set(breakdown.osVersions.map(\.label)) == ["iOS 17.4", "iOS 16.7"])
+    }
+
+    @Test("Skips the lookup when the IDs did not change")
+    func fetchSkipsUnchangedIDs() async throws {
+        let device = UUID()
+        let session = UUID()
+
+        let database = DatabaseStub()
+        database.add(.deviceStub(deviceID: device, date: Date(), model: "iPhone15,3"))
+
+        let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
+        await provider.fetch(deviceIDs: [device], sessionIDs: [session], in: database)
+        await provider.fetch(deviceIDs: [device], sessionIDs: [session], in: database)
+
+        #expect(database.readCount(of: Device.recordType) == 1)
+        #expect(database.readCount(of: Session.recordType) == 1)
+    }
+
+    @Test("Does not look up an ID without a label again")
+    func fetchSkipsUnlabeledIDs() async throws {
+        let unlabeled = UUID()
+        let device = UUID()
+
+        let database = DatabaseStub()
+        database.add(
+            .deviceStub(deviceID: unlabeled, date: Date()),
+            .deviceStub(deviceID: device, date: Date(), model: "iPhone15,3")
+        )
+
+        let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
+        await provider.fetch(deviceIDs: [unlabeled], sessionIDs: [], in: database)
+        await provider.fetch(deviceIDs: [unlabeled, device], sessionIDs: [], in: database)
+        let breakdown = try #require(try? provider.result?.get())
+
+        #expect(database.queriedIDs(of: Device.recordType) == [[unlabeled], [device]])
+        #expect(breakdown.modelsByDevice == [device: "iPhone15,3"])
+    }
+
+    @Test("Keeps the previous breakdown when a lookup for a new page fails")
+    func fetchKeepsBreakdownOnFailure() async throws {
+        let deviceA = UUID()
+        let deviceB = UUID()
+
+        let database = DatabaseStub()
+        database.add(.deviceStub(deviceID: deviceA, date: Date(), model: "iPhone15,3"))
+
+        let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
+        await provider.fetch(deviceIDs: [deviceA], sessionIDs: [], in: database)
+
+        database.failure = FailedReadError()
+        await provider.fetch(deviceIDs: [deviceA, deviceB], sessionIDs: [], in: database)
+        let breakdown = try #require(try? provider.result?.get())
+
+        #expect(breakdown.modelsByDevice == [deviceA: "iPhone15,3"])
+    }
 }
+
+extension DatabaseStub {
+    fileprivate func queriedIDs(of recordType: String) -> [Set<UUID>] {
+        queries(of: recordType).map { query in
+            guard case .strings(let values) = query.filters.first?.value else {
+                return []
+            }
+            return Set(values.compactMap(UUID.init))
+        }
+    }
+}
+
+private struct FailedReadError: Error {}

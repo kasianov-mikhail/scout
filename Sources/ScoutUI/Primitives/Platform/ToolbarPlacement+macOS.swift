@@ -8,9 +8,6 @@
 #if os(macOS)
     import SwiftUI
 
-    /// Stand-in for the iOS-only placement: the window toolbar is the macOS
-    /// counterpart of the navigation bar.
-    ///
     extension ToolbarPlacement {
         static var navigationBar: ToolbarPlacement { .windowToolbar }
     }

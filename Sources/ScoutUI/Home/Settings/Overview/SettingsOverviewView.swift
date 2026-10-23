@@ -30,13 +30,15 @@ struct SettingsOverviewView: View {
                 .padding(.top)
                 .listRowSeparator(.hidden)
 
-            Header(title: "Backends")
+            if !provider.backends.isEmpty {
+                Header(title: "Backends")
 
-            ForEach(provider.backends) { backend in
-                Row {
-                    BackendRow(backend: backend, isActive: backend.id == activeID)
-                } destination: {
-                    BackendDetailView(provider: provider, id: backend.id, activeID: $activeID)
+                ForEach(provider.backends) { backend in
+                    Row {
+                        BackendRow(backend: backend, isActive: backend.id == activeID)
+                    } destination: {
+                        BackendDetailView(provider: provider, id: backend.id, activeID: $activeID)
+                    }
                 }
             }
 
@@ -44,12 +46,14 @@ struct SettingsOverviewView: View {
                 CacheSection(cache: cache)
             }
 
-            Header(title: "Diagnostics")
+            if !provider.backends.isEmpty {
+                Header(title: "Diagnostics")
 
-            Button {
-                Task { await provider.refreshAll() }
-            } label: {
-                Text(verbatim: "Check All Backends").foregroundStyle(.tint)
+                Button {
+                    Task { await provider.refreshAll() }
+                } label: {
+                    Text(verbatim: "Check All Backends").foregroundStyle(.tint)
+                }
             }
         }
         .navigationTitle(en: "Settings")
@@ -109,5 +113,26 @@ private struct BackendRow: View {
             cache: CacheSample(),
             provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2)))
         )
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("Checking") {
+    @Previewable @State var activeID = [Backend].samples[0].id
+    NavigationStack {
+        SettingsOverviewView(
+            backends: .samples,
+            activeID: $activeID,
+            cache: CacheSample(),
+            provider: BackendHealthProvider(backends: .samples)
+        )
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("No Backends") {
+    @Previewable @State var activeID = ""
+    NavigationStack {
+        SettingsOverviewView(backends: [], activeID: $activeID, cache: CacheSample())
     }
 }
