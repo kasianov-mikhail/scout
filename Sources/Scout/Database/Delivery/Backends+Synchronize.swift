@@ -22,10 +22,10 @@ extension [Backend] {
             context.automaticallyMergesChangesFromParent = true
 
             await withTaskGroup(of: Void.self) { group in
-                for backend in await available {
+                for backend in await available(log: .console) {
                     for type in SyncableEntry.deliverableTypes {
                         group.addTask {
-                            await backend.deliver(type, in: context)
+                            await backend.deliver(type, in: context, log: .console)
                         }
                     }
                     if let symbols = BundledSymbols.main {

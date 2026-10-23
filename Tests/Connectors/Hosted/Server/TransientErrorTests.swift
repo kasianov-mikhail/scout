@@ -25,14 +25,48 @@ struct TransientErrorTests {
         #expect(HTTPDatabaseError(status: 500, reason: nil).isTransient)
         #expect(HTTPDatabaseError(status: 503, reason: nil).isTransient)
         #expect(HTTPDatabaseError(status: 429, reason: nil).isTransient)
+        #expect(HTTPDatabaseError(status: 408, reason: nil).isTransient)
     }
 
-    @Test("Auth and routing failures are transient")
-    func configurationFailuresAreTransient() {
-        #expect(HTTPDatabaseError(status: 401, reason: nil).isTransient)
-        #expect(HTTPDatabaseError(status: 403, reason: nil).isTransient)
-        #expect(HTTPDatabaseError(status: 404, reason: nil).isTransient)
-        #expect(HTTPDatabaseError(status: 408, reason: nil).isTransient)
+    @Test("Auth and routing failures keep records pending and name the misconfiguration", arguments: [401, 403, 404])
+    func authAndRoutingFailuresAreMisconfigurations(status: Int) {
+        let error = HTTPDatabaseError(status: status, reason: nil)
+
+        #expect(error.isTransient)
+        #expect(error.misconfiguration != nil)
+    }
+
+    @Test(
+        "Blocked, malformed and untrusted URLs keep records pending and name the misconfiguration",
+        arguments: [
+            URLError.Code.appTransportSecurityRequiresSecureConnection,
+            .badURL,
+            .unsupportedURL,
+            .secureConnectionFailed,
+            .serverCertificateHasBadDate,
+            .serverCertificateUntrusted,
+            .serverCertificateHasUnknownRoot,
+            .serverCertificateNotYetValid,
+            .clientCertificateRejected,
+            .clientCertificateRequired,
+        ]
+    )
+    func urlMisconfigurations(code: URLError.Code) {
+        let error = URLError(code)
+
+        #expect(error.isTransient)
+        #expect(error.misconfiguration != nil)
+    }
+
+    @Test("Connectivity, outages and throttling are not misconfigurations")
+    func transientFailuresAreNotMisconfigurations() {
+        #expect(URLError(.notConnectedToInternet).misconfiguration == nil)
+        #expect(URLError(.timedOut).misconfiguration == nil)
+        #expect(URLError(.networkConnectionLost).misconfiguration == nil)
+        #expect(HTTPDatabaseError(status: 408, reason: nil).misconfiguration == nil)
+        #expect(HTTPDatabaseError(status: 429, reason: nil).misconfiguration == nil)
+        #expect(HTTPDatabaseError(status: 503, reason: nil).misconfiguration == nil)
+        #expect(InsufficientBackgroundTimeError().misconfiguration == nil)
     }
 
     @Test("Running out of background time is transient")

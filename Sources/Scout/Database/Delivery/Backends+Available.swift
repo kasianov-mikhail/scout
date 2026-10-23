@@ -6,28 +6,32 @@
 // https://opensource.org/licenses/MIT.
 
 extension [Backend] {
-    var available: [Backend] {
-        get async {
-            await withTaskGroup(of: Backend?.self) { group in
-                for backend in self {
-                    group.addTask {
-                        do {
-                            try await backend.checkAccess?()
-                            return backend
-                        } catch {
-                            return nil
-                        }
+    func available(log: FailureLog) async -> [Backend] {
+        await withTaskGroup(of: Backend?.self) { group in
+            for backend in self {
+                group.addTask {
+                    do {
+                        try await backend.checkAccess?()
+                        return backend
+                    } catch is CancellationError {
+                    } catch let error as any TransientFailure where error.isTransient {
+                        backend.report(failure: error, log: log)
+                    } catch let error as Backend.AccountError {
+                        log.printOnce(message: "Scout can't deliver to backend \(backend.id): \(error.localizedDescription)")
+                    } catch {
+                        log.printOnce(message: "Failed to check access to backend \(backend.id): \(error)")
                     }
+                    return nil
                 }
-
-                var available: [Backend] = []
-
-                for await case let backend? in group {
-                    available.append(backend)
-                }
-
-                return available
             }
+
+            var available: [Backend] = []
+
+            for await case let backend? in group {
+                available.append(backend)
+            }
+
+            return available
         }
     }
 }

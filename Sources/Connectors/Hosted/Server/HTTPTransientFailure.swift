@@ -11,10 +11,23 @@ import Scout
 extension HTTPDatabaseError: TransientFailure {
     var isTransient: Bool {
         switch status {
-        case 401, 403, 404, 408, 429, 500...:
+        case 408, 429, 500...:
             true
         default:
-            false
+            misconfiguration != nil
+        }
+    }
+
+    var misconfiguration: String? {
+        switch status {
+        case 401:
+            "the server rejected the API key"
+        case 403:
+            "the API key has no access to this server"
+        case 404:
+            "the server has no Scout API at this URL, check the base path"
+        default:
+            nil
         }
     }
 }
@@ -22,5 +35,18 @@ extension HTTPDatabaseError: TransientFailure {
 extension URLError: TransientFailure {
     package var isTransient: Bool {
         true
+    }
+
+    package var misconfiguration: String? {
+        switch code {
+        case .appTransportSecurityRequiresSecureConnection:
+            "App Transport Security blocks this URL, use https or add an ATS exception"
+        case .badURL, .unsupportedURL:
+            "the server URL is malformed or its scheme is not supported"
+        case .secureConnectionFailed, .serverCertificateHasBadDate, .serverCertificateUntrusted, .serverCertificateHasUnknownRoot, .serverCertificateNotYetValid, .clientCertificateRejected, .clientCertificateRequired:
+            "the TLS connection to the server is not trusted"
+        default:
+            nil
+        }
     }
 }
