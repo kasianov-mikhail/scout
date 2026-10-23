@@ -40,6 +40,21 @@ struct IncidentBacktracesTests {
         #expect(Set(loaded.details.keys) == Set(incidents))
     }
 
+    @Test("A backtrace that does not decode is skipped, and the others still load")
+    func undecodable() async throws {
+        let incident = UUID().uuidString
+        let corrupted = UUID().uuidString
+        let missing = UUID().uuidString
+        var record = try makeBacktrace(incident: corrupted)
+        record["backtrace"] = Data("corrupted".utf8)
+        let database = try IncidentDatabase(backtraces: [makeBacktrace(incident: incident), record], symbols: [makeSymbols()])
+
+        let loaded = try await IncidentBacktraces(incidentIDs: [incident, corrupted, missing], database: database)
+
+        #expect(loaded.groupKeys == [incident: "MyApp|main"])
+        #expect(loaded.found == [incident, corrupted])
+    }
+
     @Test("An incident id that is not a UUID loads nothing")
     func malformedID() async throws {
         let database = try IncidentDatabase(backtraces: [], symbols: [])

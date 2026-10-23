@@ -59,7 +59,7 @@ struct IncidentProviderTests {
         await provider.fetchLatest(in: database)
 
         let newer = Crash.stub(fingerprint: "B", date: Date())
-        try database.insert(newer)
+        database.insert(newer, backtrace: true)
         await provider.fetchLatest(in: database)
 
         #expect(database.backtraceLookups == [[older.backtraceID], [newer.backtraceID]])
@@ -67,12 +67,19 @@ struct IncidentProviderTests {
         #expect(provider.groups?.first?.count == 2)
     }
 
-    @Test("fetchAgain skips crashes already looked up, with or without a backtrace")
+    @Test("fetchAgain skips crashes whose backtrace loaded, with or without a key")
     func fetchAgainSkipsResolvedCrashes() async throws {
         let symbolicated = Crash.stub(fingerprint: "A", date: Date())
-        let unsymbolicated = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-.hour))
-        let database = try PagedIncidentDatabase(crashes: [symbolicated], app: UUID(), pageSize: 10)
-        try database.insert(unsymbolicated, symbolicated: false)
+        let systemOnly = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-.hour))
+        let corrupted = Crash.stub(fingerprint: "C", date: Date().addingTimeInterval(-2 * .hour))
+        let database = try PagedIncidentDatabase(crashes: [symbolicated, systemOnly, corrupted], app: UUID(), pageSize: 10, backtrace: false)
+        database.attach(database.payload, to: symbolicated)
+        let systemBacktrace = Backtrace(
+            images: [Backtrace.Image(name: "libsystem_kernel.dylib", uuid: UUID())],
+            threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
+        )
+        database.attach(try JSONEncoder().encode(systemBacktrace), to: systemOnly)
+        database.attach(Data("corrupted".utf8), to: corrupted)
 
         let provider = IncidentProvider<Crash>()
         await provider.fetchAgain(in: database)
@@ -80,6 +87,23 @@ struct IncidentProviderTests {
 
         #expect(database.backtraceLookups.count == 1)
         #expect(provider.keys.keys.sorted() == [symbolicated.id])
+    }
+
+    @Test("A refresh looks up a crash again until its backtrace arrives")
+    func fetchAgainRetriesMissingBacktrace() async throws {
+        let crash = Crash.stub(fingerprint: "A", date: Date())
+        let database = try PagedIncidentDatabase(crashes: [crash], app: UUID(), pageSize: 10, backtrace: false)
+
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchAgain(in: database)
+        #expect(provider.keys.isEmpty)
+
+        database.attach(database.payload, to: crash)
+        await provider.fetchLatest(in: database)
+        await provider.fetchAgain(in: database)
+
+        #expect(provider.keys == [crash.id: "MyApp|handle"])
+        #expect(database.backtraceLookups == [[crash.backtraceID], [crash.backtraceID]])
     }
 
     @Test("fetchAgain drops the key of a crash that left the feed")
@@ -101,7 +125,7 @@ struct IncidentProviderTests {
 }
 
 private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
-    private let backtrace: Backtrace
+    let payload: Data
     private let pageSize: Int
     private var crashes: [Record]
     private var backtraces: [Record]
@@ -109,16 +133,18 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
 
     private(set) var backtraceLookups: [[String]] = []
 
-    init(crashes: [Crash], app: UUID, pageSize: Int = 1) throws {
+    init(crashes: [Crash], app: UUID, pageSize: Int = 1, backtrace: Bool = true) throws {
         let table = SymbolTable(
             uuid: app,
             functions: [SymbolTable.Function(start: 0, end: 0x100, name: "handle")],
             lines: [],
             inlines: []
         )
-        self.backtrace = Backtrace(
-            images: [Backtrace.Image(name: "MyApp", uuid: app)],
-            threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
+        self.payload = try JSONEncoder().encode(
+            Backtrace(
+                images: [Backtrace.Image(name: "MyApp", uuid: app)],
+                threads: [Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x10)])]
+            )
         )
         self.pageSize = pageSize
         self.crashes = []
@@ -129,20 +155,23 @@ private final class PagedIncidentDatabase: DatabaseReader, @unchecked Sendable {
         self.symbols = symbols
 
         for crash in crashes {
-            try insert(crash)
+            insert(crash, backtrace: backtrace)
         }
     }
 
-    func insert(_ crash: Crash, symbolicated: Bool = true) throws {
+    func insert(_ crash: Crash, backtrace: Bool) {
         crashes.append(crash.record)
-        guard symbolicated else {
-            return
+        if backtrace {
+            attach(payload, to: crash)
         }
+    }
+
+    func attach(_ payload: Data, to crash: Crash) {
         var record = Record(recordType: BacktraceRecord.recordType, recordID: crash.backtraceID)
         record["uuid"] = crash.backtraceID
         record["incident_id"] = crash.id
         record["date"] = crash.date
-        record["backtrace"] = try JSONEncoder().encode(backtrace)
+        record["backtrace"] = payload
         backtraces.append(record)
     }
 

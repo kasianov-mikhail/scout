@@ -12,7 +12,6 @@ import SwiftUI
 final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Refreshable {
     @Published private(set) var keys: [String: String] = [:]
 
-    // IDs whose backtrace lookup finished, with or without a key, so a refresh skips them.
     private var resolved: Set<String> = []
 
     var groups: [IncidentGroup<Element>]? {
@@ -51,14 +50,13 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
         }
 
         do {
-            let loaded = try await IncidentBacktraces(
+            let backtraces = try await IncidentBacktraces(
                 incidentIDs: missing,
                 database: database
             )
-            .groupKeys
 
-            resolved.formUnion(missing)
-            keys.merge(loaded) { $1 }
+            resolved.formUnion(backtraces.found)
+            keys.merge(backtraces.groupKeys) { $1 }
         } catch {
             print("Failed to load incident backtraces: \(error)")
         }
