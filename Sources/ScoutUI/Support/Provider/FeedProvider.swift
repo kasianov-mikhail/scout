@@ -19,8 +19,6 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     // render a full error state instead of an indefinite loading indicator.
     @Published private(set) var error: Error?
 
-    // Bumped by `clear()` so a response that was in flight when the feed was cleared
-    // (a pull racing a filter change) cannot merge stale records or its cursor back in.
     private var generation = 0
 
     init(_ records: [Element]? = nil) {
@@ -32,16 +30,27 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         if ProcessInfo.processInfo.isPreview {
             return true
         }
+
         let generation = generation
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
+
             guard generation == self.generation else {
                 return true
             }
-            if cursor == nil {
-                cursor = results.cursor
+
+            let latest = try results.records.map(Element.init)
+            let loaded = Set(records?.map(\.id) ?? [])
+
+            if results.cursor != nil, loaded.isDisjoint(with: latest.map(\.id)) {
+                replace(records: latest, cursor: results.cursor)
+            } else {
+                if cursor == nil {
+                    cursor = results.cursor
+                }
+                records = dedup(new: latest, old: records ?? [])
             }
-            records = dedup(new: try results.records.map(Element.init), old: records ?? [])
+
             error = nil
             return true
         } catch is CancellationError {
@@ -59,14 +68,16 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         if ProcessInfo.processInfo.isPreview {
             return
         }
+
+        generation += 1
         let generation = generation
+
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
             guard generation == self.generation else {
                 return
             }
-            cursor = results.cursor
-            records = try results.records.map(Element.init)
+            try replace(records: results.records.map(Element.init), cursor: results.cursor)
             error = nil
         } catch is CancellationError {
             // A cancelled task (e.g. the view was recreated) leaves the feed untouched so it retries.
@@ -83,7 +94,9 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         if ProcessInfo.processInfo.isPreview {
             return true
         }
+
         let generation = generation
+
         do {
             let results = try await cursor.next(nil)
             guard generation == self.generation else {
@@ -101,9 +114,13 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     func clear() {
-        generation += 1
-        records = nil
-        cursor = nil
+        replace(records: nil, cursor: nil)
         error = nil
+    }
+
+    private func replace(records: [Element]?, cursor: RecordCursor?) {
+        generation += 1
+        self.records = records
+        self.cursor = cursor
     }
 }
