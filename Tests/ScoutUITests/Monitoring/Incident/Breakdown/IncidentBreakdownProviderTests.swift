@@ -156,6 +156,29 @@ struct IncidentBreakdownProviderTests {
         #expect(breakdown.modelsByDevice == [device: "iPhone15,3"])
     }
 
+    @Test("Looks up an ID again when its record was not found")
+    func fetchRetriesMissingIDs() async throws {
+        let late = UUID()
+        let device = UUID()
+        let added = UUID()
+
+        let database = DatabaseStub()
+        database.add(.deviceStub(deviceID: device, date: Date(), model: "iPhone15,3"))
+
+        let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [])
+        await provider.fetch(deviceIDs: [late, device], sessionIDs: [], in: database)
+
+        database.add(
+            .deviceStub(deviceID: late, date: Date(), model: "iPhone14,2"),
+            .deviceStub(deviceID: added, date: Date(), model: "iPad13,1")
+        )
+        await provider.fetch(deviceIDs: [late, device, added], sessionIDs: [], in: database)
+        let breakdown = try #require(try? provider.result?.get())
+
+        #expect(database.queriedIDs(of: Device.recordType) == [[late, device], [late, added]])
+        #expect(breakdown.modelsByDevice == [late: "iPhone14,2", device: "iPhone15,3", added: "iPad13,1"])
+    }
+
     @Test("Keeps the previous breakdown when a lookup for a new page fails")
     func fetchKeepsBreakdownOnFailure() async throws {
         let deviceA = UUID()

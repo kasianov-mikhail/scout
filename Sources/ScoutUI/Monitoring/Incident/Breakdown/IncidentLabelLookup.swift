@@ -14,7 +14,7 @@ struct IncidentLabelLookup<Item: RecordDecodable> {
     let idField: String
     let labelField: String
 
-    func labels(ids: [UUID]) async throws -> [UUID: String] {
+    func labels(ids: [UUID]) async throws -> ResolvedLabels {
         let records = try await database.readAll(
             type: Item.self,
             field: idField,
@@ -22,16 +22,13 @@ struct IncidentLabelLookup<Item: RecordDecodable> {
             fields: [idField, labelField]
         )
 
-        let pairs = records.compactMap { (record: Record) -> (UUID, String)? in
+        var labels = ResolvedLabels()
+        for record in records {
             guard let id = record[idField].flatMap(UUID.init) else {
-                return nil
+                continue
             }
-            guard let label: String = record[labelField] else {
-                return nil
-            }
-            return (id, label)
+            labels.resolve(id: id, label: record[labelField])
         }
-
-        return Dictionary(pairs, uniquingKeysWith: { first, _ in first })
+        return labels
     }
 }
