@@ -36,12 +36,7 @@ struct MigrationDedupeTests {
         let earlyDate = Date(timeIntervalSinceNow: -600)
         let lateDate = Date(timeIntervalSinceNow: -300)
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             let bareDevice = seed.insert(DeviceEntry.self)
             bareDevice.deviceID = deviceID
             bareDevice.date = earlyDate
@@ -95,10 +90,7 @@ struct MigrationDedupeTests {
             event.level = "info"
             event.date = lateDate
             event.session = session
-
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let container = try store.container()
 

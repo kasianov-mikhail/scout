@@ -19,12 +19,12 @@ struct NativeMetricScanner {
             async let ints = query.values == .double ? [] : series(values: .int)
             async let doubles = query.values == .int ? [] : series(values: .double)
 
-            switch query.reduce {
+            return switch query.reduce {
             case .sum:
-                return try await MetricSeries.merge(ints: ints, doubles: doubles, values: query.values)
+                try await MetricSeries.merge(ints: ints, doubles: doubles, values: query.values)
 
             case .last:
-                return try await (ints + doubles).sorted { $0.key < $1.key }
+                try await (ints + doubles).sorted { $0.key < $1.key }
             }
         }
     }

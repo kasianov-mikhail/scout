@@ -29,27 +29,29 @@ struct MigrationDedupe {
             return
         }
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: source)
-        let store = try coordinator.addPersistentStore(type: .sqlite, at: url)
-        defer {
-            do {
-                try coordinator.remove(store)
-            } catch {
-                print("Failed to detach the legacy store: \(error)")
+        try autoreleasepool {
+            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: source)
+            let store = try coordinator.addPersistentStore(type: .sqlite, at: url)
+            defer {
+                do {
+                    try coordinator.remove(store)
+                } catch {
+                    print("Failed to detach the legacy store: \(error)")
+                }
             }
-        }
 
-        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        context.persistentStoreCoordinator = coordinator
+            let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+            context.persistentStoreCoordinator = coordinator
 
-        let keys = Self.uniqueKeys.filter { source.entitiesByName[$0.entity] != nil }
+            let keys = Self.uniqueKeys.filter { source.entitiesByName[$0.entity] != nil }
 
-        try context.performAndWait {
-            for (entity, key) in keys {
-                try Self.dedupe(entityName: entity, key: key, in: context)
-            }
-            if context.hasChanges {
-                try context.save()
+            try context.performAndWait {
+                for (entity, key) in keys {
+                    try Self.dedupe(entityName: entity, key: key, in: context)
+                }
+                if context.hasChanges {
+                    try context.save()
+                }
             }
         }
     }
