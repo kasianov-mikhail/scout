@@ -37,3 +37,8 @@ xcrun swift-api-digester -dump-sdk "${module_flags[@]}" -o "$dump" \
 
 jq 'walk(if type == "array" then map(select(type != "object" or .isInternal != true)) else . end)' \
   "$dump" > "$out"
+
+if ! jq -e '[.ABIRoot.children[]? | select(.declKind != "Import")] | length > 0' "$out" > /dev/null; then
+  echo "::error::The API dump is empty, which means the dump produced nothing rather than that the package vends no API."
+  exit 1
+fi
