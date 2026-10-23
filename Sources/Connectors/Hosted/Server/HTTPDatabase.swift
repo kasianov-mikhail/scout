@@ -21,8 +21,8 @@ struct HTTPDatabase: Sendable {
 extension HTTPDatabase {
     func ping() async throws {
         let query = RecordQuery(
-            recordType: Event.self,
-            filters: [RecordQuery.Filter(field: "name", op: .equals, value: .string(""))]
+            recordType: Device.self,
+            filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(""))]
         )
         _ = try await read(matching: query, fields: nil, limit: 1)
     }
@@ -56,7 +56,6 @@ extension HTTPDatabase {
     }
 
     func perform(_ request: URLRequest) async throws -> Data {
-        try await requireBackgroundTime()
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
             try check(response, data: data)
