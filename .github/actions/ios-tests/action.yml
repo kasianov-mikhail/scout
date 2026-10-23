@@ -27,27 +27,35 @@ runs:
     - name: Prepare simulator
       id: sim
       shell: bash
+      env:
+        IOS: ${{ inputs.ios }}
+        DEVICE: ${{ inputs.device }}
+        RUNTIME: ${{ inputs.runtime }}
       run: |
-        if ! xcrun simctl list runtimes | grep -q "^iOS ${{ inputs.ios }}\."; then
-          if [ -n "${{ inputs.runtime }}" ]; then
-            xcodebuild -downloadPlatform iOS -buildVersion "${{ inputs.runtime }}"
+        select_runtime() {
+          xcrun simctl list runtimes --json \
+            | jq -r --arg v "$IOS." --arg d "$DEVICE" '.runtimes[] | select(.platform == "iOS" and .isAvailable == true and (.version | startswith($v)) and any(.supportedDeviceTypes[]?; .name == $d)) | .identifier' \
+            | tail -1
+        }
+        runtime=$(select_runtime)
+        if [ -z "$runtime" ]; then
+          if [ -n "$RUNTIME" ]; then
+            xcodebuild -downloadPlatform iOS -buildVersion "$RUNTIME"
           else
             xcodebuild -downloadPlatform iOS
           fi
+          runtime=$(select_runtime)
         fi
-        runtime=$(xcrun simctl list runtimes --json \
-          | jq -r --arg d "${{ inputs.device }}" '.runtimes[] | select(.platform == "iOS" and (.version | startswith("${{ inputs.ios }}.")) and any(.supportedDeviceTypes[]?; .name == $d)) | .identifier' \
-          | tail -1)
         if [ -z "$runtime" ]; then
-          echo "No iOS ${{ inputs.ios }} simulator runtime supports ${{ inputs.device }}."
+          echo "::error::No available iOS $IOS simulator runtime supports $DEVICE."
           xcrun simctl list runtimes
           exit 1
         fi
         udid=$(xcrun simctl list devices available --json \
-          | jq -r --arg rt "$runtime" '.devices[$rt][]? | select(.name == "${{ inputs.device }}") | .udid' \
+          | jq -r --arg rt "$runtime" --arg d "$DEVICE" '.devices[$rt][]? | select(.name == $d) | .udid' \
           | head -1)
         if [ -z "$udid" ]; then
-          udid=$(xcrun simctl create "${{ inputs.device }}" "${{ inputs.device }}" "$runtime")
+          udid=$(xcrun simctl create "$DEVICE" "$DEVICE" "$runtime")
         fi
         echo "udid=$udid" >> "$GITHUB_OUTPUT"
 
