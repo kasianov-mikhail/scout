@@ -169,7 +169,6 @@ jobs:
           configuration: ${{ matrix.configuration }}
           device: ${{ matrix.device }}
           runtime: ${{ matrix.runtime }}
-          skip-testing: ${{ matrix.skipTesting }}
 
   tests-gate:
     name: tests-gate

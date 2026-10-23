@@ -15,10 +15,6 @@ inputs:
     description: Exact runtime version to download when the runner ships without one.
     required: false
     default: ""
-  skip-testing:
-    description: Test target to skip on this leg.
-    required: false
-    default: ""
 
 runs:
   using: composite
@@ -95,6 +91,5 @@ runs:
           -destination 'platform=iOS Simulator,id=${{ steps.sim.outputs.udid }}' \
           -clonedSourcePackagesDirPath /tmp/spm \
           -skipMacroValidation \
-          ${{ inputs.skip-testing && format('-skip-testing:{0}', inputs.skip-testing) || '' }} \
           -parallel-testing-enabled NO \
           test-without-building
