@@ -23,7 +23,8 @@ extension Backend {
                     isSecure: url.scheme?.lowercased() == "https"
                 )
             ),
-            checkAccess: database.ping
+            checkAccess: { try await database.access.check(ping: database.ping) },
+            probeAccess: database.ping
         )
     }
 }

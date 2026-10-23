@@ -11,6 +11,7 @@ import Scout
 struct HTTPDatabase: Sendable {
     let url: URL
     let apiKey: String?
+    let access = AccessCache(now: Date.init)
 
     init(url: URL, apiKey: String?) {
         self.url = url.absoluteString.hasSuffix("/") ? url : URL(string: url.absoluteString + "/") ?? url

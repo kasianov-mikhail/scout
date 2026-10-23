@@ -17,7 +17,14 @@ extension HTTPDatabase: DatabaseWriter {
         for chunk in records.chunked(into: 400) {
             try await requireBackgroundTime()
             let request = HTTPWriteRequest(records: chunk.map(HTTPRecord.init))
-            try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
+            do {
+                try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
+            } catch is CancellationError {
+                throw CancellationError()
+            } catch {
+                await access.invalidate()
+                throw error
+            }
         }
     }
 
