@@ -38,6 +38,26 @@ struct StackWalkerTests {
         #expect(frames[2] == 0x1002)
     }
 
+    #if arch(arm64)
+        @Test("strips the pointer authentication code from a saved return address")
+        func stripsSignedReturnAddress() {
+            var storage: [UInt64] = [0, 0x7A1D_0001_8F3C_2E40]
+
+            let (count, frames) = storage.withUnsafeMutableBufferPointer { chain in
+                let base = UInt64(UInt(bitPattern: chain.baseAddress))
+
+                var buffer = [UInt64](repeating: 0, count: 8)
+                let count = buffer.withUnsafeMutableBufferPointer {
+                    StackWalker.walk(pc: 0xABC0, fp: base, into: $0)
+                }
+                return (count, buffer)
+            }
+
+            #expect(count == 2)
+            #expect(frames[1] == 0x1_8F3C_2E40)
+        }
+    #endif
+
     @Test("a zero program counter produces no frames")
     func zeroProgramCounter() {
         var buffer = [UInt64](repeating: 0, count: 8)
