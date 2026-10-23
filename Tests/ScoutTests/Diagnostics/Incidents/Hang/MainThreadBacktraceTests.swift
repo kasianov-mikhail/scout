@@ -15,7 +15,7 @@ import Testing
 @Suite("MainThreadBacktrace")
 struct MainThreadBacktraceTests {
     @Test("captures the blocked main thread's stack from another thread")
-    func capturesBlockedMainThread() {
+    func capturesBlockedMainThread() throws {
         final class Box: @unchecked Sendable {
             var addresses: [UInt64] = []
         }
@@ -34,10 +34,13 @@ struct MainThreadBacktraceTests {
 
         finished.wait()
 
-        let frames = Backtrace(addresses: box.addresses, images: LoadedImage.loaded()).threads[0].frames
+        let backtrace = Backtrace(addresses: box.addresses, images: LoadedImage.loaded())
+        let frames = backtrace.threads[0].frames
+        let bottom = try #require(frames.last?.image)
+        let aboveLinkers = frames.dropLast().reversed().drop { $0.image == nil }
 
-        #expect(!frames.isEmpty)
-        #expect(frames.allSatisfy { $0.image != nil })
+        #expect(backtrace.images[bottom].name == "dyld")
+        #expect(aboveLinkers.allSatisfy { $0.image != nil }, "\(frames)")
     }
 
     @Test("leaves the main thread's send rights unchanged")

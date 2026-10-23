@@ -98,4 +98,27 @@ struct StackWalkerTests {
 
         #expect(count == 8)
     }
+
+    @Test("continues past a frame pointer tagged by a Swift async frame")
+    func walksPastAsyncFrame() {
+        var storage = [UInt64](repeating: 0, count: 4)
+
+        let (count, frames) = storage.withUnsafeMutableBufferPointer { chain in
+            let base = UInt64(UInt(bitPattern: chain.baseAddress))
+
+            chain[0] = (base + 16) | (1 << 60)
+            chain[1] = 0x1001
+            chain[2] = 0
+            chain[3] = 0x1002
+
+            var buffer = [UInt64](repeating: 0, count: 8)
+            let count = buffer.withUnsafeMutableBufferPointer {
+                StackWalker.walk(pc: 0xABC0, fp: base, into: $0)
+            }
+            return (count, buffer)
+        }
+
+        #expect(count == 3)
+        #expect(frames[2] == 0x1002)
+    }
 }
