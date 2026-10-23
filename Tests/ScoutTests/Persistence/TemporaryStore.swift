@@ -22,6 +22,26 @@ final class TemporaryStore {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
+    func seed(model: NSManagedObjectModel, body: (NSManagedObjectContext) throws -> Void) throws {
+        let seedURL = directory.appendingPathComponent("Seed.sqlite")
+
+        try autoreleasepool {
+            let coordinator = NSPersistentStoreCoordinator(managedObjectModel: model)
+            let options = [NSSQLitePragmasOption: ["journal_mode": "DELETE"] as NSDictionary]
+            let store = try coordinator.addPersistentStore(type: .sqlite, at: seedURL, options: options)
+            let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+            context.persistentStoreCoordinator = coordinator
+
+            try context.performAndWait {
+                try body(context)
+                try context.save()
+            }
+            try coordinator.remove(store)
+        }
+
+        try FileManager.default.copyItem(at: seedURL, to: url)
+    }
+
     func container() throws -> NSPersistentContainer {
         let container = NSPersistentContainer(named: "ScoutModel")
         container.persistentStoreDescriptions = [NSPersistentStoreDescription(url: url)]

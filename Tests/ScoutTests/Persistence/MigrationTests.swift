@@ -37,9 +37,7 @@ struct MigrationTests {
             defer { store.tearDown() }
             let storeURL = store.url
 
-            let oldCoordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-            let oldStore = try oldCoordinator.addPersistentStore(type: .sqlite, at: storeURL)
-            try oldCoordinator.remove(oldStore)
+            try store.seed(model: old) { _ in }
 
             let coordinator = NSPersistentStoreCoordinator(managedObjectModel: current)
             let options: [String: Any] = [
@@ -75,12 +73,7 @@ struct MigrationTests {
         let crashID = UUID()
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             let launch = seed.insert(LaunchEntry.self)
             launch.launchID = launchID
             launch.date = date
@@ -90,10 +83,7 @@ struct MigrationTests {
             crash.name = "SIGSEGV"
             crash.reason = "Signal 11 received"
             crash.date = date
-
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let context = try store.container().newBackgroundContext()
         try context.performAndWait {
@@ -119,12 +109,7 @@ struct MigrationTests {
         let sessionID = UUID()
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             let session = seed.insert(SessionEntry.self)
             session.sessionID = sessionID
             session.date = date
@@ -166,10 +151,7 @@ struct MigrationTests {
                 scopedEntry.date = date
                 scopedEntry.session = session
             }
-
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let context = try store.container().newBackgroundContext()
         try context.performAndWait {
@@ -198,12 +180,7 @@ struct MigrationTests {
         let sessionID = UUID()
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             let launch = seed.insert(LaunchEntry.self)
             launch.launchID = launchID
             launch.date = date
@@ -229,10 +206,7 @@ struct MigrationTests {
             event.level = "info"
             event.date = date
             event.session = session
-
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let context = try store.container().newBackgroundContext()
         try context.performAndWait {
@@ -263,12 +237,7 @@ struct MigrationTests {
         let installID = UUID()
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             let install = seed.insert(InstallEntry.self)
             install.installID = installID
             install.date = date
@@ -281,10 +250,7 @@ struct MigrationTests {
                 marker.setValue(date, forKey: key)
             }
             marker.setValue(install, forKey: "install")
-
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let context = try store.container().newBackgroundContext()
         try context.performAndWait {
@@ -305,18 +271,11 @@ struct MigrationTests {
         let installID = UUID()
         let date = Date(timeIntervalSince1970: 1_750_000_000)
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             let install = seed.insert(InstallEntry.self)
             install.installID = installID
             install.date = date
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let context = try store.container().newBackgroundContext()
         try context.performAndWait {
@@ -338,16 +297,9 @@ struct MigrationTests {
         let momdURL = try #require(Bundle.module.url(forResource: "ScoutModel", withExtension: "momd"))
         let old = try #require(NSManagedObjectModel(contentsOf: momdURL.appendingPathComponent("ScoutModel 18.mom")))
 
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: old)
-        let seeded = try coordinator.addPersistentStore(type: .sqlite, at: store.url)
-        let seed = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
-        seed.persistentStoreCoordinator = coordinator
-
-        try seed.performAndWait {
+        try store.seed(model: old) { seed in
             EventEntry.stub(name: "login", in: seed).seedDelivery(attempts: 1, for: "cloud", in: seed)
-            try seed.save()
         }
-        try coordinator.remove(seeded)
 
         let context = try store.container().newBackgroundContext()
         try context.performAndWait {
