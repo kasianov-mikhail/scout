@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import SymbolTable
 
 protocol IncidentContent {
     var name: String { get }
@@ -18,6 +19,7 @@ protocol IncidentContent {
 }
 
 protocol IncidentInfo: IncidentContent {
+    var stackTrace: [String] { get set }
     var installID: UUID { get }
     var launchID: UUID { get }
     var sessionID: UUID { get }
@@ -38,6 +40,15 @@ extension HangInfo: IncidentInfo {
 }
 
 extension IncidentInfo {
+    func symbolicated(symbols: SymbolTable) -> Self {
+        guard let backtrace else {
+            return self
+        }
+        var symbolicated = self
+        symbolicated.stackTrace = backtrace.symbolicated(stackTrace: stackTrace, symbols: symbols)
+        return symbolicated
+    }
+
     func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) throws -> Void) throws {
         guard let object = try context.insertIncident(type: Entry.self, content: self, idKey: idKey, id: id) else {
             return
@@ -53,6 +64,31 @@ extension IncidentInfo {
         try configure(object, session)
 
         try context.save()
+    }
+}
+
+extension Backtrace {
+    fileprivate func symbolicated(stackTrace: [String], symbols: SymbolTable) -> [String] {
+        let frames = threads.first(where: \.attributed)?.frames ?? []
+        return stackTrace.enumerated().map { index, line in
+            guard frames.indices.contains(index) else {
+                return line
+            }
+            return symbolicatedLine(frame: frames[index], index: index, symbols: symbols) ?? line
+        }
+    }
+
+    private func symbolicatedLine(frame: Frame, index: Int, symbols: SymbolTable) -> String? {
+        guard let image = frame.image else {
+            return nil
+        }
+        guard images.indices.contains(image), images[image].uuid == symbols.uuid else {
+            return nil
+        }
+        guard let function = symbols.frames(offset: index == 0 ? frame.offset : frame.offset &- 1).last else {
+            return nil
+        }
+        return "\(index)   \(images[image].name)   \(function.name)"
     }
 }
 

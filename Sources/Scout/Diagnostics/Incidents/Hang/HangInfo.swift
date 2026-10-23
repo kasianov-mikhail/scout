@@ -10,7 +10,7 @@ import CoreData
 struct HangInfo: Codable {
     let name: String
     let reason: String?
-    let stackTrace: [String]
+    var stackTrace: [String]
     let backtrace: Backtrace?
     let duration: TimeInterval
     let date: Date
