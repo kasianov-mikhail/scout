@@ -17,8 +17,17 @@ import Testing
 struct VisitEntryMonitorTests {
     let context = NSManagedObjectContext.inMemoryContext()
 
-    private func makeLaunch() -> LaunchEntry {
-        LaunchEntry.stub(date: Date(year: 2026, month: 1, day: 1), in: context)
+    private func makeLaunch(device: DeviceEntry? = nil) -> LaunchEntry {
+        let install = device.map { InstallEntry.stub(date: Date(year: 2026, month: 1, day: 1), device: $0, in: context) }
+        return LaunchEntry.stub(date: Date(year: 2026, month: 1, day: 1), install: install, in: context)
+    }
+
+    private func purgeDelivered(entries: [LaunchScopeEntry]) throws {
+        for entry in entries {
+            entry.seedDelivery(pending: false, for: "cloud", in: context)
+        }
+        try SyncableEntry.purge(to: ["cloud"], in: context)
+        try context.save()
     }
 
     @Test("Trigger records one visit per day")
@@ -51,8 +60,7 @@ struct VisitEntryMonitorTests {
     @Test("Each new visit day stamps the days since the device's previous visit")
     func triggerStampsGaps() throws {
         let device = DeviceEntry.stub(date: Date(year: 2026, month: 1, day: 1), in: context)
-        let install = InstallEntry.stub(date: Date(year: 2026, month: 1, day: 1), device: device, in: context)
-        let launch = LaunchEntry.stub(date: Date(year: 2026, month: 1, day: 1), install: install, in: context)
+        let launch = makeLaunch(device: device)
 
         for day in [1, 1, 4, 5] {
             try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: day, hour: 9), appVersion: "2.0")
@@ -67,6 +75,38 @@ struct VisitEntryMonitorTests {
         #expect(gaps.map(\.appVersion) == ["2.0", "2.0", "2.0", "2.1"])
         #expect(gaps.allSatisfy { $0.launch == launch })
         #expect(device.lastVisitDay == Date(year: 2026, month: 3, day: 1))
+    }
+
+    @Test("A purged visit keeps the day's gap from being stamped again")
+    func triggerAfterPurgedVisit() throws {
+        let device = DeviceEntry.stub(date: Date(year: 2026, month: 1, day: 1), in: context)
+        let launch = makeLaunch(device: device)
+
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 1, hour: 9))
+            .execute(in: context)
+        try purgeDelivered(entries: context.fetchAll(VisitEntry.self))
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 1, hour: 17))
+            .execute(in: context)
+
+        #expect(try context.fetchAll(VisitEntry.self).isEmpty)
+        #expect(try context.fetchAll(VisitGapEntry.self).map(\.gap) == [30])
+        #expect(device.lastVisitDay == Date(year: 2026, month: 1, day: 1))
+    }
+
+    @Test("The next visit day counts its gap from a purged visit")
+    func triggerNextDayAfterPurge() throws {
+        let device = DeviceEntry.stub(date: Date(year: 2026, month: 1, day: 1), in: context)
+        let launch = makeLaunch(device: device)
+
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 1, hour: 9))
+            .execute(in: context)
+        try purgeDelivered(entries: context.fetchAll(LaunchScopeEntry.self))
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 1, hour: 17))
+            .execute(in: context)
+        try VisitEntry.Trigger(launchID: launch.launchID, date: Date(year: 2026, month: 1, day: 4))
+            .execute(in: context)
+
+        #expect(try context.fetchAll(VisitGapEntry.self).map(\.gap) == [3])
     }
 
     @Test("A visit without a known device stamps the longest gap")
