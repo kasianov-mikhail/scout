@@ -97,6 +97,42 @@ struct DeliverTests {
         #expect(cloud.writeCount == 2)
     }
 
+    @Test("A page delivered after a split doesn't hold back the next page")
+    func splitPageKeepsPaging() async throws {
+        for _ in 0...DeliveryEntry.pageSize {
+            EventEntry.stub(name: "login", in: context)
+        }
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        server.writeErrors.append(Self.testError)
+
+        try await deliver(EventEntry.self, to: serverBackend)
+
+        #expect(server.records.count(of: "Event") == DeliveryEntry.pageSize + 1)
+        #expect(server.writeCount == 4)
+        #expect(try context.fetchAll(EventEntry.self).allSatisfy { $0.delivery(for: "server")?.isDelivered == true })
+    }
+
+    @Test("A record rejected from a full page doesn't hold back the next page")
+    func rejectionKeepsPaging() async throws {
+        for _ in 0...DeliveryEntry.pageSize {
+            EventEntry.stub(name: "login", in: context)
+        }
+        try context.save()
+        try SyncableEntry.plan(backends: [serverBackend], in: context)
+
+        var poison: String?
+        server.reject = { record in
+            poison = poison ?? record.recordID
+            return record.recordID == poison
+        }
+
+        try await deliver(EventEntry.self, to: serverBackend)
+
+        #expect(server.records.count(of: "Event") == DeliveryEntry.pageSize)
+    }
+
     @Test("A failing backend leaves its row outstanding without blocking the others")
     func failureIsolatedToBackend() async throws {
         let event = EventEntry.stub(name: "login", in: context)
@@ -107,9 +143,7 @@ struct DeliverTests {
 
         // The cloud engine succeeds independently of the failing server engine.
         try await deliver(EventEntry.self, to: cloudBackend)
-        await #expect(throws: (any Error).self) {
-            try await deliver(EventEntry.self, to: serverBackend)
-        }
+        try await deliver(EventEntry.self, to: serverBackend)
 
         #expect(event.delivery(for: "cloud")?.isDelivered == true)
         #expect(event.delivery(for: "server")?.isPending == true)
@@ -162,9 +196,7 @@ struct DeliverTests {
         // First cycle: the server is down, cloud succeeds.
         server.writeErrors.append(Self.testError)
         try await deliver(EventEntry.self, to: cloudBackend)
-        await #expect(throws: (any Error).self) {
-            try await deliver(EventEntry.self, to: serverBackend)
-        }
+        try await deliver(EventEntry.self, to: serverBackend)
 
         // Second cycle: only the recovered server engine runs.
         try await deliver(EventEntry.self, to: serverBackend, now: Date().addingTimeInterval(DeliveryEntry.retryDelay))
@@ -230,9 +262,7 @@ struct DeliverTests {
         let start = Date()
 
         for pass in 0..<DeliveryEntry.maxAttempts {
-            await #expect(throws: (any Error).self) {
-                try await deliver(EventEntry.self, to: serverBackend, now: start.addingDay(pass))
-            }
+            try await deliver(EventEntry.self, to: serverBackend, now: start.addingDay(pass))
         }
 
         // Every attempt in the budget was a real send: the ceiling is reached only
@@ -255,9 +285,6 @@ struct DeliverTests {
         server.reject = { _ in true }
         let start = Date()
 
-        await #expect(throws: (any Error).self) {
-            try await deliver(EventEntry.self, to: serverBackend, now: start)
-        }
         for second in 1..<DeliveryEntry.maxAttempts {
             try await deliver(EventEntry.self, to: serverBackend, now: start.addingTimeInterval(TimeInterval(second)))
         }
@@ -276,9 +303,7 @@ struct DeliverTests {
         server.writeErrors.append(Self.testError)
         let start = Date()
 
-        await #expect(throws: (any Error).self) {
-            try await deliver(EventEntry.self, to: serverBackend, now: start)
-        }
+        try await deliver(EventEntry.self, to: serverBackend, now: start)
         try await deliver(EventEntry.self, to: serverBackend, now: start.addingTimeInterval(DeliveryEntry.retryDelay))
 
         #expect(server.writeCount == 2)
@@ -297,9 +322,7 @@ struct DeliverTests {
         let retry = start.addingTimeInterval(DeliveryEntry.retryDelay)
 
         for now in [start, retry] {
-            await #expect(throws: (any Error).self) {
-                try await deliver(EventEntry.self, to: serverBackend, now: now)
-            }
+            try await deliver(EventEntry.self, to: serverBackend, now: now)
         }
         try await deliver(EventEntry.self, to: serverBackend, now: retry.addingTimeInterval(DeliveryEntry.retryDelay))
         #expect(server.writeCount == 2)
@@ -316,9 +339,7 @@ struct DeliverTests {
         try SyncableEntry.plan(backends: [cloudBackend], in: context)
 
         cloud.writeErrors.append(Self.testError)
-        await #expect(throws: (any Error).self) {
-            try await deliver(SessionEntry.self, to: cloudBackend)
-        }
+        try await deliver(SessionEntry.self, to: cloudBackend)
 
         session.endDate = Date()
         session.requeue()
@@ -338,9 +359,7 @@ struct DeliverTests {
         // The server refuses one malformed record and accepts everything else.
         server.reject = { $0["name"] as String? == "poison" }
 
-        await #expect(throws: (any Error).self) {
-            try await deliver(EventEntry.self, to: serverBackend)
-        }
+        try await deliver(EventEntry.self, to: serverBackend)
 
         // The records it was batched with are delivered in the same pass...
         #expect(server.records.count(of: "Event") == 7)
@@ -489,9 +508,7 @@ struct DeliverTests {
         // Cloud delivered; the server never accepts the record.
         server.writeErrors.append(Self.testError)
         try await deliver(EventEntry.self, to: cloudBackend)
-        await #expect(throws: (any Error).self) {
-            try await deliver(EventEntry.self, to: serverBackend)
-        }
+        try await deliver(EventEntry.self, to: serverBackend)
         #expect(event.delivery(for: "server")?.isDelivered == false)
 
         // While the server is configured, the outstanding row keeps the record...

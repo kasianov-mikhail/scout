@@ -78,6 +78,7 @@ extension RecordSender {
         var outcome = Outcome()
         var batches = [records[...]]
         var probes = 32
+        var failure: (any Error)?
 
         while probes > 0, let batch = batches.popLast() {
             probes -= 1
@@ -86,20 +87,23 @@ extension RecordSender {
                 try await database.write(records: Array(batch))
                 outcome.delivered += batch.indices
             } catch {
-                outcome.error = error
-
                 if error is CancellationError || (error as? any TransientFailure)?.isTransient == true {
+                    outcome.error = error
                     return outcome
                 }
                 if batch.count == 1 {
                     outcome.rejected[batch.startIndex] = error
                 } else {
+                    failure = error
                     let half = batch.startIndex + batch.count / 2
                     batches += [batch[half...], batch[..<half]]
                 }
             }
         }
 
+        if !batches.isEmpty {
+            outcome.error = failure
+        }
         return outcome
     }
 }

@@ -43,9 +43,7 @@ struct HostedDeliveryTests {
         try context.save()
         try SyncableEntry.plan(backends: [backend], in: context)
 
-        await #expect(throws: HTTPDatabaseError.self) {
-            try await RecordSender<EventEntry>(backend: backend).deliver(in: context)
-        }
+        try await RecordSender<EventEntry>(backend: backend).deliver(in: context)
 
         #expect(server.requestCount == 3)
         #expect(events.allSatisfy { $0.delivery(for: backend.id)?.isPending == true })
