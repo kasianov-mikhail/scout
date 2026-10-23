@@ -51,25 +51,8 @@ runs:
         fi
         echo "udid=$udid" >> "$GITHUB_OUTPUT"
 
-    - name: Identify the toolchain
-      id: toolchain
-      shell: bash
-      run: |
-        set -eo pipefail
-        id="$(xcodebuild -version | tr -d '\n' | tr ' ' '-' | tr -cd 'A-Za-z0-9.-')"
-        if [ -z "$id" ]; then
-          echo "::error::Could not read the Xcode version for the cache key."
-          exit 1
-        fi
-        echo "Toolchain: $id"
-        echo "id=$id" >> "$GITHUB_OUTPUT"
-
-    - name: Cache Swift package checkouts
-      uses: actions/cache@v6
-      with:
-        path: /tmp/spm
-        key: spm-${{ steps.toolchain.outputs.id }}-${{ hashFiles('Package.swift', 'Package@swift-*.swift') }}
-        restore-keys: spm-${{ steps.toolchain.outputs.id }}-
+    - name: Cache Swift packages
+      uses: ./.github/actions/spm-cache
 
     - name: Build
       shell: bash
