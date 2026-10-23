@@ -87,7 +87,6 @@ jobs:
               echo '```'
               echo "$fix"
               echo '```'
-              echo "Tip: install the pre-commit hook so this is applied automatically on every commit."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
