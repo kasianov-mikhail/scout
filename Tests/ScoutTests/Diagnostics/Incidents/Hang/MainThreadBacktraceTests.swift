@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import MachO
 import Testing
 
 @testable import Scout
@@ -15,7 +16,7 @@ import Testing
 @Suite("MainThreadBacktrace")
 struct MainThreadBacktraceTests {
     @Test("captures the blocked main thread's stack from another thread")
-    func capturesBlockedMainThread() {
+    func capturesBlockedMainThread() throws {
         final class Box: @unchecked Sendable {
             var addresses: [UInt64] = []
         }
@@ -34,10 +35,12 @@ struct MainThreadBacktraceTests {
 
         finished.wait()
 
-        let frames = Backtrace(addresses: box.addresses, images: LoadedImage.loaded()).threads[0].frames
+        let backtrace = Backtrace(addresses: box.addresses, images: LoadedImage.loaded())
+        let frames = backtrace.threads[0].frames
+        let bottom = try #require(frames.last?.image)
 
-        #expect(!frames.isEmpty)
-        #expect(frames.allSatisfy { $0.image != nil })
+        #expect(backtrace.images[bottom].name == "dyld")
+        #expect(zip(box.addresses, frames).allSatisfy { $1.image != nil || isInLinker(address: $0) })
     }
 
     @Test("leaves the main thread's send rights unchanged")
@@ -58,6 +61,14 @@ struct MainThreadBacktraceTests {
 
         #expect(sendRights(port: port) == before)
     }
+}
+
+private func isInLinker(address: UInt64) -> Bool {
+    var info = Dl_info()
+    guard dladdr(UnsafeRawPointer(bitPattern: UInt(address)), &info) != 0, let base = info.dli_fbase else {
+        return false
+    }
+    return base.assumingMemoryBound(to: mach_header.self).pointee.filetype == UInt32(MH_DYLINKER)
 }
 
 private func sendRights(port: mach_port_t) -> mach_port_urefs_t {

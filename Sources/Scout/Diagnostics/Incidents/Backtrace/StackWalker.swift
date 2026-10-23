@@ -9,6 +9,8 @@
 import Foundation
 import MachO
 
+private let asyncFrameFlag: UInt64 = 1 << 60
+
 enum StackWalker {
     static let maximumFrameCount = 64
 
@@ -56,7 +58,7 @@ enum StackWalker {
             return nil
         }
 
-        return Frame(previousFP: pair.previousFP, returnAddress: pair.returnAddress)
+        return Frame(previousFP: pair.previousFP & ~asyncFrameFlag, returnAddress: pair.returnAddress)
     }
 
     static func unknownFrame(index: Int, address: UInt64) -> String {
