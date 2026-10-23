@@ -6,5 +6,6 @@ xcuserdata/
 Package.resolved
 .claude/*
 !.claude/CLAUDE.md
+!.claude/settings.json
 !.claude/commands/
 !.claude/skills/

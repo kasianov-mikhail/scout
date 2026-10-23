@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "scout": {
+      "source": {
+        "source": "github",
+        "repo": "kasianov-mikhail/scout-plugin"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "scout@scout": true
+  }
+}
