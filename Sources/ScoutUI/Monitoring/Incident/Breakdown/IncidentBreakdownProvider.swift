@@ -57,8 +57,8 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
         let foundModels = try await models
         let foundVersions = try await versions
 
-        modelsByDevice.merge(found: foundModels, ids: missingDevices)
-        versionsBySession.merge(found: foundVersions, ids: missingSessions)
+        modelsByDevice.merge(found: foundModels)
+        versionsBySession.merge(found: foundVersions)
 
         let deviceModels = modelsByDevice.labels(ids: deviceIDs)
         let sessionVersions = versionsBySession.labels(ids: sessionIDs)
@@ -72,7 +72,7 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
     }
 }
 
-private struct ResolvedLabels {
+struct ResolvedLabels {
     private var labels: [UUID: String] = [:]
     private var resolved: Set<UUID> = []
 
@@ -80,9 +80,14 @@ private struct ResolvedLabels {
         Array(Set(ids).subtracting(resolved))
     }
 
-    mutating func merge(found: [UUID: String], ids: [UUID]) {
-        labels.merge(found) { _, new in new }
-        resolved.formUnion(ids)
+    mutating func resolve(id: UUID, label: String?) {
+        resolved.insert(id)
+        labels[id] = labels[id] ?? label
+    }
+
+    mutating func merge(found: ResolvedLabels) {
+        labels.merge(found.labels) { _, new in new }
+        resolved.formUnion(found.resolved)
     }
 
     func labels(ids: [UUID]) -> [UUID: String] {
