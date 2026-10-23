@@ -25,14 +25,17 @@ extension GaugeHandler: MeterHandler {
     }
 
     func set(_ value: Double) {
+        guard value.isFinite else { return }
         logMeter(value: self.value.mutate { $0 = value })
     }
 
     func increment(by amount: Double) {
+        guard amount.isFinite else { return }
         logMeter(value: value.mutate { $0 += amount })
     }
 
     func decrement(by amount: Double) {
+        guard amount.isFinite else { return }
         logMeter(value: value.mutate { $0 -= amount })
     }
 }

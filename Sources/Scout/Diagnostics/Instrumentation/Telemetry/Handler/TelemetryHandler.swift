@@ -41,6 +41,7 @@ extension TelemetryHandler: CounterHandler {
 
 extension TelemetryHandler: FloatingPointCounterHandler {
     func increment(by value: Double) {
+        guard value.isFinite else { return }
         logMetrics(telemetry: .floatingCounter, value: value)
     }
 }
@@ -57,6 +58,7 @@ extension TelemetryHandler: RecorderHandler {
     }
 
     func record(_ value: Double) {
+        guard value.isFinite else { return }
         logRecorder(value: value)
     }
 }
