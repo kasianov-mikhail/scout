@@ -20,7 +20,7 @@ struct SymbolTableCacheTests {
         let app = UUID()
         let system = (0..<599).map { _ in UUID() }
         let database = CountingDatabase(records: [try makeRecord(image: app)], failing: nil)
-        let cache = SymbolTableCache()
+        let cache = SymbolTableCache(capacity: 1, missLifetime: 60, now: Date.init)
 
         let first = await cache.tables(uuids: [app] + system, database: database)
         let second = await cache.tables(uuids: [app] + system, database: database)
@@ -34,7 +34,7 @@ struct SymbolTableCacheTests {
     func failedRead() async throws {
         let images = (0..<300).map { _ in UUID() }
         let database = CountingDatabase(records: try images.map(makeRecord), failing: images[0])
-        let cache = SymbolTableCache()
+        let cache = SymbolTableCache(capacity: images.count, missLifetime: 60, now: Date.init)
 
         let first = await cache.tables(uuids: images, database: database)
         database.failing = nil
@@ -44,6 +44,56 @@ struct SymbolTableCacheTests {
         #expect(first[images[0]] == nil)
         #expect(second.count == images.count)
         #expect(database.reads == 3)
+    }
+
+    @Test("A missing table is asked for again once its miss expires")
+    func missExpiry() async throws {
+        let app = UUID()
+        let empty = CountingDatabase(records: [], failing: nil)
+        let uploaded = CountingDatabase(records: [try makeRecord(image: app)], failing: nil)
+        let clock = ManualClock()
+        let cache = SymbolTableCache(capacity: 1, missLifetime: 60, now: { clock.now })
+
+        let first = await cache.tables(uuids: [app], database: empty)
+        clock.advance(seconds: 59)
+        let second = await cache.tables(uuids: [app], database: uploaded)
+        clock.advance(seconds: 1)
+        let third = await cache.tables(uuids: [app], database: uploaded)
+
+        #expect(first.isEmpty)
+        #expect(second.isEmpty)
+        #expect(third == [app: makeTable(image: app)])
+        #expect(empty.reads == 1)
+        #expect(uploaded.reads == 1)
+    }
+
+    @Test("The least recently used table is evicted once the cache is full")
+    func eviction() async throws {
+        let images = (0..<3).map { _ in UUID() }
+        let database = CountingDatabase(records: try images.map(makeRecord), failing: nil)
+        let cache = SymbolTableCache(capacity: 2, missLifetime: 60, now: Date.init)
+
+        _ = await cache.tables(uuids: [images[0]], database: database)
+        _ = await cache.tables(uuids: [images[1]], database: database)
+        _ = await cache.tables(uuids: [images[0]], database: database)
+        _ = await cache.tables(uuids: [images[2]], database: database)
+        let kept = await cache.tables(uuids: [images[0]], database: database)
+        let evicted = await cache.tables(uuids: [images[1]], database: database)
+
+        #expect(kept == [images[0]: makeTable(image: images[0])])
+        #expect(evicted == [images[1]: makeTable(image: images[1])])
+        #expect(database.reads == 4)
+    }
+
+    @Test("A request for more tables than the cache holds still returns all of them")
+    func overflow() async throws {
+        let images = (0..<3).map { _ in UUID() }
+        let database = CountingDatabase(records: try images.map(makeRecord), failing: nil)
+        let cache = SymbolTableCache(capacity: 1, missLifetime: 60, now: Date.init)
+
+        let tables = await cache.tables(uuids: images, database: database)
+
+        #expect(tables.count == images.count)
     }
 
     private func makeTable(image: UUID) -> SymbolTable {
@@ -96,6 +146,19 @@ private final class CountingDatabase: RecordReader, @unchecked Sendable {
     func lookup(recordName: String, fields: [String]?) async throws -> Record {
         Issue.record("Symbol tables must load by membership reads")
         throw RecordNotFoundError()
+    }
+}
+
+private final class ManualClock: @unchecked Sendable {
+    private let lock = NSLock()
+    private var date = Date(timeIntervalSince1970: 0)
+
+    var now: Date {
+        lock.withLock { date }
+    }
+
+    func advance(seconds: TimeInterval) {
+        lock.withLock { date += seconds }
     }
 }
 

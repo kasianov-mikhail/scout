@@ -10,28 +10,52 @@ import Scout
 import SymbolTable
 
 actor SymbolTableCache {
-    static let shared = SymbolTableCache()
+    static let shared = SymbolTableCache(capacity: 4, missLifetime: 300, now: Date.init)
 
+    private let capacity: Int
+    private let missLifetime: TimeInterval
+    private let now: @Sendable () -> Date
     private var tables: [UUID: SymbolTable] = [:]
-    private var missing: Set<UUID> = []
+    private var recent: [UUID] = []
+    private var missing: [UUID: Date] = [:]
+
+    init(capacity: Int, missLifetime: TimeInterval, now: @escaping @Sendable () -> Date) {
+        self.capacity = capacity
+        self.missLifetime = missLifetime
+        self.now = now
+    }
 
     func tables(uuids: [UUID], database: RecordReader) async -> [UUID: SymbolTable] {
-        let unknown = Array(Set(uuids).subtracting(tables.keys).subtracting(missing))
+        let requested = Set(uuids)
+        let date = now()
+        missing = missing.filter { $0.value > date }
+
+        var found = tables.filter { requested.contains($0.key) }
+        let unknown = Array(requested.subtracting(found.keys).subtracting(missing.keys))
 
         let loaded = await unknown.readInMembershipChunks { chunk in
             LoadedTables(requested: chunk, found: try await database.symbolTables(uuids: chunk))
         }
 
+        let expiry = now().addingTimeInterval(missLifetime)
         for result in loaded {
             switch result {
             case .success(let result):
-                tables.merge(result.found) { $1 }
-                missing.formUnion(Set(result.requested).subtracting(result.found.keys))
+                found.merge(result.found) { $1 }
+                for uuid in Set(result.requested).subtracting(result.found.keys) {
+                    missing[uuid] = expiry
+                }
             case .failure(let error):
                 print("Failed to load symbol tables: \(error)")
             }
         }
-        return tables.filter { uuids.contains($0.key) }
+
+        tables.merge(found) { $1 }
+        recent = recent.filter { found[$0] == nil } + found.keys
+        while recent.count > capacity {
+            tables[recent.removeFirst()] = nil
+        }
+        return found
     }
 }
 
