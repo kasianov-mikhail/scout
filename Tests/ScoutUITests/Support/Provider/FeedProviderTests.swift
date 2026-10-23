@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import ConnectorSupport
 import Foundation
 import Scout
 import Testing
@@ -179,6 +180,78 @@ struct FeedProviderTests {
         #expect(Set(ids).count == ids.count)
         #expect(ids.count == 4)
     }
+
+    @Test("A refresh that brings more than a page of new records leaves no gap before the loaded ones")
+    func fetchLatestLeavesNoGap() async throws {
+        let database = GrowingDatabase(names: ["d", "e", "f"])
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        #expect(provider.records?.map(\.name) == ["d", "e"])
+
+        database.prepend(names: ["a", "b", "c"])
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        while let cursor = provider.cursor {
+            await provider.fetchMore(cursor: cursor, in: database)
+        }
+
+        #expect(provider.records?.map(\.name) == ["a", "b", "c", "d", "e", "f"])
+    }
+
+    @Test("A page load in flight during a reload drops its stale page and cursor")
+    func fetchAgainDropsPageInFlight() async throws {
+        let database = GrowingDatabase(names: ["a", "b", "c", "d", "e"])
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let stale = try #require(provider.cursor)
+
+        let reloaded = GrowingDatabase(names: ["x"])
+        let racing = RecordCursor { fields in
+            await provider.fetch(for: EventQuery(), in: reloaded)
+            return try await stale.next(fields)
+        }
+        await provider.fetchMore(cursor: racing, in: database)
+
+        #expect(provider.records?.map(\.name) == ["x"])
+        #expect(provider.cursor == nil)
+    }
+
+    @Test("A page load in flight when a refresh replaces the feed drops its stale page")
+    func fetchLatestReplacementDropsPageInFlight() async throws {
+        let database = GrowingDatabase(names: ["d", "e", "f"])
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let stale = try #require(provider.cursor)
+
+        database.prepend(names: ["a", "b", "c"])
+        let racing = RecordCursor { fields in
+            await provider.fetchLatest(for: EventQuery(), in: database)
+            return try await stale.next(fields)
+        }
+        await provider.fetchMore(cursor: racing, in: database)
+
+        #expect(provider.records?.map(\.name) == ["a", "b"])
+    }
+}
+
+private final class GrowingDatabase: RecordReader, @unchecked Sendable {
+    private var records: [Record] = []
+
+    init(names: [String]) {
+        prepend(names: names)
+    }
+
+    func prepend(names: [String]) {
+        records = names.map { Record.eventStub(name: $0, sessionID: UUID(), date: Date()) } + records
+    }
+
+    func read(matching query: RecordQuery, fields: [String]?, limit: Int) async throws -> RecordChunk {
+        RecordChunk(page: records, limit: 2)
+    }
+
+    func lookup(recordName: String, fields: [String]?) async throws -> Record { throw RecordNotFoundError() }
 }
 
 private final class PagingDatabase: RecordReader, @unchecked Sendable {
