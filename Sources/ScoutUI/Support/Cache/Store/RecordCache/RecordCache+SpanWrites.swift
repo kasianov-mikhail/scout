@@ -31,11 +31,17 @@ extension RecordCache {
                 }
 
                 if let span = try context.fetch(CachedSpan.request(fingerprint: fingerprint)).first, span.lowerDate <= range.lowerBound, range.lowerBound <= span.upperDate {
-                    try context.deleteAll(entity: "CachedRecord", predicate: CachedRecord.predicate(fingerprint: fingerprint, in: range))
+                    let stale = CachedRecord.request(fingerprint: fingerprint, in: range)
+                    stale.includesPendingChanges = false
+                    stale.includesPropertyValues = false
+
+                    for record in try context.fetch(stale) {
+                        context.delete(record)
+                    }
                     span.upperDate = max(span.upperDate, range.upperBound)
                 } else {
-                    try context.deleteAll(entity: "CachedRecord", predicate: CachedRecord.predicate(fingerprint: fingerprint))
                     try context.deleteAll(entity: "CachedSpan", predicate: CachedSpan.predicate(fingerprint: fingerprint))
+                    try context.deleteAll(entity: "CachedRecord", predicate: CachedRecord.predicate(fingerprint: fingerprint))
                     _ = CachedSpan(fingerprint: fingerprint, lowerDate: range.lowerBound, upperDate: range.upperBound, context: context)
                 }
                 try context.save()
@@ -55,8 +61,8 @@ extension RecordCache {
 
         do {
             try context.performAndWait {
-                try context.deleteAll(entity: "CachedRecord", predicate: CachedRecord.predicate(fingerprint: fingerprint))
                 try context.deleteAll(entity: "CachedSpan", predicate: CachedSpan.predicate(fingerprint: fingerprint))
+                try context.deleteAll(entity: "CachedRecord", predicate: CachedRecord.predicate(fingerprint: fingerprint))
 
                 for record in records {
                     guard case .date(let date)? = record.fields["date"] else {
