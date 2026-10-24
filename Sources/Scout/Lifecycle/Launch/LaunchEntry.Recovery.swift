@@ -9,11 +9,11 @@ import CoreData
 
 extension LaunchEntry {
     struct Recovery: Command {
-        let launchID: UUID
+        let openLaunchIDs: Set<UUID>
 
         func execute(in context: NSManagedObjectContext) throws {
             let request = NSFetchRequest<LaunchEntry>(entityName: "LaunchEntry")
-            request.predicate = NSPredicate(format: "endDate == nil AND launchID != %@", launchID as CVarArg)
+            request.predicate = .unfinished(launchKey: "launchID", outside: openLaunchIDs)
 
             for launch in try context.fetch(request) {
                 launch.endDate = launch.inferred

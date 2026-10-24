@@ -9,11 +9,11 @@ import CoreData
 
 extension SessionEntry {
     struct Recovery: Command {
-        let launchID: UUID
+        let openLaunchIDs: Set<UUID>
 
         func execute(in context: NSManagedObjectContext) throws {
             let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
-            request.predicate = NSPredicate(format: "endDate == nil AND launch.launchID != %@", launchID as CVarArg)
+            request.predicate = .unfinished(launchKey: "launch.launchID", outside: openLaunchIDs)
 
             for session in try context.fetch(request) {
                 session.endDate = session.inferred

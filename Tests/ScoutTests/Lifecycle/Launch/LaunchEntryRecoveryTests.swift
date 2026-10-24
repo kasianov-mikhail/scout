@@ -24,7 +24,7 @@ struct LaunchEntryRecoveryTests {
         launch.launchID = UUID()
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(launch.endDate == date)
     }
@@ -37,7 +37,7 @@ struct LaunchEntryRecoveryTests {
         let delivery = launch.seedDelivery(pending: false, attempts: 3, for: "cloud", in: context)
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(delivery.isPending)
         #expect(delivery.attempts == 0)
@@ -48,7 +48,7 @@ struct LaunchEntryRecoveryTests {
         let launch = LaunchEntry.stub(date: date, in: context)
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(launch.endDate == nil)
     }
@@ -60,7 +60,7 @@ struct LaunchEntryRecoveryTests {
         launch.launchID = UUID()
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(launch.endDate == endDate)
     }
@@ -77,7 +77,7 @@ struct LaunchEntryRecoveryTests {
         SessionEntry.stub(date: latest, launch: launch, in: context)
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(launch.endDate == latest)
     }
@@ -91,7 +91,7 @@ struct LaunchEntryRecoveryTests {
         SessionEntry.stub(date: date.addingTimeInterval(10), endDate: endDate, launch: launch, in: context)
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(launch.endDate == endDate)
     }
@@ -108,7 +108,7 @@ struct LaunchEntryRecoveryTests {
         SessionEntry.stub(date: date.addingTimeInterval(120), endDate: nil, launch: launch, in: context)
 
         try context.save()
-        try LaunchEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try LaunchEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(launch.endDate == endDate)
     }

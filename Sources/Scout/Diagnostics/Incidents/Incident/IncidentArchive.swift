@@ -55,12 +55,28 @@ struct IncidentArchive<Payload: IncidentInfo & Codable & Sendable> {
         }
     }
 
-    func flush(deviceID: UUID) async {
-        let pending = files.filter { $0.pathExtension == pathExtension }
-        guard !pending.isEmpty else { return }
+    private var incidents: [URL] {
+        files.filter { $0.pathExtension == pathExtension }
+    }
 
+    private var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
+        return decoder
+    }
+
+    /// The launches whose incidents are still waiting to be logged.
+    ///
+    /// Recovery leaves them open, so purge keeps their records until the incident links to them.
+    var launchIDs: Set<UUID> {
+        Set(incidents.compactMap { try? decoder.decode(Payload.self, from: Data(contentsOf: $0)).launchID })
+    }
+
+    func flush(deviceID: UUID) async {
+        let pending = incidents
+        guard !pending.isEmpty else { return }
+
+        let decoder = self.decoder
         let symbols = BundledSymbols.main.flatMap(SymbolTable.init(bundled:))
 
         for file in pending {
