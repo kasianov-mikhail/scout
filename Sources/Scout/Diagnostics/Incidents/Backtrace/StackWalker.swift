@@ -72,8 +72,9 @@ enum StackWalker {
 
     static func symbolicate(index: Int, address: UInt64) -> String {
         var info = Dl_info()
+        let lookup = index == 0 ? address : address &- 1
 
-        guard let pointer = UnsafeRawPointer(bitPattern: UInt(address)), dladdr(pointer, &info) != 0 else {
+        guard let pointer = UnsafeRawPointer(bitPattern: UInt(lookup)), dladdr(pointer, &info) != 0 else {
             return unknownFrame(index: index, address: address)
         }
 
