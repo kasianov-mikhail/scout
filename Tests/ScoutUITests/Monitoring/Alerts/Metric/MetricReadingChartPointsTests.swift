@@ -50,12 +50,11 @@ struct MetricReadingChartPointsTests {
         #expect(reading.baseline == 4)
     }
 
-    @Test("An empty previous window carries no baseline to compare against")
+    @Test("An empty previous window gives a zero baseline")
     func emptyPrevious() {
         let reading = MetricReading(points: [makePoint(day: 7, hour: 1, value: 8)], period: scale)
 
         #expect(reading.baseline == 0)
-        #expect(reading.reference(for: .baselineFactor(2)) == nil)
     }
 
     @Test("Crash-free stability is computed per hour")

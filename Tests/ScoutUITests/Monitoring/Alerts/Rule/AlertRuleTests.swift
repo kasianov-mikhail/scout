@@ -65,6 +65,17 @@ struct AlertRuleTests {
         #expect(!rule.isSustained(in: reading))
     }
 
+    @Test("A jump from a quiet baseline sustains")
+    func quietBaselineSpike() {
+        let rule = AlertRule(
+            metric: .eventCount(name: "Crash"),
+            condition: AlertCondition(comparison: .above, reference: .baselineFactor(2))
+        )
+        let reading = MetricReading(baseline: 0, recent: [0, 0, 50])
+
+        #expect(rule.isSustained(in: reading))
+    }
+
     private func makeRule(holdBuckets: Int = 1) -> AlertRule {
         AlertRule(
             metric: .crashFreeSessions,

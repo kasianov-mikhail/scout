@@ -35,6 +35,17 @@ struct AlertEngineTests {
         #expect(second[0].outcome.state == first[0].outcome.state)
     }
 
+    @Test("An error spike after a quiet previous day fires")
+    func firesOverQuietBaseline() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "Error", counts: [(hoursAgo: 1, count: 50)]))
+
+        let statuses = try await makeEngine(rules: [errorRule]).run(in: database)
+
+        #expect(statuses[0].reading.baseline == 0)
+        #expect(statuses[0].outcome.shouldNotify)
+    }
+
     @Test("A crash-free dip below the threshold fires")
     func crashFree() async throws {
         let database = DatabaseStub()

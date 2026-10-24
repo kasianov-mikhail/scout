@@ -13,14 +13,25 @@ struct MetricReading: Equatable {
 }
 
 extension MetricReading {
-    func reference(for reference: AlertCondition.Reference) -> Double? {
-        switch reference {
+    func reference(for condition: AlertCondition) -> Double? {
+        switch condition.reference {
         case .constant(let value):
             value
         case .baselineFactor(let factor):
-            baseline > 0 ? baseline * factor : nil
+            max(baseline, condition.comparison.minimumBase) * factor
         case .medianFactor(let factor):
-            recent.median.map { $0 * factor }
+            recent.median.map { max($0, condition.comparison.minimumBase) * factor }
+        }
+    }
+}
+
+extension AlertCondition.Comparison {
+    fileprivate var minimumBase: Double {
+        switch self {
+        case .below:
+            0
+        case .above:
+            1
         }
     }
 }

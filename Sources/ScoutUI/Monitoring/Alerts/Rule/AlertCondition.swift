@@ -27,7 +27,7 @@ extension AlertCondition {
 
 extension AlertCondition {
     func isBreached(by value: Double, in reading: MetricReading) -> Bool {
-        guard let reference = reading.reference(for: reference) else {
+        guard let reference = reading.reference(for: self) else {
             return false
         }
 
