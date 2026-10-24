@@ -31,11 +31,9 @@ import Logging
 public struct ScoutLogHandler: LogHandler {
     let runtime: Runtime
 
-    /// The label of the logger this handler belongs to.
     public let label: String
-
     public var metadata: Logger.Metadata = [:]
-
+    public var metadataProvider: Logger.MetadataProvider?
     public var logLevel: Logger.Level = .info
 
     /// Creates a handler that records into the given runtime.
@@ -59,8 +57,14 @@ public struct ScoutLogHandler: LogHandler {
 
         let date = Date()
         let identity = runtime.identity.snapshot
+        let inherited = metadata.merging(metadataProvider?.get() ?? [:]) { $1 }
 
-        runtime.enqueue(urgent: event.level >= .error) { context in
+        var event = event
+        if !inherited.isEmpty {
+            event.metadata = inherited.merging(event.metadata ?? [:]) { $1 }
+        }
+
+        runtime.enqueue(urgent: event.level >= .error) { [event] context in
             try event.log(date: date, identity: identity, context: context)
         }
     }
