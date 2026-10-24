@@ -579,6 +579,41 @@ struct ServerContractTests {
         #expect(hangs.allSatisfy { $0.name == "Main Thread Blocked" })
     }
 
+    @Test("Incident tallies count written incidents per fingerprint", arguments: [Crash.recordType, Hang.recordType])
+    func incidentTallies(recordType: String) async throws {
+        let database = try makeDatabase()
+        let hour = eventDate.startOfHour.addingTimeInterval(-TimeInterval(Int.random(in: 1...40_000)) * .hour)
+        let fingerprint = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeIncident(type: recordType, fingerprint: fingerprint, date: hour.addingTimeInterval(900)),
+            makeIncident(type: recordType, fingerprint: fingerprint, date: hour.addingTimeInterval(.hour + 900)),
+        ])
+
+        let index = try #require(try await database.incidentIndex(recordType: recordType, in: hour..<hour.addingTimeInterval(2 * .hour)))
+
+        #expect(index.unkeyed == nil)
+        #expect(index.tallies == [IncidentTally(fingerprint: fingerprint, name: "SIGSEGV", count: 2, firstHour: hour)])
+    }
+
+    @Test("Incident tallies leave the hours of an unkeyed incident to a raw read")
+    func unkeyedIncidents() async throws {
+        let database = try makeDatabase()
+        let hour = eventDate.startOfHour.addingTimeInterval(-TimeInterval(Int.random(in: 1...40_000)) * .hour)
+        let fingerprint = "contract-\(UUID().uuidString)"
+
+        try await database.write(records: [
+            makeIncident(type: Crash.recordType, fingerprint: fingerprint, date: hour.addingTimeInterval(900)),
+            makeIncident(type: Crash.recordType, fingerprint: nil, date: hour.addingTimeInterval(.hour + 900)),
+            makeIncident(type: Crash.recordType, fingerprint: fingerprint, date: hour.addingTimeInterval(3 * .hour)),
+        ])
+
+        let index = try #require(try await database.incidentIndex(recordType: Crash.recordType, in: hour..<hour.addingTimeInterval(4 * .hour)))
+
+        #expect(index.unkeyed == hour.addingTimeInterval(.hour)..<hour.addingTimeInterval(2 * .hour))
+        #expect(index.tallies == [IncidentTally(fingerprint: fingerprint, name: "SIGSEGV", count: 1, firstHour: hour.addingTimeInterval(3 * .hour))])
+    }
+
     @Test("Timer bucket increments surface in the metric series by bucket category")
     func timerBucketSeries() async throws {
         let database = try makeDatabase()
@@ -698,6 +733,15 @@ struct ServerContractTests {
         record["app_version"] = appVersion
         record["session_id"] = UUID().uuidString
         record["date"] = eventDate
+        return record
+    }
+
+    private func makeIncident(type: String, fingerprint: String?, date: Date) -> Record {
+        var record = Record(recordType: type, recordID: "contract-\(UUID().uuidString)")
+        record["name"] = "SIGSEGV"
+        record["fingerprint"] = fingerprint
+        record["session_id"] = UUID().uuidString
+        record["date"] = date
         return record
     }
 
