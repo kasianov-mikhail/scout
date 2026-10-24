@@ -14,13 +14,10 @@ import Testing
 
 struct ChartExtentSegmentTests {
     let date: Date
-    let range: Range<Date>
     let points: [ChartPoint<Int>]
 
     init() {
         date = Date()
-        range = date..<date.addingTimeInterval(3600)
-
         let chartPoint1 = ChartPoint(date: date, value: 10)
         let chartPoint2 = ChartPoint(date: date.addingTimeInterval(86400), value: 20)
 
@@ -28,7 +25,8 @@ struct ChartExtentSegmentTests {
     }
 
     @Test("Points from data") func testPointsFromData() throws {
-        let extent = ChartExtent(period: Period.today, domain: range)
+        let scale = ScaleStub(horizonDate: date.addingTimeInterval(3600), rangeComponent: .hour, pointComponent: .hour)
+        let extent = ChartExtent(period: scale)
         let points = extent.segment(from: points)
 
         #expect(points.map(\.value) == [10])
@@ -41,8 +39,9 @@ struct ChartExtentSegmentTests {
             ChartPoint(date: day.addingTimeInterval(Double(hour) * 3600), value: value)
         }
 
-        let total = ChartExtent(period: Period.week, domain: day..<day.addingTimeInterval(86400))
-        let peak = ChartExtent(period: Period.week, domain: day..<day.addingTimeInterval(86400), fold: .peak)
+        let scale = ScaleStub(horizonDate: day.addingTimeInterval(86400), rangeComponent: .day)
+        let total = ChartExtent(period: scale)
+        let peak = ChartExtent(period: scale, fold: .peak)
 
         #expect(total.segment(from: points).map(\.value) == [16])
         #expect(peak.segment(from: points).map(\.value) == [9])

@@ -10,32 +10,28 @@ import Foundation
 extension ChartExtent {
     var isLeftEnabled: Bool {
         let yearRange = Period.year.initialRange
-        let leftRange = domain.moved(by: period.rangeComponent, value: -1)
+        let leftRange = period.range(at: offset - 1)
         return yearRange.lowerBound < leftRange.lowerBound
     }
 
     var isRightEnabled: Bool {
-        domain != period.initialRange
+        offset < 0
     }
 
     mutating func moveLeft() {
-        domain.move(by: period.rangeComponent, value: -1)
+        offset -= 1
     }
 
     mutating func moveRight() {
-        domain.move(by: period.rangeComponent, value: 1)
+        offset += 1
     }
 
     mutating func moveRightEdge() {
-        domain = period.initialRange
+        offset = 0
     }
 }
 
 extension Range<Date> {
-    mutating func move(by component: Calendar.Component, value: Int) {
-        self = moved(by: component, value: value)
-    }
-
     func moved(by component: Calendar.Component, value: Int) -> Self {
         let lowerBound = lowerBound.adding(component, value: value)
         let upperBound = upperBound.adding(component, value: value)
