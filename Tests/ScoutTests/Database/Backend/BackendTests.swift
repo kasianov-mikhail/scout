@@ -23,6 +23,19 @@ struct BackendTests {
         #expect(await backend.probeStatus?() == .readOnly)
     }
 
+    @Test("A probe access check replaces the access check in the probe") func probeAccess() async {
+        let backend = Backend(
+            id: "backend",
+            database: InMemoryDatabase(),
+            displayName: "backend",
+            engine: .cloudKit,
+            checkAccess: { throw Backend.AccountError.noAccount },
+            probeAccess: {}
+        )
+
+        #expect(await backend.probeStatus?() == .reachable)
+    }
+
     @Test("A backend without an access check has no probe") func missing() {
         let backend = makeBackend(id: "backend")
 
