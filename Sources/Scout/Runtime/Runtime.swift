@@ -92,13 +92,17 @@ extension Runtime {
 
         installConditionMonitor()
 
+        let table = table
+
         table.startListening {
             try await backends.synchronize(using: dispatcher)
         }
 
         if AppLifecycle.isInForeground {
-            try await identity.enter()
-            recordCurrentConditions()
+            await table.perform {
+                try await identity.enter()
+                recordCurrentConditions()
+            }.value
         }
 
         Task {

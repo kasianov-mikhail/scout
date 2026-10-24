@@ -15,14 +15,26 @@ struct ActionTable {
     typealias Action = @Sendable () async throws -> Void
 
     let actions: [Notification.Name: Action]
+    private let tail = Protected(Task<Void, Never> {})
 
     func startListening(completion: @escaping Action) {
         for (name, action) in actions {
             NotificationCenter.default.addObserver(forName: name, object: nil, queue: nil) { _ in
+                let task = perform(action: action)
                 Task {
-                    await run(action)
+                    await task.value
                     await run(completion)
                 }
+            }
+        }
+    }
+
+    func perform(action: @escaping Action) -> Task<Void, Never> {
+        tail.mutate { tail in
+            let previous = tail
+            tail = Task {
+                await previous.value
+                await run(action)
             }
         }
     }
