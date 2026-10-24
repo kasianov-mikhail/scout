@@ -185,6 +185,8 @@ jobs:
       && (needs.model-versions.result == 'success' || needs.model-versions.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
+    # A leg on a public-preview image shows red when it fails but leaves needs.tests.result at success
+    continue-on-error: ${{ matrix.preview == true }}
 
     permissions:
       contents: read
@@ -225,6 +227,10 @@ jobs:
           if [ "${{ needs.scope.outputs.code }}" != "true" ]; then
             echo "Nothing outside the docs changed; the iOS matrix has nothing to build."
             exit 0
+          fi
+          preview="$(jq -r '[.include[] | select(.preview == true) | "iOS \(.ios)"] | join(", ")' .github/matrix/ios.json)"
+          if [ -n "$preview" ]; then
+            echo "$preview runs on a preview image, so a red leg there does not fail this gate."
           fi
           .github/scripts/require-results.sh \
             "Lint|${{ needs.lint.result }}" \

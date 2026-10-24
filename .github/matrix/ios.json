@@ -27,7 +27,8 @@
     {
       "ios": 27,
       "os": "xcode-27",
-      "device": "iPhone 17"
+      "device": "iPhone 17",
+      "preview": true
     }
   ]
 }
