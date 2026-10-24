@@ -57,6 +57,46 @@ struct HostedDeliveryTests {
         #expect(lines.current == ["Scout can't deliver to backend \(backend.id): the server rejected the API key (Scout server returned 401: stubbed). Records stay pending until this is fixed."])
     }
 
+    @Test("Offline and timed-out writes keep records pending without charging an attempt", arguments: [URLError.Code.notConnectedToInternet, .timedOut])
+    func connectivityFailures(code: URLError.Code) async throws {
+        let server = StubServer(failure: code)
+        let backend = Backend.server(url: server.url, apiKey: "key")
+        let events = (0..<64).map { EventEntry.stub(name: "event-\($0)", in: context) }
+        try context.save()
+        try SyncableEntry.plan(backends: [backend], in: context)
+
+        await #expect(throws: (any Error).self) {
+            try await RecordSender<EventEntry>(backend: backend).deliver(in: context)
+        }
+
+        #expect(server.requestCount == 1)
+        #expect(events.allSatisfy { $0.delivery(for: backend.id)?.isPending == true })
+        #expect(events.allSatisfy { $0.delivery(for: backend.id)?.attempts == 0 })
+    }
+
+    @Test("A URL blocked by App Transport Security is printed once while records stay pending")
+    func blockedURLPrintedOnce() async throws {
+        let lines = Protected<[String]>([])
+        let log = FailureLog { line in
+            lines.mutate { $0.append(line) }
+        }
+        let server = StubServer(failure: .appTransportSecurityRequiresSecureConnection)
+        let backend = Backend.server(url: server.url, apiKey: "key")
+        let event = EventEntry.stub(name: "event", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [backend], in: context)
+
+        for _ in 0..<3 {
+            #expect(await [backend].available(log: log).isEmpty)
+            await backend.deliver(EventEntry.self, in: context, log: log)
+        }
+
+        #expect(event.delivery(for: backend.id)?.isPending == true)
+        #expect(event.delivery(for: backend.id)?.attempts == 0)
+        #expect(lines.current.count == 1)
+        #expect(lines.current.first?.contains("App Transport Security blocks this URL") == true)
+    }
+
     @Test("A rejected batch is narrowed down and each record is charged an attempt")
     func rejection() async throws {
         let server = StubServer(status: 400)
@@ -77,15 +117,20 @@ private struct StubServer {
     private static let registration = URLProtocol.registerClass(StubURLProtocol.self)
 
     let id = UUID().uuidString
-    let status: Int
+    let outcome: String
 
     init(status: Int) {
         _ = Self.registration
-        self.status = status
+        outcome = String(status)
+    }
+
+    init(failure: URLError.Code) {
+        _ = Self.registration
+        outcome = StubURLProtocol.failurePrefix + String(failure.rawValue)
     }
 
     var url: URL {
-        URL(string: "https://\(StubURLProtocol.host)/\(status)/\(id)/")!
+        URL(string: "https://\(StubURLProtocol.host)/\(outcome)/\(id)/")!
     }
 
     var requestCount: Int {
@@ -95,6 +140,7 @@ private struct StubServer {
 
 private final class StubURLProtocol: URLProtocol {
     static let host = "stub.scout.test"
+    static let failurePrefix = "failure"
     static let ledger = Ledger()
 
     override class func canInit(with request: URLRequest) -> Bool {
@@ -115,6 +161,11 @@ private final class StubURLProtocol: URLProtocol {
         }
 
         Self.ledger.record(id: components[2])
+
+        if components[1].hasPrefix(Self.failurePrefix), let code = Int(components[1].dropFirst(Self.failurePrefix.count)) {
+            client?.urlProtocol(self, didFailWithError: URLError(URLError.Code(rawValue: code)))
+            return
+        }
 
         let status = Int(components[1]) ?? 500
         let response = HTTPURLResponse(url: url, statusCode: status, httpVersion: nil, headerFields: nil)!

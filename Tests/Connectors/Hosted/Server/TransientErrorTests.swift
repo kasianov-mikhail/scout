@@ -20,6 +20,17 @@ struct TransientErrorTests {
         #expect(URLError(.networkConnectionLost).isTransient)
     }
 
+    @Test("A wrapped URL failure reads as transient through any Error and keeps its classification")
+    func transportErrorForwardsURLError() {
+        let offline: any Error = HTTPTransportError(error: URLError(.notConnectedToInternet))
+        let blocked: any Error = HTTPTransportError(error: URLError(.appTransportSecurityRequiresSecureConnection))
+
+        #expect((offline as? any TransientFailure)?.isTransient == true)
+        #expect((offline as? any TransientFailure)?.misconfiguration == nil)
+        #expect((blocked as? any TransientFailure)?.misconfiguration != nil)
+        #expect(offline.localizedDescription == URLError(.notConnectedToInternet).localizedDescription)
+    }
+
     @Test("Server-side outages and throttling are transient")
     func serverOutagesAreTransient() {
         #expect(HTTPDatabaseError(status: 500, reason: nil).isTransient)

@@ -32,6 +32,16 @@ extension HTTPDatabaseError: TransientFailure {
     }
 }
 
+extension HTTPTransportError: TransientFailure {
+    var isTransient: Bool {
+        error.isTransient
+    }
+
+    var misconfiguration: String? {
+        error.misconfiguration
+    }
+}
+
 extension URLError: TransientFailure {
     package var isTransient: Bool {
         true
