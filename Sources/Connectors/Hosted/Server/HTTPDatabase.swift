@@ -38,6 +38,15 @@ struct HTTPDatabaseError: LocalizedError {
     }
 }
 
+/// A thrown `URLError` reaches Scout as a bridged `NSError`, which `as any TransientFailure` does not match.
+struct HTTPTransportError: LocalizedError {
+    let error: URLError
+
+    var errorDescription: String? {
+        error.localizedDescription
+    }
+}
+
 extension HTTPDatabase {
     func send<Reply: Decodable>(_ body: some Encodable, to path: String, into reply: Reply.Type) async throws -> Reply {
         let data = try await post(body, to: path)
@@ -63,6 +72,8 @@ extension HTTPDatabase {
             return data
         } catch let error as URLError where error.code == .cancelled {
             throw CancellationError()
+        } catch let error as URLError {
+            throw HTTPTransportError(error: error)
         }
     }
 
