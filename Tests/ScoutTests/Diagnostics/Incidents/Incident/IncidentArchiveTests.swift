@@ -111,6 +111,22 @@ struct IncidentArchiveTests {
         #expect(files.allSatisfy { $0.pathExtension == "crash" })
     }
 
+    @Test("launchIDs lists the launches whose incidents still wait in the archive")
+    func testLaunchIDsListsPendingLaunches() {
+        let fileManager = TemporaryFileManager()
+        let archive = crashArchive(fileManager)
+        let crash = makeCrash()
+
+        archive.write(crash)
+
+        #expect(archive.launchIDs == [crash.launchID])
+    }
+
+    @Test("launchIDs is empty when no incident waits in the archive")
+    func testLaunchIDsEmptyWithoutIncidents() {
+        #expect(hangArchive(TemporaryFileManager()).launchIDs.isEmpty)
+    }
+
     private func crashArchive(_ fileManager: FileManager) -> IncidentArchive<CrashInfo> {
         IncidentArchive(
             folder: crashFolder,

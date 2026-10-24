@@ -15,21 +15,23 @@ extension Identity {
         installHangHandler()
 
         let crashes = IncidentArchive.crash
+        let hangs = IncidentArchive.hang
         crashes.convertRawReports()
         await crashes.flush(deviceID: device)
-        await IncidentArchive.hang.flush(deviceID: device)
+        await hangs.flush(deviceID: device)
 
-        try await persistentContainer.run(recoveryCommands)
+        let openLaunchIDs = crashes.launchIDs.union(hangs.launchIDs).union([launch])
+        try await persistentContainer.run(recoveryCommands(openLaunchIDs: openLaunchIDs))
         try await persistentContainer.run(startupCommands())
 
         installMetricKitReceiver()
     }
 
-    private var recoveryCommands: [any Command] {
+    private func recoveryCommands(openLaunchIDs: Set<UUID>) -> [any Command] {
         [
-            SessionEntry.Recovery(launchID: launch),
-            ScreenEntry.Recovery(launchID: launch),
-            LaunchEntry.Recovery(launchID: launch),
+            SessionEntry.Recovery(openLaunchIDs: openLaunchIDs),
+            ScreenEntry.Recovery(openLaunchIDs: openLaunchIDs),
+            LaunchEntry.Recovery(openLaunchIDs: openLaunchIDs),
         ]
     }
 

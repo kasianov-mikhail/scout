@@ -57,7 +57,7 @@ struct ScreenEntryCommandTests {
         let screen = makeScreen(session: session)
         try context.save()
 
-        try ScreenEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try ScreenEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(screen.endDate == date.addingTimeInterval(60))
     }
@@ -68,7 +68,7 @@ struct ScreenEntryCommandTests {
         let screen = makeScreen(session: SessionEntry.stub(date: date, launch: launch, in: context))
         try context.save()
 
-        try ScreenEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try ScreenEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(screen.endDate == nil)
     }

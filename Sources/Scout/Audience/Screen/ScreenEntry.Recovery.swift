@@ -9,11 +9,11 @@ import CoreData
 
 extension ScreenEntry {
     struct Recovery: Command {
-        let launchID: UUID
+        let openLaunchIDs: Set<UUID>
 
         func execute(in context: NSManagedObjectContext) throws {
             let request = NSFetchRequest<ScreenEntry>(entityName: "ScreenEntry")
-            request.predicate = NSPredicate(format: "endDate == nil AND session.launch.launchID != %@", launchID as CVarArg)
+            request.predicate = .unfinished(launchKey: "session.launch.launchID", outside: openLaunchIDs)
 
             for screen in try context.fetch(request) {
                 screen.endDate = screen.session?.endDate ?? screen.date

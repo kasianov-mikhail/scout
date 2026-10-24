@@ -29,7 +29,7 @@ struct SessionEntryRecoveryTests {
         let session = SessionEntry.stub(date: date, launch: staleLaunch(), in: context)
 
         try context.save()
-        try SessionEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try SessionEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(session.endDate == date)
     }
@@ -40,7 +40,7 @@ struct SessionEntryRecoveryTests {
         let session = SessionEntry.stub(date: date, launch: launch, in: context)
 
         try context.save()
-        try SessionEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try SessionEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(session.endDate == nil)
     }
@@ -51,7 +51,7 @@ struct SessionEntryRecoveryTests {
         let session = SessionEntry.stub(date: date, endDate: endDate, launch: staleLaunch(), in: context)
 
         try context.save()
-        try SessionEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try SessionEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(session.endDate == endDate)
     }
@@ -64,7 +64,7 @@ struct SessionEntryRecoveryTests {
         EventEntry.stub(name: "x", date: latest, session: session, in: context)
 
         try context.save()
-        try SessionEntry.Recovery(launchID: identity.launch).execute(in: context)
+        try SessionEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
 
         #expect(session.endDate == latest)
     }
