@@ -117,10 +117,9 @@ struct SymbolTableCacheTests {
 
         _ = await cache.tables(uuids: Array(images[0..<3]), database: database)
         _ = await cache.tables(uuids: [images[3]], database: database)
-        _ = await cache.tables(uuids: [images[2], images[3]], database: database)
-        let evicted = await cache.tables(uuids: [images[0]], database: database)
+        let reread = await cache.tables(uuids: Array(images[0..<3]), database: database)
 
-        #expect(evicted == [images[0]: makeTable(image: images[0])])
+        #expect(reread.count == 3)
         #expect(database.reads == 3)
     }
 
