@@ -64,7 +64,7 @@ public struct ScoutLogHandler: LogHandler {
             event.metadata = inherited.merging(event.metadata ?? [:]) { $1 }
         }
 
-        runtime.enqueue(urgent: event.level >= .error) { context in
+        runtime.enqueue(urgent: event.level >= .error) { [event] context in
             try event.log(date: date, identity: identity, context: context)
         }
     }
