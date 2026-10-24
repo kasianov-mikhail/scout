@@ -48,6 +48,40 @@ struct AccessCacheTests {
         #expect(pings.count == 2)
     }
 
+    @Test("A transient failure is not remembered", arguments: [URLError(.notConnectedToInternet), HTTPDatabaseError(status: 503, reason: nil)] as [any Error])
+    func transientFailure(error: any Error) async throws {
+        let cache = AccessCache(now: { clock.now })
+
+        await #expect(throws: (any Error).self) {
+            try await cache.check {
+                pings.record()
+                throw error
+            }
+        }
+        clock.advance(seconds: 10)
+        try await cache.check(ping: pings.record)
+
+        #expect(pings.count == 2)
+    }
+
+    @Test("A misconfiguration is remembered for thirty seconds")
+    func misconfiguration() async throws {
+        let cache = AccessCache(now: { clock.now })
+
+        await #expect(throws: URLError.self) {
+            try await cache.check {
+                pings.record()
+                throw URLError(.appTransportSecurityRequiresSecureConnection)
+            }
+        }
+        clock.advance(seconds: 10)
+        await #expect(throws: URLError.self) {
+            try await cache.check(ping: pings.record)
+        }
+
+        #expect(pings.count == 1)
+    }
+
     @Test("A cancelled ping is not remembered")
     func cancellation() async throws {
         let cache = AccessCache(now: { clock.now })
