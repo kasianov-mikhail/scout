@@ -21,6 +21,13 @@ extension RecordSender {
 
 package protocol TransientFailure: Error {
     var isTransient: Bool { get }
+    var misconfiguration: String? { get }
+}
+
+extension TransientFailure {
+    package var misconfiguration: String? {
+        nil
+    }
 }
 
 private struct Outcome {

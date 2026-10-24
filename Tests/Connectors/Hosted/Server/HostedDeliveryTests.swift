@@ -35,6 +35,28 @@ struct HostedDeliveryTests {
         #expect(events.allSatisfy { $0.delivery(for: backend.id)?.attempts == 0 })
     }
 
+    @Test("A rejected API key is printed once while records stay pending")
+    func rejectedKeyPrintedOnce() async throws {
+        let lines = Protected<[String]>([])
+        let log = FailureLog { line in
+            lines.mutate { $0.append(line) }
+        }
+        let server = StubServer(status: 401)
+        let backend = Backend.server(url: server.url, apiKey: "key")
+        let event = EventEntry.stub(name: "event", in: context)
+        try context.save()
+        try SyncableEntry.plan(backends: [backend], in: context)
+
+        for _ in 0..<3 {
+            #expect(await [backend].available(log: log).isEmpty)
+            await backend.deliver(EventEntry.self, in: context, log: log)
+        }
+
+        #expect(event.delivery(for: backend.id)?.isPending == true)
+        #expect(event.delivery(for: backend.id)?.attempts == 0)
+        #expect(lines.current == ["Scout can't deliver to backend \(backend.id): the server rejected the API key (Scout server returned 401: stubbed). Records stay pending until this is fixed."])
+    }
+
     @Test("A rejected batch is narrowed down and each record is charged an attempt")
     func rejection() async throws {
         let server = StubServer(status: 400)
