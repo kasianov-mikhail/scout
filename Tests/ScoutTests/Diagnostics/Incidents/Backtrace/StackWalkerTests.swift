@@ -121,4 +121,31 @@ struct StackWalkerTests {
         #expect(count == 3)
         #expect(frames[2] == 0x1002)
     }
+
+    @Test("a return address at the start of a symbol names the function before it")
+    func returnAddressAtSymbolStart() throws {
+        let address = try #require(strlenAddress)
+
+        let programCounter = StackWalker.symbolicate(index: 0, address: address)
+        let returnAddress = StackWalker.symbolicate(index: 1, address: address)
+
+        #expect(programCounter.hasSuffix(" + 0"))
+        #expect(!returnAddress.hasSuffix(" + 0"))
+        #expect(returnAddress.contains("0x\(String(address, radix: 16)) "))
+    }
+
+    @Test("a return address inside a symbol keeps its address and offset")
+    func returnAddressInsideSymbol() throws {
+        let address = try #require(strlenAddress) + 8
+
+        let programCounter = StackWalker.symbolicate(index: 0, address: address)
+        let returnAddress = StackWalker.symbolicate(index: 1, address: address)
+
+        #expect(programCounter.hasSuffix(" + 8"))
+        #expect(returnAddress == "1" + programCounter.dropFirst())
+    }
+
+    private var strlenAddress: UInt64? {
+        dlsym(dlopen(nil, RTLD_NOW), "strlen").map { UInt64(UInt(bitPattern: $0)) }
+    }
 }
