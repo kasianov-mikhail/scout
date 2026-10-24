@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 private let grantLifetime: TimeInterval = 300
 private let denialLifetime: TimeInterval = 30
@@ -31,6 +32,10 @@ actor AccessCache {
             result = .success(())
         } catch is CancellationError {
             throw CancellationError()
+        } catch let error as URLError where error.isOutage {
+            throw error
+        } catch let error as any TransientFailure where error.isOutage {
+            throw error
         } catch {
             result = .failure(error)
         }
@@ -61,5 +66,11 @@ extension Verdict {
         case .failure:
             self.expiry = now + denialLifetime
         }
+    }
+}
+
+extension TransientFailure {
+    fileprivate var isOutage: Bool {
+        isTransient && misconfiguration == nil
     }
 }
