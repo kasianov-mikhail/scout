@@ -1,0 +1,64 @@
+name: Retarget
+
+# CI and Server skip edited events: a title edit would post skipped, passing required checks,
+# and a re-run keeps the old event and its base. This check flags a commit whose CI started
+# before the latest base change. It never posts a required check, so it cannot pass or cancel one.
+on:
+  pull_request:
+    types: [edited, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  base-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    permissions:
+      actions: read
+      issues: read
+      pull-requests: read
+
+    steps:
+      - name: Require CI against the current base
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ACTION: ${{ github.event.action }}
+          FROM: ${{ github.event.changes.base.ref.from }}
+          BASE: ${{ github.event.pull_request.base.ref }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -eo pipefail
+          case "$ACTION" in
+            reopened | ready_for_review)
+              echo "This event starts CI against the current base, $BASE."
+              exit 0
+              ;;
+          esac
+          if [ -z "$FROM" ]; then
+            changed="$(gh api --paginate "repos/$GITHUB_REPOSITORY/issues/$PR/timeline?per_page=100" \
+              --jq '.[] | select(.event == "base_ref_changed" or .event == "automatic_base_change_succeeded") | .created_at' \
+              | sort | tail -n 1)"
+            ran="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/ci.yml/runs?event=pull_request&head_sha=$HEAD_SHA&per_page=1" \
+              --jq '.workflow_runs[0].created_at // empty')"
+            echo "Base last changed: ${changed:-never}. CI last started on $HEAD_SHA: ${ran:-never}."
+            if [ -z "$changed" ]; then
+              echo "The base never changed."
+              exit 0
+            fi
+            if [[ -n "$ran" && "$ran" > "$changed" ]]; then
+              echo "CI on $HEAD_SHA started after the latest base change, so it ran against $BASE."
+              exit 0
+            fi
+          fi
+          echo "::error::The base changed to $BASE after CI last ran on $HEAD_SHA, so CI and Server still compare against the old base. Re-running them keeps that base. Push a commit to run them against $BASE."
+          {
+            echo "### CI ran against an old base"
+            echo "Push a commit to run CI and Server against $BASE, for example:"
+            echo '```'
+            echo "git commit --allow-empty -m \"Re-run CI against $BASE\" && git push"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit 1
