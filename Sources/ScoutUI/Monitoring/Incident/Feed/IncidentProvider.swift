@@ -8,6 +8,8 @@
 import Scout
 import SwiftUI
 
+private let deliveryWindow: TimeInterval = .day
+
 @MainActor
 final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<Element>, Refreshable {
     @Published private(set) var keys: [String: String] = [:]
@@ -36,7 +38,8 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
     }
 
     private func loadKeys(in database: RecordReader) async {
-        let ids = records?.map(\.id) ?? []
+        let records = records ?? []
+        let ids = records.map(\.id)
         let present = Set(ids)
         resolved.formIntersection(present)
 
@@ -55,7 +58,11 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
                 database: database
             )
 
+            let delivered = Date().addingTimeInterval(-deliveryWindow)
+            let settled = records.filter { ($0.date ?? .distantPast) < delivered }.map(\.id)
+
             resolved.formUnion(backtraces.found)
+            resolved.formUnion(settled)
             keys.merge(backtraces.groupKeys) { $1 }
         } catch {
             print("Failed to load incident backtraces: \(error)")
