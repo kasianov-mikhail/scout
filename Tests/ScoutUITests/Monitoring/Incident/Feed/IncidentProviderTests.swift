@@ -106,6 +106,19 @@ struct IncidentProviderTests {
         #expect(database.backtraceLookups == [[crash.backtraceID], [crash.backtraceID]])
     }
 
+    @Test("A refresh does not look up an old crash without a backtrace again")
+    func fetchAgainSkipsOldMissingBacktrace() async throws {
+        let recent = Crash.stub(fingerprint: "A", date: Date())
+        let old = Crash.stub(fingerprint: "B", date: Date().addingTimeInterval(-2 * .day))
+        let database = try PagedIncidentDatabase(crashes: [recent, old], app: UUID(), pageSize: 10, backtrace: false)
+
+        let provider = IncidentProvider<Crash>()
+        await provider.fetchAgain(in: database)
+        await provider.fetchAgain(in: database)
+
+        #expect(database.backtraceLookups == [[recent.backtraceID, old.backtraceID], [recent.backtraceID]])
+    }
+
     @Test("fetchAgain drops the key of a crash that left the feed")
     func fetchAgainDropsRemovedKeys() async throws {
         let kept = Crash.stub(fingerprint: "A", date: Date())
