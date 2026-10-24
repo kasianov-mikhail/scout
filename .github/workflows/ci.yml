@@ -177,8 +177,9 @@ jobs:
   tests:
     name: test-ios-${{ matrix.ios }} (${{ matrix.configuration }})
     needs: [scope, lint, model-versions]
+    # !cancelled(), not always(): a cancelled run re-checks this condition and stops the legs only when it is false
     if: >-
-      ${{ always()
+      ${{ !cancelled()
       && needs.scope.outputs.code == 'true'
       && needs.lint.result == 'success'
       && (needs.model-versions.result == 'success' || needs.model-versions.result == 'skipped') }}
