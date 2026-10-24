@@ -96,6 +96,33 @@ struct SymbolTableCacheTests {
         #expect(tables.count == images.count)
     }
 
+    @Test("A request for more tables than the cache holds keeps all of them for the next identical request")
+    func overflowKept() async throws {
+        let images = (0..<6).map { _ in UUID() }
+        let database = CountingDatabase(records: try images.map(makeRecord), failing: nil)
+        let cache = SymbolTableCache(capacity: 4, missLifetime: 60, now: Date.init)
+
+        _ = await cache.tables(uuids: images, database: database)
+        let second = await cache.tables(uuids: images, database: database)
+
+        #expect(second.count == images.count)
+        #expect(database.reads == 1)
+    }
+
+    @Test("Tables kept above the capacity are evicted by a request for other tables")
+    func overflowEviction() async throws {
+        let images = (0..<4).map { _ in UUID() }
+        let database = CountingDatabase(records: try images.map(makeRecord), failing: nil)
+        let cache = SymbolTableCache(capacity: 2, missLifetime: 60, now: Date.init)
+
+        _ = await cache.tables(uuids: Array(images[0..<3]), database: database)
+        _ = await cache.tables(uuids: [images[3]], database: database)
+        let reread = await cache.tables(uuids: Array(images[0..<3]), database: database)
+
+        #expect(reread.count == 3)
+        #expect(database.reads == 3)
+    }
+
     private func makeTable(image: UUID) -> SymbolTable {
         SymbolTable(uuid: image, functions: [], lines: [], inlines: [])
     }
