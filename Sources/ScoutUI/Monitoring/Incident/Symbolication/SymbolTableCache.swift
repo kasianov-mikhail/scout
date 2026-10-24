@@ -52,7 +52,7 @@ actor SymbolTableCache {
 
         tables.merge(found) { $1 }
         recent = recent.filter { found[$0] == nil } + found.keys
-        while recent.count > capacity {
+        while recent.count > max(capacity, found.count) {
             tables[recent.removeFirst()] = nil
         }
         return found
