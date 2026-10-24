@@ -34,8 +34,8 @@ struct ChartComparisonTests {
     }
 
     @Test("Reference segment pairs buckets by offset across month lengths") func testMonthLengthMismatch() {
-        let domain = Date(year: 2026, month: 5, day: 10)..<Date(year: 2026, month: 6, day: 10)
-        let extent = ChartExtent(period: Period.month, domain: domain)
+        let scale = ScaleStub(horizonDate: Date(year: 2026, month: 6, day: 10), rangeComponent: .month)
+        let extent = ChartExtent(period: scale)
         let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
 
         let segment = extent.segment(from: points)

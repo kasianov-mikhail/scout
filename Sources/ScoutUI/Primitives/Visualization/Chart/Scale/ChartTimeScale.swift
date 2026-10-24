@@ -20,7 +20,11 @@ extension ChartTimeScale {
     }
 
     var initialRange: Range<Date> {
-        horizonDate.adding(rangeComponent, value: -1)..<horizonDate
+        range(at: 0)
+    }
+
+    func range(at offset: Int) -> Range<Date> {
+        horizonDate.adding(rangeComponent, value: offset - 1)..<horizonDate.adding(rangeComponent, value: offset)
     }
 
     var previousRange: Range<Date> {

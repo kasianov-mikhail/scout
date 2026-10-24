@@ -9,17 +9,15 @@ import SwiftUI
 
 struct ChartExtent<T: ChartTimeScale> {
     var period: T {
-        didSet { domain = period.initialRange }
+        didSet { offset = 0 }
     }
-    var domain: Range<Date>
+    var offset = 0
     var fold = ChartFold.total
 }
 
 extension ChartExtent {
-    init(period: T, fold: ChartFold = .total) {
-        self.period = period
-        self.domain = period.initialRange
-        self.fold = fold
+    var domain: Range<Date> {
+        period.range(at: offset)
     }
 
     func segment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
