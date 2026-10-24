@@ -292,7 +292,7 @@ jobs:
         run: |
           set -eo pipefail
           .github/scripts/build-library-schemes.sh /tmp/dd-current
-          .github/scripts/dump-api-set.sh /tmp/dd-current /tmp/current.set
+          .github/scripts/dump-api.sh /tmp/dd-current /tmp/current.json
 
       - name: Acknowledge an unbuildable baseline
         id: baseline-ack
@@ -307,13 +307,13 @@ jobs:
             echo "acknowledged=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Cache baseline API set
+      - name: Cache baseline API
         id: baseline-cache
         if: steps.baseline-ack.outputs.acknowledged != 'true'
         uses: actions/cache@v6
         with:
-          path: /tmp/baseline.set
-          key: api-baseline-set-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api-set.sh', '.github/scripts/build-library-schemes.sh') }}-${{ steps.spm.outputs.toolchain }}
+          path: /tmp/baseline.json
+          key: api-baseline-json-${{ github.event.pull_request.base.sha }}-${{ hashFiles('.github/scripts/dump-api.sh', '.github/scripts/build-library-schemes.sh') }}-${{ steps.spm.outputs.toolchain }}
 
       - name: Dump baseline API
         if: steps.baseline-ack.outputs.acknowledged != 'true' && steps.baseline-cache.outputs.cache-hit != 'true'
@@ -330,39 +330,39 @@ jobs:
             echo "::error::The baseline does not build, so the API comparison cannot run. Dependencies resolve fresh here, so a dependency release can break a base that once built — fix the base or pin the dependency. Where the PR is itself that fix, add the api-baseline-unbuildable label to say the base cannot answer."
             exit 1
           fi
-          "$GITHUB_WORKSPACE/.github/scripts/dump-api-set.sh" /tmp/dd-baseline /tmp/baseline.set
+          "$GITHUB_WORKSPACE/.github/scripts/dump-api.sh" /tmp/dd-baseline /tmp/baseline.json
 
       - name: Compare
         if: steps.baseline-ack.outputs.acknowledged != 'true'
         env:
           LABELS: ${{ steps.labels.outputs.names }}
         run: |
-          if [ ! -f /tmp/baseline.set ]; then
-            echo "::error::No baseline API set was produced, so the comparison cannot run."
+          if [ ! -f /tmp/baseline.json ]; then
+            echo "::error::No baseline API dump was produced, so the comparison cannot run."
             exit 1
           fi
-          if [ ! -s /tmp/baseline.set ]; then
-            echo "::error::The baseline API set is empty, which means the dump produced nothing rather than that the base vends no API."
+          if ! jq -e '[.ABIRoot.children[]? | select(.declKind != "Import")] | length > 0' /tmp/baseline.json > /dev/null; then
+            echo "::error::The baseline API dump is empty, which means the dump produced nothing rather than that the base vends no API."
             exit 1
           fi
-          removed="$(comm -23 /tmp/baseline.set /tmp/current.set || true)"
-          if [ -z "$removed" ]; then
+          breaks="$(.github/scripts/diff-api.sh /tmp/baseline.json /tmp/current.json)"
+          if [ -z "$breaks" ]; then
             exit 0
           fi
           {
-            echo "### API removed against the base branch"
+            echo "### API broken against the base branch"
             echo '```'
-            echo "$removed"
+            echo "$breaks"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          echo "$removed"
+          echo "$breaks"
           if grep -qxF api-breaking <<< "$LABELS"; then
             echo
             echo "The api-breaking label is set, treating the break as intentional."
             exit 0
           fi
           echo
-          echo "This PR removes API that existing integrations may depend on, which"
+          echo "This PR removes or changes API that existing integrations may depend on, which"
           echo "requires a major release. If the break is intentional, add the"
           echo "api-breaking label to this PR and re-run this job to acknowledge it."
           exit 1

@@ -28,17 +28,12 @@ fi
 
 dump="$(mktemp)"
 xcrun swift-api-digester -dump-sdk "${module_flags[@]}" -o "$dump" \
+  -avoid-location \
+  -avoid-tool-args \
   -sdk "$sdk" \
   -target "arm64-apple-ios${ios}-simulator" \
   -I "$products" \
   "${cc_flags[@]}"
 
-jq -r '
-  def emit($prefix):
-    if .isInternal == true then empty
-    elif (.declKind != null and .declKind != "Import" and .declKind != "Accessor")
-    then ($prefix + (if $prefix == "" then "" else "." end) + .printedName) as $qualified
-         | "\(.declKind) \($qualified)", (.children[]? | emit($qualified))
-    else (.children[]? | emit($prefix)) end;
-  .ABIRoot | emit("")
-' "$dump" | sort -u > "$out"
+jq 'walk(if type == "array" then map(select(type != "object" or .isInternal != true)) else . end)' \
+  "$dump" > "$out"
