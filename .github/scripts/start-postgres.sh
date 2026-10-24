@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+export HOMEBREW_NO_AUTO_UPDATE=1
 brew install postgresql@17
 pgbin="$(brew --prefix postgresql@17)/bin"
 brew services start postgresql@17

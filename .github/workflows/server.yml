@@ -56,15 +56,36 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: actions/checkout@v7
+        id: server
         with:
           repository: kasianov-mikhail/scout-server
           path: scout-server
+
+      - name: Cache Swift packages
+        id: spm
+        uses: ./.github/actions/spm-cache
+
+      - name: Restore the scout-server build
+        id: server-build
+        uses: actions/cache/restore@v6
+        with:
+          path: scout-server/.build
+          key: scout-server-build-${{ steps.spm.outputs.toolchain }}-${{ steps.server.outputs.commit }}
+          restore-keys: scout-server-build-${{ steps.spm.outputs.toolchain }}-
 
       - name: Start PostgreSQL
         run: .github/scripts/start-postgres.sh
 
       - name: Start scout-server
         run: .github/scripts/start-scout-server.sh
+
+      # A PR restores the build that main saved; its own copy would only fill the cache.
+      - name: Save the scout-server build
+        if: github.event_name != 'pull_request' && steps.server-build.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: scout-server/.build
+          key: ${{ steps.server-build.outputs.cache-primary-key }}
 
       - name: Run contract tests
         env:
@@ -73,6 +94,7 @@ jobs:
           xcodebuild \
             -scheme Scout-Package \
             -destination 'platform=macOS' \
+            -clonedSourcePackagesDirPath /tmp/spm \
             -skipMacroValidation \
             -only-testing:HostedConnectorTests/ServerContractTests \
             -resultBundlePath TestResults.xcresult \
