@@ -157,4 +157,53 @@ struct RecordCacheTests {
         #expect(inRange.map(\.recordID) == Array(records.prefix(2)).map(\.recordID))
         #expect(await cache.coveredRange(for: "fp") == date(0)..<date(600))
     }
+
+    @Test("A failed extension keeps the previous records and span")
+    func keepsSpanAfterFailedExtension() async throws {
+        let cache = try makeRecordCache()
+        let records = [makeRecord(date: date(100)), makeRecord(date: date(200))]
+
+        await cache.store(records, for: "fp", covering: date(0)..<date(300))
+        await cache.insertInvalidSpan()
+        await cache.store([makeRecord(date: date(400))], for: "fp", covering: date(200)..<date(600))
+
+        #expect(await cache.coveredRange(for: "fp") == date(0)..<date(300))
+
+        let cached = try #require(await cache.records(for: "fp", in: date(0)..<date(300)))
+        #expect(cached.map(\.recordID) == records.map(\.recordID))
+    }
+
+    @Test("A failed reset leaves the range uncovered")
+    func uncoversAfterFailedReset() async throws {
+        let cache = try makeRecordCache()
+
+        await cache.store([makeRecord(date: date(400))], for: "fp", covering: date(300)..<date(600))
+        await cache.insertInvalidSpan()
+        await cache.store([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(600))
+
+        #expect(await cache.coveredRange(for: "fp") == nil)
+    }
+
+    @Test("A failed replace leaves the range uncovered")
+    func uncoversAfterFailedReplace() async throws {
+        let cache = try makeRecordCache()
+
+        await cache.replace([makeRecord(date: date(100))], for: "fp", covering: date(0)..<date(300))
+        await cache.insertInvalidSpan()
+        await cache.replace([makeRecord(date: date(200))], for: "fp", covering: date(0)..<date(300))
+
+        #expect(await cache.coveredRange(for: "fp") == nil)
+    }
+}
+
+extension RecordCache {
+    fileprivate func insertInvalidSpan() {
+        guard let context else {
+            return
+        }
+
+        context.performAndWait {
+            _ = CachedSpan(context: context)
+        }
+    }
 }
