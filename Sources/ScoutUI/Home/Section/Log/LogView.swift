@@ -34,12 +34,7 @@ struct LogView: View {
                             NavigationLink {
                                 LogDestination(category: category)
                             } label: {
-                                TrendCard(
-                                    title: category.title,
-                                    color: category.color,
-                                    trend: log.report?[category] ?? .loading,
-                                    risesAreBad: category.risesAreBad
-                                )
+                                TrendCard(category: category, trend: log.report?[category] ?? .loading)
                             }
                             .buttonStyle(.plain)
                         }
@@ -54,6 +49,17 @@ struct LogView: View {
         }
         .refreshOnPull([log])
         .navigationTitle(en: "Log")
+    }
+}
+
+extension TrendCard {
+    fileprivate init(category: LogCategory, trend: Trend) {
+        self.init(
+            title: category.title,
+            color: category.color,
+            trend: trend,
+            risesAreBad: category.risesAreBad
+        )
     }
 }
 
