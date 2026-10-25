@@ -16,7 +16,8 @@ struct DeltaTests {
         let delta = try #require(Delta(current: 112, previous: 100))
 
         #expect(delta.value == 0.12)
-        #expect(delta.isPositive)
+        #expect(delta.isFavorable(risesAreBad: false))
+        #expect(!delta.isFavorable(risesAreBad: true))
         #expect(delta.formatted == "+12%")
     }
 
@@ -25,16 +26,18 @@ struct DeltaTests {
         let delta = try #require(Delta(current: 86, previous: 100))
 
         #expect(delta.value == -0.14)
-        #expect(!delta.isPositive)
+        #expect(!delta.isFavorable(risesAreBad: false))
+        #expect(delta.isFavorable(risesAreBad: true))
         #expect(delta.formatted == "-14%")
     }
 
-    @Test("Standing still reads as a positive zero")
+    @Test("Standing still is favorable whichever way a rise reads")
     func unchanged() throws {
         let delta = try #require(Delta(current: 100, previous: 100))
 
         #expect(delta.value == 0)
-        #expect(delta.isPositive)
+        #expect(delta.isFavorable(risesAreBad: false))
+        #expect(delta.isFavorable(risesAreBad: true))
         #expect(delta.formatted == "+0%")
     }
 

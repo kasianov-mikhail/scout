@@ -65,6 +65,15 @@ enum LogCategory: String, CaseIterable, Identifiable {
             IncidentKind.hang.color
         }
     }
+
+    var risesAreBad: Bool {
+        switch self {
+        case .events, .metrics, .network, .devices:
+            false
+        case .crashes, .hangs:
+            true
+        }
+    }
 }
 
 struct LogDestination: View {

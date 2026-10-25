@@ -19,8 +19,8 @@ struct Delta: Equatable {
 }
 
 extension Delta {
-    var isPositive: Bool {
-        value >= 0
+    func isFavorable(risesAreBad: Bool) -> Bool {
+        risesAreBad ? value <= 0 : value >= 0
     }
 
     var formatted: String {
