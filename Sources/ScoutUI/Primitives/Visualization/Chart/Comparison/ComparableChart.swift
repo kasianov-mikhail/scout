@@ -16,7 +16,7 @@ struct ComparableChart<T: ChartNumeric, S: ChartTimeScale>: View {
     var markers: [Date] = []
 
     var body: some View {
-        if isComparing {
+        if isComparing && extent.canCompare(points: points, segment: segment) {
             ComparisonChartView(
                 segment: segment,
                 reference: extent.referenceSegment(from: points, alignedTo: segment),

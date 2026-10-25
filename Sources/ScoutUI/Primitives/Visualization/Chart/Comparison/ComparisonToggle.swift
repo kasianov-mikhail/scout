@@ -9,9 +9,10 @@ import SwiftUI
 
 struct ComparisonToggle: View {
     @Binding var isOn: Bool
+    @Environment(\.isEnabled) private var isEnabled
 
     var body: some View {
-        Toggle(isOn: $isOn) {
+        Toggle(isOn: Binding(get: { isOn && isEnabled }, set: { isOn = $0 })) {
             Text(verbatim: "Compare with previous period")
         }
         .listRowSeparator(.hidden, edges: .top)

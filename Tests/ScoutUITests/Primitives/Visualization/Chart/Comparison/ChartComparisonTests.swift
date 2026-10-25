@@ -58,6 +58,20 @@ struct ChartComparisonTests {
         #expect(reference.allSatisfy { $0.value == 0 })
     }
 
+    @Test("Comparison is available when the previous period is loaded") func testCanCompareLoaded() {
+        let extent = ChartExtent(period: Period.week)
+        let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
+
+        #expect(extent.canCompare(points: points, segment: extent.segment(from: points)))
+    }
+
+    @Test("Comparison is unavailable when the previous period is outside the loaded year") func testCanCompareBeyondLoadedYear() {
+        let extent = ChartExtent(period: Period.year)
+        let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
+
+        #expect(!extent.canCompare(points: points, segment: extent.segment(from: points)))
+    }
+
     func makePoints(in range: Range<Date>, value: Int) -> [ChartPoint<Int>] {
         var points: [ChartPoint<Int>] = []
         var date = range.lowerBound
