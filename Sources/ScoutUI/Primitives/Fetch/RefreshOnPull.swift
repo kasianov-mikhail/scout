@@ -19,12 +19,17 @@ extension View {
 
 private struct RefreshOnPullModifier: ViewModifier {
     @Environment(\.database) private var database
+    @State private var message: Message?
 
     let providers: [any Refreshable]
 
     func body(content: Content) -> some View {
-        content.pullToRefresh {
-            await providers.fetchAgain(in: database)
-        }
+        content
+            .pullToRefresh {
+                if let error = await providers.refresh(in: database) {
+                    message = Message(error.localizedDescription, level: .error)
+                }
+            }
+            .message($message)
     }
 }
