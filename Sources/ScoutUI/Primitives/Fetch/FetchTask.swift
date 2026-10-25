@@ -12,6 +12,14 @@ import SwiftUI
 protocol Refreshable {
     func fetchLatest(in database: DatabaseReader) async
     func fetchAgain(in database: DatabaseReader) async
+    func refresh(in database: DatabaseReader) async -> Error?
+}
+
+extension Refreshable {
+    func refresh(in database: DatabaseReader) async -> Error? {
+        await fetchAgain(in: database)
+        return nil
+    }
 }
 
 extension View {
@@ -47,26 +55,11 @@ extension [any Refreshable] {
     }
 
     @MainActor
-    func fetchAgain(in database: DatabaseReader) async {
-        await concurrentForEach { provider in
-            await provider.fetchAgain(in: database)
+    func refresh(in database: DatabaseReader) async -> Error? {
+        await concurrentMap { provider in
+            await provider.refresh(in: database)
         }
-    }
-}
-
-extension Sequence {
-    @MainActor
-    func concurrentForEach(_ operation: @escaping @MainActor (Element) async -> Void) async {
-        let actions: [@MainActor () async -> Void] = map { element in
-            { await operation(element) }
-        }
-
-        await withTaskGroup(of: Void.self) { group in
-            for action in actions {
-                group.addTask {
-                    await action()
-                }
-            }
-        }
+        .compactMap { $0 }
+        .first
     }
 }

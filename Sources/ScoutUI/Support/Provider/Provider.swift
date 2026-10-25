@@ -25,16 +25,17 @@ extension Provider {
     }
 
     func fetchAgain(in database: DatabaseReader) async {
-        if ProcessInfo.processInfo.isPreview {
-            return
-        }
-        do {
-            result = .success(try await fetch(in: database))
-        } catch is CancellationError {
-            return
-        } catch {
+        if let error = await fetchKeepingResult(in: database) {
             result = .failure(error)
         }
+    }
+
+    func refresh(in database: DatabaseReader) async -> Error? {
+        guard case .success? = result else {
+            await fetchAgain(in: database)
+            return nil
+        }
+        return await fetchKeepingResult(in: database)
     }
 
     func fetchIfNeeded(in database: DatabaseReader) async {
@@ -52,17 +53,22 @@ extension Provider {
     }
 
     func fetchLatest(in database: DatabaseReader) async {
+        if let error = await fetchKeepingResult(in: database), result == nil {
+            result = .failure(error)
+        }
+    }
+
+    private func fetchKeepingResult(in database: DatabaseReader) async -> Error? {
         if ProcessInfo.processInfo.isPreview {
-            return
+            return nil
         }
         do {
             result = .success(try await fetch(in: database))
+            return nil
         } catch is CancellationError {
-            return
+            return nil
         } catch {
-            if result == nil {
-                result = .failure(error)
-            }
+            return error
         }
     }
 }
