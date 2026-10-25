@@ -614,6 +614,26 @@ struct ServerContractTests {
         #expect(index.tallies == [IncidentTally(fingerprint: fingerprint, name: "SIGSEGV", count: 1, firstHour: hour.addingTimeInterval(3 * .hour))])
     }
 
+    @Test("Incidents filter by a fingerprint list on the server")
+    func incidentsByFingerprint() async throws {
+        let database = try makeDatabase()
+        let fingerprints = ["contract-\(UUID().uuidString)", "contract-\(UUID().uuidString)"]
+        let matching = fingerprints.map { makeIncident(type: Crash.recordType, fingerprint: $0, date: eventDate) }
+
+        try await database.write(
+            records: matching + [
+                makeIncident(type: Crash.recordType, fingerprint: "other-\(UUID().uuidString)", date: eventDate)
+            ])
+
+        let query = RecordQuery(
+            recordType: Crash.self,
+            filters: [RecordQuery.Filter(field: "fingerprint", op: .in, value: .strings(fingerprints))]
+        )
+        let records = try await database.read(matching: query, fields: ["fingerprint"]).records
+
+        #expect(Set(records.map(\.recordID)) == Set(matching.map(\.recordID)))
+    }
+
     @Test("Timer bucket increments surface in the metric series by bucket category")
     func timerBucketSeries() async throws {
         let database = try makeDatabase()
