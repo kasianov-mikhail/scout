@@ -11,6 +11,7 @@ struct TrendCard: View {
     let title: String
     let color: Color
     let trend: Trend?
+    let risesAreBad: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -38,7 +39,7 @@ struct TrendCard: View {
                 if let delta = trend?.delta {
                     Text(verbatim: delta.formatted)
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(delta.isPositive ? .green : .red)
+                        .foregroundStyle(delta.isFavorable(risesAreBad: risesAreBad) ? .green : .red)
                         .padding(.top, 2)
                 }
             }
@@ -64,27 +65,32 @@ struct TrendCard: View {
         TrendCard(
             title: "Sessions",
             color: .purple,
-            trend: Trend(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12])
+            trend: Trend(count: 8420, previous: 7500, values: [3, 5, 4, 7, 6, 9, 12]),
+            risesAreBad: false
         )
         TrendCard(
             title: "Crashes",
             color: .red,
-            trend: Trend(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4])
+            trend: Trend(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4]),
+            risesAreBad: true
         )
         TrendCard(
             title: "Empty",
             color: .red,
-            trend: Trend(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0])
+            trend: Trend(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0]),
+            risesAreBad: true
         )
         TrendCard(
             title: "Loading",
             color: .green,
-            trend: .loading
+            trend: .loading,
+            risesAreBad: false
         )
         TrendCard(
             title: "Missing",
             color: .green,
-            trend: nil
+            trend: nil,
+            risesAreBad: false
         )
     }
     .padding()

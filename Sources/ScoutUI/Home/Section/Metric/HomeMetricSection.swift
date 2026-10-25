@@ -23,7 +23,8 @@ struct HomeMetricSection: View {
                 TrendCard(
                     title: period.activityPeriod.rawValue,
                     color: .green,
-                    trend: activityTrend
+                    trend: activityTrend,
+                    risesAreBad: false
                 )
             }
             .buttonStyle(.plain)
@@ -34,7 +35,8 @@ struct HomeMetricSection: View {
                 TrendCard(
                     title: "Sessions",
                     color: .purple,
-                    trend: sessionTrend
+                    trend: sessionTrend,
+                    risesAreBad: false
                 )
             }
             .buttonStyle(.plain)
