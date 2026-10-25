@@ -37,7 +37,7 @@ struct ActivityView: View {
                     points: points,
                     extent: extent,
                     color: .green,
-                    isComparing: isComparing && canCompare
+                    isComparing: isComparing
                 )
                 .listRowSeparator(.hidden)
                 .padding(.bottom)

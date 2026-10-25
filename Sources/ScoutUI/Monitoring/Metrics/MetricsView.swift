@@ -50,7 +50,7 @@ struct MetricsView<T: ChartNumeric, Extra: View>: View {
                 points: group.points,
                 extent: extent,
                 color: .blue,
-                isComparing: isComparing && canCompare,
+                isComparing: isComparing,
                 markers: resets.dates(in: extent.domain)
             )
             .chartYAxis {
