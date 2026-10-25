@@ -85,26 +85,16 @@ struct SymbolTableCacheTests {
         #expect(database.reads == 4)
     }
 
-    @Test("A request for more tables than the cache holds still returns all of them")
+    @Test("A request for more tables than the cache holds returns all of them and keeps them for the next identical request")
     func overflow() async throws {
-        let images = (0..<3).map { _ in UUID() }
-        let database = CountingDatabase(records: try images.map(makeRecord), failing: nil)
-        let cache = SymbolTableCache(capacity: 1, missLifetime: 60, now: Date.init)
-
-        let tables = await cache.tables(uuids: images, database: database)
-
-        #expect(tables.count == images.count)
-    }
-
-    @Test("A request for more tables than the cache holds keeps all of them for the next identical request")
-    func overflowKept() async throws {
         let images = (0..<6).map { _ in UUID() }
         let database = CountingDatabase(records: try images.map(makeRecord), failing: nil)
         let cache = SymbolTableCache(capacity: 4, missLifetime: 60, now: Date.init)
 
-        _ = await cache.tables(uuids: images, database: database)
+        let first = await cache.tables(uuids: images, database: database)
         let second = await cache.tables(uuids: images, database: database)
 
+        #expect(first.count == images.count)
         #expect(second.count == images.count)
         #expect(database.reads == 1)
     }
