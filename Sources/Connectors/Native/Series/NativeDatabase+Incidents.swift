@@ -11,14 +11,21 @@ import ScoutDB
 
 extension NativeDatabase: IncidentReader {
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
-        let points = try await resolve().query(recordType).series(metric: .sum, group: CatalogEntry.incidentKey, in: range)
+        let points = try await resolve()
+            .query(recordType)
+            .series(metric: .sum, group: CatalogEntry.incidentKey, in: range)
+
         let unkeyed = points.filter { IncidentKey(key: $0.group) == nil }.map(\.date)
 
         guard let first = unkeyed.min(), let last = unkeyed.max() else {
             return IncidentIndex(tallies: points.tallies, unkeyed: nil)
         }
         let end = last.addingTimeInterval(.hour)
-        return IncidentIndex(tallies: points.filter { $0.date >= end }.tallies, unkeyed: first..<end)
+
+        return IncidentIndex(
+            tallies: points.filter { $0.date >= end }.tallies,
+            unkeyed: first..<end
+        )
     }
 }
 
