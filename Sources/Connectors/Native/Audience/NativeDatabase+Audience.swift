@@ -71,7 +71,7 @@ extension EntityStore {
         )
 
         return ActivityPoint.points(
-            visits: visits.filter { !$0.group.isEmpty }.map { DatedID(date: $0.date, id: $0.group) },
+            visits: visits.filter(\.hasGroup).map { DatedID(date: $0.date, id: $0.group) },
             in: range
         )
     }

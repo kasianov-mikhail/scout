@@ -70,7 +70,7 @@ extension EntityStore {
             group: "device_id",
             in: lower..<upper
         )
-        .filter { !$0.group.isEmpty }
+        .filter(\.hasGroup)
 
         return ranges.map { range in
             Set(points.filter { range.contains($0.date) }.map(\.group)).count

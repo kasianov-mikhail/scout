@@ -18,8 +18,9 @@ struct DeviceFold {
     var activities: [DeviceActivity] {
         let crashCounts = Dictionary(crashes.map { ($0.group, Int($0.value)) }, uniquingKeysWith: +)
         let latestSystems = latestSystems
+        let sessions = sessions.filter(\.hasGroup)
 
-        return Dictionary(grouping: sessions.filter { !$0.group.isEmpty }, by: \.group).compactMap { device, points in
+        return Dictionary(grouping: sessions, by: \.group).compactMap { device, points in
             guard let lastSeen = points.map(\.date).max() else {
                 return nil
             }
