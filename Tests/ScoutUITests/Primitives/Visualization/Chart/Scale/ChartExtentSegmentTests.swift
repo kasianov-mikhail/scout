@@ -46,4 +46,32 @@ struct ChartExtentSegmentTests {
         #expect(total.segment(from: points).map(\.value) == [16])
         #expect(peak.segment(from: points).map(\.value) == [9])
     }
+
+    @Test("A year buckets points by calendar month, with the current month partial")
+    func yearBuckets() {
+        let scale = ScaleStub(horizonDate: Date(year: 2026, month: 10, day: 25), rangeComponent: .year, pointComponent: .month)
+        let extent = ChartExtent(period: scale)
+        let points = [
+            ChartPoint(date: Date(year: 2025, month: 10, day: 28), value: 100),
+            ChartPoint(date: Date(year: 2025, month: 11, day: 2), value: 1),
+            ChartPoint(date: Date(year: 2026, month: 9, day: 30), value: 7),
+            ChartPoint(date: Date(year: 2026, month: 10, day: 3), value: 5),
+        ]
+
+        let segment = extent.segment(from: points)
+
+        #expect(extent.domain == Date(year: 2025, month: 11, day: 1)..<Date(year: 2026, month: 11, day: 1))
+        #expect(segment.count == 12)
+        #expect(segment.first?.date == Date(year: 2026, month: 10, day: 1))
+        #expect(segment.last?.date == Date(year: 2025, month: 11, day: 1))
+        #expect(segment.map(\.value) == [5, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])
+    }
+
+    @Test("A year that ends on the first of a month keeps its range")
+    func yearOnFirstOfMonth() {
+        let scale = ScaleStub(horizonDate: Date(year: 2026, month: 11, day: 1), rangeComponent: .year, pointComponent: .month)
+        let extent = ChartExtent(period: scale)
+
+        #expect(extent.domain == scale.initialRange)
+    }
 }
