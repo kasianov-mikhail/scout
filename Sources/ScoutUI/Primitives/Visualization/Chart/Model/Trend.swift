@@ -21,11 +21,19 @@ extension Trend {
         let levels = latest.points(on: period.activityPeriod)
         let current = levels.latest(in: period.initialRange)
         let previous = levels.latest(in: period.previousRange)
+        let end = period.initialRange.upperBound
+        let window =
+            switch period.activityPeriod {
+            case .daily:
+                end.addingDay(-MiniChartSeries.sliceCount)..<end
+            case .weekly, .monthly:
+                period.initialRange
+            }
 
         self.init(
             count: current,
             delta: Delta(current: current, previous: previous),
-            series: MiniChartSeries(points: levels, range: period.initialRange, aggregation: .latest)
+            series: MiniChartSeries(points: levels, range: window, aggregation: .latest)
         )
     }
 
