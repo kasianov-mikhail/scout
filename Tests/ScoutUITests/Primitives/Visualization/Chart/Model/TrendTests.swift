@@ -43,9 +43,9 @@ struct TrendTests {
     func levels() throws {
         let trend = Trend(
             latest: [
-                makeActivity(day: -1, level: 120),
-                makeActivity(day: -2, level: 100),
-                makeActivity(day: -8, level: 90),
+                makeActivity(day: -1, dau: 0, wau: 120),
+                makeActivity(day: -2, dau: 0, wau: 100),
+                makeActivity(day: -8, dau: 0, wau: 90),
             ],
             period: .week
         )
@@ -56,7 +56,7 @@ struct TrendTests {
 
     @Test("Levels outside the window read as a zero level, not as loading")
     func levelsOutsideWindow() {
-        let trend = Trend(latest: [makeActivity(day: -20, level: 100)], period: .week)
+        let trend = Trend(latest: [makeActivity(day: -20, dau: 0, wau: 100)], period: .week)
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
@@ -69,6 +69,22 @@ struct TrendTests {
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
         #expect(try #require(trend.series).values.allSatisfy { $0 == .zero })
+    }
+
+    @Test("Today draws the daily level of each of the last seven days, ending today")
+    func today() throws {
+        let trend = Trend(latest: dailyLevels, period: .today)
+
+        #expect(trend.count == 7)
+        #expect(try #require(trend.series).values == [1, 2, 3, 4, 5, 6, 7])
+    }
+
+    @Test("Yesterday draws the daily level of each of the seven days before today")
+    func yesterday() throws {
+        let trend = Trend(latest: dailyLevels, period: .yesterday)
+
+        #expect(trend.count == 6)
+        #expect(try #require(trend.series).values == [100, 1, 2, 3, 4, 5, 6])
     }
 
     @Test("Distinct counts pass their slices through untouched")
@@ -91,11 +107,15 @@ struct TrendTests {
         ChartPoint(date: Date(year: 2026, month: 6, day: day, hour: hour), value: value)
     }
 
-    private func makeActivity(day: Int, level: Int) -> ActivityPoint {
+    private var dailyLevels: [ActivityPoint] {
+        [makeActivity(day: -7, dau: 100, wau: 0)] + (-6...0).map { makeActivity(day: $0, dau: 7 + $0, wau: 0) }
+    }
+
+    private func makeActivity(day: Int, dau: Int, wau: Int) -> ActivityPoint {
         ActivityPoint(
             date: Date().startOfDay.addingDay(day).millisecondsSince1970,
-            dau: 0,
-            wau: level,
+            dau: dau,
+            wau: wau,
             mau: 0
         )
     }
