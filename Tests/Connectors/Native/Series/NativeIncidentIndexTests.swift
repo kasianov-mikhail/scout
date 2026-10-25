@@ -62,16 +62,25 @@ struct NativeIncidentIndexTests {
     @Test("Records written without the key mark the hours a raw read must cover")
     func unkeyedHours() async throws {
         try await database.write(record: makeCrash(id: "c-1", fingerprint: "A", at: 30 * .hour))
-        let store = try await database.resolve()
-        let legacy = [10 * .hour + 5 * .minute, 20 * .hour].enumerated().map { offset, time in
-            EntityWrite(values: ["date": .date(TestDate.reference.addingTimeInterval(time))], uuid: "legacy-\(offset)")
-        }
-        try await store.write(legacy, entity: CrashEntry.recordType)
+        try await writeLegacyCrashes(at: [10 * .hour + 5 * .minute, 20 * .hour])
 
         let index = try await database.incidentIndex(recordType: CrashEntry.recordType, in: range)
 
         #expect(index?.tallies.map(\.fingerprint) == ["A"])
         #expect(index?.unkeyed == TestDate.reference.addingTimeInterval(10 * .hour)..<TestDate.reference.addingTimeInterval(21 * .hour))
+    }
+
+    @Test("Keyed hours before the end of the unkeyed window are left to the raw read")
+    func keyedBeforeUnkeyedEnd() async throws {
+        try await database.write(record: makeCrash(id: "c-1", fingerprint: "A", at: 5 * .hour))
+        try await database.write(record: makeCrash(id: "c-2", fingerprint: "A", at: 15 * .hour))
+        try await database.write(record: makeCrash(id: "c-3", fingerprint: "A", at: 30 * .hour))
+        try await writeLegacyCrashes(at: [10 * .hour + 5 * .minute, 20 * .hour])
+
+        let index = try await database.incidentIndex(recordType: CrashEntry.recordType, in: range)
+
+        #expect(index?.unkeyed == TestDate.reference.addingTimeInterval(10 * .hour)..<TestDate.reference.addingTimeInterval(21 * .hour))
+        #expect(index?.tallies == [IncidentTally(fingerprint: "A", name: "NSRangeException", count: 1, firstHour: TestDate.reference.addingTimeInterval(30 * .hour))])
     }
 
     @Test("Hangs are tallied apart from crashes under the fingerprint the feed groups by")
@@ -88,6 +97,14 @@ struct NativeIncidentIndexTests {
         let decoded = try Hang(record: hang)
         #expect(tallies.map(\.fingerprint) == [decoded.fingerprint])
         #expect(tallies.map(\.name) == ["Main Thread Blocked"])
+    }
+
+    private func writeLegacyCrashes(at offsets: [TimeInterval]) async throws {
+        let store = try await database.resolve()
+        let legacy = offsets.enumerated().map { offset, time in
+            EntityWrite(values: ["date": .date(TestDate.reference.addingTimeInterval(time))], uuid: "legacy-\(offset)")
+        }
+        try await store.write(legacy, entity: CrashEntry.recordType)
     }
 
     private func makeCrash(id: String, fingerprint: String?, at offset: TimeInterval) -> Record {

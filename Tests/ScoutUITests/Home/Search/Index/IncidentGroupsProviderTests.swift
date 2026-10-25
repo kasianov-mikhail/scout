@@ -68,6 +68,32 @@ struct IncidentGroupsProviderTests {
         #expect(database.readCount(of: Crash.recordType) == 1)
     }
 
+    @Test("Keyed records before the end of the unkeyed window are counted once, by the raw read")
+    func keyedInsideUnkeyedWindow() async throws {
+        let database = DatabaseStub()
+        let unkeyed = now.addingTimeInterval(-30 * .day)..<now.addingTimeInterval(-20 * .day)
+        database.add(
+            makeCrash("keyed-before", fingerprint: "range", at: -40 * .day),
+            makeCrash("keyed-inside", fingerprint: "range", at: -25 * .day),
+            makeCrash("legacy-inside", fingerprint: "range", at: -22 * .day),
+            makeCrash("keyed-after", fingerprint: "range", at: -.day)
+        )
+        database.add(
+            index: IncidentIndex(tallies: [makeTally("range", count: 1, firstHour: now.addingTimeInterval(-.day))], unkeyed: unkeyed),
+            for: Crash.recordType
+        )
+
+        let entries = try await IncidentGroupsProvider<Crash>().fetch(in: database)
+
+        guard case .tally(let tally)? = entries.first, entries.count == 1 else {
+            Issue.record("The fingerprint should merge into one tally")
+            return
+        }
+        #expect(tally.count == 4)
+        #expect(tally.firstHour < now.addingTimeInterval(-39 * .day))
+        #expect(database.readCount(of: Crash.recordType) == 1)
+    }
+
     private func makeCrash(_ id: String, fingerprint: String, at offset: TimeInterval) -> Record {
         var record = Record(recordType: Crash.recordType, recordID: id)
         record["name"] = fingerprint == "range" ? "NSRangeException" : "crash-\(fingerprint)"
