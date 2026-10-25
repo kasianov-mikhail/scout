@@ -30,7 +30,7 @@ extension NativeDatabase: DeviceReader {
         )
         let devices = try await store.fetch(
             entity: DeviceEntry.recordType,
-            uuids: Array(Set(sessions.map(\.group)))
+            uuids: Array(Set(sessions.filter(\.hasGroup).map(\.group)))
         )
 
         return try await DeviceFold(

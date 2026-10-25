@@ -44,6 +44,17 @@ struct NativeDeviceCountTests {
         #expect(try await database.deviceCounts(in: ranges) == ranges.map { sessionDevices(in: $0, extra: [ghost]) })
     }
 
+    @Test("A session without a device is not counted as a device")
+    func deviceless() async throws {
+        var deviceless = Session(device: "", date: day(89, hour: 12), version: "2.0").record
+        deviceless.fields["device_id"] = nil
+        let database = try await makeDatabase(extra: [])
+        try await database.write(record: deviceless)
+        let ranges = [day(89)..<day(90)] + slices(of: day(89)..<day(90))
+
+        #expect(try await database.deviceCounts(in: ranges) == ranges.map { sessionDevices(in: $0, extra: []) })
+    }
+
     @Test("Ranges longer than a month send every range to the session devices")
     func year() async throws {
         let database = try await makeDatabase(extra: [ghostSession])
