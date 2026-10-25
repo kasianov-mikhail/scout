@@ -47,7 +47,7 @@ struct HomeAlertSection: View {
             placeholderText("All healthy").foregroundStyle(.green)
 
         case .success(let statuses) where !statuses.isEmpty:
-            ForEach(statuses.prefix(2), id: \.rule) { status in
+            ForEach(statuses.firingFirst.prefix(2), id: \.rule) { status in
                 AlertRow(status: status)
             }
 

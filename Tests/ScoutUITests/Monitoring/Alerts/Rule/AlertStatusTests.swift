@@ -43,6 +43,18 @@ struct AlertStatusTests {
         #expect(statuses.firingCount == 1)
     }
 
+    @Test("Firing statuses come first and keep their order")
+    func firingFirst() {
+        let armed = makeStatus(recent: [0.998], state: .armed)
+        let muted = makeStatus(recent: [0.998], state: .muted(until: Date(timeIntervalSince1970: 0)))
+        let earlier = makeStatus(recent: [0.9], state: .firing(since: Date(timeIntervalSince1970: 0)))
+        let later = makeStatus(recent: [0.9], state: .firing(since: Date(timeIntervalSince1970: 60)))
+
+        let statuses = [armed, muted, earlier, later]
+
+        #expect(statuses.firingFirst == [earlier, later, armed, muted])
+    }
+
     private func makeStatus(recent: [Double], state: AlertState) -> AlertStatus {
         AlertStatus(
             rule: AlertRule(

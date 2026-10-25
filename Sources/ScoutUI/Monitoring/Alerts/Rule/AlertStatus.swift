@@ -14,6 +14,10 @@ struct AlertStatus: Equatable {
 }
 
 extension AlertStatus {
+    var isFiring: Bool {
+        if case .firing = outcome.state { true } else { false }
+    }
+
     var detail: String? {
         guard let current = reading.recent.last else {
             return nil
@@ -28,7 +32,11 @@ extension AlertStatus {
 
 extension [AlertStatus] {
     var firingCount: Int {
-        count { if case .firing = $0.outcome.state { true } else { false } }
+        count(where: \.isFiring)
+    }
+
+    var firingFirst: [AlertStatus] {
+        filter(\.isFiring) + filter { !$0.isFiring }
     }
 
     var allHealthy: Bool {
