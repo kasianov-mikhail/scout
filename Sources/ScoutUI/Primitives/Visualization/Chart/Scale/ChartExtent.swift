@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Scout
 import SwiftUI
 
 struct ChartExtent<T: ChartTimeScale> {
@@ -17,7 +18,12 @@ struct ChartExtent<T: ChartTimeScale> {
 
 extension ChartExtent {
     var domain: Range<Date> {
-        period.range(at: offset)
+        let range = period.range(at: offset)
+        guard case .month = period.pointComponent, range.upperBound != range.upperBound.startOfMonth else {
+            return range
+        }
+        let upperBound = range.upperBound.startOfMonth.addingMonth()
+        return upperBound.adding(period.rangeComponent, value: -1)..<upperBound
     }
 
     func segment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
