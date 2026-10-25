@@ -13,7 +13,9 @@ extension ChartExtent {
     }
 
     func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        zip(segment, previousSegment(from: points)).map { ChartPoint(date: $0.date, value: $1.value) }
+        zip(segment, previousSegment(from: points)).map {
+            ChartPoint(date: $0.date, value: $1.value)
+        }
     }
 
     func canCompare<U: ChartNumeric>(points: [ChartPoint<U>], segment: [ChartPoint<U>]) -> Bool {
@@ -24,6 +26,10 @@ extension ChartExtent {
     }
 
     private func previousSegment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        points.bucket(in: previousDomain, component: period.pointComponent, fold: fold)
+        points.bucket(
+            in: previousDomain,
+            component: period.pointComponent,
+            fold: fold
+        )
     }
 }
