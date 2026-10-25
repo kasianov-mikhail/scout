@@ -17,7 +17,10 @@ extension ChartExtent {
     }
 
     func canCompare<U: ChartNumeric>(points: [ChartPoint<U>], segment: [ChartPoint<U>]) -> Bool {
-        segment.total != .zero || previousSegment(from: points).total != .zero
+        guard Date().trailingYear.lowerBound <= previousDomain.lowerBound else {
+            return false
+        }
+        return segment.total != .zero || previousSegment(from: points).total != .zero
     }
 
     private func previousSegment<U: ChartNumeric>(from points: [ChartPoint<U>]) -> [ChartPoint<U>] {

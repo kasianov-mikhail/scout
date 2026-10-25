@@ -35,7 +35,7 @@ struct StatView: View {
                     points: points,
                     extent: extent,
                     color: color,
-                    isComparing: isComparing
+                    isComparing: isComparing && canCompare
                 )
                 .listRowSeparator(.hidden)
                 .padding(.bottom)
