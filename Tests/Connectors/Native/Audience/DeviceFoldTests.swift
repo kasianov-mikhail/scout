@@ -57,4 +57,23 @@ struct DeviceFoldTests {
 
         #expect(fold.activities.isEmpty)
     }
+
+    @Test("A session without a device is left out")
+    func devicelessSessionsAreLeftOut() {
+        let fold = DeviceFold(
+            sessions: [
+                SeriesPoint(group: "", date: start, value: 4),
+                SeriesPoint(group: "a", date: start, value: 1),
+            ],
+            systems: [],
+            crashes: [SeriesPoint(group: "", date: start, value: 1)],
+            models: [:]
+        )
+
+        #expect(
+            fold.activities == [
+                DeviceActivity(deviceID: "a", model: nil, osVersion: nil, lastSeen: start, sessions: 1, crashes: 0)
+            ]
+        )
+    }
 }
