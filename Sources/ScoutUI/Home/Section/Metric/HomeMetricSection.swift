@@ -48,7 +48,7 @@ struct HomeMetricSection: View {
     private var activityTrend: Trend {
         switch activities.result {
         case .success(let points):
-            Trend(latest: points, period: period)
+            Trend(latest: points, period: period, now: Date())
         case .failure, nil:
             .loading
         }
@@ -57,7 +57,7 @@ struct HomeMetricSection: View {
     private var sessionTrend: Trend {
         switch sessions.result {
         case .success(let points):
-            Trend(total: points, period: period)
+            Trend(total: points, period: period, now: Date())
         case .failure, nil:
             .loading
         }

@@ -14,6 +14,7 @@ import Testing
 
 struct TrendTests {
     private let scale = DayScale(horizonDate: Date(year: 2026, month: 6, day: 8))
+    private let now = Date(year: 2026, month: 6, day: 8)
 
     @Test("Additive points sum into the count and compare against the previous day")
     func additive() throws {
@@ -23,7 +24,8 @@ struct TrendTests {
                 makePoint(day: 7, hour: 2, value: 4),
                 makePoint(day: 6, hour: 1, value: 10),
             ],
-            period: scale
+            period: scale,
+            now: now
         )
 
         #expect(trend.count == 12)
@@ -33,10 +35,37 @@ struct TrendTests {
 
     @Test("Additive points with an empty previous day carry no delta")
     func additiveWithoutPrevious() {
-        let trend = Trend(total: [makePoint(day: 7, hour: 1, value: 8)], period: scale)
+        let trend = Trend(total: [makePoint(day: 7, hour: 1, value: 8)], period: scale, now: now)
 
         #expect(trend.count == 8)
         #expect(trend.delta == nil)
+    }
+
+    @Test("A partial day compares against the same part of the previous day")
+    func partialDay() throws {
+        let trend = Trend(
+            total: [
+                makePoint(day: 7, hour: 1, value: 4),
+                makePoint(day: 7, hour: 5, value: 4),
+                makePoint(day: 6, hour: 2, value: 8),
+                makePoint(day: 6, hour: 12, value: 30),
+            ],
+            period: scale,
+            now: Date(year: 2026, month: 6, day: 7, hour: 8)
+        )
+
+        #expect(trend.count == 8)
+        #expect(try #require(trend.delta).formatted == "+0%")
+    }
+
+    @Test("A partial day draws the trailing day up to now, with no empty future slices")
+    func partialDaySeries() throws {
+        let hours = (8...23).map { makePoint(day: 6, hour: $0, value: 1) } + (0...7).map { makePoint(day: 7, hour: $0, value: 1) }
+        let trend = Trend(total: hours, period: scale, now: Date(year: 2026, month: 6, day: 7, hour: 8))
+        let values = try #require(trend.series).values
+
+        #expect(values.reduce(0, +) == 24)
+        #expect(!values.contains(.zero))
     }
 
     @Test("Levels are sampled, not summed, and compared level to level")
@@ -47,7 +76,8 @@ struct TrendTests {
                 makeActivity(day: -2, dau: 0, wau: 100),
                 makeActivity(day: -8, dau: 0, wau: 90),
             ],
-            period: .week
+            period: .week,
+            now: Date()
         )
 
         #expect(trend.count == 120)
@@ -56,7 +86,7 @@ struct TrendTests {
 
     @Test("Levels outside the window read as a zero level, not as loading")
     func levelsOutsideWindow() {
-        let trend = Trend(latest: [makeActivity(day: -20, dau: 0, wau: 100)], period: .week)
+        let trend = Trend(latest: [makeActivity(day: -20, dau: 0, wau: 100)], period: .week, now: Date())
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
@@ -64,7 +94,7 @@ struct TrendTests {
 
     @Test("An empty level series reads as a zero level, not as loading")
     func emptyLevels() throws {
-        let trend = Trend(latest: [], period: .week)
+        let trend = Trend(latest: [], period: .week, now: Date())
 
         #expect(trend.count == 0)
         #expect(trend.delta == nil)
@@ -73,15 +103,23 @@ struct TrendTests {
 
     @Test("Today draws the daily level of each of the last seven days, ending today")
     func today() throws {
-        let trend = Trend(latest: dailyLevels, period: .today)
+        let trend = Trend(latest: dailyLevels, period: .today, now: Date())
 
         #expect(trend.count == 7)
         #expect(try #require(trend.series).values == [1, 2, 3, 4, 5, 6, 7])
     }
 
+    @Test("Today carries no level delta while the day is still running")
+    func todayWithoutDelta() {
+        let trend = Trend(latest: dailyLevels, period: .today, now: Date().startOfDay.addingTimeInterval(8 * 3600))
+
+        #expect(trend.count == 7)
+        #expect(trend.delta == nil)
+    }
+
     @Test("Yesterday draws the daily level of each of the seven days before today")
     func yesterday() throws {
-        let trend = Trend(latest: dailyLevels, period: .yesterday)
+        let trend = Trend(latest: dailyLevels, period: .yesterday, now: Date())
 
         #expect(trend.count == 6)
         #expect(try #require(trend.series).values == [100, 1, 2, 3, 4, 5, 6])

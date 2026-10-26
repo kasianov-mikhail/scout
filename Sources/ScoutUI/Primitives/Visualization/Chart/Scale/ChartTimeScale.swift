@@ -31,4 +31,19 @@ extension ChartTimeScale {
         let range = initialRange
         return range.lowerBound.adding(rangeComponent, value: -1)..<range.lowerBound
     }
+
+    func elapsedRange(now: Date) -> Range<Date> {
+        let range = initialRange
+        return range.lowerBound..<min(max(now, range.lowerBound), range.upperBound)
+    }
+
+    func elapsedPreviousRange(now: Date) -> Range<Date> {
+        let range = elapsedRange(now: now)
+        return range.lowerBound.adding(rangeComponent, value: -1)..<range.upperBound.adding(rangeComponent, value: -1)
+    }
+
+    func trailingRange(now: Date) -> Range<Date> {
+        let end = elapsedRange(now: now).upperBound
+        return end.adding(rangeComponent, value: -1)..<end
+    }
 }

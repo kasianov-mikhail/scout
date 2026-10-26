@@ -20,40 +20,41 @@ extension LogSnapshot {
 }
 
 extension Period {
-    var deviceRanges: [Range<Date>] {
-        [initialRange, previousRange] + initialRange.slices(count: MiniChartSeries.sliceCount)
+    func deviceRanges(now: Date) -> [Range<Date>] {
+        [elapsedRange(now: now), elapsedPreviousRange(now: now)] + trailingRange(now: now).slices(count: MiniChartSeries.sliceCount)
     }
 }
 
 struct LogSeries {
     let snapshot: LogSnapshot
     let period: Period
+    let now: Date
 
     var report: [LogCategory: Trend] {
         let window = period.previousRange.lowerBound..<period.initialRange.upperBound
         let span = SeriesSpan(series: snapshot.series, range: window)
-        let slices = period.initialRange.slices(count: MiniChartSeries.sliceCount)
+        let slices = period.trailingRange(now: now).slices(count: MiniChartSeries.sliceCount)
 
         let metrics = Trend(
-            count: count(in: period.initialRange),
-            previous: count(in: period.previousRange),
+            count: count(in: period.elapsedRange(now: now)),
+            previous: count(in: period.elapsedPreviousRange(now: now)),
             values: slices.map(count)
         )
 
         let incidents: Set = [Crash.recordType, Hang.recordType]
 
         return [
-            .events: Trend(total: span.points { !incidents.contains($0) }, period: period),
-            .crashes: Trend(total: span.points { $0 == Crash.recordType }, period: period),
-            .hangs: Trend(total: span.points { $0 == Hang.recordType }, period: period),
-            .network: Trend(total: span.points(inCategories: Set(StatusBuckets.categories)), period: period),
+            .events: Trend(total: span.points { !incidents.contains($0) }, period: period, now: now),
+            .crashes: Trend(total: span.points { $0 == Crash.recordType }, period: period, now: now),
+            .hangs: Trend(total: span.points { $0 == Hang.recordType }, period: period, now: now),
+            .network: Trend(total: span.points(inCategories: Set(StatusBuckets.categories)), period: period, now: now),
             .metrics: metrics,
             .devices: deviceTrend,
         ]
     }
 
     private var deviceTrend: Trend {
-        let expected = period.deviceRanges.count
+        let expected = period.deviceRanges(now: now).count
         let counts = snapshot.deviceCounts.count == expected ? snapshot.deviceCounts : Array(repeating: 0, count: expected)
 
         return Trend(count: counts[0], previous: counts[1], values: Array(counts.dropFirst(2)))

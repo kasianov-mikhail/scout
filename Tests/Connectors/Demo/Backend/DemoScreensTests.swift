@@ -71,7 +71,7 @@ import Testing
     @Test func homeLogLightsUp() async throws {
         let snapshot = try await HomeLogProvider().fetch(in: database)
         #expect(!snapshot.series.isEmpty)
-        #expect(snapshot.deviceCounts.count == Period.today.deviceRanges.count)
+        #expect(snapshot.deviceCounts.count == Period.today.deviceRanges(now: Date()).count)
     }
 
     @Test func deviceTimelineLightsUp() async throws {
