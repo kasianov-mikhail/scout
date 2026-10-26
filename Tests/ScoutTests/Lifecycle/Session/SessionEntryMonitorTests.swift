@@ -172,7 +172,7 @@ struct SessionEntryMonitorTests {
         let closed = try #require(try context.fetchAll(SessionEntry.self).first)
         try purgeDelivered(closed)
 
-        let linked = try context.makeLinkedSession(identity: identity.snapshot)
+        let linked = try #require(try context.makeLinkedSession(identity: identity.snapshot))
 
         #expect(linked == closed)
         #expect(linked.endDate != nil)
