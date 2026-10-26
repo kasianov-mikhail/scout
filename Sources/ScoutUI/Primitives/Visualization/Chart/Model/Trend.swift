@@ -17,10 +17,11 @@ struct Trend {
 extension Trend {
     static let loading = Trend(count: nil, delta: nil, series: nil)
 
-    init(latest: [ActivityPoint], period: Period) {
+    init(latest: [ActivityPoint], period: Period, now: Date) {
         let levels = latest.points(on: period.activityPeriod)
         let current = levels.latest(in: period.initialRange)
         let previous = levels.latest(in: period.previousRange)
+        let isComplete = period.elapsedRange(now: now) == period.initialRange
         let end = period.initialRange.upperBound
         let window =
             switch period.activityPeriod {
@@ -32,19 +33,19 @@ extension Trend {
 
         self.init(
             count: current,
-            delta: Delta(current: current, previous: previous),
+            delta: isComplete ? Delta(current: current, previous: previous) : nil,
             series: MiniChartSeries(points: levels, range: window, aggregation: .latest)
         )
     }
 
-    init(total: [ChartPoint<Int>], period: some ChartTimeScale) {
-        let current = total.total(in: period.initialRange)
-        let previous = total.total(in: period.previousRange)
+    init(total: [ChartPoint<Int>], period: some ChartTimeScale, now: Date) {
+        let current = total.total(in: period.elapsedRange(now: now))
+        let previous = total.total(in: period.elapsedPreviousRange(now: now))
 
         self.init(
             count: current,
             delta: Delta(current: current, previous: previous),
-            series: MiniChartSeries(points: total, range: period.initialRange, aggregation: .total)
+            series: MiniChartSeries(points: total, range: period.trailingRange(now: now), aggregation: .total)
         )
     }
 }

@@ -13,6 +13,7 @@ import Testing
 
 struct LogSeriesTests {
     let today = Date().startOfDay
+    let now = Date().startOfDay.addingTimeInterval(8 * 3600)
 
     @Test("Events count everything that is neither a crash nor a hang")
     func events() {
@@ -70,6 +71,39 @@ struct LogSeriesTests {
         #expect(makeReport(deviceCounts: [])[.devices]?.count == 0)
     }
 
+    @Test("Today compares against the same part of yesterday")
+    func partialDay() throws {
+        let report = makeReport(
+            series: [
+                makeSeries(name: "login", hour: 1, value: 3),
+                makeSeries(name: "login", hour: -23, value: 3),
+                makeSeries(name: "login", hour: -12, value: 9),
+            ]
+        )
+        let events = try #require(report[.events])
+
+        #expect(events.count == 3)
+        #expect(try #require(events.delta).formatted == "+0%")
+    }
+
+    @Test("Today draws the trailing day up to now, with no empty future slices")
+    func partialDaySeries() throws {
+        let report = makeReport(series: (-16...7).map { makeSeries(name: "login", hour: $0, value: 1) })
+        let values = try #require(report[.events]?.series).values
+
+        #expect(values.reduce(0, +) == 24)
+        #expect(!values.contains(.zero))
+    }
+
+    @Test("Device ranges stop at now and compare against the same part of yesterday")
+    func deviceRanges() throws {
+        let ranges = Period.today.deviceRanges(now: now)
+
+        #expect(ranges[0] == today..<now)
+        #expect(ranges[1] == today.addingDay(-1)..<now.addingDay(-1))
+        #expect(try #require(ranges.last).upperBound == now)
+    }
+
     @Test("Every category draws a sparkline with one value per slice")
     func sliceCount() throws {
         let report = makeReport(
@@ -86,16 +120,17 @@ struct LogSeriesTests {
     private func makeReport(series: [MetricSeries] = [], deviceCounts: [Int] = []) -> [LogCategory: Trend] {
         LogSeries(
             snapshot: LogSnapshot(series: series, deviceCounts: deviceCounts),
-            period: .today
+            period: .today,
+            now: now
         )
         .report
     }
 
-    private func makeSeries(name: String, category: String? = nil, value: Double) -> MetricSeries {
+    private func makeSeries(name: String, category: String? = nil, hour: Int = 1, value: Double) -> MetricSeries {
         MetricSeries(
             name: name,
             category: category,
-            points: [MetricSeriesPoint(date: today.addingTimeInterval(3600), value: value)]
+            points: [MetricSeriesPoint(date: today.addingTimeInterval(TimeInterval(hour) * 3600), value: value)]
         )
     }
 }

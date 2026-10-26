@@ -41,7 +41,7 @@ final class HomeLogProvider: ObservableObject, Provider {
     private func rebuildReport() {
         switch result {
         case .success(let snapshot):
-            report = LogSeries(snapshot: snapshot, period: period).report
+            report = LogSeries(snapshot: snapshot, period: period, now: Date()).report
         case .failure, nil:
             report = nil
         }
@@ -64,7 +64,7 @@ final class HomeLogProvider: ObservableObject, Provider {
         async let metrics = database.metricSeries(
             matching: MetricSeriesQuery(bucket: bucket, range: window)
         )
-        async let devices = database.deviceCounts(in: period.deviceRanges)
+        async let devices = database.deviceCounts(in: period.deviceRanges(now: Date()))
 
         let snapshot = try await LogSnapshot(series: events + crashes + hangs + metrics, deviceCounts: devices)
 
