@@ -12,9 +12,12 @@ extension ChartExtent {
         domain.moved(by: period.rangeComponent, value: -1)
     }
 
-    func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>]) -> [ChartPoint<U>] {
-        zip(segment, previousSegment(from: points)).map {
-            ChartPoint(date: $0.date, value: $1.value)
+    func referenceSegment<U: ChartNumeric>(from points: [ChartPoint<U>], alignedTo segment: [ChartPoint<U>], now: Date = Date()) -> [ChartPoint<U>] {
+        zip(segment, previousSegment(from: points)).compactMap { current, previous in
+            guard binRange(of: current.date, unit: unit).upperBound <= now else {
+                return nil
+            }
+            return ChartPoint(date: current.date, value: previous.value)
         }
     }
 

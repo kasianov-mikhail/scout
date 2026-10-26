@@ -58,6 +58,24 @@ struct ChartComparisonTests {
         #expect(reference.allSatisfy { $0.value == 0 })
     }
 
+    @Test("Hours that have not ended get no reference") func testUnfinishedHours() {
+        let scale = ScaleStub(horizonDate: Date(year: 2026, month: 6, day: 11), rangeComponent: .day, pointComponent: .hour)
+        let extent = ChartExtent(period: scale)
+        let points = (0..<24).map {
+            ChartPoint(date: extent.previousDomain.lowerBound.adding(.hour, value: $0), value: 5)
+        }
+        let now = Date(year: 2026, month: 6, day: 10, hour: 14, minute: 30)
+
+        let segment = extent.segment(from: points)
+        let reference = extent.referenceSegment(from: points, alignedTo: segment, now: now)
+        let pairs = segment.paired(with: reference, unit: extent.unit)
+
+        #expect(segment.count == 24)
+        #expect(reference.map(\.date).sorted() == (0..<14).map { Date(year: 2026, month: 6, day: 10, hour: $0) })
+        #expect(reference.allSatisfy { $0.value == 5 })
+        #expect(pairs.filter { $0.reference == nil }.map(\.date).sorted() == (14..<24).map { Date(year: 2026, month: 6, day: 10, hour: $0) })
+    }
+
     @Test("Comparison is available when the previous period is loaded") func testCanCompareLoaded() {
         let extent = ChartExtent(period: Period.week)
         let points = makePoints(in: extent.domain, value: 2) + makePoints(in: extent.previousDomain, value: 5)
