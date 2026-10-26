@@ -47,7 +47,7 @@ struct LaunchEntryMonitorTests {
 
     @Test("trigger fills in the launch an earlier record created")
     func triggerFillsExistingLaunch() throws {
-        _ = try context.linkedSession(identity.snapshot, date: Date())
+        _ = try context.linkedLaunch(identity: identity.snapshot, date: Date())
         try context.save()
 
         try LaunchEntry.Trigger(launchID: identity.launch, installID: identity.install, processID: 42).execute(in: context)

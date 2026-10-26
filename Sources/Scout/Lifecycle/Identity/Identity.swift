@@ -12,6 +12,7 @@ struct Identity: Sendable {
     let launch: UUID
     let device: UUID
     let session: Protected<UUID>
+    let foreground: Protected<Bool>
 }
 
 final class Protected<Value: Sendable>: @unchecked Sendable {

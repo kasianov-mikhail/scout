@@ -20,7 +20,13 @@ extension NSManagedObjectContext {
         return try fetch(request).first
     }
 
-    func linkedSession(_ identity: Identity.Snapshot, date: Date) throws -> SessionEntry {
+    func link(entry: SessionScopeEntry, identity: Identity.Snapshot, date: Date) throws {
+        let launch = try linkedLaunch(identity: identity, date: date)
+        entry.launch = launch
+        entry.session = try linkedSession(identity: identity, launch: launch, date: date)
+    }
+
+    func linkedLaunch(identity: Identity.Snapshot, date: Date) throws -> LaunchEntry {
         let device = try fetchOrCreate(DeviceEntry.self, key: "deviceID", id: identity.device) {
             $0.deviceID = identity.device
             $0.date = date
@@ -31,10 +37,16 @@ extension NSManagedObjectContext {
             $0.device = device
             $0.startCohort()
         }
-        let launch = try fetchOrCreate(LaunchEntry.self, key: "launchID", id: identity.launch) {
+        return try fetchOrCreate(LaunchEntry.self, key: "launchID", id: identity.launch) {
             $0.launchID = identity.launch
             $0.date = date
             $0.install = install
+        }
+    }
+
+    func linkedSession(identity: Identity.Snapshot, launch: LaunchEntry, date: Date) throws -> SessionEntry? {
+        guard identity.isForeground else {
+            return try existing(SessionEntry.self, key: "sessionID", id: identity.session)
         }
         return try fetchOrCreate(SessionEntry.self, key: "sessionID", id: identity.session) {
             $0.sessionID = identity.session

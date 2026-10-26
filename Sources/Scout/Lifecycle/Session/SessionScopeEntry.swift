@@ -10,21 +10,26 @@ import CoreData
 @objc(SessionScopeEntry)
 package class SessionScopeEntry: SyncableEntry {
     @NSManaged var session: SessionEntry?
+    @NSManaged var launch: LaunchEntry?
 
     var sessionID: UUID? {
         session?.sessionID
     }
 
     var launchID: UUID? {
-        session?.launchID
+        owner?.launchID
     }
 
     var installID: UUID? {
-        session?.installID
+        owner?.installID
     }
 
     var deviceID: UUID? {
-        session?.deviceID
+        owner?.deviceID
+    }
+
+    private var owner: LaunchEntry? {
+        session?.launch ?? launch
     }
 
     func sessionRecord(type: String, id: String) -> Record {

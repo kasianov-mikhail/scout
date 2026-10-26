@@ -51,7 +51,7 @@ struct InstallEntryMonitorTests {
 
     @Test("trigger links the device onto an install an earlier record created")
     func triggerLinksExistingInstall() throws {
-        _ = try context.linkedSession(identity.snapshot, date: Date())
+        _ = try context.linkedLaunch(identity: identity.snapshot, date: Date())
         try context.save()
 
         try InstallEntry.Trigger(installID: identity.install, deviceID: identity.device).execute(in: context)

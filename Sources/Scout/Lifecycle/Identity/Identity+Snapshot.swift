@@ -13,9 +13,10 @@ extension Identity {
         let launch: UUID
         let device: UUID
         let session: UUID
+        let isForeground: Bool
     }
 
     var snapshot: Snapshot {
-        Snapshot(install: install, launch: launch, device: device, session: session.current)
+        Snapshot(install: install, launch: launch, device: device, session: session.current, isForeground: foreground.current)
     }
 }

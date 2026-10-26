@@ -94,7 +94,7 @@ struct SessionEntryMonitorTests {
     @Test("trigger fills in the session an earlier record created")
     func triggerFillsExistingSession() throws {
         let snapshot = identity.snapshot
-        _ = try context.linkedSession(snapshot, date: Date())
+        _ = try context.makeLinkedSession(identity: snapshot)
         try context.save()
 
         try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
@@ -172,12 +172,29 @@ struct SessionEntryMonitorTests {
         let closed = try #require(try context.fetchAll(SessionEntry.self).first)
         try purgeDelivered(closed)
 
-        let linked = try context.linkedSession(identity.snapshot, date: Date())
+        let linked = try #require(try context.makeLinkedSession(identity: identity.snapshot))
 
         #expect(linked == closed)
         #expect(linked.endDate != nil)
         #expect(linked.delivery(for: "cloud")?.isPending == false)
         #expect(try context.fetchAll(SessionEntry.self).count == 1)
+    }
+
+    @Test("a background record after its session was purged links to the launch and creates no session")
+    func backgroundRecordAfterPurgeCreatesNoSession() throws {
+        LaunchEntry.stub(date: Date(), in: context)
+        try SessionEntry.Trigger(session: identity.session, launchID: identity.launch).execute(in: context)
+        try SessionEntry.Complete(launchID: identity.launch).execute(in: context)
+        context.delete(try #require(try context.fetchAll(SessionEntry.self).first))
+        try context.save()
+
+        let snapshot = Identity.Snapshot(install: identity.install, launch: identity.launch, device: identity.device, session: identity.session.current, isForeground: false)
+        let event = context.insert(EventEntry.self)
+        try context.link(entry: event, identity: snapshot, date: Date())
+
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
+        #expect(event.session == nil)
+        #expect(event.launchID == identity.launch)
     }
 
     @Test("trigger queues a delivered session again after stamping it")

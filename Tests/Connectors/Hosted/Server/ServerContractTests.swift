@@ -114,6 +114,22 @@ struct ServerContractTests {
         #expect(point.mau >= 1)
     }
 
+    @Test("A device with only a sessionless event on a day is not active that day")
+    func sessionlessEventIsNotActive() async throws {
+        let database = try makeDatabase()
+        let day = Date(timeIntervalSince1970: 1_000_000_000).startOfDay
+        var record = makeEvent(name: "refresh", index: 0)
+        record["device_id"] = UUID().uuidString
+        record["launch_id"] = UUID().uuidString
+        record["date"] = day.addingTimeInterval(3600)
+
+        try await database.write(record: record)
+
+        let series = try await database.activity(in: day..<day.addingDay())
+        let point = series.first { $0.date == Int64((day.timeIntervalSince1970 * 1000).rounded()) }
+        #expect((point?.dau ?? 0) == 0)
+    }
+
     @Test("A written Visit marker round-trips")
     func visitRoundTrip() async throws {
         let database = try makeDatabase()

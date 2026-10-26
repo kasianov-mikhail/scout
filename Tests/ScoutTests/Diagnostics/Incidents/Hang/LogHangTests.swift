@@ -28,6 +28,7 @@ struct LogHangTests {
         let hang = makeHangInfo(
             name: "Main Thread Blocked", reason: "Main thread unresponsive for 4.2s", stackTrace: ["frame0"],
             duration: 4.2)
+        _ = try context.makeLinkedSession(identity: Identity.stub.snapshot)
 
         try hang.log(deviceID: deviceID, context: context)
 
@@ -104,8 +105,9 @@ struct LogHangTests {
     @Test("Preserves sessionID captured at hang time, not the recovery session")
     func preservesCapturedSessionID() throws {
         let hangSessionID = UUID()
-        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(hangSessionID))
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(hangSessionID), foreground: Protected(true))
         let hang = HangInfo(name: "Main Thread Blocked", reason: nil, stackTrace: [], backtrace: Backtrace(images: [], threads: []), duration: 3.5, identity: identity)
+        _ = try context.makeLinkedSession(identity: identity.snapshot)
 
         #expect(Identity.stub.session.current != hangSessionID)
 

@@ -43,6 +43,26 @@ struct MetricKitCrashLogTests {
         #expect(try context.fetchAll(CrashEntry.self).count == 1)
     }
 
+    @Test("A crash its launch recorded in process without a session is skipped")
+    func skipsDuplicateOfSessionlessCrash() throws {
+        let launch = makeLaunch(processID: 412, date: start)
+        makeCaughtCrash(name: "SIGSEGV", date: start.addingTimeInterval(500), launch: launch)
+
+        try makeCrash(processID: 412).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
+    }
+
+    @Test("Without its launch, a crash Scout caught in process without a session is skipped")
+    func skipsSessionlessCaughtCrashWithoutLaunch() throws {
+        let launch = LaunchEntry.stub(date: start, install: makeInstall(), in: context)
+        makeCaughtCrash(name: "SIGSEGV", date: start.addingTimeInterval(500), launch: launch)
+
+        try makeCrash(processID: nil).log(installID: Identity.stub.install, context: context)
+
+        #expect(try context.fetchAll(CrashEntry.self).count == 1)
+    }
+
     @Test("A launch with many events and one recorded crash skips the report")
     func skipsLaunchWithEventsAndCrash() throws {
         let launch = makeLaunch(processID: 412, date: start)
@@ -239,11 +259,19 @@ struct MetricKitCrashLogTests {
     }
 
     private func makeCaughtCrash(name: String, date: Date, session: SessionEntry) {
+        makeBareCrash(name: name, date: date).session = session
+    }
+
+    private func makeCaughtCrash(name: String, date: Date, launch: LaunchEntry) {
+        makeBareCrash(name: name, date: date).launch = launch
+    }
+
+    private func makeBareCrash(name: String, date: Date) -> CrashEntry {
         let caught = context.insert(CrashEntry.self)
         caught.crashID = UUID()
         caught.name = name
         caught.date = date
-        caught.session = session
+        return caught
     }
 
     private func makeLaunch(processID: Int32, date: Date) -> LaunchEntry {

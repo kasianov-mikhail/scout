@@ -25,6 +25,7 @@ struct LogCrashTests {
     @Test("Creates a CrashEntry with correct fields")
     func createsCrashObject() throws {
         let crash = makeCrashInfo(name: "SIGABRT", reason: "Fatal error", stackTrace: ["frame0"])
+        _ = try context.makeLinkedSession(identity: Identity.stub.snapshot)
 
         try crash.log(deviceID: deviceID, context: context)
 
@@ -51,8 +52,9 @@ struct LogCrashTests {
         // UUID can never match the current session, so the recovery session
         // log materializes keeps the captured ID intact.
         let crashedSessionID = UUID()
-        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(crashedSessionID))
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(crashedSessionID), foreground: Protected(true))
         let crash = CrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [], backtrace: Backtrace(images: [], threads: []), identity: identity)
+        _ = try context.makeLinkedSession(identity: identity.snapshot)
 
         #expect(Identity.stub.session.current != crashedSessionID)
 
@@ -60,6 +62,20 @@ struct LogCrashTests {
 
         let object = try #require(try context.fetchAll(CrashEntry.self).first)
         #expect(object.sessionID == crashedSessionID)
+    }
+
+    @Test("A crash in a process that never opened a session links to its launch and creates no session")
+    func crashWithoutSessionCreatesNone() throws {
+        let crash = makeCrashInfo(name: "SIGSEGV", reason: nil, stackTrace: [])
+
+        try crash.log(deviceID: deviceID, context: context)
+
+        let object = try #require(try context.fetchAll(CrashEntry.self).first)
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
+        #expect(object.sessionID == nil)
+        #expect(object.launchID == crash.launchID)
+        #expect(object.installID == crash.installID)
+        #expect(object.deviceID == deviceID)
     }
 
     @Test("Stores the backtrace for delivery under the crash id")
