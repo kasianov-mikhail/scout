@@ -20,7 +20,8 @@ extension MetricKitCrash {
             window.end.addingTimeInterval(timestampTolerance),
         ]
         let scope = NSPredicate(
-            format: "source == nil AND session.launch.install == %@ AND %K BETWEEN %@",
+            format: "source == nil AND (launch.install == %@ OR session.launch.install == %@) AND %K BETWEEN %@",
+            install,
             install,
             DateEntry.datePrimitiveKey,
             range as NSArray

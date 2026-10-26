@@ -21,7 +21,7 @@ extension ScreenEntry {
             screen.name = name
             screen.previous = previous
             screen.date = date
-            screen.session = try context.linkedSession(identity, date: date)
+            try context.link(entry: screen, identity: identity, date: date)
             try context.save()
         }
     }

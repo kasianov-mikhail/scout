@@ -20,7 +20,7 @@ extension ConditionEntry {
             entry.kind = condition.rawValue
             entry.value = value
             entry.date = date
-            entry.session = try context.linkedSession(identity, date: date)
+            try context.link(entry: entry, identity: identity, date: date)
             try context.save()
         }
     }

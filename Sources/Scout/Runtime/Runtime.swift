@@ -58,7 +58,8 @@ extension Runtime {
             install: UserDefaults.standard.ensure("scout_install_id"),
             launch: UUID(),
             device: registry.ensure("scout_device_id"),
-            session: Protected(UUID())
+            session: Protected(UUID()),
+            foreground: Protected(Thread.isMainThread && MainActor.assumeIsolated { AppLifecycle.isInForeground })
         )
 
         self.init(

@@ -36,7 +36,7 @@ struct DeviceEntryMonitorTests {
 
     @Test("trigger stamps the model onto a device an earlier record created")
     func triggerStampsExistingDevice() throws {
-        _ = try context.linkedSession(identity.snapshot, date: Date())
+        _ = try context.linkedLaunch(identity: identity.snapshot, date: Date())
         try context.save()
 
         try DeviceEntry.Trigger(deviceID: identity.device).execute(in: context)

@@ -46,10 +46,9 @@ extension HangInfo {
             deviceID: deviceID,
             idKey: "hangID",
             context: context
-        ) { (entry: HangEntry, session) in
-            entry.session = session
+        ) { (entry: HangEntry) in
             entry.duration = duration
-            try session.launch?.install?.markIncident(milestone: .hang, date: entry.date)
+            try entry.launch?.install?.markIncident(milestone: .hang, date: entry.date)
         }
     }
 }

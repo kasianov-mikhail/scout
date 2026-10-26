@@ -14,7 +14,7 @@ extension LogEvent {
 
         object.eventID = UUID()
         object.date = date
-        object.session = try context.linkedSession(identity, date: date)
+        try context.link(entry: object, identity: identity, date: date)
         object.level = level.rawValue
         object.name = message.description
 

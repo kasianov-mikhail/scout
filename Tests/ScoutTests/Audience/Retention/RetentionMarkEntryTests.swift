@@ -37,10 +37,10 @@ struct RetentionMarkEntryTests {
         #expect(try names() == ["install"])
     }
 
-    @Test("An install first written by a linked session starts its cohort once")
-    func linkedSessionInstall() throws {
+    @Test("An install first written by a linked record starts its cohort once")
+    func linkedLaunchInstall() throws {
         let identity = Identity.stub
-        _ = try context.linkedSession(identity.snapshot, date: Date())
+        _ = try context.linkedLaunch(identity: identity.snapshot, date: Date())
         try context.save()
 
         let trigger = InstallEntry.Trigger(installID: identity.install, deviceID: identity.device)

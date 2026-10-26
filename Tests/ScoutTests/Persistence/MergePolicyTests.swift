@@ -62,7 +62,7 @@ struct MergePolicyTests {
 
         let identity = Identity.stub.snapshot
         try await container.performBackgroundTask { @Sendable context in
-            _ = try context.linkedSession(identity, date: Date())
+            _ = try context.makeLinkedSession(identity: identity)
             try context.save()
         }
 
@@ -137,7 +137,7 @@ struct MergePolicyTests {
                     do {
                         try await container.performBackgroundTask { context in
                             context.mergePolicy = NSMergePolicy.scout
-                            _ = try context.linkedSession(identity, date: Date())
+                            _ = try context.makeLinkedSession(identity: identity)
                             try context.save()
                         }
                     } catch {
@@ -179,12 +179,12 @@ struct MergePolicyTests {
         racer.mergePolicy = NSMergePolicy.scout
 
         try filler.performAndWait {
-            let session = try filler.linkedSession(identity, date: Date())
+            let session = try #require(try filler.makeLinkedSession(identity: identity))
             session.appVersion = "1.2.3"
             session.osVersion = "26.0"
         }
         try racer.performAndWait {
-            _ = try racer.linkedSession(identity, date: Date())
+            _ = try racer.makeLinkedSession(identity: identity)
         }
         try filler.performAndWait {
             try filler.save()

@@ -68,5 +68,5 @@ func saveMetrics<T: MetricScalar>(_ name: String, date: Date, category: String, 
     metrics.telemetry = category
     metrics.date = date
     metrics.name = name
-    metrics.session = try context.linkedSession(identity, date: date)
+    try context.link(entry: metrics, identity: identity, date: date)
 }

@@ -49,7 +49,7 @@ extension IncidentInfo {
         return symbolicated
     }
 
-    func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, context: NSManagedObjectContext, configure: (Entry, SessionEntry) throws -> Void) throws {
+    func log<Entry: IncidentEntry>(id: UUID, deviceID: UUID, idKey: String, context: NSManagedObjectContext, configure: (Entry) throws -> Void) throws {
         guard let object = try context.insertIncident(type: Entry.self, content: self, idKey: idKey, id: id) else {
             return
         }
@@ -58,10 +58,11 @@ extension IncidentInfo {
             install: installID,
             launch: launchID,
             device: deviceID,
-            session: sessionID
+            session: sessionID,
+            isForeground: false
         )
-        let session = try context.linkedSession(identity, date: date)
-        try configure(object, session)
+        try context.link(entry: object, identity: identity, date: date)
+        try configure(object)
 
         try context.save()
     }

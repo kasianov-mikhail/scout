@@ -74,10 +74,9 @@ extension CrashInfo {
             deviceID: deviceID,
             idKey: "crashID",
             context: context
-        ) { (entry: CrashEntry, session) in
-            entry.session = session
-            try session.launch?.install?.mark(name: Version.crashMarker, appVersion: appVersion)
-            try session.launch?.install?.markIncident(milestone: .crash, date: entry.date)
+        ) { (entry: CrashEntry) in
+            try entry.launch?.install?.mark(name: Version.crashMarker, appVersion: appVersion)
+            try entry.launch?.install?.markIncident(milestone: .crash, date: entry.date)
         }
     }
 }

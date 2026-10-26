@@ -22,3 +22,9 @@ extension SessionEntry {
         return session
     }
 }
+
+extension NSManagedObjectContext {
+    func makeLinkedSession(identity: Identity.Snapshot) throws -> SessionEntry? {
+        try linkedSession(identity: identity, launch: linkedLaunch(identity: identity, date: Date()), date: Date())
+    }
+}

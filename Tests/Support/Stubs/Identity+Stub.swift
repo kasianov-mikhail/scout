@@ -12,5 +12,5 @@ import Foundation
 extension Identity {
     // A shared fixture so object stubs and the monitors under test agree on the
     // install/launch/device/session identifiers.
-    static let stub = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()))
+    static let stub = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()), foreground: Protected(true))
 }

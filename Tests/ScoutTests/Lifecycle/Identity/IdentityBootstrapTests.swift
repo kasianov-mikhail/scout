@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import CoreData
+import Logging
 import Testing
 
 @testable import Scout
@@ -30,6 +31,11 @@ struct IdentityBootstrapTests {
         }
     }
 
+    private func log(_ identity: Identity, date: Date) throws {
+        let event = LogEvent(level: .info, message: "refresh", metadata: nil, source: nil, file: #file, function: #function, line: #line)
+        try event.log(date: date, identity: identity.snapshot, context: context)
+    }
+
     @Test("startup links the launch, install and device in one pass")
     func startupLinksChain() throws {
         try startup(identity)
@@ -50,7 +56,7 @@ struct IdentityBootstrapTests {
 
     @Test("entering the foreground after startup opens one session and one visit for the launch")
     func foregroundAfterStartupOpensSession() throws {
-        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()))
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()), foreground: Protected(true))
         let first = identity.session.current
 
         try startup(identity)
@@ -63,6 +69,35 @@ struct IdentityBootstrapTests {
 
         let visit = try #require(try context.fetchAll(VisitEntry.self).first)
         #expect(visit.launch?.launchID == identity.launch)
+    }
+
+    @Test("a log written before the first foreground opens no session and keeps the launch, install and device")
+    func backgroundLogOpensNoSession() throws {
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()), foreground: Protected(false))
+
+        try startup(identity)
+        try log(identity, date: Date())
+
+        let event = try #require(try context.fetchAll(EventEntry.self).first)
+        #expect(try context.fetchAll(SessionEntry.self).isEmpty)
+        #expect(event.sessionID == nil)
+        #expect(event.launchID == identity.launch)
+        #expect(event.installID == identity.install)
+        #expect(event.deviceID == identity.device)
+    }
+
+    @Test("entering the foreground after a background log opens a session that starts at the foreground")
+    func foregroundAfterBackgroundLogStartsFresh() throws {
+        let identity = Identity(install: UUID(), launch: UUID(), device: UUID(), session: Protected(UUID()), foreground: Protected(false))
+        let logDate = Date().addingTimeInterval(-3_600)
+
+        try startup(identity)
+        try log(identity, date: logDate)
+        try enterForeground(identity)
+
+        let session = try #require(try context.fetchAll(SessionEntry.self).first)
+        #expect(try context.fetchAll(SessionEntry.self).count == 1)
+        #expect(try #require(session.date) > logDate)
     }
 
     @Test("startup links the version to the launch it was recorded in")
@@ -78,7 +113,7 @@ struct IdentityBootstrapTests {
     func laterLaunchKeepsOneVersion() throws {
         try startup(identity)
         try startup(
-            Identity(install: identity.install, launch: UUID(), device: identity.device, session: identity.session)
+            Identity(install: identity.install, launch: UUID(), device: identity.device, session: identity.session, foreground: Protected(true))
         )
 
         #expect(try context.fetchAll(VersionEntry.self).count == 1)

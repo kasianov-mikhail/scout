@@ -19,9 +19,11 @@ extension Identity {
 
     func enter() async throws {
         try await persistentContainer.run(foregroundCommands)
+        foreground.current = true
     }
 
     func leave() async throws {
+        foreground.current = false
         try await persistentContainer.run(
             SessionEntry.Complete(launchID: launch)
         )

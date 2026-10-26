@@ -14,7 +14,7 @@ extension MetricKitCrash {
 
         if let launch {
             let request = NSFetchRequest<CrashEntry>(entityName: "CrashEntry")
-            request.predicate = NSPredicate(format: "session.launch == %@", launch)
+            request.predicate = NSPredicate(format: "launch == %@ OR session.launch == %@", launch, launch)
             request.fetchLimit = 1
             guard try context.count(for: request) == 0 else {
                 return
