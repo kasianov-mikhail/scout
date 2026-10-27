@@ -10,5 +10,4 @@ import SwiftUI
 extension Font {
     static let placeholderTitle = Font.system(size: 18, weight: .semibold)
     static let codeChip = Font.system(size: 14, design: .monospaced)
-    static let stepBadge = Font.system(size: 13, weight: .semibold)
 }
