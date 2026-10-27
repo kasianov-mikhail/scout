@@ -69,7 +69,6 @@ struct HomeView: View {
         .background {
             Rectangle().fill(.background).ignoresSafeArea()
         }
-        .onboardingSheet()
         .imageScale(.medium)
         .dynamicTypeSize(.large)
         .environment(\.locale, Locale(identifier: "en_US"))
