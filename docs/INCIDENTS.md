@@ -13,8 +13,10 @@ Scout records crashes, hangs, and resource exceptions as incidents and collects 
 | Other terminations: background task timeout, locked file, CPU limit | ✅ Implemented | MetricKit |
 | CPU exception | ✅ Implemented | MetricKit |
 | Disk write exception | ✅ Implemented | MetricKit |
-| Memory exception | ⛔ Not available | None: MetricKit has no such diagnostic, so memory-limit terminations count as exits |
+| Memory exception | ⛔ Not available | None |
 | Slow launch | ✅ Implemented | MetricKit |
 | Hang reported by MetricKit | ⏸ Not planned | MetricKit |
+
+MetricKit has no memory exception diagnostic, so memory-limit terminations count as exits.
 
 A crash that MetricKit reports keeps the stack of every thread, up to 64 threads of 64 frames each. A crash caught in process keeps only the crashed thread.
