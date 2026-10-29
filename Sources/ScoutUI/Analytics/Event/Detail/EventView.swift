@@ -53,7 +53,7 @@ struct EventView: View {
                 RingIndicator().frame(maxHeight: .infinity)
             }
         }
-        .refreshes([stat, param])
+        .fetchTask([stat, param])
     }
 }
 

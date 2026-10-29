@@ -80,7 +80,7 @@ struct DeviceDetailView: View {
             }
         }
         .navigationTitle(en: device.modelName)
-        .refreshes([incidents])
+        .fetchTask([incidents])
     }
 }
 

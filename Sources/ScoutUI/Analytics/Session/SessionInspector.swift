@@ -30,7 +30,7 @@ struct SessionInspector: View {
                 EmptyView()
             }
         }
-        .refreshes([events, info])
+        .fetchTask([events, info])
         .navigationTitle(en: "Session")
         .largeNavigationTitle()
     }

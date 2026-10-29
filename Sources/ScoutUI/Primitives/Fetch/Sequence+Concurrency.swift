@@ -8,27 +8,16 @@
 extension Sequence {
     @MainActor
     func concurrentForEach(_ operation: @escaping @MainActor (Element) async -> Void) async {
-        _ = await concurrentMap(operation)
-    }
-
-    @MainActor
-    func concurrentMap<T: Sendable>(_ transform: @escaping @MainActor (Element) async -> T) async -> [T] {
-        let actions: [@MainActor () async -> T] = map { element in
-            { await transform(element) }
+        let actions: [@MainActor () async -> Void] = map { element in
+            { await operation(element) }
         }
 
-        return await withTaskGroup(of: T.self) { group in
+        await withTaskGroup(of: Void.self) { group in
             for action in actions {
                 group.addTask {
                     await action()
                 }
             }
-
-            var results: [T] = []
-            for await result in group {
-                results.append(result)
-            }
-            return results
         }
     }
 }

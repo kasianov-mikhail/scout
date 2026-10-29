@@ -37,7 +37,6 @@ struct AlertListView: View {
                 await provider.fetchIfNeeded(in: database)
             }
             .notificationStatus(of: provider)
-            .refreshOnPull([provider])
     }
 
     @ViewBuilder private var content: some View {

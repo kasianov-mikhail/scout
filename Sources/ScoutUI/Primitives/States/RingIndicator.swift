@@ -11,7 +11,6 @@ struct RingIndicator: View {
     static let lineWidth: CGFloat = 3
 
     var size: CGFloat = 44
-    var progress: Double?
 
     var body: some View {
         Circle()
@@ -20,14 +19,9 @@ struct RingIndicator: View {
             .frame(width: size, height: size)
     }
 
-    @ViewBuilder
     private var arc: some View {
-        if let progress {
-            blueArc.rotationEffect(.degrees(progress * 360))
-        } else {
-            TimelineView(.animation) { context in
-                blueArc.rotationEffect(.degrees(context.date.timeIntervalSinceReferenceDate * 400))
-            }
+        TimelineView(.animation) { context in
+            blueArc.rotationEffect(.degrees(context.date.timeIntervalSinceReferenceDate * 400))
         }
     }
 
@@ -38,10 +32,6 @@ struct RingIndicator: View {
     }
 }
 
-#Preview("Indeterminate") {
+#Preview {
     RingIndicator()
-}
-
-#Preview("Determinate") {
-    RingIndicator(progress: 0.6)
 }
