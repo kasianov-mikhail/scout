@@ -11,7 +11,6 @@ import SwiftUI
 enum HapticFeedback {
     case selection
     case success
-    case impact
 }
 
 extension View {
@@ -31,7 +30,6 @@ extension HapticFeedback {
         switch self {
         case .selection: .selection
         case .success: .success
-        case .impact: .impact
         }
     }
 }

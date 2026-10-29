@@ -48,7 +48,7 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
         .navigationTitle(en: Element.kind.title)
         .largeNavigationTitle()
         .message($provider.message)
-        .refreshes([provider])
+        .fetchTask([provider])
     }
 }
 

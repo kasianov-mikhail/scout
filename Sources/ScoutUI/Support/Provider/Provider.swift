@@ -30,14 +30,6 @@ extension Provider {
         }
     }
 
-    func refresh(in database: DatabaseReader) async -> Error? {
-        guard case .success? = result else {
-            await fetchAgain(in: database)
-            return nil
-        }
-        return await fetchKeepingResult(in: database)
-    }
-
     func fetchIfNeeded(in database: DatabaseReader) async {
         guard result == nil else {
             return

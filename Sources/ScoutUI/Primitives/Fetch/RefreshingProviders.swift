@@ -30,7 +30,6 @@ private struct RefreshingProvidersModifier: ViewModifier {
             content
                 .loadingGate(first)
                 .fetchTask(first: first, later: later)
-                .refreshOnPull(providers)
         }
     }
 

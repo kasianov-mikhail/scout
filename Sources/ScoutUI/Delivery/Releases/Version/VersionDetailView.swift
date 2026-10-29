@@ -99,7 +99,7 @@ struct VersionDetailView: View {
         .toolbarBackground(release.freeSessions.color.opacity(0.12), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .monospacedNavigationTitle(en: release.id)
-        .refreshes([provider])
+        .fetchTask([provider])
     }
 
     private var trend: VersionTrend {

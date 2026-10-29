@@ -58,7 +58,7 @@ struct SettingsOverviewView: View {
         }
         .navigationTitle(en: "Settings")
         .dismissable()
-        .refreshes([provider])
+        .fetchTask([provider])
     }
 }
 

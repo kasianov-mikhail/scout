@@ -43,6 +43,6 @@ struct IncidentList<Element: RecordDecodable & Incident, Row: View>: View {
         }
         .navigationTitle(en: Element.kind.title)
         .message($provider.message)
-        .refreshes([provider])
+        .fetchTask([provider])
     }
 }

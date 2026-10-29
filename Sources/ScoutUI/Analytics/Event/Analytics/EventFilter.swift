@@ -28,9 +28,7 @@ private struct EventFilter: ViewModifier {
     func body(content: Content) -> some View {
         VStack(spacing: 0) {
             FilterChips(query: $filter)
-            content.pullToRefresh {
-                await activeProvider.fetch(for: filter, in: database)
-            }
+            content
         }
         .searchable(text: $filter.text, placement: .pinned, prompt: Text(verbatim: "Search"))
         .autocorrectionDisabled(true)

@@ -47,7 +47,6 @@ struct LogView: View {
             log.period = period
             await log.fetchIfNeeded(in: database)
         }
-        .refreshOnPull([log])
         .navigationTitle(en: "Log")
     }
 }

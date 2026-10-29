@@ -12,14 +12,6 @@ import SwiftUI
 protocol Refreshable {
     func fetchLatest(in database: DatabaseReader) async
     func fetchAgain(in database: DatabaseReader) async
-    func refresh(in database: DatabaseReader) async -> Error?
-}
-
-extension Refreshable {
-    func refresh(in database: DatabaseReader) async -> Error? {
-        await fetchAgain(in: database)
-        return nil
-    }
 }
 
 extension View {
@@ -52,14 +44,5 @@ extension [any Refreshable] {
         await concurrentForEach { provider in
             await provider.fetchLatest(in: database)
         }
-    }
-
-    @MainActor
-    func refresh(in database: DatabaseReader) async -> Error? {
-        await concurrentMap { provider in
-            await provider.refresh(in: database)
-        }
-        .compactMap { $0 }
-        .first
     }
 }

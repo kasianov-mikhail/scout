@@ -26,6 +26,6 @@ struct ProviderView<P: Provider, Content: View>: View {
                 }
             }
         }
-        .refreshes([provider])
+        .fetchTask([provider])
     }
 }
