@@ -15,13 +15,27 @@ struct DemanglerError: Error {
 }
 
 struct SwiftDemangler {
+    private let run: (String) throws -> String
+
+    init() {
+        #if os(macOS)
+            run = Self.runProcess
+        #else
+            run = { _ in "" }
+        #endif
+    }
+
+    init(run: @escaping (String) throws -> String) {
+        self.run = run
+    }
+
     func names(mangled: [String]) throws -> [String: String] {
         let unique = Array(Set(mangled.filter { name in swiftPrefixes.contains { name.hasPrefix($0) } }))
         guard !unique.isEmpty else {
             return [:]
         }
         #if os(macOS)
-            let demangled = try run(input: unique.joined(separator: "\n"))
+            let demangled = try run(unique.joined(separator: "\n"))
             return Dictionary(zip(unique, demangled.split(separator: "\n").map(String.init)), uniquingKeysWith: { first, _ in first })
         #else
             return [:]
@@ -29,7 +43,7 @@ struct SwiftDemangler {
     }
 
     #if os(macOS)
-        private func run(input: String) throws -> String {
+        private static func runProcess(input: String) throws -> String {
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/usr/bin/xcrun")
             process.arguments = ["--sdk", "macosx", "swift-demangle", "--simplified"]

@@ -198,5 +198,12 @@ let package = Package(
                 .copy("Fixtures")
             ]
         ),
+        .testTarget(
+            name: "ScoutSymbolsTests",
+            dependencies: [
+                "ScoutSymbols"
+            ],
+            path: "Tests/ScoutSymbols/CLI"
+        ),
     ]
 )
