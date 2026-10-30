@@ -8,7 +8,7 @@
 
 import Testing
 
-@testable import ScoutSymbols
+@testable import ScoutSymbolsCore
 
 @Suite("SwiftDemangler")
 struct SwiftDemanglerTests {

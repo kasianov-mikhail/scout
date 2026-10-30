@@ -14,10 +14,10 @@ struct DemanglerError: Error {
     let status: Int32
 }
 
-struct SwiftDemangler {
+package struct SwiftDemangler {
     private let run: (String) throws -> String
 
-    init() {
+    package init() {
         #if os(macOS)
             run = Self.runProcess
         #else
@@ -25,11 +25,11 @@ struct SwiftDemangler {
         #endif
     }
 
-    init(run: @escaping (String) throws -> String) {
+    package init(run: @escaping (String) throws -> String) {
         self.run = run
     }
 
-    func names(mangled: [String]) throws -> [String: String] {
+    package func names(mangled: [String]) throws -> [String: String] {
         let unique = Array(Set(mangled.filter { name in swiftPrefixes.contains { name.hasPrefix($0) } }))
         guard !unique.isEmpty else {
             return [:]

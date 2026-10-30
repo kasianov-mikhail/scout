@@ -7,15 +7,19 @@
 //
 import Foundation
 
-struct UsageError: Error {
-    let message: String
+package struct UsageError: Error {
+    package let message: String
+
+    package init(message: String) {
+        self.message = message
+    }
 }
 
-enum Command {
+package enum Command {
     case convert(input: URL, output: URL)
     case lookup(table: URL, offsets: [UInt64])
 
-    init(arguments: [String]) throws {
+    package init(arguments: [String]) throws {
         var remaining = arguments[...]
         switch remaining.popFirst() {
         case "convert":
@@ -66,7 +70,7 @@ enum Command {
 }
 
 extension URL {
-    var dwarfFiles: [URL] {
+    package var dwarfFiles: [URL] {
         get throws {
             guard pathExtension == "dSYM" else {
                 return [self]

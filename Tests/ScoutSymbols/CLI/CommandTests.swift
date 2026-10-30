@@ -9,7 +9,7 @@
 import Foundation
 import Testing
 
-@testable import ScoutSymbols
+@testable import ScoutSymbolsCore
 
 @Suite("Command")
 struct CommandTests {

@@ -8,6 +8,7 @@
 
 import DWARF
 import Foundation
+import ScoutSymbolsCore
 import SymbolTable
 
 private let usage = """

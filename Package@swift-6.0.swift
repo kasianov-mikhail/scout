@@ -104,10 +104,15 @@ let package = Package(
             ],
             path: "Sources/ScoutSymbols/DWARF"
         ),
+        .target(
+            name: "ScoutSymbolsCore",
+            path: "Sources/ScoutSymbols/Core"
+        ),
         .executableTarget(
             name: "ScoutSymbols",
             dependencies: [
                 "DWARF",
+                "ScoutSymbolsCore",
                 "SymbolTable",
             ],
             path: "Sources/ScoutSymbols/CLI"
@@ -201,7 +206,7 @@ let package = Package(
         .testTarget(
             name: "ScoutSymbolsTests",
             dependencies: [
-                "ScoutSymbols"
+                "ScoutSymbolsCore"
             ],
             path: "Tests/ScoutSymbols/CLI"
         ),
