@@ -18,7 +18,7 @@ struct RetentionTally {
 
 extension RetentionTally {
     init?(point: SeriesPoint) {
-        guard let key = RetentionKey(key: point.group), let milestone = RetentionMilestone(name: key.milestone) else {
+        guard let key = SystemScopedKey(key: point.group), let milestone = RetentionMilestone(name: key.value) else {
             return nil
         }
         self.init(week: point.date.startOfWeek, milestone: milestone, system: key.system, count: Int(point.value))

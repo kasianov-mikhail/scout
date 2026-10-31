@@ -20,30 +20,6 @@ extension CatalogEntry {
         guard let device else {
             return [:]
         }
-        return [deviceSystem: .string(DeviceSystem(device: device, system: system).key)]
-    }
-}
-
-struct DeviceSystem {
-    let device: String
-    let system: String?
-
-    var key: String {
-        [device, system ?? ""].joined(separator: "|")
-    }
-}
-
-extension DeviceSystem {
-    init?(key: String) {
-        let parts = key.split(separator: "|", maxSplits: 1, omittingEmptySubsequences: false)
-
-        guard let device = parts.first else {
-            return nil
-        }
-        guard !device.isEmpty else {
-            return nil
-        }
-
-        self.init(device: String(device), system: parts.count > 1 && !parts[1].isEmpty ? String(parts[1]) : nil)
+        return [deviceSystem: .string(SystemScopedKey(value: device, system: system).key)]
     }
 }

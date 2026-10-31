@@ -41,16 +41,16 @@ struct DeviceFold {
         var latest: [String: DatedSystem] = [:]
 
         for point in systems {
-            guard let key = DeviceSystem(key: point.group) else {
+            guard let key = SystemScopedKey(key: point.group) else {
                 continue
             }
             guard let system = key.system else {
                 continue
             }
-            if let current = latest[key.device], current.date >= point.date {
+            if let current = latest[key.value], current.date >= point.date {
                 continue
             }
-            latest[key.device] = DatedSystem(date: point.date, system: system)
+            latest[key.value] = DatedSystem(date: point.date, system: system)
         }
 
         return latest.mapValues(\.system)

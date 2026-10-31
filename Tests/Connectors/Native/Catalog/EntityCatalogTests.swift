@@ -156,16 +156,16 @@ struct EntityCatalogTests {
         #expect(derived[CatalogEntry.lifecycleKey] != nil)
     }
 
-    @Test("A device and system key splits back, with a missing system read as nil")
-    func deviceSystemRoundTrip() throws {
-        let full = try #require(DeviceSystem(key: DeviceSystem(device: "D1", system: "iOS 17.4").key))
-        let bare = try #require(DeviceSystem(key: DeviceSystem(device: "D2", system: nil).key))
+    @Test("A system-scoped key splits back, with a missing system read as nil")
+    func systemScopedKeyRoundTrip() throws {
+        let full = try #require(SystemScopedKey(key: SystemScopedKey(value: "D1", system: "iOS 17.4").key))
+        let bare = try #require(SystemScopedKey(key: SystemScopedKey(value: "D2", system: nil).key))
 
-        #expect(full.device == "D1")
+        #expect(full.value == "D1")
         #expect(full.system == "iOS 17.4")
-        #expect(bare.device == "D2")
+        #expect(bare.value == "D2")
         #expect(bare.system == nil)
-        #expect(DeviceSystem(key: "") == nil)
+        #expect(SystemScopedKey(key: "") == nil)
     }
 
     @Test("Entities without a declared derivation derive nothing")
