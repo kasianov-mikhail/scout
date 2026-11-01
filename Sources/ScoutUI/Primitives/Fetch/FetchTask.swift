@@ -16,24 +16,18 @@ protocol Refreshable {
 
 extension View {
     func fetchTask(_ providers: [any Refreshable]) -> some View {
-        modifier(FetchTaskModifier(first: providers, later: []))
-    }
-
-    func fetchTask(first: [any Refreshable], later: [any Refreshable]) -> some View {
-        modifier(FetchTaskModifier(first: first, later: later))
+        modifier(FetchTaskModifier(providers: providers))
     }
 }
 
 private struct FetchTaskModifier: ViewModifier {
     @Environment(\.database) private var database
 
-    let first: [any Refreshable]
-    let later: [any Refreshable]
+    let providers: [any Refreshable]
 
     func body(content: Content) -> some View {
         content.task {
-            await first.fetchLatest(in: database)
-            await later.fetchLatest(in: database)
+            await providers.fetchLatest(in: database)
         }
     }
 }
