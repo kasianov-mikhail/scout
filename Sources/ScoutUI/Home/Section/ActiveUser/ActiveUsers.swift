@@ -25,34 +25,14 @@ struct ActiveUsers {
         }
     }
 
-    struct Metric: Identifiable {
-        let kind: Kind
-        let value: Int
-        let delta: Double
-        let series: [Int]
-
-        var id: Kind { kind }
-
-        var valueLabel: String {
-            value.formatted(.number.locale(Locale(identifier: "en_US")))
-        }
-
-        var deltaLabel: String {
-            let percent = (delta * 1000).rounded() / 10
-            let format = percent == percent.rounded() ? "%+.0f%%" : "%+.1f%%"
-
-            return String(format: format, percent)
-        }
-    }
-
-    let metrics: [Metric]
+    let metrics: [ActiveUsersMetric]
     let start: Date
     let end: Date
     let monthlyUsers: Int
 }
 
 extension ActiveUsers {
-    func metric(_ kind: Kind) -> Metric? {
+    func metric(_ kind: Kind) -> ActiveUsersMetric? {
         metrics.first { $0.kind == kind }
     }
 
@@ -85,7 +65,7 @@ extension ActiveUsers {
 
         return ActiveUsers(
             metrics: [
-                Metric(
+                ActiveUsersMetric(
                     kind: .dau,
                     value: 1212,
                     delta: 0.041,
@@ -95,7 +75,7 @@ extension ActiveUsers {
                         1174, 1138, 1192, 1282, 1228, 1101, 1246, 1300, 1174, 1212,
                     ]
                 ),
-                Metric(
+                ActiveUsersMetric(
                     kind: .sessions,
                     value: 8412,
                     delta: 0.123,
@@ -105,7 +85,7 @@ extension ActiveUsers {
                         7800, 7560, 7920, 8520, 8160, 7320, 8280, 8640, 7800, 8412,
                     ]
                 ),
-                Metric(
+                ActiveUsersMetric(
                     kind: .devices,
                     value: 38,
                     delta: 0.12,
