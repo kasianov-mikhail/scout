@@ -25,8 +25,8 @@ final class HomeLogProvider: ObservableObject, Provider {
 
     private(set) var report: [LogCategory: Trend]?
 
-    init(acrossAllPeriods snapshot: Output? = nil) {
-        period = UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
+    init(period: Period? = nil, acrossAllPeriods snapshot: Output? = nil) {
+        self.period = period ?? UserDefaults.standard.string(forKey: "scout_home_log_period").flatMap(Period.init) ?? .today
         if let snapshot {
             results = Dictionary(uniqueKeysWithValues: Period.allCases.map { ($0, .success(snapshot)) })
             rebuildReport()
