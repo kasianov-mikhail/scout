@@ -29,10 +29,9 @@ struct HomeList: View {
             )
             .listRowSeparator(.hidden)
 
-            HomeAlertSection(
-                alerts: alerts,
-                path: $path
-            )
+            HomeAlertSection(history: .sample) {
+                path.append(.alerts)
+            }
             HomeMetricSection(
                 activities: activities,
                 sessions: sessions,

@@ -8,85 +8,57 @@
 import SwiftUI
 
 struct HomeAlertSection: View {
-    @ObservedObject var alerts: AlertProvider
-
-    @Binding var path: [HomeDestination]
-
-    @Environment(\.database) private var database
-    @State private var isEditorPresented = false
+    let history: AlertHistory
+    let action: () -> Void
 
     var body: some View {
-        Header(title: "Alerts") {
-            HStack(spacing: 8) {
-                switch alerts.result {
-                case .success(let statuses):
-                    if statuses.firingCount > 0 {
-                        CountBadge(count: statuses.firingCount)
-                    }
+        Button(action: action) {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(verbatim: "ALERTS")
+                        .font(.footnote.weight(.semibold))
 
-                    if !statuses.isEmpty {
-                        AllButton { path.append(.alerts) }
+                    Spacer()
+
+                    if history.firing > 0 {
+                        Text(verbatim: "\(history.firing) firing")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.red)
                     }
-                case .failure, nil:
-                    AllButton { path.append(.alerts) }
                 }
+
+                AlertHealthStrip(buckets: history.buckets)
+                    .padding(.top, 4)
+
+                HStack(alignment: .firstTextBaseline) {
+                    Text(verbatim: history.summary)
+
+                    Spacer()
+
+                    Text(verbatim: history.rulesLabel)
+                }
+                .font(.footnote)
+                .foregroundStyle(Color(.systemGray))
             }
+            .padding(.top, 12)
+            .padding(.bottom, 14)
+            .contentShape(Rectangle())
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(Color.separator)
+                    .frame(height: 0.5)
+            }
+            .accessibilityElement(children: .combine)
         }
-        .padding(.top, -16)
-        .sheet(isPresented: $isEditorPresented) {
-            Task { await alerts.fetchAgain(in: database) }
-        } content: {
-            NavigationStack {
-                AlertEditorView(provider: alerts)
-            }
-            .opaquePresentation()
-        }
-
-        switch alerts.result {
-        case .success(let statuses) where statuses.allHealthy:
-            placeholderText("All healthy").foregroundStyle(.green)
-
-        case .success(let statuses) where !statuses.isEmpty:
-            ForEach(statuses.firingFirst.prefix(2), id: \.rule) { status in
-                AlertRow(status: status)
-            }
-
-        case .success:
-            Button {
-                isEditorPresented = true
-            } label: {
-                placeholderText("New rule").foregroundStyle(.blue)
-            }
-            .buttonStyle(.plain)
-
-        case .failure, nil:
-            ForEach(0..<2, id: \.self) { _ in
-                AlertRowPlaceholder()
-            }
-        }
-    }
-
-    private func placeholderText(_ text: String) -> some View {
-        Text(verbatim: text)
-            .font(.body)
-            .frame(height: 44)
-            .frame(maxWidth: .infinity)
-            .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-    }
-}
-
-extension HomeAlertSection {
-    init(statuses: [AlertStatus]) {
-        self.init(alerts: .init(.success(statuses)), path: .constant([]))
+        .buttonStyle(.plain)
+        .listRowSeparator(.hidden)
     }
 }
 
 #Preview {
     NavigationStack {
         InsetList {
-            HomeAlertSection(statuses: [.firingSample, .armedSample])
-            HomeAlertSection(statuses: [.armedSample])
-            HomeAlertSection(statuses: [])
+            HomeAlertSection(history: .sample) {}
         }
     }
 }
