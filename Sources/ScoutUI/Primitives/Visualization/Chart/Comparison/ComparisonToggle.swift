@@ -17,7 +17,7 @@ struct ComparisonToggle: View {
         }
         .listRowSeparator(.hidden, edges: .top)
         .hapticFeedback(.selection, trigger: isOn)
-        .onChange(of: isEnabled) { _, isEnabled in
+        .onChange(of: isEnabled) { isEnabled in
             if !isEnabled {
                 isOn = false
             }
