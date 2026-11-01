@@ -9,6 +9,8 @@ import SwiftUI
 import UserNotifications
 
 struct HomeList: View {
+    let snapshot: HomeSnapshot = .sample
+
     @Binding var path: [HomeDestination]
 
     @StateObject var activities = ActivityProvider()
@@ -20,10 +22,10 @@ struct HomeList: View {
 
     var body: some View {
         InsetList {
-            HomeAlertSection(history: .sample) {
+            HomeAlertSection(history: snapshot.alerts) {
                 path.append(.alerts)
             }
-            HomeActiveUsersSection(users: .sample) { kind in
+            HomeActiveUsersSection(users: snapshot.users) { kind in
                 switch kind {
                 case .sessions:
                     path.append(.sessions)
@@ -31,7 +33,7 @@ struct HomeList: View {
                     path.append(.activity)
                 }
             }
-            HomeTelemetrySection(items: TelemetryItem.sample) { kind in
+            HomeTelemetrySection(items: snapshot.telemetry) { kind in
                 switch kind {
                 case .events:
                     path.append(.log)
@@ -47,10 +49,10 @@ struct HomeList: View {
                     path.append(.resources)
                 }
             }
-            HomeReleaseSection(adoption: .sample) {
+            HomeReleaseSection(adoption: snapshot.releases) {
                 path.append(.releaseHealth)
             }
-            HomeRetentionSection(weeks: .sample) {
+            HomeRetentionSection(weeks: snapshot.retention) {
                 path.append(.retention)
             }
         }
@@ -89,50 +91,10 @@ struct HomeList: View {
     }
 }
 
-#Preview("Loading") {
+#Preview("Home") {
     NavigationStack {
-        HomeList(
-            path: .constant([]),
-            activities: .init(),
-            retention: .init(),
-            sessions: .init(subject: .sessions),
-            releases: .init(.success(.samples)),
-            logs: .init(),
-            alerts: .init(.success([.firingSample, .armedSample]))
-        )
-        .navigationTitle(en: "Home")
-    }
-    .environmentObject(Tint())
-}
-
-#Preview("Full") {
-    NavigationStack {
-        HomeList(
-            path: .constant([]),
-            activities: .init(.success(.samples)),
-            retention: .init(.success(.samples)),
-            sessions: .init(.success(.samples), subject: .sessions),
-            releases: .init(.success(.samples)),
-            logs: .init(acrossAllPeriods: .sample(for: .today)),
-            alerts: .init(.success([.firingSample, .armedSample]))
-        )
-        .navigationTitle(en: "Home")
-    }
-    .environmentObject(Tint())
-}
-
-#Preview("Empty") {
-    NavigationStack {
-        HomeList(
-            path: .constant([]),
-            activities: .init(.success([])),
-            retention: .init(.success([])),
-            sessions: .init(.success([]), subject: .sessions),
-            releases: .init(.success([])),
-            logs: .init(acrossAllPeriods: LogSnapshot(series: [], deviceCounts: [])),
-            alerts: .init(.success([]))
-        )
-        .navigationTitle(en: "Home")
+        HomeList(path: .constant([]))
+            .navigationTitle(en: "Home")
     }
     .environmentObject(Tint())
 }
