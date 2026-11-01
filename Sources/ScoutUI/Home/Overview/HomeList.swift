@@ -9,8 +9,6 @@ import SwiftUI
 import UserNotifications
 
 struct HomeList: View {
-    @AppStorage("scout_home_period") var period = Period.today
-
     @Binding var path: [HomeDestination]
 
     @StateObject var activities = ActivityProvider()
@@ -22,13 +20,6 @@ struct HomeList: View {
 
     var body: some View {
         InsetList {
-            SegmentStrip(
-                selection: $period,
-                distribution: .justified,
-                title: \.shortTitle
-            )
-            .listRowSeparator(.hidden)
-
             HomeAlertSection(history: .sample) {
                 path.append(.alerts)
             }
@@ -74,13 +65,13 @@ struct HomeList: View {
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:
-                ActivityView(activity: activities, period: period.activityPeriod)
+                ActivityView(activity: activities, period: Period.today.activityPeriod)
             case .retention:
                 RetentionHeroChartView(provider: retention)
             case .sessions:
                 statView
             case .log:
-                LogView(period: period, log: logs)
+                LogView(period: .today, log: logs)
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
             case .alerts:
@@ -94,7 +85,7 @@ struct HomeList: View {
     }
 
     private var statView: some View {
-        StatView(showList: false, extent: ChartExtent(period: period), stat: sessions)
+        StatView(showList: false, extent: ChartExtent(period: .today), stat: sessions)
             .environment(\.chartColor, .purple)
             .navigationTitle(en: "Sessions")
     }
