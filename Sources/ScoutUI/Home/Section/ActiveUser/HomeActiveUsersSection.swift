@@ -73,7 +73,7 @@ struct HomeActiveUsersSection: View {
 }
 
 private struct ActiveUserMetricView: View {
-    let metric: ActiveUsers.Metric
+    let metric: ActiveUsersMetric
     let isSelected: Bool
 
     var body: some View {

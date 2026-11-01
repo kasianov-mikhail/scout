@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 struct ActiveUsersChart: View {
-    let metric: ActiveUsers.Metric
+    let metric: ActiveUsersMetric
     let start: Date
     let end: Date
 

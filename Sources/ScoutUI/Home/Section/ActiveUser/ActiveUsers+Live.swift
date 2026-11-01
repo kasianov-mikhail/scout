@@ -20,43 +20,15 @@ extension ActiveUsers {
 
         self.init(
             metrics: [
-                Metric(
-                    kind: .dau,
-                    value: dau.last ?? 0,
-                    delta: delta(dau),
-                    series: dau
-                ),
-                Metric(
-                    kind: .sessions,
-                    value: sessionCounts.last ?? 0,
-                    delta: delta(sessionCounts),
-                    series: sessionCounts
-                ),
-                Metric(
-                    kind: .devices,
-                    value: deviceSeries.last ?? 0,
-                    delta: delta(deviceSeries),
-                    series: deviceSeries
-                ),
+                ActiveUsersMetric(kind: .dau, series: dau),
+                ActiveUsersMetric(kind: .sessions, series: sessionCounts),
+                ActiveUsersMetric(kind: .devices, series: deviceSeries),
             ],
             start: start,
             end: end,
             monthlyUsers: activity.max { $0.date < $1.date }?.mau ?? 0
         )
     }
-}
-
-private func delta(_ values: [Int]) -> Double {
-    guard values.count >= 2 else {
-        return 0
-    }
-    let current = values[values.count - 1]
-    let previous = values[values.count - 2]
-
-    guard previous > 0 else {
-        return 0
-    }
-    return Double(current - previous) / Double(previous)
 }
 
 private func deviceCounts(_ devices: [DeviceSummary], start: Date) -> [Int] {
