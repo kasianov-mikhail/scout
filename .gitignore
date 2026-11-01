@@ -4,7 +4,6 @@
 xcuserdata/
 .swiftpm/
 Package.resolved
-.claude/*
-!.claude/CLAUDE.md
-!.claude/commands/
-!.claude/skills/
+.agents/*
+!.agents/commands/
+!.agents/skills/
