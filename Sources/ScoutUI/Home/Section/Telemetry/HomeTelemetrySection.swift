@@ -33,6 +33,12 @@ struct HomeTelemetrySection: View {
                     }
                 }
             }
+            .overlay {
+                Rectangle()
+                    .fill(Color.separator)
+                    .frame(width: 0.5)
+                    .allowsHitTesting(false)
+            }
         }
         .padding(.bottom, 6)
         .listRowSeparator(.hidden)
@@ -44,6 +50,7 @@ struct HomeTelemetrySection: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: "INCIDENTS")
+                .padding(.leading, 12)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .font(.callout.weight(.bold))

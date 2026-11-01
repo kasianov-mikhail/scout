@@ -20,11 +20,11 @@ struct TelemetryRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 0) {
+            HStack(spacing: 12) {
                 Image(systemName: item.kind.systemImage)
                     .font(.system(size: 18))
                     .foregroundStyle(item.kind.color)
-                    .frame(width: 24, alignment: .leading)
+                    .frame(width: 20)
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 2) {
