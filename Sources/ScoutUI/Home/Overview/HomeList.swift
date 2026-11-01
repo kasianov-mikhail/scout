@@ -32,12 +32,14 @@ struct HomeList: View {
             HomeAlertSection(history: .sample) {
                 path.append(.alerts)
             }
-            HomeMetricSection(
-                activities: activities,
-                sessions: sessions,
-                period: period,
-                path: $path
-            )
+            HomeActiveUsersSection(users: .sample) { kind in
+                switch kind {
+                case .sessions:
+                    path.append(.sessions)
+                case .dau, .devices:
+                    path.append(.activity)
+                }
+            }
             HomeLogSection(
                 period: period,
                 log: logs,
