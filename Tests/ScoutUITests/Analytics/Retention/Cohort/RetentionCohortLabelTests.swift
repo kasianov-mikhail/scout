@@ -14,8 +14,8 @@ import Testing
 struct RetentionCohortLabelTests {
     @Test("Reads its dates in UTC on any host")
     func testConfiguration() {
-        #expect(DateFormatter.cohortDay.timeZone == Calendar.utc.timeZone)
-        #expect(DateFormatter.cohortDay.calendar == .utc)
+        #expect(DateFormatter.monthDay.timeZone == Calendar.utc.timeZone)
+        #expect(DateFormatter.monthDay.calendar == .utc)
     }
 
     @Test("Labels read the cohort day in UTC from either end of it")
