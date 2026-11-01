@@ -59,25 +59,6 @@ extension CompactRing {
     }
 }
 
-struct ReleaseRowPlaceholder: View {
-    var body: some View {
-        HStack {
-            CompactRing(adoption: 1.0, color: .gray)
-
-            Text(verbatim: "3.2.1")
-                .font(.subheadline)
-                .monospacedDigit()
-
-            Spacer()
-
-            ReleasePercent(text: "1000.00%")
-            ReleasePercent(text: "100.00%")
-        }
-        .redacted(reason: .placeholder)
-        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
-    }
-}
-
 private struct ReleasePercent: View {
     let text: String
 
@@ -97,8 +78,6 @@ private struct ReleasePercent: View {
             ForEach([ReleaseHealth].samples) { release in
                 ReleaseRow(release: release)
             }
-            ReleaseRowPlaceholder()
-            ReleaseRowPlaceholder()
         }
         .navigationTitle(en: "Releases")
     }

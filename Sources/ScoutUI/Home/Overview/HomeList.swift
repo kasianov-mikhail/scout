@@ -47,10 +47,9 @@ struct HomeList: View {
                     path.append(.resources)
                 }
             }
-            HomeReleaseSection(
-                releases: releases,
-                path: $path
-            )
+            HomeReleaseSection(adoption: .sample) {
+                path.append(.releaseHealth)
+            }
             HomeRetentionSection(
                 retention: retention,
                 path: $path

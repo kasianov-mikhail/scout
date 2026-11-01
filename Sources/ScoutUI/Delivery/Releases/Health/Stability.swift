@@ -14,17 +14,48 @@ struct Stability: Ratio {
         self.value = value
     }
 
-    var color: Color {
+    var level: Level {
         switch value {
-        case 0.995...: .green
-        case 0.99..<0.995: .yellow
-        case 0.98..<0.99: .orange
-        default: .red
+        case 0.995...: .healthy
+        case 0.99..<0.995: .watch
+        case 0.98..<0.99: .atRisk
+        default: .critical
         }
+    }
+
+    var color: Color {
+        level.color
     }
 
     var formatted: String {
         percentage(fractionDigits: 2)
+    }
+}
+
+extension Stability {
+    enum Level: CaseIterable, Hashable {
+        case healthy
+        case watch
+        case atRisk
+        case critical
+
+        var title: String {
+            switch self {
+            case .healthy: "healthy"
+            case .watch: "watch"
+            case .atRisk: "at risk"
+            case .critical: "critical"
+            }
+        }
+
+        var color: Color {
+            switch self {
+            case .healthy: .green
+            case .watch: .yellow
+            case .atRisk: .orange
+            case .critical: .red
+            }
+        }
     }
 }
 

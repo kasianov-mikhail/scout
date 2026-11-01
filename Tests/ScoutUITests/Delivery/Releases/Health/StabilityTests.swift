@@ -25,4 +25,13 @@ struct StabilityTests {
     func testCrashesWithoutSessions() {
         #expect(Stability(of: 3, in: 0).value == 0)
     }
+
+    @Test("Stability maps to the four health levels")
+    func testLevels() {
+        #expect(Stability(0.996).level == .healthy)
+        #expect(Stability(0.992).level == .watch)
+        #expect(Stability(0.985).level == .atRisk)
+        #expect(Stability(0.970).level == .critical)
+        #expect(Stability.Level.atRisk.title == "at risk")
+    }
 }
