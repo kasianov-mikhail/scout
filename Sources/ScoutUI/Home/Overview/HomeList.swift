@@ -57,10 +57,6 @@ struct HomeList: View {
             }
         }
         .scrollContentBackground(.hidden)
-        .refreshingProviders(
-            first: [alerts, releases, retention],
-            later: [sessions, activities, logs]
-        )
         .globalSearch(releases: releases)
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
