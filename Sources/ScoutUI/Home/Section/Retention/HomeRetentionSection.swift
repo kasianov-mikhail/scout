@@ -5,79 +5,109 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Foundation
 import SwiftUI
 
 struct HomeRetentionSection: View {
-    @ObservedObject var retention: RetentionProvider
+    let weeks: [RetentionWeek]
+    let onSelect: () -> Void
 
-    @Binding var path: [HomeDestination]
+    private var maxInstalls: Int {
+        weeks.map(\.installs).max() ?? 0
+    }
 
     var body: some View {
-        Header(title: "Retention") {
-            switch retention.result {
-            case .success(let cohorts) where !cohorts.isEmpty:
-                AllButton { path.append(.retention) }
-            case .success, .failure, nil:
-                EmptyView()
+        VStack(alignment: .leading, spacing: 0) {
+            header
+
+            ForEach(Array(weeks.enumerated()), id: \.element.id) { index, week in
+                Button(action: onSelect) {
+                    RetentionRowContent(
+                        week: week,
+                        maxInstalls: maxInstalls,
+                        showsDivider: index < weeks.count - 1
+                    )
+                }
+                .buttonStyle(.plain)
+            }
+
+            footer
+                .padding(.top, 4)
+                .padding(.bottom, 6)
+        }
+        .listRowSeparator(.hidden)
+    }
+
+    private var header: some View {
+        HStack(alignment: .center) {
+            Text(verbatim: "RETENTION")
+                .font(.callout.weight(.bold))
+
+            Spacer()
+
+            Text(verbatim: "kept on day 7")
+                .font(.footnote)
+                .foregroundStyle(Color(.systemGray))
+        }
+        .frame(height: 70)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+
+    private var footer: some View {
+        Text(verbatim: "Gray: installs that week · green: kept")
+            .font(.footnote)
+            .foregroundStyle(Color(.systemGray))
+    }
+}
+
+private struct RetentionRowContent: View {
+    let week: RetentionWeek
+    let maxInstalls: Int
+    let showsDivider: Bool
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Text(verbatim: DateFormatter.monthDay.string(from: week.start))
+                .font(.subheadline)
+                .frame(width: 56, alignment: .leading)
+
+            RetentionBar(week: week, maxInstalls: maxInstalls)
+                .frame(maxWidth: .infinity)
+
+            value
+                .frame(width: 84, alignment: .trailing)
+        }
+        .frame(height: 40)
+        .contentShape(Rectangle())
+        .overlay(alignment: .bottom) {
+            if showsDivider {
+                Rectangle()
+                    .fill(Color.separator)
+                    .frame(height: 0.5)
             }
         }
+    }
 
-        switch retention.result {
-        case .success(let cohorts) where !cohorts.isEmpty:
-            let stats = cohorts.stats
+    @ViewBuilder
+    private var value: some View {
+        if let kept = week.kept, let rate = week.rate {
+            HStack(spacing: 0) {
+                Text(verbatim: "\(kept)")
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.positive)
 
-            let series = MiniChartSeries(
-                values: stats.map {
-                    Int(($0.average * 100).rounded())
-                }
-            )
-
-            HomeRetentionRow(series: series) { path.append(.retention) }
-
-            ForEach(summaryOffsets, id: \.self) { day in
-                let rate = stats.first { $0.day == day }?.average
-
-                Button {
-                    path.append(.retention)
-                } label: {
-                    HStack {
-                        Text(verbatim: "Day \(day)")
-                            .font(.subheadline)
-                        Spacer()
-                        Text(verbatim: rate?.formatted(.retentionRate) ?? "—")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.green)
-                    }
-                }
-                .buttonStyle(.plain)
+                Text(verbatim: " · \(Int((rate * 100).rounded()))%")
+                    .foregroundStyle(Color(.systemGray))
             }
-
-        case .success:
-            Text(verbatim: "No results")
-                .font(.body)
-                .foregroundStyle(.gray)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 20)
-                .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
-
-        case .failure, nil:
-            HomeRetentionRow(series: .empty) {}
-
-            ForEach(summaryOffsets, id: \.self) { day in
-                Button {
-                } label: {
-                    HStack {
-                        Text(verbatim: "Day \(day)")
-                            .font(.subheadline)
-                        Spacer()
-                        Text(verbatim: "     ")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(.green)
-                    }
-                }
-                .buttonStyle(.plain)
-                .redacted(reason: .placeholder)
-            }
+            .font(.footnote)
+        } else {
+            Text(verbatim: week.pendingLabel ?? "—")
+                .font(.footnote)
+                .foregroundStyle(Color.pending)
         }
     }
 }
@@ -85,20 +115,7 @@ struct HomeRetentionSection: View {
 #Preview {
     NavigationStack {
         InsetList {
-            HomeRetentionSection(
-                retention: .init(.success(.samples)),
-                path: .constant([])
-            )
-            HomeRetentionSection(
-                retention: .init(.success([])),
-                path: .constant([])
-            )
-            HomeRetentionSection(
-                retention: .init(),
-                path: .constant([])
-            )
+            HomeRetentionSection(weeks: .sample) {}
         }
     }
 }
-
-private let summaryOffsets = [1, 7, 30]
