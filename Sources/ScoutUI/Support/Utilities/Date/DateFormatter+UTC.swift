@@ -9,6 +9,8 @@ import Foundation
 import Scout
 
 extension DateFormatter {
+    static let monthDay = DateFormatter(format: "MMM d")
+
     convenience init(format: String) {
         self.init()
         locale = Locale(identifier: "en_US_POSIX")

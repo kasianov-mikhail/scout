@@ -11,12 +11,8 @@ import Scout
 
 extension RetentionCohort {
     var label: String {
-        DateFormatter.cohortDay.string(from: id)
+        DateFormatter.monthDay.string(from: id)
     }
-}
-
-extension DateFormatter {
-    static let cohortDay = DateFormatter(format: "MMM d")
 }
 
 extension FormatStyle where Self == FloatingPointFormatStyle<Double>.Percent {
