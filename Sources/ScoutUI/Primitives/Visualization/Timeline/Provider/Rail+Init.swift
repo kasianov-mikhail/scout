@@ -10,8 +10,8 @@ import Scout
 
 extension Rail {
     init(device: Device, installs: [Install], launches: [Launch], sessions: [Session] = [], events: [Event] = [], crashes: [Crash] = []) {
+        let launches = Dictionary(grouping: launches + syntheticLaunches(launches: launches, sessions: sessions), by: \.installID)
         let installs = Dictionary(grouping: installs, by: \.deviceID)
-        let launches = Dictionary(grouping: launches, by: \.installID)
         let sessions = Dictionary(grouping: sessions, by: \.launchID)
         let events = Dictionary(grouping: events, by: \.sessionID)
         let crashes = Dictionary(grouping: crashes, by: \.sessionID)
@@ -40,5 +40,26 @@ extension Rail {
 
         self.device = device
         self.installs = installs[device.deviceID]?.sorted(byDate: \.date).map(installRoot) ?? []
+    }
+}
+
+private func syntheticLaunches(launches: [Launch], sessions: [Session]) -> [Launch] {
+    let delivered = Set(launches.compactMap(\.launchID))
+    var orphans: [UUID: [Session]] = [:]
+    for session in sessions {
+        guard let launchID = session.launchID, !delivered.contains(launchID) else {
+            continue
+        }
+        orphans[launchID, default: []].append(session)
+    }
+
+    return orphans.map { launchID, sessions in
+        Launch(
+            startDate: sessions.compactMap(\.startDate).min(),
+            endDate: nil,
+            id: launchID.uuidString,
+            launchID: launchID,
+            installID: sessions.first?.installID
+        )
     }
 }
