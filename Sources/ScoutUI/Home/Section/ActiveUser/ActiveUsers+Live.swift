@@ -1,0 +1,54 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Foundation
+import Scout
+
+extension ActiveUsers {
+    init(activity: [ActivityPoint], sessions: [ChartPoint<Int>], devices: [DeviceSummary]) {
+        let end = Date().startOfDay
+        let start = end.addingDay(-29)
+        let range = start..<end.addingDay()
+
+        let dau = Array(activity.points(on: .daily).bucket(in: range, component: .day).reversed()).map(\.value)
+        let sessionCounts = Array(sessions.bucket(in: range, component: .day).reversed()).map(\.value)
+        let deviceCounts = Self.deviceCounts(devices, start: start)
+
+        self.init(
+            metrics: [
+                Metric(kind: .dau, value: dau.last ?? 0, delta: Self.delta(dau), series: dau),
+                Metric(kind: .sessions, value: sessionCounts.last ?? 0, delta: Self.delta(sessionCounts), series: sessionCounts),
+                Metric(kind: .devices, value: deviceCounts.last ?? 0, delta: Self.delta(deviceCounts), series: deviceCounts),
+            ],
+            start: start,
+            end: end,
+            monthlyUsers: activity.max { $0.date < $1.date }?.mau ?? 0
+        )
+    }
+
+    private static func delta(_ values: [Int]) -> Double {
+        guard values.count >= 2 else {
+            return 0
+        }
+        let current = values[values.count - 1]
+        let previous = values[values.count - 2]
+
+        guard previous > 0 else {
+            return 0
+        }
+        return Double(current - previous) / Double(previous)
+    }
+
+    private static func deviceCounts(_ devices: [DeviceSummary], start: Date) -> [Int] {
+        (0..<30).map { index in
+            let day = start.addingDay(index)
+            let next = day.addingDay()
+
+            return devices.count { $0.lastSeen >= day && $0.lastSeen < next }
+        }
+    }
+}
