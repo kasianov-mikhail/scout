@@ -102,7 +102,7 @@ extension Sequence where Element == any Provider {
 extension SearchFieldPlacement {
     fileprivate static var navigationBar: SearchFieldPlacement {
         #if os(iOS)
-            .navigationBarDrawer(displayMode: .always)
+            .navigationBarDrawer(displayMode: .automatic)
         #else
             .automatic
         #endif
