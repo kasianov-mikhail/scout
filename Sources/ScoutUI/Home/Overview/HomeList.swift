@@ -50,10 +50,9 @@ struct HomeList: View {
             HomeReleaseSection(adoption: .sample) {
                 path.append(.releaseHealth)
             }
-            HomeRetentionSection(
-                retention: retention,
-                path: $path
-            )
+            HomeRetentionSection(weeks: .sample) {
+                path.append(.retention)
+            }
         }
         .scrollContentBackground(.hidden)
         .refreshingProviders(
