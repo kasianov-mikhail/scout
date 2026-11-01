@@ -18,6 +18,14 @@ extension AlertStatus {
         if case .firing = outcome.state { true } else { false }
     }
 
+    var isArmed: Bool {
+        outcome.state == .armed
+    }
+
+    var isMuted: Bool {
+        if case .muted = outcome.state { true } else { false }
+    }
+
     var detail: String? {
         guard let current = reading.recent.last else {
             return nil
