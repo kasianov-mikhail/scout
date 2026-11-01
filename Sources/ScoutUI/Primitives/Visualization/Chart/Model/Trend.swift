@@ -10,12 +10,13 @@ import Scout
 
 struct Trend {
     let count: Int?
+    let previous: Int?
     let delta: Delta?
     let series: MiniChartSeries?
 }
 
 extension Trend {
-    static let loading = Trend(count: nil, delta: nil, series: nil)
+    static let loading = Trend(count: nil, previous: nil, delta: nil, series: nil)
 
     init(latest: [ActivityPoint], period: Period, now: Date) {
         let levels = latest.points(on: period.activityPeriod)
@@ -33,6 +34,7 @@ extension Trend {
 
         self.init(
             count: current,
+            previous: previous,
             delta: isComplete ? Delta(current: current, previous: previous) : nil,
             series: MiniChartSeries(points: levels, range: window, aggregation: .latest)
         )
@@ -44,6 +46,7 @@ extension Trend {
 
         self.init(
             count: current,
+            previous: previous,
             delta: Delta(current: current, previous: previous),
             series: MiniChartSeries(points: total, range: period.trailingRange(now: now), aggregation: .total)
         )
@@ -53,6 +56,7 @@ extension Trend {
 extension Trend {
     init(count: Int, previous: Int, values: [Int]) {
         self.count = count
+        self.previous = previous
         self.delta = Delta(current: count, previous: previous)
         self.series = MiniChartSeries(values: values)
     }
