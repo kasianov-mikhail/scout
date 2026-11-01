@@ -16,39 +16,54 @@ extension ActiveUsers {
 
         let dau = Array(activity.points(on: .daily).bucket(in: range, component: .day).reversed()).map(\.value)
         let sessionCounts = Array(sessions.bucket(in: range, component: .day).reversed()).map(\.value)
-        let deviceCounts = Self.deviceCounts(devices, start: start)
+        let deviceSeries = deviceCounts(devices, start: start)
 
         self.init(
             metrics: [
-                Metric(kind: .dau, value: dau.last ?? 0, delta: Self.delta(dau), series: dau),
-                Metric(kind: .sessions, value: sessionCounts.last ?? 0, delta: Self.delta(sessionCounts), series: sessionCounts),
-                Metric(kind: .devices, value: deviceCounts.last ?? 0, delta: Self.delta(deviceCounts), series: deviceCounts),
+                Metric(
+                    kind: .dau,
+                    value: dau.last ?? 0,
+                    delta: delta(dau),
+                    series: dau
+                ),
+                Metric(
+                    kind: .sessions,
+                    value: sessionCounts.last ?? 0,
+                    delta: delta(sessionCounts),
+                    series: sessionCounts
+                ),
+                Metric(
+                    kind: .devices,
+                    value: deviceSeries.last ?? 0,
+                    delta: delta(deviceSeries),
+                    series: deviceSeries
+                ),
             ],
             start: start,
             end: end,
             monthlyUsers: activity.max { $0.date < $1.date }?.mau ?? 0
         )
     }
+}
 
-    private static func delta(_ values: [Int]) -> Double {
-        guard values.count >= 2 else {
-            return 0
-        }
-        let current = values[values.count - 1]
-        let previous = values[values.count - 2]
-
-        guard previous > 0 else {
-            return 0
-        }
-        return Double(current - previous) / Double(previous)
+private func delta(_ values: [Int]) -> Double {
+    guard values.count >= 2 else {
+        return 0
     }
+    let current = values[values.count - 1]
+    let previous = values[values.count - 2]
 
-    private static func deviceCounts(_ devices: [DeviceSummary], start: Date) -> [Int] {
-        (0..<30).map { index in
-            let day = start.addingDay(index)
-            let next = day.addingDay()
+    guard previous > 0 else {
+        return 0
+    }
+    return Double(current - previous) / Double(previous)
+}
 
-            return devices.count { $0.lastSeen >= day && $0.lastSeen < next }
-        }
+private func deviceCounts(_ devices: [DeviceSummary], start: Date) -> [Int] {
+    (0..<30).map { index in
+        let day = start.addingDay(index)
+        let next = day.addingDay()
+
+        return devices.count { $0.lastSeen >= day && $0.lastSeen < next }
     }
 }
