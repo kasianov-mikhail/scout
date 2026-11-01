@@ -14,4 +14,6 @@ enum HomeDestination: Hashable {
     case log
     case releaseHealth
     case alerts
+    case telemetry(LogCategory)
+    case resources
 }
