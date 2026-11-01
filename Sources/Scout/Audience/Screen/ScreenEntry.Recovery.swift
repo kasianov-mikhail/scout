@@ -13,9 +13,9 @@ extension ScreenEntry {
 
         func execute(in context: NSManagedObjectContext) throws {
             let request = NSFetchRequest<ScreenEntry>(entityName: "ScreenEntry")
-            request.predicate = .unfinished(launchKey: "session.launch.launchID", outside: openLaunchIDs)
+            request.predicate = NSPredicate(format: "endDate == nil")
 
-            for screen in try context.fetch(request) {
+            for screen in try context.fetch(request) where !screen.hasOpenLaunch(openLaunchIDs: openLaunchIDs) {
                 screen.endDate = screen.session?.endDate ?? screen.date
                 screen.requeue()
             }

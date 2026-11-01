@@ -22,4 +22,8 @@ package class LaunchScopeEntry: SyncableEntry {
     var deviceID: UUID? {
         launch?.deviceID
     }
+
+    func hasOpenLaunch(openLaunchIDs: Set<UUID>) -> Bool {
+        launchID.map(openLaunchIDs.contains) ?? false
+    }
 }

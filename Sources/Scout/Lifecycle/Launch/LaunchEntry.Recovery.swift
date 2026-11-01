@@ -13,9 +13,9 @@ extension LaunchEntry {
 
         func execute(in context: NSManagedObjectContext) throws {
             let request = NSFetchRequest<LaunchEntry>(entityName: "LaunchEntry")
-            request.predicate = .unfinished(launchKey: "launchID", outside: openLaunchIDs)
+            request.predicate = NSPredicate(format: "endDate == nil")
 
-            for launch in try context.fetch(request) {
+            for launch in try context.fetch(request) where !openLaunchIDs.contains(launch.launchID) {
                 launch.endDate = launch.inferred
                 launch.requeue()
             }

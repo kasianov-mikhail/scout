@@ -51,9 +51,7 @@ struct ScreenEntryCommandTests {
 
     @Test("Recovery closes screens of previous launches at the session end")
     func recoveryClosesStale() throws {
-        let launch = LaunchEntry.stub(date: date, in: context)
-        launch.launchID = UUID()
-        let session = SessionEntry.stub(date: date, endDate: date.addingTimeInterval(60), launch: launch, in: context)
+        let session = SessionEntry.stub(date: date, endDate: date.addingTimeInterval(60), launch: staleLaunch(), in: context)
         let screen = makeScreen(session: session)
         try context.save()
 
@@ -73,12 +71,49 @@ struct ScreenEntryCommandTests {
         #expect(screen.endDate == nil)
     }
 
-    private func makeScreen(session: SessionEntry) -> ScreenEntry {
+    @Test("Recovery closes a screen without a session")
+    func recoveryClosesSessionless() throws {
+        let screen = makeScreen(launch: staleLaunch())
+        try context.save()
+
+        try ScreenEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
+
+        #expect(screen.endDate == date)
+    }
+
+    @Test("Recovery keeps a screen without a session in the current launch open")
+    func recoverySkipsSessionlessCurrent() throws {
+        let screen = makeScreen(launch: LaunchEntry.stub(date: date, in: context))
+        try context.save()
+
+        try ScreenEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
+
+        #expect(screen.endDate == nil)
+    }
+
+    private func staleLaunch() -> LaunchEntry {
+        let launch = LaunchEntry.stub(date: date, in: context)
+        launch.launchID = UUID()
+        return launch
+    }
+
+    private func makeScreen() -> ScreenEntry {
         let screen = context.insert(ScreenEntry.self)
         screen.screenID = UUID()
         screen.name = "Feed"
         screen.date = date
+        return screen
+    }
+
+    private func makeScreen(session: SessionEntry) -> ScreenEntry {
+        let screen = makeScreen()
         screen.session = session
+        return screen
+    }
+
+    private func makeScreen(launch: LaunchEntry) -> ScreenEntry {
+        let screen = makeScreen()
+        screen.launch = launch
         return screen
     }
 }
