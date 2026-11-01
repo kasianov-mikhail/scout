@@ -40,11 +40,22 @@ struct HomeList: View {
                     path.append(.activity)
                 }
             }
-            HomeLogSection(
-                period: period,
-                log: logs,
-                path: $path
-            )
+            HomeTelemetrySection(items: TelemetryItem.sample) { kind in
+                switch kind {
+                case .events:
+                    path.append(.log)
+                case .crashes:
+                    path.append(.telemetry(.crashes))
+                case .metrics:
+                    path.append(.telemetry(.metrics))
+                case .hangs:
+                    path.append(.telemetry(.hangs))
+                case .network:
+                    path.append(.telemetry(.network))
+                case .resources:
+                    path.append(.resources)
+                }
+            }
             HomeReleaseSection(
                 releases: releases,
                 path: $path
@@ -74,6 +85,10 @@ struct HomeList: View {
                 ReleaseHealthView(provider: releases)
             case .alerts:
                 AlertListView(provider: alerts)
+            case .telemetry(let category):
+                LogDestination(category: category)
+            case .resources:
+                ReleaseHealthView(provider: releases)
             }
         }
     }
