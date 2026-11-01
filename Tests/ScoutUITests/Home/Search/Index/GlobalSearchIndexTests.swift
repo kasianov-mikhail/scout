@@ -24,22 +24,6 @@ struct GlobalSearchIndexTests {
         DeviceSummary(id: UUID(), model: model, osVersion: "18.0", lastSeen: Date(), sessions: 1, crashes: 0)
     }
 
-    private func makeRelease(_ version: String) -> ReleaseHealth {
-        ReleaseHealth(
-            id: version,
-            freeSessions: 1.0,
-            freeUsers: nil,
-            crashes: 0,
-            hangs: 0,
-            sessions: 1,
-            adoption: 1.0,
-            trend: [],
-            exits: ExitSummary(counts: [:]),
-            performance: PerformanceComparison(current: PerformanceSummary(), previous: nil),
-            resources: ResourceSummary(counts: [:])
-        )
-    }
-
     @Test("Empty query produces no hits") func emptyQuery() {
         let index = makeIndex(series: [makeSeries("session_start")])
 
@@ -98,7 +82,7 @@ struct GlobalSearchIndexTests {
     }
 
     @Test("Releases match on version") func releaseMatch() {
-        let index = makeIndex(releases: [makeRelease("3.2.0"), makeRelease("2.9.9")])
+        let index = makeIndex(releases: [ReleaseHealth.stub(version: "3.2.0"), ReleaseHealth.stub(version: "2.9.9")])
         let hits = index.hits(matching: "3.2")
 
         #expect(hits.map(\.title) == ["3.2.0"])
@@ -142,7 +126,7 @@ struct GlobalSearchIndexTests {
                 makeSeries("GET /v1/sessions", category: StatusBuckets.categories[0]),
             ],
             devices: [makeDevice(model: "iPhone SE")],
-            releases: [makeRelease("1.0-session")],
+            releases: [ReleaseHealth.stub(version: "1.0-session")],
             crashes: IncidentGroup.groups(from: [Crash.stub(name: "SessionStoreCrash")]).map(IncidentSearchEntry.group),
             hangs: [.tally(IncidentTally(fingerprint: "stall", name: "SessionSaveStall", count: 1, firstHour: Date()))]
         )
