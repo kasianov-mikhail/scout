@@ -9,7 +9,7 @@ import SwiftUI
 import UserNotifications
 
 struct HomeList: View {
-    let snapshot: HomeSnapshot = .sample
+    var snapshot: HomeSnapshot? = nil
 
     @Binding var path: [HomeDestination]
 
@@ -17,10 +17,65 @@ struct HomeList: View {
     @StateObject var retention = RetentionProvider()
     @StateObject var sessions = StatProvider(subject: .sessions)
     @StateObject var releases = ReleaseHealthProvider()
-    @StateObject var logs = HomeLogProvider()
+    @StateObject var logs = HomeLogProvider(period: .today)
+    @StateObject var devices = DevicesProvider()
     @StateObject var alerts = AlertProvider(permission: NotificationPermission(center: UNUserNotificationCenter.current()))
 
+    @Environment(\.database) private var database
+
     var body: some View {
+        content
+            .fetchTask(providers)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if let snapshot {
+            list(snapshot)
+        } else if let error = providers.compactMap(\.error).first {
+            ErrorView(description: error.localizedDescription) {
+                for provider in providers {
+                    await provider.fetchIfFailed(in: database)
+                }
+            }
+        } else {
+            liveContent.loadingGate(providers)
+        }
+    }
+
+    @ViewBuilder
+    private var liveContent: some View {
+        if let live {
+            list(live)
+        }
+    }
+
+    private var providers: [any Provider] {
+        [alerts, activities, sessions, releases, retention, logs, devices]
+    }
+
+    private var live: HomeSnapshot? {
+        guard case .success(let statuses)? = alerts.result,
+            case .success(let points)? = activities.result,
+            case .success(let sessionPoints)? = sessions.result,
+            case .success(let releaseList)? = releases.result,
+            case .success(let cohorts)? = retention.result,
+            let report = logs.report,
+            case .success(let deviceList)? = devices.result
+        else {
+            return nil
+        }
+
+        return HomeSnapshot(
+            alerts: AlertHistory(statuses: statuses),
+            users: ActiveUsers(activity: points, sessions: sessionPoints, devices: deviceList),
+            telemetry: [TelemetryItem](report: report, resources: releaseList),
+            releases: ReleaseAdoption(releases: releaseList),
+            retention: [RetentionWeek](cohorts: cohorts)
+        )
+    }
+
+    private func list(_ snapshot: HomeSnapshot) -> some View {
         InsetList {
             HomeAlertSection(history: snapshot.alerts) {
                 path.append(.alerts)
@@ -89,7 +144,7 @@ struct HomeList: View {
 
 #Preview("Home") {
     NavigationStack {
-        HomeList(path: .constant([]))
+        HomeList(snapshot: .sample, path: .constant([]))
             .navigationTitle(en: "Home")
     }
     .environmentObject(Tint())
