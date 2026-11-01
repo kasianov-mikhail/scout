@@ -73,23 +73,23 @@ extension Runtime {
         let runtime = self
 
         Task { @MainActor in
-            do {
-                try await runtime.start()
-            } catch {
-                print("Failed to start Scout: \(error)")
-            }
+            await runtime.start()
         }
     }
 
     @MainActor
-    func start() async throws {
+    func start() async {
         for case let .server(info) in backends.map(\.engine) {
             if let warning = info.setupWarning {
                 print(warning)
             }
         }
 
-        try await identity.bootstrap()
+        do {
+            try await identity.bootstrap()
+        } catch {
+            print("Failed to bootstrap Scout: \(error)")
+        }
 
         installConditionMonitor()
 
