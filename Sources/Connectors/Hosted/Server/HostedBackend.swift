@@ -10,6 +10,7 @@ import Scout
 
 extension Backend {
     public static func server(url: URL, apiKey: String?) -> Backend {
+        let url = url.normalized
         let database = HTTPDatabase(url: url, apiKey: apiKey)
 
         return Backend(
@@ -20,7 +21,7 @@ extension Backend {
                 .init(
                     endpoint: url.hostWithPort ?? url.absoluteString,
                     hasAPIKey: apiKey != nil,
-                    isSecure: url.scheme?.lowercased() == "https"
+                    isSecure: url.scheme == "https"
                 )
             ),
             checkAccess: { try await database.access.check(ping: database.ping) },
@@ -30,6 +31,18 @@ extension Backend {
 }
 
 extension URL {
+    fileprivate var normalized: URL {
+        guard var components = URLComponents(url: self, resolvingAgainstBaseURL: false) else {
+            return self
+        }
+        components.scheme = components.scheme?.lowercased()
+        components.host = components.host?.lowercased()
+        if components.path.hasSuffix("/") {
+            components.path.removeLast()
+        }
+        return components.url ?? self
+    }
+
     fileprivate var hostWithPort: String? {
         guard let host else { return nil }
         return port.map { "\(host):\($0)" } ?? host
