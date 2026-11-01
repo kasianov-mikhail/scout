@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
 import SwiftUI
 
 struct HomeReleaseSection: View {
@@ -72,7 +71,7 @@ struct HomeReleaseSection: View {
                 + Text(verbatim: top.stability.level.title)
                 .fontWeight(.semibold)
                 .foregroundColor(top.stability.level.color)
-                + Text(verbatim: " at \(top.stability.formatted) crash-free · shipped \(DateFormatter.monthDay.string(from: top.shipped))")
+                + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
                 .foregroundColor(Color(.systemGray)))
                 .font(.footnote)
         }

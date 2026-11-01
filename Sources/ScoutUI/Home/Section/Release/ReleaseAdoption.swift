@@ -13,7 +13,7 @@ struct ReleaseAdoption {
         let id: String
         let share: Double
         let stability: Stability
-        let shipped: Date
+        let shipped: Date?
 
         var shareLabel: String {
             "\(Int((share * 100).rounded()))%"
@@ -21,6 +21,13 @@ struct ReleaseAdoption {
 
         var showsLabel: Bool {
             share >= 0.15
+        }
+
+        var shippedLabel: String {
+            guard let shipped else {
+                return ""
+            }
+            return " · shipped \(DateFormatter.monthDay.string(from: shipped))"
         }
     }
 
