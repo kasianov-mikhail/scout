@@ -32,6 +32,10 @@ package class SessionScopeEntry: SyncableEntry {
         session?.launch ?? launch
     }
 
+    func hasOpenLaunch(openLaunchIDs: Set<UUID>) -> Bool {
+        launchID.map(openLaunchIDs.contains) ?? false
+    }
+
     func sessionRecord(type: String, id: String) -> Record {
         var record = Record(recordType: type, recordID: id)
 

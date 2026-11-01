@@ -13,9 +13,9 @@ extension SessionEntry {
 
         func execute(in context: NSManagedObjectContext) throws {
             let request = NSFetchRequest<SessionEntry>(entityName: "SessionEntry")
-            request.predicate = .unfinished(launchKey: "launch.launchID", outside: openLaunchIDs)
+            request.predicate = NSPredicate(format: "endDate == nil")
 
-            for session in try context.fetch(request) {
+            for session in try context.fetch(request) where !session.hasOpenLaunch(openLaunchIDs: openLaunchIDs) {
                 session.endDate = session.inferred
                 session.requeue()
             }

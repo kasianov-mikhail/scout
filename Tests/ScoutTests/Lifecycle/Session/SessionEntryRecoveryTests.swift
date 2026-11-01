@@ -45,6 +45,16 @@ struct SessionEntryRecoveryTests {
         #expect(session.endDate == nil)
     }
 
+    @Test("Closes a session without a launch")
+    func closesUnlinked() throws {
+        let session = SessionEntry.stub(date: date, in: context)
+
+        try context.save()
+        try SessionEntry.Recovery(openLaunchIDs: [identity.launch]).execute(in: context)
+
+        #expect(session.endDate == date)
+    }
+
     @Test("Does not modify already completed sessions")
     func skipsCompleted() throws {
         let endDate = date.addingTimeInterval(60)
