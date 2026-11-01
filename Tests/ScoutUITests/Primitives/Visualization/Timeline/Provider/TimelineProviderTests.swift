@@ -70,6 +70,24 @@ struct TimelineProviderTests {
         #expect(provider.items.map(\.name) == ["e"])
     }
 
+    @Test("Keeps the events of a session whose launch record is missing")
+    func testMissingLaunchRecord() async throws {
+        let provider = TimelineProvider()
+        let database = DatabaseStub()
+        database.add(
+            .deviceStub(deviceID: deviceID, date: TimelineFixture.baseDate),
+            .installStub(installID: installID, deviceID: deviceID, date: TimelineFixture.baseDate),
+            .sessionStub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20)),
+            .eventStub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))
+        )
+
+        await start(provider, database: database, anchorEvent: nil)
+
+        let rail = try #require(provider.result).get()
+        #expect(rail.installs.first?.launches.map(\.launch.launchID) == [launchID])
+        #expect(provider.items.map(\.name) == ["e"])
+    }
+
     @Test("Caches the export text alongside the published result")
     func testExportTextCached() async throws {
         let provider = TimelineProvider()

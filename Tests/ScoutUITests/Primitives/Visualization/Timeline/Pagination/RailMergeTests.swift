@@ -53,6 +53,19 @@ struct RailMergeTests {
         #expect(sessions.count == rail.installs[0].launches[0].sessions.count + 1)
     }
 
+    @Test("Adds a session whose launch record is missing under a synthetic launch")
+    func testAddsMissingLaunch() throws {
+        let rail = Rail.stub(baseDate: TimelineFixture.baseDate)
+        let installID = try #require(rail.installs.first?.install.installID)
+        let launchID = UUID()
+        let session = Session.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.at(900))
+
+        let merged = rail.merged(sessions: [session], events: [])
+
+        let launch = try #require(merged.installs.first?.launches.first { $0.launch.launchID == launchID })
+        #expect(launch.sessions.map(\.session.sessionID) == [session.sessionID])
+    }
+
     @Test("Drops new items whose parent is not in the existing tree")
     func testDropsOrphans() {
         let rail = Rail.stub(baseDate: TimelineFixture.baseDate)

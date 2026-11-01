@@ -86,7 +86,30 @@ struct RailInitTests {
         #expect(firstSession.crashes.map(\.name) == ["early", "late"])
     }
 
-    @Test("Orphans whose parent id does not match are dropped")
+    @Test("A session whose launch record is missing keeps its events under a synthetic launch")
+    func testMissingLaunch() throws {
+        let deviceID = UUID()
+        let installID = UUID()
+        let launchID = UUID()
+        let sessionID = UUID()
+
+        let rail = Rail(
+            device: .stub(deviceID: deviceID),
+            installs: [.stub(installID: installID, deviceID: deviceID)],
+            launches: [],
+            sessions: [.stub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(10))],
+            events: [.stub(name: "e", sessionID: sessionID)]
+        )
+
+        let launch = try #require(rail.installs.first?.launches.first)
+        #expect(launch.launch.launchID == launchID)
+        #expect(launch.launch.installID == installID)
+        #expect(launch.launch.startDate == TimelineFixture.at(10))
+        #expect(launch.sessions.map(\.session.sessionID) == [sessionID])
+        #expect(launch.sessions.first?.events.map(\.name) == ["e"])
+    }
+
+    @Test("A session with no matching install is dropped")
     func testOrphans() {
         let deviceID = UUID()
         let sessionID = UUID()
