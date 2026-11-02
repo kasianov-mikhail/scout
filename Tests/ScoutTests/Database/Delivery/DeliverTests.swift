@@ -45,7 +45,7 @@ struct DeliverTests {
 
     /// Run the delivery engine for a type the way `synchronize` does: send its raw
     /// records and let the send itself count the attempt on failure.
-    func deliver<T: DeliverableEntry>(_ type: T.Type, to backend: Backend, now: Date = Date()) async throws {
+    nonisolated func deliver<T: DeliverableEntry>(_ type: T.Type, to backend: Backend, now: Date = Date()) async throws {
         try await RecordSender<T>(backend: backend).deliver(in: context, now: now)
     }
 

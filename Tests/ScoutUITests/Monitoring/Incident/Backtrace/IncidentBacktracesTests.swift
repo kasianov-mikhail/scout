@@ -57,7 +57,7 @@ struct IncidentBacktracesTests {
 
     @Test("An incident id that is not a UUID loads nothing")
     func malformedID() async throws {
-        let database = try IncidentDatabase(backtraces: [], symbols: [])
+        let database = IncidentDatabase(backtraces: [], symbols: [])
 
         let loaded = try await IncidentBacktraces(incidentIDs: ["c-1"], database: database)
 
