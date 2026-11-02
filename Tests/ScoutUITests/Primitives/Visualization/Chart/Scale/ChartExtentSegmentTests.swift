@@ -7,6 +7,7 @@
 
 import Charts
 import Foundation
+import Scout
 import Testing
 
 @testable import ScoutUI

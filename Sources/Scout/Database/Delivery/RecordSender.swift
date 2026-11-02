@@ -38,12 +38,12 @@ private struct Outcome {
 
 extension RecordSender {
     func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws {
-        let request = NSFetchRequest<T>(entityName: String(describing: T.self), pendingBackendID: id, now: now)
         var count = DeliveryEntry.pageSize
 
         while count == DeliveryEntry.pageSize {
-            let objects = try await context.perform {
-                try context.fetch(request).filter {
+            nonisolated(unsafe) let objects = try await context.perform {
+                let request = NSFetchRequest<T>(entityName: String(describing: T.self), pendingBackendID: id, now: now)
+                return try context.fetch(request).filter {
                     $0.delivery(for: id)?.isPending == true
                 }
             }

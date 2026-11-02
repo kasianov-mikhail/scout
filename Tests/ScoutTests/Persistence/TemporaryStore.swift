@@ -22,7 +22,7 @@ final class TemporaryStore {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     }
 
-    func seed(model: NSManagedObjectModel, body: (NSManagedObjectContext) throws -> Void) throws {
+    func seed(model: NSManagedObjectModel, body: @Sendable (NSManagedObjectContext) throws -> Void) throws {
         let seedURL = directory.appendingPathComponent("Seed.sqlite")
 
         try autoreleasepool {

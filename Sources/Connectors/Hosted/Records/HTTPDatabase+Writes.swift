@@ -18,7 +18,7 @@ extension HTTPDatabase: DatabaseWriter {
             try await requireBackgroundTime()
             let request = HTTPWriteRequest(records: chunk.map(HTTPRecord.init))
             do {
-                try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
+                _ = try await send(request, to: "api/v1/records", into: HTTPWriteAck.self)
             } catch is CancellationError {
                 throw CancellationError()
             } catch {
