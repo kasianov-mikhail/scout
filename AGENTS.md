@@ -65,3 +65,8 @@
 ✗ 0.4.0 — MetricKit diagnostics and on-device symbolication
 ✓ 0.4.0 — MetricKit
 ```
+
+## Worktrees
+
+- Create every worktree at `.agents/worktrees/<name>` in the main worktree.
+- Do not use `.claude`: the repository dropped it in favor of `.agents`, and only `.agents` is ignored.
