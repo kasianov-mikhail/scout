@@ -49,7 +49,7 @@ struct HangDetailView: View {
 
             ContextSection(
                 context: hang,
-                timelineHighlight: IncidentKind.hang.color
+                timelineFocus: TimelineFocus(hang: hang)
             )
             StackTraceSection(
                 frames: hang.stackTrace,

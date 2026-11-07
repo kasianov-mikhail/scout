@@ -63,7 +63,7 @@ struct RailLaneTests {
         }
 
         await Task.yield()
-        lane.eventName = "reset"
+        lane.reset(anchor: nil)
         gate.open()
 
         await #expect(throws: CancellationError.self) {

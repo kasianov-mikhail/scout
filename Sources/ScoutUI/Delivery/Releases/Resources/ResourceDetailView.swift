@@ -38,7 +38,7 @@ struct ResourceDetailView: View {
 
             ContextSection(
                 context: resource,
-                timelineHighlight: IncidentKind.resource.color
+                timelineFocus: TimelineFocus(resource: resource)
             )
             StackTraceSection(
                 frames: resource.stackTrace,

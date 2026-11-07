@@ -33,26 +33,26 @@ struct TimelineProviderTests {
         return database
     }
 
-    private func start(_ provider: TimelineProvider, database: DatabaseStub, anchorEvent: Event?) async {
+    private func start(_ provider: TimelineProvider, database: DatabaseStub, anchor: TimelineAnchor?) async {
         let feed = TimelineFeed(deviceID: deviceID, database: database)
-        await provider.start(feed: feed, anchorEvent: anchorEvent, eventName: nil)
+        await provider.start(feed: feed, anchor: anchor, focus: nil)
     }
 
     @Test("Publishes a result without an anchor event")
     func testNoAnchorPublishes() async throws {
         let provider = TimelineProvider()
-        await start(provider, database: makeDatabase(), anchorEvent: nil)
+        await start(provider, database: makeDatabase(), anchor: nil)
 
         let rail = try #require(provider.result).get()
         #expect(rail.installs.map(\.install.installID) == [installID])
-        #expect(provider.items.map(\.name) == ["e"])
+        #expect(provider.entries.contains { $0.title.text == "e" })
     }
 
     @Test("Publishes a result when the anchor's install is not in the rail")
     func testMissingAnchorInstallPublishes() async throws {
         let provider = TimelineProvider()
-        let anchor = Event.stub(name: "a", installID: UUID(), date: TimelineFixture.at(30))
-        await start(provider, database: makeDatabase(), anchorEvent: anchor)
+        let anchor = TimelineAnchor(date: TimelineFixture.at(30), installID: UUID())
+        await start(provider, database: makeDatabase(), anchor: anchor)
 
         let rail = try #require(provider.result).get()
         #expect(rail.installs.map(\.install.installID) == [installID])
@@ -61,13 +61,13 @@ struct TimelineProviderTests {
     @Test("Anchored start seeds the timeline around the anchor")
     func testAnchoredStart() async throws {
         let provider = TimelineProvider()
-        let anchor = Event.stub(name: "e", sessionID: sessionID, installID: installID, date: TimelineFixture.at(30))
-        await start(provider, database: makeDatabase(), anchorEvent: anchor)
+        let anchor = TimelineAnchor(date: TimelineFixture.at(30), installID: installID)
+        await start(provider, database: makeDatabase(), anchor: anchor)
 
         let rail = try #require(provider.result).get()
         let sessions = rail.installs.flatMap { $0.launches.flatMap(\.sessions) }
         #expect(sessions.map(\.session.sessionID) == [sessionID])
-        #expect(provider.items.map(\.name) == ["e"])
+        #expect(provider.entries.contains { $0.title.text == "e" })
     }
 
     @Test("Keeps the events of a session whose launch record is missing")
@@ -81,17 +81,17 @@ struct TimelineProviderTests {
             .eventStub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))
         )
 
-        await start(provider, database: database, anchorEvent: nil)
+        await start(provider, database: database, anchor: nil)
 
         let rail = try #require(provider.result).get()
         #expect(rail.installs.first?.launches.map(\.launch.launchID) == [launchID])
-        #expect(provider.items.map(\.name) == ["e"])
+        #expect(provider.entries.contains { $0.title.text == "e" })
     }
 
     @Test("Caches the export text alongside the published result")
     func testExportTextCached() async throws {
         let provider = TimelineProvider()
-        await start(provider, database: makeDatabase(), anchorEvent: nil)
+        await start(provider, database: makeDatabase(), anchor: nil)
 
         #expect(provider.exportText?.contains("- 2023-11-14T22:13:50Z  e") == true)
     }
@@ -101,22 +101,22 @@ struct TimelineProviderTests {
         let provider = TimelineProvider()
         let feed = TimelineFeed(deviceID: deviceID, database: DatabaseStub())
 
-        await provider.start(feed: feed, anchorEvent: nil, eventName: nil)
+        await provider.start(feed: feed, anchor: nil, focus: nil)
 
         _ = try #require(provider.result).get()
-        #expect(provider.items.isEmpty)
+        #expect(provider.entries.isEmpty)
     }
 
-    @Test("A failure clears the items and the export text of the earlier result")
+    @Test("A failure clears the entries and the export text of the earlier result")
     func testFailureClearsDerivedState() async throws {
         let provider = TimelineProvider()
-        await start(provider, database: makeDatabase(), anchorEvent: nil)
-        #expect(!provider.items.isEmpty)
+        await start(provider, database: makeDatabase(), anchor: nil)
+        #expect(!provider.entries.isEmpty)
         #expect(provider.exportText != nil)
 
         provider.result = .failure(TimelineFailure())
 
-        #expect(provider.items.isEmpty)
+        #expect(provider.entries.isEmpty)
         #expect(provider.exportText == nil)
     }
 }

@@ -41,7 +41,7 @@ struct CrashDetailView: View {
             }
             .padding(.vertical)
 
-            ContextSection(context: crash, timelineHighlight: .red)
+            ContextSection(context: crash, timelineFocus: TimelineFocus(crash: crash))
             StackTraceSection(crash: crash, detail: backtrace.detail)
 
             if case .success(let threads) = threads.result {

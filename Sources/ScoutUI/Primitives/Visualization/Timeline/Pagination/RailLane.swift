@@ -10,16 +10,6 @@ import Scout
 
 @MainActor
 final class RailLane: ObservableObject {
-    var eventName: String? {
-        didSet {
-            generation = Epoch()
-            pendingInstalls = []
-            cursor = nil
-            anchorDate = nil
-            isLoading = false
-        }
-    }
-
     var anchorDate: Date?
 
     let ascending: Bool
@@ -38,6 +28,14 @@ final class RailLane: ObservableObject {
     private var isFetching = false
 
     private var waiters: [CheckedContinuation<Void, Never>] = []
+
+    func reset(anchor: Date?) {
+        generation = Epoch()
+        pendingInstalls = []
+        cursor = nil
+        anchorDate = anchor
+        isLoading = false
+    }
 
     func loadMore(in database: RecordReader) async throws -> (sessions: [Session], events: [Event]) {
         let generation = generation
@@ -69,16 +67,9 @@ final class RailLane: ObservableObject {
             throw CancellationError()
         }
 
-        let sessions =
-            try sessionChunk
-            .records
-            .map(Session.init)
+        let sessions = try sessionChunk.records.map(Session.init)
 
-        let events = try await Event.fetch(
-            sessionIDs: sessions.compactMap(\.sessionID),
-            name: eventName,
-            in: database
-        )
+        let events = try await Event.fetch(sessionIDs: sessions.compactMap(\.sessionID), in: database)
 
         guard generation == self.generation else {
             throw CancellationError()
@@ -94,12 +85,10 @@ final class RailLane: ObservableObject {
         return (sessions, events)
     }
 
-    private var chunkLimit: Int { eventName == nil ? 25 : 100 }
-
     private func chunk(in database: RecordReader) async throws -> RecordChunk {
         guard let cursor else {
             return try await Session.fetchChunk(
-                installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, limit: chunkLimit, in: database)
+                installIDs: pendingInstalls, anchor: anchorDate, ascending: ascending, limit: 25, in: database)
         }
         return try await cursor.next(Session.desiredKeys)
     }

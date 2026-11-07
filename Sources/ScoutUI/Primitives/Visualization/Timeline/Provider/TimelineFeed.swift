@@ -42,4 +42,40 @@ struct TimelineFeed {
         )
         return try await database.readAll(matching: query, fields: Launch.desiredKeys)
     }
+
+    func incidents() async throws -> TimelineIncidents {
+        async let crashes: [Crash] = records(Crash.self)
+        async let hangs: [Hang] = records(Hang.self)
+        async let resources: [ResourceException] = records(ResourceException.self)
+
+        return try await TimelineIncidents(
+            crashes: crashes,
+            hangs: hangs,
+            resources: resources
+        )
+    }
+
+    func versions(installIDs: [UUID]) async throws -> [Version] {
+        guard !installIDs.isEmpty else {
+            return []
+        }
+
+        let records = try await database.readAll(
+            type: Version.self,
+            field: "install_id",
+            values: installIDs.map(\.uuidString),
+            fields: Version.desiredKeys
+        )
+
+        return try records.map { try Version(record: $0) }.sorted(byDate: \.date)
+    }
+
+    private func records<Element: RecordDecodable>(_ type: Element.Type) async throws -> [Element] {
+        let query = RecordQuery(
+            recordType: type,
+            filters: [RecordQuery.Filter(field: "device_id", op: .equals, value: .string(deviceID.uuidString))],
+            sort: [RecordQuery.Sort(field: "date", ascending: true)]
+        )
+        return try await database.readAll(matching: query, fields: Element.desiredKeys)
+    }
 }

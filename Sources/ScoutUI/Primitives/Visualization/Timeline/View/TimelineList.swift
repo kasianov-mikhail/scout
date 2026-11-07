@@ -8,46 +8,41 @@
 import SwiftUI
 
 struct TimelineList<Pagination: View>: View {
-    let items: [TimelineItem]
-    let highlightedID: String?
-    let highlightColor: Color
+    let entries: [TimelineEntry]
+    let focusID: String?
 
     @ViewBuilder let older: () -> Pagination
     @ViewBuilder let newer: () -> Pagination
 
-    let timeline = Date()
-
     var body: some View {
         LazyVStack(spacing: 0) {
+            Color.clear.frame(height: 8)
+
             older()
 
-            ForEach(Array(items.enumerated()), id: \.element) { index, row in
-                TimelineRow(
-                    items: items,
-                    index: index,
-                    timeline: timeline,
-                    highlighted: row.id == highlightedID,
-                    highlightColor: highlightColor
-                )
+            ForEach(entries) { entry in
+                TimelineRow(entry: entry)
+                    .id(entry.id)
             }
 
             newer()
         }
+        .anchoredScroll(id: isFocusLoaded ? focusID : nil, revision: entries.count)
+    }
+
+    private var isFocusLoaded: Bool {
+        guard let focusID else {
+            return false
+        }
+        return entries.contains { $0.id == focusID }
     }
 }
 
 #Preview {
-    NavigationStack {
-        ScrollView {
-            let items = [TimelineItem].samples
-
-            TimelineList(
-                items: items,
-                highlightedID: items.randomElement()?.id,
-                highlightColor: .accentColor,
-                older: { EmptyView() },
-                newer: { EmptyView() }
-            )
-        }
-    }
+    TimelineList(
+        entries: [],
+        focusID: nil,
+        older: { EmptyView() },
+        newer: { EmptyView() }
+    )
 }

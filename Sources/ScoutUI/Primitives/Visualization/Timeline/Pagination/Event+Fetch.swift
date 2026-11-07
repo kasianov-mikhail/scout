@@ -9,20 +9,12 @@ import Foundation
 import Scout
 
 extension Event {
-    static func fetch(sessionIDs: [UUID], name: String?, in database: RecordReader) async throws -> [Event] {
+    static func fetch(sessionIDs: [UUID], in database: RecordReader) async throws -> [Event] {
         guard !sessionIDs.isEmpty else { return [] }
 
-        let ids = sessionIDs.map(\.uuidString)
-        let query = RecordQuery(recordType: Event.self, filters: filters(ids: ids, name: name))
+        let filter = RecordQuery.Filter(field: "session_id", op: .in, value: .strings(sessionIDs.map(\.uuidString)))
+        let query = RecordQuery(recordType: Event.self, filters: [filter])
 
         return try await database.readAll(matching: query, fields: Event.desiredKeys)
-    }
-
-    private static func filters(ids: [String], name: String?) -> [RecordQuery.Filter] {
-        var filters = [RecordQuery.Filter(field: "session_id", op: .in, value: .strings(ids))]
-        if let name {
-            filters.append(RecordQuery.Filter(field: "name", op: .equals, value: .string(name)))
-        }
-        return filters
     }
 }

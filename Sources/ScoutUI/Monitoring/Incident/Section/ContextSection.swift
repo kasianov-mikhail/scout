@@ -14,7 +14,7 @@ protocol SessionContext {
 
 struct ContextSection<Context: SessionContext>: View {
     let context: Context
-    var timelineHighlight: Color = .accentColor
+    var timelineFocus: TimelineFocus? = nil
 
     var body: some View {
         if context.sessionID != nil || context.deviceID != nil {
@@ -49,7 +49,7 @@ struct ContextSection<Context: SessionContext>: View {
                     .monospaced()
                     .foregroundStyle(Color.gray)
             } destination: {
-                Timeline(deviceID: deviceID, highlight: timelineHighlight)
+                Timeline(deviceID: deviceID, focus: timelineFocus)
             }
         }
     }
@@ -63,7 +63,7 @@ struct ContextSection<Context: SessionContext>: View {
 
     return NavigationStack {
         InsetList {
-            ContextSection(context: Sample(sessionID: UUID(), deviceID: UUID()), timelineHighlight: .red)
+            ContextSection(context: Sample(sessionID: UUID(), deviceID: UUID()))
         }
     }
 }
