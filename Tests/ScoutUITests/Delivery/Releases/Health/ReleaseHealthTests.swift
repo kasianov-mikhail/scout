@@ -4,25 +4,24 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
-//
 
+import Foundation
 import Testing
 
 @testable import ScoutUI
 
-@Suite("ReleaseHealth")
 struct ReleaseHealthTests {
-    @Test("The row subtitle joins the adoption share and the ship date")
-    func subtitleWithShipDate() throws {
-        let release = [ReleaseHealth].samples[0]
-        let shippedAt = try #require(release.shippedAt)
-        let date = DateFormatter.monthDay.string(from: shippedAt)
+    @Test("The adoption label pairs the share with the ship date")
+    func adoptionLabelWithDate() {
+        let release = ReleaseHealth.stub(version: "1.0", shipped: Date(timeIntervalSince1970: 0))
 
-        #expect(release.subtitle == "62% of sessions · \(date)")
+        #expect(release.adoptionLabel == "100% of sessions · Jan 1")
     }
 
-    @Test("A release without a ship date shows only the adoption share")
-    func subtitleWithoutShipDate() {
-        #expect(ReleaseHealth.stub(version: "1.0").subtitle == "100% of sessions")
+    @Test("The adoption label omits a missing ship date")
+    func adoptionLabelWithoutDate() {
+        let release = ReleaseHealth.stub(version: "1.0")
+
+        #expect(release.adoptionLabel == "100% of sessions")
     }
 }

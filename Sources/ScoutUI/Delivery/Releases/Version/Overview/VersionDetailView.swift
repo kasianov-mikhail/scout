@@ -146,7 +146,7 @@ private struct HangRateRow: View {
         }
 
         if change <= -0.1 {
-            return Stability.Level.healthy.accent
+            return Stability.Level.healthy.labelColor
         }
 
         return .primary

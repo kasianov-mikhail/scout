@@ -33,7 +33,7 @@ extension VersionSummary {
     var adoptionLine: String {
         let line = "\(release.adoption.formatted) of sessions"
 
-        guard let shippedAt = release.shippedAt else {
+        guard let shippedAt = release.shipped else {
             return line
         }
 
@@ -42,7 +42,7 @@ extension VersionSummary {
     }
 
     var shippedDate: String? {
-        release.shippedAt.map { DateFormatter.monthDay.string(from: $0).uppercased() }
+        release.shipped.map { DateFormatter.monthDay.string(from: $0).uppercased() }
     }
 }
 

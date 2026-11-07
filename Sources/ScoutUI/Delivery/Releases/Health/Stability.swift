@@ -58,7 +58,7 @@ extension Stability {
         }
 
         var displayTitle: String {
-            "\(title.prefix(1).uppercased())\(title.dropFirst())"
+            title.prefix(1).uppercased() + title.dropFirst()
         }
 
         var color: Color {
@@ -67,6 +67,15 @@ extension Stability {
             case .watch: .yellow
             case .atRisk: .orange
             case .critical: .red
+            }
+        }
+
+        var labelColor: Color {
+            switch self {
+            case .healthy: Color(red: 0x1E / 255, green: 0x7D / 255, blue: 0x34 / 255)
+            case .watch: Color(red: 0x8A / 255, green: 0x6D / 255, blue: 0x00 / 255)
+            case .atRisk: Color(red: 0xB3 / 255, green: 0x5C / 255, blue: 0x00 / 255)
+            case .critical: Color(red: 0xC4 / 255, green: 0x00 / 255, blue: 0x1A / 255)
             }
         }
     }

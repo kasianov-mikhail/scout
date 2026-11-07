@@ -79,13 +79,14 @@ struct VersionSummaryTests {
     private func makeRelease() -> ReleaseHealth {
         ReleaseHealth(
             id: "3.2.0",
-            shippedAt: shipped,
             freeSessions: 0.9982,
             freeUsers: Stability(0.9991),
             crashes: 14,
             hangs: 9,
             sessions: 48_210,
             adoption: 0.62,
+            shipped: shipped,
+            trend: [3, 5, 4, 6, 4, 7, 5],
             exits: ExitSummary(counts: [
                 .normal: 41_200,
                 .memoryPressure: 6_100,

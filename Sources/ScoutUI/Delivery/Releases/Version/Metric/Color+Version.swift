@@ -9,8 +9,8 @@
 import SwiftUI
 
 extension Color {
-    static let crashValue = Stability.Level.critical.accent
-    static let hangValue = Stability.Level.atRisk.accent
+    static let crashValue = Stability.Level.critical.labelColor
+    static let hangValue = Stability.Level.atRisk.labelColor
     static let resourceValue = Color(red: 0x36 / 255, green: 0x34 / 255, blue: 0xA3 / 255)
 
     static let stabilityCritical = Color(red: 0xFF / 255, green: 0xE5 / 255, blue: 0xE5 / 255)

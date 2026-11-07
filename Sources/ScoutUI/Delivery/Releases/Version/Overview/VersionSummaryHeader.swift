@@ -20,7 +20,7 @@ struct VersionSummaryHeader: View {
 
                 Text(verbatim: summary.statusLine)
                     .font(.system(size: 15))
-                    .foregroundStyle(summary.level.accent)
+                    .foregroundStyle(summary.level.labelColor)
 
                 Text(verbatim: summary.adoptionLine)
                     .font(.system(size: 15))
@@ -49,11 +49,11 @@ struct VersionSummaryHeader: View {
             Text(verbatim: summary.shippedDate ?? "—")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
         }
-        .foregroundStyle(summary.level.accent)
+        .foregroundStyle(summary.level.labelColor)
         .frame(width: 76, height: 76)
         .overlay {
             Circle()
-                .strokeBorder(summary.level.accent, style: StrokeStyle(lineWidth: 2, dash: [3, 3]))
+                .strokeBorder(summary.level.labelColor, style: StrokeStyle(lineWidth: 2, dash: [3, 3]))
         }
         .rotationEffect(.degrees(-12))
     }

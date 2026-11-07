@@ -4,14 +4,13 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
-//
 
 import SwiftUI
 
 struct ReleaseHealthView: View {
-    @Environment(\.database) private var database
+    @ObservedObject var provider: ReleaseHealthProvider
 
-    @StateObject var provider = ReleaseHealthProvider()
+    @Environment(\.database) private var database
 
     var body: some View {
         Group {
@@ -20,16 +19,8 @@ struct ReleaseHealthView: View {
                 ReleaseHealthViewPlaceholder()
                     .transition(.opacity)
             case .success(let releases):
-                if releases.isEmpty {
-                    Placeholder(
-                        text: "No releases",
-                        systemImage: "shippingbox",
-                        description: "Release health appears once your app reports versions"
-                    )
-                } else {
-                    content(releases: releases)
-                        .transition(.opacity)
-                }
+                content(releases: releases)
+                    .transition(.opacity)
             case .failure(let error):
                 ErrorView(description: Text(error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
@@ -37,30 +28,70 @@ struct ReleaseHealthView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+        .fetchTask([provider])
         .navigationTitle(en: "Releases")
         .inlineNavigationTitle()
-        .fetchTask([provider])
     }
 
+    @ViewBuilder
     private func content(releases: [ReleaseHealth]) -> some View {
-        let adoption = ReleaseAdoption(releases: releases)
-
-        return List {
-            ReleaseAdoptionHeader(adoption: adoption)
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
-
-            ForEach(releases) { release in
-                ReleaseRow(release: release, showsSeparator: release.id != releases.last?.id)
-                    .listRowInsets(.sideInsets)
+        if releases.isEmpty {
+            Placeholder(
+                text: "No releases",
+                systemImage: "shippingbox",
+                description: "Release health appears once your app reports versions"
+            )
+        } else {
+            InsetList {
+                ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
                     .listRowSeparator(.hidden)
+
+                ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                    ReleaseRow(release: release, isLast: index == releases.count - 1)
+                        .listRowSeparator(.hidden)
+                }
             }
+            .scrollContentBackground(.hidden)
         }
-        .listStyle(.plain)
     }
 }
 
-#Preview {
+private struct ReleaseSummary: View {
+    let adoption: ReleaseAdoption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(verbatim: adoption.headline)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+
+                Text(verbatim: "of sessions")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+            }
+
+            AdoptionBar(
+                versions: adoption.versions,
+                height: 32,
+                labelSize: 11,
+                labelWeight: .bold,
+                labelInset: 6
+            )
+            .padding(.top, 12)
+
+            AdoptionLegend(squareSize: 8, squareColor: nil)
+                .padding(.top, 8)
+        }
+        .padding(.vertical, 14)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+}
+
+#Preview("Releases") {
     NavigationStack {
         ReleaseHealthView(provider: .init(.success(.samples)))
     }
@@ -68,6 +99,6 @@ struct ReleaseHealthView: View {
 
 #Preview("Loading") {
     NavigationStack {
-        ReleaseHealthView(provider: .init())
+        ReleaseHealthView(provider: ReleaseHealthProvider())
     }
 }
