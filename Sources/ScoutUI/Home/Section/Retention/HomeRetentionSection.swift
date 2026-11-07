@@ -9,15 +9,21 @@ import Foundation
 import SwiftUI
 
 struct HomeRetentionSection: View {
-    let weeks: [RetentionWeek]
+    let weeks: [RetentionWeek]?
     let onSelect: () -> Void
 
-    private var maxInstalls: Int {
-        weeks.map(\.installs).max() ?? 0
+    var body: some View {
+        if let weeks {
+            content(weeks: weeks)
+        } else {
+            HomeRetentionSectionPlaceholder()
+        }
     }
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+    private func content(weeks: [RetentionWeek]) -> some View {
+        let maxInstalls = weeks.maxInstalls
+
+        return VStack(alignment: .leading, spacing: 0) {
             header
 
             ForEach(Array(weeks.enumerated()), id: \.element.id) { index, week in
@@ -117,6 +123,7 @@ private struct RetentionRowContent: View {
     NavigationStack {
         InsetList {
             HomeRetentionSection(weeks: .sample) {}
+            HomeRetentionSection(weeks: nil) {}
         }
     }
 }

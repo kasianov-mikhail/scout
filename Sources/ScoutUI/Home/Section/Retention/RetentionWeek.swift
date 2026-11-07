@@ -41,6 +41,10 @@ struct RetentionWeek: Identifiable {
 }
 
 extension [RetentionWeek] {
+    var maxInstalls: Int {
+        map(\.installs).max() ?? 0
+    }
+
     static let sample: [RetentionWeek] = {
         let end = Date().startOfDay
 

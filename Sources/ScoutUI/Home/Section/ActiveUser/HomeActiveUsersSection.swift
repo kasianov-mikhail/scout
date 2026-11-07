@@ -5,15 +5,24 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Scout
 import SwiftUI
 
 struct HomeActiveUsersSection: View {
-    let users: ActiveUsers
+    let users: ActiveUsers?
     let onShowAll: (ActiveUsers.Kind) -> Void
 
     @State private var selected: ActiveUsers.Kind = .dau
 
     var body: some View {
+        if let users {
+            content(users: users)
+        } else {
+            HomeActiveUsersSectionPlaceholder()
+        }
+    }
+
+    private func content(users: ActiveUsers) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Active Users") {
                 Button {
@@ -50,14 +59,14 @@ struct HomeActiveUsersSection: View {
                     .padding(.top, 14)
             }
 
-            stickiness
+            stickiness(users: users)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
         .listRowSeparator(.hidden)
     }
 
-    private var stickiness: some View {
+    private func stickiness(users: ActiveUsers) -> some View {
         HStack(spacing: 0) {
             Text(verbatim: "Stickiness ")
 
@@ -109,6 +118,7 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample) { _ in }
+            HomeActiveUsersSection(users: nil) { _ in }
         }
     }
 }

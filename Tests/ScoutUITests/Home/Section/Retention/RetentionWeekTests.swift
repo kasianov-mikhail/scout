@@ -19,6 +19,12 @@ struct RetentionWeekTests {
         #expect(weeks.map(\.kept) == [nil, 192, 217, 142])
     }
 
+    @Test("The largest install count comes from the cohorts")
+    func maxInstalls() {
+        #expect([RetentionWeek].sample.maxInstalls == 1142)
+        #expect([RetentionWeek]().maxInstalls == 0)
+    }
+
     @Test("Kept over installs reads the rate")
     func rate() throws {
         let weeks = [RetentionWeek].sample
