@@ -26,7 +26,10 @@ extension ActiveUsers {
             ],
             start: start,
             end: end,
-            monthlyUsers: activity.max { $0.date < $1.date }?.mau ?? 0
+            monthlyUsers: activity.max { $0.date < $1.date }?.mau ?? 0,
+            medianSession: nil,
+            newDevicesToday: false,
+            devicesThisWeek: deviceSeries.suffix(7).reduce(0, +)
         )
     }
 }

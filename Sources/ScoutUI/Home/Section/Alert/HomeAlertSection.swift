@@ -71,3 +71,27 @@ struct HomeAlertSection: View {
         }
     }
 }
+
+#Preview("Summary · 40") {
+    NavigationStack {
+        InsetList {
+            HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 2, armed: 31, muted: 7, total: 40)) {}
+        }
+    }
+}
+
+#Preview("Summary · firing") {
+    NavigationStack {
+        InsetList {
+            HomeAlertSection(history: .sample) {}
+        }
+    }
+}
+
+#Preview("Summary · many") {
+    NavigationStack {
+        InsetList {
+            HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 3, armed: 2, muted: 1, total: 6)) {}
+        }
+    }
+}

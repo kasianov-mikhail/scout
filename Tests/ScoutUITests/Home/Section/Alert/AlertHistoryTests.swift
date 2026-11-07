@@ -29,6 +29,20 @@ struct AlertHistoryTests {
         #expect(history.firing == 1)
     }
 
+    @Test("More than one firing rule adds a count")
+    func multipleFiring() {
+        let history = AlertHistory(
+            buckets: [],
+            rule: "Crash-free sessions",
+            firing: 3,
+            armed: 2,
+            muted: 1,
+            total: 6
+        )
+
+        #expect(history.summary == "Crash-free sessions +2 · 2 armed · 1 muted")
+    }
+
     @Test("One rule reads in the singular")
     func singular() {
         let history = AlertHistory(
