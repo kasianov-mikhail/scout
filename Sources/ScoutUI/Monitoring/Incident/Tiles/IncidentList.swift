@@ -82,7 +82,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
 
         return
             (Text(verbatim: "\(count) \(Element.kind.noun(for: count)) in \(groups) \(groups == 1 ? "group" : "groups") · ")
-            + Text(verbatim: Element.kind.captionName).foregroundColor(Element.kind.labelColor)
+            + Text(verbatim: Element.kind.captionName).foregroundColor(Element.kind.detailColor)
             + Text(verbatim: " is today"))
             .font(.system(size: 15))
             .foregroundStyle(Color(.systemGray))

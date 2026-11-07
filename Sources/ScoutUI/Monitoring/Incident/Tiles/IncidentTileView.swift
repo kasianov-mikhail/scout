@@ -46,14 +46,14 @@ struct IncidentTileView<Element: Incident>: View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(verbatim: "\(tile.count)")
                 .font(.system(size: 34, weight: .bold, design: .rounded))
-                .foregroundStyle(tile.isAccented ? Element.kind.labelColor : Color.primary)
+                .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
             if let change = tile.changeLabel {
                 Text(verbatim: change)
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(tile.isAccented ? Element.kind.labelColor : Color(.systemGray))
+                    .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color(.systemGray))
                     .lineLimit(1)
             }
         }

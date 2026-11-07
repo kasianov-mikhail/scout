@@ -36,17 +36,6 @@ extension IncidentKind {
         }
     }
 
-    var labelColor: Color {
-        switch self {
-        case .crash:
-            Color(red: 196 / 255, green: 0, blue: 26 / 255)
-        case .hang:
-            Color(red: 179 / 255, green: 92 / 255, blue: 0)
-        case .resource:
-            Color(red: 54 / 255, green: 52 / 255, blue: 163 / 255)
-        }
-    }
-
     var noun: String {
         switch self {
         case .crash:

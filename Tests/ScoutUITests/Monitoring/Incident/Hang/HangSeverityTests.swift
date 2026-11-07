@@ -28,8 +28,8 @@ struct HangSeverityTests {
     func labels() {
         #expect(HangSeverity.warning.label == "Hang")
         #expect(HangSeverity.critical.label == "Severe Hang")
-        #expect(HangSeverity.warning.shortLabel == "Hang")
-        #expect(HangSeverity.critical.shortLabel == "Severe")
+        #expect(HangSeverity.warning.detailLabel == "hang")
+        #expect(HangSeverity.critical.detailLabel == "severe")
         #expect(HangSeverity.warning.systemImage == "hourglass")
         #expect(HangSeverity.critical.systemImage == "exclamationmark.octagon")
     }

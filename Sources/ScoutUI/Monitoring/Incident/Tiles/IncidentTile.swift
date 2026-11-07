@@ -83,7 +83,7 @@ extension IncidentTile {
         guard let peak = records.compactMap({ $0 as? Hang }).max(by: { $0.duration < $1.duration }) else {
             return "Hang"
         }
-        return "\(peak.severity.shortLabel) · up to \(peak.duration.duration)"
+        return "\(peak.severity.detailLabel.capitalized) · up to \(peak.duration.duration)"
     }
 
     private var lastDate: Date? {

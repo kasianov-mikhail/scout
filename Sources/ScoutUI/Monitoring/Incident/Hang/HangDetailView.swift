@@ -4,74 +4,45 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
+//
 
 import Scout
 import SwiftUI
 
 struct HangDetailView: View {
     let hang: Hang
+    let group: IncidentGroup<Hang>?
+    let backtrace: BacktraceProvider?
+    let context: IncidentContextProvider?
 
-    @StateObject private var provider: BacktraceProvider
-    @Environment(\.database) private var database
-
-    init(hang: Hang, provider: BacktraceProvider? = nil) {
+    init(hang: Hang, group: IncidentGroup<Hang>? = nil, backtrace: BacktraceProvider? = nil, context: IncidentContextProvider? = nil) {
         self.hang = hang
-        self._provider = StateObject(wrappedValue: provider ?? BacktraceProvider(incidentID: hang.id))
+        self.group = group
+        self.backtrace = backtrace
+        self.context = context
     }
 
     var body: some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 0) {
-                if let date = hang.date {
-                    UTCTimestampText(date: date)
-                        .frame(height: 44)
-                }
-
-                HStack(spacing: 6) {
-                    Image(systemName: hang.severity.systemImage)
-                        .foregroundStyle(IncidentKind.hang.color)
-                    Text(verbatim: "\(hang.severity.label) · \(hang.duration.duration)")
-                        .fontWeight(.bold)
-                        .foregroundStyle(IncidentKind.hang.color)
-                }
-                Divider().padding(.vertical)
-                if let reason = hang.reason {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(verbatim: "BLOCKED ON:")
-                        Text(reason)
-                            .foregroundStyle(IncidentKind.hang.color)
-                    }
-                    .fontWeight(.bold)
-                }
-            }
-            .listRowSeparator(.hidden, edges: .top)
-            .padding(.bottom)
-
-            ContextSection(
-                context: hang,
-                timelineFocus: TimelineFocus(hang: hang)
-            )
-            StackTraceSection(
-                frames: hang.stackTrace,
-                caption: nil,
-                detail: provider.detail
-            )
-            if let detail = provider.detail {
-                BinaryImagesSection(images: detail.backtrace.images)
-            }
-        }
-        .navigationTint(IncidentKind.hang.color)
-        .exportToolbar(text: HangExport(hang: hang).text)
-        .monospacedNavigationTitle(en: hang.name)
-        .task {
-            await provider.fetchIfNeeded(in: database)
-        }
+        IncidentDetailView(element: hang, group: group, backtrace: backtrace, context: context)
+            .exportToolbar(text: HangExport(hang: hang).text)
     }
 }
 
-#Preview {
+#Preview("Hang") {
     NavigationStack {
-        HangDetailView(hang: .sample, provider: BacktraceProvider(.success(.sample), incidentID: ""))
+        HangDetailView(
+            hang: .sample,
+            group: Hang.sampleGroup,
+            backtrace: BacktraceProvider(.success(.hangSample), incidentID: ""),
+            context: IncidentContextProvider(.success(.sample), sessionID: nil, deviceID: nil)
+        )
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Hang loading") {
+    NavigationStack {
+        HangDetailView(hang: .sample, group: Hang.sampleGroup)
     }
     .environmentObject(Tint())
 }

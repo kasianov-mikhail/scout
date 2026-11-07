@@ -4,65 +4,44 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
+//
 
 import Scout
 import SwiftUI
 
 struct ResourceDetailView: View {
     let resource: ResourceException
+    let group: IncidentGroup<ResourceException>?
+    let backtrace: BacktraceProvider?
+    let context: IncidentContextProvider?
 
-    @StateObject private var provider: BacktraceProvider
-    @Environment(\.database) private var database
-
-    init(resource: ResourceException, provider: BacktraceProvider? = nil) {
+    init(resource: ResourceException, group: IncidentGroup<ResourceException>? = nil, backtrace: BacktraceProvider? = nil, context: IncidentContextProvider? = nil) {
         self.resource = resource
-        self._provider = StateObject(wrappedValue: provider ?? BacktraceProvider(incidentID: resource.id))
+        self.group = group
+        self.backtrace = backtrace
+        self.context = context
     }
 
     var body: some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 0) {
-                if let date = resource.date {
-                    UTCTimestampText(date: date)
-                        .frame(height: 44)
-                }
-
-                if let reason = resource.reason {
-                    Text(verbatim: reason)
-                        .fontWeight(.bold)
-                        .foregroundStyle(IncidentKind.resource.color)
-                }
-            }
-            .listRowSeparator(.hidden, edges: .top)
-            .padding(.bottom)
-
-            ContextSection(
-                context: resource,
-                timelineFocus: TimelineFocus(resource: resource)
-            )
-            StackTraceSection(
-                frames: resource.stackTrace,
-                caption: "Unsymbolicated",
-                detail: provider.detail
-            )
-            if let detail = provider.detail {
-                BinaryImagesSection(images: detail.backtrace.images)
-            }
-        }
-        .navigationTint(IncidentKind.resource.color)
-        .monospacedNavigationTitle(en: resource.name)
-        .task {
-            await provider.fetchIfNeeded(in: database)
-        }
+        IncidentDetailView(element: resource, group: group, backtrace: backtrace, context: context)
     }
 }
 
-#Preview {
+#Preview("Resource") {
     NavigationStack {
         ResourceDetailView(
             resource: .sample,
-            provider: BacktraceProvider(.success(.sample), incidentID: "")
+            group: ResourceException.sampleGroup,
+            backtrace: BacktraceProvider(.success(.resourceSample), incidentID: ""),
+            context: IncidentContextProvider(.success(.sample), sessionID: nil, deviceID: nil)
         )
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Resource loading") {
+    NavigationStack {
+        ResourceDetailView(resource: .sample, group: ResourceException.sampleGroup)
     }
     .environmentObject(Tint())
 }

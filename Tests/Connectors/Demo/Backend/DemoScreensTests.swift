@@ -89,4 +89,22 @@ import Testing
         #expect(!rail.installs.isEmpty)
         #expect(!provider.entries.isEmpty, "device timeline renders no rows")
     }
+
+    @Test func sessionTimelineLightsUp() async throws {
+        let records = try await database.read(
+            matching: RecordQuery(recordType: Session.self), fields: nil, limit: 1
+        ).records
+        let record = try #require(records.first)
+        let storedSessionID: String? = record["session_id"]
+        let sessionID = try #require(storedSessionID.flatMap(UUID.init))
+        let storedDeviceID: String? = record["device_id"]
+        let deviceID = storedDeviceID.flatMap(UUID.init)
+
+        let provider = SessionTimelineProvider(sessionID: sessionID, deviceID: deviceID)
+        await provider.fetchAgain(in: database)
+
+        let timeline = try #require(try provider.result?.get())
+        #expect(!timeline.rows.isEmpty, "session timeline renders no rows")
+        #expect(timeline.rows.first?.kind == .start)
+    }
 }
