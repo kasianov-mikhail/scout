@@ -41,17 +41,17 @@ extension EntityStore {
         async let gaps = query(VisitGapEntry.recordType).series(
             metric: .sum,
             group: "gap",
-            in: range
+            range: range
         )
         async let versions = query(VisitGapEntry.recordType).series(
             metric: .sum,
             group: "app_version",
-            in: range
+            range: range
         )
         async let sessions = query(SessionEntry.recordType).series(
             metric: .sum,
             group: CatalogEntry.lifecycleKey,
-            in: range
+            range: range
         )
 
         return try await VisitGapFold(gaps: gaps, versions: versions, sessions: sessions)
@@ -68,7 +68,7 @@ extension EntityStore {
         let points = try await query(SessionEntry.recordType).series(
             metric: .sum,
             group: "device_id",
-            in: lower..<upper
+            range: lower..<upper
         )
         .filter(\.hasGroup)
 

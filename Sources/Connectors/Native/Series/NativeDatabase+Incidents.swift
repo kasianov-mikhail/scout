@@ -13,7 +13,7 @@ extension NativeDatabase: IncidentReader {
     func incidentIndex(recordType: String, in range: Range<Date>) async throws -> IncidentIndex? {
         let points = try await resolve()
             .query(recordType)
-            .series(metric: .sum, group: CatalogEntry.incidentKey, in: range)
+            .series(metric: .sum, group: CatalogEntry.incidentKey, range: range)
 
         let unkeyed = points.filter { IncidentKey(key: $0.group) == nil }.map(\.date)
 

@@ -32,7 +32,7 @@ struct NativeLifecycleScanner {
                     read.field,
                     metric: .sum,
                     group: read.group,
-                    in: read.range
+                    range: read.range
                 )
             }
 
