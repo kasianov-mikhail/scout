@@ -16,17 +16,17 @@ extension NativeDatabase: DeviceReader {
         async let systems = store.query(SessionEntry.recordType).series(
             metric: .sum,
             group: CatalogEntry.deviceSystem,
-            in: range
+            range: range
         )
         async let crashes = store.query(CrashEntry.recordType).series(
             metric: .sum,
             group: "device_id",
-            in: range
+            range: range
         )
         let sessions = try await store.query(SessionEntry.recordType).series(
             metric: .sum,
             group: "device_id",
-            in: range
+            range: range
         )
         let devices = try await store.fetch(
             entity: DeviceEntry.recordType,

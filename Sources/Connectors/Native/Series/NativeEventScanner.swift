@@ -22,7 +22,7 @@ struct NativeEventScanner {
             let points = try await named.series(
                 metric: .sum,
                 group: "name",
-                in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
+                range: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             )
 
             var totals = SeriesTotals()

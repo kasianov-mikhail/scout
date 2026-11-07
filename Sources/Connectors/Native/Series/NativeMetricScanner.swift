@@ -61,7 +61,7 @@ struct NativeMetricScanner {
             "value",
             metric: query.reduce.metric,
             group: CatalogEntry.metricSeriesKey,
-            in: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
+            range: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
         )
 
         return points.compactMap {

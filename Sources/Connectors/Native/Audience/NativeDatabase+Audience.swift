@@ -18,12 +18,12 @@ extension NativeDatabase: AudienceReader {
         async let gaps = store.query(VisitGapEntry.recordType).series(
             metric: .sum,
             group: "gap",
-            in: span
+            range: span
         )
         async let versions = store.query(VisitGapEntry.recordType).series(
             metric: .sum,
             group: "app_version",
-            in: span
+            range: span
         )
 
         let sessions = try await store.sessionVersions(from: gaps, in: span)
@@ -43,7 +43,7 @@ extension NativeDatabase: AudienceReader {
         let marks = try await store.query(RetentionMarkEntry.recordType).series(
             metric: .sum,
             group: CatalogEntry.retentionKey,
-            in: range
+            range: range
         )
 
         return [RetentionCohort](tallies: marks.compactMap(RetentionTally.init), now: Date())
@@ -59,7 +59,7 @@ extension EntityStore {
         return try await query(SessionEntry.recordType).series(
             metric: .sum,
             group: CatalogEntry.lifecycleKey,
-            in: first..<span.upperBound
+            range: first..<span.upperBound
         )
     }
 
@@ -67,7 +67,7 @@ extension EntityStore {
         let visits = try await query(VisitEntry.recordType).series(
             metric: .sum,
             group: "device_id",
-            in: range.lookback..<range.upperBound
+            range: range.lookback..<range.upperBound
         )
 
         return ActivityPoint.points(
