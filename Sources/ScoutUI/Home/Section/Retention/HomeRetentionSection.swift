@@ -49,6 +49,7 @@ struct HomeRetentionSection: View {
                 .font(.footnote)
                 .foregroundStyle(Color(.systemGray))
         }
+        .padding(.top, 12)
         .frame(height: 70)
         .overlay(alignment: .bottom) {
             Rectangle()

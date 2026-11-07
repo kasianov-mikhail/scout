@@ -15,7 +15,7 @@ struct HomeReleaseSection: View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Releases") {
                 Button(action: onShowAll) {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    Image(systemName: "arrow.up.right.and.arrow.down.left")
                         .font(.system(size: 20))
                         .frame(width: 44, height: 44)
                         .padding(.trailing, -12)

@@ -19,7 +19,7 @@ struct HomeActiveUsersSection: View {
                 Button {
                     onShowAll(selected)
                 } label: {
-                    Image(systemName: "arrow.up.left.and.arrow.down.right")
+                    Image(systemName: "arrow.up.right.and.arrow.down.left")
                         .font(.system(size: 20))
                         .frame(width: 44, height: 44)
                         .padding(.trailing, -12)

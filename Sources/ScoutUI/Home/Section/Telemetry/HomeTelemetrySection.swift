@@ -54,6 +54,7 @@ struct HomeTelemetrySection: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .font(.callout.weight(.bold))
+        .padding(.top, 12)
         .frame(height: 70)
         .overlay(alignment: .bottom) {
             Rectangle()
