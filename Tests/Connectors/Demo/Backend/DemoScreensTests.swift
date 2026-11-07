@@ -83,10 +83,10 @@ import Testing
 
         let provider = TimelineProvider()
         await provider.start(
-            feed: TimelineFeed(deviceID: deviceID, database: database), anchorEvent: nil, eventName: nil)
+            feed: TimelineFeed(deviceID: deviceID, database: database), anchor: nil, focus: nil)
 
         let rail = try #require(try provider.result?.get())
         #expect(!rail.installs.isEmpty)
-        #expect(!provider.items.isEmpty, "device timeline renders no rows")
+        #expect(!provider.entries.isEmpty, "device timeline renders no rows")
     }
 }

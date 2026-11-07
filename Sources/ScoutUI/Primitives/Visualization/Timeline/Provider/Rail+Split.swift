@@ -9,14 +9,23 @@ import Foundation
 import Scout
 
 extension Rail {
-    func split(at anchor: Event?) -> (older: [UUID], newer: [UUID])? {
-        guard let anchor, let anchorInstallID = anchor.installID else {
+    func split(anchor: TimelineAnchor?) -> (older: [UUID], newer: [UUID])? {
+        guard let anchor else {
             return nil
         }
 
         let sorted = installs.map(\.install)
+        let anchorIndex: Int?
 
-        guard let anchorIndex = sorted.firstIndex(where: { $0.installID == anchorInstallID }) else {
+        if let installID = anchor.installID {
+            anchorIndex = sorted.firstIndex { $0.installID == installID }
+        } else if let date = anchor.date {
+            anchorIndex = sorted.lastIndex { ($0.date ?? .distantPast) <= date }
+        } else {
+            anchorIndex = nil
+        }
+
+        guard let anchorIndex else {
             return nil
         }
 
@@ -26,5 +35,12 @@ extension Rail {
         let newer = sorted[newerStart...].compactMap(\.installID)
 
         return (Array(older), Array(newer))
+    }
+
+    func split(at anchor: Event?) -> (older: [UUID], newer: [UUID])? {
+        guard let anchor, anchor.installID != nil else {
+            return nil
+        }
+        return split(anchor: TimelineAnchor(date: anchor.date, installID: anchor.installID))
     }
 }

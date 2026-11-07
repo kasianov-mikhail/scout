@@ -11,10 +11,10 @@ package struct Version {
     package static let installMarker = "VersionInstall"
     package static let crashMarker = "VersionCrash"
 
-    let appVersion: String?
+    package let appVersion: String?
     let buildNumber: String?
-    let launchID: UUID?
-    let date: Date?
+    package let launchID: UUID?
+    package let date: Date?
     let id: String
 
     package init(appVersion: String?, buildNumber: String?, launchID: UUID?, date: Date?, id: String) {

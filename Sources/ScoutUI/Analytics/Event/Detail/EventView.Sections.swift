@@ -100,7 +100,7 @@ extension EventView {
                 Text(verbatim: "Timeline")
                 Spacer()
             } destination: {
-                Timeline(deviceID: deviceID, event: event)
+                Timeline(deviceID: deviceID, focus: TimelineFocus(event: event))
             }
         }
     }

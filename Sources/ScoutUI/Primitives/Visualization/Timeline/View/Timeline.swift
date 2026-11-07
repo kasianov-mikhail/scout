@@ -5,112 +5,100 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Foundation
 import Scout
 import SwiftUI
 
 struct Timeline: View {
     let deviceID: UUID
-    var event: Event? = nil
-    var highlight: Color = .accentColor
+    let focus: TimelineFocus?
 
-    @Environment(\.database) var database
-    @StateObject var provider = TimelineProvider()
+    @Environment(\.database) private var database
+    @StateObject var provider: TimelineProvider
 
-    @State private var scope: TimelineScope = .all
-    @State private var showLegend = false
-    @State private var expandedKind: LegendKind?
+    init(deviceID: UUID, focus: TimelineFocus? = nil, provider: TimelineProvider? = nil) {
+        self.deviceID = deviceID
+        self.focus = focus
+        self._provider = StateObject(wrappedValue: provider ?? TimelineProvider())
+    }
 
     var body: some View {
         Group {
             switch provider.result {
             case nil:
-                RingIndicator().frame(maxHeight: .infinity)
+                TimelinePlaceholder()
+                    .transition(.opacity)
             case .failure(let error):
-                errorView(Text(verbatim: error.localizedDescription))
-            case .success where provider.items.isEmpty:
-                errorView(Text(verbatim: "The timeline couldn't be loaded."))
+                ErrorView(description: Text(verbatim: error.localizedDescription)) {
+                    await load()
+                }
+            case .success where provider.entries.isEmpty:
+                Placeholder(
+                    text: "No timeline",
+                    systemImage: "calendar.day.timeline.left",
+                    description: "Activity appears here once this device reports a launch"
+                )
             case .success:
-                list
+                list.transition(.opacity)
             }
         }
-        .navigationTitle(en: "Multi-Rail")
+        .animation(.easeOut(duration: 0.2), value: isLoading)
+        .navigationTitle(en: "Timeline")
         .inlineNavigationTitle()
-        .toolbar {
-            if event != nil {
-                ToolbarItem(placement: .principal) {
-                    Picker("", selection: $scope) {
-                        ForEach(TimelineScope.allCases) { scope in
-                            Text(verbatim: scope.title).tag(scope)
-                        }
-                    }
-                    .pickerStyle(.segmented)
-                    .frame(width: 160)
-                }
-            }
-
-            ToolbarItem(placement: .topBarTrailing) {
-                if showsList {
-                    Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
-                            showLegend.toggle()
-                            if !showLegend { expandedKind = nil }
-                        }
-                    } label: {
-                        Image(systemName: showLegend ? "info.circle.fill" : "info.circle")
-                    }
-                }
-            }
-        }
         .exportToolbar(text: provider.exportText)
         .task(load)
-        .onChange(of: scope) { _ in
-            Task(operation: load)
-        }
-    }
-
-    private var showsList: Bool {
-        if case .success = provider.result, !provider.items.isEmpty {
-            return true
-        }
-        return false
     }
 
     private var list: some View {
-        let items = provider.items
-        let anchorIndex = event.flatMap { event in items.firstIndex { $0.id == event.id } }
-
-        return TimelineList(
-            items: items,
-            highlightedID: event?.id,
-            highlightColor: highlight,
-            older: { RailPagination(lane: provider.older, result: $provider.result) },
-            newer: { RailPagination(lane: provider.newer, result: $provider.result) }
-        )
-        .anchoredScroll(id: anchorIndex.map { items[$0] }, revision: anchorIndex ?? 0)
-        .overlay(alignment: .top) {
-            if showLegend {
-                Legend(kinds: LegendKind.allCases, expanded: $expandedKind)
-                    .background(.bar)
-                    .transition(.move(edge: .top).combined(with: .opacity))
+        TimelineList(
+            entries: provider.entries,
+            focusID: focus?.id,
+            older: {
+                RailPagination(lane: provider.older, result: $provider.result)
+            },
+            newer: {
+                RailPagination(lane: provider.newer, result: $provider.result)
             }
-        }
+        )
     }
 
-    private func errorView(_ description: Text) -> some View {
-        ErrorView(description: description) {
-            Task(operation: load)
+    private var isLoading: Bool {
+        provider.result == nil
+    }
+
+    private var anchor: TimelineAnchor? {
+        guard let focus else {
+            return nil
         }
+        return TimelineAnchor(date: focus.date, installID: focus.installID)
     }
 
     private func load() async {
-        let feed = TimelineFeed(
-            deviceID: deviceID,
-            database: database
-        )
+        guard !ProcessInfo.processInfo.isPreview else {
+            return
+        }
+
         await provider.start(
-            feed: feed,
-            anchorEvent: event,
-            eventName: scope == .event ? event?.name : nil
+            feed: TimelineFeed(deviceID: deviceID, database: database),
+            anchor: anchor,
+            focus: focus
         )
+    }
+}
+
+#Preview("Timeline") {
+    let sample = TimelineSample.sample
+    let provider = TimelineProvider()
+    provider.incidents = sample.incidents
+    provider.result = .success(sample.rail)
+
+    return NavigationStack {
+        Timeline(deviceID: UUID(), focus: sample.focus, provider: provider)
+    }
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        Timeline(deviceID: UUID())
     }
 }

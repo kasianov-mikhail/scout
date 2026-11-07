@@ -13,57 +13,62 @@ import SwiftUI
 final class TimelineProvider: ObservableObject {
     @Published var result: Result<Rail, Error>? {
         didSet {
-            switch result {
-            case .success(let rail):
-                items = TimelineItem.items(from: rail)
-                exportText = TimelineExport(rail: rail).text
-            case .failure, nil:
-                items = []
-                exportText = nil
-            }
+            updateDerivedState()
         }
     }
 
-    // Derived from `result` once per change, so view body re-evaluations
-    // (legend toggles, scroll) don't rebuild the row list from the tree.
-    private(set) var items: [TimelineItem] = []
+    private(set) var entries: [TimelineEntry] = []
 
-    // The Markdown export of `result`, rebuilt once per change rather than
-    // on every toolbar render.
     private(set) var exportText: String?
 
     let older = RailLane(ascending: false)
     let newer = RailLane(ascending: true)
 
-    // Identifies the latest `start` call; a superseded call that survives its
-    // awaits must not publish a result over the newer one's.
+    var incidents = TimelineIncidents()
+
+    private var focus: TimelineFocus?
+
     private var startToken = Epoch()
 
-    func start(feed: TimelineFeed, anchorEvent: Event?, eventName: String?) async {
+    func start(feed: TimelineFeed, anchor: TimelineAnchor?, focus: TimelineFocus?) async {
         let token = Epoch()
         startToken = token
+        self.focus = focus
+        incidents = TimelineIncidents()
+
+        for lane in [older, newer] {
+            lane.reset(anchor: anchor?.date)
+        }
 
         result = nil
 
-        for lane in [older, newer] {
-            lane.eventName = eventName
-            lane.anchorDate = anchorEvent?.date
-        }
-
         do {
-            let rail = try await feed.rail()
+            async let rail = feed.rail()
+            async let fetched = feed.incidents()
+
+            let railValue = try await rail
+            let fetchedValue = try await fetched
+            let versions = try await feed.versions(installIDs: railValue.installs.compactMap(\.install.installID))
+
+            guard token == startToken else {
+                return
+            }
+
+            incidents = TimelineIncidents(
+                crashes: fetchedValue.crashes,
+                hangs: fetchedValue.hangs,
+                resources: fetchedValue.resources,
+                versions: versions
+            )
 
             let split: (older: [UUID], newer: [UUID])
-            if let anchored = rail.split(at: anchorEvent) {
+            if let anchored = railValue.split(anchor: anchor) {
                 split = anchored
             } else {
-                // No usable anchor (no event, or its install isn't in the
-                // rail yet): load the whole timeline from its start through
-                // the ascending lane instead of spinning forever.
                 for lane in [older, newer] {
                     lane.anchorDate = nil
                 }
-                split = (older: [], newer: rail.installs.compactMap(\.install.installID))
+                split = (older: [], newer: railValue.installs.compactMap(\.install.installID))
             }
 
             older.pendingInstalls = split.older
@@ -72,18 +77,16 @@ final class TimelineProvider: ObservableObject {
             var sessions: [Session] = []
             var events: [Event] = []
 
-            // Count only events that will actually render: `TimelineItem.items`
-            // drops events without a date, so raw counts overestimate the seed.
             while events.count(where: { $0.date != nil }) < 50 {
-                // A newer `start` owns the lanes now; bail out before touching
-                // them, or this loop would consume the chunks it seeds with.
                 guard token == startToken else {
                     throw CancellationError()
                 }
 
                 let lanes = [older, newer].filter { !$0.pendingInstalls.isEmpty }
 
-                guard !lanes.isEmpty else { break }
+                guard !lanes.isEmpty else {
+                    break
+                }
 
                 try await withThrowingTaskGroup(of: (sessions: [Session], events: [Event]).self) { group in
                     for lane in lanes {
@@ -102,13 +105,32 @@ final class TimelineProvider: ObservableObject {
                 return
             }
 
-            result = .success(rail.merged(sessions: sessions, events: events))
+            result = .success(railValue.merged(sessions: sessions, events: events))
         } catch is CancellationError {
-            // A newer `start` reset the lanes mid-seed; it owns the result now.
+            return
         } catch {
             if token == startToken {
                 result = .failure(error)
             }
+        }
+    }
+
+    private func updateDerivedState() {
+        switch result {
+        case .success(let rail):
+            entries =
+                TimelineRows(
+                    rail: rail,
+                    incidents: incidents,
+                    focus: focus,
+                    now: Date(),
+                    reachesStart: older.pendingInstalls.isEmpty && !older.isLoading,
+                    reachesEnd: newer.pendingInstalls.isEmpty && !newer.isLoading
+                ).entries
+            exportText = TimelineExport(rail: rail).text
+        case .failure, nil:
+            entries = []
+            exportText = nil
         }
     }
 }
@@ -124,4 +146,16 @@ extension TimelineFeed {
             launches: launches
         )
     }
+}
+
+struct TimelineAnchor {
+    let date: Date?
+    let installID: UUID?
+}
+
+struct TimelineIncidents {
+    var crashes: [Crash] = []
+    var hangs: [Hang] = []
+    var resources: [ResourceException] = []
+    var versions: [Version] = []
 }
