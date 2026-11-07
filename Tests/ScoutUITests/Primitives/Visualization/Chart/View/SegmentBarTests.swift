@@ -82,4 +82,12 @@ struct SegmentBarTests {
 
         #expect(fitted.reduce(0) { $0 + $1.count } == 25)
     }
+
+    @Test("Sums segment counts into a total")
+    func total() {
+        let segments = makeSegments([5, 3, 2])
+
+        #expect(segments.total == 10)
+        #expect([Segment]().total == 0)
+    }
 }

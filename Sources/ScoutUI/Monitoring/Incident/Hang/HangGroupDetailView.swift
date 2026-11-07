@@ -17,48 +17,46 @@ struct HangGroupDetailView: View {
         _occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
         _breakdown = StateObject(
             wrappedValue: breakdown
-                ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+                ?? IncidentBreakdownProvider(
+                    deviceIDs: group.deviceIDs,
+                    sessionIDs: group.sessionIDs
+                )
+        )
     }
 
     init(occurrences: IncidentOccurrencesProvider<Hang>) {
         _occurrences = StateObject(wrappedValue: occurrences)
         _breakdown = StateObject(
-            wrappedValue: IncidentBreakdownProvider(deviceIDs: occurrences.group.deviceIDs, sessionIDs: occurrences.group.sessionIDs))
+            wrappedValue: IncidentBreakdownProvider(
+                deviceIDs: occurrences.group.deviceIDs,
+                sessionIDs: occurrences.group.sessionIDs
+            )
+        )
     }
 
     var body: some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 16) {
-                    Readout(title: "Duration", value: occurrences.group.durationText, color: IncidentKind.hang.color)
-                    Readout(title: "Occurrences", value: occurrences.group.occurrencesText)
-                    Readout(title: "Devices", value: occurrences.group.devicesText)
-                    Readout(title: "Sessions", value: occurrences.group.sessionsText)
+        Group {
+            if let records = occurrences.records {
+                if records.isEmpty {
+                    Placeholder(text: "No occurrences")
+                } else {
+                    content(records: records)
+                        .transition(.opacity)
                 }
-
-                if let first = occurrences.group.firstDate, let last = occurrences.group.lastDate {
-                    Text(verbatim: "\(occurrences.group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.gray)
+            } else if let error = occurrences.error {
+                ErrorView(description: error.localizedDescription) {
+                    await occurrences.fetchIfNeeded(in: database)
                 }
-            }
-            .padding(.bottom)
-
-            IncidentBreakdownSection(breakdown: breakdown, records: occurrences.group.records, row: occurrenceRow)
-
-            Header(title: "Occurrences")
-
-            ForEach(occurrences.group.records, content: occurrenceRow)
-
-            if let cursor = occurrences.cursor {
-                PaginationFooter {
-                    await occurrences.fetchMore(cursor: cursor, in: database)
-                }
+            } else {
+                IncidentGroupPlaceholder(kind: .hang)
+                    .transition(.opacity)
             }
         }
-        .navigationTint(IncidentKind.hang.color)
-        .exportToolbar(text: HangGroupExport(group: occurrences.group).text, tint: .primary)
-        .monospacedNavigationTitle(en: occurrences.group.name)
+        .animation(.easeOut(duration: 0.2), value: occurrences.records == nil)
+        .message($occurrences.message)
+        .toolbarBackground(IncidentKind.hang.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .monospacedNavigationTitle(en: occurrences.name)
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }
@@ -69,18 +67,48 @@ struct HangGroupDetailView: View {
         }
     }
 
+    private func content(records: [Hang]) -> some View {
+        IncidentSummaryView(
+            summary: summary(records: records),
+            records: records,
+            row: occurrenceRow
+        ) {
+            IncidentOccurrencesView(occurrences: occurrences, row: occurrenceRow)
+        }
+        .exportToolbar(text: HangGroupExport(group: occurrences.group).text, tint: .primary)
+    }
+
+    private func summary(records: [Hang]) -> IncidentSummary {
+        let group = occurrences.group
+        return IncidentSummary(
+            kind: .hang,
+            label: group.severity.label,
+            message: group.peak.reason,
+            group: group,
+            breakdown: breakdown.value,
+            cards: [
+                .occurrences(records: records, value: group.occurrencesText),
+                .longest(records: records),
+            ],
+            stack: group.peak.stackTrace
+        )
+    }
+
     private func occurrenceRow(_ hang: Hang) -> some View {
         Row {
             if let date = hang.date {
-                UTCTimestampText(date: date, size: 14)
+                Text(verbatim: date.relativeString)
+                    .font(.system(size: 15))
             }
 
             Spacer()
 
-            Text(verbatim: hang.duration.duration)
-                .font(.footnote)
-                .monospacedDigit()
-                .foregroundStyle(IncidentKind.hang.color)
+            if let label = breakdown.value?.occurrenceLabel(record: hang) {
+                Text(verbatim: label)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+                    .lineLimit(1)
+            }
         } destination: {
             HangDetailView(hang: hang)
         }

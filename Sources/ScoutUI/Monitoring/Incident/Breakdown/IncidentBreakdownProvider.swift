@@ -13,10 +13,18 @@ import SwiftUI
 final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
     @Published var result: ProviderResult<IncidentBreakdown>?
 
+    var value: IncidentBreakdown? {
+        if case .success(let value) = result {
+            return value
+        }
+        return nil
+    }
+
     private var deviceIDs: [UUID]
     private var sessionIDs: [UUID]
     private var modelsByDevice = ResolvedLabels()
     private var versionsBySession = ResolvedLabels()
+    private var appVersionsBySession = ResolvedLabels()
 
     init(_ result: ProviderResult<Output>? = nil, deviceIDs: [UUID], sessionIDs: [UUID]) {
         self.deviceIDs = deviceIDs
@@ -38,7 +46,10 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
 
     func fetch(in database: RecordReader) async throws -> IncidentBreakdown {
         let missingDevices = modelsByDevice.missing(ids: deviceIDs)
-        let missingSessions = versionsBySession.missing(ids: sessionIDs)
+        let missingSessions = Array(
+            Set(versionsBySession.missing(ids: sessionIDs))
+                .union(appVersionsBySession.missing(ids: sessionIDs))
+        )
 
         async let models = IncidentLabelLookup<Device>(
             database: database,
@@ -47,27 +58,30 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
         )
         .labels(ids: missingDevices)
 
-        async let versions = IncidentLabelLookup<Session>(
+        async let sessions = IncidentLabelLookup<Session>(
             database: database,
             idField: "session_id",
             labelField: "os_version"
         )
-        .labels(ids: missingSessions)
+        .labels(ids: missingSessions, fields: ["os_version", "app_version"])
 
         let foundModels = try await models
-        let foundVersions = try await versions
+        let foundSessions = try await sessions
 
         modelsByDevice.merge(found: foundModels)
-        versionsBySession.merge(found: foundVersions)
+        versionsBySession.merge(found: foundSessions["os_version"] ?? ResolvedLabels())
+        appVersionsBySession.merge(found: foundSessions["app_version"] ?? ResolvedLabels())
 
         let deviceModels = modelsByDevice.labels(ids: deviceIDs)
         let sessionVersions = versionsBySession.labels(ids: sessionIDs)
+        let sessionAppVersions = appVersionsBySession.labels(ids: sessionIDs)
 
         return IncidentBreakdown(
             devices: IncidentBreakdown.segments(from: Array(deviceModels.values)),
             osVersions: IncidentBreakdown.segments(from: Array(sessionVersions.values)),
+            appVersions: IncidentBreakdown.segments(from: Array(sessionAppVersions.values)),
             modelsByDevice: deviceModels,
-            versionsBySession: sessionVersions
+            appVersionsBySession: sessionAppVersions
         )
     }
 }

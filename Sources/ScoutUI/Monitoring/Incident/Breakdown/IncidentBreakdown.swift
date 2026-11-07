@@ -11,14 +11,41 @@ import SwiftUI
 struct IncidentBreakdown: Equatable {
     let devices: [Segment]
     let osVersions: [Segment]
+    let appVersions: [Segment]
     let modelsByDevice: [UUID: String]
-    let versionsBySession: [UUID: String]
+    let appVersionsBySession: [UUID: String]
 
-    init(devices: [Segment], osVersions: [Segment], modelsByDevice: [UUID: String] = [:], versionsBySession: [UUID: String] = [:]) {
+    init(devices: [Segment], osVersions: [Segment], appVersions: [Segment], modelsByDevice: [UUID: String] = [:], appVersionsBySession: [UUID: String] = [:]) {
         self.devices = devices
         self.osVersions = osVersions
+        self.appVersions = appVersions
         self.modelsByDevice = modelsByDevice
-        self.versionsBySession = versionsBySession
+        self.appVersionsBySession = appVersionsBySession
+    }
+}
+
+extension IncidentBreakdown {
+    var affected: [IncidentAffected] {
+        [
+            IncidentAffected(title: IncidentAffected.titles[0], segments: devices, usesDeviceNames: true),
+            IncidentAffected(title: IncidentAffected.titles[1], segments: osVersions),
+            IncidentAffected(title: IncidentAffected.titles[2], segments: appVersions),
+        ]
+        .filter { !$0.segments.isEmpty }
+    }
+
+    func occurrenceLabel<Element: Incident>(record: Element) -> String? {
+        var parts: [String] = []
+        if let detail = record.summaryDetail {
+            parts.append(detail)
+        }
+        if let deviceID = record.deviceID, let model = modelsByDevice[deviceID] {
+            parts.append(DeviceModel(identifier: model).name)
+        }
+        if Element.kind != .resource, let sessionID = record.sessionID, let version = appVersionsBySession[sessionID] {
+            parts.append(version)
+        }
+        return parts.isEmpty ? nil : parts.joined(separator: " · ")
     }
 }
 
@@ -43,45 +70,6 @@ extension IncidentBreakdown {
 }
 
 extension IncidentBreakdown {
-    enum Dimension {
-        case devices
-        case osVersions
-    }
-
-    func records<Element: SessionContext>(from records: [Element], in dimension: Dimension, matching segment: Segment) -> [Element] {
-        guard segment.kind == .other else {
-            return records.filter { label(of: $0, in: dimension) == segment.value }
-        }
-
-        let named = Set(segments(in: dimension).compactMap(\.value))
-        return records.filter { record in
-            guard let label = label(of: record, in: dimension) else {
-                return false
-            }
-            return !named.contains(label)
-        }
-    }
-
-    private func segments(in dimension: Dimension) -> [Segment] {
-        switch dimension {
-        case .devices:
-            devices
-        case .osVersions:
-            osVersions
-        }
-    }
-
-    private func label<Element: SessionContext>(of record: Element, in dimension: Dimension) -> String? {
-        switch dimension {
-        case .devices:
-            record.deviceID.flatMap { modelsByDevice[$0] }
-        case .osVersions:
-            record.sessionID.flatMap { versionsBySession[$0] }
-        }
-    }
-}
-
-extension IncidentBreakdown {
     static var sample: IncidentBreakdown {
         IncidentBreakdown(
             devices: segments(
@@ -91,7 +79,9 @@ extension IncidentBreakdown {
                     ]),
             osVersions: segments(
                 from: Array(repeating: "iOS 17.4", count: 6) + Array(repeating: "iOS 17.3", count: 3)
-                    + Array(repeating: "iOS 16.7", count: 2))
+                    + Array(repeating: "iOS 16.7", count: 2)),
+            appVersions: segments(
+                from: Array(repeating: "3.2.0", count: 10) + Array(repeating: "3.1.4", count: 2))
         )
     }
 }

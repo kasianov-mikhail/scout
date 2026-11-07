@@ -16,6 +16,13 @@ protocol Incident: Identifiable, Comparable, SessionContext where ID == String {
     var reason: String? { get }
     var stackTrace: [String] { get }
     var date: Date? { get }
+    var summaryDetail: String? { get }
+}
+
+extension Incident {
+    var summaryDetail: String? {
+        nil
+    }
 }
 
 extension Crash: Incident {
@@ -24,8 +31,26 @@ extension Crash: Incident {
 
 extension Hang: Incident {
     static let kind = IncidentKind.hang
+
+    var summaryDetail: String? {
+        duration.duration
+    }
 }
 
 extension ResourceException: Incident {
     static let kind = IncidentKind.resource
+
+    var summaryDetail: String? {
+        guard let amount = ResourceAmount(reason: reason) else {
+            return nil
+        }
+        switch resourceKind {
+        case .cpu:
+            "\(amount.text) CPU"
+        case .diskWrite:
+            "\(amount.text) disk"
+        case nil:
+            amount.text
+        }
+    }
 }

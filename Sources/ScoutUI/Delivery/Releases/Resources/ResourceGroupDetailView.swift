@@ -9,61 +9,105 @@ import Scout
 import SwiftUI
 
 struct ResourceGroupDetailView: View {
-    let group: IncidentGroup<ResourceException>
-
+    @StateObject private var occurrences: IncidentOccurrencesProvider<ResourceException>
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
 
     init(group: IncidentGroup<ResourceException>, breakdown: IncidentBreakdownProvider? = nil) {
-        self.group = group
-        self._breakdown = StateObject(
+        _occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
+        _breakdown = StateObject(
             wrappedValue: breakdown
-                ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
+                ?? IncidentBreakdownProvider(
+                    deviceIDs: group.deviceIDs,
+                    sessionIDs: group.sessionIDs
+                )
+        )
+    }
+
+    init(occurrences: IncidentOccurrencesProvider<ResourceException>) {
+        _occurrences = StateObject(wrappedValue: occurrences)
+        _breakdown = StateObject(
+            wrappedValue: IncidentBreakdownProvider(
+                deviceIDs: occurrences.group.deviceIDs,
+                sessionIDs: occurrences.group.sessionIDs
+            )
+        )
     }
 
     var body: some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 16) {
-                    Readout(title: "Occurrences", value: group.occurrencesText, color: IncidentKind.resource.color)
-                    Readout(title: "Devices", value: group.devicesText)
-                    Readout(title: "Sessions", value: group.sessionsText)
+        Group {
+            if let records = occurrences.records {
+                if records.isEmpty {
+                    Placeholder(text: "No occurrences")
+                } else {
+                    content(records: records)
+                        .transition(.opacity)
                 }
-
-                if let first = group.firstDate, let last = group.lastDate {
-                    Text(verbatim: "\(group.firstSeenLabel) \(first.relativeString) · Last seen \(last.relativeString)")
-                        .font(.system(size: 14))
-                        .foregroundStyle(Color.gray)
+            } else if let error = occurrences.error {
+                ErrorView(description: error.localizedDescription) {
+                    await occurrences.fetchIfNeeded(in: database)
                 }
+            } else {
+                IncidentGroupPlaceholder(kind: .resource, resourceKind: occurrences.group.records.first?.resourceKind)
+                    .transition(.opacity)
             }
-            .padding(.bottom)
-
-            IncidentBreakdownSection(breakdown: breakdown, records: group.records, row: occurrenceRow)
-
-            Header(title: "Occurrences")
-
-            ForEach(group.records, content: occurrenceRow)
         }
-        .navigationTint(IncidentKind.resource.color)
-        .monospacedNavigationTitle(en: group.name)
+        .animation(.easeOut(duration: 0.2), value: occurrences.records == nil)
+        .message($occurrences.message)
+        .toolbarBackground(IncidentKind.resource.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
+        .monospacedNavigationTitle(en: occurrences.name)
         .task {
-            await breakdown.fetchIfNeeded(in: database)
+            await occurrences.fetchIfNeeded(in: database)
         }
+        .task(id: occurrences.records?.map(\.id)) {
+            if occurrences.records != nil {
+                await breakdown.fetch(deviceIDs: occurrences.group.deviceIDs, sessionIDs: occurrences.group.sessionIDs, in: database)
+            }
+        }
+    }
+
+    private func content(records: [ResourceException]) -> some View {
+        IncidentSummaryView(
+            summary: summary(records: records),
+            records: records,
+            row: occurrenceRow
+        ) {
+            IncidentOccurrencesView(occurrences: occurrences, row: occurrenceRow)
+        }
+    }
+
+    private func summary(records: [ResourceException]) -> IncidentSummary {
+        let group = occurrences.group
+        let heaviest = group.heaviest
+        return IncidentSummary(
+            kind: .resource,
+            label: "Resource · MetricKit",
+            message: heaviest.reason,
+            group: group,
+            breakdown: breakdown.value,
+            cards: [
+                .occurrences(records: records, value: group.occurrencesText),
+                .peak(records: records),
+            ],
+            stack: heaviest.stackTrace
+        )
     }
 
     private func occurrenceRow(_ resource: ResourceException) -> some View {
         Row {
             if let date = resource.date {
-                UTCTimestampText(date: date, size: 14)
+                Text(verbatim: date.relativeString)
+                    .font(.system(size: 15))
             }
 
             Spacer()
 
-            if let reason = resource.reason {
-                Text(verbatim: reason)
-                    .font(.footnote)
-                    .monospacedDigit()
-                    .foregroundStyle(IncidentKind.resource.color)
+            if let label = breakdown.value?.occurrenceLabel(record: resource) {
+                Text(verbatim: label)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+                    .lineLimit(1)
             }
         } destination: {
             ResourceDetailView(resource: resource)
@@ -71,9 +115,22 @@ struct ResourceGroupDetailView: View {
     }
 }
 
+extension IncidentGroup where Element == ResourceException {
+    fileprivate var heaviest: ResourceException {
+        records.max { amount(resource: $0) < amount(resource: $1) } ?? representative
+    }
+
+    fileprivate func amount(resource: ResourceException) -> Double {
+        ResourceAmount(reason: resource.reason)?.value ?? 0
+    }
+}
+
 #Preview {
     NavigationStack {
-        ResourceGroupDetailView(group: IncidentGroup(records: [ResourceException].samples.filter { $0.resourceKind == .cpu }))
+        ResourceGroupDetailView(
+            group: IncidentGroup(records: [ResourceException].samples.filter { $0.resourceKind == .cpu }),
+            breakdown: .init(.success(.sample), deviceIDs: [], sessionIDs: [])
+        )
     }
     .environmentObject(Tint())
 }
