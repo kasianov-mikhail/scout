@@ -99,6 +99,21 @@ struct NativeIncidentIndexTests {
         #expect(tallies.map(\.name) == ["Main Thread Blocked"])
     }
 
+    @Test("Resource exceptions are tallied under their fingerprint")
+    func resources() async throws {
+        var resource = Record(recordType: ResourceEntry.recordType, recordID: "r-1")
+        resource["name"] = "CPU Exception"
+        resource["fingerprint"] = "R"
+        resource["category"] = ResourceKind.cpu.rawValue
+        resource["date"] = TestDate.reference.addingTimeInterval(12 * .hour)
+        try await database.write(record: resource)
+
+        let tallies = try #require(try await database.incidentIndex(recordType: ResourceEntry.recordType, in: range)).tallies
+
+        #expect(tallies.map(\.fingerprint) == ["R"])
+        #expect(tallies.map(\.name) == ["CPU Exception"])
+    }
+
     private func writeLegacyCrashes(at offsets: [TimeInterval]) async throws {
         let store = try await database.resolve()
         let legacy = offsets.enumerated().map { offset, time in

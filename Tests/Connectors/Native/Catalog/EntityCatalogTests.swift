@@ -121,6 +121,7 @@ struct EntityCatalogTests {
             (DeviceEntry.recordType, Device.desiredKeys),
             (VersionEntry.recordType, Version.desiredKeys),
             (CrashEntry.recordType, Crash.desiredKeys),
+            (ResourceEntry.recordType, ResourceException.desiredKeys),
         ]
 
         for (entity, keys) in requests {

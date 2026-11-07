@@ -21,6 +21,15 @@ enum HangSeverity {
         }
     }
 
+    var shortLabel: String {
+        switch self {
+        case .warning:
+            "Hang"
+        case .critical:
+            "Severe"
+        }
+    }
+
     var systemImage: String {
         switch self {
         case .warning:

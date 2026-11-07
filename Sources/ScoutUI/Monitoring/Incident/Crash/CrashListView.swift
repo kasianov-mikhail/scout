@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 struct CrashListView: View {
-    @StateObject var provider = IncidentProvider<Crash>()
+    @StateObject var provider = IncidentTilesProvider<Crash>()
 
     var body: some View {
         IncidentList(
@@ -19,9 +19,9 @@ struct CrashListView: View {
                 systemImage: "checkmark.shield",
                 description: "No crash reports have been recorded"
             )
-        ) { group in
-            IncidentRow(group: group) { group in
-                CrashGroupDetailView(group: group)
+        ) { tally in
+            IncidentGroupLoader(tally: tally) { occurrences in
+                CrashGroupDetailView(occurrences: occurrences)
             }
         }
     }
@@ -29,7 +29,7 @@ struct CrashListView: View {
 
 #Preview {
     NavigationStack {
-        CrashListView(provider: .init(.samples))
+        CrashListView(provider: .init(.success(IncidentTile<Crash>.samples)))
     }
 }
 

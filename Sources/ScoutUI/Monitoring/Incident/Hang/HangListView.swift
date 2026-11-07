@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 struct HangListView: View {
-    @StateObject var provider = IncidentProvider<Hang>()
+    @StateObject var provider = IncidentTilesProvider<Hang>()
 
     var body: some View {
         IncidentList(
@@ -19,12 +19,9 @@ struct HangListView: View {
                 systemImage: "checkmark.shield",
                 description: "No unresponsive main thread has been recorded"
             )
-        ) { group in
-            IncidentRow(
-                group: group,
-                accent: (group.severity.systemImage, IncidentKind.hang.color)
-            ) { group in
-                HangGroupDetailView(group: group)
+        ) { tally in
+            IncidentGroupLoader(tally: tally) { occurrences in
+                HangGroupDetailView(occurrences: occurrences)
             }
         }
     }
@@ -32,7 +29,7 @@ struct HangListView: View {
 
 #Preview {
     NavigationStack {
-        HangListView(provider: .init(.samples))
+        HangListView(provider: .init(.success(IncidentTile<Hang>.samples)))
     }
     .environmentObject(Tint())
 }

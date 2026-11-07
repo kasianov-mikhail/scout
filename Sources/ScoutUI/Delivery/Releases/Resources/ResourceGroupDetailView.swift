@@ -21,6 +21,16 @@ struct ResourceGroupDetailView: View {
                 ?? IncidentBreakdownProvider(deviceIDs: group.deviceIDs, sessionIDs: group.sessionIDs))
     }
 
+    init(occurrences: IncidentOccurrencesProvider<ResourceException>) {
+        self.group = occurrences.group
+        self._breakdown = StateObject(
+            wrappedValue: IncidentBreakdownProvider(
+                deviceIDs: occurrences.group.deviceIDs,
+                sessionIDs: occurrences.group.sessionIDs
+            )
+        )
+    }
+
     var body: some View {
         InsetList {
             VStack(alignment: .leading, spacing: 12) {

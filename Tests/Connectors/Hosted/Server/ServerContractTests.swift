@@ -595,7 +595,7 @@ struct ServerContractTests {
         #expect(hangs.allSatisfy { $0.name == "Main Thread Blocked" })
     }
 
-    @Test("Incident tallies count written incidents per fingerprint", arguments: [Crash.recordType, Hang.recordType])
+    @Test("Incident tallies count written incidents per fingerprint", arguments: [Crash.recordType, Hang.recordType, ResourceException.recordType])
     func incidentTallies(recordType: String) async throws {
         let database = try makeDatabase()
         let hour = eventDate.startOfHour.addingTimeInterval(-TimeInterval(Int.random(in: 1...40_000)) * .hour)
