@@ -41,11 +41,15 @@ extension Stability {
 
         var title: String {
             switch self {
-            case .healthy: "Healthy"
-            case .watch: "Watch"
-            case .atRisk: "At risk"
-            case .critical: "Critical"
+            case .healthy: "healthy"
+            case .watch: "watch"
+            case .atRisk: "at risk"
+            case .critical: "critical"
             }
+        }
+
+        var displayTitle: String {
+            title.prefix(1).uppercased() + title.dropFirst()
         }
 
         var color: Color {
@@ -57,7 +61,7 @@ extension Stability {
             }
         }
 
-        var tint: Color {
+        var labelColor: Color {
             switch self {
             case .healthy: Color(red: 0x1E / 255, green: 0x7D / 255, blue: 0x34 / 255)
             case .watch: Color(red: 0x8A / 255, green: 0x6D / 255, blue: 0x00 / 255)

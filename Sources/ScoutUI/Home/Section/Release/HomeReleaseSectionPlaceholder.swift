@@ -23,7 +23,7 @@ struct HomeReleaseSectionPlaceholder: View {
             SkeletonBar(height: 24, delay: 1.04, fill: Color(.systemGray6))
                 .padding(.top, 10)
 
-            ReleaseLevelLegend(squareSize: 7, fill: Color(.systemGray5))
+            AdoptionLegend(squareSize: 7, squareColor: Color(.systemGray5))
                 .padding(.top, 6)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)

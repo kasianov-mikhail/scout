@@ -9,66 +9,73 @@ import SwiftUI
 
 struct ReleaseRow: View {
     let release: ReleaseHealth
-    let showsDivider: Bool
+    let isLast: Bool
 
     var body: some View {
         Row {
-            HStack(spacing: 12) {
-                ring
+            ReleaseRing(adoption: release.adoption, color: release.freeSessions.color)
 
-                VStack(alignment: .leading, spacing: 3) {
-                    Text(verbatim: release.id)
-                        .font(.system(size: 17, weight: .bold, design: .monospaced))
+            VStack(alignment: .leading, spacing: 3) {
+                Text(verbatim: release.id)
+                    .font(.system(size: 17, weight: .bold, design: .monospaced))
+                    .lineLimit(1)
 
-                    Text(verbatim: "\(release.adoption.formatted) of sessions · \(DateFormatter.monthDay.string(from: release.released))")
-                        .font(.system(size: 13))
-                        .foregroundStyle(Color(.systemGray))
-                }
-
-                Spacer(minLength: 0)
-
-                VStack(alignment: .trailing, spacing: 3) {
-                    Text(verbatim: release.freeSessions.formatted)
-                        .font(.system(size: 15, weight: .bold, design: .monospaced))
-
-                    Text(verbatim: release.freeSessions.level.title)
-                        .font(.system(size: 12, weight: .semibold))
-                        .foregroundStyle(release.freeSessions.level.tint)
-                }
+                Text(verbatim: release.adoptionLabel)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+                    .lineLimit(1)
             }
-            .padding(.vertical, 8)
-            .frame(minHeight: 64)
-            .overlay(alignment: .bottom) {
-                if showsDivider {
-                    DashedLine()
-                }
+
+            Spacer(minLength: 0)
+
+            VStack(alignment: .trailing, spacing: 3) {
+                Text(verbatim: release.freeSessions.formatted)
+                    .font(.system(size: 15, weight: .bold, design: .monospaced))
+
+                Text(verbatim: release.freeSessions.level.displayTitle)
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(release.freeSessions.level.labelColor)
             }
-            .accessibilityElement(children: .combine)
         } destination: {
             ReleaseView(release: release)
         }
+        .padding(.vertical, 8)
+        .frame(minHeight: 64)
+        .overlay(alignment: .bottom) {
+            if !isLast {
+                DashedLine()
+            }
+        }
     }
+}
 
-    private var ring: some View {
+private struct ReleaseRing: View {
+    let adoption: Adoption
+    let color: Color
+
+    var body: some View {
         ZStack {
             Circle()
+                .inset(by: 1.5)
                 .stroke(Color(.systemGray5), lineWidth: 3)
-
             Circle()
-                .trim(from: 0, to: release.adoption.value)
-                .stroke(release.freeSessions.color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                .inset(by: 1.5)
+                .trim(from: 0, to: adoption.value)
+                .stroke(color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                 .rotationEffect(.degrees(-90))
         }
         .frame(width: 30, height: 30)
-        .accessibilityHidden(true)
     }
 }
 
 #Preview {
-    NavigationStack {
+    let releases = [ReleaseHealth].samples
+
+    return NavigationStack {
         InsetList {
-            ForEach(Array([ReleaseHealth].samples.enumerated()), id: \.element.id) { index, release in
-                ReleaseRow(release: release, showsDivider: index < 4)
+            ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                ReleaseRow(release: release, isLast: index == releases.count - 1)
+                    .listRowSeparator(.hidden)
             }
         }
         .navigationTitle(en: "Releases")

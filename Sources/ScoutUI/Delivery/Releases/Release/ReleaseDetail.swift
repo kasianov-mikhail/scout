@@ -15,15 +15,22 @@ struct ReleaseDetail {
     let now: Date
 
     var age: Int {
-        Calendar.utc.dateComponents([.day], from: release.released.startOfDay, to: now.startOfDay).day ?? 0
+        guard let shipped = release.shipped else {
+            return 0
+        }
+        return Calendar.utc.dateComponents([.day], from: shipped.startOfDay, to: now.startOfDay).day ?? 0
     }
 
     var statusLabel: String {
-        "\(release.freeSessions.level.title) · \(release.freeSessions.formatted) crash-free"
+        "\(release.freeSessions.level.displayTitle) · \(release.freeSessions.formatted) crash-free"
     }
 
     var subtitle: String {
-        "\(release.adoption.formatted) of sessions · day \(max(age, 0))"
+        let share = "\(release.adoption.formatted) of sessions"
+        guard release.shipped != nil else {
+            return share
+        }
+        return "\(share) · day \(max(age, 0))"
     }
 
     var tiles: [ReleaseTileValue] {
@@ -92,7 +99,7 @@ struct ReleaseDetail {
         guard let change = release.performance.change(\.hangRate) else {
             return ReleaseHangRate(value: value, change: nil, color: Color(.systemGray))
         }
-        return ReleaseHangRate(value: value, change: percentLabel(change), color: change > 0 ? .orange : Stability.Level.healthy.tint)
+        return ReleaseHangRate(value: value, change: percentLabel(change), color: change > 0 ? .orange : Stability.Level.healthy.labelColor)
     }
 }
 

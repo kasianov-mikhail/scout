@@ -14,7 +14,7 @@ import Testing
 struct ReleaseDetailTests {
     private let release = [ReleaseHealth].samples[0]
     private var detail: ReleaseDetail {
-        ReleaseDetail(release: release, trend: .sample, now: release.released.addingDay(14))
+        ReleaseDetail(release: release, trend: .sample, now: (release.shipped ?? Date()).addingDay(14))
     }
 
     private func tile(_ kind: ReleaseTileValue.Kind) throws -> ReleaseTileValue {

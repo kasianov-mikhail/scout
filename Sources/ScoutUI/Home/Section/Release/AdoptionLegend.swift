@@ -7,30 +7,32 @@
 
 import SwiftUI
 
-struct ReleaseLevelLegend: View {
+struct AdoptionLegend: View {
     let squareSize: CGFloat
-    var fill: Color?
+    let squareColor: Color?
 
     var body: some View {
         HStack(spacing: 12) {
             ForEach(Stability.Level.allCases, id: \.self) { level in
                 HStack(spacing: 4) {
                     RoundedRectangle(cornerRadius: 2)
-                        .fill(fill ?? level.color)
+                        .fill(squareColor ?? level.color)
                         .frame(width: squareSize, height: squareSize)
 
-                    Text(verbatim: level.title.lowercased())
+                    Text(verbatim: level.title)
                 }
             }
         }
-        .font(.caption)
+        .font(.system(size: 12))
         .foregroundStyle(Color(.systemGray))
     }
 }
 
 #Preview {
-    VStack {
-        ReleaseLevelLegend(squareSize: 8)
-        ReleaseLevelLegend(squareSize: 7, fill: Color(.systemGray5))
+    VStack(alignment: .leading) {
+        AdoptionLegend(squareSize: 7, squareColor: nil)
+        AdoptionLegend(squareSize: 8, squareColor: nil)
+        AdoptionLegend(squareSize: 8, squareColor: Color(.systemGray5))
     }
+    .padding()
 }

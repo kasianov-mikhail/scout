@@ -9,7 +9,7 @@ import Scout
 import SwiftUI
 
 struct ReleaseHealthView: View {
-    @StateObject var provider = ReleaseHealthProvider()
+    @ObservedObject var provider: ReleaseHealthProvider
 
     @Environment(\.database) private var database
 
@@ -20,16 +20,8 @@ struct ReleaseHealthView: View {
                 ReleaseHealthViewPlaceholder()
                     .transition(.opacity)
             case .success(let releases):
-                if releases.isEmpty {
-                    Placeholder(
-                        text: "No releases",
-                        systemImage: "shippingbox",
-                        description: "Release health appears once your app reports versions"
-                    )
-                } else {
-                    content(releases: releases)
-                        .transition(.opacity)
-                }
+                content(releases: releases)
+                    .transition(.opacity)
             case .failure(let error):
                 ErrorView(description: Text(error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
@@ -42,21 +34,33 @@ struct ReleaseHealthView: View {
         .inlineNavigationTitle()
     }
 
+    @ViewBuilder
     private func content(releases: [ReleaseHealth]) -> some View {
-        let adoption = ReleaseAdoption(releases: releases)
-
-        return InsetList {
-            header(adoption: adoption)
-                .listRowSeparator(.hidden)
-
-            ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
-                ReleaseRow(release: release, showsDivider: index < releases.count - 1)
+        if releases.isEmpty {
+            Placeholder(
+                text: "No releases",
+                systemImage: "shippingbox",
+                description: "Release health appears once your app reports versions"
+            )
+        } else {
+            InsetList {
+                ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
                     .listRowSeparator(.hidden)
+
+                ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                    ReleaseRow(release: release, isLast: index == releases.count - 1)
+                        .listRowSeparator(.hidden)
+                }
             }
+            .scrollContentBackground(.hidden)
         }
     }
+}
 
-    private func header(adoption: ReleaseAdoption) -> some View {
+private struct ReleaseSummary: View {
+    let adoption: ReleaseAdoption
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(verbatim: adoption.headline)
@@ -67,14 +71,19 @@ struct ReleaseHealthView: View {
                     .foregroundStyle(Color(.systemGray))
             }
 
-            AdoptionBar(versions: adoption.versions, height: 32)
-                .padding(.top, 12)
+            AdoptionBar(
+                versions: adoption.versions,
+                height: 32,
+                labelSize: 11,
+                labelWeight: .bold,
+                labelInset: 6
+            )
+            .padding(.top, 12)
 
-            ReleaseLevelLegend(squareSize: 8)
+            AdoptionLegend(squareSize: 8, squareColor: nil)
                 .padding(.top, 8)
         }
-        .padding(.top, 14)
-        .padding(.bottom, 14)
+        .padding(.vertical, 14)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -83,7 +92,7 @@ struct ReleaseHealthView: View {
     }
 }
 
-#Preview {
+#Preview("Releases") {
     NavigationStack {
         ReleaseHealthView(provider: .init(.success(.samples)))
     }
@@ -91,6 +100,6 @@ struct ReleaseHealthView: View {
 
 #Preview("Loading") {
     NavigationStack {
-        ReleaseHealthView(provider: .init())
+        ReleaseHealthView(provider: ReleaseHealthProvider())
     }
 }

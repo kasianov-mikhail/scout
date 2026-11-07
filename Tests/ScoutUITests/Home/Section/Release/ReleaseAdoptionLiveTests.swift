@@ -18,6 +18,7 @@ struct ReleaseAdoptionLiveTests {
         #expect(adoption.versions.map(\.id) == ["3.2.0", "3.1.4", "3.1.0", "3.0.2", "2.9.9"])
         #expect(adoption.versions.map(\.shareLabel) == ["62%", "21%", "10%", "5%", "2%"])
         #expect(adoption.versions.map(\.stability.level) == [.healthy, .healthy, .watch, .atRisk, .critical])
+        #expect(adoption.versions.map(\.shipped) == [ReleaseHealth].samples.map(\.shipped))
     }
 
     @Test("The top version follows the largest adoption")

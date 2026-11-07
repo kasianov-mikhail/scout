@@ -42,10 +42,16 @@ struct HomeReleaseSection: View {
                     .foregroundStyle(Color(.systemGray))
             }
 
-            AdoptionBar(versions: adoption.versions, height: 24)
-                .padding(.top, 10)
+            AdoptionBar(
+                versions: adoption.versions,
+                height: 24,
+                labelSize: 10,
+                labelWeight: .semibold,
+                labelInset: 4
+            )
+            .padding(.top, 10)
 
-            ReleaseLevelLegend(squareSize: 7)
+            AdoptionLegend(squareSize: 7, squareColor: nil)
                 .padding(.top, 6)
 
             caption(adoption: adoption)
@@ -60,7 +66,7 @@ struct HomeReleaseSection: View {
         if let top = adoption.top {
             (Text(verbatim: "\(top.id) is ")
                 .foregroundColor(Color(.systemGray))
-                + Text(verbatim: top.stability.level.title.lowercased())
+                + Text(verbatim: top.stability.level.title)
                 .fontWeight(.semibold)
                 .foregroundColor(top.stability.level.color)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")

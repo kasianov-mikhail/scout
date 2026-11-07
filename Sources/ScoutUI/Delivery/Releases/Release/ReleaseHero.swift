@@ -19,7 +19,7 @@ struct ReleaseHero: View {
 
                 Text(verbatim: detail.statusLabel)
                     .font(.system(size: 15))
-                    .foregroundStyle(level.tint)
+                    .foregroundStyle(level.labelColor)
 
                 Text(verbatim: detail.subtitle)
                     .font(.system(size: 15))
@@ -51,14 +51,14 @@ struct ReleaseHero: View {
                 .font(.system(size: 10, weight: .bold))
                 .tracking(1)
 
-            Text(verbatim: DateFormatter.monthDay.string(from: detail.release.released).uppercased())
+            Text(verbatim: detail.release.shipped.map { DateFormatter.monthDay.string(from: $0).uppercased() } ?? "—")
                 .font(.system(size: 13, weight: .bold, design: .monospaced))
         }
-        .foregroundStyle(level.tint)
+        .foregroundStyle(level.labelColor)
         .frame(width: 76, height: 76)
         .overlay {
             Circle()
-                .strokeBorder(level.tint, style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                .strokeBorder(level.labelColor, style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
         }
         .rotationEffect(.degrees(-12))
         .accessibilityHidden(true)

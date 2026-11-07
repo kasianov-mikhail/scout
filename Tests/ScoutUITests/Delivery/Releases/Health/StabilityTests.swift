@@ -32,6 +32,7 @@ struct StabilityTests {
         #expect(Stability(0.992).level == .watch)
         #expect(Stability(0.985).level == .atRisk)
         #expect(Stability(0.970).level == .critical)
-        #expect(Stability.Level.atRisk.title == "At risk")
+        #expect(Stability.Level.atRisk.title == "at risk")
+        #expect(Stability.Level.atRisk.displayTitle == "At risk")
     }
 }
