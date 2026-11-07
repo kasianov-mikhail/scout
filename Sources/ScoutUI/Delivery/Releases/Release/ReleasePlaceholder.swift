@@ -1,0 +1,127 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import SwiftUI
+
+struct ReleasePlaceholder: View {
+    let version: String
+
+    var body: some View {
+        InsetList {
+            hero
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+
+            grid
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
+
+            footer
+                .listRowSeparator(.hidden)
+        }
+        .scrollContentBackground(.hidden)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "Loading"))
+    }
+
+    private var hero: some View {
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text(verbatim: version)
+                    .font(.system(size: 34, weight: .bold, design: .monospaced))
+                    .tracking(-0.5)
+
+                SkeletonBar(width: 200, height: 9, delay: 0.08)
+                SkeletonBar(width: 120, height: 9, delay: 0.08)
+            }
+
+            Spacer(minLength: 0)
+
+            badge
+        }
+        .padding(.top, 14)
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
+        .background(Color(.systemGray6))
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color(.systemGray5))
+                .frame(height: 0.5)
+        }
+    }
+
+    private var badge: some View {
+        VStack(spacing: 1) {
+            SkeletonBar(width: 46, height: 6, delay: 0.08)
+            SkeletonBar(width: 28, height: 9, delay: 0.08)
+        }
+        .frame(width: 76, height: 76)
+        .overlay {
+            Circle()
+                .strokeBorder(Color(.systemGray4), style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+        }
+        .rotationEffect(.degrees(-12))
+    }
+
+    private var grid: some View {
+        VStack(spacing: 0) {
+            ForEach(0..<4, id: \.self) { row in
+                HStack(spacing: 0) {
+                    cell(delay: 0.16 + Double(row) * 0.08, isLeading: true)
+                    cell(delay: 0.16 + Double(row) * 0.08, isLeading: false)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
+    private func cell(delay: Double, isLeading: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            SkeletonBar(width: 46, height: 9, delay: delay)
+            SkeletonBar(width: 74, height: 14, delay: delay)
+            SkeletonBar(height: 24, delay: delay, cornerRadius: 4, fill: Color(.systemGray6))
+            SkeletonBar(width: 120, height: 6, delay: delay)
+        }
+        .padding(.vertical, 14)
+        .padding(.leading, isLeading ? 0 : 12)
+        .padding(.trailing, isLeading ? 12 : 0)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .overlay(alignment: .trailing) {
+            if isLeading {
+                Rectangle()
+                    .fill(Color.separator)
+                    .frame(width: 0.5)
+            }
+        }
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+
+    private var footer: some View {
+        HStack(spacing: 8) {
+            Text(verbatim: "Hang rate")
+                .font(.system(size: 15))
+
+            Spacer()
+
+            SkeletonBar(width: 74, height: 9, delay: 0.56)
+        }
+        .padding(.vertical, 6)
+        .frame(minHeight: 44)
+    }
+}
+
+#Preview("Release loading") {
+    NavigationStack {
+        ReleasePlaceholder(version: "3.2.0")
+            .navigationTitle(en: "Release")
+            .inlineNavigationTitle()
+    }
+}

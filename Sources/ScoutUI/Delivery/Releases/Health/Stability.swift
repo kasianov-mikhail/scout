@@ -69,6 +69,24 @@ extension Stability {
             case .critical: Color(red: 0xC4 / 255, green: 0x00 / 255, blue: 0x1A / 255)
             }
         }
+
+        var background: Color {
+            switch self {
+            case .healthy: Color(red: 0xE9 / 255, green: 0xF8 / 255, blue: 0xEE / 255)
+            case .watch: Color(red: 0xFF / 255, green: 0xF8 / 255, blue: 0xDB / 255)
+            case .atRisk: Color(red: 0xFF / 255, green: 0xF1 / 255, blue: 0xE0 / 255)
+            case .critical: Color(red: 0xFF / 255, green: 0xEB / 255, blue: 0xEA / 255)
+            }
+        }
+
+        var border: Color {
+            switch self {
+            case .healthy: Color(red: 0xC5 / 255, green: 0xE8 / 255, blue: 0xCF / 255)
+            case .watch: Color(red: 0xF0 / 255, green: 0xE2 / 255, blue: 0xA8 / 255)
+            case .atRisk: Color(red: 0xF3 / 255, green: 0xD2 / 255, blue: 0xA9 / 255)
+            case .critical: Color(red: 0xF3 / 255, green: 0xC1 / 255, blue: 0xBE / 255)
+            }
+        }
     }
 }
 

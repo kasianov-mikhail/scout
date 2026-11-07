@@ -8,18 +8,14 @@
 import Foundation
 import Scout
 
+extension RetentionWeek {
+    init(cohort: RetentionCohort, day: RetentionDay) {
+        self.init(start: cohort.id, installs: cohort.size, kept: cohort.kept(onDay: day), day: day)
+    }
+}
+
 extension [RetentionWeek] {
     init(cohorts: [RetentionCohort]) {
-        self =
-            cohorts
-            .sorted { $0.id > $1.id }
-            .prefix(4)
-            .map { cohort in
-                let kept = RetentionCohort.rate(cohort.retention, onDay: 7).map {
-                    Int(($0 * Double(cohort.size)).rounded())
-                }
-
-                return RetentionWeek(start: cohort.id, installs: cohort.size, kept: kept)
-            }
+        self = cohorts.sorted(by: >).prefix(4).map { RetentionWeek(cohort: $0, day: .day7) }
     }
 }

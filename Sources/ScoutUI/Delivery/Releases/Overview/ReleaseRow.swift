@@ -37,7 +37,7 @@ struct ReleaseRow: View {
                     .foregroundStyle(release.freeSessions.level.labelColor)
             }
         } destination: {
-            VersionDetailView(release: release)
+            ReleaseView(release: release)
         }
         .padding(.vertical, 8)
         .frame(minHeight: 64)

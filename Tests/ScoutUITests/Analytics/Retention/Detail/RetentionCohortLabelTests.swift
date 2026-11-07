@@ -10,6 +10,7 @@ import Scout
 import Testing
 
 @testable import ScoutUI
+@testable import Support
 
 struct RetentionCohortLabelTests {
     @Test("Reads its dates in UTC on any host")
@@ -20,11 +21,24 @@ struct RetentionCohortLabelTests {
 
     @Test("Labels read the cohort day in UTC from either end of it")
     func testUTC() {
-        // 2024-01-01T00:00:00Z is a Monday, so its UTC week starts the Sunday before.
         let midnight = Date(timeIntervalSince1970: 1_704_067_200).startOfWeek
         let lastSecond = midnight.addingDay().addingTimeInterval(-1)
 
         #expect(RetentionCohort(id: midnight, size: 10, retention: [], segments: []).label == "Dec 31")
         #expect(RetentionCohort(id: lastSecond, size: 10, retention: [], segments: []).label == "Dec 31")
+    }
+
+    @Test("A week inside one month names the month once")
+    func sameMonthRange() {
+        let cohort = RetentionCohort(id: Date(year: 2026, month: 10, day: 13), size: 10, retention: [], segments: [])
+
+        #expect(cohort.weekRange == "Oct 13–19")
+    }
+
+    @Test("A week across two months names both")
+    func crossMonthRange() {
+        let cohort = RetentionCohort(id: Date(year: 2026, month: 9, day: 29), size: 10, retention: [], segments: [])
+
+        #expect(cohort.weekRange == "Sep 29–Oct 5")
     }
 }

@@ -12,7 +12,7 @@ import Testing
 struct RetentionWeekTests {
     @Test("The sample carries four weekly cohorts")
     func sample() {
-        let weeks = [RetentionWeek].sample
+        let weeks = [RetentionWeek].samples
 
         #expect(weeks.count == 4)
         #expect(weeks.map(\.installs) == [1104, 960, 1142, 787])
@@ -21,13 +21,13 @@ struct RetentionWeekTests {
 
     @Test("The largest install count comes from the cohorts")
     func maxInstalls() {
-        #expect([RetentionWeek].sample.maxInstalls == 1142)
+        #expect([RetentionWeek].samples.maxInstalls == 1142)
         #expect([RetentionWeek]().maxInstalls == 0)
     }
 
     @Test("Kept over installs reads the rate")
     func rate() throws {
-        let weeks = [RetentionWeek].sample
+        let weeks = [RetentionWeek].samples
         let week = try #require(weeks.first { $0.kept == 192 })
 
         #expect(week.rate == 0.2)
@@ -36,10 +36,9 @@ struct RetentionWeekTests {
 
     @Test("A cohort without day 7 reads as pending")
     func pending() throws {
-        let pending = try #require([RetentionWeek].sample.first { $0.kept == nil })
+        let pending = try #require([RetentionWeek].samples.first { $0.kept == nil })
 
         #expect(pending.rate == nil)
-        #expect(pending.pendingDays == 2)
-        #expect(pending.pendingLabel == "in 2 d")
+        #expect(pending.pendingLabel == "in 9 d")
     }
 }

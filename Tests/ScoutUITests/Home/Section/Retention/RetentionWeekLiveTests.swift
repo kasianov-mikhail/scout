@@ -46,6 +46,6 @@ struct RetentionWeekLiveTests {
 
         #expect(week.kept == nil)
         #expect(week.rate == nil)
-        #expect(week.pendingLabel == "in 5 d")
+        #expect(week.pendingLabel == "in 12 d")
     }
 }

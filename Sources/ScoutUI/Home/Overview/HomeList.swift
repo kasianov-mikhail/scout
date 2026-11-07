@@ -128,7 +128,7 @@ struct HomeList: View {
             case .activity:
                 ActivityView(activity: activities)
             case .retention:
-                RetentionHeroChartView(provider: retention)
+                RetentionView(provider: retention)
             case .sessions:
                 statView
             case .log:
