@@ -24,7 +24,8 @@ struct AlertHistory: Equatable {
 
 extension AlertHistory {
     var summary: String {
-        "\(rule) · \(armed) armed · \(muted) muted"
+        let extra = firing > 1 ? " +\(firing - 1)" : ""
+        return "\(rule)\(extra) · \(armed) armed · \(muted) muted"
     }
 
     var rulesLabel: String {

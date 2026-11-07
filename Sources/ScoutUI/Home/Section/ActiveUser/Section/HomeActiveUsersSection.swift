@@ -12,7 +12,13 @@ struct HomeActiveUsersSection: View {
     let users: ActiveUsers?
     let onShowAll: (ActiveUsers.Kind) -> Void
 
-    @State private var selected: ActiveUsers.Kind = .dau
+    @State private var selected: ActiveUsers.Kind
+
+    init(users: ActiveUsers?, selected: ActiveUsers.Kind = .dau, onShowAll: @escaping (ActiveUsers.Kind) -> Void) {
+        self.users = users
+        self.onShowAll = onShowAll
+        self._selected = State(initialValue: selected)
+    }
 
     var body: some View {
         if let users {
@@ -55,26 +61,51 @@ struct HomeActiveUsersSection: View {
                 .frame(height: 0.5)
 
             if let metric = users.metric(selected) {
-                ActiveUsersChart(metric: metric, start: users.start, end: users.end)
+                HomeActiveUsersChart(metric: metric, start: users.start, end: users.end)
                     .padding(.top, 14)
             }
 
-            stickiness(users: users)
+            footer(users: users)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
         .listRowSeparator(.hidden)
     }
 
-    private func stickiness(users: ActiveUsers) -> some View {
+    private func footer(users: ActiveUsers) -> some View {
         HStack(spacing: 0) {
-            Text(verbatim: "Stickiness ")
+            switch selected {
+            case .dau:
+                Text(verbatim: "Stickiness ")
 
-            Text(verbatim: users.stickinessLabel)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
+                Text(verbatim: users.stickinessLabel)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
 
-            Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
+                Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
+            case .sessions:
+                if let median = users.medianSessionLabel {
+                    Text(verbatim: "Median ")
+
+                    Text(verbatim: median)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+
+                    Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
+                } else {
+                    Text(verbatim: "\(users.sessionsPerUserLabel) sessions per user")
+                }
+            case .devices:
+                if users.newDevicesToday {
+                    Text(verbatim: "First seen today · ")
+                }
+
+                Text(verbatim: users.devicesThisWeekLabel)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+
+                Text(verbatim: " this week")
+            }
         }
         .font(.footnote)
         .foregroundStyle(Color(.systemGray))
@@ -87,7 +118,7 @@ private struct ActiveUserMetricView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: metric.kind.title)
+            Text(verbatim: metric.kind.title.uppercased())
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
 
@@ -106,7 +137,7 @@ private struct ActiveUserMetricView: View {
         .overlay(alignment: .bottom) {
             if isSelected {
                 Rectangle()
-                    .fill(.green)
+                    .fill(metric.kind.accent)
                     .frame(height: 2)
                     .padding(.trailing, 12)
             }
@@ -119,6 +150,22 @@ private struct ActiveUserMetricView: View {
         InsetList {
             HomeActiveUsersSection(users: .sample) { _ in }
             HomeActiveUsersSection(users: nil) { _ in }
+        }
+    }
+}
+
+#Preview("Active · devices") {
+    NavigationStack {
+        InsetList {
+            HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
+        }
+    }
+}
+
+#Preview("Active · sessions") {
+    NavigationStack {
+        InsetList {
+            HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
         }
     }
 }

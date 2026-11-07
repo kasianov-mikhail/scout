@@ -50,7 +50,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
 
     private func metric(kind: ActiveUsers.Kind) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(verbatim: kind.title)
+            Text(verbatim: kind.title.uppercased())
                 .font(.footnote.weight(.semibold))
                 .foregroundStyle(Color(.systemGray))
 

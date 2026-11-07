@@ -15,7 +15,7 @@ struct ActiveUsersTests {
         let users = ActiveUsers.sample
 
         #expect(users.metrics.map(\.kind) == [.dau, .sessions, .devices])
-        #expect(users.metrics.map(\.kind.title) == ["DAU", "SESSIONS", "DEVICES"])
+        #expect(users.metrics.map(\.kind.title) == ["DAU", "Sessions", "Devices"])
         #expect(users.metrics.allSatisfy { $0.series.count == 30 })
     }
 
@@ -34,5 +34,8 @@ struct ActiveUsersTests {
         #expect(devices.deltaLabel == "+12%")
         #expect(users.stickinessLabel == "8.5%")
         #expect(users.sessionsPerUserLabel == "6.9")
+        #expect(users.medianSessionLabel == "4 min 12 s")
+        #expect(users.newDevicesToday)
+        #expect(users.devicesThisWeekLabel == "254")
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct ActiveUsersChart: View {
+struct HomeActiveUsersChart: View {
     let metric: ActiveUsersMetric
     let start: Date
     let end: Date
@@ -18,7 +18,7 @@ struct ActiveUsersChart: View {
             HStack(alignment: .bottom, spacing: 2) {
                 ForEach(metric.series.indices, id: \.self) { index in
                     RoundedRectangle(cornerRadius: 1)
-                        .fill(index == metric.series.indices.last ? Color.green : Color(.systemGray4))
+                        .fill(index == metric.series.indices.last ? metric.kind.accent : Color(.systemGray4))
                         .frame(maxWidth: .infinity)
                         .frame(height: height(for: metric.series[index]))
                 }
@@ -54,6 +54,6 @@ struct ActiveUsersChart: View {
 }
 
 #Preview {
-    ActiveUsersChart(metric: ActiveUsers.sample.metrics[0], start: ActiveUsers.sample.start, end: ActiveUsers.sample.end)
+    HomeActiveUsersChart(metric: ActiveUsers.sample.metrics[0], start: ActiveUsers.sample.start, end: ActiveUsers.sample.end)
         .padding()
 }

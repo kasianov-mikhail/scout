@@ -23,6 +23,9 @@ struct ActiveUsersLiveTests {
         #expect(users.metrics.map(\.kind) == [.dau, .sessions, .devices])
         #expect(users.metrics.allSatisfy { $0.series.count == 30 })
         #expect(users.metrics.allSatisfy { $0.series.last == $0.value })
+        #expect(users.medianSession == nil)
+        #expect(!users.newDevicesToday)
+        #expect(users.devicesThisWeek > 0)
     }
 
     @Test("Ratios read from the latest values")
