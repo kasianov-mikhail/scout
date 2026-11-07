@@ -36,8 +36,10 @@ extension EventLevel {
         switch self {
         case .notice, .debug, .trace, .info:
             nil
-        case .warning, .error:
+        case .warning:
             .yellow
+        case .error:
+            .orange
         case .critical:
             .red
         }

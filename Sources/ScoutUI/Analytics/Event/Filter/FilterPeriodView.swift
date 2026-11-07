@@ -5,52 +5,35 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Scout
 import SwiftUI
 
 struct FilterPeriodView: View {
     @ObservedObject var draft: FilterDraft
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Header(title: "Period")
+        FilterSection(title: "Period") {
+            FilterBox {
+                HStack(spacing: 0) {
+                    let periods = FilterPeriod.presets
 
-            VStack(alignment: .leading, spacing: 10) {
-                Toggle(isOn: $draft.isDateRangeEnabled.animation()) {
-                    Text(verbatim: "Date range").font(.callout)
-                }
-                .softCell()
-
-                if draft.isDateRangeEnabled {
-                    HStack(spacing: 10) {
-                        dateBox("From", selection: $draft.startDate)
-                        dateBox("To", selection: $draft.endDate)
+                    ForEach(periods) { period in
+                        FilterSegment(
+                            title: period.title,
+                            isSelected: draft.period == period,
+                            ink: draft.period == period ? .blue : .primary,
+                            fill: Color.blue.opacity(0.12),
+                            showsDivider: period != periods.last
+                        ) {
+                            draft.period = period
+                        }
                     }
                 }
             }
         }
     }
-
-    private func dateBox(_ title: String, selection: Binding<Date>) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(verbatim: title).font(.caption).foregroundStyle(.secondary)
-
-            Text(verbatim: dateBoxFormatter.string(from: selection.wrappedValue))
-                .font(.callout)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay {
-                    DatePicker(selection: selection, displayedComponents: .date) {
-                        Text(verbatim: title)
-                    }
-                    .labelsHidden()
-                    .blendMode(.destinationOver)
-                    .environment(\.calendar, Calendar.utc)
-                    .environment(\.timeZone, Calendar.utc.timeZone)
-                }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .softCell()
-    }
 }
 
-private let dateBoxFormatter = DateFormatter(format: "d MMM yyyy")
+#Preview {
+    FilterPeriodView(draft: FilterDraft(query: .constant(EventQuery())))
+        .padding(16)
+}

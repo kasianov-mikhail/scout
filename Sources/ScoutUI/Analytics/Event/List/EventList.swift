@@ -9,8 +9,6 @@ import Scout
 import SwiftUI
 
 struct EventList<Header: View>: View {
-    let timeline = Date()
-
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
     var retry: (() async -> Void)? = nil
@@ -32,13 +30,16 @@ struct EventList<Header: View>: View {
                         rows(for: events)
                     }
                     .animation(nil, value: UUID())
+                    .transition(.opacity)
                 }
             } else if let error = provider.error {
                 ErrorView(description: error.localizedDescription, retry: retryLoad)
             } else {
-                RingIndicator().frame(maxHeight: .infinity)
+                EventListPlaceholder()
+                    .transition(.opacity)
             }
         }
+        .animation(.easeOut(duration: 0.2), value: provider.records == nil)
         .message($provider.message)
     }
 
@@ -52,7 +53,7 @@ struct EventList<Header: View>: View {
 
     @ViewBuilder
     private func rows(for events: [Event]) -> some View {
-        ForEach(events, content: row)
+        ForEach(events, content: EventRow.init)
 
         if let cursor = provider.cursor {
             PaginationFooter {
@@ -60,32 +61,28 @@ struct EventList<Header: View>: View {
             }
         }
     }
-
-    func row(for event: Event) -> some View {
-        Row {
-            HStack(spacing: 12) {
-                Text(event.name)
-                    .font(.body)
-                    .lineLimit(1)
-                    .monospaced()
-
-                Spacer()
-
-                if let date = event.date {
-                    RelativeTimeText(date: date, timeline: timeline)
-                }
-            }
-        } destination: {
-            EventView(event: event)
-        }
-        .listRowBackground(event.level?.color?.opacity(0.12) ?? .clear)
-    }
 }
 
 extension EventList where Header == EmptyView {
     init(provider: EventProvider, retry: (() async -> Void)? = nil) {
         self.init(provider: provider, retry: retry) { EmptyView() }
     }
+}
+
+#Preview("Rows") {
+    NavigationStack {
+        EventList(provider: .init(.samples))
+            .navigationTitle(en: "Events")
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        EventList(provider: .init())
+            .navigationTitle(en: "Events")
+    }
+    .environmentObject(Tint())
 }
 
 #Preview("Empty State") {
