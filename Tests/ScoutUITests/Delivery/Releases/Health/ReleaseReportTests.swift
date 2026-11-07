@@ -44,6 +44,31 @@ struct ReleaseReportTests {
         #expect(abs(previous.adoption.value - 1.0 / 3.0) < 1e-9)
     }
 
+    @Test("The ship date is the earliest point across the lifecycle series")
+    func testShippedDateFromSeries() {
+        let start = Date(timeIntervalSince1970: 0)
+        let sessions = MetricSeries(
+            name: Session.recordType,
+            category: nil,
+            version: "2.0",
+            points: [
+                MetricSeriesPoint(date: start.addingTimeInterval(4 * 86_400), value: 5),
+                MetricSeriesPoint(date: start.addingTimeInterval(8 * 86_400), value: 7),
+            ]
+        )
+        let installs = MetricSeries(
+            name: Version.installMarker,
+            category: nil,
+            version: "2.0",
+            points: [MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400), value: 1)]
+        )
+
+        let releases = ReleaseSeries(sessions: [sessions], crashes: [], hangs: [], installs: [installs], crashedInstalls: [], exits: [], performance: [], resources: [])
+            .report(in: start..<start.addingTimeInterval(10 * 86_400))
+
+        #expect(releases[0].shipped == start.addingTimeInterval(2 * 86_400))
+    }
+
     @Test("Hangs are counted per version from series")
     func testHangsByVersion() {
         let releases = ReleaseSeries(

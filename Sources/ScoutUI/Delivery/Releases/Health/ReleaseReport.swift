@@ -26,6 +26,9 @@ struct ReleaseSeries {
         let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
         let exitCounts = exits.reasonCounts(in: range)
         let resourceCounts = resources.kindCounts(in: range)
+        let shippedDates = (sessions + crashes + hangs + installs)
+            .points(in: range)
+            .compactMapValues { $0.map(\.date).min() }
         let summaries = Dictionary(grouping: performance, by: \.version).mapValues {
             PerformanceSummary(series: $0, range: range)
         }
@@ -54,6 +57,7 @@ struct ReleaseSeries {
                 hangs: hangCounts[version] ?? 0,
                 sessions: sessions,
                 adoption: Adoption(of: sessions, in: totalSessions),
+                shipped: shippedDates[version],
                 trend: crashPoints.trend(in: range),
                 exits: ExitSummary(counts: exitCounts[version] ?? [:]),
                 performance: PerformanceComparison(current: summaries[version] ?? PerformanceSummary(), previous: previous),

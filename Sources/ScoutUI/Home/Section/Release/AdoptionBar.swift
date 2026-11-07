@@ -9,6 +9,10 @@ import SwiftUI
 
 struct AdoptionBar: View {
     let versions: [ReleaseAdoption.Version]
+    let height: CGFloat
+    let labelSize: CGFloat
+    let labelWeight: Font.Weight
+    let labelInset: CGFloat
 
     var body: some View {
         GeometryReader { proxy in
@@ -23,23 +27,29 @@ struct AdoptionBar: View {
                         .overlay(alignment: .leading) {
                             if version.showsLabel {
                                 Text(verbatim: version.id)
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(.system(size: labelSize, weight: labelWeight, design: .monospaced))
                                     .foregroundStyle(.white)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
-                                    .padding(.leading, 4)
+                                    .padding(.leading, labelInset)
                             }
                         }
                 }
             }
         }
-        .frame(height: 24)
+        .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 3))
         .accessibilityHidden(true)
     }
 }
 
 #Preview {
-    AdoptionBar(versions: ReleaseAdoption.sample.versions)
-        .padding()
+    AdoptionBar(
+        versions: ReleaseAdoption.sample.versions,
+        height: 32,
+        labelSize: 11,
+        labelWeight: .bold,
+        labelInset: 6
+    )
+    .padding()
 }
