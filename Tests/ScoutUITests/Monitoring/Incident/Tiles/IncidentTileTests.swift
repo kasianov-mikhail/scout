@@ -19,7 +19,7 @@ struct IncidentTileTests {
     @Test("A tally keeps its count when the loaded page is smaller")
     func indexCountWins() {
         let tiles = tileList(
-            records: [.stub(name: "NSRangeException", date: now)],
+            records: [.stub(name: "NSRangeException", fingerprint: "A", date: now)],
             current: [tally("A", name: "NSRangeException", count: 12)],
             previous: []
         )
@@ -31,8 +31,8 @@ struct IncidentTileTests {
     func rawCountFillsGap() {
         let tiles = tileList(
             records: [
-                .stub(name: "NSRangeException", date: now),
-                .stub(name: "NSRangeException", date: now.addingTimeInterval(-3600)),
+                .stub(name: "NSRangeException", fingerprint: "A", date: now),
+                .stub(name: "NSRangeException", fingerprint: "A", date: now.addingTimeInterval(-3600)),
             ],
             current: [],
             previous: []
@@ -57,7 +57,7 @@ struct IncidentTileTests {
     @Test("A group without previous occurrences reads as new")
     func newGroup() {
         let tiles = tileList(
-            records: [.stub(name: "NSRangeException", date: now)],
+            records: [.stub(name: "NSRangeException", fingerprint: "A", date: now)],
             current: [tally("A", name: "NSRangeException", count: 1)],
             previous: []
         )
@@ -81,7 +81,7 @@ struct IncidentTileTests {
     @Test("A tile always draws seven bars")
     func bars() {
         let tiles = tileList(
-            records: [.stub(name: "NSRangeException", date: now)],
+            records: [.stub(name: "NSRangeException", fingerprint: "A", date: now)],
             current: [tally("A", name: "NSRangeException", count: 1)],
             previous: []
         )
