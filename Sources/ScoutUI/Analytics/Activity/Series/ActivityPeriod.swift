@@ -19,7 +19,7 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
 extension ActivityPeriod {
     func value(point: ActivityPoint?) -> Int {
         guard let point else { return 0 }
-        switch self {
+        return switch self {
         case .daily:
             point.dau
         case .weekly:
