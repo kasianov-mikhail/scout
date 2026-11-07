@@ -184,8 +184,8 @@ extension [Int] {
         }
 
         let last = lastIndex { $0 > 0 } ?? length - 1
-        let start = max(0, min(last - length + 1, count - length))
-        return Array(self[start..<min(start + length, count)])
+        let start = Swift.max(0, Swift.min(last - length + 1, count - length))
+        return Array(self[start..<Swift.min(start + length, count)])
     }
 }
 
