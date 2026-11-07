@@ -4,9 +4,7 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
-//
 
-import Charts
 import Scout
 import SwiftUI
 
@@ -15,98 +13,74 @@ struct RetentionCohortDetailView: View {
     let cohorts: [RetentionCohort]
 
     var body: some View {
+        let detail = RetentionCohortDetail(cohort: cohort, cohorts: cohorts, now: Date())
+
         InsetList {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: "\(cohort.size) installs").font(.caption).foregroundStyle(.secondary)
+            RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
+                .listRowSeparator(.hidden)
 
-                Chart {
-                    ForEach(cohorts.stats) { stat in
-                        LineMark(
-                            x: .value("Day", stat.day),
-                            y: .value("Average", stat.average),
-                            series: .value("Series", "Average")
-                        )
-                        .foregroundStyle(Color(.systemGray4))
-                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [4, 3]))
-                        .interpolationMethod(.monotone)
-                    }
+            RetentionSection(title: "Come back on", note: detail.averageNote, divider: true)
+                .listRowSeparator(.hidden)
 
-                    ForEach(Array(zip(RetentionCohort.dayOffsets, cohort.retention)), id: \.0) { day, rate in
-                        if let rate {
-                            LineMark(
-                                x: .value("Day", day),
-                                y: .value("Retention", rate),
-                                series: .value("Series", "Cohort")
-                            )
-                            .foregroundStyle(.green)
-                            .lineStyle(StrokeStyle(lineWidth: 2.5))
-                            .interpolationMethod(.monotone)
-
-                            PointMark(
-                                x: .value("Day", day),
-                                y: .value("Retention", rate)
-                            )
-                            .foregroundStyle(.green)
-                            .symbolSize(30)
-                        }
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks { value in
-                        AxisGridLine()
-                        if let rate = value.as(Double.self) {
-                            AxisValueLabel(
-                                rate.formatted(.retentionRate))
-                        }
-                    }
-                }
-                .aspectRatio(1.618, contentMode: .fit)
-                .padding(.top, 8)
-
-                legend
+            ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
+                RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
+                    .listRowSeparator(.hidden)
             }
-            .padding(.top)
-            .listRowSeparator(.hidden)
 
-            if !cohort.segments.isEmpty {
-                Header(title: "By OS Version")
+            if !detail.segments.isEmpty {
+                RetentionSection(title: "By OS version", note: "day 7")
+                    .listRowSeparator(.hidden)
 
-                ForEach(cohort.segments) { segment in
+                ForEach(Array(detail.segments.enumerated()), id: \.element.id) { index, segment in
                     Row {
-                        Text(verbatim: segment.name).font(.subheadline)
-                        Spacer()
-
-                        HStack(spacing: 14) {
-                            stat(day: 7, retention: segment.retention)
-                            stat(day: 30, retention: segment.retention)
-                        }
+                        RetentionSegmentRow(value: segment, showsDivider: index < detail.segments.count - 1)
                     } destination: {
-                        RetentionSegmentDetailView(segment: segment, cohort: cohort)
+                        RetentionSegmentDetailView(segment: segment.segment, cohort: cohort, cohorts: cohorts)
                     }
+                    .listRowSeparator(.hidden)
                 }
             }
         }
         .navigationTitle(en: "Week of \(cohort.label)")
+        .inlineNavigationTitle()
     }
+}
 
-    private var legend: some View {
-        HStack(spacing: 16) {
-            RetentionLegendItem(color: .green, dashed: false, title: "This cohort")
-            RetentionLegendItem(color: Color(.systemGray4), dashed: true, title: "Average")
-        }
-    }
+private struct RetentionSegmentRow: View {
+    let value: RetentionSegmentValue
+    let showsDivider: Bool
 
-    private func stat(day: Int, retention: [Double?]) -> some View {
-        VStack(spacing: 2) {
-            Text(verbatim: "D\(day)").font(.caption2).foregroundStyle(.secondary)
-            Text(
-                verbatim: RetentionCohort.rate(retention, onDay: day).map {
-                    $0.formatted(.retentionRate)
-                } ?? "—"
-            )
-            .font(.caption.weight(.semibold))
+    var body: some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: value.name)
+                    .font(.system(size: 15))
+
+                HStack(spacing: 0) {
+                    Text(verbatim: "\(value.installsLabel) · ")
+                        .foregroundStyle(Color(.systemGray))
+
+                    Text(verbatim: value.crashRateLabel)
+                        .foregroundStyle(Color.crashText)
+
+                    Text(verbatim: " crashed")
+                        .foregroundStyle(Color(.systemGray))
+                }
+                .font(.system(size: 12))
+            }
+
+            Spacer(minLength: 0)
+
+            RetentionValueLabel(kept: value.keptLabel, rate: value.rateLabel, pending: value.pendingLabel)
+                .frame(width: 76, alignment: .trailing)
         }
-        .frame(width: 40)
+        .padding(.vertical, 6)
+        .frame(minHeight: 52)
+        .overlay(alignment: .bottom) {
+            if showsDivider {
+                DashedLine()
+            }
+        }
     }
 }
 

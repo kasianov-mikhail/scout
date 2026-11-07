@@ -19,6 +19,6 @@ struct HomeSnapshot {
         users: .sample,
         telemetry: TelemetryItem.sample,
         releases: .sample,
-        retention: [RetentionWeek].sample
+        retention: [RetentionWeek].samples
     )
 }

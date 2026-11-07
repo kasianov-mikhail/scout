@@ -34,7 +34,7 @@ struct ActivityView: View {
         .animation(.easeOut(duration: 0.2), value: activity.isLoading)
         .fetchTask([activity])
         .navigationTitle(en: "Active users")
-        .navigationBarTitleDisplayMode(.inline)
+        .inlineNavigationTitle()
     }
 
     private func content(points: [ActivityPoint]) -> some View {

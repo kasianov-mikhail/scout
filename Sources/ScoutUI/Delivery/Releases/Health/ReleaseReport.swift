@@ -19,10 +19,12 @@ struct ReleaseSeries {
     let resources: [MetricSeries]
 
     func report(in range: Range<Date>) -> [ReleaseHealth] {
-        let sessionCounts = sessions.points(in: range).mapValues(\.total)
+        let sessionPoints = sessions.points(in: range)
+        let sessionCounts = sessionPoints.mapValues(\.total)
         let crashPoints = crashes.points(in: range)
         let hangCounts = hangs.points(in: range).mapValues(\.total)
-        let installCounts = installs.points(in: range).mapValues(\.total)
+        let installPoints = installs.points(in: range)
+        let installCounts = installPoints.mapValues(\.total)
         let crashedInstallCounts = crashedInstalls.points(in: range).mapValues(\.total)
         let exitCounts = exits.reasonCounts(in: range)
         let resourceCounts = resources.kindCounts(in: range)
@@ -39,22 +41,29 @@ struct ReleaseSeries {
 
         return versions.enumerated().map { index, version in
             let sessions = sessionCounts[version] ?? 0
-            let crashPoints = crashPoints[version] ?? []
-            let crashes = crashPoints.total
+            let crashSeries = crashPoints[version] ?? []
+            let crashes = crashSeries.total
             let installs = installCounts[version] ?? 0
             let previous = versions[(index + 1)...].lazy
                 .compactMap { version in summaries[version].map { PerformanceComparison.VersionSummary(version: version, summary: $0) } }
                 .first { !$0.summary.isEmpty }
 
+            let released =
+                [sessionPoints[version], crashPoints[version], installPoints[version]]
+                .compactMap(\.self)
+                .joined()
+                .map(\.date)
+                .min() ?? range.lowerBound
+
             return ReleaseHealth(
                 id: version,
+                released: released,
                 freeSessions: Stability(of: crashes, in: sessions),
                 freeUsers: Stability.optional(of: crashedInstallCounts[version] ?? 0, in: installs),
                 crashes: crashes,
                 hangs: hangCounts[version] ?? 0,
                 sessions: sessions,
                 adoption: Adoption(of: sessions, in: totalSessions),
-                trend: crashPoints.trend(in: range),
                 exits: ExitSummary(counts: exitCounts[version] ?? [:]),
                 performance: PerformanceComparison(current: summaries[version] ?? PerformanceSummary(), previous: previous),
                 resources: ResourceSummary(counts: resourceCounts[version] ?? [:])
@@ -99,27 +108,6 @@ extension [MetricSeries] {
             }
         }
         return result
-    }
-}
-
-extension [ChartPoint<Int>] {
-    fileprivate func trend(in range: Range<Date>) -> [Int] {
-        let slices = MiniChartSeries.sliceCount
-        var values = [Int](repeating: 0, count: slices)
-        let span = range.upperBound.timeIntervalSince(range.lowerBound)
-
-        guard span > 0 else {
-            return values
-        }
-
-        let step = span / Double(slices)
-
-        for point in self where range.contains(point.date) {
-            let index = Swift.min(slices - 1, Int(point.date.timeIntervalSince(range.lowerBound) / step))
-            values[index] += point.value
-        }
-
-        return values
     }
 }
 

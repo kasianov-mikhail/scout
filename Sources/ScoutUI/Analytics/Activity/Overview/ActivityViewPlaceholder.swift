@@ -134,6 +134,6 @@ struct ActivityViewPlaceholder: View {
     NavigationStack {
         ActivityViewPlaceholder(range: .constant(.month), metric: .daily)
             .navigationTitle(en: "Active users")
-            .navigationBarTitleDisplayMode(.inline)
+            .inlineNavigationTitle()
     }
 }

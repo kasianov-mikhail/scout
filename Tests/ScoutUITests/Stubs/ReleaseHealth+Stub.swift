@@ -5,19 +5,21 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Foundation
+
 @testable import ScoutUI
 
 extension ReleaseHealth {
     @discardableResult static func stub(version: String) -> ReleaseHealth {
         ReleaseHealth(
             id: version,
+            released: Date(),
             freeSessions: 1.0,
             freeUsers: nil,
             crashes: 0,
             hangs: 0,
             sessions: 1,
             adoption: 1.0,
-            trend: [],
             exits: ExitSummary(counts: [:]),
             performance: PerformanceComparison(current: PerformanceSummary(), previous: nil),
             resources: ResourceSummary(counts: [:])

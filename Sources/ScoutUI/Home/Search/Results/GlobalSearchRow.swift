@@ -48,7 +48,7 @@ struct GlobalSearchRow: View {
         case .device(let device):
             DeviceDetailView(device: device)
         case .release(let release):
-            VersionDetailView(release: release)
+            ReleaseView(release: release)
         case .crash(.group(let group)):
             CrashGroupDetailView(group: group)
         case .crash(.tally(let tally)):

@@ -1,0 +1,86 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import SwiftUI
+
+struct ReleaseHealthViewPlaceholder: View {
+    var body: some View {
+        InsetList {
+            header
+                .listRowSeparator(.hidden)
+
+            ForEach(0..<8, id: \.self) { index in
+                row(index: index)
+                    .listRowSeparator(.hidden)
+            }
+        }
+        .scrollContentBackground(.hidden)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "Loading"))
+    }
+
+    private var header: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                SkeletonBar(width: 120, height: 18, delay: 0.08)
+                    .frame(height: 28, alignment: .leading)
+
+                Text(verbatim: "of sessions")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+            }
+
+            SkeletonBar(height: 32, delay: 0.08, cornerRadius: 3, fill: Color(.systemGray6))
+                .padding(.top, 12)
+
+            ReleaseLevelLegend(squareSize: 8, fill: Color(.systemGray5))
+                .padding(.top, 8)
+        }
+        .padding(.top, 14)
+        .padding(.bottom, 14)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+
+    private func row(index: Int) -> some View {
+        let delay = 0.16 + Double(index) * 0.08
+
+        return HStack(spacing: 12) {
+            SkeletonBar(width: 30, height: 30, delay: delay, cornerRadius: 15)
+
+            VStack(alignment: .leading, spacing: 3) {
+                SkeletonBar(width: 46, height: 12, delay: delay)
+                SkeletonBar(width: 120, height: 9, delay: delay)
+            }
+
+            Spacer(minLength: 0)
+
+            VStack(alignment: .trailing, spacing: 3) {
+                SkeletonBar(width: 46, height: 11, delay: delay)
+                SkeletonBar(width: 46, height: 7, delay: delay)
+            }
+        }
+        .padding(.vertical, 8)
+        .frame(minHeight: 64)
+        .overlay(alignment: .bottom) {
+            if index < 7 {
+                DashedLine()
+            }
+        }
+    }
+}
+
+#Preview("Releases loading") {
+    NavigationStack {
+        ReleaseHealthViewPlaceholder()
+            .navigationTitle(en: "Releases")
+            .inlineNavigationTitle()
+    }
+}

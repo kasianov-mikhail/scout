@@ -9,6 +9,14 @@
     import AppKit
 
     extension NSColor {
+        static var systemGray2: NSColor {
+            NSColor(name: nil) { appearance in
+                appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                    ? NSColor(red: 99 / 255, green: 99 / 255, blue: 102 / 255, alpha: 1)
+                    : NSColor(red: 174 / 255, green: 174 / 255, blue: 178 / 255, alpha: 1)
+            }
+        }
+
         static var systemGray3: NSColor {
             NSColor(name: nil) { appearance in
                 appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua

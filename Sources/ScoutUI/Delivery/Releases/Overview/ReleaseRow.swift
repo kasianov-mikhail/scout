@@ -9,74 +9,66 @@ import SwiftUI
 
 struct ReleaseRow: View {
     let release: ReleaseHealth
+    let showsDivider: Bool
 
     var body: some View {
         Row {
-            CompactRing(release: release)
+            HStack(spacing: 12) {
+                ring
 
-            Text(verbatim: release.id)
-                .font(.body)
-                .monospacedDigit()
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(verbatim: release.id)
+                        .font(.system(size: 17, weight: .bold, design: .monospaced))
 
-            Spacer()
+                    Text(verbatim: "\(release.adoption.formatted) of sessions · \(DateFormatter.monthDay.string(from: release.released))")
+                        .font(.system(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                }
 
-            Sparkline(
-                series: MiniChartSeries(values: release.trend),
-                color: release.freeSessions.color,
-                lineWidth: 1.5,
-                showsGridlines: false
-            )
-            .frame(width: 56, height: 22)
+                Spacer(minLength: 0)
 
-            ReleasePercent(text: release.freeSessions.formatted)
+                VStack(alignment: .trailing, spacing: 3) {
+                    Text(verbatim: release.freeSessions.formatted)
+                        .font(.system(size: 15, weight: .bold, design: .monospaced))
+
+                    Text(verbatim: release.freeSessions.level.title)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(release.freeSessions.level.tint)
+                }
+            }
+            .padding(.vertical, 8)
+            .frame(minHeight: 64)
+            .overlay(alignment: .bottom) {
+                if showsDivider {
+                    DashedLine()
+                }
+            }
+            .accessibilityElement(children: .combine)
         } destination: {
-            VersionDetailView(release: release)
+            ReleaseView(release: release)
         }
     }
-}
 
-private struct CompactRing: View {
-    let adoption: Adoption
-    let color: Color
-
-    var body: some View {
+    private var ring: some View {
         ZStack {
             Circle()
-                .stroke(Color(.systemGray5), lineWidth: 2)
+                .stroke(Color(.systemGray5), lineWidth: 3)
+
             Circle()
-                .trim(from: 0, to: adoption.value)
-                .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .trim(from: 0, to: release.adoption.value)
+                .stroke(release.freeSessions.color, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                 .rotationEffect(.degrees(-90))
         }
-        .frame(width: 16, height: 16)
-        .padding(.horizontal, 4)
-    }
-}
-
-extension CompactRing {
-    init(release: ReleaseHealth) {
-        self.init(adoption: release.adoption, color: release.freeSessions.color)
-    }
-}
-
-private struct ReleasePercent: View {
-    let text: String
-
-    var body: some View {
-        Text(verbatim: text)
-            .font(.subheadline)
-            .monospacedDigit()
-            .foregroundStyle(.primary)
-            .frame(minWidth: 80, alignment: .trailing)
-            .padding(.leading, 8)
+        .frame(width: 30, height: 30)
+        .accessibilityHidden(true)
     }
 }
 
 #Preview {
     NavigationStack {
         InsetList {
-            ForEach([ReleaseHealth].samples) { release in
-                ReleaseRow(release: release)
+            ForEach(Array([ReleaseHealth].samples.enumerated()), id: \.element.id) { index, release in
+                ReleaseRow(release: release, showsDivider: index < 4)
             }
         }
         .navigationTitle(en: "Releases")

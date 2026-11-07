@@ -32,3 +32,9 @@ extension [MetricSeries] {
         return [DailyCount](counts: counts, window: window)
     }
 }
+
+extension [DailyCount] {
+    var today: Int {
+        last?.count ?? 0
+    }
+}

@@ -34,8 +34,8 @@ struct RetentionBar: View {
 
 #Preview {
     VStack {
-        RetentionBar(week: [RetentionWeek].sample[1], maxInstalls: 1142)
-        RetentionBar(week: [RetentionWeek].sample[0], maxInstalls: 1142)
+        RetentionBar(week: [RetentionWeek].samples[1], maxInstalls: 1142)
+        RetentionBar(week: [RetentionWeek].samples[0], maxInstalls: 1142)
     }
     .padding()
 }

@@ -12,8 +12,13 @@ struct RetentionWeek: Identifiable {
     let start: Date
     let installs: Int
     let kept: Int?
+    let day: RetentionDay
 
     var id: Date { start }
+
+    var label: String {
+        DateFormatter.monthDay.string(from: start)
+    }
 
     var rate: Double? {
         guard let kept, installs > 0 else {
@@ -22,21 +27,32 @@ struct RetentionWeek: Identifiable {
         return Double(kept) / Double(installs)
     }
 
-    var pendingDays: Int? {
-        guard kept == nil else {
-            return nil
-        }
-        let daySeven = start.addingDay(7)
-        let days = Calendar.utc.dateComponents([.day], from: Date().startOfDay, to: daySeven).day ?? 0
+    var keptLabel: String? {
+        kept.map { $0.formatted(.count) }
+    }
 
-        return max(days, 0)
+    var rateLabel: String? {
+        rate.map { $0.formatted(.retentionRate) }
     }
 
     var pendingLabel: String? {
-        guard let pendingDays else {
+        guard kept == nil else {
             return nil
         }
-        return pendingDays > 0 ? "in \(pendingDays) d" : "today"
+        return day.pendingLabel(week: start, now: Date())
+    }
+}
+
+extension RetentionWeek: Fixture {
+    static var samples: [RetentionWeek] {
+        let end = Date().startOfDay
+
+        return [
+            RetentionWeek(start: end.addingDay(-5), installs: 1104, kept: nil, day: .day7),
+            RetentionWeek(start: end.addingDay(-12), installs: 960, kept: 192, day: .day7),
+            RetentionWeek(start: end.addingDay(-19), installs: 1142, kept: 217, day: .day7),
+            RetentionWeek(start: end.addingDay(-26), installs: 787, kept: 142, day: .day7),
+        ]
     }
 }
 
@@ -44,15 +60,4 @@ extension [RetentionWeek] {
     var maxInstalls: Int {
         map(\.installs).max() ?? 0
     }
-
-    static let sample: [RetentionWeek] = {
-        let end = Date().startOfDay
-
-        return [
-            RetentionWeek(start: end.addingDay(-5), installs: 1104, kept: nil),
-            RetentionWeek(start: end.addingDay(-12), installs: 960, kept: 192),
-            RetentionWeek(start: end.addingDay(-19), installs: 1142, kept: 217),
-            RetentionWeek(start: end.addingDay(-26), installs: 787, kept: 142),
-        ]
-    }()
 }

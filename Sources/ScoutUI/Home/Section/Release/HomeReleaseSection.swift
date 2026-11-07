@@ -42,10 +42,10 @@ struct HomeReleaseSection: View {
                     .foregroundStyle(Color(.systemGray))
             }
 
-            AdoptionBar(versions: adoption.versions)
+            AdoptionBar(versions: adoption.versions, height: 24)
                 .padding(.top, 10)
 
-            legend
+            ReleaseLevelLegend(squareSize: 7)
                 .padding(.top, 6)
 
             caption(adoption: adoption)
@@ -55,28 +55,12 @@ struct HomeReleaseSection: View {
         .listRowSeparator(.hidden)
     }
 
-    private var legend: some View {
-        HStack(spacing: 12) {
-            ForEach(Stability.Level.allCases, id: \.self) { level in
-                HStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(level.color)
-                        .frame(width: 7, height: 7)
-
-                    Text(verbatim: level.title)
-                }
-            }
-        }
-        .font(.caption)
-        .foregroundStyle(Color(.systemGray))
-    }
-
     @ViewBuilder
     private func caption(adoption: ReleaseAdoption) -> some View {
         if let top = adoption.top {
             (Text(verbatim: "\(top.id) is ")
                 .foregroundColor(Color(.systemGray))
-                + Text(verbatim: top.stability.level.title)
+                + Text(verbatim: top.stability.level.title.lowercased())
                 .fontWeight(.semibold)
                 .foregroundColor(top.stability.level.color)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")

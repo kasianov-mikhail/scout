@@ -18,7 +18,7 @@ extension ReleaseAdoption {
                         id: release.id,
                         share: release.adoption.value,
                         stability: release.freeSessions,
-                        shipped: nil
+                        shipped: release.released
                     )
                 }
         )
