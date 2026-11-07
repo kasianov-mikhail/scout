@@ -11,17 +11,18 @@ struct FilterContextView: View {
     @ObservedObject var draft: FilterDraft
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Header(title: "Context")
-
-            VStack(alignment: .leading, spacing: 10) {
-                IDField(
-                    title: "Session ID",
+        VStack(alignment: .leading, spacing: 22) {
+            FilterSection(title: "Session ID") {
+                FilterIDField(
+                    placeholder: "From a session or timeline",
                     text: $draft.sessionText,
                     isValid: draft.isSessionValid
                 )
-                IDField(
-                    title: "Device ID",
+            }
+
+            FilterSection(title: "Device ID") {
+                FilterIDField(
+                    placeholder: "From a device or session",
                     text: $draft.deviceText,
                     isValid: draft.isDeviceValid
                 )
@@ -30,51 +31,66 @@ struct FilterContextView: View {
     }
 }
 
-private struct IDField: View {
-    let title: String
+private struct FilterIDField: View {
+    let placeholder: String
     @Binding var text: String
     let isValid: Bool
 
     var body: some View {
-        HStack {
-            Text(verbatim: title).font(.callout)
-            Spacer()
-            if text.isEmpty {
-                Button(action: paste) {
-                    Image(systemName: "clipboard").font(.body)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
-            } else {
-                VStack(alignment: .trailing, spacing: 1) {
-                    Text(verbatim: text)
-                        .font(.callout.monospaced())
-                        .foregroundStyle(isValid ? Color.primary : Color.red)
+        VStack(alignment: .leading, spacing: 4) {
+            FilterBox {
+                HStack(spacing: 0) {
+                    Text(verbatim: text.isEmpty ? placeholder : text)
+                        .font(text.isEmpty ? .system(size: 17) : .system(size: 15, design: .monospaced))
+                        .foregroundStyle(!isValid ? Color.red : text.isEmpty ? Color(.systemGray3) : Color.primary)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                    if !isValid {
-                        Text(verbatim: "Not a valid ID").font(.caption).foregroundStyle(.red)
+                        .padding(.horizontal, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    Button(action: toggle) {
+                        Text(verbatim: text.isEmpty ? "Paste" : "Clear")
+                            .font(.system(size: 15, weight: .semibold))
+                            .foregroundStyle(Color.blue)
+                            .padding(.horizontal, 16)
+                            .frame(maxHeight: .infinity)
+                            .overlay(alignment: .leading) {
+                                Rectangle()
+                                    .fill(Color(.systemGray3))
+                                    .frame(width: 0.5)
+                            }
                     }
+                    .buttonStyle(.plain)
                 }
-                Button {
-                    text = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill").foregroundStyle(.secondary)
-                }
-                .buttonStyle(.plain)
+                .frame(height: 44)
+            }
+
+            if !isValid {
+                Text(verbatim: "Not a valid ID")
+                    .font(.system(size: 13))
+                    .foregroundStyle(.red)
             }
         }
-        .softCell()
     }
 
-    private func paste() {
+    private var clipboardText: String? {
         #if os(iOS)
-            let string = UIPasteboard.general.string
+            UIPasteboard.general.string
         #else
-            let string = NSPasteboard.general.string(forType: .string)
+            NSPasteboard.general.string(forType: .string)
         #endif
-        if let string {
-            text = string.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
     }
+
+    private func toggle() {
+        guard text.isEmpty else {
+            text = ""
+            return
+        }
+        text = clipboardText?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+    }
+}
+
+#Preview {
+    FilterContextView(draft: FilterDraft(query: .constant(EventQuery())))
+        .padding(16)
 }

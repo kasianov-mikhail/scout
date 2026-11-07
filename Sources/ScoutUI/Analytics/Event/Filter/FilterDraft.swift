@@ -11,29 +11,20 @@ import SwiftUI
 @MainActor
 final class FilterDraft: ObservableObject {
     private let query: Binding<EventQuery>
+    private let today: Date
 
     @Published var levels: Set<EventLevel>
-    @Published var isDateRangeEnabled: Bool
-    @Published var startDate: Date
-    @Published var endDate: Date
+    @Published var period: FilterPeriod
     @Published var sessionText: String
     @Published var deviceText: String
 
-    private let defaultStartDate: Date
-    private let defaultEndDate: Date
-
     init(query: Binding<EventQuery>, today: Date = Date()) {
         let value = query.wrappedValue
-        let start = today.startOfDay.addingDay(-6)
-        let end = today.startOfDay
 
         self.query = query
-        self.defaultStartDate = start
-        self.defaultEndDate = end
-        self.levels = value.levels
-        self.isDateRangeEnabled = value.dates != nil
-        self.startDate = value.dates?.lowerBound ?? start
-        self.endDate = value.dates.map { $0.upperBound.addingDay(-1) } ?? end
+        self.today = today.startOfDay
+        self.levels = value.levels == EventQuery.allLevels ? [] : value.levels
+        self.period = FilterPeriod(dates: value.dates, today: today)
         self.sessionText = value.sessionID?.uuidString ?? ""
         self.deviceText = value.deviceID?.uuidString ?? ""
     }
@@ -65,44 +56,83 @@ extension FilterDraft {
     var isDeviceValid: Bool {
         deviceText.trimmed.isEmpty || deviceID != nil
     }
-
-    var isDateRangeValid: Bool {
-        !isDateRangeEnabled || startDate.startOfDay <= endDate.startOfDay
-    }
 }
 
 extension FilterDraft {
     var result: EventQuery {
         var result = query.wrappedValue
-        result.levels = levels
-        result.dates = isDateRangeEnabled ? startDate.startOfDay..<endDate.startOfDay.addingDay() : nil
+        result.levels = levels.isEmpty ? EventQuery.allLevels : levels
+        result.dates = period.dates(today: today)
         result.sessionID = sessionID
         result.deviceID = deviceID
         return result
     }
 
     var isApplyEnabled: Bool {
-        !levels.isEmpty && isSessionValid && isDeviceValid && isDateRangeValid && result != query.wrappedValue
+        isSessionValid && isDeviceValid && result != query.wrappedValue
     }
 
     func apply() {
         query.wrappedValue = result
     }
-}
-
-extension FilterDraft {
-    var isResetEnabled: Bool {
-        levels != EventQuery.allLevels || isDateRangeEnabled || !sessionText.trimmed.isEmpty
-            || !deviceText.trimmed.isEmpty
-    }
 
     func reset() {
-        levels = EventQuery.allLevels
-        isDateRangeEnabled = false
-        startDate = defaultStartDate
-        endDate = defaultEndDate
+        levels = []
+        period = .any
         sessionText = ""
         deviceText = ""
+    }
+}
+
+enum FilterPeriod: Hashable, Identifiable {
+    case any
+    case today
+    case week
+    case month
+    case custom(Range<Date>)
+
+    static let presets = [FilterPeriod.any, .today, .week, .month]
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .any:
+            "Any"
+        case .today:
+            "Today"
+        case .week:
+            "7 days"
+        case .month:
+            "30 days"
+        case .custom:
+            "Custom"
+        }
+    }
+
+    init(dates: Range<Date>?, today: Date) {
+        guard let dates else {
+            self = .any
+            return
+        }
+        self = FilterPeriod.presets.first { $0.dates(today: today) == dates } ?? .custom(dates)
+    }
+
+    func dates(today: Date) -> Range<Date>? {
+        let end = today.startOfDay.addingDay()
+
+        return switch self {
+        case .any:
+            nil
+        case .today:
+            end.addingDay(-1)..<end
+        case .week:
+            end.addingDay(-7)..<end
+        case .month:
+            end.addingDay(-30)..<end
+        case .custom(let dates):
+            dates
+        }
     }
 }
 

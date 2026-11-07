@@ -31,24 +31,29 @@ struct FilterDraftTests {
     @Test("Toggle flips level selection") func toggle() {
         let draft = draft
 
-        #expect(draft.isSelected(.error))
-
-        draft.toggle(.error)
         #expect(draft.isSelected(.error) == false)
 
         draft.toggle(.error)
         #expect(draft.isSelected(.error))
+
+        draft.toggle(.error)
+        #expect(draft.isSelected(.error) == false)
     }
 
     @Test("Apply is disabled while the draft matches the query") func applyDisabled() {
         #expect(draft.isApplyEnabled == false)
     }
 
-    @Test("Apply is disabled when no levels are selected") func applyNeedsLevels() {
+    @Test("An empty level selection applies every level") func emptyLevels() {
+        box.query = EventQuery(levels: [.error])
+
         let draft = draft
         draft.levels = []
 
-        #expect(draft.isApplyEnabled == false)
+        #expect(draft.isApplyEnabled)
+
+        draft.apply()
+        #expect(box.query.levels == EventQuery.allLevels)
     }
 
     @Test("Apply writes the draft back to the query") func apply() {
@@ -58,7 +63,7 @@ struct FilterDraftTests {
         #expect(draft.isApplyEnabled)
 
         draft.apply()
-        #expect(box.query.levels == EventQuery.allLevels.subtracting([.trace]))
+        #expect(box.query.levels == [.trace])
     }
 
     @Test("Session field maps to the query identifier") func session() {
@@ -99,59 +104,80 @@ struct FilterDraftTests {
         #expect(draft.isApplyEnabled == false)
     }
 
-    @Test("Date range applies day-aligned bounds") func dateRange() {
+    @Test("Period applies day-aligned bounds") func period() {
         let draft = draft
-        draft.isDateRangeEnabled = true
+        draft.period = .week
 
         draft.apply()
         #expect(box.query.dates == today.startOfDay.addingDay(-6)..<today.startOfDay.addingDay())
     }
 
-    @Test("Inverted date range disables apply") func invertedRange() {
+    @Test("Today covers the current day") func todayPeriod() {
         let draft = draft
-        draft.isDateRangeEnabled = true
-        draft.endDate = draft.startDate.addingDay(-1)
+        draft.period = .today
 
-        #expect(draft.isDateRangeValid == false)
-        #expect(draft.isApplyEnabled == false)
+        draft.apply()
+        #expect(box.query.dates == today.startOfDay..<today.startOfDay.addingDay())
     }
 
     @Test("Draft starts from the applied query") func initialState() {
-        let dates = today.startOfDay.addingDay(-3)..<today.startOfDay
+        let dates = today.startOfDay.addingDay(-6)..<today.startOfDay.addingDay()
         box.query = EventQuery(levels: [.error], sessionID: UUID(), dates: dates)
 
         let draft = draft
 
         #expect(draft.levels == [.error])
-        #expect(draft.isDateRangeEnabled)
-        #expect(draft.startDate == dates.lowerBound)
-        #expect(draft.endDate == dates.upperBound.addingDay(-1))
+        #expect(draft.period == .week)
         #expect(draft.sessionText == box.query.sessionID?.uuidString)
         #expect(draft.isApplyEnabled == false)
+    }
+
+    @Test("Draft starts with no levels when the query has none set") func allLevelsState() {
+        box.query = EventQuery()
+
+        #expect(draft.levels.isEmpty)
+        #expect(draft.period == .any)
+    }
+
+    @Test("A custom date range keeps its bounds") func customRange() {
+        let dates = today.startOfDay.addingDay(-3)..<today.startOfDay
+        box.query = EventQuery(dates: dates)
+
+        let draft = draft
+
+        #expect(draft.period == .custom(dates))
+    }
+
+    @Test("A custom date range survives apply") func customRangeApply() {
+        let dates = today.startOfDay.addingDay(-3)..<today.startOfDay
+        box.query = EventQuery(dates: dates)
+
+        let draft = draft
+        draft.toggle(.error)
+
+        #expect(draft.isApplyEnabled)
+
+        draft.apply()
+        #expect(box.query.dates == dates)
     }
 
     @Test("Reset restores the defaults") func reset() {
         let draft = draft
         draft.toggle(.error)
-        draft.isDateRangeEnabled = true
-        draft.startDate = today.startOfDay.addingDay(-30)
+        draft.period = .month
         draft.sessionText = UUID().uuidString
         draft.deviceText = UUID().uuidString
 
-        #expect(draft.isResetEnabled)
-
         draft.reset()
-        #expect(draft.levels == EventQuery.allLevels)
-        #expect(draft.isDateRangeEnabled == false)
-        #expect(draft.startDate == today.startOfDay.addingDay(-6))
+        #expect(draft.levels.isEmpty)
+        #expect(draft.period == .any)
         #expect(draft.sessionText.isEmpty)
         #expect(draft.deviceText.isEmpty)
-        #expect(draft.isResetEnabled == false)
     }
 
     @Test("Reset on a filtered query enables apply and clears it") func resetThenApply() {
-        box.query = EventQuery(
-            levels: [.error], sessionID: UUID(), dates: today.startOfDay.addingDay(-3)..<today.startOfDay)
+        let dates = today.startOfDay.addingDay(-6)..<today.startOfDay.addingDay()
+        box.query = EventQuery(levels: [.error], sessionID: UUID(), dates: dates)
 
         let draft = draft
         draft.reset()
