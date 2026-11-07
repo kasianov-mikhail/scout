@@ -6,6 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 enum ActivityPeriod: String, Identifiable, CaseIterable {
     case daily = "DAU"
@@ -15,11 +16,18 @@ enum ActivityPeriod: String, Identifiable, CaseIterable {
     var id: Self { self }
 }
 
-extension ActivityPeriod: ChartTimeScale {
-    var horizonDate: Date { today }
-
-    var rangeComponent: Calendar.Component { .month }
-    var pointComponent: Calendar.Component { .day }
+extension ActivityPeriod {
+    func value(point: ActivityPoint?) -> Int {
+        guard let point else { return 0 }
+        return switch self {
+        case .daily:
+            point.dau
+        case .weekly:
+            point.wau
+        case .monthly:
+            point.mau
+        }
+    }
 }
 
 extension Period {

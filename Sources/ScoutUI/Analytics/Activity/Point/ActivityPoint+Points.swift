@@ -11,15 +11,7 @@ import Scout
 extension [ActivityPoint] {
     func points(on period: ActivityPeriod) -> [ChartPoint<Int>] {
         compactMap { point in
-            let count =
-                switch period {
-                case .daily:
-                    point.dau
-                case .weekly:
-                    point.wau
-                case .monthly:
-                    point.mau
-                }
+            let count = period.value(point: point)
             guard count > 0 else {
                 return nil
             }

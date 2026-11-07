@@ -14,42 +14,22 @@ struct HomeActiveUsersChart: View {
     let end: Date
 
     var body: some View {
-        VStack(spacing: 4) {
-            HStack(alignment: .bottom, spacing: 2) {
-                ForEach(metric.series.indices, id: \.self) { index in
-                    RoundedRectangle(cornerRadius: 1)
-                        .fill(index == metric.series.indices.last ? metric.kind.accent : Color(.systemGray4))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: height(for: metric.series[index]))
-                }
-            }
-            .frame(height: 72)
-
-            HStack {
-                Text(verbatim: DateFormatter.monthDay.string(from: start))
-
-                Spacer()
-
-                Text(verbatim: DateFormatter.monthDay.string(from: middle))
-
-                Spacer()
-
-                Text(verbatim: "today")
-            }
-            .font(.system(size: 10))
-            .foregroundStyle(Color(.systemGray))
-        }
+        BarChart(
+            values: metric.series,
+            startLabel: DateFormatter.monthDay.string(from: start),
+            middleLabel: DateFormatter.monthDay.string(from: middle),
+            endLabel: "today",
+            height: 72,
+            spacing: 2,
+            cornerRadius: 1,
+            labelGap: 4,
+            labelDesign: .default,
+            accent: metric.series.indices.last.map { BarChart.Accent(index: $0, color: metric.kind.accent) }
+        )
     }
 
     private var middle: Date {
         start.addingTimeInterval(end.timeIntervalSince(start) / 2)
-    }
-
-    private func height(for value: Int) -> CGFloat {
-        guard let maximum = metric.series.max(), maximum > 0 else {
-            return 0
-        }
-        return CGFloat(value) / CGFloat(maximum) * 72
     }
 }
 

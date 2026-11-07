@@ -1,0 +1,137 @@
+//
+// Copyright 2025 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Scout
+import SwiftUI
+
+struct ActivityView: View {
+    @ObservedObject var activity: ActivityProvider
+
+    @State private var range = ActivityRange.month
+    @State private var metric = ActivityPeriod.daily
+
+    @Environment(\.database) private var database
+
+    var body: some View {
+        Group {
+            switch activity.result {
+            case nil:
+                ActivityViewPlaceholder(range: $range, metric: metric)
+                    .transition(.opacity)
+            case .success(let points):
+                content(points: points)
+                    .transition(.opacity)
+            case .failure(let error):
+                ErrorView(description: Text(error.localizedDescription)) {
+                    await activity.fetchAgain(in: database)
+                }
+            }
+        }
+        .animation(.easeOut(duration: 0.2), value: activity.isLoading)
+        .fetchTask([activity])
+        .navigationTitle(en: "Active users")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func content(points: [ActivityPoint]) -> some View {
+        let series = ActivitySeries(points: points, range: range, metric: metric, now: Date())
+
+        return InsetList {
+            ActivityRangeStrip(selection: $range)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
+                .listRowSeparator(.hidden)
+
+            ActivityMetricTabs(series: series, selection: $metric)
+                .listRowInsets(.activityRow(top: 4))
+                .listRowSeparator(.hidden)
+
+            ActivityChart(series: series)
+                .listRowInsets(.activityRow(top: 16))
+                .listRowSeparator(.hidden)
+
+            ActivityStickiness(series: series)
+                .listRowInsets(.activityRow(top: 12))
+                .listRowSeparator(.hidden)
+
+            ActivityRowsHeader()
+                .listRowInsets(.activityRow(top: 0))
+                .listRowSeparator(.hidden)
+
+            ForEach(series.rows) { row in
+                ActivityDayRow(row: row)
+                    .listRowInsets(.activityRow(top: 0))
+                    .listRowSeparator(.hidden)
+            }
+        }
+    }
+}
+
+private struct ActivityStickiness: View {
+    let series: ActivitySeries
+
+    var body: some View {
+        HStack(spacing: 0) {
+            Text(verbatim: "Stickiness ")
+
+            Text(verbatim: series.stickinessLabel)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+
+            Text(verbatim: " · a monthly user comes \(series.daysPerMonthLabel) days a month")
+        }
+        .font(.system(size: 13))
+        .foregroundStyle(Color(.systemGray))
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.bottom, 12)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+}
+
+struct ActivityRowsHeader: View {
+    var body: some View {
+        HStack(spacing: 0) {
+            Text(verbatim: "PER DAY")
+                .font(.system(size: 16, weight: .bold))
+
+            Spacer()
+
+            Text(verbatim: "vs day before")
+                .font(.system(size: 13))
+                .foregroundStyle(Color(.systemGray))
+        }
+        .frame(height: 56)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+}
+
+extension EdgeInsets {
+    static func activityRow(top: CGFloat) -> EdgeInsets {
+        EdgeInsets(top: top, leading: 16, bottom: 0, trailing: 16)
+    }
+}
+
+#Preview("Activity") {
+    NavigationStack {
+        ActivityView(activity: ActivityProvider(.success(ActivityPoint.samples)))
+    }
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        ActivityView(activity: ActivityProvider())
+    }
+}

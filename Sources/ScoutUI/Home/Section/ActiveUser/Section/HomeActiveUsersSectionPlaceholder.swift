@@ -26,20 +26,13 @@ struct HomeActiveUsersSectionPlaceholder: View {
             SkeletonBar(height: 72, delay: 0.56, fill: Color(.systemGray6))
                 .padding(.top, 14)
 
-            HStack {
-                Text(verbatim: DateFormatter.monthDay.string(from: start))
-
-                Spacer()
-
-                Text(verbatim: DateFormatter.monthDay.string(from: middle))
-
-                Spacer()
-
-                Text(verbatim: "today")
-            }
-            .font(.system(size: 10))
-            .foregroundStyle(Color(.systemGray))
-            .padding(.top, 4)
+            AxisLabelRow(
+                start: DateFormatter.monthDay.string(from: start),
+                middle: DateFormatter.monthDay.string(from: middle),
+                end: "today",
+                topInset: 4,
+                design: .default
+            )
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
                 .padding(.top, 10)

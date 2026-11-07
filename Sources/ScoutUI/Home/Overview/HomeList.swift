@@ -126,7 +126,7 @@ struct HomeList: View {
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:
-                ActivityView(activity: activities, period: Period.today.activityPeriod)
+                ActivityView(activity: activities)
             case .retention:
                 RetentionHeroChartView(provider: retention)
             case .sessions:
