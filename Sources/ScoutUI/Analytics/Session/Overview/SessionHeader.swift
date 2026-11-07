@@ -1,0 +1,89 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import SwiftUI
+
+struct SessionHeader: View {
+    let info: SessionInfo
+
+    var body: some View {
+        VStack(spacing: 0) {
+            summary
+                .padding(.top, 16)
+                .padding(.bottom, 14)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottom) {
+                    divider
+                }
+
+            chips
+                .padding(.top, 12)
+                .padding(.bottom, 14)
+                .padding(.horizontal, 16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottom) {
+                    divider
+                }
+        }
+    }
+
+    @ViewBuilder
+    private var summary: some View {
+        if let duration = info.duration, let detail = info.detail {
+            (Text(verbatim: duration).fontWeight(.semibold) + Text(verbatim: " · \(detail)"))
+                .font(.system(size: 15))
+        } else if let text = info.summary {
+            Text(verbatim: text)
+                .font(.system(size: 15))
+        }
+    }
+
+    private var chips: some View {
+        FlowLayout(spacing: 6) {
+            if let model = info.model.map(DeviceModel.init) {
+                chip(model.name)
+            }
+            if let osVersion = info.osVersion {
+                chip(osVersion)
+            }
+            if let locale = info.locale {
+                chip(locale, monospaced: true)
+            }
+            if let version = info.version {
+                chip(version, monospaced: true)
+            }
+            if let channel = info.channel {
+                chip(channel)
+            }
+        }
+    }
+
+    private func chip(_ text: String, monospaced: Bool = false) -> some View {
+        Text(verbatim: text)
+            .font(.system(size: 13))
+            .monospaced(monospaced)
+            .lineLimit(1)
+            .padding(.horizontal, 9)
+            .frame(height: 26)
+            .overlay {
+                Capsule().stroke(Color(.systemGray4), lineWidth: 0.5)
+            }
+    }
+
+    private var divider: some View {
+        Rectangle()
+            .fill(Color(.systemGray3))
+            .frame(height: 0.5)
+            .padding(.horizontal, 16)
+    }
+}
+
+#Preview {
+    SessionHeader(info: .sample)
+        .padding(.vertical)
+}
