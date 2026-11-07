@@ -161,17 +161,17 @@ extension VersionSummary {
     }
 
     private func note(readout: PerformanceReadout) -> String {
-        var parts = ["median"]
+        var note = "median"
 
         if let change = readout.change {
-            parts.append(Self.percent(change: change))
+            note += " · \(Self.percent(change: change))"
         }
 
         if let version = release.performance.previous?.version {
-            parts.append("vs \(version)")
+            note += " vs \(version)"
         }
 
-        return parts.joined(separator: " · ")
+        return note
     }
 }
 
