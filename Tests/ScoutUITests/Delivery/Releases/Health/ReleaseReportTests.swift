@@ -103,7 +103,7 @@ struct ReleaseReportTests {
         #expect(releases[0].freeUsers?.value == 0.75)
     }
 
-    @Test("Crashes are summed from the point dates")
+    @Test("Crash trend is bucketed from the point dates")
     func testCrashTrendFromPoints() {
         let start = Date(timeIntervalSince1970: 0)
 
@@ -130,6 +130,7 @@ struct ReleaseReportTests {
         .report(in: start..<start.addingTimeInterval(7 * 86_400))
 
         #expect(releases[0].crashes == 5)
+        #expect(releases[0].trend == [2, 0, 3, 0, 0, 0, 0])
     }
 
     @Test("Session points outside the range are excluded from the count")
