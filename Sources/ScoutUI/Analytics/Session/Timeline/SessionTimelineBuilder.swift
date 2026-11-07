@@ -26,7 +26,7 @@ extension SessionTimeline {
             )
         ]
 
-        let occurrences = Occurrence.all(events: events, screens: screens, crashes: crashes, hangs: hangs, resources: resources)
+        let occurrences = SessionOccurrence.all(events: events, screens: screens, crashes: crashes, hangs: hangs, resources: resources)
         var previous: Date?
 
         for (index, occurrence) in occurrences.enumerated() {
@@ -82,7 +82,7 @@ extension SessionTimeline {
         return "app launched \(delay.sessionDuration) before"
     }
 
-    private static func endRow(info: SessionInfo, occurrences: [Occurrence], start: Date, now: Date) -> EndRow {
+    private static func endRow(info: SessionInfo, occurrences: [SessionOccurrence], start: Date, now: Date) -> EndRow {
         if let crash = latestCrash(occurrences), !occurrences.contains(where: { $0.date > crash.date }) {
             return EndRow(
                 row: SessionTimelineRow(
@@ -139,7 +139,7 @@ extension SessionTimeline {
         )
     }
 
-    private static func latestCrash(_ occurrences: [Occurrence]) -> Occurrence? {
+    private static func latestCrash(_ occurrences: [SessionOccurrence]) -> SessionOccurrence? {
         occurrences.last { occurrence in
             if case .crash = occurrence {
                 true

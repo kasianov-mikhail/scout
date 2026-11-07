@@ -8,21 +8,21 @@
 import Foundation
 import Scout
 
-enum Occurrence {
+enum SessionOccurrence {
     case event(Event, Date)
     case screen(Screen, Date)
     case crash(Crash, Date)
     case hang(Hang, Date)
     case resource(ResourceException, Date)
 
-    static func all(events: [Event], screens: [Screen], crashes: [Crash], hangs: [Hang], resources: [ResourceException]) -> [Occurrence] {
-        var result: [Occurrence] = []
+    static func all(events: [Event], screens: [Screen], crashes: [Crash], hangs: [Hang], resources: [ResourceException]) -> [SessionOccurrence] {
+        var result: [SessionOccurrence] = []
 
-        result += events.compactMap { event -> Occurrence? in event.date.map { .event(event, $0) } }
-        result += screens.compactMap { screen -> Occurrence? in screen.startDate.map { .screen(screen, $0) } }
-        result += crashes.compactMap { crash -> Occurrence? in crash.date.map { .crash(crash, $0) } }
-        result += hangs.compactMap { hang -> Occurrence? in hang.date.map { .hang(hang, $0) } }
-        result += resources.compactMap { resource -> Occurrence? in resource.date.map { .resource(resource, $0) } }
+        result += events.compactMap { event -> SessionOccurrence? in event.date.map { .event(event, $0) } }
+        result += screens.compactMap { screen -> SessionOccurrence? in screen.startDate.map { .screen(screen, $0) } }
+        result += crashes.compactMap { crash -> SessionOccurrence? in crash.date.map { .crash(crash, $0) } }
+        result += hangs.compactMap { hang -> SessionOccurrence? in hang.date.map { .hang(hang, $0) } }
+        result += resources.compactMap { resource -> SessionOccurrence? in resource.date.map { .resource(resource, $0) } }
 
         return result.sorted { $0.date == $1.date ? $0.id < $1.id : $0.date < $1.date }
     }
