@@ -36,10 +36,16 @@ struct TimelineEntry: Identifiable {
     }
 
     struct Lane {
+        struct Split {
+            let color: Color
+            let y: CGFloat
+        }
+
         let color: Color
         let dashed: Bool
         let top: CGFloat
         let bottom: CGFloat
+        var split: Split? = nil
     }
 
     struct Label {

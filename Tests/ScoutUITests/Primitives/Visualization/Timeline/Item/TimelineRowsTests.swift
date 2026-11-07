@@ -7,6 +7,7 @@
 
 import Foundation
 import Scout
+import SwiftUI
 import Testing
 
 @testable import ScoutUI
@@ -61,8 +62,32 @@ struct TimelineRowsTests {
         let incidents = TimelineIncidents(crashes: [crash])
         let rows = entries(rail(launches: [launch], sessions: [session], events: [.stub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))]), incidents: incidents)
 
-        #expect(rows.contains { $0.kind == .crash })
-        #expect(rows.contains { $0.kind == .merge && $0.title.text == "App crashed" })
+        let crashRow = rows.first { $0.kind == .crash }
+        let mergeRow = rows.first { $0.kind == .merge }
+
+        #expect(crashRow?.session?.split?.color == .timelineCrash)
+        #expect(crashRow?.session?.split?.y == 22)
+        #expect(mergeRow?.title.text == "App crashed")
+        #expect(mergeRow?.session == nil)
+    }
+
+    @Test("A crash before the session ends keeps the session rail green")
+    func testCrashContinues() {
+        let launch = Launch.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.at(10))
+        let session = Session.stub(
+            sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20))
+        let crash = Crash.stub(name: "SIGABRT", sessionID: sessionID, date: TimelineFixture.at(50))
+        let incidents = TimelineIncidents(crashes: [crash])
+        let events: [Event] = [
+            .stub(name: "before", sessionID: sessionID, date: TimelineFixture.at(30)),
+            .stub(name: "after", sessionID: sessionID, date: TimelineFixture.at(60)),
+        ]
+        let rows = entries(rail(launches: [launch], sessions: [session], events: events), incidents: incidents)
+
+        let crashRow = rows.first { $0.kind == .crash }
+
+        #expect(crashRow?.session?.split == nil)
+        #expect(!rows.contains { $0.kind == .merge && $0.title.text == "App crashed" })
     }
 
     @Test("A focus on a crash adds the chip and the tint")

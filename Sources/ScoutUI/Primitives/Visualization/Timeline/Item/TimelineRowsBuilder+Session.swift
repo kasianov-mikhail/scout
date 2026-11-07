@@ -29,8 +29,8 @@ extension TimelineRowsBuilder {
 
         appendFork(root.session, start: start, live: sessionLive)
 
-        for occurrence in occurrences {
-            appendOccurrence(occurrence)
+        for (index, occurrence) in occurrences.enumerated() {
+            appendOccurrence(occurrence, isLast: index == occurrences.count - 1)
         }
 
         if case .crash(let crash)? = occurrences.last, let date = crash.date {
@@ -125,7 +125,7 @@ extension TimelineRowsBuilder {
                 kind: .merge,
                 height: Self.compactHeight,
                 launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: 0, bottom: 6),
-                session: TimelineEntry.Lane(color: .timelineSession, dashed: false, top: 0, bottom: 0),
+                session: nil,
                 connector: .merge(color: .timelineCrash, dashed: false),
                 marker: nil,
                 title: label("App crashed", size: 13, weight: .semibold, color: .timelineCrashInk),
@@ -144,7 +144,7 @@ extension TimelineRowsBuilder {
                 kind: .merge,
                 height: Self.compactHeight,
                 launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: 0, bottom: 0),
-                session: TimelineEntry.Lane(color: .timelineSession, dashed: false, top: 0, bottom: 0),
+                session: nil,
                 connector: .merge(color: .timelineSession, dashed: true),
                 marker: nil,
                 title: label("Session end not recorded", size: 13, weight: .regular, color: .timelineMuted),
@@ -158,7 +158,7 @@ extension TimelineRowsBuilder {
 }
 
 extension TimelineRowsBuilder {
-    private mutating func appendOccurrence(_ occurrence: Occurrence) {
+    private mutating func appendOccurrence(_ occurrence: Occurrence, isLast: Bool) {
         switch occurrence {
         case .event(let event):
             appendEvent(event)
@@ -169,7 +169,8 @@ extension TimelineRowsBuilder {
                 date: crash.date,
                 title: "Crash",
                 subtitle: crash.name,
-                incidentKind: .crash
+                incidentKind: .crash,
+                closesSession: isLast
             )
         case .hang(let hang):
             appendIncident(
@@ -217,7 +218,7 @@ extension TimelineRowsBuilder {
         )
     }
 
-    private mutating func appendIncident(id: String, kind: TimelineEntry.Kind, date: Date?, title: String, subtitle: String?, incidentKind: IncidentKind) {
+    private mutating func appendIncident(id: String, kind: TimelineEntry.Kind, date: Date?, title: String, subtitle: String?, incidentKind: IncidentKind, closesSession: Bool = false) {
         guard let date else {
             return
         }
@@ -230,7 +231,13 @@ extension TimelineRowsBuilder {
                 kind: kind,
                 height: Self.rowHeight,
                 launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: 0, bottom: 0),
-                session: TimelineEntry.Lane(color: .timelineSession, dashed: false, top: 0, bottom: 0),
+                session: TimelineEntry.Lane(
+                    color: .timelineSession,
+                    dashed: false,
+                    top: 0,
+                    bottom: 0,
+                    split: closesSession ? .init(color: .timelineCrash, y: Self.rowHeight / 2) : nil
+                ),
                 connector: nil,
                 marker: .incident(incidentKind),
                 title: label(title, size: 16, weight: .semibold, color: incidentKind.timelineInk),
