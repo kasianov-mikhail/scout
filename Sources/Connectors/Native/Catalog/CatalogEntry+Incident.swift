@@ -25,6 +25,13 @@ extension CatalogEntry {
         }
         return [incidentKey: .string(IncidentKey(fingerprint: hang.fingerprint, name: hang.name).key)]
     }
+
+    static func resourceKey(for record: Record) -> [String: ScoutDB.RecordValue] {
+        guard let resource = try? ResourceException(record: record) else {
+            return [:]
+        }
+        return [incidentKey: .string(IncidentKey(fingerprint: resource.fingerprint, name: resource.name).key)]
+    }
 }
 
 struct IncidentKey: Hashable {

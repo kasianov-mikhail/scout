@@ -36,6 +36,39 @@ extension IncidentKind {
         }
     }
 
+    var noun: String {
+        switch self {
+        case .crash:
+            "crash"
+        case .hang:
+            "hang"
+        case .resource:
+            "report"
+        }
+    }
+
+    var pluralNoun: String {
+        switch self {
+        case .crash:
+            "crashes"
+        case .hang:
+            "hangs"
+        case .resource:
+            "reports"
+        }
+    }
+
+    var captionName: String {
+        switch self {
+        case .crash:
+            "red"
+        case .hang:
+            "orange"
+        case .resource:
+            "indigo"
+        }
+    }
+
     var textColor: Color {
         switch self {
         case .crash:

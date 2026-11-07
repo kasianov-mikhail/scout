@@ -21,7 +21,11 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
     }
 
     func fetchLatest(in database: DatabaseReader) async {
-        await fetchLatest(matching: Element.query(), in: database)
+        await fetchLatest(in: database, range: Date().trailingYear)
+    }
+
+    func fetchLatest(in database: DatabaseReader, range: Range<Date>) async {
+        await fetchLatest(matching: Element.query(in: range), in: database)
         await loadKeys(in: database)
     }
 

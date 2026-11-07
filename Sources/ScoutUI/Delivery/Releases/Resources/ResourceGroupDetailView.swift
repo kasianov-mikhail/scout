@@ -110,7 +110,7 @@ struct ResourceGroupDetailView: View {
                     .lineLimit(1)
             }
         } destination: {
-            ResourceDetailView(resource: resource, group: group)
+            ResourceDetailView(resource: resource, group: occurrences.group)
         }
     }
 }

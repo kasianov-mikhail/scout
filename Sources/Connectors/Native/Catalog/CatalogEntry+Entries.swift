@@ -229,9 +229,13 @@ extension CatalogEntry {
             .init(name: "date_start", type: .timestamp),
             .init(name: "source", type: .string),
             .init(name: lifecycleKey, type: .string),
+            .init(name: incidentKey, type: .string),
         ],
-        aggregates: [.count(by: lifecycleKey, at: "date")],
-        derive: lifecycleKey
+        aggregates: [
+            .count(by: lifecycleKey, at: "date"),
+            .count(by: incidentKey, at: "date"),
+        ],
+        derive: { lifecycleKey(for: $0).merging(resourceKey(for: $0)) { key, _ in key } }
     )
 
     private static let backtrace = CatalogEntry(

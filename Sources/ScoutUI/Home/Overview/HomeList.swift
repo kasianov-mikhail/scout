@@ -140,7 +140,7 @@ struct HomeList: View {
             case .telemetry(let category):
                 LogDestination(category: category)
             case .resources:
-                ReleaseHealthView(provider: releases)
+                ResourceListView()
             }
         }
     }
