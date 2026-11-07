@@ -29,6 +29,15 @@ enum HangSeverity {
             "exclamationmark.octagon"
         }
     }
+
+    var detailLabel: String {
+        switch self {
+        case .warning:
+            "hang"
+        case .critical:
+            "severe"
+        }
+    }
 }
 
 extension Hang {

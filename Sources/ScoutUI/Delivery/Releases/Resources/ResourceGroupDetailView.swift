@@ -66,7 +66,7 @@ struct ResourceGroupDetailView: View {
                     .foregroundStyle(IncidentKind.resource.color)
             }
         } destination: {
-            ResourceDetailView(resource: resource)
+            ResourceDetailView(resource: resource, group: group)
         }
     }
 }

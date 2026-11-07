@@ -101,7 +101,7 @@ struct CrashGroupDetailView: View {
                     .foregroundStyle(Color.gray)
             }
         } destination: {
-            CrashDetailView(crash: crash)
+            CrashDetailView(crash: crash, group: occurrences.group)
         }
     }
 }

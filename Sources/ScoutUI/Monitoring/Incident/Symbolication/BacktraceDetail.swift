@@ -13,10 +13,6 @@ import SymbolTable
 struct BacktraceDetail: Equatable {
     let backtrace: Backtrace
     let tables: [UUID: SymbolTable]
-
-    static var sample: BacktraceDetail {
-        BacktraceDetail(backtrace: .sample, tables: [:])
-    }
 }
 
 struct SymbolicatedFrame {
