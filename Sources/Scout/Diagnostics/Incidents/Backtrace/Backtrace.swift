@@ -30,11 +30,21 @@ package struct Backtrace: Codable, Equatable, Sendable {
     package struct Thread: Codable, Equatable, Sendable {
         package let attributed: Bool
         package let frames: [Frame]
+
+        package init(attributed: Bool, frames: [Frame]) {
+            self.attributed = attributed
+            self.frames = frames
+        }
     }
 
     package struct Frame: Equatable, Sendable {
         package let image: Int?
         package let offset: UInt64
+
+        package init(image: Int?, offset: UInt64) {
+            self.image = image
+            self.offset = offset
+        }
     }
 }
 

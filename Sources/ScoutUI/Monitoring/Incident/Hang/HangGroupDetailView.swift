@@ -82,7 +82,7 @@ struct HangGroupDetailView: View {
                 .monospacedDigit()
                 .foregroundStyle(IncidentKind.hang.color)
         } destination: {
-            HangDetailView(hang: hang)
+            HangDetailView(hang: hang, group: occurrences.group)
         }
     }
 }

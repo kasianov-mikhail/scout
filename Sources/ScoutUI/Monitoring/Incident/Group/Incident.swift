@@ -8,6 +8,11 @@
 import Foundation
 import Scout
 
+protocol SessionContext {
+    var sessionID: UUID? { get }
+    var deviceID: UUID? { get }
+}
+
 protocol Incident: Identifiable, Comparable, SessionContext where ID == String {
     static var kind: IncidentKind { get }
 

@@ -59,7 +59,7 @@ struct IncidentRow<Element: Incident, Destination: View>: View {
     NavigationStack {
         InsetList {
             IncidentRow(group: IncidentGroup(records: [Crash].samples)) { group in
-                CrashDetailView(crash: group.representative)
+                CrashDetailView(crash: group.representative, group: group)
             }
             IncidentRow(
                 group: IncidentGroup(
@@ -68,7 +68,7 @@ struct IncidentRow<Element: Incident, Destination: View>: View {
                     symbol: "CartViewModel.applyDiscount(_:)"
                 )
             ) { group in
-                CrashDetailView(crash: group.representative)
+                CrashDetailView(crash: group.representative, group: group)
             }
         }
         .navigationTitle(en: "Crashes")
