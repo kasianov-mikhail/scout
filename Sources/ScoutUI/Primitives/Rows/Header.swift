@@ -19,7 +19,7 @@ struct Header<Trailing: View>: View {
 
     var body: some View {
         HStack {
-            Text(title.uppercased()).font(.callout.weight(.bold))
+            Text(verbatim: title.uppercased()).font(.callout.weight(.bold))
 
             Spacer()
 

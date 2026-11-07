@@ -45,11 +45,11 @@ struct IncidentBreakdownProviderTests {
         let database = DatabaseStub()
         database.add(
             .sessionStub(
-                sessionID: sessionA, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
+                sessionID: sessionA, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4", appVersion: "3.2.0"),
             .sessionStub(
-                sessionID: sessionB, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4"),
+                sessionID: sessionB, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 17.4", appVersion: "3.2.0"),
             .sessionStub(
-                sessionID: other, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 16.7")
+                sessionID: other, launchID: UUID(), installID: UUID(), startDate: Date(), osVersion: "iOS 16.7", appVersion: "3.1.4")
         )
 
         let provider = IncidentBreakdownProvider(deviceIDs: [], sessionIDs: [sessionA, sessionB])
@@ -58,7 +58,9 @@ struct IncidentBreakdownProviderTests {
 
         #expect(breakdown.osVersions.map(\.label) == ["iOS 17.4"])
         #expect(breakdown.osVersions.first?.count == 2)
-        #expect(breakdown.versionsBySession == [sessionA: "iOS 17.4", sessionB: "iOS 17.4"])
+        #expect(breakdown.appVersions.map(\.label) == ["3.2.0"])
+        #expect(breakdown.appVersions.first?.count == 2)
+        #expect(breakdown.appVersionsBySession == [sessionA: "3.2.0", sessionB: "3.2.0"])
     }
 
     @Test("Splits a long device ID list into several reads")
@@ -115,7 +117,6 @@ struct IncidentBreakdownProviderTests {
         #expect(database.queriedIDs(of: Device.recordType) == [[deviceA], [deviceB]])
         #expect(database.queriedIDs(of: Session.recordType) == [[sessionA], [sessionB]])
         #expect(breakdown.modelsByDevice == [deviceA: "iPhone15,3", deviceB: "iPhone14,2"])
-        #expect(breakdown.versionsBySession == [sessionA: "iOS 17.4", sessionB: "iOS 16.7"])
         #expect(Set(breakdown.devices.map(\.label)) == ["iPhone15,3", "iPhone14,2"])
         #expect(Set(breakdown.osVersions.map(\.label)) == ["iOS 17.4", "iOS 16.7"])
     }

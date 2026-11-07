@@ -55,6 +55,7 @@ struct IncidentOccurrencesProviderTests {
 
         let provider = IncidentOccurrencesProvider<Crash>(tally: IncidentTally(fingerprint: "A", name: "NSRangeException", count: 9, firstHour: firstHour))
         #expect(provider.records == nil)
+        #expect(provider.name == "NSRangeException")
 
         await provider.fetchIfNeeded(in: database)
 
