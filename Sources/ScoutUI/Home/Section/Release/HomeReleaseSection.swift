@@ -8,10 +8,18 @@
 import SwiftUI
 
 struct HomeReleaseSection: View {
-    let adoption: ReleaseAdoption
+    let adoption: ReleaseAdoption?
     let onShowAll: () -> Void
 
     var body: some View {
+        if let adoption {
+            content(adoption: adoption)
+        } else {
+            HomeReleaseSectionPlaceholder()
+        }
+    }
+
+    private func content(adoption: ReleaseAdoption) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Releases") {
                 Button(action: onShowAll) {
@@ -40,7 +48,7 @@ struct HomeReleaseSection: View {
             legend
                 .padding(.top, 6)
 
-            caption
+            caption(adoption: adoption)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
@@ -64,7 +72,7 @@ struct HomeReleaseSection: View {
     }
 
     @ViewBuilder
-    private var caption: some View {
+    private func caption(adoption: ReleaseAdoption) -> some View {
         if let top = adoption.top {
             (Text(verbatim: "\(top.id) is ")
                 .foregroundColor(Color(.systemGray))
@@ -82,6 +90,7 @@ struct HomeReleaseSection: View {
     NavigationStack {
         InsetList {
             HomeReleaseSection(adoption: .sample) {}
+            HomeReleaseSection(adoption: nil) {}
         }
     }
 }

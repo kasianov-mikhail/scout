@@ -7,20 +7,28 @@
 
 import SwiftUI
 
+let telemetryColumns = [
+    GridItem(.flexible(), spacing: 0),
+    GridItem(.flexible(), spacing: 0),
+]
+
 struct HomeTelemetrySection: View {
-    let items: [TelemetryItem]
+    let items: [TelemetryItem]?
     let onSelect: (TelemetryItem.Kind) -> Void
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 0),
-        GridItem(.flexible(), spacing: 0),
-    ]
-
     var body: some View {
+        if let items {
+            content(items: items)
+        } else {
+            HomeTelemetrySectionPlaceholder()
+        }
+    }
+
+    private func content(items: [TelemetryItem]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             header
 
-            LazyVGrid(columns: columns, spacing: 0) {
+            LazyVGrid(columns: telemetryColumns, spacing: 0) {
                 ForEach(items.indices, id: \.self) { index in
                     let item = items[index]
 
@@ -68,6 +76,7 @@ struct HomeTelemetrySection: View {
     NavigationStack {
         InsetList {
             HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
+            HomeTelemetrySection(items: nil) { _ in }
         }
     }
 }

@@ -26,6 +26,7 @@ struct HomeList: View {
 
     var body: some View {
         content
+            .animation(.easeOut(duration: 0.2), value: isLoading)
             .fetchTask(providers)
     }
 
@@ -39,16 +40,28 @@ struct HomeList: View {
                     await provider.fetchIfFailed(in: database)
                 }
             }
-        } else {
-            liveContent.loadingGate(providers)
+        } else if isLoading {
+            skeleton.transition(.opacity)
+        } else if let live {
+            list(live).transition(.opacity)
         }
     }
 
-    @ViewBuilder
-    private var liveContent: some View {
-        if let live {
-            list(live)
+    fileprivate var skeleton: some View {
+        InsetList {
+            HomeAlertSection(history: nil) {}
+            HomeActiveUsersSection(users: nil) { _ in }
+            HomeTelemetrySection(items: nil) { _ in }
+            HomeReleaseSection(adoption: nil) {}
+            HomeRetentionSection(weeks: nil) {}
         }
+        .scrollContentBackground(.hidden)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "Loading"))
+    }
+
+    private var isLoading: Bool {
+        providers.contains(where: \.isLoading)
     }
 
     private var providers: [any Provider] {
@@ -56,14 +69,10 @@ struct HomeList: View {
     }
 
     private var live: HomeSnapshot? {
-        guard case .success(let statuses)? = alerts.result,
-            case .success(let points)? = activities.result,
-            case .success(let sessionPoints)? = sessions.result,
-            case .success(let releaseList)? = releases.result,
-            case .success(let cohorts)? = retention.result,
-            let report = logs.report,
-            case .success(let deviceList)? = devices.result
-        else {
+        guard case .success(let statuses)? = alerts.result, case .success(let points)? = activities.result, case .success(let sessionPoints)? = sessions.result, case .success(let releaseList)? = releases.result, case .success(let cohorts)? = retention.result, case .success(let deviceList)? = devices.result else {
+            return nil
+        }
+        guard let report = logs.report else {
             return nil
         }
 
@@ -149,4 +158,11 @@ struct HomeList: View {
             .navigationTitle(en: "Home")
     }
     .environmentObject(Tint())
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        HomeList(path: .constant([])).skeleton
+            .navigationTitle(en: "Home")
+    }
 }

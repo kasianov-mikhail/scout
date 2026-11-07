@@ -8,10 +8,18 @@
 import SwiftUI
 
 struct HomeAlertSection: View {
-    let history: AlertHistory
+    let history: AlertHistory?
     let action: () -> Void
 
     var body: some View {
+        if let history {
+            content(history: history)
+        } else {
+            HomeAlertSectionPlaceholder()
+        }
+    }
+
+    private func content(history: AlertHistory) -> some View {
         Button(action: action) {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(alignment: .firstTextBaseline) {
@@ -59,6 +67,7 @@ struct HomeAlertSection: View {
     NavigationStack {
         InsetList {
             HomeAlertSection(history: .sample) {}
+            HomeAlertSection(history: nil) {}
         }
     }
 }
