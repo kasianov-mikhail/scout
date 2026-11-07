@@ -232,7 +232,7 @@ extension Record {
         return record
     }
 
-    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil, deviceID: UUID? = nil) -> Record {
+    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil, appVersion: String? = nil, deviceID: UUID? = nil) -> Record {
         var record = Session(
             startDate: startDate,
             endDate: nil,
@@ -242,6 +242,7 @@ extension Record {
             installID: installID
         ).record
         record["os_version"] = osVersion
+        record["app_version"] = appVersion
         record["device_id"] = deviceID?.uuidString
         return record
     }

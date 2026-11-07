@@ -36,13 +36,6 @@ struct Segment: Identifiable, Equatable {
         }
     }
 
-    var value: String? {
-        switch kind {
-        case .value(let label): label
-        case .other: nil
-        }
-    }
-
     var id: String {
         switch kind {
         case .value(let label): "value:\(label)"
@@ -147,4 +140,10 @@ struct SegmentBar: View {
         ).segments
     )
     .padding(.horizontal)
+}
+
+extension [Segment] {
+    var total: Int {
+        reduce(0) { $0 + $1.count }
+    }
 }

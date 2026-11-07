@@ -17,7 +17,7 @@ extension IncidentGroup where Element == Hang {
         peak.duration.duration
     }
 
-    private var peak: Hang {
+    var peak: Hang {
         records.max { $0.duration < $1.duration } ?? representative
     }
 }

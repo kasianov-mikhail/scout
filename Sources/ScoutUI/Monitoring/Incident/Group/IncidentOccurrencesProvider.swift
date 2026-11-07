@@ -12,11 +12,13 @@ import SwiftUI
 final class IncidentOccurrencesProvider<Element: RecordDecodable & Incident>: FeedProvider<Element> {
     private let loaded: [Element]
     private let fingerprints: [String]
+    let name: String
     private let regroup: ([Element]) -> IncidentGroup<Element>
 
     init(group: IncidentGroup<Element>) {
         loaded = group.records
         fingerprints = Set(group.records.map(\.fingerprint)).sorted()
+        name = group.name
         regroup = group.replacing
         super.init(group.isPartial || group.hasAllRecords ? group.records : nil)
     }
@@ -24,6 +26,7 @@ final class IncidentOccurrencesProvider<Element: RecordDecodable & Incident>: Fe
     init(tally: IncidentTally) {
         loaded = []
         fingerprints = [tally.fingerprint]
+        name = tally.name
         regroup = { records in
             IncidentGroup(id: tally.fingerprint, records: records, symbol: nil, tallies: [tally.fingerprint: tally], hasMore: false)
         }
