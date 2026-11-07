@@ -44,6 +44,51 @@ struct ReleaseReportTests {
         #expect(abs(previous.adoption.value - 1.0 / 3.0) < 1e-9)
     }
 
+    @Test("A release ships on its first install day in the range")
+    func testShippedDate() {
+        let start = Date(timeIntervalSince1970: 0)
+        let installs = MetricSeries(
+            name: Version.installMarker,
+            category: nil,
+            version: "2.0",
+            points: [
+                MetricSeriesPoint(date: start, value: 1),
+                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400), value: 1),
+            ]
+        )
+
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 2)],
+            crashes: [],
+            hangs: [],
+            installs: [installs],
+            crashedInstalls: [],
+            exits: [],
+            performance: [],
+            resources: []
+        )
+        .report(in: range)
+
+        #expect(releases[0].shippedAt == start)
+    }
+
+    @Test("A release without install markers has no shipped date")
+    func testMissingShippedDate() {
+        let releases = ReleaseSeries(
+            sessions: [sessionSeries("2.0", count: 2)],
+            crashes: [],
+            hangs: [],
+            installs: [],
+            crashedInstalls: [],
+            exits: [],
+            performance: [],
+            resources: []
+        )
+        .report(in: range)
+
+        #expect(releases[0].shippedAt == nil)
+    }
+
     @Test("Hangs are counted per version from series")
     func testHangsByVersion() {
         let releases = ReleaseSeries(
@@ -76,36 +121,6 @@ struct ReleaseReportTests {
         .report(in: range)
 
         #expect(releases[0].freeUsers?.value == 0.75)
-    }
-
-    @Test("Crash trend is bucketed from the point dates")
-    func testCrashTrendFromPoints() {
-        let start = Date(timeIntervalSince1970: 0)
-
-        let crashes = MetricSeries(
-            name: Crash.recordType,
-            category: nil,
-            version: "5.0",
-            points: [
-                MetricSeriesPoint(date: start, value: 2),
-                MetricSeriesPoint(date: start.addingTimeInterval(2 * 86_400), value: 3),
-            ]
-        )
-
-        let releases = ReleaseSeries(
-            sessions: [sessionSeries("5.0", count: 10)],
-            crashes: [crashes],
-            hangs: [],
-            installs: [],
-            crashedInstalls: [],
-            exits: [],
-            performance: [],
-            resources: []
-        )
-        .report(in: start..<start.addingTimeInterval(7 * 86_400))
-
-        #expect(releases[0].crashes == 5)
-        #expect(releases[0].trend == [2, 0, 3, 0, 0, 0, 0])
     }
 
     @Test("Session points outside the range are excluded from the count")
@@ -189,7 +204,7 @@ struct ReleaseReportTests {
         .report(in: range)
 
         #expect(releases[0].exits.counts == [.normal: 90, .watchdog: 10])
-        #expect(releases[0].exits.clean?.value == 0.9)
+        #expect(releases[0].exits.total == 100)
         #expect(releases[1].exits.counts == [.memoryLimit: 4])
     }
 

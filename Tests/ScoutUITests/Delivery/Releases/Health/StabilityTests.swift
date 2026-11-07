@@ -33,5 +33,16 @@ struct StabilityTests {
         #expect(Stability(0.985).level == .atRisk)
         #expect(Stability(0.970).level == .critical)
         #expect(Stability.Level.atRisk.title == "at risk")
+        #expect(Stability.Level.atRisk.displayTitle == "At risk")
+    }
+
+    @Test("The scale marker spreads each health level across its own band")
+    func testMarkerPosition() {
+        #expect(abs(Stability(0.971).markerPosition - 0.00495) < 1e-9)
+        #expect(abs(Stability(0.989).markerPosition - 0.45495) < 1e-9)
+        #expect(abs(Stability(0.9921).markerPosition - 0.605) < 1e-9)
+        #expect(abs(Stability(0.9982).markerPosition - 0.91) < 1e-9)
+        #expect(Stability(0.95).markerPosition == 0)
+        #expect(abs(Stability(1).markerPosition - 1) < 1e-9)
     }
 }

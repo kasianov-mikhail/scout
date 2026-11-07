@@ -4,11 +4,16 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
+//
 
 import SwiftUI
 
 struct AdoptionBar: View {
     let versions: [ReleaseAdoption.Version]
+
+    var height: CGFloat = 24
+    var labelFont: Font = .system(size: 10, weight: .semibold)
+    var labelInset: CGFloat = 4
 
     var body: some View {
         GeometryReader { proxy in
@@ -23,23 +28,32 @@ struct AdoptionBar: View {
                         .overlay(alignment: .leading) {
                             if version.showsLabel {
                                 Text(verbatim: version.id)
-                                    .font(.system(size: 10, weight: .semibold))
+                                    .font(labelFont)
                                     .foregroundStyle(.white)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
-                                    .padding(.leading, 4)
+                                    .padding(.leading, labelInset)
                             }
                         }
                 }
             }
         }
-        .frame(height: 24)
+        .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: 3))
         .accessibilityHidden(true)
     }
 }
 
 #Preview {
-    AdoptionBar(versions: ReleaseAdoption.sample.versions)
-        .padding()
+    VStack(spacing: 16) {
+        AdoptionBar(versions: ReleaseAdoption.sample.versions)
+
+        AdoptionBar(
+            versions: ReleaseAdoption.sample.versions,
+            height: 32,
+            labelFont: .system(size: 11, weight: .bold, design: .monospaced),
+            labelInset: 6
+        )
+    }
+    .padding()
 }

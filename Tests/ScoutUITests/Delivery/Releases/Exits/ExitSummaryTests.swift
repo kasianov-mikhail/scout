@@ -12,14 +12,6 @@ import Testing
 
 @Suite("ExitSummary")
 struct ExitSummaryTests {
-    @Test("Clean exits are the share of normal and memory pressure exits")
-    func cleanShare() {
-        let summary = ExitSummary(counts: [.normal: 900, .memoryPressure: 80, .watchdog: 15, .badAccess: 5])
-
-        #expect(summary.total == 1000)
-        #expect(summary.clean?.value == 0.98)
-    }
-
     @Test("Abnormal reasons come largest first, with their share per thousand exits")
     func abnormalShares() {
         let summary = ExitSummary(counts: [.normal: 990, .badAccess: 2, .watchdog: 6, .memoryLimit: 2])
@@ -27,11 +19,12 @@ struct ExitSummaryTests {
         #expect(summary.abnormal.map(\.reason) == [.watchdog, .badAccess, .memoryLimit])
         #expect(summary.abnormal.map(\.perMille) == [6, 2, 2])
         #expect(summary.abnormal.first?.formatted == "6.0 ‰")
+        #expect(summary.abnormalPerMille == 10)
     }
 
-    @Test("A version without exit data has no clean exit share")
+    @Test("A version without exit data has no abnormal exits")
     func noExits() {
-        #expect(ExitSummary(counts: [:]).clean == nil)
+        #expect(ExitSummary(counts: [:]).total == 0)
         #expect(ExitSummary(counts: [:]).abnormal.isEmpty)
     }
 }

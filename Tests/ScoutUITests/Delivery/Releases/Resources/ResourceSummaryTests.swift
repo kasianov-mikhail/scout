@@ -17,7 +17,7 @@ struct ResourceSummaryTests {
         let summary = ResourceSummary(counts: [.cpu: 3])
 
         #expect(summary.total == 3)
-        #expect(summary.readouts.map(\.title) == ["CPU", "Disk writes"])
+        #expect(summary.readouts.map(\.title) == ["CPU", "Disk"])
         #expect(summary.readouts.map(\.value) == [3, 0])
     }
 }

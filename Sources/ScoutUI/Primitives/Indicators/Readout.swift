@@ -25,9 +25,3 @@ struct Readout: View {
         .frame(height: 70)
     }
 }
-
-extension Readout {
-    init(title: String, stability: Stability) {
-        self.init(title: title, value: stability.formatted, color: stability.color)
-    }
-}

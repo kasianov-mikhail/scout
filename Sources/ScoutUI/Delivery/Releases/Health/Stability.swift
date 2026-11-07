@@ -30,6 +30,15 @@ struct Stability: Ratio {
     var formatted: String {
         percentage(fractionDigits: 2)
     }
+
+    var markerPosition: Double {
+        switch value {
+        case ..<0.98: max(0, (value - 0.97) * 4.95)
+        case ..<0.99: 0.0495 + (value - 0.98) * 45.05
+        case ..<0.995: 0.5 + (value - 0.99) * 50
+        default: 0.75 + (value - 0.995) * 50
+        }
+    }
 }
 
 extension Stability {
@@ -46,6 +55,10 @@ extension Stability {
             case .atRisk: "at risk"
             case .critical: "critical"
             }
+        }
+
+        var displayTitle: String {
+            "\(title.prefix(1).uppercased())\(title.dropFirst())"
         }
 
         var color: Color {

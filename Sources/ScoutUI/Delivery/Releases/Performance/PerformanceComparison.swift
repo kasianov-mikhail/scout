@@ -5,8 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Scout
-import SwiftUI
+import Foundation
 
 struct PerformanceComparison: Equatable {
     let current: PerformanceSummary
@@ -48,23 +47,6 @@ extension PerformanceComparison {
             ),
         ]
     }
-
-    func launchBars(version: String) -> [LaunchBar] {
-        let versions = [VersionSummary(version: version, summary: current)] + [previous].compactMap(\.self)
-        let last = versions.compactMap { $0.summary.launchHistogram.counts.lastIndex { $0 > 0 } }.max() ?? 0
-        let shown = min(last, launchBarLimit - 1)
-
-        return versions.flatMap { item in
-            let histogram = item.summary.launchHistogram
-            return (0...shown).map { index in
-                LaunchBar(
-                    version: item.version,
-                    start: index * PerformanceMetric.launchStep,
-                    share: histogram.total > 0 ? Double(histogram.counts[index]) / Double(histogram.total) : 0
-                )
-            }
-        }
-    }
 }
 
 extension PerformanceComparison {
@@ -75,46 +57,8 @@ extension PerformanceComparison {
     }
 }
 
-struct PerformanceReadout: Identifiable {
+struct PerformanceReadout {
     let title: String
     let value: String?
     let change: Double?
-
-    var id: String {
-        title
-    }
-
-    var color: Color {
-        switch change {
-        case .some(0.1...): .orange
-        case .some(...(-0.1)): .green
-        default: .primary
-        }
-    }
 }
-
-struct LaunchBar: Identifiable {
-    let version: String
-    let start: Int
-    let share: Double
-
-    var id: String {
-        "\(version)-\(start)"
-    }
-
-    var category: String {
-        String(start)
-    }
-
-    static func axisLabel(category: String) -> String? {
-        guard let start = Int(category) else {
-            return nil
-        }
-        guard start % 500 == 0 else {
-            return nil
-        }
-        return String(format: "%.1f s", Double(start) / 1_000)
-    }
-}
-
-private let launchBarLimit = 30

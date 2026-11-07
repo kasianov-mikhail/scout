@@ -19,18 +19,14 @@ extension ResourceSummary {
     var readouts: [ResourceReadout] {
         [
             ResourceReadout(title: "CPU", value: counts[.cpu] ?? 0),
-            ResourceReadout(title: "Disk writes", value: counts[.diskWrite] ?? 0),
+            ResourceReadout(title: "Disk", value: counts[.diskWrite] ?? 0),
         ]
     }
 
     static let sample = ResourceSummary(counts: [.cpu: 7, .diskWrite: 2])
 }
 
-struct ResourceReadout: Identifiable {
+struct ResourceReadout {
     let title: String
     let value: Int
-
-    var id: String {
-        title
-    }
 }

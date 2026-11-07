@@ -8,14 +8,10 @@
 import Foundation
 import Scout
 
-struct ExitShare: Identifiable {
+struct ExitShare {
     let reason: ExitReason
     let count: Int
     let total: Int
-
-    var id: ExitReason {
-        reason
-    }
 }
 
 extension ExitShare {
