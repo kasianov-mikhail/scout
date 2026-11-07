@@ -46,11 +46,11 @@ extension ResourceException: Incident {
         }
         switch resourceKind {
         case .cpu:
-            "\(amount.text) CPU"
+            return "\(amount.text) CPU"
         case .diskWrite:
-            "\(amount.text) disk"
+            return "\(amount.text) disk"
         case nil:
-            amount.text
+            return amount.text
         }
     }
 }
