@@ -46,19 +46,6 @@ struct ActivityDayRow: View {
     }
 }
 
-struct DashedLine: View {
-    var body: some View {
-        GeometryReader { proxy in
-            Path { path in
-                path.move(to: CGPoint(x: 0, y: 0.25))
-                path.addLine(to: CGPoint(x: proxy.size.width, y: 0.25))
-            }
-            .stroke(Color(.systemGray4), style: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
-        }
-        .frame(height: 0.5)
-    }
-}
-
 #Preview {
     let series = ActivitySeries(
         points: ActivityPoint.samples,

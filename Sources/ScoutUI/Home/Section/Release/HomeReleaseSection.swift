@@ -42,10 +42,16 @@ struct HomeReleaseSection: View {
                     .foregroundStyle(Color(.systemGray))
             }
 
-            AdoptionBar(versions: adoption.versions)
-                .padding(.top, 10)
+            AdoptionBar(
+                versions: adoption.versions,
+                height: 24,
+                labelSize: 10,
+                labelWeight: .semibold,
+                labelInset: 4
+            )
+            .padding(.top, 10)
 
-            legend
+            AdoptionLegend(squareSize: 7, squareColor: nil)
                 .padding(.top, 6)
 
             caption(adoption: adoption)
@@ -53,22 +59,6 @@ struct HomeReleaseSection: View {
                 .padding(.bottom, 6)
         }
         .listRowSeparator(.hidden)
-    }
-
-    private var legend: some View {
-        HStack(spacing: 12) {
-            ForEach(Stability.Level.allCases, id: \.self) { level in
-                HStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(level.color)
-                        .frame(width: 7, height: 7)
-
-                    Text(verbatim: level.title)
-                }
-            }
-        }
-        .font(.caption)
-        .foregroundStyle(Color(.systemGray))
     }
 
     @ViewBuilder

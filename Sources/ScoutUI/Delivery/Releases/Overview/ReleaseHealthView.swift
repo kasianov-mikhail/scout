@@ -8,30 +8,97 @@
 import SwiftUI
 
 struct ReleaseHealthView: View {
-    @StateObject var provider = ReleaseHealthProvider()
+    @ObservedObject var provider: ReleaseHealthProvider
+
+    @Environment(\.database) private var database
 
     var body: some View {
-        ProviderView(provider: provider) { releases in
-            if releases.isEmpty {
-                Placeholder(
-                    text: "No releases",
-                    systemImage: "shippingbox",
-                    description: "Release health appears once your app reports versions"
-                )
-            } else {
-                InsetList {
-                    ForEach(releases) { release in
-                        ReleaseRow(release: release)
-                    }
+        Group {
+            switch provider.result {
+            case nil:
+                ReleaseHealthViewPlaceholder()
+                    .transition(.opacity)
+            case .success(let releases):
+                content(releases: releases)
+                    .transition(.opacity)
+            case .failure(let error):
+                ErrorView(description: Text(error.localizedDescription)) {
+                    await provider.fetchAgain(in: database)
                 }
             }
         }
+        .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+        .fetchTask([provider])
         .navigationTitle(en: "Releases")
+        .inlineNavigationTitle()
+    }
+
+    @ViewBuilder
+    private func content(releases: [ReleaseHealth]) -> some View {
+        if releases.isEmpty {
+            Placeholder(
+                text: "No releases",
+                systemImage: "shippingbox",
+                description: "Release health appears once your app reports versions"
+            )
+        } else {
+            InsetList {
+                ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
+                    .listRowSeparator(.hidden)
+
+                ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                    ReleaseRow(release: release, isLast: index == releases.count - 1)
+                        .listRowSeparator(.hidden)
+                }
+            }
+            .scrollContentBackground(.hidden)
+        }
     }
 }
 
-#Preview {
+private struct ReleaseSummary: View {
+    let adoption: ReleaseAdoption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text(verbatim: adoption.headline)
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+
+                Text(verbatim: "of sessions")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+            }
+
+            AdoptionBar(
+                versions: adoption.versions,
+                height: 32,
+                labelSize: 11,
+                labelWeight: .bold,
+                labelInset: 6
+            )
+            .padding(.top, 12)
+
+            AdoptionLegend(squareSize: 8, squareColor: nil)
+                .padding(.top, 8)
+        }
+        .padding(.vertical, 14)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+    }
+}
+
+#Preview("Releases") {
     NavigationStack {
         ReleaseHealthView(provider: .init(.success(.samples)))
+    }
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        ReleaseHealthView(provider: ReleaseHealthProvider())
     }
 }

@@ -23,7 +23,7 @@ struct HomeReleaseSectionPlaceholder: View {
             SkeletonBar(height: 24, delay: 1.04, fill: Color(.systemGray6))
                 .padding(.top, 10)
 
-            legend
+            AdoptionLegend(squareSize: 7, squareColor: Color(.systemGray5))
                 .padding(.top, 6)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
@@ -31,21 +31,5 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.bottom, 6)
         }
         .listRowSeparator(.hidden)
-    }
-
-    private var legend: some View {
-        HStack(spacing: 12) {
-            ForEach(Stability.Level.allCases, id: \.self) { level in
-                HStack(spacing: 4) {
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color(.systemGray5))
-                        .frame(width: 7, height: 7)
-
-                    Text(verbatim: level.title)
-                }
-            }
-        }
-        .font(.caption)
-        .foregroundStyle(Color(.systemGray))
     }
 }
