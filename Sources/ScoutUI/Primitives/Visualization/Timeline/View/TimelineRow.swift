@@ -180,14 +180,23 @@ private struct TimelineRails: View {
             return
         }
 
+        let split = lane.split.map { min(max($0.y, top), bottom) } ?? bottom
+        stroke(x: x, top: top, bottom: split, color: lane.color, dashed: lane.dashed, context: &context)
+
+        if let splitColor = lane.split?.color {
+            stroke(x: x, top: split, bottom: bottom, color: splitColor, dashed: lane.dashed, context: &context)
+        }
+    }
+
+    private func stroke(x: CGFloat, top: CGFloat, bottom: CGFloat, color: Color, dashed: Bool, context: inout GraphicsContext) {
         var path = Path()
         path.move(to: CGPoint(x: x, y: top))
         path.addLine(to: CGPoint(x: x, y: bottom))
 
         context.stroke(
             path,
-            with: .color(lane.color),
-            style: StrokeStyle(lineWidth: 2, dash: lane.dashed ? [4, 4] : [])
+            with: .color(color),
+            style: StrokeStyle(lineWidth: 2, dash: dashed ? [4, 4] : [])
         )
     }
 
@@ -313,7 +322,13 @@ private struct TimelineRails: View {
                 kind: .crash,
                 height: 44,
                 launch: .init(color: .timelineLaunch, dashed: false, top: 0, bottom: 0),
-                session: .init(color: .timelineSession, dashed: false, top: 0, bottom: 0),
+                session: .init(
+                    color: .timelineSession,
+                    dashed: false,
+                    top: 0,
+                    bottom: 0,
+                    split: .init(color: .timelineCrash, y: 22)
+                ),
                 connector: nil,
                 marker: .incident(.crash),
                 title: .init(text: "Crash", size: 16, weight: .semibold, color: .timelineCrashInk),
@@ -330,7 +345,7 @@ private struct TimelineRails: View {
                 kind: .merge,
                 height: 36,
                 launch: .init(color: .timelineLaunch, dashed: false, top: 0, bottom: 6),
-                session: .init(color: .timelineSession, dashed: false, top: 0, bottom: 0),
+                session: nil,
                 connector: .merge(color: .timelineCrash, dashed: false),
                 marker: nil,
                 title: .init(text: "App crashed", size: 13, weight: .semibold, color: .timelineCrashInk),
