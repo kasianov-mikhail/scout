@@ -9,34 +9,6 @@ import Foundation
 import Scout
 import SwiftUI
 
-struct NetworkStatusBar: View {
-    let breakdown: StatusBreakdown
-
-    var body: some View {
-        GeometryReader { proxy in
-            HStack(spacing: 2) {
-                ForEach(breakdown.networkClasses) { item in
-                    Rectangle()
-                        .fill(item.color)
-                        .frame(width: width(item: item, available: proxy.size.width))
-                }
-            }
-        }
-        .frame(height: 10)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
-        .padding(.top, 14)
-        .padding(.bottom, 6)
-    }
-
-    private func width(item: NetworkStatusClass, available: CGFloat) -> CGFloat {
-        guard breakdown.total > 0 else {
-            return 0
-        }
-        let gaps = CGFloat(breakdown.networkClasses.count - 1) * 2
-        return max(0, (available - gaps) * CGFloat(item.count) / CGFloat(breakdown.total))
-    }
-}
-
 struct NetworkStatusRow: View {
     let item: NetworkStatusClass
     let total: Int

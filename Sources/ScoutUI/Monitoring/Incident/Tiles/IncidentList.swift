@@ -49,7 +49,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
 
     private func list(_ tiles: [IncidentTile<Element>]) -> some View {
         InsetList {
-            IncidentRangeStrip(selection: $provider.range)
+            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                 .listRowSeparator(.hidden)
 

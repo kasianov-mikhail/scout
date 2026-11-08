@@ -7,18 +7,21 @@
 
 import SwiftUI
 
-struct ActivityRangeStrip: View {
-    @Binding var selection: ActivityRange
+struct RangeStrip<Value: Hashable>: View {
+    @Binding var selection: Value
+
+    let ranges: [Value]
+    let title: (Value) -> String
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 20) {
-                ForEach(ActivityRange.allCases) { range in
+                ForEach(ranges, id: \.self) { range in
                     Button {
                         selection = range
                     } label: {
-                        Text(verbatim: range.title)
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                        Text(verbatim: title(range))
+                            .font(.listTitle)
                             .foregroundStyle(range == selection ? Color.primary : Color.pending)
                     }
                     .buttonStyle(.plain)
@@ -39,6 +42,6 @@ struct ActivityRangeStrip: View {
 }
 
 #Preview {
-    ActivityRangeStrip(selection: .constant(.month))
+    RangeStrip(selection: .constant(IncidentRange.week), ranges: IncidentRange.allCases, title: \.title)
         .padding(.vertical)
 }

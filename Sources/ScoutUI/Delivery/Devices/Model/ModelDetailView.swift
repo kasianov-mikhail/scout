@@ -46,7 +46,7 @@ struct ModelDetailView: View {
     private func content(_ detail: ModelDetail) -> some View {
         if detail.devices.isEmpty {
             VStack(spacing: 0) {
-                IncidentRangeStrip(selection: $provider.range)
+                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                     .padding(.top, 8)
                     .padding(.horizontal, 16)
 
@@ -58,7 +58,7 @@ struct ModelDetailView: View {
             }
         } else {
             InsetList {
-                IncidentRangeStrip(selection: $provider.range)
+                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                     .listRowSeparator(.hidden)
 
@@ -66,18 +66,22 @@ struct ModelDetailView: View {
                     .padding(.top, 4)
                     .padding(.bottom, 12)
                     .overlay(alignment: .bottom) {
-                        separator
+                        Separator()
                     }
                     .listRowSeparator(.hidden)
 
                 if !detail.osVersions.isEmpty {
-                    sectionTitle("OS VERSIONS")
+                    SectionHeader(title: "OS VERSIONS", topPadding: 12)
                         .listRowSeparator(.hidden)
 
-                    OSVersionBar(osVersions: detail.osVersions)
-                        .padding(.top, 14)
-                        .padding(.bottom, 6)
-                        .listRowSeparator(.hidden)
+                    ProportionBar(
+                        items: detail.osVersions,
+                        color: { index, _ in deviceOSColor(index) },
+                        share: { Double($0.percentage) / 100 }
+                    )
+                    .padding(.top, 14)
+                    .padding(.bottom, 6)
+                    .listRowSeparator(.hidden)
 
                     ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
                         OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
@@ -85,15 +89,11 @@ struct ModelDetailView: View {
                     }
                 }
 
-                sectionTitle("DEVICES", border: false)
+                SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
                     .listRowSeparator(.hidden)
 
                 deviceColumns
-                    .padding(.top, 12)
-                    .padding(.bottom, 8)
-                    .overlay(alignment: .bottom) {
-                        separator
-                    }
+                    .columnHeaderStyle(topPadding: 12)
                     .listRowSeparator(.hidden)
 
                 ForEach(detail.devices) { device in
@@ -118,67 +118,17 @@ struct ModelDetailView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func sectionTitle(_ title: String, border: Bool = true) -> some View {
-        HStack {
-            Text(verbatim: title)
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-        }
-        .padding(.top, 12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            if border {
-                separator
-            }
-        }
-    }
-
     private var deviceColumns: some View {
         HStack(spacing: 8) {
-            column("LAST SEEN ↓", color: .blue)
+            ColumnHeader(title: "LAST SEEN ↓", color: .blue)
                 .frame(width: 84, alignment: .leading)
-            column("SESSIONS")
+            ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
-            column("OS")
+            ColumnHeader(title: "OS")
                 .frame(width: 44, alignment: .leading)
-            column("CRASHES")
+            ColumnHeader(title: "CRASHES")
                 .frame(width: 56, alignment: .trailing)
         }
-        .foregroundStyle(Color(.systemGray))
-    }
-
-    private func column(_ title: String, color: Color? = nil) -> some View {
-        Text(verbatim: title)
-            .font(.system(size: 11, weight: .semibold))
-            .tracking(0.3)
-            .foregroundStyle(color ?? Color(.systemGray))
-    }
-
-    private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
-    }
-}
-
-private struct OSVersionBar: View {
-    let osVersions: [DeviceOSUsage]
-
-    var body: some View {
-        GeometryReader { proxy in
-            let spacing = CGFloat(max(osVersions.count - 1, 0)) * 2
-            let width = proxy.size.width - spacing
-
-            HStack(spacing: 2) {
-                ForEach(Array(osVersions.enumerated()), id: \.element.id) { index, osVersion in
-                    Rectangle()
-                        .fill(deviceOSColor(index))
-                        .frame(width: width * CGFloat(osVersion.percentage) / 100)
-                }
-            }
-        }
-        .frame(height: 10)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
     }
 }
 
@@ -235,18 +185,7 @@ private struct ModelDeviceRow: View {
                 .lineLimit(1)
                 .frame(width: 84, alignment: .leading)
 
-            Text(verbatim: device.sessions.compact)
-                .font(.system(size: 13, design: .monospaced))
-                .monospacedDigit()
-                .padding(.horizontal, 4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(alignment: .leading) {
-                    GeometryReader { proxy in
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(Color.deviceTrack)
-                            .frame(width: proxy.size.width * share)
-                    }
-                }
+            BarValue(text: device.sessions.compact, fraction: share, color: .deviceTrack)
 
             Text(verbatim: osVersion)
                 .font(.system(size: 12, design: .monospaced))
@@ -273,8 +212,8 @@ private struct ModelDeviceRow: View {
         DeviceOSRange(versions: [device.osVersion]).shortLabel ?? device.osVersion
     }
 
-    private var share: CGFloat {
-        maxSessions > 0 ? CGFloat(device.sessions) / CGFloat(maxSessions) : 0
+    private var share: Double {
+        maxSessions > 0 ? Double(device.sessions) / Double(maxSessions) : 0
     }
 }
 

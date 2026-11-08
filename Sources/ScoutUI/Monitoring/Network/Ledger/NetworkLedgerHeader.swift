@@ -10,20 +10,16 @@ import SwiftUI
 struct NetworkEndpointListHeader: View {
     var body: some View {
         HStack(spacing: 8) {
-            Text(verbatim: "REQUESTS ↓")
-                .networkColumnHeader()
-                .foregroundColor(Color.networkAccent)
+            ColumnHeader(title: "REQUESTS ↓", color: .networkAccent)
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Text(verbatim: "OK")
-                .networkColumnHeader()
+            ColumnHeader(title: "OK")
                 .hidden()
                 .frame(width: 56, alignment: .trailing)
-            Text(verbatim: "P99")
-                .networkColumnHeader()
+            ColumnHeader(title: "P99")
                 .hidden()
                 .frame(width: 64, alignment: .trailing)
         }
-        .networkColumnHeaderStyle()
+        .columnHeaderStyle()
     }
 }
 
@@ -32,56 +28,15 @@ struct NetworkLedgerHeader: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            Text(verbatim: primary + " ↓")
-                .networkColumnHeader()
-                .foregroundColor(Color.networkAccent)
+            ColumnHeader(title: primary + " ↓", color: .networkAccent)
                 .frame(width: 58, alignment: .leading)
-            Text(verbatim: "REQUESTS")
-                .networkColumnHeader()
+            ColumnHeader(title: "REQUESTS")
                 .frame(maxWidth: .infinity, alignment: .leading)
-            Text(verbatim: "OK")
-                .networkColumnHeader()
+            ColumnHeader(title: "OK")
                 .frame(width: 56, alignment: .trailing)
-            Text(verbatim: "P99")
-                .networkColumnHeader()
+            ColumnHeader(title: "P99")
                 .frame(width: 64, alignment: .trailing)
         }
-        .networkColumnHeaderStyle()
-    }
-}
-
-struct NetworkSectionHeader: View {
-    let title: String
-
-    var body: some View {
-        Text(verbatim: title)
-            .font(.system(size: 16, weight: .bold))
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .frame(height: 56)
-            .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
-            }
-    }
-}
-
-extension Text {
-    fileprivate func networkColumnHeader() -> Text {
-        font(.system(size: 11, weight: .semibold))
-            .tracking(0.3)
-    }
-}
-
-extension View {
-    fileprivate func networkColumnHeaderStyle() -> some View {
-        foregroundStyle(Color(.systemGray))
-            .padding(.top, 14)
-            .padding(.bottom, 8)
-            .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
-            }
+        .columnHeaderStyle()
     }
 }

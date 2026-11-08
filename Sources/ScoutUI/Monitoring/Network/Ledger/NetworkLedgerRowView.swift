@@ -49,8 +49,9 @@ struct NetworkLedgerRowView: View {
             }
             .frame(width: 58, alignment: .leading)
 
-            NetworkRequestBar(requests: row.requests, fraction: fraction)
+            BarValue(text: row.requests.compact, fraction: fraction, color: .networkTrack, barHeight: 28, minimumWidth: 4)
                 .frame(maxWidth: .infinity)
+                .frame(height: 18)
 
             Text(verbatim: row.successRate.networkValue)
                 .foregroundStyle(row.successRate.networkColor)

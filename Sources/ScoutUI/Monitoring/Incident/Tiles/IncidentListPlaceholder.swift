@@ -20,7 +20,7 @@ struct IncidentListPlaceholder: View {
 
     var body: some View {
         InsetList {
-            IncidentRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                 .listRowSeparator(.hidden)
 

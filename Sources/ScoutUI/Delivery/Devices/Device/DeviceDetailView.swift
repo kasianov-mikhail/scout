@@ -46,7 +46,7 @@ struct DeviceDetailView: View {
 
     private func content(_ detail: DeviceDetail) -> some View {
         InsetList {
-            IncidentRangeStrip(selection: $provider.range)
+            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                 .listRowSeparator(.hidden)
 
@@ -54,15 +54,24 @@ struct DeviceDetailView: View {
                 .padding(.top, 4)
                 .padding(.bottom, 12)
                 .overlay(alignment: .bottom) {
-                    separator
+                    Separator()
                 }
                 .listRowSeparator(.hidden)
 
             stats(detail)
                 .listRowSeparator(.hidden)
 
-            sessionsHeader
-                .listRowSeparator(.hidden)
+            SectionHeader(title: "SESSIONS", topPadding: 12) {
+                Button {
+                    showTimeline = true
+                } label: {
+                    Text(verbatim: "TIMELINE")
+                        .font(.system(size: 16, weight: .medium))
+                        .foregroundStyle(.blue)
+                }
+                .buttonStyle(.plain)
+            }
+            .listRowSeparator(.hidden)
 
             if detail.recentSessions.isEmpty {
                 Text(verbatim: "No sessions in this period")
@@ -80,7 +89,7 @@ struct DeviceDetailView: View {
             if !detail.history.isEmpty {
                 spacer(8)
 
-                sectionTitle("HISTORY")
+                SectionHeader(title: "HISTORY", topPadding: 12)
                     .listRowSeparator(.hidden)
 
                 ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
@@ -91,18 +100,10 @@ struct DeviceDetailView: View {
 
             spacer(12)
 
-            HStack {
-                Text(verbatim: "ACTIVITY")
-                    .font(.system(size: 16, weight: .bold))
-                Spacer()
+            SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 Text(verbatim: detail.activeDaysLabel)
                     .font(.system(size: 13))
                     .foregroundStyle(Color(.systemGray))
-            }
-            .padding(.top, 12)
-            .frame(height: 56)
-            .overlay(alignment: .bottom) {
-                separator
             }
             .listRowSeparator(.hidden)
 
@@ -117,7 +118,7 @@ struct DeviceDetailView: View {
                 .padding(.bottom, 16)
                 .listRowSeparator(.hidden)
 
-            sectionTitle("WHEN IT IS USED")
+            SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
                 .listRowSeparator(.hidden)
 
             UsageGrid(usage: detail.usage)
@@ -149,51 +150,16 @@ struct DeviceDetailView: View {
             stat("resources", value: detail.resources, color: .resourceText, divider: false, leading: 10, trailing: 0)
         }
         .overlay(alignment: .bottom) {
-            separator
+            Separator()
         }
     }
 
     private func stat(_ title: String, value: Int, color: Color, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+        StatColumn(title: title, leading: leading, trailing: trailing, divider: divider) {
             Text(verbatim: "\(value)")
                 .font(.system(size: 28, weight: .bold, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(value > 0 ? color : Color.primary)
-            Text(verbatim: title)
-                .font(.system(size: 13))
-                .foregroundStyle(Color(.systemGray))
-        }
-        .padding(.vertical, 14)
-        .padding(.leading, leading)
-        .padding(.trailing, trailing)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .trailing) {
-            if divider {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
-            }
-        }
-    }
-
-    private var sessionsHeader: some View {
-        HStack {
-            Text(verbatim: "SESSIONS")
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-            Button {
-                showTimeline = true
-            } label: {
-                Text(verbatim: "TIMELINE")
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(.blue)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.top, 12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            separator
         }
     }
 
@@ -210,29 +176,38 @@ struct DeviceDetailView: View {
         }
     }
 
-    private func sectionTitle(_ title: String) -> some View {
-        HStack {
-            Text(verbatim: title)
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-        }
-        .padding(.top, 12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            separator
-        }
-    }
-
     private func spacer(_ height: CGFloat) -> some View {
         Color.clear
             .frame(height: height)
             .listRowSeparator(.hidden)
     }
+}
 
-    private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
+struct StatColumn<Value: View>: View {
+    let title: String
+    let leading: CGFloat
+    let trailing: CGFloat
+    var divider = true
+
+    @ViewBuilder let value: () -> Value
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            value()
+
+            Text(verbatim: title)
+                .font(.system(size: 13))
+                .foregroundStyle(Color(.systemGray))
+        }
+        .padding(.vertical, 14)
+        .padding(.leading, leading)
+        .padding(.trailing, trailing)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .trailing) {
+            if divider {
+                Separator(axis: .vertical)
+            }
+        }
     }
 }
 
@@ -252,18 +227,7 @@ private struct SessionLine: View {
                 .lineLimit(1)
                 .frame(width: 76, alignment: .leading)
 
-            Text(verbatim: session.durationText ?? "—")
-                .font(.system(size: 13, design: .monospaced))
-                .monospacedDigit()
-                .padding(.leading, 4)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(alignment: .leading) {
-                    GeometryReader { proxy in
-                        RoundedRectangle(cornerRadius: 3)
-                            .fill(Color.deviceTrack)
-                            .frame(width: proxy.size.width * share)
-                    }
-                }
+            BarValue(text: session.durationText ?? "—", fraction: share, color: .deviceTrack)
 
             Text(verbatim: session.appVersion ?? "—")
                 .font(.system(size: 12, design: .monospaced))
@@ -281,11 +245,11 @@ private struct SessionLine: View {
         .contentShape(.rect)
     }
 
-    private var share: CGFloat {
+    private var share: Double {
         guard let duration = session.duration, maxDuration > 0 else {
             return 0
         }
-        return CGFloat(duration / maxDuration)
+        return duration / maxDuration
     }
 }
 

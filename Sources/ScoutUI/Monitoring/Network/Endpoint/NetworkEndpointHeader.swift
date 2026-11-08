@@ -26,9 +26,7 @@ struct NetworkEndpointHeader: View {
         .padding(.top, 4)
         .padding(.bottom, 16)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 
@@ -69,9 +67,7 @@ struct NetworkEndpointHeaderPlaceholder: View {
         .padding(.top, 4)
         .padding(.bottom, 16)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 }

@@ -13,7 +13,7 @@ struct NetworkEndpointViewPlaceholder: View {
 
     var body: some View {
         InsetList {
-            NetworkRangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+            RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
                 .listRowSeparator(.hidden)
 
