@@ -35,23 +35,23 @@ extension NetworkReportExport {
     }
 
     private var summary: String {
-        let breakdown = report.summary(in: range)
+        let overview = report.summary(in: range)
 
         var parts = [
             ExportFormat.range(from: range.lowerBound, to: range.upperBound),
-            ExportFormat.counted(breakdown.total, .request),
+            ExportFormat.counted(overview.requests, .request),
         ]
-        if breakdown.total > 0 {
-            parts.append("success \(breakdown.successRate.formatted)")
+        if let successRate = overview.successRate {
+            parts.append("success \(successRate.formatted)")
         }
-        if let p99 = report.percentiles(in: range)?.p99 {
+        if let p99 = overview.p99 {
             parts.append("p99 \(p99.duration)")
         }
         return parts.joined(separator: " · ")
     }
 
     private var statusLines: [ExportLine] {
-        report.summary(in: range).segments.map { segment in
+        report.statusBreakdown(range: range).segments.map { segment in
             .bullet("\(segment.label): \(ExportFormat.counted(segment.count, .request))")
         }
     }
