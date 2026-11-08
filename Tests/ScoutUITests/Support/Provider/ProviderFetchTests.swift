@@ -12,7 +12,7 @@ import Testing
 @testable import ScoutUI
 
 @MainActor
-struct GlobalSearchTests {
+struct ProviderFetchTests {
     @Test("Providers load at the same time") func concurrentLoad() async {
         let tracker = ConcurrencyTracker()
         let providers: [any Provider] = [

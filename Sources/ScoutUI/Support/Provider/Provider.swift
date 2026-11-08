@@ -65,6 +65,21 @@ extension Provider {
     }
 }
 
+@MainActor
+extension Sequence where Element == any Provider {
+    func fetchIfNeeded(in database: DatabaseReader) async {
+        await concurrentForEach { provider in
+            await provider.fetchIfNeeded(in: database)
+        }
+    }
+
+    func fetchIfFailed(in database: DatabaseReader) async {
+        await concurrentForEach { provider in
+            await provider.fetchIfFailed(in: database)
+        }
+    }
+}
+
 protocol SeriesProvider: Provider {
     func fetch(in database: SeriesReader) async throws -> Output
 }

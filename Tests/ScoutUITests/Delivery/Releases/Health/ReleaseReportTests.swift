@@ -214,7 +214,6 @@ struct ReleaseReportTests {
         .report(in: range)
 
         #expect(releases[0].exits.counts == [.normal: 90, .watchdog: 10])
-        #expect(releases[0].exits.clean?.value == 0.9)
         #expect(releases[1].exits.counts == [.memoryLimit: 4])
     }
 

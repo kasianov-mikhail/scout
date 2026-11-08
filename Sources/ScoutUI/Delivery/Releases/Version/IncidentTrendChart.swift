@@ -9,19 +9,6 @@ import Charts
 import Scout
 import SwiftUI
 
-struct IncidentTrendSection<Trailing: View>: View {
-    let kind: IncidentKind
-    let days: [DailyCount]
-
-    @ViewBuilder let trailing: () -> Trailing
-
-    var body: some View {
-        Header(title: kind.title, trailing: trailing)
-
-        IncidentTrendChart(kind: kind, days: days)
-    }
-}
-
 struct IncidentTrendChart: View {
     let kind: IncidentKind
     let days: [DailyCount]

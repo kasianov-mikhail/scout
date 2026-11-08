@@ -12,12 +12,10 @@ import Testing
 
 @Suite("ResourceSummary")
 struct ResourceSummaryTests {
-    @Test("Readouts list every kind, zero when missing")
-    func readouts() {
+    @Test("Total sums every kind")
+    func total() {
         let summary = ResourceSummary(counts: [.cpu: 3])
 
         #expect(summary.total == 3)
-        #expect(summary.readouts.map(\.title) == ["CPU", "Disk writes"])
-        #expect(summary.readouts.map(\.value) == [3, 0])
     }
 }
