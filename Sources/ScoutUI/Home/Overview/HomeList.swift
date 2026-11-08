@@ -43,7 +43,7 @@ struct HomeList: View {
                     wasLoading = false
                 }
             }
-            .fetchTask(providers)
+            .fetchTask(snapshot == nil ? providers : [])
     }
 
     @ViewBuilder
@@ -78,7 +78,7 @@ struct HomeList: View {
     }
 
     private var isLoading: Bool {
-        providers.contains(where: \.isLoading)
+        snapshot == nil && providers.contains(where: \.isLoading)
     }
 
     private var providers: [any Provider] {
