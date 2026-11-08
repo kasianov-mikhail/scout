@@ -229,9 +229,11 @@ extension DeviceDetail {
                 isCurrent: index == 6
             )
         }
-        let usageCounts = (0..<7).map { day in
+        let usageCounts: [[Int]] = (0..<7).map { day in
             (0..<24).map { hour in
-                max(0, Int((exp(-pow(Double(hour) - 20, 2) / 8) * (day < 5 ? 1 : 0.6) + 0.05) * 20))
+                let peak: Double = exp(-pow(Double(hour) - 20, 2) / 8)
+                let weekday: Double = day < 5 ? 1 : 0.6
+                return max(0, Int((peak * weekday + 0.05) * 20))
             }
         }
 
