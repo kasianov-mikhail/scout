@@ -33,18 +33,22 @@ struct EventRow: View {
             }
             .padding(.horizontal, 16)
             .frame(height: 44)
+        } destination: {
+            EventView(event: event)
+        }
+        .listRowInsets(EdgeInsets())
+        .listRowSeparator(.hidden)
+        .listRowBackground(cell)
+    }
+
+    private var cell: some View {
+        (event.level?.color?.opacity(0.12) ?? Color.clear)
             .overlay(alignment: .bottom) {
                 Rectangle()
                     .fill(Color.separator)
                     .frame(height: 0.5)
                     .padding(.leading, 42)
             }
-        } destination: {
-            EventView(event: event)
-        }
-        .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
-        .listRowBackground(event.level?.color?.opacity(0.12) ?? .clear)
     }
 }
 
