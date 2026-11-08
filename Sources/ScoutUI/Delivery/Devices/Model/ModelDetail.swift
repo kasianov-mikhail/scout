@@ -52,23 +52,28 @@ extension ModelDetail {
             .filter { $0.model == model }
             .sorted { $0.lastSeen > $1.lastSeen }
 
-        let sessions = devices.reduce(0) { $0 + $1.sessions }
-        let osVersions = Dictionary(grouping: devices, by: \.osVersion)
-            .map { version, devices in
-                let versionSessions = devices.reduce(0) { $0 + $1.sessions }
-                let share = sessions > 0 ? Double(versionSessions) / Double(sessions) : 0
-                let percentage = Int((share * 100).rounded())
+        let sessions: Int = devices.reduce(0) { $0 + $1.sessions }
+        let grouped: [String: [DeviceSummary]] = Dictionary(grouping: devices, by: \.osVersion)
+        var usages: [DeviceOSUsage] = []
 
-                return DeviceOSUsage(
+        for (version, versionDevices) in grouped {
+            let versionSessions: Int = versionDevices.reduce(0) { $0 + $1.sessions }
+            let share: Double = sessions > 0 ? Double(versionSessions) / Double(sessions) : 0
+            let percentage: Int = Int((share * 100).rounded())
+
+            usages.append(
+                DeviceOSUsage(
                     version: version,
-                    devices: devices.count,
+                    devices: versionDevices.count,
                     sessions: versionSessions,
                     percentage: percentage
                 )
-            }
-            .sorted { lhs, rhs in
-                lhs.sessions == rhs.sessions ? lhs.version > rhs.version : lhs.sessions > rhs.sessions
-            }
+            )
+        }
+
+        let osVersions: [DeviceOSUsage] = usages.sorted { lhs, rhs in
+            lhs.sessions == rhs.sessions ? lhs.version > rhs.version : lhs.sessions > rhs.sessions
+        }
 
         self.init(devices: devices, osVersions: osVersions)
     }
