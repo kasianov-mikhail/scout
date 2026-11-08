@@ -53,9 +53,32 @@ final class AlertProvider: ObservableObject, SeriesProvider {
             var rules = try registry.rules()
             rules.removeAll { $0 == rule }
             try registry.save(rules)
+            update(rule) { _ in nil }
         } catch {
             result = .failure(error)
         }
+    }
+
+    func mute(_ rule: AlertRule, until: Date) {
+        do {
+            try registry.remember(.muted(until: until), for: rule)
+            update(rule) { status in
+                AlertStatus(
+                    rule: status.rule,
+                    outcome: AlertOutcome(state: .muted(until: until), shouldNotify: false),
+                    reading: status.reading
+                )
+            }
+        } catch {
+            result = .failure(error)
+        }
+    }
+
+    private func update(_ rule: AlertRule, _ transform: (AlertStatus) -> AlertStatus?) {
+        guard case .success(let statuses)? = result else {
+            return
+        }
+        result = .success(statuses.compactMap { $0.rule == rule ? transform($0) : $0 })
     }
 
     func fetch(in database: SeriesReader) async throws -> [AlertStatus] {

@@ -33,21 +33,53 @@ extension AlertStatus {
         return "\(rule.metric.format(current)) — \(rule.condition.summary(format: rule.metric.format))"
     }
 
-    var series: MiniChartSeries {
-        MiniChartSeries(values: reading.recent.map { Int($0 * 1000) })
+    var value: String? {
+        reading.recent.last.map(rule.metric.format)
+    }
+
+    var summary: String {
+        let condition = rule.condition
+        var text = condition.summary(format: rule.metric.format)
+
+        switch condition.reference {
+        case .constant:
+            break
+        case .baselineFactor, .medianFactor:
+            if let reference = reading.reference(for: condition) {
+                text += " · \(rule.metric.format(reference))"
+            }
+        }
+
+        return "\(text) for \(rule.holdBuckets) h"
+    }
+
+    func firingLabel(now: Date = .now) -> String? {
+        guard case .firing(let since) = outcome.state else {
+            return nil
+        }
+        let hours = max(1, Int(now.timeIntervalSince(since) / 3600))
+        return "Firing \(hours) h"
+    }
+
+    var mutedLabel: String? {
+        guard case .muted(let until) = outcome.state else {
+            return nil
+        }
+        let time = until.formatted(.dateTime.hour(.twoDigits(amPM: .omitted)).minute(.twoDigits))
+        return "Muted till \(time)"
     }
 }
 
 extension [AlertStatus] {
-    var firingCount: Int {
-        count(where: \.isFiring)
+    var firing: [AlertStatus] {
+        filter(\.isFiring)
     }
 
-    var firingFirst: [AlertStatus] {
-        filter(\.isFiring) + filter { !$0.isFiring }
+    var armed: [AlertStatus] {
+        filter(\.isArmed)
     }
 
-    var allHealthy: Bool {
-        count > 0 && allSatisfy { $0.outcome.state == .armed }
+    var muted: [AlertStatus] {
+        filter(\.isMuted)
     }
 }
