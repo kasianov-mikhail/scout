@@ -13,8 +13,12 @@ struct BackendDetailView: View {
     @ObservedObject var provider: BackendHealthProvider
     let id: String
     @Binding var activeID: String
+    var report: BackendReport? = nil
 
-    @State private var isChecking = false
+    @Environment(\.openURL) private var openURL
+
+    @State private var retention = BackendRetention.year
+    @State private var copyCount = 0
 
     private var backend: BackendHealth? {
         provider.backends.first { $0.id == id }
@@ -33,109 +37,309 @@ struct BackendDetailView: View {
     }
 
     private func content(for backend: BackendHealth) -> some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 12) {
-                HStack(spacing: 10) {
-                    Image(systemName: backend.status.healthIcon)
-                        .font(.title2)
-                        .foregroundStyle(backend.status.healthColor)
+        let details = report ?? .sample(engine: backend.engine)
 
-                    VStack(alignment: .leading, spacing: 1) {
-                        Text(verbatim: backend.status.healthLabel)
-                            .font(.headline)
-                        Text(verbatim: backend.engine.label)
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+        return InsetList {
+            VStack(alignment: .leading, spacing: 0) {
+                SettingsLabel(title: "STATUS")
+                SettingsCard {
+                    SettingsReadoutRow(
+                        value: backend.status == nil ? nil : backend.status.healthLabel,
+                        caption: details.statusDetail,
+                        captionSkeletonWidth: backend.status == nil ? 120 : nil,
+                        skeletonWidth: 120
+                    )
+                }
+
+                SettingsLabel(title: backend.isCloud ? "CONTAINER" : "ADDRESS")
+
+                SettingsCard {
+                    SettingsAddressRow(value: backend.endpoint) {
+                        copy(backend.endpoint)
+                    }
+
+                    addressColumns(for: backend, details: details)
+                }
+
+                SettingsLabel(title: "LATEST DATA")
+
+                SettingsCard {
+                    SettingsReadoutRow(
+                        value: details.latestEvent,
+                        caption: backend.isCloud ? "newest event in CloudKit" : "newest event on the server"
+                    )
+                }
+
+                SettingsLabel(title: "THIS IPHONE SENDS")
+
+                SettingsCard {
+                    SettingsReadoutRow(
+                        value: details.pendingRecords,
+                        caption: "records waiting",
+                        skeletonWidth: 28
+                    )
+
+                    SettingsColumnRow {
+                        SettingsColumn(title: "Last sent", value: details.lastSent)
+                        SettingsColumn(title: "Given up", value: details.givenUp)
+                        SettingsColumn(title: "Last error", value: details.lastError, isLast: true)
                     }
                 }
 
-                Text(verbatim: backend.endpoint)
-                    .codeChipStyle()
-            }
-            .padding(.vertical, 6)
-            .listRowSeparator(.hidden)
+                SettingsLabel(title: "STORAGE")
 
-            Header(title: "Health")
+                storageCard(for: backend, details: details)
 
-            DetailValueRow(title: "Latency", value: backend.latencyLabel)
-
-            if let spread = backend.pingSpreadLabel {
-                DetailValueRow(title: "Min / Avg / Max", value: spread)
-            }
-
-            DetailValueRow(title: "Last Checked", value: backend.lastCheckedLabel)
-
-            if !backend.pings.isEmpty {
-                HStack {
-                    Text(verbatim: "Recent Pings")
-                    Spacer()
-                    PingSparkline(pings: backend.pings)
-                        .frame(width: 144, height: 28)
+                if backend.isCloud {
+                    SettingsNote(text: "CloudKit does not report its size to apps. The exact number is in CloudKit Console.")
                 }
-            }
 
-            if case let .server(info) = backend.engine {
-                Header(title: "Connection")
+                errorsSection(for: backend, details: details)
 
-                DetailValueRow(title: "API Key", value: info.hasAPIKey ? "Configured" : "Not set")
-                DetailValueRow(title: "Timeout", value: "10 s")
-                DetailValueRow(title: "Transport", value: info.isSecure ? "HTTPS" : "HTTP")
-            }
+                if case .server = backend.engine {
+                    retentionSection
+                }
 
-            Header(title: "Actions")
-
-            if backend.id != activeID {
-                Button {
+                SettingsButton(
+                    title: backend.id == activeID ? "Reading From \(backend.name)" : "Read From \(backend.name)",
+                    isEnabled: backend.id != activeID
+                ) {
                     activeID = backend.id
-                } label: {
-                    Text(verbatim: "Use This Backend")
-                        .foregroundStyle(.tint)
                 }
+                .padding(.top, 26)
             }
+            .listRowSeparator(.hidden)
+        }
+        .hapticFeedback(.success, trigger: copyCount)
+    }
 
-            Button {
-                isChecking = true
-                Task {
-                    await provider.refresh(id: backend.id)
-                    isChecking = false
-                }
-            } label: {
-                HStack {
-                    Text(verbatim: "Check Now")
-                        .foregroundStyle(.tint)
-                    if isChecking {
-                        Spacer()
-                        RingIndicator(size: 22)
+    @ViewBuilder
+    private func addressColumns(for backend: BackendHealth, details: BackendReport) -> some View {
+        SettingsColumnRow {
+            switch backend.engine {
+            case .cloudKit:
+                SettingsColumn(title: "Database", value: details.database)
+                SettingsColumn(title: "Schema", value: details.schema)
+                SettingsColumn(title: "Symbols \(details.symbolsVersion)", value: details.symbolsState, isLast: true)
+            case let .server(info):
+                SettingsColumn(title: "Transport", value: info.isSecure ? "HTTPS" : "HTTP")
+                SettingsColumn(title: "API key", value: info.hasAPIKey ? "Set" : "Not set")
+                SettingsColumn(title: "Symbols \(details.symbolsVersion)", value: details.symbolsState, isLast: true)
+            case .local:
+                SettingsColumn(title: "Transport", value: "On Device")
+                SettingsColumn(title: "API key", value: "Not set")
+                SettingsColumn(title: "Symbols \(details.symbolsVersion)", value: details.symbolsState, isLast: true)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func storageCard(for backend: BackendHealth, details: BackendReport) -> some View {
+        SettingsCard {
+            if backend.isCloud {
+                HStack(spacing: 0) {
+                    SettingsReadoutRow(
+                        value: details.storage,
+                        caption: details.storageCaption,
+                        captionSkeletonWidth: details.storageCaption == nil ? 74 : nil
+                    )
+
+                    SettingsCardAction(title: "Console") {
+                        openConsole()
                     }
                 }
+            } else {
+                SettingsReadoutRow(
+                    value: details.storage,
+                    caption: details.storageCaption,
+                    captionSkeletonWidth: details.storageCaption == nil ? 74 : nil
+                )
+
+                SettingsColumnRow {
+                    SettingsColumn(title: "Events", value: details.eventCount)
+                    SettingsColumn(title: "Sessions", value: details.sessionCount)
+                    SettingsColumn(title: "Metrics", value: details.metricCount, isLast: true)
+                }
             }
-            .disabled(isChecking)
+        }
+    }
+
+    @ViewBuilder
+    private func errorsSection(for backend: BackendHealth, details: BackendReport) -> some View {
+        if backend.isCloud {
+            SettingsLabel(title: "SEND ERRORS · 24 H")
+
+            SettingsCard {
+                SettingsReadoutRow(
+                    value: details.sendErrors,
+                    caption: "devices could not send",
+                    skeletonWidth: 28
+                )
+            }
+
+            SettingsNote(text: "Reported by devices once they reach iCloud again. CloudKit itself does not share its error rate.")
+        } else {
+            SettingsLabel(title: "INTAKE ERRORS · 24 H")
+
+            SettingsCard {
+                SettingsReadoutRow(
+                    value: details.errorRate,
+                    caption: details.requestCount,
+                    captionSkeletonWidth: details.requestCount == nil ? 120 : nil,
+                    skeletonWidth: 46
+                )
+
+                SettingsColumnRow {
+                    SettingsColumn(title: "Server 5xx", value: details.serverErrors)
+                    SettingsColumn(title: "Too large", value: details.tooLarge)
+                    SettingsColumn(title: "Bad key", value: details.badKey, isLast: true)
+                }
+            }
+        }
+    }
+
+    private var retentionSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            SettingsLabel(title: "KEEP DATA FOR")
+
+            SettingsStrip {
+                ForEach(BackendRetention.allCases) { option in
+                    Button {
+                        retention = option
+                    } label: {
+                        SettingsSegmentCell(
+                            title: option.title,
+                            isSelected: retention == option,
+                            showsDivider: option != BackendRetention.allCases.last
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .hapticFeedback(.selection, trigger: retention)
+
+            SettingsNote(text: "Older records are deleted on the server every night.")
+        }
+    }
+
+    private func copy(_ text: String) {
+        #if os(iOS)
+            UIPasteboard.general.string = text
+        #else
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(text, forType: .string)
+        #endif
+        copyCount += 1
+    }
+
+    private func openConsole() {
+        if let url = URL(string: "https://icloud.developer.apple.com/dashboard/") {
+            openURL(url)
         }
     }
 }
 
-struct PingSparkline: View {
-    let pings: [Int]
+private enum BackendRetention: CaseIterable, Identifiable {
+    case days30
+    case days90
+    case year
+    case forever
 
-    private static let spacing: CGFloat = 3
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .days30:
+            "30 days"
+        case .days90:
+            "90 days"
+        case .year:
+            "1 year"
+        case .forever:
+            "Forever"
+        }
+    }
+}
+
+private struct SettingsAddressRow: View {
+    let value: String
+    let action: () -> Void
 
     var body: some View {
-        GeometryReader { proxy in
-            let peak = Double(pings.max() ?? 1)
-            let slots = CGFloat(BackendHealth.maxPingHistory)
-            let barWidth = (proxy.size.width - Self.spacing * (slots - 1)) / slots
+        HStack(spacing: 0) {
+            Text(verbatim: value)
+                .font(.system(size: 15, weight: .medium, design: .monospaced))
+                .padding(.horizontal, 8)
+                .padding(.vertical, 10)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(alignment: .bottom, spacing: Self.spacing) {
-                Spacer(minLength: 0)
-
-                ForEach(Array(pings.enumerated()), id: \.offset) { _, ping in
-                    Capsule()
-                        .fill(.tint.opacity(0.6))
-                        .frame(width: barWidth, height: max(3, proxy.size.height * Double(ping) / peak))
-                }
-            }
-            .frame(maxHeight: .infinity, alignment: .bottom)
+            SettingsCardAction(title: "Copy", action: action)
         }
+    }
+}
+
+private struct SettingsColumnRow<Content: View>: View {
+    @ViewBuilder let content: () -> Content
+
+    var body: some View {
+        HStack(spacing: 0) {
+            content()
+        }
+        .overlay(alignment: .top) {
+            Separator()
+        }
+    }
+}
+
+private struct SettingsColumn: View {
+    let title: String
+    let value: String?
+    var isLast = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(verbatim: title)
+                .font(.system(size: 11))
+                .foregroundStyle(Color(.systemGray))
+                .lineLimit(1)
+
+            if let value {
+                Text(verbatim: value)
+                    .font(.system(size: 15, weight: .semibold))
+                    .lineLimit(1)
+            } else {
+                SkeletonBar(width: 46, height: 11, delay: 0)
+                    .frame(height: 18, alignment: .center)
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 9)
+        .overlay(alignment: .trailing) {
+            if !isLast {
+                Separator(axis: .vertical)
+            }
+        }
+    }
+}
+
+private struct SettingsButton: View {
+    let title: String
+    let isEnabled: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(verbatim: title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(isEnabled ? Color.accentColor : Color(.systemGray2))
+                .frame(maxWidth: .infinity)
+                .frame(height: 46)
+                .settingsCardStyle()
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .disabled(!isEnabled)
     }
 }
 
@@ -159,6 +363,19 @@ struct PingSparkline: View {
             provider: BackendHealthProvider(healths: .samples),
             id: [BackendHealth].samples[1].id,
             activeID: $activeID
+        )
+    }
+}
+
+@available(iOS 17.0, macOS 14.0, *)
+#Preview("Loading") {
+    @Previewable @State var activeID = [BackendHealth].samples[0].id
+    NavigationStack {
+        BackendDetailView(
+            provider: BackendHealthProvider(healths: .samples),
+            id: [BackendHealth].samples[2].id,
+            activeID: $activeID,
+            report: BackendReport()
         )
     }
 }

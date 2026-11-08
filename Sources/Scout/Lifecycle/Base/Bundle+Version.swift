@@ -8,7 +8,7 @@
 import Foundation
 
 extension Bundle {
-    var marketingVersion: String? {
+    package var marketingVersion: String? {
         infoDictionary?["CFBundleShortVersionString"] as? String
     }
 
