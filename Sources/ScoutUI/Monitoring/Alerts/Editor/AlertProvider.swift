@@ -42,6 +42,43 @@ final class AlertProvider: ObservableObject, SeriesProvider {
         await refreshNotificationStatus()
     }
 
+    func update(rule: AlertRule, updated: AlertRule) async throws {
+        var rules = try registry.rules()
+
+        guard let index = rules.firstIndex(of: rule) else {
+            return
+        }
+        if updated == rule {
+            return
+        }
+        guard !rules.contains(updated) else {
+            throw DuplicateRuleError()
+        }
+
+        let state: AlertState
+        if rule.metric == updated.metric {
+            state = try registry.state(for: rule)
+        } else {
+            state = .armed
+        }
+        rules[index] = updated
+        try registry.save(rules)
+        try registry.remember(state, for: updated)
+
+        if updated.notifies {
+            await permission?.requestIfUndetermined()
+        }
+        await refreshNotificationStatus()
+    }
+
+    func mute(_ rule: AlertRule, hours: Int) throws {
+        try registry.remember(.muted(until: Date().adding(.hour, value: hours)), for: rule)
+    }
+
+    func unmute(_ rule: AlertRule) throws {
+        try registry.remember(.armed, for: rule)
+    }
+
     func refreshNotificationStatus() async {
         if let permission {
             notificationsDenied = await permission.isDenied

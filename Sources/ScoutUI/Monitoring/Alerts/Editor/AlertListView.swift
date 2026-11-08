@@ -12,27 +12,50 @@ struct AlertListView: View {
     @ObservedObject var provider: AlertProvider
 
     @Environment(\.database) private var database
-    @State private var isEditorPresented = false
+    @State private var creation: Creation?
+
+    private enum Creation: String, Identifiable {
+        case composer
+        case templates
+
+        var id: String { rawValue }
+    }
 
     var body: some View {
         content
             .navigationTitle(en: "Alerts")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        isEditorPresented = true
+                    Menu {
+                        Button {
+                            creation = .composer
+                        } label: {
+                            Text(verbatim: "New Alert")
+                        }
+
+                        Button {
+                            creation = .templates
+                        } label: {
+                            Text(verbatim: "From Template")
+                        }
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $isEditorPresented) {
+            .sheet(item: $creation) {
                 Task { await provider.fetchAgain(in: database) }
-            } content: {
-                NavigationStack {
-                    AlertEditorView(provider: provider)
+            } content: { creation in
+                switch creation {
+                case .composer:
+                    NavigationStack {
+                        AlertComposerView(provider: provider)
+                    }
+                    .opaquePresentation()
+                case .templates:
+                    AlertTemplateListView(provider: provider)
+                        .opaquePresentation()
                 }
-                .opaquePresentation()
             }
             .task {
                 await provider.fetchIfNeeded(in: database)
@@ -57,15 +80,19 @@ struct AlertListView: View {
                 }
 
                 ForEach(statuses, id: \.rule) { status in
-                    AlertRow(status: status)
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                provider.remove(status.rule)
-                                Task { await provider.fetchAgain(in: database) }
-                            } label: {
-                                Text(verbatim: "Delete")
-                            }
+                    Row {
+                        AlertRow(status: status)
+                    } destination: {
+                        AlertDetailView(provider: provider, rule: status.rule, status: status)
+                    }
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            provider.remove(status.rule)
+                            Task { await provider.fetchAgain(in: database) }
+                        } label: {
+                            Text(verbatim: "Delete")
                         }
+                    }
                 }
             }
             .environment(\.defaultMinListRowHeight, 34)
@@ -150,12 +177,12 @@ extension AlertStatus {
                 holdBuckets: 2
             ),
             outcome: AlertOutcome(
-                state: .firing(since: Date(timeIntervalSinceReferenceDate: 803_500_000)),
+                state: .firing(since: Date().startOfDay.adding(.hour, value: 12)),
                 shouldNotify: false
             ),
             reading: MetricReading(
                 baseline: 0.998,
-                recent: [0.998, 0.998, 0.997, 0.996, 0.994, 0.989, 0.982]
+                recent: [0.998, 0.998, 0.997, 0.996, 0.995, 0.993, 0.9918]
             )
         )
     }

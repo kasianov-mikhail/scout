@@ -10,17 +10,6 @@ import Foundation
 extension AlertRule {
     private static let windowBuckets = 24
 
-    func backtestSummary(over values: [Double]) -> String {
-        switch backtestFireCount(over: values) {
-        case 0:
-            "Would not have fired in the past week"
-        case 1:
-            "Would have fired once in the past week"
-        case let count:
-            "Would have fired \(count) times in the past week"
-        }
-    }
-
     func backtestFireCount(over values: [Double]) -> Int {
         let window = Self.windowBuckets
 

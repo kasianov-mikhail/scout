@@ -62,15 +62,4 @@ struct AlertRuleBacktestTests {
         #expect(rule.backtestFireCount(over: quiet + [50]) == 1)
         #expect(rule.backtestFireCount(over: quiet + [1, 0, 2, 0, 1]) == 0)
     }
-
-    @Test("Summaries phrase zero, one, and many fires")
-    func summaries() {
-        let none = Array(repeating: 10.0, count: 96)
-        let once = Array(repeating: 10.0, count: 48) + [1]
-        let twice = Array(repeating: 10.0, count: 48) + [1, 10, 1]
-
-        #expect(dropRule.backtestSummary(over: none) == "Would not have fired in the past week")
-        #expect(dropRule.backtestSummary(over: once) == "Would have fired once in the past week")
-        #expect(dropRule.backtestSummary(over: twice) == "Would have fired 2 times in the past week")
-    }
 }
