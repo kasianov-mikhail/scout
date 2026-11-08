@@ -232,10 +232,10 @@ extension Record {
         return record
     }
 
-    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, osVersion: String? = nil, appVersion: String? = nil, deviceID: UUID? = nil) -> Record {
+    static func sessionStub(sessionID: UUID, launchID: UUID, installID: UUID, startDate: Date, endDate: Date? = nil, osVersion: String? = nil, appVersion: String? = nil, deviceID: UUID? = nil) -> Record {
         var record = Session(
             startDate: startDate,
-            endDate: nil,
+            endDate: endDate,
             id: sessionID.uuidString,
             sessionID: sessionID,
             launchID: launchID,

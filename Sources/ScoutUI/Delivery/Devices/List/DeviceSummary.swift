@@ -19,10 +19,6 @@ struct DeviceSummary: Identifiable, Equatable {
     var modelName: String {
         model.map { DeviceModel(identifier: $0).name } ?? "Unknown"
     }
-
-    var symbol: String {
-        DeviceModel(identifier: model ?? "").symbol
-    }
 }
 
 extension DeviceSummary {

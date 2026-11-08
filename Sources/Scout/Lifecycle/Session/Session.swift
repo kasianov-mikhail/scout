@@ -14,14 +14,20 @@ package struct Session: Identifiable {
     package let sessionID: UUID?
     package let launchID: UUID?
     package let installID: UUID?
+    package let deviceID: UUID?
+    package let osVersion: String?
+    package let appVersion: String?
 
-    package init(startDate: Date?, endDate: Date?, id: String, sessionID: UUID?, launchID: UUID?, installID: UUID?) {
+    package init(startDate: Date?, endDate: Date?, id: String, sessionID: UUID?, launchID: UUID?, installID: UUID?, deviceID: UUID? = nil, osVersion: String? = nil, appVersion: String? = nil) {
         self.startDate = startDate
         self.endDate = endDate
         self.id = id
         self.sessionID = sessionID
         self.launchID = launchID
         self.installID = installID
+        self.deviceID = deviceID
+        self.osVersion = osVersion
+        self.appVersion = appVersion
     }
 }
 
@@ -34,6 +40,9 @@ extension Session: RecordDecodable {
         "session_id",
         "launch_id",
         "install_id",
+        "device_id",
+        "os_version",
+        "app_version",
     ]
 
     package init(record: Record) throws {
@@ -43,6 +52,9 @@ extension Session: RecordDecodable {
         sessionID = record["session_id"].flatMap(UUID.init)
         launchID = record["launch_id"].flatMap(UUID.init)
         installID = record["install_id"].flatMap(UUID.init)
+        deviceID = record["device_id"].flatMap(UUID.init)
+        osVersion = record["os_version"]
+        appVersion = record["app_version"]
     }
 }
 
@@ -54,6 +66,9 @@ extension Session: RecordEncodable {
         record["session_id"] = sessionID?.uuidString
         record["launch_id"] = launchID?.uuidString
         record["install_id"] = installID?.uuidString
+        record["device_id"] = deviceID?.uuidString
+        record["os_version"] = osVersion
+        record["app_version"] = appVersion
         return record
     }
 }
