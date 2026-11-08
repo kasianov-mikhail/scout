@@ -77,7 +77,7 @@ private struct RetentionRowContent: View {
     let showsDivider: Bool
 
     var body: some View {
-        HStack(spacing: 0) {
+        HStack(spacing: 10) {
             Text(verbatim: DateFormatter.monthDay.string(from: week.start))
                 .font(.subheadline)
                 .frame(width: 56, alignment: .leading)
@@ -110,10 +110,10 @@ private struct RetentionRowContent: View {
                 Text(verbatim: " · \(Int((rate * 100).rounded()))%")
                     .foregroundStyle(Color(.systemGray))
             }
-            .font(.footnote)
+            .font(.system(size: 13, design: .monospaced))
         } else {
             Text(verbatim: week.pendingLabel ?? "—")
-                .font(.footnote)
+                .font(.system(size: 13, design: .monospaced))
                 .foregroundStyle(Color.pending)
         }
     }

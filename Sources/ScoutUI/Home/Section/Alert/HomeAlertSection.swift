@@ -47,6 +47,7 @@ struct HomeAlertSection: View {
                 }
                 .font(.footnote)
                 .foregroundStyle(Color(.systemGray))
+                .padding(.top, 2)
             }
             .padding(.top, 12)
             .padding(.bottom, 14)

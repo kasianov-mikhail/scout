@@ -10,12 +10,15 @@ import SwiftUI
 struct ConnectionMenu: View {
     @Binding var activeID: Connection.ID
 
+    let onSettings: (() -> Void)?
+
     @State private var connections: [Connection]
     @State private var isPresented = false
 
-    init(connections: [Connection], activeID: Binding<Connection.ID>) {
+    init(connections: [Connection], activeID: Binding<Connection.ID>, onSettings: (() -> Void)? = nil) {
         _activeID = activeID
         _connections = State(initialValue: connections)
+        self.onSettings = onSettings
     }
 
     var body: some View {
@@ -24,6 +27,8 @@ struct ConnectionMenu: View {
         } label: {
             Image(systemName: "server.rack")
         }
+        .foregroundStyle(.primary)
+        .accessibilityLabel(Text(verbatim: "Backend"))
         .popover(isPresented: $isPresented) {
             VStack(spacing: 0) {
                 ForEach(connections) { connection in
@@ -35,6 +40,30 @@ struct ConnectionMenu: View {
                         activeID = connection.id
                         isPresented = false
                     }
+                }
+
+                if let onSettings {
+                    Divider()
+
+                    Button {
+                        isPresented = false
+                        Task { @MainActor in
+                            try? await Task.sleep(for: .milliseconds(250))
+                            onSettings()
+                        }
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: "gearshape")
+                            Text(verbatim: "Settings")
+                            Spacer(minLength: 0)
+                        }
+                        .font(.callout)
+                        .padding(.leading, 16)
+                        .padding(.trailing, 16)
+                        .padding(.vertical, 12)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
                 }
             }
             .padding(.vertical, 8)

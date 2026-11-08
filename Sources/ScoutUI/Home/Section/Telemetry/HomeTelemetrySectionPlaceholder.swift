@@ -46,11 +46,11 @@ struct HomeTelemetrySectionPlaceholder: View {
     private func row(kind: TelemetryItem.Kind, index: Int) -> some View {
         let delay = 0.72 + Double(index / 2) * 0.08
 
-        return HStack(spacing: 12) {
+        return HStack(alignment: .top, spacing: 8) {
             Image(systemName: kind.systemImage)
                 .font(.system(size: 18))
                 .foregroundStyle(kind.color)
-                .frame(width: 20)
+                .frame(width: 24)
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 2) {

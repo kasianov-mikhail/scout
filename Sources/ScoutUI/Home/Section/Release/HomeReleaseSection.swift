@@ -47,12 +47,12 @@ struct HomeReleaseSection: View {
                 height: 24,
                 labelSize: 10,
                 labelWeight: .semibold,
-                labelInset: 4
+                labelInset: 6
             )
             .padding(.top, 10)
 
             AdoptionLegend(squareSize: 7, squareColor: nil)
-                .padding(.top, 6)
+                .padding(.top, 8)
 
             caption(adoption: adoption)
                 .padding(.top, 10)
@@ -68,7 +68,7 @@ struct HomeReleaseSection: View {
                 .foregroundColor(Color(.systemGray))
                 + Text(verbatim: top.stability.level.title)
                 .fontWeight(.semibold)
-                .foregroundColor(top.stability.level.color)
+                .foregroundColor(top.stability.level == .healthy ? Color.positive : top.stability.level.labelColor)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
                 .foregroundColor(Color(.systemGray)))
                 .font(.footnote)

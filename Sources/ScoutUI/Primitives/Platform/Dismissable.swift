@@ -28,8 +28,11 @@ private struct DismissableModifier: ViewModifier {
                 Button {
                     dismiss()
                 } label: {
-                    Text(verbatim: "Close")
+                    Image(systemName: "xmark")
+                        .font(.system(size: 14, weight: .semibold))
                 }
+                .foregroundStyle(.primary)
+                .accessibilityLabel(Text(verbatim: "Close"))
             }
         }
     }

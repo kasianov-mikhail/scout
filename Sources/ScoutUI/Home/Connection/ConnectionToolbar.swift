@@ -28,15 +28,9 @@ private struct ConnectionToolbar: ViewModifier {
                     ToolbarItem(placement: .topBarLeading) {
                         ConnectionMenu(
                             connections: backends.map(Connection.init),
-                            activeID: $activeID
+                            activeID: $activeID,
+                            onSettings: { isSettingsPresented = true }
                         )
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        isSettingsPresented = true
-                    } label: {
-                        Image(systemName: "gearshape")
                     }
                 }
             }
