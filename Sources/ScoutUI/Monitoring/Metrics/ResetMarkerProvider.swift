@@ -16,9 +16,10 @@ final class ResetMarkerProvider: ObservableObject, SeriesProvider {
     private let name: String
     private let isEnabled: Bool
 
-    init(name: String, isEnabled: Bool) {
+    init(_ result: ProviderResult<[Date]>? = nil, name: String, isEnabled: Bool) {
         self.name = name
         self.isEnabled = isEnabled
+        self.result = result
     }
 
     func fetch(in database: SeriesReader) async throws -> [Date] {

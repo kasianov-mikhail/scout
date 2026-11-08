@@ -12,6 +12,12 @@ import Scout
 typealias TimerDistribution = MetricDistribution<LatencyHistogram>
 typealias RecorderDistribution = MetricDistribution<RecorderHistogram>
 
+struct Percentiles: Equatable {
+    let p50: Double
+    let p90: Double
+    let p99: Double
+}
+
 struct MetricDistribution<H: QuantileHistogram>: Equatable {
     let histograms: [Date: H]
 
@@ -43,24 +49,40 @@ struct MetricDistribution<H: QuantileHistogram>: Equatable {
 
         return Percentiles(p50: p50, p90: p90, p99: p99)
     }
+}
 
-    func trend(in range: Range<Date>, component: Calendar.Component) -> [PercentileTrendPoint] {
-        var result: [PercentileTrendPoint] = []
-        var date = range.upperBound
-        var steps = 0
+extension MetricDistribution {
+    func buckets(range: MetricRange, quantile: MetricQuantile, now: Date) -> [MetricBucket] {
+        range.buckets(now: now).map { bucket in
+            let isFuture = range.isFuture(date: bucket.lowerBound, now: now)
+            let previous = range.shifted(bucket)
 
-        while date > range.lowerBound {
-            steps -= 1
-            let newDate = range.upperBound.adding(component, value: steps)
-
-            if let p99 = histogram(in: newDate..<date).percentile(0.99) {
-                result.append(PercentileTrendPoint(date: newDate, p99: p99))
-            }
-
-            date = newDate
+            return MetricBucket(
+                date: bucket.lowerBound,
+                value: isFuture ? nil : histogram(in: bucket).percentile(quantile.value),
+                previous: isFuture ? nil : histogram(in: previous).percentile(quantile.value),
+                isFuture: isFuture,
+                isCurrent: range.isCurrent(date: bucket.lowerBound, now: now)
+            )
         }
+    }
 
-        return result.reversed()
+    func histogram(range: MetricRange, now: Date) -> H {
+        histogram(in: range.elapsedRange(now: now))
+    }
+
+    func summary(range: MetricRange, now: Date) -> Percentiles? {
+        summary(in: range.elapsedRange(now: now))
+    }
+
+    func previousSummary(range: MetricRange, now: Date) -> Percentiles? {
+        summary(in: range.elapsedPreviousRange(now: now))
+    }
+}
+
+extension Percentiles {
+    static var sample: Percentiles {
+        Percentiles(p50: 0.081, p90: 0.42, p99: 3.8)
     }
 }
 

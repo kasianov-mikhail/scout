@@ -15,9 +15,10 @@ final class MetricsProvider<T: ChartNumeric>: ObservableObject, SeriesProvider {
     private let name: String?
     private let telemetry: Telemetry.Export
 
-    init(name: String?, telemetry: Telemetry.Export) {
+    init(_ result: ProviderResult<[MetricSeries]>? = nil, name: String?, telemetry: Telemetry.Export) {
         self.name = name
         self.telemetry = telemetry
+        self.result = result
     }
 
     func fetch(in database: SeriesReader) async throws -> [MetricSeries] {

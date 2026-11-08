@@ -39,17 +39,16 @@ struct MetricsProviderTests {
         await provider.fetchIfNeeded(in: database)
         let series = try #require(try provider.result?.get())
 
-        let groups: [PointGroup<Int>] = series.map { PointGroup(name: $0.name, points: $0.chartPoints()) }
-        #expect(Set(groups.map(\.name)) == ["api_calls", "errors"])
+        #expect(Set(series.map(\.name)) == ["api_calls", "errors"])
 
-        let calls = try #require(groups.first { $0.name == "api_calls" })
+        let calls = try #require(series.first { $0.name == "api_calls" })
         // Points span two weeks but flatten under the one name.
         #expect(calls.points.map(\.value).sorted() == [1, 2, 3])
         // The cell position round-trips back to the original hour.
         #expect(calls.points.contains { $0.date == date(2026, 6, 10, 9) })
         #expect(calls.points.contains { $0.date == date(2026, 6, 17, 9) })
 
-        let errors = try #require(groups.first { $0.name == "errors" })
+        let errors = try #require(series.first { $0.name == "errors" })
         #expect(errors.points.map(\.value) == [4])
     }
 
