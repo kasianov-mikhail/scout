@@ -91,28 +91,39 @@ extension Backend.Status? {
             .gray
         }
     }
-
-    var healthIcon: String {
-        switch self {
-        case .reachable:
-            "checkmark.circle.fill"
-        case .readOnly:
-            "exclamationmark.triangle.fill"
-        case .unreachable:
-            "xmark.octagon.fill"
-        case nil:
-            "questionmark.circle.fill"
-        }
-    }
 }
 
 extension BackendHealth {
-    var latencyLabel: String {
-        latency.map { "\($0) ms" } ?? "—"
+    var detailLabel: String? {
+        switch status {
+        case .unreachable:
+            "no answer"
+        case .readOnly:
+            "read only"
+        case .reachable:
+            engine.label
+        case nil:
+            probe == nil ? engine.label : nil
+        }
     }
 
-    var lastCheckedLabel: String {
-        lastChecked?.relativeString ?? "Never"
+    var segmentState: SettingsSegmentState {
+        switch status {
+        case .unreachable, .readOnly:
+            .error
+        case .reachable:
+            .normal
+        case nil:
+            probe == nil ? .normal : .loading
+        }
+    }
+
+    var isCloud: Bool {
+        if case .cloudKit = engine {
+            true
+        } else {
+            false
+        }
     }
 
     var pingSpreadLabel: String? {
