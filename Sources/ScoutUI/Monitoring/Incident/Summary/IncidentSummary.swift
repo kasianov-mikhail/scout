@@ -54,7 +54,7 @@ extension IncidentSummary {
             parts.append("since \(version)")
         }
         if let lastDate {
-            parts.append("last \(lastDate.relativeString)")
+            parts.append("last seen \(lastDate.relativeString)")
         }
         return parts.joined(separator: " · ")
     }

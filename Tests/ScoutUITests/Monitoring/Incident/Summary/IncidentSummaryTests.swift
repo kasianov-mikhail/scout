@@ -35,7 +35,7 @@ struct IncidentSummaryTests {
             stack: []
         )
 
-        #expect(summary.meta.hasPrefix("Crash · since 3.2.0 · last "))
+        #expect(summary.meta.hasPrefix("Crash · since 3.2.0 · last seen "))
         #expect(summary.message == "last")
     }
 
@@ -53,7 +53,7 @@ struct IncidentSummaryTests {
             stack: []
         )
 
-        #expect(summary.meta.hasPrefix("Crash · last "))
+        #expect(summary.meta.hasPrefix("Crash · last seen "))
     }
 
     @Test("The affected rows follow the breakdown")

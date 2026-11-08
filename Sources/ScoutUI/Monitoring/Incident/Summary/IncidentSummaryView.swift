@@ -194,25 +194,39 @@ private struct IncidentAffectedRow: View {
 
             bar
 
-            HStack(spacing: 14) {
-                ForEach(affected.segments) { segment in
-                    HStack(spacing: 5) {
-                        Circle()
-                            .fill(segment.color)
-                            .frame(width: 7, height: 7)
-
-                        Text(verbatim: label(segment: segment))
-                            .lineLimit(1)
-                    }
-                    .font(.system(size: 12))
-                    .foregroundStyle(Color(.systemGray))
-                    .fixedSize(horizontal: true, vertical: false)
-                }
+            ViewThatFits(in: .horizontal) {
+                legend(visible: affected.segments.count)
+                legend(visible: affected.segments.count - 1)
+                legend(visible: affected.segments.count - 2)
+                legend(visible: affected.segments.count - 3)
+                legend(visible: affected.segments.count - 4)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .clipped()
         }
         .padding(.vertical, 16)
+    }
+
+    private func legend(visible count: Int) -> some View {
+        let visible = min(max(count, 1), affected.segments.count)
+
+        return HStack(spacing: 14) {
+            ForEach(affected.segments.prefix(visible)) { segment in
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(segment.color)
+                        .frame(width: 7, height: 7)
+
+                    Text(verbatim: label(segment: segment))
+                        .lineLimit(1)
+                }
+            }
+
+            if affected.segments.count > visible {
+                Text(verbatim: "+\(affected.segments.count - visible)")
+            }
+        }
+        .font(.system(size: 12))
+        .foregroundStyle(Color(.systemGray))
+        .fixedSize(horizontal: true, vertical: false)
     }
 
     private var bar: some View {
