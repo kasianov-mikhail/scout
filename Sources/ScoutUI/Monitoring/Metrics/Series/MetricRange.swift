@@ -141,7 +141,7 @@ extension MetricRange {
     func range(now: Date) -> Range<Date> {
         let day = now.startOfDay
 
-        switch self {
+        return switch self {
         case .today:
             day..<day.addingDay()
         case .yesterday:
@@ -196,7 +196,7 @@ extension MetricRange {
             return false
         }
 
-        switch component {
+        return switch component {
         case .hour:
             date == now.startOfHour
         case .day:
@@ -228,14 +228,14 @@ extension MetricRange {
         case .week, .month:
             DateFormatter.metricDay.string(from: date)
         case .year:
-            DateFormatter.metricMonth.string(from: date)
+            DateFormatter.monthShort.string(from: date)
         }
     }
 
     func axisLabels(now: Date) -> [String] {
         let buckets = buckets(now: now)
 
-        switch self {
+        return switch self {
         case .today, .yesterday:
             return ["00:00", "06:00", "12:00", "18:00", "24:00"]
         case .week:
