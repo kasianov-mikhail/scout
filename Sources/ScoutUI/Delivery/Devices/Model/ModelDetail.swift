@@ -52,11 +52,12 @@ extension ModelDetail {
             .filter { $0.model == model }
             .sorted { $0.lastSeen > $1.lastSeen }
 
-        let sessions = devices.map(\.sessions).reduce(0, +)
+        let sessions = devices.reduce(0) { $0 + $1.sessions }
         let osVersions = Dictionary(grouping: devices, by: \.osVersion)
             .map { version, devices in
-                let versionSessions = devices.map(\.sessions).reduce(0, +)
-                let percentage = sessions > 0 ? Int((Double(versionSessions) / Double(sessions) * 100).rounded()) : 0
+                let versionSessions = devices.reduce(0) { $0 + $1.sessions }
+                let share = sessions > 0 ? Double(versionSessions) / Double(sessions) : 0
+                let percentage = Int((share * 100).rounded())
 
                 return DeviceOSUsage(
                     version: version,

@@ -36,11 +36,14 @@ extension [DeviceModelSummary] {
     init(activities: [DeviceActivity]) {
         self = Dictionary(grouping: activities, by: \.model)
             .map { model, activities in
-                DeviceModelSummary(
+                let sessions = activities.reduce(0) { $0 + $1.sessions }
+                let crashes = activities.reduce(0) { $0 + $1.crashes }
+
+                return DeviceModelSummary(
                     model: model,
                     devices: activities.count,
-                    sessions: activities.map(\.sessions).reduce(0, +),
-                    crashes: activities.map(\.crashes).reduce(0, +),
+                    sessions: sessions,
+                    crashes: crashes,
                     osRange: DeviceOSRange(versions: activities.compactMap(\.osVersion))
                 )
             }
