@@ -13,10 +13,7 @@ struct NetworkLedgerPlaceholder: View {
 
     var body: some View {
         InsetList {
-            Text(verbatim: title)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 8)
+            ListTitle(title: title)
                 .listRowSeparator(.hidden)
 
             NetworkEndpointHeaderPlaceholder()

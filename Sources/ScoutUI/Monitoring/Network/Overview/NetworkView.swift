@@ -63,7 +63,7 @@ struct NetworkView: View {
         let maxRequests = endpoints.map(\.requests).max() ?? 0
 
         return InsetList {
-            NetworkRangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+            RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
                 .listRowSeparator(.hidden)
 
@@ -75,9 +75,7 @@ struct NetworkView: View {
                 .padding(.bottom, 12)
                 .padding(.horizontal, 16)
                 .overlay(alignment: .bottom) {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(height: 0.5)
+                    Separator()
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)

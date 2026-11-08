@@ -34,8 +34,9 @@ struct NetworkEndpointRow: View {
             }
 
             HStack(spacing: 8) {
-                NetworkRequestBar(requests: endpoint.requests, fraction: fraction)
+                BarValue(text: endpoint.requests.compact, fraction: fraction, color: .networkTrack, barHeight: 28, minimumWidth: 4)
                     .frame(maxWidth: .infinity)
+                    .frame(height: 18)
 
                 Text(verbatim: endpoint.successRate.networkValue)
                     .foregroundStyle(endpoint.successRate.networkColor)

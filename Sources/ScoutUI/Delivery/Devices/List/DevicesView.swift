@@ -40,7 +40,7 @@ struct DevicesView: View {
     private func content(_ models: [DeviceModelSummary]) -> some View {
         if models.isEmpty {
             VStack(spacing: 0) {
-                IncidentRangeStrip(selection: $provider.range)
+                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                     .padding(.top, 8)
                     .padding(.horizontal, 16)
 
@@ -54,7 +54,7 @@ struct DevicesView: View {
             let maxSessions = models.map(\.sessions).max() ?? 0
 
             InsetList {
-                IncidentRangeStrip(selection: $provider.range)
+                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                     .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                     .listRowSeparator(.hidden)
 
@@ -62,16 +62,12 @@ struct DevicesView: View {
                     .padding(.top, 4)
                     .padding(.bottom, 12)
                     .overlay(alignment: .bottom) {
-                        separator
+                        Separator()
                     }
                     .listRowSeparator(.hidden)
 
                 columns
-                    .padding(.top, 14)
-                    .padding(.bottom, 8)
-                    .overlay(alignment: .bottom) {
-                        separator
-                    }
+                    .columnHeaderStyle()
                     .listRowSeparator(.hidden)
 
                 ForEach(models) { model in
@@ -109,26 +105,13 @@ struct DevicesView: View {
 
     private var columns: some View {
         HStack(spacing: 8) {
-            column("SESSIONS")
+            ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
-            column("OS")
+            ColumnHeader(title: "OS")
                 .frame(width: 112, alignment: .leading)
-            column("CRASHES")
+            ColumnHeader(title: "CRASHES")
                 .frame(width: 56, alignment: .trailing)
         }
-        .foregroundStyle(Color(.systemGray))
-    }
-
-    private func column(_ title: String) -> some View {
-        Text(verbatim: title)
-            .font(.system(size: 11, weight: .semibold))
-            .tracking(0.3)
-    }
-
-    private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
     }
 }
 
@@ -156,18 +139,7 @@ private struct DeviceModelRow: View {
             }
 
             HStack(spacing: 8) {
-                Text(verbatim: model.sessions.compact)
-                    .font(.system(size: 13, design: .monospaced))
-                    .monospacedDigit()
-                    .padding(.horizontal, 4)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(alignment: .leading) {
-                        GeometryReader { proxy in
-                            RoundedRectangle(cornerRadius: 3)
-                                .fill(Color.deviceTrack)
-                                .frame(width: proxy.size.width * share)
-                        }
-                    }
+                BarValue(text: model.sessions.compact, fraction: share, color: .deviceTrack)
 
                 Text(verbatim: model.osLabel ?? "—")
                     .font(.system(size: 12, design: .monospaced))
@@ -190,8 +162,8 @@ private struct DeviceModelRow: View {
         .contentShape(.rect)
     }
 
-    private var share: CGFloat {
-        maxSessions > 0 ? CGFloat(model.sessions) / CGFloat(maxSessions) : 0
+    private var share: Double {
+        maxSessions > 0 ? Double(model.sessions) / Double(maxSessions) : 0
     }
 }
 

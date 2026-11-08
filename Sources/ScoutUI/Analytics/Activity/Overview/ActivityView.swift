@@ -41,7 +41,7 @@ struct ActivityView: View {
         let series = ActivitySeries(points: points, range: range, metric: metric, now: Date())
 
         return InsetList {
-            ActivityRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
                 .listRowSeparator(.hidden)
 

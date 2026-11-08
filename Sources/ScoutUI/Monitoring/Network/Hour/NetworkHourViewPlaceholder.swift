@@ -15,16 +15,13 @@ struct NetworkHourViewPlaceholder: View {
 
     var body: some View {
         InsetList {
-            Text(verbatim: DateFormatter.networkHourLabel.string(from: date))
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 8)
+            ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
                 .listRowSeparator(.hidden)
 
             NetworkEndpointHeaderPlaceholder()
                 .listRowSeparator(.hidden)
 
-            NetworkSectionHeader(title: "STATUS")
+            SectionHeader(title: "STATUS")
                 .listRowSeparator(.hidden)
 
             SkeletonBar(height: 10, delay: 0.16, cornerRadius: 5)
@@ -37,7 +34,7 @@ struct NetworkHourViewPlaceholder: View {
                     .listRowSeparator(.hidden)
             }
 
-            NetworkSectionHeader(title: "LATENCY")
+            SectionHeader(title: "LATENCY")
                 .listRowSeparator(.hidden)
 
             HStack(alignment: .bottom, spacing: 4) {

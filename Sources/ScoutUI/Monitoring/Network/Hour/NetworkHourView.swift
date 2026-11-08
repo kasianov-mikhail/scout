@@ -64,21 +64,24 @@ struct NetworkHourView: View {
         let breakdown = report.statusBreakdown(name: name, range: range)
 
         return InsetList {
-            Text(verbatim: DateFormatter.networkHourLabel.string(from: date))
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 8)
+            ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
                 .listRowSeparator(.hidden)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
                 .listRowSeparator(.hidden)
 
             if breakdown.total > 0 {
-                NetworkSectionHeader(title: "STATUS")
+                SectionHeader(title: "STATUS")
                     .listRowSeparator(.hidden)
 
-                NetworkStatusBar(breakdown: breakdown)
-                    .listRowSeparator(.hidden)
+                ProportionBar(
+                    items: breakdown.networkClasses,
+                    color: { _, item in item.color },
+                    share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
+                )
+                .padding(.top, 14)
+                .padding(.bottom, 6)
+                .listRowSeparator(.hidden)
 
                 ForEach(breakdown.networkClasses) { item in
                     NetworkStatusRow(item: item, total: breakdown.total)
@@ -87,7 +90,7 @@ struct NetworkHourView: View {
             }
 
             if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
-                NetworkSectionHeader(title: "LATENCY")
+                SectionHeader(title: "LATENCY")
                     .listRowSeparator(.hidden)
 
                 NetworkLatencyChart(histogram: histogram)

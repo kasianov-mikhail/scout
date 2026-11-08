@@ -67,10 +67,7 @@ struct NetworkDayView: View {
         let maxRequests = rows.map(\.requests).max() ?? 0
 
         return InsetList {
-            Text(verbatim: title)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 8)
+            ListTitle(title: title)
                 .listRowSeparator(.hidden)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))

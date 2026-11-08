@@ -17,7 +17,7 @@ struct DeviceDetailPlaceholder: View {
 
     var body: some View {
         InsetList {
-            IncidentRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                 .listRowSeparator(.hidden)
 
@@ -28,15 +28,19 @@ struct DeviceDetailPlaceholder: View {
                 .padding(.top, 4)
                 .padding(.bottom, 12)
                 .overlay(alignment: .bottom) {
-                    separator
+                    Separator()
                 }
                 .listRowSeparator(.hidden)
 
             stats
                 .listRowSeparator(.hidden)
 
-            sessionsHeader
-                .listRowSeparator(.hidden)
+            SectionHeader(title: "SESSIONS", topPadding: 12) {
+                Text(verbatim: "TIMELINE")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(.blue)
+            }
+            .listRowSeparator(.hidden)
 
             ForEach(0..<5, id: \.self) { index in
                 sessionRow(index: index)
@@ -47,7 +51,7 @@ struct DeviceDetailPlaceholder: View {
                 .frame(height: 8)
                 .listRowSeparator(.hidden)
 
-            sectionTitle("HISTORY")
+            SectionHeader(title: "HISTORY", topPadding: 12)
                 .listRowSeparator(.hidden)
 
             ForEach(0..<4, id: \.self) { index in
@@ -59,16 +63,8 @@ struct DeviceDetailPlaceholder: View {
                 .frame(height: 12)
                 .listRowSeparator(.hidden)
 
-            HStack {
-                Text(verbatim: "ACTIVITY")
-                    .font(.system(size: 16, weight: .bold))
-                Spacer()
+            SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 SkeletonBar(width: 74, height: 9, delay: 1.2)
-            }
-            .padding(.top, 12)
-            .frame(height: 56)
-            .overlay(alignment: .bottom) {
-                separator
             }
             .listRowSeparator(.hidden)
 
@@ -83,7 +79,7 @@ struct DeviceDetailPlaceholder: View {
             .padding(.bottom, 16)
             .listRowSeparator(.hidden)
 
-            sectionTitle("WHEN IT IS USED")
+            SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
                 .listRowSeparator(.hidden)
 
             usage
@@ -110,43 +106,13 @@ struct DeviceDetailPlaceholder: View {
             stat("resources", divider: false, leading: 10, trailing: 0)
         }
         .overlay(alignment: .bottom) {
-            separator
+            Separator()
         }
     }
 
     private func stat(_ title: String, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+        StatColumn(title: title, leading: leading, trailing: trailing, divider: divider) {
             SkeletonBar(width: 28, height: 18, delay: 0.08)
-            Text(verbatim: title)
-                .font(.system(size: 13))
-                .foregroundStyle(Color(.systemGray))
-        }
-        .padding(.vertical, 14)
-        .padding(.leading, leading)
-        .padding(.trailing, trailing)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .trailing) {
-            if divider {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
-            }
-        }
-    }
-
-    private var sessionsHeader: some View {
-        HStack {
-            Text(verbatim: "SESSIONS")
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-            Text(verbatim: "TIMELINE")
-                .font(.system(size: 16, weight: .medium))
-                .foregroundStyle(.blue)
-        }
-        .padding(.top, 12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            separator
         }
     }
 
@@ -172,19 +138,6 @@ struct DeviceDetailPlaceholder: View {
         .frame(minHeight: 44)
         .overlay(alignment: .bottom) {
             DashedLine()
-        }
-    }
-
-    private func sectionTitle(_ title: String) -> some View {
-        HStack {
-            Text(verbatim: title)
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-        }
-        .padding(.top, 12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            separator
         }
     }
 
@@ -278,12 +231,6 @@ struct DeviceDetailPlaceholder: View {
             let date = today.addingDay(index - 6)
             return PlaceholderWeekday(label: placeholderWeekdayFormatter.string(from: date), isCurrent: index == 6)
         }
-    }
-
-    private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
     }
 }
 

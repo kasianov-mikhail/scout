@@ -14,7 +14,7 @@ struct DeviceListPlaceholder: View {
 
     var body: some View {
         InsetList {
-            IncidentRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                 .listRowSeparator(.hidden)
 
@@ -24,11 +24,7 @@ struct DeviceListPlaceholder: View {
                 .listRowSeparator(.hidden)
 
             columns
-                .padding(.top, 14)
-                .padding(.bottom, 8)
-                .overlay(alignment: .bottom) {
-                    separator
-                }
+                .columnHeaderStyle()
                 .listRowSeparator(.hidden)
 
             ForEach(0..<9, id: \.self) { index in
@@ -43,20 +39,13 @@ struct DeviceListPlaceholder: View {
 
     private var columns: some View {
         HStack(spacing: 8) {
-            column("SESSIONS")
+            ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
-            column("OS")
+            ColumnHeader(title: "OS")
                 .frame(width: 112, alignment: .leading)
-            column("CRASHES")
+            ColumnHeader(title: "CRASHES")
                 .frame(width: 56, alignment: .trailing)
         }
-        .foregroundStyle(Color(.systemGray))
-    }
-
-    private func column(_ title: String) -> some View {
-        Text(verbatim: title)
-            .font(.system(size: 11, weight: .semibold))
-            .tracking(0.3)
     }
 
     private func row(index: Int, isLast: Bool) -> some View {
@@ -93,12 +82,6 @@ struct DeviceListPlaceholder: View {
                 DashedLine()
             }
         }
-    }
-
-    private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
     }
 }
 

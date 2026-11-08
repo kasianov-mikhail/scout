@@ -14,7 +14,7 @@ struct NetworkViewPlaceholder: View {
 
     var body: some View {
         InsetList {
-            NetworkRangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+            RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
                 .listRowSeparator(.hidden)
 
@@ -24,9 +24,7 @@ struct NetworkViewPlaceholder: View {
                 .padding(.bottom, 12)
                 .padding(.horizontal, 16)
                 .overlay(alignment: .bottom) {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(height: 0.5)
+                    Separator()
                 }
                 .listRowInsets(EdgeInsets())
                 .listRowSeparator(.hidden)

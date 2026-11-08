@@ -15,7 +15,7 @@ struct ModelDetailPlaceholder: View {
 
     var body: some View {
         InsetList {
-            IncidentRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
                 .listRowSeparator(.hidden)
 
@@ -23,11 +23,11 @@ struct ModelDetailPlaceholder: View {
                 .padding(.top, 4)
                 .padding(.bottom, 12)
                 .overlay(alignment: .bottom) {
-                    separator
+                    Separator()
                 }
                 .listRowSeparator(.hidden)
 
-            sectionTitle("OS VERSIONS")
+            SectionHeader(title: "OS VERSIONS", topPadding: 12)
                 .listRowSeparator(.hidden)
 
             SkeletonBar(height: 10, delay: 0.24, cornerRadius: 5, fill: Color.deviceShade)
@@ -40,15 +40,11 @@ struct ModelDetailPlaceholder: View {
                     .listRowSeparator(.hidden)
             }
 
-            sectionTitle("DEVICES", border: false)
+            SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
                 .listRowSeparator(.hidden)
 
             columns
-                .padding(.top, 12)
-                .padding(.bottom, 8)
-                .overlay(alignment: .bottom) {
-                    separator
-                }
+                .columnHeaderStyle(topPadding: 12)
                 .listRowSeparator(.hidden)
 
             ForEach(0..<11, id: \.self) { index in
@@ -61,21 +57,6 @@ struct ModelDetailPlaceholder: View {
         .inlineNavigationTitle()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
-    }
-
-    private func sectionTitle(_ title: String, border: Bool = true) -> some View {
-        HStack {
-            Text(verbatim: title)
-                .font(.system(size: 16, weight: .bold))
-            Spacer()
-        }
-        .padding(.top, 12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            if border {
-                separator
-            }
-        }
     }
 
     private func osRow(index: Int) -> some View {
@@ -105,22 +86,15 @@ struct ModelDetailPlaceholder: View {
 
     private var columns: some View {
         HStack(spacing: 8) {
-            column("LAST SEEN ↓")
+            ColumnHeader(title: "LAST SEEN ↓")
                 .frame(width: 84, alignment: .leading)
-            column("SESSIONS")
+            ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
-            column("OS")
+            ColumnHeader(title: "OS")
                 .frame(width: 44, alignment: .leading)
-            column("CRASHES")
+            ColumnHeader(title: "CRASHES")
                 .frame(width: 56, alignment: .trailing)
         }
-        .foregroundStyle(Color(.systemGray))
-    }
-
-    private func column(_ title: String) -> some View {
-        Text(verbatim: title)
-            .font(.system(size: 11, weight: .semibold))
-            .tracking(0.3)
     }
 
     private func deviceRow(index: Int, isLast: Bool) -> some View {
@@ -147,11 +121,5 @@ struct ModelDetailPlaceholder: View {
                 DashedLine()
             }
         }
-    }
-
-    private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
     }
 }
