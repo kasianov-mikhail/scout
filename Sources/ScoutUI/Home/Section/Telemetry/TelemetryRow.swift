@@ -30,7 +30,7 @@ struct TelemetryRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(verbatim: item.kind.title)
-                            .font(.callout.weight(.medium))
+                            .font(.telemetryTitle)
 
                         Spacer(minLength: 0)
 
