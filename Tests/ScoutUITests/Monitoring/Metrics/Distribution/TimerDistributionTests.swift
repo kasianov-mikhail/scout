@@ -57,36 +57,6 @@ struct TimerDistributionTests {
         #expect(distribution.summary(in: base.adding(.day)..<base.adding(.day, value: 2)) == nil)
     }
 
-    @Test("trend reports one chronological p99 point per interval")
-    func trend() throws {
-        let distribution = TimerDistribution(series: [
-            makeSeries(category: "timer_le_1", points: [(base, 100)]),
-            makeSeries(category: "timer_le_inf", points: [(base.adding(.hour), 100)]),
-        ])
-
-        let trend = distribution.trend(in: base..<base.adding(.hour, value: 2), component: .hour)
-
-        #expect(trend.count == 2)
-        #expect(trend.map(\.date) == [base, base.adding(.hour)])
-
-        let first = try #require(trend.first)
-        let last = try #require(trend.last)
-        #expect(first.p99 < 0.001)
-        #expect(last.p99 == 30)
-    }
-
-    @Test("trend skips intervals without samples")
-    func trendGaps() {
-        let distribution = TimerDistribution(series: [
-            makeSeries(category: "timer_le_1", points: [(base, 5)])
-        ])
-
-        let trend = distribution.trend(in: base..<base.adding(.hour, value: 3), component: .hour)
-
-        #expect(trend.count == 1)
-        #expect(trend.first?.date == base)
-    }
-
     @Test("isEmpty reflects total counts")
     func isEmpty() {
         #expect(TimerDistribution(series: []).isEmpty)

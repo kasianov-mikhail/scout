@@ -8,7 +8,7 @@
 import Foundation
 import Scout
 
-private let categories = Set(MetricsList.Scope.allCases.map(\.telemetry.rawValue))
+private let categories = Set(Telemetry.Export.allCases.map(\.rawValue))
 
 struct SeriesSpan {
     let series: [MetricSeries]

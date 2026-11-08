@@ -84,7 +84,7 @@ struct LogDestination: View {
         case .events:
             AnalyticsView()
         case .metrics:
-            MetricsList().navigationTitle(en: "Metrics")
+            MetricsListView()
         case .network:
             NetworkView()
         case .devices:
