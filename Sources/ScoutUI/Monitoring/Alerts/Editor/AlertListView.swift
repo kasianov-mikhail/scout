@@ -182,7 +182,7 @@ extension AlertStatus {
             ),
             reading: MetricReading(
                 baseline: 0.998,
-                recent: [0.998, 0.998, 0.997, 0.996, 0.995, 0.993, 0.9918]
+                recent: [0.998, 0.998, 0.997, 0.996, 0.993, 0.992, 0.9918]
             )
         )
     }
