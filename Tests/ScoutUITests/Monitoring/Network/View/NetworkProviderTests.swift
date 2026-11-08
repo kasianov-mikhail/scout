@@ -11,6 +11,7 @@ import Scout
 import Testing
 
 @testable import ScoutUI
+@testable import Support
 
 @MainActor
 @Suite("NetworkProvider")
@@ -79,8 +80,27 @@ struct NetworkProviderTests {
         #expect(database.queries.count == 1)
         #expect(report.endpoints(in: range).map(\.name) == expected.endpoints(in: range).map(\.name))
         #expect(report.endpoints(in: range).map(\.requests) == expected.endpoints(in: range).map(\.requests))
-        #expect(report.summary(in: range) == expected.summary(in: range))
+        #expect(report.statusBreakdown(range: range) == expected.statusBreakdown(range: range))
         #expect(report.percentiles(in: range) == expected.percentiles(in: range))
+    }
+
+    @Test("A week root query asks for daily points")
+    func weekQuery() {
+        let now = Date(year: 2026, month: 10, day: 25)
+        let provider = NetworkProvider(query: NetworkQuery(range: .week, now: now))
+
+        #expect(provider.query.bucket == .day)
+        #expect(provider.query.range == NetworkRange.week.range(now: now))
+    }
+
+    @Test("A detail year query asks for daily points of one endpoint")
+    func detailYearQuery() {
+        let now = Date(year: 2026, month: 10, day: 25)
+        let provider = NetworkProvider(query: NetworkQuery(range: .year, name: "GET /a", detailed: true, now: now))
+
+        #expect(provider.query.name == "GET /a")
+        #expect(provider.query.bucket == .day)
+        #expect(provider.query.range == NetworkRange.year.range(now: now))
     }
 
     @Test("fetchIfNeeded surfaces database errors")

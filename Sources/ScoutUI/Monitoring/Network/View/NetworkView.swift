@@ -4,84 +4,108 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
-//
 
 import SwiftUI
 
 struct NetworkView: View {
-    @State private var showAllEndpoints = false
-    @StateObject var provider = NetworkProvider()
+    @Environment(\.database) private var database
+
+    @State private var range: NetworkRange
+    @StateObject var provider: NetworkProvider
+
+    init(_ result: ProviderResult<NetworkReport>? = nil, range: NetworkRange = .today) {
+        _range = State(initialValue: range)
+        _provider = StateObject(wrappedValue: NetworkProvider(result, query: NetworkQuery(range: range)))
+    }
 
     var body: some View {
-        ProviderView(provider: provider) { report in
-            if report.isEmpty {
+        content
+            .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+            .navigationTitle(en: "Network")
+            .inlineNavigationTitle()
+            .task(id: provider.query) {
+                await provider.fetchIfNeeded(in: database)
+            }
+            .onChange(of: range) { newValue in
+                provider.result = nil
+                provider.query = NetworkQuery(range: newValue)
+            }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch provider.result {
+        case nil:
+            NetworkViewPlaceholder(range: $range)
+                .transition(.opacity)
+        case .success(let report):
+            if report.summary(in: provider.query.range).requests > 0 {
+                list(report)
+                    .transition(.opacity)
+            } else {
                 Placeholder(
                     text: "No requests",
                     systemImage: "network",
                     description: "No network requests have been recorded in this period"
                 )
-            } else {
-                content(report)
+            }
+        case .failure(let error):
+            ErrorView(description: Text(error.localizedDescription)) {
+                await provider.fetchAgain(in: database)
             }
         }
-        .navigationTitle(en: "Network")
     }
 
-    private func content(_ report: NetworkReport) -> some View {
-        let range = Period.today.initialRange
-        let endpoints = report.endpoints(in: range)
-        let breakdown = report.summary(in: range)
-        let successRate = breakdown.total > 0 ? breakdown.successRate : nil
-        let trend = report.trend(in: range, component: .hour)
+    private func list(_ report: NetworkReport) -> some View {
+        let endpoints = report.endpoints(in: provider.query.range)
+        let summary = report.summary(in: provider.query.range)
+        let maxRequests = endpoints.map(\.requests).max() ?? 0
 
         return InsetList {
-            HStack(spacing: 28) {
-                Readout(title: "P99", value: report.percentiles(in: range)?.p99.duration ?? "—", color: .orange)
-                Readout(title: "Success", value: successRate?.formatted ?? "—", color: successRate?.color ?? .primary)
-                Readout(title: "Req/min", value: report.requestsPerMinute(endpoints, in: range).plain, color: .primary)
-                Spacer()
-            }
+            NetworkRangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
+                .listRowSeparator(.hidden)
 
-            if trend.count > 0 {
-                Header(title: "Latency P99")
-                PercentileTrendChart(trend: trend, unit: .hour, formatter: \TimeInterval.duration)
-                    .listRowSeparator(.hidden)
-            }
+            Text(verbatim: summary.text)
+                .font(.system(size: 15))
+                .foregroundStyle(Color(.systemGray))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, 4)
+                .padding(.bottom, 12)
+                .padding(.horizontal, 16)
+                .overlay(alignment: .bottom) {
+                    Rectangle()
+                        .fill(Color.separator)
+                        .frame(height: 0.5)
+                }
+                .listRowInsets(EdgeInsets())
+                .listRowSeparator(.hidden)
 
-            Header(title: "Status codes")
-            SegmentBar(segments: breakdown.segments)
+            NetworkEndpointListHeader()
+                .listRowSeparator(.hidden)
 
-            Header(title: "Top endpoints") {
-                AllButton { showAllEndpoints = true }
-            }
-            ForEach(endpoints.prefix(3)) { endpoint in
-                NetworkEndpointRow(
-                    endpoint: endpoint,
-                    report: report,
-                    range: range
-                )
+            ForEach(endpoints) { endpoint in
+                Row {
+                    NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
+                } destination: {
+                    NetworkEndpointView(name: endpoint.name, initialRange: range)
+                }
+                .listRowSeparator(.hidden)
             }
         }
-        .navigationDestination(isPresented: $showAllEndpoints) {
-            NetworkEndpointsView(report: report, range: range)
-        }
-        .exportToolbar(text: NetworkReportExport(report: report, range: range).text)
+        .scrollContentBackground(.hidden)
+        .exportToolbar(text: NetworkReportExport(report: report, range: provider.query.range).text)
     }
 }
 
-#Preview("NetworkView") {
+#Preview("Network") {
     NavigationStack {
-        NetworkView(provider: .init(.success(.sample)))
+        NetworkView(.success(.sample(range: .today)))
     }
 }
 
-#Preview("Empty State") {
+#Preview("Loading") {
     NavigationStack {
-        Placeholder(
-            text: "No requests",
-            systemImage: "network",
-            description: "No network requests have been recorded in this period"
-        )
-        .navigationTitle(en: "Network")
+        NetworkView()
     }
 }

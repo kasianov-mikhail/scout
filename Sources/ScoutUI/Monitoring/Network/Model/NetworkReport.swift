@@ -52,7 +52,9 @@ struct NetworkReport {
             statuses: status.mapValues(StatusDistribution.init)
         )
     }
+}
 
+extension NetworkReport {
     var isEmpty: Bool {
         statuses.values.allSatisfy(\.isEmpty) && distributions.values.allSatisfy(\.isEmpty)
     }
@@ -60,55 +62,105 @@ struct NetworkReport {
     func endpoints(in range: Range<Date>) -> [NetworkEndpoint] {
         Set(statuses.keys)
             .union(distributions.keys)
-            .map { name in
-                let breakdown = statuses[name]?.summary(in: range) ?? StatusBreakdown()
-                let histogram = distributions[name]?.histogram(in: range)
-                let requests = breakdown.total > 0 ? breakdown.total : histogram?.total ?? 0
-                return NetworkEndpoint(
-                    name: name,
-                    requests: requests,
-                    successRate: breakdown.total > 0 ? breakdown.successRate : nil,
-                    p99: histogram?.percentile(0.99)
-                )
+            .compactMap { name in
+                endpoint(name: name, range: range)
             }
             .sorted { lhs, rhs in
                 lhs.requests == rhs.requests ? lhs.name < rhs.name : lhs.requests > rhs.requests
             }
     }
 
-    func summary(in range: Range<Date>) -> StatusBreakdown {
+    func endpoint(name: String, range: Range<Date>) -> NetworkEndpoint? {
+        guard statuses[name] != nil || distributions[name] != nil else {
+            return nil
+        }
+
+        let breakdown = statusBreakdown(name: name, range: range)
+        let histogram = distributions[name]?.histogram(in: range)
+        let requests = breakdown.total > 0 ? breakdown.total : histogram?.total ?? 0
+
+        return NetworkEndpoint(
+            name: name,
+            requests: requests,
+            successRate: breakdown.total > 0 ? breakdown.successRate : nil,
+            p99: histogram?.percentile(0.99)
+        )
+    }
+
+    func summary(in range: Range<Date>) -> NetworkSummary {
+        let endpoints = endpoints(in: range)
+        let breakdown = statusBreakdown(range: range)
+
+        return NetworkSummary(
+            requests: endpoints.reduce(0) { $0 + $1.requests },
+            successRate: breakdown.total > 0 ? breakdown.successRate : nil,
+            p99: combined.summary(in: range)?.p99,
+            endpoints: endpoints.count
+        )
+    }
+
+    func statusBreakdown(range: Range<Date>) -> StatusBreakdown {
         statuses.values.reduce(StatusBreakdown()) { $0 + $1.summary(in: range) }
     }
 
-    func percentiles(in range: Range<Date>) -> LatencyPercentiles? {
+    func statusBreakdown(name: String, range: Range<Date>) -> StatusBreakdown {
+        statuses[name]?.summary(in: range) ?? StatusBreakdown()
+    }
+
+    func histogram(name: String, range: Range<Date>) -> LatencyHistogram? {
+        distributions[name]?.histogram(in: range)
+    }
+
+    func percentiles(in range: Range<Date>) -> Percentiles? {
         combined.summary(in: range)
     }
 
-    func trend(in range: Range<Date>, component: Calendar.Component) -> [PercentileTrendPoint] {
-        combined.trend(in: range, component: component)
+    func percentiles(name: String, range: Range<Date>) -> Percentiles? {
+        distributions[name]?.summary(in: range)
     }
 
-    func requestsPerMinute(_ endpoints: [NetworkEndpoint], in range: Range<Date>, until now: Date = .now) -> Int {
-        let end = min(now, range.upperBound)
-        let minutes = max(1.0, end.timeIntervalSince(range.lowerBound) / .minute)
-        let total = endpoints.reduce(0) { $0 + $1.requests }
-        return Int(Double(total) / minutes)
+    func rows(name: String, range: Range<Date>, component: Calendar.Component, now: Date = .now) -> [NetworkLedgerRow] {
+        let starts = bucketStarts(range: range, component: component, now: now)
+
+        return starts.map { start in
+            let lower = max(start, range.lowerBound)
+            let upper = min(bucketEnd(start, component: component), range.upperBound)
+            let bucket = lower..<upper
+            let breakdown = statusBreakdown(name: name, range: bucket)
+            let histogram = distributions[name]?.histogram(in: bucket)
+            let requests = breakdown.total > 0 ? breakdown.total : histogram?.total ?? 0
+
+            return NetworkLedgerRow(
+                date: start,
+                requests: requests,
+                successRate: breakdown.total > 0 ? breakdown.successRate : nil,
+                p99: histogram?.percentile(0.99),
+                isCurrent: start == bucketStart(now, component: component)
+            )
+        }
+        .sorted { $0.date > $1.date }
     }
 }
 
 extension NetworkReport {
-    static var sample: NetworkReport {
-        let statuses: [String: StatusDistribution] = [
-            "GET /v1/events": .sample(success: 8_140, redirect: 210, clientError: 52, serverError: 18),
-            "POST /v1/metrics": .sample(success: 5_160, clientError: 44, serverError: 6),
-            "GET /v1/releases": .sample(success: 3_050, clientError: 80, serverError: 10),
-            "POST /v1/crash": .sample(success: 1_040, clientError: 120, serverError: 20),
-            "GET /health": .sample(success: 640),
-        ]
+    private func bucketStarts(range: Range<Date>, component: Calendar.Component, now: Date) -> [Date] {
+        var starts: [Date] = []
+        var date = bucketStart(range.lowerBound, component: component)
+        let limit = min(range.upperBound, now.startOfHour.adding(.hour))
 
-        return NetworkReport(
-            distributions: statuses.mapValues { _ in TimerDistribution.sample },
-            statuses: statuses
-        )
+        while date < limit {
+            starts.append(date)
+            date = bucketEnd(date, component: component)
+        }
+
+        return starts
+    }
+
+    private func bucketStart(_ date: Date, component: Calendar.Component) -> Date {
+        Calendar.utc.dateInterval(of: component, for: date)?.start ?? date
+    }
+
+    private func bucketEnd(_ date: Date, component: Calendar.Component) -> Date {
+        Calendar.utc.dateInterval(of: component, for: date)?.end ?? date
     }
 }

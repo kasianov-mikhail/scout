@@ -45,7 +45,6 @@ struct NetworkReportTests {
         #expect(endpoint.requests == 5)
         #expect(endpoint.successRate == nil)
         #expect(endpoint.p99 != nil)
-        #expect(report.requestsPerMinute(report.endpoints(in: range), in: range, until: base.adding(.hour)) == 0)
     }
 
     @Test("Endpoints carry requests, success rate, and p99 for the range")
@@ -107,13 +106,13 @@ struct NetworkReportTests {
             makeSeries(name: "POST /b", category: "status_4xx", points: [(base, 4)]),
         ])
 
-        let summary = report.summary(in: range)
+        let summary = report.statusBreakdown(range: range)
 
         #expect(summary.total == 14)
         #expect(summary.counts == [10, 0, 4, 0])
     }
 
-    @Test("percentiles and trend combine latency across endpoints")
+    @Test("percentiles combine latency across endpoints")
     func combinedLatency() throws {
         let report = NetworkReport(series: [
             makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 1)]),
@@ -125,21 +124,6 @@ struct NetworkReportTests {
         let percentiles = try #require(report.percentiles(in: range))
         #expect(percentiles.p50 <= 0.001)
         #expect(percentiles.p99 > 10)
-
-        let trend = report.trend(in: base..<base.adding(.hour), component: .hour)
-        #expect(trend.count == 1)
-    }
-
-    @Test("requestsPerMinute divides the range total by elapsed minutes")
-    func requestsPerMinute() {
-        let report = NetworkReport(series: [
-            makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 120)])
-        ])
-
-        let endpoints = report.endpoints(in: range)
-
-        #expect(report.requestsPerMinute(endpoints, in: range, until: base.adding(.hour)) == 2)
-        #expect(report.requestsPerMinute(endpoints, in: range, until: base) == 120)
     }
 
     @Test("isEmpty reflects endpoint presence")

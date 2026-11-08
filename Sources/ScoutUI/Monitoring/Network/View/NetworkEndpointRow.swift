@@ -4,57 +4,59 @@
 // Use of this source code is governed by an MIT-style
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
-//
 
 import SwiftUI
 
 struct NetworkEndpointRow: View {
     let endpoint: NetworkEndpoint
-    let report: NetworkReport
-    let range: Range<Date>
+    let maxRequests: Int
 
     var body: some View {
-        Row {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(endpoint.successRate?.color ?? .gray)
-                    .frame(width: 8, height: 8)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(verbatim: endpoint.name)
-                        .font(.subheadline.weight(.medium))
-                    Text(verbatim: endpoint.requests.plain + " req · " + (endpoint.successRate?.formatted ?? "—"))
-                        .font(.caption)
-                        .foregroundStyle(.gray)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 4) {
+                if let method = endpoint.method {
+                    Text(verbatim: method)
+                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .foregroundStyle(endpoint.methodColor)
                 }
 
-                Spacer()
-
-                VStack(alignment: .trailing, spacing: 8) {
-                    Text(verbatim: endpoint.p99?.duration ?? "—")
-                        .font(.subheadline.weight(.semibold))
-                        .monospacedDigit()
-                    Text(verbatim: "P99")
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(.gray)
-                }
+                Text(verbatim: endpoint.path)
+                    .font(.system(size: 13, design: .monospaced))
+                    .lineLimit(1)
+                    .mask(alignment: .trailing) {
+                        HStack(spacing: 0) {
+                            Rectangle()
+                                .fill(.black)
+                            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
+                                .frame(width: 28)
+                        }
+                    }
             }
-            .frame(height: 70)
-        } destination: {
-            NetworkEndpointDetailView(endpoint: endpoint, report: report, range: range)
+
+            HStack(spacing: 8) {
+                NetworkRequestBar(requests: endpoint.requests, fraction: fraction)
+                    .frame(maxWidth: .infinity)
+
+                Text(verbatim: endpoint.successRate.networkValue)
+                    .foregroundStyle(endpoint.successRate.networkColor)
+                    .frame(width: 56, alignment: .trailing)
+
+                Text(verbatim: endpoint.p99.networkP99Value)
+                    .fontWeight(endpoint.p99.networkP99Weight)
+                    .foregroundStyle(endpoint.p99.networkP99Color)
+                    .frame(width: 64, alignment: .trailing)
+            }
+            .font(.system(size: 13, design: .monospaced))
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, 10)
+        .overlay(alignment: .bottom) {
+            DashedLine()
+        }
+        .contentShape(.rect)
     }
-}
 
-#Preview("NetworkEndpointRow") {
-    let report = NetworkReport.sample
-    let range = Period.today.initialRange
-
-    NavigationStack {
-        InsetList {
-            ForEach(report.endpoints(in: range)) { endpoint in
-                NetworkEndpointRow(endpoint: endpoint, report: report, range: range)
-            }
-        }
+    private var fraction: Double {
+        maxRequests > 0 ? Double(endpoint.requests) / Double(maxRequests) : 0
     }
 }
