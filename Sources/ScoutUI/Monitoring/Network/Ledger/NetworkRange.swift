@@ -102,7 +102,7 @@ extension NetworkRange {
     }
 
     func rollups(initial: NetworkRange) -> [NetworkRange] {
-        allCases.filter { $0 >= initial }
+        Self.allCases.filter { $0 >= initial }
     }
 }
 
