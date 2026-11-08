@@ -17,17 +17,24 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
     var body: some View {
         InsetList {
             message
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             cards
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             if !summary.affected.isEmpty {
                 Header(title: "Affected")
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
 
                 ForEach(summary.affected) { affected in
                     IncidentAffectedRow(affected: affected)
+                        .frame(minHeight: 44)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
                 }
             }
 
@@ -37,9 +44,12 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                         .font(.system(size: 13))
                         .foregroundStyle(Color(.systemGray))
                 }
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
                 frames
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             Header(title: "Occurrences") {
@@ -55,8 +65,20 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 .foregroundStyle(.blue)
                 .accessibilityLabel(Text(verbatim: "Show all occurrences"))
             }
+            .overlay(alignment: .bottom) {
+                if !records.isEmpty {
+                    Separator()
+                }
+            }
 
-            ForEach(Array(records.prefix(4)), content: row)
+            ForEach(Array(records.prefix(4).enumerated()), id: \.element.id) { index, record in
+                row(record)
+                    .overlay(alignment: .bottom) {
+                        if index < min(records.count, 4) - 1 {
+                            Separator()
+                        }
+                    }
+            }
         }
     }
 

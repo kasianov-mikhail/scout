@@ -27,19 +27,31 @@ extension EventView {
                     EmptyView()
                 }
             }
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
 
             switch param.result {
             case .success(let items):
                 ForEach(items.prefix(Self.previewLimit)) { item in
                     ParamRow(item: item)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
                 }
             case .failure(let error):
                 ErrorRow(description: error.localizedDescription) {
                     await param.fetchAgain(in: database)
                 }
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
             case nil:
                 ForEach(0..<min(Self.previewLimit, count), id: \.self) { _ in
                     ParamRow(item: nil)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
                 }
             }
         }
@@ -53,6 +65,9 @@ extension EventView {
 
         var body: some View {
             Header(title: "Stats")
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             switch stat.result {
             case .success, nil:
@@ -71,10 +86,16 @@ extension EventView {
                         .navigationTitle(en: "Stats")
                         .largeNavigationTitle()
                     }
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
                 }
             case .failure(let error):
                 ErrorRow(description: error.localizedDescription) {
                     await stat.fetchAgain(in: database)
+                }
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
             }
         }
@@ -88,6 +109,9 @@ extension EventView {
         var body: some View {
             if let deviceID = event.deviceID {
                 Header(title: "History")
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
                 timelineRow(deviceID: deviceID)
             }
         }

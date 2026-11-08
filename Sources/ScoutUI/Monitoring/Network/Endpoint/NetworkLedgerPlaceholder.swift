@@ -14,20 +14,19 @@ struct NetworkLedgerPlaceholder: View {
     var body: some View {
         InsetList {
             ListTitle(title: title)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeaderPlaceholder()
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: primary)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(0..<14, id: \.self) { index in
                 NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

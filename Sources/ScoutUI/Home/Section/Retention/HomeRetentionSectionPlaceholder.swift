@@ -38,7 +38,6 @@ struct HomeRetentionSectionPlaceholder: View {
                 .padding(.top, 4)
                 .padding(.bottom, 6)
         }
-        .listRowSeparator(.hidden)
     }
 
     private func row(index: Int) -> some View {

@@ -24,11 +24,10 @@ struct StatView: View {
 
             InsetList {
                 PeriodPicker(extent: $extent, title: \.shortTitle)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 RangeControl(extent: $extent)
                     .padding(.bottom)
-                    .listRowSeparator(.hidden)
 
                 ComparableChart(
                     segment: segment,
@@ -37,11 +36,14 @@ struct StatView: View {
                     color: color,
                     isComparing: isComparing
                 )
-                .listRowSeparator(.hidden)
                 .padding(.bottom)
 
                 ComparisonToggle(isOn: $isComparing)
                     .disabled(!canCompare)
+                    .frame(minHeight: 44)
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
 
                 if showList {
                     Row {
@@ -52,6 +54,9 @@ struct StatView: View {
                         EventStatList(eventName: stat.subject.name, range: extent.domain)
                     }
                     .foregroundStyle(.blue)
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
                 }
 
                 Header(title: "Weekly Pattern") {
@@ -59,7 +64,6 @@ struct StatView: View {
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
-                .listRowSeparator(.hidden, edges: .bottom)
 
                 HeatmapView(
                     grid: HeatmapGrid(
@@ -68,7 +72,6 @@ struct StatView: View {
                         calendar: .utc
                     )
                 )
-                .listRowSeparator(.hidden)
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

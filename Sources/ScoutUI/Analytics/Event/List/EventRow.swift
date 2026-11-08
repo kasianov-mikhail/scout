@@ -36,9 +36,8 @@ struct EventRow: View {
         } destination: {
             EventView(event: event)
         }
-        .listRowInsets(EdgeInsets())
-        .listRowSeparator(.hidden)
-        .listRowBackground(cell)
+        .background(cell)
+        .padding(.horizontal, -16)
     }
 
     private var cell: some View {

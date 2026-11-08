@@ -38,7 +38,6 @@ struct NotificationsDeniedRow: View {
             }
         }
         .frame(minHeight: 60)
-        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
     private var settingsURL: URL? {

@@ -16,8 +16,13 @@ struct ParamList: View {
 
     var body: some View {
         InsetList {
-            ForEach(items) { item in
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                 ParamRow(item: item)
+                    .overlay(alignment: .bottom) {
+                        if index < items.count - 1 {
+                            Separator()
+                        }
+                    }
             }
         }
         .navigationTitle(en: "Params")
@@ -57,7 +62,7 @@ struct ParamRow: View {
 
                     Redacted(length: 8).opacity(0.5)
                 }
-                .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
+                .frame(minHeight: 44)
             }
         }
         .lineLimit(1)

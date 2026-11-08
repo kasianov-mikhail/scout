@@ -36,6 +36,7 @@ struct RetentionWeekRow: View {
     InsetList {
         ForEach([RetentionWeek].samples) { week in
             RetentionWeekRow(week: week, maxInstalls: [RetentionWeek].samples.maxInstalls, showsDivider: week.kept != nil)
+                .frame(minHeight: 44)
         }
     }
 }

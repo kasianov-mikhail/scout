@@ -99,16 +99,16 @@ struct AlertRuleRow: View {
                 onMute: {},
                 onOpen: {}
             )
-            .listRowInsets(EdgeInsets())
-            .listRowSeparator(.hidden)
+            .padding(.horizontal, -16)
+            .frame(minHeight: 44)
         }
 
         AlertRuleRow(status: .firingSample, isLast: false, onDelete: {}, onMute: {}, onOpen: {})
-            .listRowInsets(EdgeInsets())
-            .listRowSeparator(.hidden)
+            .padding(.horizontal, -16)
+            .frame(minHeight: 44)
 
         AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {}, onOpen: {})
-            .listRowInsets(EdgeInsets())
-            .listRowSeparator(.hidden)
+            .padding(.horizontal, -16)
+            .frame(minHeight: 44)
     }
 }

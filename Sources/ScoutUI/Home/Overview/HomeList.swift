@@ -67,12 +67,16 @@ struct HomeList: View {
         InsetList {
             HomeAlertSection(history: nil) {}
                 .padding(.top, 6)
+                .frame(minHeight: 44)
             HomeActiveUsersSection(users: nil) { _ in }
+                .frame(minHeight: 44)
             HomeTelemetrySection(items: nil) { _ in }
+                .frame(minHeight: 44)
             HomeReleaseSection(adoption: nil) {}
+                .frame(minHeight: 44)
             HomeRetentionSection(weeks: nil) {}
+                .frame(minHeight: 44)
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -109,6 +113,7 @@ struct HomeList: View {
             }
             .padding(.top, 6)
             .homeInk(0, isInked: ink)
+            .frame(minHeight: 44)
             HomeActiveUsersSection(users: snapshot.users) { kind in
                 switch kind {
                 case .sessions:
@@ -118,6 +123,7 @@ struct HomeList: View {
                 }
             }
             .homeInk(1, isInked: ink)
+            .frame(minHeight: 44)
             HomeTelemetrySection(items: snapshot.telemetry) { kind in
                 switch kind {
                 case .events:
@@ -135,16 +141,18 @@ struct HomeList: View {
                 }
             }
             .homeInk(2, isInked: ink)
+            .frame(minHeight: 44)
             HomeReleaseSection(adoption: snapshot.releases) {
                 path.append(.releaseHealth)
             }
             .homeInk(3, isInked: ink)
+            .frame(minHeight: 44)
             HomeRetentionSection(weeks: snapshot.retention) {
                 path.append(.retention)
             }
             .homeInk(4, isInked: ink)
+            .frame(minHeight: 44)
         }
-        .scrollContentBackground(.hidden)
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:

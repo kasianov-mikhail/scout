@@ -44,6 +44,5 @@ struct IncidentTrendChart: View {
         .frame(height: 170)
         .environment(\.calendar, .utc)
         .environment(\.timeZone, Calendar.utc.timeZone)
-        .listRowSeparator(.hidden)
     }
 }

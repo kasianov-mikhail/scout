@@ -14,11 +14,9 @@ struct EventListPlaceholder: View {
         InsetList {
             ForEach(0..<16, id: \.self) { index in
                 row(index)
-                    .listRowInsets(EdgeInsets())
-                    .listRowSeparator(.hidden)
+                    .padding(.horizontal, -16)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

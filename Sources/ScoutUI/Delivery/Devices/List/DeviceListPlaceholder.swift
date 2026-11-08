@@ -15,24 +15,23 @@ struct DeviceListPlaceholder: View {
     var body: some View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .frame(minHeight: 44)
 
             SkeletonBar(width: 200, height: 9, delay: 0)
                 .frame(height: 17.5, alignment: .leading)
                 .padding(.top, 4)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             columns
                 .columnHeaderStyle()
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(0..<9, id: \.self) { index in
                 row(index: index, isLast: index == 8)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

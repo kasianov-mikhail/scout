@@ -17,19 +17,17 @@ struct RetentionCohortDetailView: View {
 
         InsetList {
             RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             RetentionSection(title: "Come back on", note: detail.averageNote, divider: true)
-                .listRowSeparator(.hidden)
 
             ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
                 RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             if !detail.segments.isEmpty {
                 RetentionSection(title: "By OS version", note: "day 7")
-                    .listRowSeparator(.hidden)
 
                 ForEach(Array(detail.segments.enumerated()), id: \.element.id) { index, segment in
                     Row {
@@ -37,7 +35,6 @@ struct RetentionCohortDetailView: View {
                     } destination: {
                         RetentionSegmentDetailView(segment: segment.segment, cohort: cohort, cohorts: cohorts)
                     }
-                    .listRowSeparator(.hidden)
                 }
             }
         }

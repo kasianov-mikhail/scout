@@ -16,26 +16,24 @@ struct NetworkHourViewPlaceholder: View {
     var body: some View {
         InsetList {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeaderPlaceholder()
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "STATUS")
-                .listRowSeparator(.hidden)
 
             SkeletonBar(height: 10, delay: 0.16, cornerRadius: 5)
                 .padding(.top, 14)
                 .padding(.bottom, 6)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(0..<3, id: \.self) { index in
                 NetworkStatusRowPlaceholder(index: index)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             SectionHeader(title: "LATENCY")
-                .listRowSeparator(.hidden)
 
             HStack(alignment: .bottom, spacing: 4) {
                 ForEach(latencySkeletonHeights.indices, id: \.self) { index in
@@ -47,7 +45,7 @@ struct NetworkHourViewPlaceholder: View {
                 }
             }
             .padding(.top, 14)
-            .listRowSeparator(.hidden)
+            .frame(minHeight: 44)
 
             HStack(spacing: 16) {
                 SkeletonBar(width: 76, height: 9, delay: 0.8)
@@ -56,9 +54,8 @@ struct NetworkHourViewPlaceholder: View {
             }
             .padding(.top, 10)
             .padding(.bottom, 14)
-            .listRowSeparator(.hidden)
+            .frame(minHeight: 44)
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

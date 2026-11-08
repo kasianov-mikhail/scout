@@ -124,7 +124,6 @@ struct SettingsOverviewView: View {
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 22)
             }
-            .listRowSeparator(.hidden)
         }
         .navigationTitle(en: "Settings")
         .inlineNavigationTitle()

@@ -18,29 +18,26 @@ struct RetentionSegmentDetailView: View {
 
         InsetList {
             RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             RetentionSection(title: "Come back on", note: "whole week", divider: true)
-                .listRowSeparator(.hidden)
 
             ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
                 RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             RetentionSection(title: "Stability")
-                .listRowSeparator(.hidden)
 
             RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             if !detail.weeks.isEmpty {
                 RetentionSection(title: "\(segment.name) by week", note: "day 7")
-                    .listRowSeparator(.hidden)
 
                 ForEach(Array(detail.weeks.enumerated()), id: \.element.id) { index, week in
                     RetentionSegmentWeekRow(week: week, showsDivider: index < detail.weeks.count - 1)
-                        .listRowSeparator(.hidden)
+                        .frame(minHeight: 44)
                 }
             }
         }

@@ -21,22 +21,19 @@ struct IncidentListPlaceholder: View {
     var body: some View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .frame(minHeight: 44)
 
             SkeletonBar(width: 160, height: 9, delay: 0)
                 .frame(height: 17.5)
                 .padding(.top, 4)
-                .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             IncidentGrid(count: rowCount) { index in
                 tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
             }
-            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-            .listRowSeparator(.hidden)
+            .padding(.top, 8)
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

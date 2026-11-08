@@ -43,6 +43,5 @@ struct HomeAlertSectionPlaceholder: View {
                 .fill(Color.separator)
                 .frame(height: 0.5)
         }
-        .listRowSeparator(.hidden)
     }
 }

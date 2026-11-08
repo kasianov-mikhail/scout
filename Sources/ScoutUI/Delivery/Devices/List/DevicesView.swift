@@ -55,8 +55,8 @@ struct DevicesView: View {
 
             InsetList {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                    .listRowSeparator(.hidden)
+                    .padding(.top, 8)
+                    .frame(minHeight: 44)
 
                 summary(models)
                     .padding(.top, 4)
@@ -64,11 +64,11 @@ struct DevicesView: View {
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 columns
                     .columnHeaderStyle()
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 ForEach(models) { model in
                     Row {
@@ -82,10 +82,8 @@ struct DevicesView: View {
                                 : nil
                         )
                     }
-                    .listRowSeparator(.hidden)
                 }
             }
-            .scrollContentBackground(.hidden)
             .exportToolbar(text: DevicesExport(models: models).text)
         }
     }

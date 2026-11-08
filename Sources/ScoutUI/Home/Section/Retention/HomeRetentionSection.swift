@@ -41,7 +41,6 @@ struct HomeRetentionSection: View {
                 .padding(.top, 4)
                 .padding(.bottom, 6)
         }
-        .listRowSeparator(.hidden)
     }
 
     private var header: some View {
@@ -123,7 +122,9 @@ private struct RetentionRowContent: View {
     NavigationStack {
         InsetList {
             HomeRetentionSection(weeks: .samples) {}
+                .frame(minHeight: 44)
             HomeRetentionSection(weeks: nil) {}
+                .frame(minHeight: 44)
         }
     }
 }

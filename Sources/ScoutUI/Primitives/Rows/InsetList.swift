@@ -7,18 +7,16 @@
 
 import SwiftUI
 
-extension EdgeInsets {
-    static let sideInsets = EdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
-}
-
 struct InsetList<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        List {
-            content().listRowInsets(.sideInsets)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                content()
+            }
+            .padding(.horizontal, 16)
         }
-        .listStyle(.plain)
         .scrollIndicators(.hidden)
     }
 }
@@ -38,6 +36,7 @@ struct InsetList<Content: View>: View {
 
             Text(verbatim: "Full width")
                 .frame(maxWidth: .infinity)
+                .frame(minHeight: 44)
                 .background(.blue.opacity(0.1))
         }
     }

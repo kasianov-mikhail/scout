@@ -99,7 +99,6 @@ struct AlertListView: View {
         InsetList {
             if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
                 NotificationsDeniedRow()
-                    .listRowSeparator(.hidden)
                     .overlay(alignment: .bottom) {
                         Rectangle()
                             .fill(Color.separator)
@@ -109,19 +108,17 @@ struct AlertListView: View {
 
             AlertListLegend()
                 .padding(.top, 10)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             section(statuses.firing, title: "FIRING")
             section(statuses.armed, title: "ARMED")
             section(statuses.muted, title: "MUTED")
         }
-        .scrollContentBackground(.hidden)
     }
 
     @ViewBuilder private func section(_ statuses: [AlertStatus], title: String) -> some View {
         if !statuses.isEmpty {
             AlertListSectionHeader(title: title, count: statuses.count)
-                .listRowSeparator(.hidden)
 
             ForEach(Array(statuses.enumerated()), id: \.element.rule) { index, status in
                 AlertRuleRow(
@@ -141,8 +138,8 @@ struct AlertListView: View {
                         selected = status
                     }
                 )
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
             }
         }
     }

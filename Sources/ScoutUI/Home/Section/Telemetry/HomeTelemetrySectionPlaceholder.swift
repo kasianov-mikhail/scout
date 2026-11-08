@@ -40,7 +40,6 @@ struct HomeTelemetrySectionPlaceholder: View {
             }
         }
         .padding(.bottom, 6)
-        .listRowSeparator(.hidden)
     }
 
     private func row(kind: TelemetryItem.Kind, index: Int) -> some View {

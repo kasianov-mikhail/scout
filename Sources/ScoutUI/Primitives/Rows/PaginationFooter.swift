@@ -17,7 +17,6 @@ struct PaginationFooter: View {
         content
             .frame(height: 68)
             .frame(maxWidth: .infinity)
-            .listRowSeparator(.hidden, edges: .bottom)
     }
 
     @ViewBuilder private var content: some View {

@@ -21,7 +21,14 @@ struct IncidentOccurrencesView<Element: RecordDecodable & Incident, Row: View>: 
                     Placeholder(text: "No occurrences")
                 } else {
                     InsetList {
-                        ForEach(records, content: row)
+                        ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
+                            row(record)
+                                .overlay(alignment: .bottom) {
+                                    if index < records.count - 1 || occurrences.cursor != nil {
+                                        Separator()
+                                    }
+                                }
+                        }
 
                         if let cursor = occurrences.cursor {
                             PaginationFooter {

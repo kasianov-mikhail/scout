@@ -15,7 +15,6 @@ struct ComparisonToggle: View {
         Toggle(isOn: Binding(get: { isOn && isEnabled }, set: { isOn = $0 })) {
             Text(verbatim: "Compare with previous period")
         }
-        .listRowSeparator(.hidden, edges: .top)
         .hapticFeedback(.selection, trigger: isOn)
         .onChange(of: isEnabled) { isEnabled in
             if !isEnabled {
@@ -28,8 +27,11 @@ struct ComparisonToggle: View {
 #Preview("ComparisonToggle") {
     InsetList {
         ComparisonToggle(isOn: .constant(true))
+            .frame(minHeight: 44)
         ComparisonToggle(isOn: .constant(false))
+            .frame(minHeight: 44)
         ComparisonToggle(isOn: .constant(false))
             .disabled(true)
+            .frame(minHeight: 44)
     }
 }

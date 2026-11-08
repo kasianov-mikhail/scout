@@ -47,8 +47,8 @@ struct DeviceDetailView: View {
     private func content(_ detail: DeviceDetail) -> some View {
         InsetList {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .frame(minHeight: 44)
 
             subtitle(detail.summary)
                 .padding(.top, 4)
@@ -56,10 +56,10 @@ struct DeviceDetailView: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             stats(detail)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "SESSIONS", topPadding: 12) {
                 Button {
@@ -71,68 +71,65 @@ struct DeviceDetailView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .listRowSeparator(.hidden)
 
             if detail.recentSessions.isEmpty {
                 Text(verbatim: "No sessions in this period")
                     .font(.system(size: 15))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.vertical, 12)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             } else {
                 ForEach(detail.recentSessions) { session in
                     sessionRow(session, deviceID: detail.summary.id, maxDuration: detail.maxSessionDuration)
-                        .listRowSeparator(.hidden)
+                        .frame(minHeight: 44)
                 }
             }
 
             if !detail.history.isEmpty {
                 spacer(8)
+                    .frame(minHeight: 44)
 
                 SectionHeader(title: "HISTORY", topPadding: 12)
-                    .listRowSeparator(.hidden)
 
                 ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
                     HistoryRow(event: event, isLast: index == detail.history.count - 1)
-                        .listRowSeparator(.hidden)
+                        .frame(minHeight: 44)
                 }
             }
 
             spacer(12)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 Text(verbatim: detail.activeDaysLabel)
                     .font(.system(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
-            .listRowSeparator(.hidden)
 
             DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
                 .padding(.top, 14)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             Text(verbatim: detail.activityCaption)
                 .font(.system(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 12)
                 .padding(.bottom, 16)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
-                .listRowSeparator(.hidden)
 
             UsageGrid(usage: detail.usage)
                 .padding(.top, 14)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             Text(verbatim: detail.usageCaption)
                 .font(.system(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 12)
                 .padding(.bottom, 16)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
         }
-        .scrollContentBackground(.hidden)
     }
 
     private func subtitle(_ summary: DeviceSummary) -> some View {
@@ -179,7 +176,6 @@ struct DeviceDetailView: View {
     private func spacer(_ height: CGFloat) -> some View {
         Color.clear
             .frame(height: height)
-            .listRowSeparator(.hidden)
     }
 }
 

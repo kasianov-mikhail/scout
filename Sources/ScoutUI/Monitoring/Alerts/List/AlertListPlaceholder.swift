@@ -11,11 +11,10 @@ struct AlertListPlaceholder: View {
     var body: some View {
         InsetList {
             banner
-                .listRowSeparator(.hidden)
 
             AlertListLegend(showsAxis: false)
                 .padding(.top, 10)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             header(delay: 0)
             row(titleWidth: 95, delay: 0, isLast: true)
@@ -29,7 +28,6 @@ struct AlertListPlaceholder: View {
             header(delay: 0.40)
             row(titleWidth: 69, delay: 0.40, isLast: true)
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -66,7 +64,6 @@ struct AlertListPlaceholder: View {
         .overlay(alignment: .bottom) {
             separator
         }
-        .listRowSeparator(.hidden)
     }
 
     private func row(titleWidth: CGFloat, delay: Double, isLast: Bool) -> some View {
@@ -93,7 +90,7 @@ struct AlertListPlaceholder: View {
                 separator
             }
         }
-        .listRowSeparator(.hidden)
+        .frame(minHeight: 44)
     }
 
     private var separator: some View {
