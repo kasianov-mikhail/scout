@@ -28,6 +28,7 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
             }
             .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

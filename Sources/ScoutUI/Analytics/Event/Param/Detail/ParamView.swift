@@ -64,6 +64,7 @@ private struct ParamScalarView: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal)
         }
+        .scrollIndicators(.hidden)
     }
 }
 

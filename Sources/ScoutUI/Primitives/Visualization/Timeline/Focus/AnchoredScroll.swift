@@ -22,6 +22,7 @@ private struct AnchoredScroll<ID: Hashable>: ViewModifier {
                 ScrollView {
                     content
                 }
+                .scrollIndicators(.hidden)
                 .toolbar {
                     ToolbarItemGroup(placement: .bottomBar) {
                         if let anchorFrame, let direction = RecenterDirection(frame: anchorFrame, viewport: viewport) {

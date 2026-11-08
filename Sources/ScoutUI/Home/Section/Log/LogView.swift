@@ -44,6 +44,7 @@ struct LogView: View {
             }
             .padding(16)
         }
+        .scrollIndicators(.hidden)
         .task(id: period) {
             log.period = period
             await log.fetchIfNeeded(in: database)
