@@ -40,7 +40,7 @@ struct TelemetryRow: View {
                     }
 
                     Text(verbatim: item.caption)
-                        .font(.footnote.weight(.medium))
+                        .font(.telemetryCaption)
                         .foregroundStyle(Color(.systemGray))
                 }
             }

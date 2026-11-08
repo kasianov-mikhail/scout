@@ -18,6 +18,7 @@ extension Font {
     static let codeChip = Font.system(size: 14, design: .monospaced)
     static let listTitle = Font.system(size: 28, weight: .bold, design: .rounded)
     static let telemetryTitle = Font.system(size: 16, variableWeight: 0.12)
+    static let telemetryCaption = Font.system(size: 13, variableWeight: 0.12)
 
     static func system(size: CGFloat, variableWeight: CGFloat) -> Font {
         #if os(iOS)
