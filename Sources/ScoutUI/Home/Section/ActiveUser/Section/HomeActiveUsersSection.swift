@@ -123,8 +123,7 @@ private struct ActiveUserMetricView: View {
                 .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
 
             Text(verbatim: metric.valueLabel)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
-                .monospacedDigit()
+                .font(.system(size: 28, weight: .bold))
                 .foregroundStyle(isSelected ? Color.primary : Color.inactiveValue)
                 .frame(height: 34, alignment: .leading)
 
