@@ -205,20 +205,6 @@ extension Session {
     }
 }
 
-extension [TimeInterval] {
-    fileprivate var median: TimeInterval? {
-        guard !isEmpty else {
-            return nil
-        }
-        let sorted = sorted()
-        let middle = count / 2
-        if count.isMultiple(of: 2) {
-            return (sorted[middle - 1] + sorted[middle]) / 2
-        }
-        return sorted[middle]
-    }
-}
-
 extension DeviceDetail {
     static var sample: DeviceDetail {
         let now = Date()

@@ -106,7 +106,7 @@ struct DeviceDetailView: View {
             }
             .listRowSeparator(.hidden)
 
-            ActivityChart(points: detail.activity, showsCounts: detail.range != .month)
+            DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
                 .padding(.top, 14)
                 .listRowSeparator(.hidden)
 
@@ -337,7 +337,7 @@ private struct HistoryRow: View {
     }
 }
 
-private struct ActivityChart: View {
+private struct DeviceActivityChart: View {
     let points: [DeviceActivityPoint]
     let showsCounts: Bool
 
