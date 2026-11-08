@@ -24,6 +24,7 @@ struct TimelinePlaceholder: View {
                 }
             }
         }
+        .scrollIndicators(.hidden)
         .scrollDisabled(true)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))

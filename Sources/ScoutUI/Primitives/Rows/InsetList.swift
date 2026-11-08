@@ -19,6 +19,7 @@ struct InsetList<Content: View>: View {
             content().listRowInsets(.sideInsets)
         }
         .listStyle(.plain)
+        .scrollIndicators(.hidden)
     }
 }
 

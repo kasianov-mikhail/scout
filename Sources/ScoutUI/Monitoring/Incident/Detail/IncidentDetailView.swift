@@ -60,6 +60,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
             }
             .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 
     private var contextValue: IncidentContext? {

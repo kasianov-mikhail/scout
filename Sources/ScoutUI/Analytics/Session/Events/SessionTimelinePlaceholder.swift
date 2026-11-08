@@ -26,6 +26,7 @@ struct SessionTimelinePlaceholder: View {
                 Color.clear.frame(height: 8)
             }
         }
+        .scrollIndicators(.hidden)
         .scrollDisabled(true)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
