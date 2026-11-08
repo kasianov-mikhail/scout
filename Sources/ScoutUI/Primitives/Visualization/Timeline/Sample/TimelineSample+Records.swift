@@ -9,7 +9,7 @@ import Foundation
 import Scout
 
 extension TimelineSample.Records {
-    static var sample: Records {
+    static var sample: Self {
         let now = Date()
         let base = now.addingTimeInterval(-3 * 86_400)
         let deviceID = UUID()
@@ -164,7 +164,7 @@ extension TimelineSample.Records {
             crashes: [crash, launchCrash]
         )
 
-        return Records(
+        return Self(
             rail: rail,
             incidents: TimelineIncidents(
                 crashes: [crash, launchCrash],
