@@ -25,34 +25,59 @@ struct AlertStatusTests {
         #expect(status.detail == nil)
     }
 
-    @Test("The chart series preserves the shape of ratio readings")
-    func series() {
-        let status = makeStatus(recent: [0.998, 0.9], state: .armed)
+    @Test("The summary names the threshold and the hold")
+    func summary() {
+        let stability = makeStatus(recent: [0.998, 0.9], state: .armed)
+        #expect(stability.summary == "below 99.50% for 1 h")
 
-        #expect(status.series.values == [998, 900])
+        let count = AlertStatus(
+            rule: AlertRule(
+                metric: .eventCount(name: "Error"),
+                condition: AlertCondition(comparison: .above, reference: .medianFactor(3))
+            ),
+            outcome: AlertOutcome(state: .armed, shouldNotify: false),
+            reading: MetricReading(baseline: 4, recent: [4, 4])
+        )
+        #expect(count.summary == "above 3× median · 12 for 1 h")
     }
 
-    @Test("Only firing statuses count toward the badge")
-    func firingCount() {
-        let statuses = [
-            makeStatus(recent: [0.9], state: .firing(since: Date(timeIntervalSince1970: 0))),
-            makeStatus(recent: [0.998], state: .armed),
-            makeStatus(recent: [0.998], state: .muted(until: Date(timeIntervalSince1970: 0))),
-        ]
+    @Test("The value reads the last bucket")
+    func value() {
+        let status = makeStatus(recent: [0.998, 0.9918], state: .armed)
 
-        #expect(statuses.firingCount == 1)
+        #expect(status.value == "99.18%")
     }
 
-    @Test("Firing statuses come first and keep their order")
-    func firingFirst() {
+    @Test("The firing label counts whole hours")
+    func firingLabel() {
+        let since = Date(timeIntervalSince1970: 0)
+        let status = makeStatus(recent: [0.9], state: .firing(since: since))
+
+        #expect(status.firingLabel(now: since.addingTimeInterval(2 * 3600 + 60)) == "Firing 2 h")
+    }
+
+    @Test("Statuses group by their state")
+    func groups() {
         let armed = makeStatus(recent: [0.998], state: .armed)
         let muted = makeStatus(recent: [0.998], state: .muted(until: Date(timeIntervalSince1970: 0)))
-        let earlier = makeStatus(recent: [0.9], state: .firing(since: Date(timeIntervalSince1970: 0)))
-        let later = makeStatus(recent: [0.9], state: .firing(since: Date(timeIntervalSince1970: 60)))
+        let firing = makeStatus(recent: [0.9], state: .firing(since: Date(timeIntervalSince1970: 0)))
 
-        let statuses = [armed, muted, earlier, later]
+        let statuses = [armed, muted, firing]
 
-        #expect(statuses.firingFirst == [earlier, later, armed, muted])
+        #expect(statuses.firing == [firing])
+        #expect(statuses.armed == [armed])
+        #expect(statuses.muted == [muted])
+    }
+
+    @Test("The row strip colors only the current breach red")
+    func buckets() {
+        let status = makeStatus(
+            recent: [0.9, 0.998, 0.998, 0.9, 0.9],
+            state: .firing(since: Date(timeIntervalSince1970: 0))
+        )
+
+        #expect(Array(status.buckets.suffix(5)) == [.muted, .clear, .clear, .firing, .firing])
+        #expect(status.buckets.count == 24)
     }
 
     private func makeStatus(recent: [Double], state: AlertState) -> AlertStatus {

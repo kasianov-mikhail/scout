@@ -122,18 +122,20 @@ struct AlertDetailView: View {
     }
 
     private func mute() {
-        Task {
+        if status?.isMuted == true {
             do {
-                if status?.isMuted == true {
-                    try provider.unmute(rule)
-                } else {
-                    try provider.mute(rule, hours: 1)
-                }
-                await provider.fetchAgain(in: database)
-                dismiss()
+                try provider.unmute(rule)
             } catch {
                 message = Message(error.localizedDescription, level: .error)
+                return
             }
+        } else {
+            provider.mute(rule, until: Date().addingTimeInterval(3600))
+        }
+
+        Task {
+            await provider.fetchAgain(in: database)
+            dismiss()
         }
     }
 

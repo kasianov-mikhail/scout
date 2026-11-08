@@ -6,87 +6,218 @@
 // https://opensource.org/licenses/MIT.
 //
 
+import Foundation
 import Scout
 import SwiftUI
 
 struct SettingsOverviewView: View {
     @Binding var activeID: String
-    @StateObject var provider: BackendHealthProvider
+    @StateObject var health: BackendHealthProvider
+    @StateObject private var cacheStatus: CacheStatus
 
-    let backends: [Backend]
-    let cache: any CacheClearing
+    let send: SendSummary
 
-    init(backends: [Backend], activeID: Binding<String>, cache: any CacheClearing, provider: BackendHealthProvider? = nil) {
-        self.backends = backends
+    @State private var start = StartPeriod.today
+    @State private var pushes = true
+    @State private var isClearing = false
+
+    init(backends: [Backend], activeID: Binding<String>, cache: any CacheClearing, health: BackendHealthProvider? = nil, send: SendSummary = .sample) {
         self._activeID = activeID
-        self.cache = cache
-        self._provider = StateObject(wrappedValue: provider ?? BackendHealthProvider(backends: backends))
+        self.send = send
+        self._health = StateObject(wrappedValue: health ?? BackendHealthProvider(backends: backends))
+        self._cacheStatus = StateObject(wrappedValue: CacheStatus(cache: cache))
     }
 
     var body: some View {
         InsetList {
-            GlanceHero(summary: GlanceSummary(backends: provider.backends))
-                .padding(.vertical, 6)
-                .padding(.top)
-                .listRowSeparator(.hidden)
+            VStack(alignment: .leading, spacing: 0) {
+                SettingsLabel(title: "READ FROM")
 
-            if !provider.backends.isEmpty {
-                Header(title: "Backends")
-
-                ForEach(provider.backends) { backend in
-                    Row {
-                        BackendRow(backend: backend, isActive: backend.id == activeID)
-                    } destination: {
-                        BackendDetailView(provider: provider, id: backend.id, activeID: $activeID)
+                if health.backends.isEmpty {
+                    SettingsCard {
+                        Text(verbatim: "No backends configured.")
+                            .font(.system(size: 15))
+                            .foregroundStyle(Color(.systemGray))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 10)
+                    }
+                } else {
+                    SettingsStrip {
+                        ForEach(health.backends) { backend in
+                            NavigationLink {
+                                BackendDetailView(provider: health, id: backend.id, activeID: $activeID)
+                            } label: {
+                                SettingsSegmentCell(
+                                    title: backend.name,
+                                    detail: backend.detailLabel,
+                                    state: backend.segmentState,
+                                    isSelected: backend.id == activeID,
+                                    showsDivider: backend.id != health.backends.last?.id
+                                )
+                            }
+                            .buttonStyle(.plain)
+                        }
                     }
                 }
-            }
 
-            if !backends.isEmpty {
-                CacheSection(cache: cache)
-            }
+                SettingsNote(text: "All backends get the data. Scout reads from the one you pick.")
 
-            if !provider.backends.isEmpty {
-                Header(title: "Diagnostics")
+                SettingsLabel(title: "START ON")
 
-                Button {
-                    Task { await provider.refreshAll() }
-                } label: {
-                    Text(verbatim: "Check All Backends").foregroundStyle(.tint)
+                SettingsStrip {
+                    ForEach(StartPeriod.allCases) { period in
+                        Button {
+                            start = period
+                        } label: {
+                            SettingsSegmentCell(
+                                title: period.title,
+                                isSelected: start == period,
+                                showsDivider: period != StartPeriod.allCases.last
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
                 }
+                .hapticFeedback(.selection, trigger: start)
+
+                SettingsLabel(title: "ALERT PUSHES")
+
+                SettingsStrip {
+                    segment(title: "On", isSelected: pushes, showsDivider: true) {
+                        pushes = true
+                    }
+
+                    segment(title: "Off", isSelected: !pushes, showsDivider: false) {
+                        pushes = false
+                    }
+                }
+                .hapticFeedback(.selection, trigger: pushes)
+
+                SettingsNote(text: "Firing rules notify this iPhone.")
+
+                SettingsLabel(title: "SENDING FROM THIS IPHONE")
+
+                SettingsCard {
+                    SendReadout(summary: send)
+                }
+
+                SettingsNote(text: "Scout sends and checks in the background on its own.")
+
+                SettingsLabel(title: "CACHE")
+
+                SettingsCard {
+                    HStack(spacing: 0) {
+                        SettingsReadoutRow(
+                            value: cacheStatus.bytes == nil ? nil : cacheStatus.sizeLabel,
+                            caption: "on this iPhone"
+                        )
+
+                        SettingsCardAction(title: "Clear", color: .red) {
+                            isClearing = true
+                        }
+                    }
+                }
+
+                Text(verbatim: version)
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+                    .padding(.top, 22)
             }
+            .listRowSeparator(.hidden)
         }
         .navigationTitle(en: "Settings")
+        .inlineNavigationTitle()
         .dismissable()
-        .fetchTask([provider])
+        .fetchTask([health])
+        .task {
+            await cacheStatus.refresh()
+        }
+        .confirmationDialog(
+            Text(verbatim: "Clear the cached data?"),
+            isPresented: $isClearing,
+            titleVisibility: .visible
+        ) {
+            Button(role: .destructive) {
+                Task { await cacheStatus.clear() }
+            } label: {
+                Text(verbatim: "Clear Cache")
+            }
+
+            Button(role: .cancel) {
+            } label: {
+                Text(verbatim: "Cancel")
+            }
+        } message: {
+            Text(verbatim: "Charts and lists will reload from the backend on their next refresh.")
+        }
+    }
+
+    private var version: String {
+        Bundle.main.marketingVersion.map { "Scout \($0)" } ?? "Scout"
+    }
+
+    private func segment(title: String, isSelected: Bool, showsDivider: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            SettingsSegmentCell(title: title, isSelected: isSelected, showsDivider: showsDivider)
+        }
+        .buttonStyle(.plain)
     }
 }
 
-private struct BackendRow: View {
-    let backend: BackendHealth
-    let isActive: Bool
+private enum StartPeriod: CaseIterable, Identifiable {
+    case today
+    case week
+    case month
+    case year
+
+    var id: Self { self }
+
+    var title: String {
+        switch self {
+        case .today:
+            "Today"
+        case .week:
+            "7 days"
+        case .month:
+            "30 days"
+        case .year:
+            "Year"
+        }
+    }
+}
+
+private struct SendReadout: View {
+    let summary: SendSummary
 
     var body: some View {
-        Circle()
-            .fill(backend.status.healthColor)
-            .frame(width: 8, height: 8)
+        HStack(alignment: .firstTextBaseline, spacing: 4) {
+            if let pending = summary.pending {
+                Text(verbatim: "\(pending)")
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+            } else {
+                SkeletonBar(width: 28, height: 16, delay: 0)
+            }
 
-        Text(verbatim: backend.name)
+            Text(verbatim: "records waiting")
+                .font(.system(size: 13))
+                .foregroundStyle(Color(.systemGray))
 
-        if isActive {
-            Text(verbatim: "Active")
-                .font(.caption2.weight(.semibold))
-                .padding(.horizontal, 6)
-                .padding(.vertical, 2)
-                .background(Capsule().fill(.tint.opacity(0.15)))
-                .foregroundStyle(.tint)
+            if let lastSent = summary.lastSent {
+                Text(verbatim: "· sent \(lastSent)")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+            } else {
+                Text(verbatim: "·")
+                    .font(.system(size: 13))
+                    .foregroundStyle(Color(.systemGray))
+                SkeletonBar(width: 74, height: 9, delay: 0)
+            }
+
+            Spacer(minLength: 0)
         }
-
-        Spacer()
-
-        Text(verbatim: backend.latencyLabel)
-            .font(.body.monospacedDigit())
-            .foregroundStyle(.secondary)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 10)
     }
 }
 
@@ -95,36 +226,30 @@ private struct BackendRow: View {
     @Previewable @State var activeID = [BackendHealth].samples[0].id
     NavigationStack {
         SettingsOverviewView(
-            backends: .samples,
+            backends: [],
             activeID: $activeID,
-            cache: CacheSample(),
-            provider: BackendHealthProvider(healths: .samples)
+            cache: CacheSample(size: 18_400_000),
+            health: BackendHealthProvider(healths: .samples)
         )
     }
 }
 
 @available(iOS 17.0, macOS 14.0, *)
-#Preview("Degraded") {
-    @Previewable @State var activeID = ""
+#Preview("Loading") {
+    @Previewable @State var activeID = [BackendHealth].samples[0].id
     NavigationStack {
         SettingsOverviewView(
             backends: [],
             activeID: $activeID,
-            cache: CacheSample(),
-            provider: BackendHealthProvider(healths: Array([BackendHealth].samples.suffix(2)))
-        )
-    }
-}
-
-@available(iOS 17.0, macOS 14.0, *)
-#Preview("Checking") {
-    @Previewable @State var activeID = [Backend].samples[0].id
-    NavigationStack {
-        SettingsOverviewView(
-            backends: .samples,
-            activeID: $activeID,
-            cache: CacheSample(),
-            provider: BackendHealthProvider(backends: .samples)
+            cache: CacheSample(size: 18_400_000),
+            health: BackendHealthProvider(
+                healths: [BackendHealth].samples.map { health in
+                    var health = health
+                    health.status = nil
+                    health.probe = { .reachable }
+                    return health
+                }),
+            send: .loading
         )
     }
 }

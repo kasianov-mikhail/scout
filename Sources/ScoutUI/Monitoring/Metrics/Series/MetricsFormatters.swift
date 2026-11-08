@@ -29,6 +29,19 @@ extension Double {
         }
         return formatter.string(from: NSNumber(value: self))!
     }
+
+    var compact: String {
+        switch abs(self) {
+        case 999_950_000...:
+            String(format: "%.1fB", self / 1_000_000_000)
+        case 999_950...:
+            String(format: "%.1fM", self / 1_000_000)
+        case 10_000...:
+            String(format: "%.1fK", self / 1_000)
+        default:
+            self.rounded() == self ? Int(self).formatted(.number.locale(Locale(identifier: "en_US"))) : decimal
+        }
+    }
 }
 
 extension TimeInterval {

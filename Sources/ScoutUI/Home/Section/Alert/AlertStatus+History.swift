@@ -7,6 +7,24 @@
 
 import Foundation
 
+extension AlertStatus {
+    var buckets: [AlertHistory.Bucket] {
+        let breached = reading.recent.suffix(24).map {
+            rule.condition.isBreached(by: $0, in: reading)
+        }
+        let firing = isFiring ? breached.reversed().prefix(while: { $0 }).count : 0
+
+        var buckets = [AlertHistory.Bucket](repeating: .clear, count: 24)
+        let offset = 24 - breached.count
+
+        for (index, isBreached) in breached.enumerated() where isBreached {
+            buckets[offset + index] = index >= breached.count - firing ? .firing : .muted
+        }
+
+        return buckets
+    }
+}
+
 extension [AlertStatus] {
     var buckets: [AlertHistory.Bucket] {
         var buckets = [AlertHistory.Bucket](repeating: .clear, count: 24)

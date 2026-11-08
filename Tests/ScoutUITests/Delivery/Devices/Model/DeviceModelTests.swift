@@ -23,6 +23,9 @@ struct DeviceModelTests {
             ("iPod9,1", "iPod touch (7th generation)"),
             ("Watch7,5", "Apple Watch Ultra 2"),
             ("Watch7,17", "Apple Watch Series 11"),
+            ("MacBookPro18,3", "MacBook Pro"),
+            ("MacBookAir10,1", "MacBook Air"),
+            ("Macmini9,1", "Mac mini"),
         ])
     func mapsKnownIdentifiers(identifier: String, name: String) {
         #expect(DeviceModel(identifier: identifier).name == name)
@@ -47,6 +50,8 @@ struct DeviceModelTests {
             ("iPad14,1", "ipad"),
             ("Watch7,5", "applewatch"),
             ("iPod9,1", "iphone"),
+            ("MacBookPro18,3", "laptopcomputer"),
+            ("Macmini9,1", "desktopcomputer"),
         ])
     func picksSymbol(identifier: String, symbol: String) {
         #expect(DeviceModel(identifier: identifier).symbol == symbol)

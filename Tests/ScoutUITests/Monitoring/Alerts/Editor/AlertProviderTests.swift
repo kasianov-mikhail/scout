@@ -85,6 +85,39 @@ struct AlertProviderTests {
         #expect(try registry.rules() == [crashFreeRule])
     }
 
+    @Test("Removing a rule drops its status from the result")
+    func removeStatus() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let provider = AlertProvider(.success([errorStatus]), registry: registry)
+
+        provider.remove(errorRule)
+
+        guard case .success(let statuses)? = provider.result else {
+            Issue.record("Expected statuses")
+            return
+        }
+        #expect(statuses.isEmpty)
+    }
+
+    @Test("Muting a rule stores the expiry and moves its status to muted")
+    func mute() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let provider = AlertProvider(.success([errorStatus]), registry: registry)
+        let until = Date(timeIntervalSince1970: 1_800_000_000)
+
+        provider.mute(errorRule, until: until)
+
+        #expect(try registry.state(for: errorRule) == .muted(until: until))
+
+        guard case .success(let statuses)? = provider.result else {
+            Issue.record("Expected statuses")
+            return
+        }
+        #expect(statuses.first?.isMuted == true)
+    }
+
     @Test("A denied center makes the provider report that notifications are denied")
     func notificationsDeniedWhenDenied() async {
         let center = NotificationCenterStub()
@@ -185,25 +218,6 @@ struct AlertProviderTests {
         #expect(try registry.rules() == [errorRule, crashFreeRule])
     }
 
-    @Test("Muting a rule stores a muted state")
-    func mute() throws {
-        let registry = AlertRegistry(defaults: defaults)
-        try registry.save([errorRule])
-        let provider = AlertProvider(registry: registry)
-        let before = Date()
-
-        try provider.mute(errorRule, hours: 1)
-
-        let state = try registry.state(for: errorRule)
-        guard case .muted(let until) = state else {
-            Issue.record("Expected a muted state")
-            return
-        }
-
-        #expect(until > before)
-        #expect(until < before.addingTimeInterval(3700))
-    }
-
     @Test("Unmuting returns the rule to armed")
     func unmute() throws {
         let registry = AlertRegistry(defaults: defaults)
@@ -220,6 +234,14 @@ struct AlertProviderTests {
         AlertRule(
             metric: .eventCount(name: "Error"),
             condition: AlertCondition(comparison: .above, reference: .baselineFactor(2))
+        )
+    }
+
+    private var errorStatus: AlertStatus {
+        AlertStatus(
+            rule: errorRule,
+            outcome: AlertOutcome(state: .armed, shouldNotify: false),
+            reading: MetricReading(baseline: 4, recent: [4, 5])
         )
     }
 
