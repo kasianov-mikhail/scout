@@ -9,14 +9,14 @@ import Foundation
 
 extension AlertHistory {
     init(statuses: [AlertStatus]) {
-        let firing = statuses.filter(\.isFiring)
+        let firing = statuses.firing
 
         self.init(
             buckets: statuses.buckets,
             rule: (firing.first ?? statuses.first)?.rule.metric.title ?? "Alerts",
             firing: firing.count,
-            armed: statuses.filter(\.isArmed).count,
-            muted: statuses.filter(\.isMuted).count,
+            armed: statuses.armed.count,
+            muted: statuses.muted.count,
             total: statuses.count
         )
     }
