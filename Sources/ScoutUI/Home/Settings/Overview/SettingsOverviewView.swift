@@ -36,7 +36,7 @@ struct SettingsOverviewView: View {
                 if health.backends.isEmpty {
                     SettingsCard {
                         Text(verbatim: "No backends configured.")
-                            .font(.system(size: 15))
+                            .font(.weight450(size: 15))
                             .foregroundStyle(Color(.systemGray))
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 8)
@@ -120,7 +120,7 @@ struct SettingsOverviewView: View {
                 }
 
                 Text(verbatim: version)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 22)
             }
@@ -200,16 +200,16 @@ private struct SendReadout: View {
             }
 
             Text(verbatim: "records waiting")
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
 
             if let lastSent = summary.lastSent {
                 Text(verbatim: "· sent \(lastSent)")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             } else {
                 Text(verbatim: "·")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                 SkeletonBar(width: 74, height: 9, delay: 0)
             }

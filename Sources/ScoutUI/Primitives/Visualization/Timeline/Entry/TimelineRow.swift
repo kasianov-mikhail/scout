@@ -66,8 +66,7 @@ struct TimelineRow: View {
 
             if let time = entry.time {
                 Text(verbatim: time)
-                    .font(.system(size: 12))
-                    .monospaced()
+                    .font(.weight450(size: 12, design: .monospaced))
                     .foregroundStyle(Color.timelineMuted)
                     .layoutPriority(1)
             }
@@ -79,8 +78,7 @@ struct TimelineRow: View {
 
     private func text(_ label: TimelineEntry.Label) -> some View {
         Text(verbatim: label.text)
-            .font(.system(size: label.size, weight: label.weight))
-            .monospaced(label.monospaced)
+            .font(.weighted(size: label.size, weight: label.weight, design: label.monospaced ? .monospaced : .default))
             .italic(label.italic)
             .foregroundStyle(label.color)
             .lineLimit(1)

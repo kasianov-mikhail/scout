@@ -29,7 +29,7 @@ struct IncidentGroupPlaceholder: View {
 
             Header(title: "Stack Trace") {
                 Text(verbatim: kind.stackCaption)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
 
@@ -95,7 +95,7 @@ struct IncidentGroupPlaceholder: View {
     private func card(title: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: title)
-                .font(.system(size: 14, weight: .medium))
+                .font(.weight450(size: 14))
                 .foregroundStyle(Color(.systemGray))
 
             HStack {
@@ -117,7 +117,7 @@ struct IncidentGroupPlaceholder: View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Text(verbatim: title)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
 
                 Spacer()
 

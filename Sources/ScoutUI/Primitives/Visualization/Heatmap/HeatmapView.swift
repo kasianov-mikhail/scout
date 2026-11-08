@@ -24,14 +24,14 @@ struct HeatmapView: View {
                     .gridCellUnsizedAxes([.horizontal, .vertical])
                 ForEach(0..<24 / hours, id: \.self) { block in
                     Text(verbatim: "\(block * hours)–\(block * hours + hours)")
-                        .font(.caption2)
+                        .font(.weight450(size: 11))
                         .foregroundStyle(.secondary)
                 }
             }
             ForEach(0..<7) { day in
                 GridRow {
                     Text(verbatim: HeatmapGrid.dayLabels[day])
-                        .font(.caption2)
+                        .font(.weight450(size: 11))
                         .foregroundStyle(.secondary)
                         .frame(width: 30, alignment: .leading)
                     ForEach(0..<24 / hours, id: \.self) { block in
@@ -52,7 +52,7 @@ struct HeatmapView: View {
             .overlay {
                 if count > 0 {
                     Text(verbatim: "\(count)")
-                        .font(.caption2.monospacedDigit())
+                        .font(.weight450(size: 11).monospacedDigit())
                         .foregroundStyle(intensity > 0.55 ? Color.white : .secondary)
                 }
             }

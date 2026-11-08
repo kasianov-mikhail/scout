@@ -19,7 +19,7 @@ struct MetricSectionHeader: View {
             Spacer()
 
             Text(verbatim: trailing)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.top, 12)
@@ -41,7 +41,7 @@ struct MetricBucketRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(verbatim: label)
-                .font(.system(size: 13, design: .monospaced))
+                .font(.weight450(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .leading)
@@ -63,19 +63,19 @@ struct MetricBucketRow: View {
 
                 if row.isCurrent {
                     Text(verbatim: "so far")
-                        .font(.system(size: 12))
+                        .font(.weight450(size: 12))
                         .foregroundStyle(Color(.systemGray))
                         .frame(width: 34, alignment: .leading)
                 }
             }
 
             Text(verbatim: row.value.map { format.label($0) } ?? "—")
-                .font(.system(size: 14, design: .monospaced))
+                .font(.weight450(size: 14, design: .monospaced))
                 .monospacedDigit()
                 .frame(width: 56, alignment: .trailing)
 
             Text(verbatim: deltaLabel)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(row.isCurrent ? Color(.systemGray) : tone.color)
                 .frame(width: 48, alignment: .trailing)
         }

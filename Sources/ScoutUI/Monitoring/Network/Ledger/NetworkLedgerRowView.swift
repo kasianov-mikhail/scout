@@ -38,12 +38,12 @@ struct NetworkLedgerRowView: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: label.formatter.string(from: row.date))
-                    .fontWeight(row.isCurrent ? .semibold : .regular)
+                    .font(.weighted(size: 13, weight: row.isCurrent ? .semibold : .regular, design: .monospaced))
                     .lineLimit(1)
 
                 if component == .day && row.isCurrent {
                     Text(verbatim: "today")
-                        .font(.system(size: 11))
+                        .font(.weight450(size: 11))
                         .foregroundStyle(Color(.systemGray))
                 }
             }
@@ -58,11 +58,11 @@ struct NetworkLedgerRowView: View {
                 .frame(width: 56, alignment: .trailing)
 
             Text(verbatim: row.p99.networkP99Value)
-                .fontWeight(row.p99.networkP99Weight)
+                .font(.weighted(size: 13, weight: row.p99.networkP99Weight, design: .monospaced))
                 .foregroundStyle(row.p99.networkP99Color)
                 .frame(width: 64, alignment: .trailing)
         }
-        .font(.system(size: 13, design: .monospaced))
+        .font(.weight450(size: 13, design: .monospaced))
         .frame(minHeight: 40)
         .padding(.vertical, 6)
         .overlay(alignment: .bottom) {

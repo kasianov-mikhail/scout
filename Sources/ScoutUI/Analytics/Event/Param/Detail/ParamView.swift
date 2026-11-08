@@ -58,7 +58,7 @@ private struct ParamScalarView: View {
                 }
 
                 Text(raw)
-                    .monospaced()
+                    .font(.weight450(size: 17, design: .monospaced))
                     .textSelection(.enabled)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

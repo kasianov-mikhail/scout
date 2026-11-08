@@ -22,7 +22,7 @@ struct AlertTemplateListView: View {
                         .padding(.top, 20)
 
                     Text(verbatim: "Pick a starting point. You can change everything on the next step.")
-                        .font(.system(size: 15))
+                        .font(.weight450(size: 15))
                         .foregroundStyle(Color(.systemGray))
                         .padding(.top, 8)
                         .padding(.bottom, 8)
@@ -77,7 +77,7 @@ private struct AlertTemplateRow: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             Image(systemName: symbol)
-                .font(.system(size: 20))
+                .font(.weight450(size: 20))
                 .foregroundStyle(tint)
                 .frame(width: 32, alignment: .leading)
                 .padding(.top, 1)
@@ -87,7 +87,7 @@ private struct AlertTemplateRow: View {
                     .font(.system(size: 17, weight: .semibold))
 
                 Text(verbatim: watch.templateDetail)
-                    .font(.system(size: 14))
+                    .font(.weight450(size: 14))
                     .foregroundStyle(Color(.systemGray))
             }
 

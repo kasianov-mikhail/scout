@@ -21,7 +21,7 @@ struct ReleaseRow: View {
                     .lineLimit(1)
 
                 Text(verbatim: release.adoptionLabel)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
             }

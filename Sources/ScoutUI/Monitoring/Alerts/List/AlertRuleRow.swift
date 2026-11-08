@@ -39,7 +39,7 @@ struct AlertRuleRow: View {
                         .fixedSize()
                 } else if let label = status.mutedLabel {
                     Text(verbatim: label)
-                        .font(.system(size: 13))
+                        .font(.weight450(size: 13))
                         .foregroundStyle(Color(.systemGray))
                         .fixedSize()
                 }
@@ -47,14 +47,14 @@ struct AlertRuleRow: View {
 
             HStack(alignment: .firstTextBaseline, spacing: 12) {
                 Text(verbatim: status.summary)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
 
                 Spacer(minLength: 0)
 
                 if let value = status.value {
                     Text(verbatim: value)
-                        .font(.system(size: 14, design: .monospaced))
+                        .font(.weight450(size: 14, design: .monospaced))
                         .monospacedDigit()
                         .foregroundStyle(status.isFiring ? Color(.systemRed) : .primary)
                         .fixedSize()
@@ -82,7 +82,7 @@ struct AlertRuleRow: View {
     private var titleFont: Font {
         switch status.rule.metric {
         case .eventCount:
-            .system(size: 15, weight: .medium, design: .monospaced)
+            .weight450(size: 15, design: .monospaced)
         case .crashFreeSessions:
             .system(size: 16, weight: .semibold)
         }

@@ -44,8 +44,7 @@ private struct IncidentStackRowView: View {
 
             Spacer(minLength: 0)
         }
-        .font(.system(size: 12, design: .monospaced))
-        .fontWeight(weight)
+        .font(.weighted(size: 12, weight: weight, design: .monospaced))
         .foregroundStyle(foreground)
         .lineLimit(1)
         .frame(height: 16)

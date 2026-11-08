@@ -48,7 +48,7 @@ struct FilterLevelsView: View {
                 }
 
                 Text(verbatim: "Pick none to see every level.")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
         }

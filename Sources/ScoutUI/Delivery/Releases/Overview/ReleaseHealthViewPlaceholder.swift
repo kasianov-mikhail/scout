@@ -31,7 +31,7 @@ struct ReleaseHealthViewPlaceholder: View {
                 SkeletonBar(width: 120, height: 18, delay: 0.08)
 
                 Text(verbatim: "of sessions")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
 

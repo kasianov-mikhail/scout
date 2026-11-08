@@ -97,7 +97,7 @@ struct AlertFormView: View {
                 }
 
                 Text(verbatim: draft.hint)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 4)
 
@@ -155,7 +155,7 @@ private struct AlertWatchSummary: View {
                         .font(.system(size: 15, weight: .semibold))
 
                     Text(verbatim: watch.summary)
-                        .font(.system(size: 11))
+                        .font(.weight450(size: 11))
                         .foregroundStyle(Color(.systemGray))
                 }
 

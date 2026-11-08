@@ -13,7 +13,7 @@ struct AllButton: View {
     var body: some View {
         Button(action: action) {
             Text(verbatim: "All".uppercased())
-                .font(.callout.weight(.medium))
+                .font(.weight450(size: 16))
                 .foregroundStyle(.blue)
         }
         .buttonStyle(.plain)

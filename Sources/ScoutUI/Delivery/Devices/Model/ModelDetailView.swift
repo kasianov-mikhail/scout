@@ -111,9 +111,9 @@ struct ModelDetailView: View {
 
     private func subtitle(_ detail: ModelDetail) -> some View {
         (Text(verbatim: "\(detail.deviceCount) \(detail.deviceCount == 1 ? "device" : "devices") · \(detail.sessionCount.compact) sessions · ")
-            + Text(verbatim: "\(detail.crashCount)").foregroundColor(detail.crashCount > 0 ? .crashText : Color(.systemGray)).fontWeight(.semibold)
+            + Text(verbatim: "\(detail.crashCount)").foregroundColor(detail.crashCount > 0 ? .crashText : Color(.systemGray)).font(.system(size: 15, weight: .semibold))
             + Text(verbatim: " \(detail.crashCount == 1 ? "crash" : "crashes")"))
-            .font(.system(size: 15))
+            .font(.weight450(size: 15))
             .foregroundStyle(Color(.systemGray))
             .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -143,21 +143,21 @@ private struct OSVersionRow: View {
                 .frame(width: 8, height: 8)
                 .frame(width: 14, alignment: .leading)
 
-            (Text(verbatim: osVersion.version).fontWeight(.semibold)
+            (Text(verbatim: osVersion.version).font(.system(size: 13, weight: .semibold, design: .monospaced))
                 + Text(verbatim: " · \(osVersion.devices) \(osVersion.devices == 1 ? "device" : "devices")")
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundColor(Color(.systemGray)))
-                .font(.system(size: 13, design: .monospaced))
+                .font(.weight450(size: 13, design: .monospaced))
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: osVersion.sessions.compact)
-                .font(.system(size: 13, design: .monospaced))
+                .font(.weight450(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .frame(width: 72, alignment: .trailing)
 
             Text(verbatim: osVersion.percentageText)
-                .font(.system(size: 13, design: .monospaced))
+                .font(.weight450(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .trailing)
@@ -181,20 +181,20 @@ private struct ModelDeviceRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(verbatim: device.lastSeen.relativeString)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .lineLimit(1)
                 .frame(width: 84, alignment: .leading)
 
             BarValue(text: device.sessions.compact, fraction: share, color: .deviceTrack)
 
             Text(verbatim: osVersion)
-                .font(.system(size: 12, design: .monospaced))
+                .font(.weight450(size: 12, design: .monospaced))
                 .foregroundStyle(Color(.systemGray))
                 .lineLimit(1)
                 .frame(width: 44, alignment: .leading)
 
             Text(verbatim: device.crashes > 0 ? "\(device.crashes)" : "—")
-                .font(.system(size: 13, weight: device.crashes > 0 ? .bold : .regular, design: .monospaced))
+                .font(device.crashes > 0 ? .system(size: 13, weight: .bold, design: .monospaced) : .weight450(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .foregroundStyle(device.crashes > 0 ? Color.crashText : Color.pending)
                 .frame(width: 56, alignment: .trailing)

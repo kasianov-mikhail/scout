@@ -17,7 +17,6 @@ struct UTCTimestampText: View {
 
     var body: some View {
         Text(utcDateFormatter.string(from: date) + " UTC")
-            .font(.system(size: size))
-            .monospaced()
+            .font(.weight450(size: size, design: .monospaced))
     }
 }

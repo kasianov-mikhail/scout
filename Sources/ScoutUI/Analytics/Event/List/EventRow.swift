@@ -18,14 +18,14 @@ struct EventRow: View {
                     .frame(width: 16, height: 16)
 
                 Text(verbatim: event.name)
-                    .font(.system(size: 16, design: .monospaced))
+                    .font(.weight450(size: 16, design: .monospaced))
                     .foregroundStyle(event.level == .critical ? criticalNameColor : Color.primary)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 if let date = event.date {
                     Text(verbatim: eventTimeFormatter.string(from: date))
-                        .font(.system(size: 13, design: .monospaced))
+                        .font(.weight450(size: 13, design: .monospaced))
                         .foregroundStyle(Color(.systemGray))
                         .lineLimit(1)
                         .frame(width: 68, alignment: .trailing)

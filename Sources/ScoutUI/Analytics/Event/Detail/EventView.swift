@@ -68,7 +68,7 @@ extension EventView {
                 }
 
                 if let level = event.level {
-                    (Text(verbatim: "LEVEL:   ") + level.descriptionText).fontWeight(.bold)
+                    (Text(verbatim: "LEVEL:   ") + level.descriptionText).bold()
                 }
             }
             .frame(height: 90)

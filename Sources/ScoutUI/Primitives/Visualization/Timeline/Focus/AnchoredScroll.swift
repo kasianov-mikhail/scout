@@ -98,7 +98,7 @@ extension EnvironmentValues {
                     Text(verbatim: "Row \(row)").monospaced()
                     Spacer()
                     if row == anchor {
-                        Text(verbatim: "anchor").foregroundStyle(.tint).font(.caption)
+                        Text(verbatim: "anchor").foregroundStyle(.tint).font(.weight450(size: 12))
                     }
                 }
                 .padding()

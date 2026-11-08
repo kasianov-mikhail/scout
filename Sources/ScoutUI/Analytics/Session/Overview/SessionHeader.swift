@@ -35,11 +35,11 @@ struct SessionHeader: View {
     @ViewBuilder
     private var summary: some View {
         if let duration = info.duration, let detail = info.detail {
-            (Text(verbatim: duration).fontWeight(.semibold) + Text(verbatim: " · \(detail)"))
-                .font(.system(size: 15))
+            (Text(verbatim: duration).font(.system(size: 15, weight: .semibold)) + Text(verbatim: " · \(detail)"))
+                .font(.weight450(size: 15))
         } else if let text = info.summary {
             Text(verbatim: text)
-                .font(.system(size: 15))
+                .font(.weight450(size: 15))
         }
     }
 
@@ -65,7 +65,7 @@ struct SessionHeader: View {
 
     private func chip(_ text: String, monospaced: Bool = false) -> some View {
         Text(verbatim: text)
-            .font(.system(size: 13))
+            .font(.weight450(size: 13))
             .monospaced(monospaced)
             .lineLimit(1)
             .padding(.horizontal, 9)

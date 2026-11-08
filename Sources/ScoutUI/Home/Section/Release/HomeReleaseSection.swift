@@ -24,7 +24,7 @@ struct HomeReleaseSection: View {
             Header(title: "Releases") {
                 Button(action: onShowAll) {
                     Image(systemName: "arrow.up.right.and.arrow.down.left")
-                        .font(.system(size: 20))
+                        .font(.weight450(size: 20))
                         .frame(width: 44, height: 44)
                         .padding(.trailing, -12)
                 }
@@ -38,7 +38,7 @@ struct HomeReleaseSection: View {
                     .font(.system(size: 24, weight: .bold))
 
                 Text(verbatim: "of sessions")
-                    .font(.subheadline)
+                    .font(.weight450(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
 
@@ -67,11 +67,11 @@ struct HomeReleaseSection: View {
             (Text(verbatim: "\(top.id) is ")
                 .foregroundColor(Color(.systemGray))
                 + Text(verbatim: top.stability.level.title)
-                .fontWeight(.semibold)
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(top.stability.level == .healthy ? Color.positive : top.stability.level.labelColor)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
                 .foregroundColor(Color(.systemGray)))
-                .font(.footnote)
+                .font(.weight450(size: 13))
         }
     }
 }

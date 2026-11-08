@@ -98,7 +98,7 @@ struct DevicesView: View {
             (Text(verbatim: "\(devices) \(devices == 1 ? "device" : "devices") in \(models.count) \(models.count == 1 ? "model" : "models") · ")
             + Text(verbatim: "\(crashing)").foregroundColor(crashing > 0 ? .crashText : Color(.systemGray))
             + Text(verbatim: " \(crashing == 1 ? "model" : "models") with crashes"))
-            .font(.system(size: 15))
+            .font(.weight450(size: 15))
             .foregroundStyle(Color(.systemGray))
             .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -127,13 +127,13 @@ private struct DeviceModelRow: View {
                     .frame(width: 20)
 
                 Text(verbatim: model.name)
-                    .font(.system(size: 15, weight: .medium))
+                    .font(.weight450(size: 15))
                     .lineLimit(1)
 
                 Spacer(minLength: 8)
 
                 Text(verbatim: "\(model.devices) \(model.devices == 1 ? "device" : "devices")")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
             }
@@ -142,13 +142,13 @@ private struct DeviceModelRow: View {
                 BarValue(text: model.sessions.compact, fraction: share, color: .deviceTrack)
 
                 Text(verbatim: model.osLabel ?? "—")
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(.weight450(size: 12, design: .monospaced))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
                     .frame(width: 112, alignment: .leading)
 
                 Text(verbatim: model.crashes > 0 ? "\(model.crashes)" : "—")
-                    .font(.system(size: 13, weight: model.crashes > 0 ? .bold : .regular, design: .monospaced))
+                    .font(model.crashes > 0 ? .system(size: 13, weight: .bold, design: .monospaced) : .weight450(size: 13, design: .monospaced))
                     .monospacedDigit()
                     .foregroundStyle(model.crashes > 0 ? Color.crashText : Color.pending)
                     .frame(width: 56, alignment: .trailing)

@@ -14,7 +14,7 @@ struct ActivityDayRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(verbatim: row.dayLabel)
-                .font(.system(size: 15))
+                .font(.weight450(size: 15))
                 .frame(width: 64, alignment: .leading)
 
             GeometryReader { proxy in
@@ -29,11 +29,11 @@ struct ActivityDayRow: View {
             .frame(height: 8)
 
             Text(verbatim: row.valueLabel)
-                .font(.system(size: 15, design: .monospaced))
+                .font(.weight450(size: 15, design: .monospaced))
                 .frame(width: 52, alignment: .trailing)
 
             Text(verbatim: row.deltaLabel)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(row.isRising ? Color.trendPositive : Color(.systemGray))
                 .frame(width: 52, alignment: .trailing)
         }

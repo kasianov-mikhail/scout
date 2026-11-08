@@ -96,7 +96,7 @@ struct ActivityViewPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: 0.24)
             SkeletonBar(width: 194, height: 9, delay: 0.24)
         }
-        .font(.system(size: 13))
+        .font(.weight450(size: 13))
         .foregroundStyle(Color(.systemGray))
         .padding(.bottom, 12)
         .overlay(alignment: .bottom) {

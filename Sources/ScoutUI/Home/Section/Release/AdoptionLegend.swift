@@ -23,7 +23,7 @@ struct AdoptionLegend: View {
                 }
             }
         }
-        .font(.system(size: 12))
+        .font(.weight450(size: 12))
         .foregroundStyle(Color(.systemGray))
     }
 }

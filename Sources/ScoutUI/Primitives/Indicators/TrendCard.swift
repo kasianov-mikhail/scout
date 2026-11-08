@@ -16,7 +16,7 @@ struct TrendCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: title.uppercased())
-                .font(.system(size: 14, weight: .medium))
+                .font(.weight450(size: 14))
                 .foregroundStyle(.secondary)
                 .padding(.leading, 1)
 
@@ -27,7 +27,7 @@ struct TrendCard: View {
                     if let count = trend?.count {
                         Text(count == 0 ? "—" : count.compact)
                     } else if trend != nil {
-                        Redacted(length: 5).font(.body)
+                        Redacted(length: 5).font(.weight450(size: 17))
                     } else {
                         Text(verbatim: "0")
                     }

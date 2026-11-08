@@ -54,7 +54,7 @@ private struct RetentionSegmentRow: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: value.name)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
 
                 HStack(spacing: 0) {
                     Text(verbatim: "\(value.installsLabel) · ")
@@ -66,7 +66,7 @@ private struct RetentionSegmentRow: View {
                     Text(verbatim: " crashed")
                         .foregroundStyle(Color(.systemGray))
                 }
-                .font(.system(size: 12))
+                .font(.weight450(size: 12))
             }
 
             Spacer(minLength: 0)

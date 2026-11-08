@@ -35,7 +35,7 @@ struct ServerOutageView: View {
                     .padding(.top, 6)
 
                 Text(verbatim: "No answer since \(since). Events wait on the devices and upload when it is back.")
-                    .font(.system(size: 17))
+                    .font(.weight450(size: 17))
                     .lineSpacing(4)
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 8)
@@ -48,7 +48,7 @@ struct ServerOutageView: View {
                     Spacer(minLength: 0)
                     Text(verbatim: "now")
                 }
-                .font(.system(size: 12))
+                .font(.weight450(size: 12))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 6)
 
@@ -101,7 +101,7 @@ struct ServerOutageView: View {
             Text(verbatim: value)
                 .monospacedDigit()
         }
-        .font(.system(size: 17))
+        .font(.weight450(size: 17))
         .frame(minHeight: 44)
         .overlay(alignment: .bottom) {
             Rectangle()

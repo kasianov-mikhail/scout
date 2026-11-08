@@ -27,7 +27,7 @@ struct SettingsNote: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.system(size: 13))
+            .font(.weight450(size: 13))
             .foregroundStyle(Color(.systemGray))
             .padding(.top, 4)
             .frame(maxWidth: .infinity, alignment: .leading)

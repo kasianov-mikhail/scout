@@ -107,7 +107,7 @@ struct ReleasePlaceholder: View {
     private var footer: some View {
         HStack(spacing: 8) {
             Text(verbatim: "Hang rate")
-                .font(.system(size: 15))
+                .font(.weight450(size: 15))
 
             Spacer()
 

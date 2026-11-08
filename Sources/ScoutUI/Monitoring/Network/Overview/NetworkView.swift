@@ -68,7 +68,7 @@ struct NetworkView: View {
                 .listRowSeparator(.hidden)
 
             Text(verbatim: summary.text)
-                .font(.system(size: 15))
+                .font(.weight450(size: 15))
                 .foregroundStyle(Color(.systemGray))
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, 4)
