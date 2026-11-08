@@ -64,7 +64,7 @@ struct DeviceHistoryTests {
 
         let events = [DeviceHistoryEvent](installs: [], versions: versions, sessions: [])
 
-        #expect(events.map(\.title) == ["Updated to", "First seen"])
+        #expect(events.map(\.title) == ["Updated to", "First seen with"])
         #expect(events.map(\.version) == ["1.1", "1.0"])
     }
 

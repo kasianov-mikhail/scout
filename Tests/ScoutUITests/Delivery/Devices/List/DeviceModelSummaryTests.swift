@@ -55,7 +55,7 @@ struct DeviceModelSummaryTests {
 
         let summaries = [DeviceModelSummary](activities: activities)
 
-        #expect(summaries.map(\.name) == ["iPhone 15 Pro", "iPad Air", "iPhone 13"])
+        #expect(summaries.map(\.name) == ["iPhone 15 Pro", "iPad Air (4th generation)", "iPhone 13"])
     }
 
     @Test("Devices without a model group under Unknown")

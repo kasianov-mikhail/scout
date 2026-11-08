@@ -29,8 +29,20 @@ struct DeviceHistoryEvent: Identifiable {
         case .updated:
             "Updated to"
         case .os(let from, let to):
-            "\(from) → \(to)"
+            osTitle(from: from, to: to)
         }
+    }
+
+    private func osTitle(from: String, to: String) -> String {
+        let parts = from.split(separator: " ", maxSplits: 1)
+        guard parts.count == 2 else {
+            return "\(from) → \(to)"
+        }
+        let prefix = "\(parts[0]) "
+        guard to.hasPrefix(prefix) else {
+            return "\(from) → \(to)"
+        }
+        return "\(from) → \(to.dropFirst(prefix.count))"
     }
 
     var version: String? {
