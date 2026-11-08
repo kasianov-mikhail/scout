@@ -16,7 +16,7 @@ package struct Version {
     package let launchID: UUID?
     package let installID: UUID?
     package let date: Date?
-    let id: String
+    package let id: String
 
     package init(appVersion: String?, buildNumber: String?, launchID: UUID?, installID: UUID? = nil, date: Date?, id: String) {
         self.appVersion = appVersion
