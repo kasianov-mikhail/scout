@@ -27,7 +27,7 @@ struct AdoptionBar: View {
                         .overlay(alignment: .leading) {
                             if version.showsLabel {
                                 Text(verbatim: version.id)
-                                    .font(.system(size: labelSize, weight: labelWeight, design: .monospaced))
+                                    .font(.weighted(size: labelSize, weight: labelWeight, design: .monospaced))
                                     .foregroundStyle(.white)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)

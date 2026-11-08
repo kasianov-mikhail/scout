@@ -20,7 +20,7 @@ struct DataMismatchView: View {
                     .font(.system(size: 28, weight: .bold))
 
                 Text(verbatim: "The server answered, but Scout couldn't read the reply. The app and the server may run different Scout versions.")
-                    .font(.system(size: 17))
+                    .font(.weight450(size: 17))
                     .lineSpacing(4)
                     .foregroundStyle(.secondary)
                     .padding(.top, 8)
@@ -70,7 +70,7 @@ struct DataMismatchView: View {
                 .foregroundStyle(color)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .font(.system(size: 13, design: .monospaced))
+        .font(.weight450(size: 13, design: .monospaced))
         .lineSpacing(3)
         .padding(.vertical, 3)
     }

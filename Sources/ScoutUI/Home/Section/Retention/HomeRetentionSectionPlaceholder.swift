@@ -17,7 +17,7 @@ struct HomeRetentionSectionPlaceholder: View {
                 Spacer()
 
                 Text(verbatim: "kept on day 7")
-                    .font(.footnote)
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
             .padding(.top, 12)
@@ -33,7 +33,7 @@ struct HomeRetentionSectionPlaceholder: View {
             }
 
             Text(verbatim: "Gray: installs that week · green: kept")
-                .font(.footnote)
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 4)
                 .padding(.bottom, 6)

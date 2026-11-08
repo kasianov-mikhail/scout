@@ -65,8 +65,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
             ForEach(groups) { group in
                 Row {
                     Text(verbatim: group.name)
-                        .font(.callout)
-                        .monospaced()
+                        .font(.weight450(size: 16, design: .monospaced))
                         .lineLimit(1)
 
                     Spacer()

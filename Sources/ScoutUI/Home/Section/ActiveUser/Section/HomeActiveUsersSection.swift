@@ -35,7 +35,7 @@ struct HomeActiveUsersSection: View {
                     onShowAll(selected)
                 } label: {
                     Image(systemName: "arrow.up.right.and.arrow.down.left")
-                        .font(.system(size: 20))
+                        .font(.weight450(size: 20))
                         .frame(width: 44, height: 44)
                         .padding(.trailing, -12)
                 }
@@ -79,7 +79,7 @@ struct HomeActiveUsersSection: View {
                 Text(verbatim: "Stickiness ")
 
                 Text(verbatim: users.stickinessLabel)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.primary)
 
                 Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
@@ -88,7 +88,7 @@ struct HomeActiveUsersSection: View {
                     Text(verbatim: "Median ")
 
                     Text(verbatim: median)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 13, weight: .semibold))
                         .foregroundStyle(.primary)
 
                     Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
@@ -101,13 +101,13 @@ struct HomeActiveUsersSection: View {
                 }
 
                 Text(verbatim: users.devicesThisWeekLabel)
-                    .fontWeight(.semibold)
+                    .font(.system(size: 13, weight: .semibold))
                     .foregroundStyle(.primary)
 
                 Text(verbatim: " this week")
             }
         }
-        .font(.footnote)
+        .font(.weight450(size: 13))
         .foregroundStyle(Color(.systemGray))
     }
 }
@@ -128,7 +128,7 @@ private struct ActiveUserMetricView: View {
                 .frame(height: 34, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel)
-                .font(.footnote)
+                .font(.weight450(size: 13))
                 .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.red)
         }
         .padding(.vertical, 10)

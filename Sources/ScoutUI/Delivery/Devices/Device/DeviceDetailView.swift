@@ -66,7 +66,7 @@ struct DeviceDetailView: View {
                     showTimeline = true
                 } label: {
                     Text(verbatim: "TIMELINE")
-                        .font(.system(size: 16, weight: .medium))
+                        .font(.weight450(size: 16))
                         .foregroundStyle(.blue)
                 }
                 .buttonStyle(.plain)
@@ -75,7 +75,7 @@ struct DeviceDetailView: View {
 
             if detail.recentSessions.isEmpty {
                 Text(verbatim: "No sessions in this period")
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.vertical, 12)
                     .listRowSeparator(.hidden)
@@ -102,7 +102,7 @@ struct DeviceDetailView: View {
 
             SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 Text(verbatim: detail.activeDaysLabel)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
             .listRowSeparator(.hidden)
@@ -112,7 +112,7 @@ struct DeviceDetailView: View {
                 .listRowSeparator(.hidden)
 
             Text(verbatim: detail.activityCaption)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 12)
                 .padding(.bottom, 16)
@@ -126,7 +126,7 @@ struct DeviceDetailView: View {
                 .listRowSeparator(.hidden)
 
             Text(verbatim: detail.usageCaption)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 12)
                 .padding(.bottom, 16)
@@ -137,7 +137,7 @@ struct DeviceDetailView: View {
 
     private func subtitle(_ summary: DeviceSummary) -> some View {
         Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
-            .font(.system(size: 15))
+            .font(.weight450(size: 15))
             .foregroundStyle(Color(.systemGray))
             .lineLimit(2)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -196,7 +196,7 @@ struct StatColumn<Value: View>: View {
             value()
 
             Text(verbatim: title)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.vertical, 14)
@@ -222,7 +222,7 @@ private struct SessionLine: View {
                 .frame(width: 8, height: 8)
 
             Text(verbatim: session.time)
-                .font(.system(size: 13, design: .monospaced))
+                .font(.weight450(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .lineLimit(1)
                 .frame(width: 76, alignment: .leading)
@@ -230,7 +230,7 @@ private struct SessionLine: View {
             BarValue(text: session.durationText ?? "—", fraction: share, color: .deviceTrack)
 
             Text(verbatim: session.appVersion ?? "—")
-                .font(.system(size: 12, design: .monospaced))
+                .font(.weight450(size: 12, design: .monospaced))
                 .monospacedDigit()
                 .foregroundStyle(Color(.systemGray))
                 .lineLimit(1)
@@ -275,7 +275,7 @@ private struct HistoryRow: View {
             .frame(width: 8, height: 44)
 
             Text(verbatim: event.dateText)
-                .font(.system(size: 13, design: .monospaced))
+                .font(.weight450(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .leading)
@@ -283,7 +283,7 @@ private struct HistoryRow: View {
             (Text(verbatim: event.title)
                 + Text(verbatim: event.version.map { " " + $0 } ?? "")
                 .font(.system(size: 14, weight: .semibold, design: .monospaced)))
-                .font(.system(size: 15))
+                .font(.weight450(size: 15))
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .frame(minHeight: 44)
@@ -313,7 +313,7 @@ private struct DeviceActivityChart: View {
                 VStack(spacing: 4) {
                     if showsCounts {
                         Text(verbatim: point.count > 0 ? "\(point.count)" : "—")
-                            .font(.system(size: 10, design: .monospaced))
+                            .font(.weight450(size: 10, design: .monospaced))
                             .monospacedDigit()
                             .foregroundStyle(point.count > 0 ? Color(.systemGray) : Color.pending)
                             .lineLimit(1)
@@ -328,7 +328,7 @@ private struct DeviceActivityChart: View {
                     .frame(height: 56)
 
                     Text(verbatim: point.showsLabel ? point.label : "")
-                        .font(.system(size: 11, weight: point.isCurrent ? .semibold : .regular))
+                        .font(point.isCurrent ? .system(size: 11, weight: .semibold) : .weight450(size: 11))
                         .foregroundStyle(point.isCurrent ? Color.primary : Color(.systemGray))
                         .lineLimit(1)
                 }
@@ -364,7 +364,7 @@ private struct UsageGrid: View {
             ForEach(0..<7, id: \.self) { day in
                 HStack(spacing: 6) {
                     Text(verbatim: labels[day])
-                        .font(.system(size: 10))
+                        .font(.weight450(size: 10))
                         .foregroundStyle(Color(.systemGray))
                         .frame(width: 10, alignment: .leading)
 
@@ -389,7 +389,7 @@ private struct UsageGrid: View {
                 Spacer()
                 Text(verbatim: "23")
             }
-            .font(.system(size: 10, design: .monospaced))
+            .font(.weight450(size: 10, design: .monospaced))
             .foregroundStyle(Color(.systemGray))
             .padding(.leading, 16)
             .padding(.top, 3)

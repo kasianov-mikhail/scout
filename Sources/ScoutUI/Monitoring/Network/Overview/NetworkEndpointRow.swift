@@ -21,7 +21,7 @@ struct NetworkEndpointRow: View {
                 }
 
                 Text(verbatim: endpoint.path)
-                    .font(.system(size: 13, design: .monospaced))
+                    .font(.weight450(size: 13, design: .monospaced))
                     .lineLimit(1)
                     .mask(alignment: .trailing) {
                         HStack(spacing: 0) {
@@ -43,11 +43,11 @@ struct NetworkEndpointRow: View {
                     .frame(width: 56, alignment: .trailing)
 
                 Text(verbatim: endpoint.p99.networkP99Value)
-                    .fontWeight(endpoint.p99.networkP99Weight)
+                    .font(.weighted(size: 13, weight: endpoint.p99.networkP99Weight, design: .monospaced))
                     .foregroundStyle(endpoint.p99.networkP99Color)
                     .frame(width: 64, alignment: .trailing)
             }
-            .font(.system(size: 13, design: .monospaced))
+            .font(.weight450(size: 13, design: .monospaced))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 10)

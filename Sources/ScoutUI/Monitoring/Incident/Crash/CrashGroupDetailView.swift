@@ -98,14 +98,14 @@ struct CrashGroupDetailView: View {
         Row {
             if let date = crash.date {
                 Text(verbatim: date.relativeString)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
             }
 
             Spacer()
 
             if let label = breakdown.value?.occurrenceLabel(record: crash) {
                 Text(verbatim: label)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
             }

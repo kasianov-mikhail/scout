@@ -74,7 +74,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
         VStack(alignment: .leading, spacing: 6) {
             if let reason = element.reason {
                 Text(verbatim: reason)
-                    .font(.system(size: 15, design: .monospaced))
+                    .font(.weight450(size: 15, design: .monospaced))
                     .foregroundStyle(Element.kind.detailColor)
                     .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: true)
@@ -82,7 +82,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
 
             if let meta = metaText(version: contextValue?.appVersion) {
                 meta
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
 
@@ -108,13 +108,13 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
             parts.append(Text(verbatim: date))
         }
         if let accent = meta.accent {
-            parts.append(Text(verbatim: accent).foregroundColor(Element.kind.detailColor).fontWeight(.semibold))
+            parts.append(Text(verbatim: accent).foregroundColor(Element.kind.detailColor).font(.system(size: 13, weight: .semibold)))
         }
         if let source = meta.source {
             parts.append(Text(verbatim: source))
         }
         if let version {
-            parts.append(Text(verbatim: version).font(.system(size: 13, design: .monospaced)))
+            parts.append(Text(verbatim: version).font(.weight450(size: 13, design: .monospaced)))
         }
 
         guard let first = parts.first else {
@@ -162,7 +162,7 @@ extension IncidentDetailHeader where Trailing == Text {
     init(title: String, caption: String) {
         self.init(title: title) {
             Text(verbatim: caption)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundColor(Color(.systemGray))
         }
     }
@@ -176,7 +176,7 @@ private struct IncidentCulpritCard<Element: Incident & IncidentDetailInfo>: View
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             Text(verbatim: element.detailCulprit)
-                .font(.system(size: 12))
+                .font(.weight450(size: 12))
                 .foregroundStyle(Color(.systemGray))
 
             if let symbol = culprit.symbol {
@@ -187,15 +187,15 @@ private struct IncidentCulpritCard<Element: Incident & IncidentDetailInfo>: View
 
             if let location = culprit.location {
                 Text(verbatim: location.text)
-                    .font(.system(size: 12, design: .monospaced))
+                    .font(.weight450(size: 12, design: .monospaced))
                     .foregroundStyle(Element.kind.detailColor)
             }
 
             if let caller, let callerSymbol = caller.bareSymbol, let callerLocation = caller.location {
                 (Text(verbatim: "called from ")
-                    + Text(verbatim: callerSymbol).font(.system(size: 12, design: .monospaced)).foregroundColor(.primary)
+                    + Text(verbatim: callerSymbol).font(.weight450(size: 12, design: .monospaced)).foregroundColor(.primary)
                     + Text(verbatim: " · line \(callerLocation.line)"))
-                    .font(.system(size: 12))
+                    .font(.weight450(size: 12))
                     .foregroundStyle(Color(.systemGray))
             }
         }

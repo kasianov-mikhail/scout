@@ -21,13 +21,13 @@ extension SessionTimelineRowView {
     var titleFont: Font {
         switch row.kind {
         case .event:
-            .system(size: 16, design: .monospaced)
+            .weight450(size: 16, design: .monospaced)
         case .screen, .crash, .hang, .resource:
             .system(size: 16, weight: .semibold)
         case .start, .end:
             .system(size: 13, weight: .semibold)
         case .gap:
-            .system(size: 13)
+            .weight450(size: 13)
         }
     }
 
@@ -53,9 +53,9 @@ extension SessionTimelineRowView {
     var subtitleFont: Font {
         switch row.kind {
         case .crash, .hang, .resource:
-            .system(size: 13, design: .monospaced)
+            .weight450(size: 13, design: .monospaced)
         default:
-            .system(size: 13)
+            .weight450(size: 13)
         }
     }
 

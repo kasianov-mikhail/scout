@@ -16,7 +16,7 @@ struct ParamIcon: View {
             switch value.icon {
             case .symbol(let name):
                 Image(systemName: name)
-                    .font(.body)
+                    .font(.weight450(size: 17))
             case .text(let text):
                 Text(text)
                     .font(.body.weight(.semibold))

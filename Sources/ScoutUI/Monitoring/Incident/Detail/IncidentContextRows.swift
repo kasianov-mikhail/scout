@@ -136,7 +136,7 @@ private struct IncidentContextRow: View {
                     .frame(width: 24)
             } else {
                 Image(systemName: systemImage)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
                     .frame(width: 24)
                     .foregroundStyle(color)
             }
@@ -145,7 +145,7 @@ private struct IncidentContextRow: View {
                 SkeletonBar(width: 88, height: 9, delay: delay)
             } else if let label {
                 Text(verbatim: label)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
                     .lineLimit(1)
             }
 
@@ -155,7 +155,7 @@ private struct IncidentContextRow: View {
                 SkeletonBar(width: 74, height: 9, delay: delay)
             } else if let value {
                 Text(verbatim: value)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
             }

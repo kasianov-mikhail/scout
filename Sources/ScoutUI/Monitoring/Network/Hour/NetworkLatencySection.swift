@@ -24,7 +24,7 @@ struct NetworkLatencyChart: View {
                     }
 
                     Text(verbatim: band.label)
-                        .font(.system(size: 10, design: .monospaced))
+                        .font(.weight450(size: 10, design: .monospaced))
                         .foregroundStyle(Color(.systemGray))
                 }
                 .frame(maxWidth: .infinity)
@@ -57,7 +57,7 @@ struct NetworkPercentileRow: View {
             item(label: "p90", value: percentiles?.p90.duration ?? "—", color: .primary, weight: .regular)
             item(label: "p99", value: percentiles.map(\.p99.duration) ?? "—", color: percentiles.map(\.p99.networkP99Color) ?? Color(.systemGray), weight: percentiles.map(\.p99.networkP99Weight) ?? .regular)
         }
-        .font(.system(size: 12, design: .monospaced))
+        .font(.weight450(size: 12, design: .monospaced))
         .padding(.top, 10)
         .padding(.bottom, 14)
     }
@@ -67,7 +67,7 @@ struct NetworkPercentileRow: View {
             Text(verbatim: label)
                 .foregroundStyle(Color(.systemGray))
             Text(verbatim: value)
-                .fontWeight(weight)
+                .font(.weighted(size: 12, weight: weight, design: .monospaced))
                 .foregroundStyle(color)
         }
     }

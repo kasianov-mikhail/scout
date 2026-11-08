@@ -41,7 +41,7 @@ private struct FilterIDField: View {
             FilterBox {
                 HStack(spacing: 0) {
                     Text(verbatim: text.isEmpty ? placeholder : text)
-                        .font(text.isEmpty ? .system(size: 17) : .system(size: 15, design: .monospaced))
+                        .font(text.isEmpty ? .weight450(size: 17) : .weight450(size: 15, design: .monospaced))
                         .foregroundStyle(!isValid ? Color.red : text.isEmpty ? Color(.systemGray3) : Color.primary)
                         .lineLimit(1)
                         .truncationMode(.middle)
@@ -67,7 +67,7 @@ private struct FilterIDField: View {
 
             if !isValid {
                 Text(verbatim: "Not a valid ID")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(.red)
             }
         }

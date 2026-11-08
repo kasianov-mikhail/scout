@@ -110,7 +110,7 @@ struct AlertSwipeRow<Content: View>: View {
                 .frame(width: capsuleWidth, height: swipeActionSize)
                 .overlay(alignment: side.alignment) {
                     Image(systemName: icon)
-                        .font(.system(size: 17, weight: .medium))
+                        .font(.weight450(size: 17))
                         .foregroundStyle(.white)
                         .padding(side.iconPadding, 14)
                 }

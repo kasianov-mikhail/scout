@@ -15,16 +15,47 @@ import SwiftUI
 
 extension Font {
     static let placeholderTitle = Font.system(size: 18, weight: .semibold)
-    static let codeChip = Font.system(size: 14, design: .monospaced)
+    static let codeChip = Font.weight450(size: 14, design: .monospaced)
     static let listTitle = Font.system(size: 28, weight: .bold, design: .rounded)
-    static let telemetryTitle = Font.system(size: 16, variableWeight: 0.12)
-    static let telemetryCaption = Font.system(size: 13, variableWeight: 0.12)
+    static let telemetryTitle = Font.weight450(size: 16)
+    static let telemetryCaption = Font.weight450(size: 13)
 
-    static func system(size: CGFloat, variableWeight: CGFloat) -> Font {
+    static func weight450(size: CGFloat, design: Font.Design = .default) -> Font {
         #if os(iOS)
-            Font(UIFont.systemFont(ofSize: size, weight: UIFont.Weight(rawValue: variableWeight)))
+            let weight = UIFont.Weight(rawValue: 0.12)
+            switch design {
+            case .monospaced:
+                return Font(UIFont.monospacedSystemFont(ofSize: size, weight: weight))
+            case .rounded, .serif:
+                let base = UIFont.systemFont(ofSize: size, weight: weight)
+                let systemDesign: UIFontDescriptor.SystemDesign = design == .rounded ? .rounded : .serif
+                let descriptor = base.fontDescriptor.withDesign(systemDesign) ?? base.fontDescriptor
+                return Font(UIFont(descriptor: descriptor, size: size))
+            default:
+                return Font(UIFont.systemFont(ofSize: size, weight: weight))
+            }
         #else
-            Font(NSFont.systemFont(ofSize: size, weight: NSFont.Weight(rawValue: variableWeight)))
+            let weight = NSFont.Weight(rawValue: 0.12)
+            switch design {
+            case .monospaced:
+                return Font(NSFont.monospacedSystemFont(ofSize: size, weight: weight))
+            case .rounded, .serif:
+                let base = NSFont.systemFont(ofSize: size, weight: weight)
+                let systemDesign: NSFontDescriptor.SystemDesign = design == .rounded ? .rounded : .serif
+                let descriptor = base.fontDescriptor.withDesign(systemDesign) ?? base.fontDescriptor
+                return Font(NSFont(descriptor: descriptor, size: size) ?? base)
+            default:
+                return Font(NSFont.systemFont(ofSize: size, weight: weight))
+            }
         #endif
+    }
+
+    static func weighted(size: CGFloat, weight: Font.Weight, design: Font.Design) -> Font {
+        switch weight {
+        case .regular, .medium:
+            .weight450(size: size, design: design)
+        default:
+            .system(size: size, weight: weight, design: design)
+        }
     }
 }

@@ -45,7 +45,7 @@ struct SectionHeader<Trailing: View>: View {
         SectionHeader(title: "HISTORY", topPadding: 12)
         SectionHeader(title: "SESSIONS", topPadding: 12) {
             Text(verbatim: "TIMELINE")
-                .font(.system(size: 16, weight: .medium))
+                .font(.weight450(size: 16))
                 .foregroundStyle(.blue)
         }
         SectionHeader(title: "DEVICES", showsSeparator: false)

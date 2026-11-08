@@ -18,11 +18,11 @@ struct ReleaseHero: View {
                     .tracking(-0.5)
 
                 Text(verbatim: detail.statusLabel)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
                     .foregroundStyle(level.labelColor)
 
                 Text(verbatim: detail.subtitle)
-                    .font(.system(size: 15))
+                    .font(.weight450(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
 

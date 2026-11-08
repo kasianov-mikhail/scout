@@ -48,7 +48,7 @@ struct ActivityMetricTabs: View {
                 .frame(height: 33, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel(precision: 1))
-                .font(.footnote)
+                .font(.weight450(size: 13))
                 .foregroundStyle(metric.isRising ? Color.trendPositive : Color(.systemGray))
         }
         .padding(.top, 10)

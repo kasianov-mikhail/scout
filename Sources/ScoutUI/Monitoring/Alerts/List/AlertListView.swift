@@ -160,7 +160,7 @@ private struct AlertListSectionHeader: View {
             Spacer()
 
             Text(verbatim: "\(count)")
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.top, 12)
@@ -185,7 +185,7 @@ struct AlertListLegend: View {
                 Spacer()
                 Text(verbatim: "now")
             }
-            .font(.system(size: 10, design: .monospaced))
+            .font(.weight450(size: 10, design: .monospaced))
             .foregroundStyle(Color(.systemGray))
             .opacity(showsAxis ? 1 : 0)
 
@@ -193,7 +193,7 @@ struct AlertListLegend: View {
                 legendItem(color: Color(.systemGray), title: "breached")
                 legendItem(color: Color(.systemRed), title: "firing now")
             }
-            .font(.system(size: 12))
+            .font(.weight450(size: 12))
             .foregroundStyle(Color(.systemGray))
         }
     }

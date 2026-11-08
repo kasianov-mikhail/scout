@@ -39,7 +39,7 @@ struct BarValue: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.system(size: 13, design: .monospaced))
+            .font(.weight450(size: 13, design: .monospaced))
             .monospacedDigit()
             .padding(.horizontal, 4)
             .frame(maxWidth: .infinity, alignment: .leading)

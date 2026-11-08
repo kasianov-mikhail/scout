@@ -56,7 +56,7 @@ struct StatView: View {
 
                 Header(title: "Weekly Pattern") {
                     Text(verbatim: "Last 4 weeks")
-                        .font(.footnote)
+                        .font(.weight450(size: 13))
                         .foregroundStyle(.secondary)
                 }
                 .listRowSeparator(.hidden, edges: .bottom)

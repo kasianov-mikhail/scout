@@ -111,7 +111,7 @@ struct ReleaseView: View {
     private func hangRate(_ value: ReleaseHangRate) -> some View {
         HStack(spacing: 8) {
             Text(verbatim: "Hang rate")
-                .font(.system(size: 15))
+                .font(.weight450(size: 15))
 
             Spacer()
 
@@ -122,8 +122,7 @@ struct ReleaseView: View {
                     Text(verbatim: " · \(change)")
                 }
             }
-            .font(.system(size: 13, design: .monospaced))
-            .fontWeight(.semibold)
+            .font(.system(size: 13, weight: .semibold, design: .monospaced))
             .foregroundStyle(value.color)
         }
         .padding(.vertical, 6)

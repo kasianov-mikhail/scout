@@ -59,14 +59,14 @@ struct SettingsSegmentCell: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: title)
-                .font(.system(size: 15, weight: isSelected ? .bold : .medium))
+                .font(isSelected ? .system(size: 15, weight: .bold) : .weight450(size: 15))
                 .foregroundStyle(foreground)
                 .lineLimit(1)
 
             if hasDetail {
                 if let detail, state != .loading {
                     Text(verbatim: detail)
-                        .font(.system(size: 11))
+                        .font(.weight450(size: 11))
                         .foregroundStyle(detailForeground)
                         .lineLimit(1)
                 } else {

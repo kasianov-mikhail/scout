@@ -14,13 +14,13 @@ struct NetworkEndpointHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(verbatim: endpoint.path)
-                .font(.system(size: 15, design: .monospaced))
+                .font(.weight450(size: 15, design: .monospaced))
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             methodText
                 + Text(verbatim: " · " + phrase)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundColor(Color(.systemGray))
         }
         .padding(.top, 4)

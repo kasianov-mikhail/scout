@@ -36,7 +36,7 @@ struct RetentionHero: View {
             }
 
             Text(verbatim: subtitle)
-                .font(.system(size: 17))
+                .font(.weight450(size: 17))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.top, 16)

@@ -21,7 +21,7 @@ struct NetworkStatusRow: View {
                 .frame(width: 14, alignment: .leading)
 
             Text(verbatim: item.label)
-                .fontWeight(item.isFailure ? .semibold : .regular)
+                .font(.weighted(size: 13, weight: item.isFailure ? .semibold : .regular, design: .monospaced))
                 .foregroundStyle(item.labelColor)
                 .frame(width: 44, alignment: .leading)
 
@@ -32,7 +32,7 @@ struct NetworkStatusRow: View {
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .trailing)
         }
-        .font(.system(size: 13, design: .monospaced))
+        .font(.weight450(size: 13, design: .monospaced))
         .frame(height: 40)
         .overlay(alignment: .bottom) {
             DashedLine()

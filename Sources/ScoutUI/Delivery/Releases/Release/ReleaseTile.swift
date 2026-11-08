@@ -44,7 +44,7 @@ struct ReleaseTile: View {
     private var content: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(verbatim: value.title)
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
 
             Text(verbatim: value.value)
@@ -57,7 +57,7 @@ struct ReleaseTile: View {
 
             if let footer = value.footer {
                 Text(verbatim: footer)
-                    .font(.system(size: 12))
+                    .font(.weight450(size: 12))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)

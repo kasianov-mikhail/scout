@@ -67,7 +67,7 @@ struct SessionTimelineRowView: View {
 
                 if let time = row.time {
                     Text(verbatim: time)
-                        .font(.system(size: 12, design: .monospaced))
+                        .font(.weight450(size: 12, design: .monospaced))
                         .foregroundStyle(Color.timelineMuted)
                         .layoutPriority(1)
                 }

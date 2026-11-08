@@ -169,7 +169,7 @@ struct MetricHistogramChart: View {
             ZStack(alignment: .topLeading) {
                 ForEach(layout.labelIndices, id: \.self) { index in
                     Text(verbatim: layout.label(at: index, format: format))
-                        .font(.system(size: 9, design: .monospaced))
+                        .font(.weight450(size: 9, design: .monospaced))
                         .foregroundStyle(Color(.systemGray))
                         .position(
                             x: (CGFloat(index) + 0.5) / CGFloat(counts.count) * proxy.size.width,

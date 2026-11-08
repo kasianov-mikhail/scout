@@ -78,12 +78,12 @@ private struct ActivityStickiness: View {
             Text(verbatim: "Stickiness ")
 
             Text(verbatim: series.stickinessLabel)
-                .fontWeight(.semibold)
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundStyle(.primary)
 
             Text(verbatim: " · a monthly user comes \(series.daysPerMonthLabel) days a month")
         }
-        .font(.system(size: 13))
+        .font(.weight450(size: 13))
         .foregroundStyle(Color(.systemGray))
         .lineLimit(1)
         .minimumScaleFactor(0.8)
@@ -106,7 +106,7 @@ struct ActivityRowsHeader: View {
             Spacer()
 
             Text(verbatim: "vs day before")
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .frame(height: 56)

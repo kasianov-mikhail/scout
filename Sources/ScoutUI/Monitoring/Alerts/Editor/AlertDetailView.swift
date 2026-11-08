@@ -51,7 +51,7 @@ struct AlertDetailView: View {
                 }
 
                 Text(verbatim: draft.hint)
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 4)
 
@@ -197,7 +197,7 @@ private struct AlertNowCard: View {
             }
 
             Text(verbatim: " \(unit)")
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.vertical, 10)
@@ -220,7 +220,7 @@ private struct AlertNowCard: View {
     private func stat(title: String, text: String?, color: Color, showsDivider: Bool) -> some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: title)
-                .font(.system(size: 11))
+                .font(.weight450(size: 11))
                 .foregroundStyle(Color(.systemGray))
 
             if let text {

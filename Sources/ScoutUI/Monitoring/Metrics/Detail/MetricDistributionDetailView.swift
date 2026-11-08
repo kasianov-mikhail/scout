@@ -85,7 +85,7 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                 .listRowSeparator(.hidden)
 
                 Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
-                    .font(.system(size: 13))
+                    .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -191,7 +191,7 @@ private struct MetricQuantileSelector: View {
                 .minimumScaleFactor(0.7)
 
             Text(verbatim: delta?.formatted ?? "—")
-                .font(.system(size: 13))
+                .font(.weight450(size: 13))
                 .foregroundStyle(tone(delta, quantile).color)
         }
         .padding(.top, 10)

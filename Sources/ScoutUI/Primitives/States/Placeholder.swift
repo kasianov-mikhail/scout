@@ -17,7 +17,7 @@ struct Placeholder: View {
         VStack(spacing: 12) {
             if let systemImage {
                 Image(systemName: systemImage)
-                    .font(.system(size: 36))
+                    .font(.weight450(size: 36))
                     .foregroundStyle(.gray.opacity(0.5))
             }
 
@@ -27,7 +27,7 @@ struct Placeholder: View {
 
             if let description {
                 Text(description)
-                    .font(.body)
+                    .font(.weight450(size: 17))
                     .kerning(0.3)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)

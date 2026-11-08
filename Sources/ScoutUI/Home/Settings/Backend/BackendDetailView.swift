@@ -268,7 +268,7 @@ private struct SettingsAddressRow: View {
     var body: some View {
         HStack(spacing: 0) {
             Text(verbatim: value)
-                .font(.system(size: 15, weight: .medium, design: .monospaced))
+                .font(.weight450(size: 15, design: .monospaced))
                 .padding(.horizontal, 8)
                 .padding(.vertical, 10)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -299,7 +299,7 @@ private struct SettingsColumn: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: title)
-                .font(.system(size: 11))
+                .font(.weight450(size: 11))
                 .foregroundStyle(Color(.systemGray))
                 .lineLimit(1)
 
