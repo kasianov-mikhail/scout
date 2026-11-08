@@ -104,49 +104,6 @@ extension TimelineRowsBuilder {
     }
 }
 
-extension TimelineRowsBuilder {
-    private static func group<Element>(_ elements: [Element], by keyPath: KeyPath<Element, UUID?>) -> [UUID: [Element]] {
-        var result: [UUID: [Element]] = [:]
-        for element in elements {
-            guard let id = element[keyPath: keyPath] else {
-                continue
-            }
-            result[id, default: []].append(element)
-        }
-        return result
-    }
-
-    private static func bounds(for starts: [Date]) -> [Date: Date] {
-        var result: [Date: Date] = [:]
-        var next: Date?
-        for start in Set(starts).sorted(by: >) {
-            if let next {
-                result[start] = next
-            }
-            next = start
-        }
-        return result
-    }
-
-    private static func range(for starts: [Date]) -> ClosedRange<Date>? {
-        guard let lower = starts.min(), let upper = starts.max() else {
-            return nil
-        }
-        return lower...upper
-    }
-
-    private static func versions(_ versions: [Version]) -> [UUID: String] {
-        var result: [UUID: String] = [:]
-        for version in versions.sorted(byDate: \.date) {
-            guard let launchID = version.launchID, let appVersion = version.appVersion else {
-                continue
-            }
-            result[launchID] = appVersion
-        }
-        return result
-    }
-}
-
 private let timelineTimeFormatter = DateFormatter(format: "HH:mm")
 private let timelineSecondFormatter = DateFormatter(format: "HH:mm:ss")
 private let timelineDayFormatter = DateFormatter(format: "MMM d")

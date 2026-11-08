@@ -8,15 +8,8 @@
 import Foundation
 import Scout
 
-struct TimelineSample {
-    let rail: Rail
-    let incidents: TimelineIncidents
-
-    var focus: TimelineFocus? {
-        incidents.crashes.first { $0.sessionID != nil }.map { TimelineFocus(crash: $0) }
-    }
-
-    static var sample: TimelineSample {
+extension TimelineSample.Records {
+    static var sample: Self {
         let now = Date()
         let base = now.addingTimeInterval(-3 * 86_400)
         let deviceID = UUID()
@@ -171,7 +164,7 @@ struct TimelineSample {
             crashes: [crash, launchCrash]
         )
 
-        return TimelineSample(
+        return Self(
             rail: rail,
             incidents: TimelineIncidents(
                 crashes: [crash, launchCrash],
