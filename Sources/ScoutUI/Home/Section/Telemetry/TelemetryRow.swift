@@ -30,7 +30,7 @@ struct TelemetryRow: View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(alignment: .firstTextBaseline, spacing: 8) {
                         Text(verbatim: item.kind.title)
-                            .font(.callout)
+                            .font(.telemetryTitle)
 
                         Spacer(minLength: 0)
 
@@ -40,7 +40,7 @@ struct TelemetryRow: View {
                     }
 
                     Text(verbatim: item.caption)
-                        .font(.footnote)
+                        .font(.telemetryCaption)
                         .foregroundStyle(Color(.systemGray))
                 }
             }
