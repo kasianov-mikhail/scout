@@ -24,9 +24,25 @@ struct HomeList: View {
 
     @Environment(\.database) private var database
 
+    @State private var ink = true
+    @State private var wasLoading = false
+
     var body: some View {
         content
             .animation(.easeOut(duration: 0.2), value: isLoading)
+            .task(id: isLoading) {
+                if isLoading {
+                    wasLoading = true
+                    ink = false
+                } else if wasLoading {
+                    try? await Task.sleep(for: .milliseconds(200))
+                    guard !Task.isCancelled else {
+                        return
+                    }
+                    ink = true
+                    wasLoading = false
+                }
+            }
             .fetchTask(providers)
     }
 
@@ -50,6 +66,7 @@ struct HomeList: View {
     fileprivate var skeleton: some View {
         InsetList {
             HomeAlertSection(history: nil) {}
+                .padding(.top, 6)
             HomeActiveUsersSection(users: nil) { _ in }
             HomeTelemetrySection(items: nil) { _ in }
             HomeReleaseSection(adoption: nil) {}
@@ -90,6 +107,8 @@ struct HomeList: View {
             HomeAlertSection(history: snapshot.alerts) {
                 path.append(.alerts)
             }
+            .padding(.top, 6)
+            .homeInk(0, isInked: ink)
             HomeActiveUsersSection(users: snapshot.users) { kind in
                 switch kind {
                 case .sessions:
@@ -98,6 +117,7 @@ struct HomeList: View {
                     path.append(.activity)
                 }
             }
+            .homeInk(1, isInked: ink)
             HomeTelemetrySection(items: snapshot.telemetry) { kind in
                 switch kind {
                 case .events:
@@ -114,15 +134,17 @@ struct HomeList: View {
                     path.append(.resources)
                 }
             }
+            .homeInk(2, isInked: ink)
             HomeReleaseSection(adoption: snapshot.releases) {
                 path.append(.releaseHealth)
             }
+            .homeInk(3, isInked: ink)
             HomeRetentionSection(weeks: snapshot.retention) {
                 path.append(.retention)
             }
+            .homeInk(4, isInked: ink)
         }
         .scrollContentBackground(.hidden)
-        .globalSearch(releases: releases)
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:
@@ -149,6 +171,15 @@ struct HomeList: View {
         StatView(showList: false, extent: ChartExtent(period: .today), stat: sessions)
             .environment(\.chartColor, .purple)
             .navigationTitle(en: "Sessions")
+    }
+}
+
+private let homeInkDelays = [0.05, 0.10, 0.20, 0.30, 0.40]
+
+extension View {
+    fileprivate func homeInk(_ index: Int, isInked: Bool) -> some View {
+        saturation(isInked ? 1 : 0)
+            .animation(.easeOut(duration: 0.3).delay(homeInkDelays[min(index, homeInkDelays.count - 1)]), value: isInked)
     }
 }
 

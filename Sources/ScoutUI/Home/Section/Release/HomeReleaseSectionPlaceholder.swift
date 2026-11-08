@@ -24,7 +24,7 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.top, 10)
 
             AdoptionLegend(squareSize: 7, squareColor: Color(.systemGray5))
-                .padding(.top, 6)
+                .padding(.top, 8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
                 .padding(.top, 10)

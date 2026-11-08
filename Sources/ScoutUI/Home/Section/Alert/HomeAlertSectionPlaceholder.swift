@@ -20,7 +20,7 @@ struct HomeAlertSectionPlaceholder: View {
             }
 
             HStack(spacing: 2) {
-                ForEach(0..<20) { _ in
+                ForEach(0..<24) { _ in
                     SkeletonBar(height: 10, delay: 0.08, cornerRadius: 2)
                         .frame(maxWidth: .infinity)
                 }
@@ -34,6 +34,7 @@ struct HomeAlertSectionPlaceholder: View {
 
                 SkeletonBar(width: 46, height: 9, delay: 0.16)
             }
+            .padding(.top, 2)
         }
         .padding(.top, 12)
         .padding(.bottom, 14)

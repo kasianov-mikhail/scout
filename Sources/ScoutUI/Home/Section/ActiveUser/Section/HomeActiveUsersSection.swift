@@ -130,7 +130,7 @@ private struct ActiveUserMetricView: View {
 
             Text(verbatim: metric.deltaLabel)
                 .font(.footnote)
-                .foregroundStyle(metric.delta >= 0 ? Color.green : Color.red)
+                .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.red)
         }
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)

@@ -23,6 +23,7 @@ struct BarChart: View {
     let labelGap: CGFloat
     let labelDesign: Font.Design
     let accent: Accent?
+    var roundBottomCorners = true
 
     var body: some View {
         let maximum = values.max() ?? 0
@@ -30,7 +31,7 @@ struct BarChart: View {
         return VStack(spacing: 0) {
             HStack(alignment: .bottom, spacing: spacing) {
                 ForEach(values.indices, id: \.self) { index in
-                    RoundedRectangle(cornerRadius: cornerRadius)
+                    barShape
                         .fill(color(index: index))
                         .frame(maxWidth: .infinity)
                         .frame(height: barHeight(value: values[index], maximum: maximum))
@@ -53,6 +54,21 @@ struct BarChart: View {
             return Color(.systemGray4)
         }
         return accent.color
+    }
+
+    private var barShape: AnyShape {
+        if #available(iOS 17.0, macOS 14.0, *) {
+            AnyShape(
+                UnevenRoundedRectangle(
+                    topLeadingRadius: cornerRadius,
+                    bottomLeadingRadius: roundBottomCorners ? cornerRadius : 0,
+                    bottomTrailingRadius: roundBottomCorners ? cornerRadius : 0,
+                    topTrailingRadius: cornerRadius
+                )
+            )
+        } else {
+            AnyShape(RoundedRectangle(cornerRadius: cornerRadius))
+        }
     }
 
     private func barHeight(value: Int, maximum: Int) -> CGFloat {

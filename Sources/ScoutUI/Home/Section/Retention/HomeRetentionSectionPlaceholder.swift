@@ -44,14 +44,16 @@ struct HomeRetentionSectionPlaceholder: View {
     private func row(index: Int) -> some View {
         let delay = 1.2 + Double(index) * 0.08
 
-        return HStack(spacing: 0) {
+        return HStack(spacing: 10) {
             SkeletonBar(width: 46, height: 9, delay: delay)
+                .frame(width: 56, alignment: .leading)
 
             SkeletonBar(height: 18, delay: delay)
                 .frame(maxWidth: .infinity)
-                .padding(.horizontal, 10)
+                .padding(.trailing, 4)
 
             SkeletonBar(width: 46, height: 8, delay: delay)
+                .frame(width: 84, alignment: .trailing)
         }
         .frame(height: 40)
         .overlay(alignment: .bottom) {

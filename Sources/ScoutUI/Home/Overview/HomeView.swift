@@ -62,6 +62,7 @@ struct HomeView: View {
             .iCloudWarning(backend)
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")
+            .inlineNavigationTitle()
             .dismissable()
             .id(backend?.id)
             .connectionToolbar(backends: backends, activeID: active, cache: cache)

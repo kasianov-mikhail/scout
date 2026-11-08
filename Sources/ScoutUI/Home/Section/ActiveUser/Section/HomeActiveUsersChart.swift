@@ -22,9 +22,10 @@ struct HomeActiveUsersChart: View {
             height: 72,
             spacing: 2,
             cornerRadius: 1,
-            labelGap: 4,
-            labelDesign: .default,
-            accent: metric.series.indices.last.map { BarChart.Accent(index: $0, color: metric.kind.accent) }
+            labelGap: 6,
+            labelDesign: .monospaced,
+            accent: metric.series.indices.last.map { BarChart.Accent(index: $0, color: metric.kind.accent) },
+            roundBottomCorners: false
         )
     }
 

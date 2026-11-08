@@ -30,8 +30,8 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 start: DateFormatter.monthDay.string(from: start),
                 middle: DateFormatter.monthDay.string(from: middle),
                 end: "today",
-                topInset: 4,
-                design: .default
+                topInset: 6,
+                design: .monospaced
             )
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
