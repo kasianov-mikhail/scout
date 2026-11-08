@@ -43,6 +43,17 @@ struct TimelineFeed {
         return try await database.readAll(matching: query, fields: Launch.desiredKeys)
     }
 
+    func rail() async throws -> Rail {
+        async let device = self.device()
+        async let installs = self.installs()
+        async let launches = self.launches()
+        return try await Rail(
+            device: device,
+            installs: installs,
+            launches: launches
+        )
+    }
+
     func incidents() async throws -> TimelineIncidents {
         async let crashes: [Crash] = records(Crash.self)
         async let hangs: [Hang] = records(Hang.self)

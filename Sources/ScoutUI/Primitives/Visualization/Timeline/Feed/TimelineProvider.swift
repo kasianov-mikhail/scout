@@ -134,28 +134,3 @@ final class TimelineProvider: ObservableObject {
         }
     }
 }
-
-extension TimelineFeed {
-    fileprivate func rail() async throws -> Rail {
-        async let device = self.device()
-        async let installs = self.installs()
-        async let launches = self.launches()
-        return try await Rail(
-            device: device,
-            installs: installs,
-            launches: launches
-        )
-    }
-}
-
-struct TimelineAnchor {
-    let date: Date?
-    let installID: UUID?
-}
-
-struct TimelineIncidents {
-    var crashes: [Crash] = []
-    var hangs: [Hang] = []
-    var resources: [ResourceException] = []
-    var versions: [Version] = []
-}
