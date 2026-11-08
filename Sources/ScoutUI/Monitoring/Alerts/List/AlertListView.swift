@@ -12,7 +12,15 @@ struct AlertListView: View {
     @ObservedObject var provider: AlertProvider
 
     @Environment(\.database) private var database
-    @State private var isEditorPresented = false
+    @State private var creation: Creation?
+    @State private var selected: AlertStatus?
+
+    private enum Creation: String, Identifiable {
+        case composer
+        case templates
+
+        var id: String { rawValue }
+    }
 
     var body: some View {
         content
@@ -21,20 +29,41 @@ struct AlertListView: View {
             .inlineNavigationTitle()
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        isEditorPresented = true
+                    Menu {
+                        Button {
+                            creation = .composer
+                        } label: {
+                            Text(verbatim: "New Alert")
+                        }
+
+                        Button {
+                            creation = .templates
+                        } label: {
+                            Text(verbatim: "From Template")
+                        }
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-            .sheet(isPresented: $isEditorPresented) {
+            .sheet(item: $creation) {
                 Task { await provider.fetchAgain(in: database) }
-            } content: {
-                NavigationStack {
-                    AlertEditorView(provider: provider)
+            } content: { creation in
+                switch creation {
+                case .composer:
+                    NavigationStack {
+                        AlertComposerView(provider: provider)
+                    }
+                    .opaquePresentation()
+                case .templates:
+                    AlertTemplateListView(provider: provider)
+                        .opaquePresentation()
                 }
-                .opaquePresentation()
+            }
+            .navigationDestination(isPresented: Binding(get: { selected != nil }, set: { if !$0 { selected = nil } })) {
+                if let selected {
+                    AlertDetailView(provider: provider, rule: selected.rule, status: selected)
+                }
             }
             .task {
                 await provider.fetchIfNeeded(in: database)
@@ -107,6 +136,9 @@ struct AlertListView: View {
                         withAnimation(.easeInOut(duration: 0.2)) {
                             provider.mute(status.rule, until: Date().addingTimeInterval(3600))
                         }
+                    },
+                    onOpen: {
+                        selected = status
                     }
                 )
                 .listRowInsets(EdgeInsets())

@@ -35,6 +35,7 @@ struct AlertSwipeRow<Content: View>: View {
     @ViewBuilder let content: () -> Content
     let onDelete: () -> Void
     let onMute: (() -> Void)?
+    let onOpen: () -> Void
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
@@ -55,10 +56,14 @@ struct AlertSwipeRow<Content: View>: View {
                 .offset(x: displayOffset)
                 .simultaneousGesture(dragGesture)
                 .onTapGesture {
-                    guard !isActing, offset != 0 else {
+                    guard !isActing else {
                         return
                     }
-                    settle(to: 0)
+                    if offset == 0 {
+                        onOpen()
+                    } else {
+                        settle(to: 0)
+                    }
                 }
                 .accessibilityAction(named: Text(verbatim: "Delete")) {
                     perform(direction: -1, action: onDelete)

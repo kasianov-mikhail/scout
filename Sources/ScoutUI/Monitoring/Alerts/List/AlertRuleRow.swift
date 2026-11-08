@@ -12,12 +12,14 @@ struct AlertRuleRow: View {
     let isLast: Bool
     let onDelete: () -> Void
     let onMute: () -> Void
+    let onOpen: () -> Void
 
     var body: some View {
         AlertSwipeRow(
             content: { content },
             onDelete: { onDelete() },
-            onMute: status.isMuted ? nil : onMute
+            onMute: status.isMuted ? nil : onMute,
+            onOpen: onOpen
         )
     }
 
@@ -94,17 +96,18 @@ struct AlertRuleRow: View {
                 status: status,
                 isLast: index == AlertStatus.armedSamples.count - 1,
                 onDelete: {},
-                onMute: {}
+                onMute: {},
+                onOpen: {}
             )
             .listRowInsets(EdgeInsets())
             .listRowSeparator(.hidden)
         }
 
-        AlertRuleRow(status: .firingSample, isLast: false, onDelete: {}, onMute: {})
+        AlertRuleRow(status: .firingSample, isLast: false, onDelete: {}, onMute: {}, onOpen: {})
             .listRowInsets(EdgeInsets())
             .listRowSeparator(.hidden)
 
-        AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {})
+        AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {}, onOpen: {})
             .listRowInsets(EdgeInsets())
             .listRowSeparator(.hidden)
     }

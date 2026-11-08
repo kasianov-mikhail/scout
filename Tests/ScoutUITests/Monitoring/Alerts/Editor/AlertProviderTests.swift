@@ -186,6 +186,50 @@ struct AlertProviderTests {
         #expect(center.authorizationRequests == 0)
     }
 
+    @Test("Updating a rule replaces it and keeps its state")
+    func updateKeepsState() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        let updated = AlertRule(
+            metric: .eventCount(name: "Error"),
+            condition: AlertCondition(comparison: .above, reference: .baselineFactor(3)),
+            holdBuckets: 1
+        )
+        let since = Date(timeIntervalSince1970: 100)
+        try registry.save([errorRule])
+        try registry.remember(.firing(since: since), for: errorRule)
+        let provider = AlertProvider(registry: registry)
+
+        try await provider.update(rule: errorRule, updated: updated)
+
+        #expect(try registry.rules() == [updated])
+        #expect(try registry.state(for: updated) == .firing(since: since))
+    }
+
+    @Test("Updating to an existing rule fails")
+    func updateDuplicate() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule, crashFreeRule])
+        let provider = AlertProvider(registry: registry)
+
+        await #expect(throws: AlertProvider.DuplicateRuleError.self) {
+            try await provider.update(rule: errorRule, updated: crashFreeRule)
+        }
+
+        #expect(try registry.rules() == [errorRule, crashFreeRule])
+    }
+
+    @Test("Unmuting returns the rule to armed")
+    func unmute() throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        try registry.remember(.muted(until: Date().addingTimeInterval(3600)), for: errorRule)
+        let provider = AlertProvider(registry: registry)
+
+        try provider.unmute(errorRule)
+
+        #expect(try registry.state(for: errorRule) == .armed)
+    }
+
     private var errorRule: AlertRule {
         AlertRule(
             metric: .eventCount(name: "Error"),
