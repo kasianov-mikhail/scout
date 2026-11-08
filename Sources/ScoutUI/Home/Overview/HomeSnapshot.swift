@@ -6,8 +6,12 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 
 struct HomeSnapshot {
+    /// The Home mockups use Sunday, October 25, 2026 as today.
+    static let date = Calendar.utc.date(from: DateComponents(year: 2026, month: 10, day: 25))!
+
     let alerts: AlertHistory
     let users: ActiveUsers
     let telemetry: [TelemetryItem]

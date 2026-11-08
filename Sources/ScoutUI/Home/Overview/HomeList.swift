@@ -187,6 +187,7 @@ extension View {
     NavigationStack {
         HomeList(snapshot: .sample, path: .constant([]))
             .navigationTitle(en: "Home")
+            .inlineNavigationTitle()
     }
     .environmentObject(Tint())
 }
@@ -195,5 +196,6 @@ extension View {
     NavigationStack {
         HomeList(path: .constant([])).skeleton
             .navigationTitle(en: "Home")
+            .inlineNavigationTitle()
     }
 }
