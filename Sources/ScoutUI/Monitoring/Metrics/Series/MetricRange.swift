@@ -237,17 +237,17 @@ extension MetricRange {
 
         return switch self {
         case .today, .yesterday:
-            return ["00:00", "06:00", "12:00", "18:00", "24:00"]
+            ["00:00", "06:00", "12:00", "18:00", "24:00"]
         case .week:
-            return [0, 2, 4, 6].compactMap { index in
+            [0, 2, 4, 6].compactMap { index in
                 buckets.indices.contains(index) ? DateFormatter.weekdayShort.string(from: buckets[index].lowerBound) : nil
             }
         case .month:
-            return [0, 7, 14, 21, 29].compactMap { index in
+            [0, 7, 14, 21, 29].compactMap { index in
                 buckets.indices.contains(index) ? DateFormatter.monthDayShort.string(from: buckets[index].lowerBound) : nil
             }
         case .year:
-            return [0, 2, 4, 6, 8, 10].compactMap { index in
+            [0, 2, 4, 6, 8, 10].compactMap { index in
                 buckets.indices.contains(index) ? DateFormatter.monthShort.string(from: buckets[index].lowerBound) : nil
             }
         }
