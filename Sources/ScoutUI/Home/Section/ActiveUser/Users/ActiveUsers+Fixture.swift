@@ -10,7 +10,7 @@ import Scout
 
 extension ActiveUsers {
     static let sample: ActiveUsers = {
-        let end = Date().startOfDay
+        let end = HomeSnapshot.date
 
         return ActiveUsers(
             metrics: [

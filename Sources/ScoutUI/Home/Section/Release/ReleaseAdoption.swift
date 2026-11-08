@@ -47,10 +47,10 @@ struct ReleaseAdoption {
 
 extension ReleaseAdoption {
     static let sample: ReleaseAdoption = {
-        let end = Date().startOfDay
+        let end = HomeSnapshot.date
 
         return ReleaseAdoption(versions: [
-            Version(id: "3.2.0", share: 0.62, stability: Stability(0.9982), shipped: end.addingDay(-14)),
+            Version(id: "3.2.0", share: 0.62, stability: Stability(0.9982), shipped: end.addingDay(-13)),
             Version(id: "3.1.4", share: 0.21, stability: Stability(0.9967), shipped: end.addingDay(-27)),
             Version(id: "3.1.0", share: 0.10, stability: Stability(0.9921), shipped: end.addingDay(-42)),
             Version(id: "3.0.2", share: 0.05, stability: Stability(0.9890), shipped: end.addingDay(-58)),

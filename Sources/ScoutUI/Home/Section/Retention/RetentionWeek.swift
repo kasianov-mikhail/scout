@@ -13,6 +13,7 @@ struct RetentionWeek: Identifiable {
     let installs: Int
     let kept: Int?
     let day: RetentionDay
+    var now: Date = Date()
 
     var id: Date { start }
 
@@ -39,19 +40,19 @@ struct RetentionWeek: Identifiable {
         guard kept == nil else {
             return nil
         }
-        return day.pendingLabel(week: start, now: Date())
+        return day.pendingLabel(week: start, now: now)
     }
 }
 
 extension RetentionWeek: Fixture {
     static var samples: [RetentionWeek] {
-        let end = Date().startOfDay
+        let end = HomeSnapshot.date
 
         return [
-            RetentionWeek(start: end.addingDay(-5), installs: 1104, kept: nil, day: .day7),
-            RetentionWeek(start: end.addingDay(-12), installs: 960, kept: 192, day: .day7),
-            RetentionWeek(start: end.addingDay(-19), installs: 1142, kept: 217, day: .day7),
-            RetentionWeek(start: end.addingDay(-26), installs: 787, kept: 142, day: .day7),
+            RetentionWeek(start: end.addingDay(-5), installs: 1104, kept: nil, day: .day7, now: end),
+            RetentionWeek(start: end.addingDay(-12), installs: 960, kept: 192, day: .day7, now: end),
+            RetentionWeek(start: end.addingDay(-19), installs: 1142, kept: 217, day: .day7, now: end),
+            RetentionWeek(start: end.addingDay(-26), installs: 787, kept: 142, day: .day7, now: end),
         ]
     }
 }
