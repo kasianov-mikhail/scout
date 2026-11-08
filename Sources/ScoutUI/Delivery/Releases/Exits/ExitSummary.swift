@@ -5,7 +5,6 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
 import Scout
 
 struct ExitSummary {
@@ -15,10 +14,6 @@ struct ExitSummary {
 extension ExitSummary {
     var total: Int {
         counts.values.reduce(0, +)
-    }
-
-    var clean: Stability? {
-        Stability.optional(of: abnormal.map(\.count).reduce(0, +), in: total)
     }
 
     var abnormal: [ExitShare] {
