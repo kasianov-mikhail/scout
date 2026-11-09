@@ -13,7 +13,6 @@ struct ActivityView: View {
 
     @State private var range = ActivityRange.month
     @State private var metric = ActivityPeriod.daily
-    @State private var isInked = true
 
     @Environment(\.database) private var database
 
@@ -33,19 +32,7 @@ struct ActivityView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: activity.isLoading)
-        .saturation(isInked ? 1 : 0)
-        .animation(.easeOut(duration: 0.3), value: isInked)
-        .task(id: activity.isLoading) {
-            guard activity.isLoading else {
-                try? await Task.sleep(for: .milliseconds(200))
-                guard !Task.isCancelled else {
-                    return
-                }
-                isInked = true
-                return
-            }
-            isInked = false
-        }
+        .loadingInk(isLoading: activity.isLoading)
         .fetchTask([activity])
         .navigationTitle(en: "Active users")
         .inlineNavigationTitle()

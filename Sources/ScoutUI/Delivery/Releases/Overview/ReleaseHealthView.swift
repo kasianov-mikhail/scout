@@ -13,8 +13,6 @@ struct ReleaseHealthView: View {
 
     @Environment(\.database) private var database
 
-    @State private var isInked = true
-
     var body: some View {
         Group {
             switch provider.result {
@@ -31,19 +29,7 @@ struct ReleaseHealthView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
-        .saturation(isInked ? 1 : 0)
-        .animation(.easeOut(duration: 0.3), value: isInked)
-        .task(id: provider.isLoading) {
-            guard provider.isLoading else {
-                try? await Task.sleep(for: .milliseconds(200))
-                guard !Task.isCancelled else {
-                    return
-                }
-                isInked = true
-                return
-            }
-            isInked = false
-        }
+        .loadingInk(isLoading: provider.isLoading)
         .fetchTask([provider])
         .navigationTitle(en: "Releases")
         .inlineNavigationTitle()
