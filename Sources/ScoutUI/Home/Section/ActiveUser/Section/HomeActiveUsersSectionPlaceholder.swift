@@ -35,6 +35,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
             )
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
+                .frame(height: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }

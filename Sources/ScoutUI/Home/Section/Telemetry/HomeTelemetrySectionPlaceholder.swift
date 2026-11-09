@@ -61,8 +61,10 @@ struct HomeTelemetrySectionPlaceholder: View {
 
                     SkeletonBar(width: 28, height: 11, delay: delay)
                 }
+                .frame(height: 20)
 
                 SkeletonBar(width: 74, height: 8, delay: delay)
+                    .frame(height: 15, alignment: .leading)
             }
         }
         .padding(.leading, index.isMultiple(of: 2) ? 0 : 12)
