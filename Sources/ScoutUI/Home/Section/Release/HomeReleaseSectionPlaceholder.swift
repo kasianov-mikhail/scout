@@ -13,7 +13,7 @@ struct HomeReleaseSectionPlaceholder: View {
             Header(title: "Releases")
 
             HStack(alignment: .firstTextBaseline, spacing: 8) {
-                SkeletonBar(width: 120, height: 15, delay: 0.96)
+                SkeletonText(width: 120, height: 15, font: .system(size: 24, weight: .bold), delay: 0.96)
 
                 Text(verbatim: "of sessions")
                     .font(.weight450(size: 15))
@@ -27,6 +27,7 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.top, 8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
+                .frame(height: 18)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }

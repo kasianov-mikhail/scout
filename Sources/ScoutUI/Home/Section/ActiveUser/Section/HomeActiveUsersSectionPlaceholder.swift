@@ -35,6 +35,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
             )
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
+                .frame(height: 18)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
@@ -49,8 +50,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
             SkeletonBar(width: 74, height: 17, delay: 0.4)
                 .frame(height: 34, alignment: .leading)
 
-            SkeletonBar(width: 46, height: 8, delay: 0.48)
-                .frame(height: 15, alignment: .leading)
+            SkeletonText(width: 46, height: 8, font: .weight450(size: 13), delay: 0.48)
         }
         .padding(.vertical, 10)
         .frame(maxWidth: .infinity, alignment: .leading)

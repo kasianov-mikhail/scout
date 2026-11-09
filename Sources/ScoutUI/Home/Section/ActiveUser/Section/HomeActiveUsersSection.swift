@@ -66,6 +66,7 @@ struct HomeActiveUsersSection: View {
             }
 
             footer(users: users)
+                .frame(minHeight: 18)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }

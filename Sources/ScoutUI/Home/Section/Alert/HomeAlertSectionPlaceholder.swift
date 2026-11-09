@@ -16,7 +16,7 @@ struct HomeAlertSectionPlaceholder: View {
 
                 Spacer()
 
-                SkeletonBar(width: 46, height: 9, delay: 0)
+                SkeletonText(width: 46, height: 9, font: .footnote.weight(.semibold), delay: 0)
             }
 
             HStack(spacing: 2) {
@@ -28,11 +28,11 @@ struct HomeAlertSectionPlaceholder: View {
             .padding(.top, 4)
 
             HStack {
-                SkeletonBar(width: 194, height: 9, delay: 0.16)
+                SkeletonText(width: 194, height: 9, font: .weight450(size: 13), delay: 0.16)
 
                 Spacer()
 
-                SkeletonBar(width: 46, height: 9, delay: 0.16)
+                SkeletonText(width: 46, height: 9, font: .weight450(size: 13), delay: 0.16)
             }
             .padding(.top, 2)
         }

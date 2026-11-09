@@ -55,6 +55,7 @@ struct HomeReleaseSection: View {
                 .padding(.top, 8)
 
             caption(adoption: adoption)
+                .frame(minHeight: 18)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }

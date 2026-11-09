@@ -59,10 +59,10 @@ struct HomeTelemetrySectionPlaceholder: View {
 
                     Spacer(minLength: 0)
 
-                    SkeletonBar(width: 28, height: 11, delay: delay)
+                    SkeletonText(width: 28, height: 11, font: .body.weight(.semibold).monospacedDigit(), delay: delay)
                 }
 
-                SkeletonBar(width: 74, height: 8, delay: delay)
+                SkeletonText(width: 74, height: 8, font: .telemetryCaption, delay: delay)
             }
         }
         .padding(.leading, index.isMultiple(of: 2) ? 0 : 12)
