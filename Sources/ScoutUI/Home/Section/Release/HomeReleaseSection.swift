@@ -41,6 +41,7 @@ struct HomeReleaseSection: View {
                     .font(.weight450(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
+            .frame(height: 28)
 
             AdoptionBar(
                 versions: adoption.versions,
@@ -55,6 +56,7 @@ struct HomeReleaseSection: View {
                 .padding(.top, 8)
 
             caption(adoption: adoption)
+                .frame(minHeight: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }

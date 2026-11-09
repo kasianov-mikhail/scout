@@ -108,6 +108,7 @@ struct HomeActiveUsersSection: View {
         }
         .font(.weight450(size: 13))
         .foregroundStyle(Color(.systemGray))
+        .frame(minHeight: 18, alignment: .leading)
     }
 }
 

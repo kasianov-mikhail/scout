@@ -19,6 +19,7 @@ struct HomeReleaseSectionPlaceholder: View {
                     .font(.weight450(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
+            .frame(height: 28)
 
             SkeletonBar(height: 24, delay: 1.04, fill: Color(.systemGray6))
                 .padding(.top, 10)
@@ -27,6 +28,7 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.top, 8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
+                .frame(height: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }

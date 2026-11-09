@@ -34,6 +34,7 @@ struct HomeAlertSectionPlaceholder: View {
 
                 SkeletonBar(width: 46, height: 9, delay: 0.16)
             }
+            .frame(height: 16)
             .padding(.top, 2)
         }
         .padding(.top, 12)
