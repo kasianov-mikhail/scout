@@ -41,6 +41,7 @@ struct RetentionStabilitySection: View {
                     .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
+            .frame(height: 31)
 
             Text(verbatim: value.subtitle)
                 .font(.weight450(size: 13))

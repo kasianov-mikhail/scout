@@ -49,7 +49,7 @@ struct RetentionView: View {
             RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
 
             ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in
-                Row {
+                Row(minHeight: 40) {
                     RetentionWeekRow(
                         week: RetentionWeek(cohort: cohort, day: day),
                         maxInstalls: overview.maxInstalls,

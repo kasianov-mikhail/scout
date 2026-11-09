@@ -37,8 +37,10 @@ struct RetentionSegmentDetailView: View {
 
                 ForEach(Array(detail.weeks.enumerated()), id: \.element.id) { index, week in
                     RetentionSegmentWeekRow(week: week, showsDivider: index < detail.weeks.count - 1)
-                        .frame(minHeight: 44)
                 }
+
+                Color.clear
+                    .frame(height: 24)
             }
         }
         .navigationTitle(en: segment.name)
@@ -61,7 +63,7 @@ private struct RetentionSegmentWeekRow: View {
                     RoundedRectangle(cornerRadius: 3)
                         .fill(Color(.systemGray5))
 
-                    RoundedRectangle(cornerRadius: 3)
+                    LeftRoundedRectangle(cornerRadius: 3)
                         .fill(week.isCurrent ? Color.green : Color(.systemGray2))
                         .frame(width: proxy.size.width * week.fraction)
                 }

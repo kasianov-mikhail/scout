@@ -22,7 +22,6 @@ struct RetentionViewPlaceholder: View {
 
             ForEach(0..<12, id: \.self) { index in
                 row(index: index)
-                    .frame(minHeight: 44)
             }
         }
         .accessibilityElement(children: .ignore)
