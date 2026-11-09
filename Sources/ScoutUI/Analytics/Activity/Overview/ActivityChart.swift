@@ -25,7 +25,7 @@ struct ActivityChart: View {
             cornerRadius: 0,
             labelGap: 6,
             labelDesign: .monospaced,
-            accent: nil
+            accent: series.values.indices.last.map { BarChart.Accent(index: $0, color: .green) }
         )
     }
 }
