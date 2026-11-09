@@ -25,64 +25,64 @@ struct MetricDetailPlaceholder: View {
 
         return InsetList {
             MetricRangeStrip(selection: $range)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             switch kind {
             case .series(let telemetry):
                 headline(telemetry)
                     .padding(.top, 12)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 chartSkeleton(height: 150, delay: 0.16)
                     .padding(.top, 16)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricLegend(title: range.previousTitle, note: nil)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             case .distribution(let telemetry):
                 percentileSelector
                     .padding(.top, 4)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 SkeletonBar(width: 120, height: 9, delay: 0.08)
                     .padding(.top, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 chartSkeleton(height: 150, delay: 0.16)
                     .padding(.top, 16)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricLegend(title: range.previousTitle, note: nil)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 chartSkeleton(height: 126, delay: 0.24)
                     .padding(.top, 8)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             ForEach(dates.indices, id: \.self) { index in
                 row(index: index, dates: dates, now: now)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

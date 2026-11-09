@@ -21,5 +21,6 @@ struct ListTitle: View {
 #Preview {
     InsetList {
         ListTitle(title: "Today")
+            .frame(minHeight: 44)
     }
 }

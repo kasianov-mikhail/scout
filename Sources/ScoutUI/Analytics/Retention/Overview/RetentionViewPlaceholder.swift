@@ -13,20 +13,18 @@ struct RetentionViewPlaceholder: View {
     var body: some View {
         InsetList {
             RetentionHero(subtitle: "people kept", placeholderWidth: 120)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             RetentionDayTabs(overview: nil, day: $day)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
-                .listRowSeparator(.hidden)
 
             ForEach(0..<12, id: \.self) { index in
                 row(index: index)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

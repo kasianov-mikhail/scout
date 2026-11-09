@@ -42,29 +42,27 @@ struct ActivityView: View {
 
         return InsetList {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             ActivityMetricTabs(series: series, selection: $metric)
-                .listRowInsets(.activityRow(top: 4))
-                .listRowSeparator(.hidden)
+                .padding(.top, 4)
+                .frame(minHeight: 44)
 
             ActivityChart(series: series)
-                .listRowInsets(.activityRow(top: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 16)
+                .frame(minHeight: 44)
 
             ActivityStickiness(series: series)
-                .listRowInsets(.activityRow(top: 12))
-                .listRowSeparator(.hidden)
+                .padding(.top, 12)
+                .frame(minHeight: 44)
 
             ActivityRowsHeader()
-                .listRowInsets(.activityRow(top: 0))
-                .listRowSeparator(.hidden)
 
             ForEach(series.rows) { row in
                 ActivityDayRow(row: row)
-                    .listRowInsets(.activityRow(top: 0))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
     }
@@ -115,12 +113,6 @@ struct ActivityRowsHeader: View {
                 .fill(Color.separator)
                 .frame(height: 0.5)
         }
-    }
-}
-
-extension EdgeInsets {
-    static func activityRow(top: CGFloat) -> EdgeInsets {
-        EdgeInsets(top: top, leading: 16, bottom: 0, trailing: 16)
     }
 }
 

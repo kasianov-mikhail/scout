@@ -14,21 +14,21 @@ struct NetworkEndpointViewPlaceholder: View {
     var body: some View {
         InsetList {
             RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeaderPlaceholder()
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: range.pointComponent.networkTitle)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(0..<14, id: \.self) { index in
                 NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

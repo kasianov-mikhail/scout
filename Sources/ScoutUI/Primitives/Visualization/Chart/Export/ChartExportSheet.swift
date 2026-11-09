@@ -31,10 +31,11 @@ struct ChartExportSheet<ChartContent: View>: View {
                 fadesHeader: true,
                 chart: chart
             )
-            .listRowSeparator(.hidden)
 
             Header(title: "Format")
-                .listRowSeparator(.hidden, edges: .top)
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             HStack {
                 Text(verbatim: "File Type")
@@ -50,6 +51,10 @@ struct ChartExportSheet<ChartContent: View>: View {
                 .frame(width: 140)
             }
             .frame(height: 22)
+            .frame(minHeight: 44)
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
 
             HStack {
                 Text(verbatim: "Appearance")
@@ -64,21 +69,30 @@ struct ChartExportSheet<ChartContent: View>: View {
                 .pickerStyle(.menu)
             }
             .frame(height: 22)
-            .listRowSeparator(.visible, edges: .bottom)
+            .frame(minHeight: 44)
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
 
             Header(title: "Content")
-                .listRowSeparator(.hidden, edges: .top)
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             Toggle(isOn: $options.includesTitle) {
                 Text(verbatim: "Chart Title")
+            }
+            .frame(minHeight: 44)
+            .overlay(alignment: .bottom) {
+                Separator()
             }
 
             Toggle(isOn: $options.includesRange) {
                 Text(verbatim: "Period Label")
             }
+            .frame(minHeight: 44)
         }
         .disabledBounce()
-        .scrollContentBackground(.hidden)
         .background(.background)
         .safeAreaInset(edge: .bottom) {
             shareButton.padding()

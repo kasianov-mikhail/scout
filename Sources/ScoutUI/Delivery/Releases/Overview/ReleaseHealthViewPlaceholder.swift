@@ -13,14 +13,13 @@ struct ReleaseHealthViewPlaceholder: View {
     var body: some View {
         InsetList {
             header
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(0..<rowCount, id: \.self) { index in
                 row(index: index)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

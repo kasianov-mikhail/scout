@@ -108,7 +108,6 @@ struct BackendDetailView: View {
                 }
                 .padding(.top, 26)
             }
-            .listRowSeparator(.hidden)
         }
         .hapticFeedback(.success, trigger: copyCount)
     }

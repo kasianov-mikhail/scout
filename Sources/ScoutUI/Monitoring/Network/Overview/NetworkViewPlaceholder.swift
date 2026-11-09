@@ -15,8 +15,9 @@ struct NetworkViewPlaceholder: View {
     var body: some View {
         InsetList {
             RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             SkeletonBar(width: 160, height: 9, delay: 0)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -26,18 +27,17 @@ struct NetworkViewPlaceholder: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             NetworkEndpointListHeader()
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(0..<10, id: \.self) { index in
                 NetworkEndpointRowPlaceholder(index: index)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

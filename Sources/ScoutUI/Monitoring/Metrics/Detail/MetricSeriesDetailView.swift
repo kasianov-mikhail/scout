@@ -69,24 +69,25 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
         } else {
             InsetList {
                 MetricRangeStrip(selection: $range)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                    .listRowSeparator(.hidden)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
+                    .frame(minHeight: 44)
 
                 MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
                     .padding(.top, 16)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 ForEach(buckets.rows) { row in
                     MetricBucketRow(
@@ -95,10 +96,9 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                         format: format,
                         tone: tone(row)
                     )
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
                 }
             }
-            .scrollContentBackground(.hidden)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(title: name, rangeLabel: range.title) {

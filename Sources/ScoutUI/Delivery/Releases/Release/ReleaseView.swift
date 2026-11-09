@@ -85,8 +85,8 @@ struct ReleaseView: View {
     private func content(detail: ReleaseDetail) -> some View {
         InsetList {
             ReleaseHero(detail: detail)
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             ReleaseGrid(detail: detail) { kind in
                 switch kind {
@@ -100,11 +100,11 @@ struct ReleaseView: View {
                     break
                 }
             }
-            .listRowInsets(EdgeInsets())
-            .listRowSeparator(.hidden)
+            .padding(.horizontal, -16)
+            .frame(minHeight: 44)
 
             hangRate(detail.hangRate)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
         }
     }
 

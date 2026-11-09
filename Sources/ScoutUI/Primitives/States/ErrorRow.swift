@@ -27,7 +27,6 @@ struct ErrorRow: View {
             retryControl
         }
         .frame(minHeight: 44)
-        .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
     }
 
     private var retryControl: some View {

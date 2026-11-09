@@ -21,6 +21,7 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
         InsetList {
             IncidentTrendChart(kind: Element.kind, days: days)
                 .padding(.top)
+                .frame(minHeight: 44)
 
             if let records = provider.records {
                 IncidentIssuesSection(
@@ -38,11 +39,12 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
                 ErrorRow(description: error.localizedDescription) {
                     await provider.fetchAgain(in: database)
                 }
+                .frame(minHeight: 44)
             } else {
                 RingIndicator()
                     .frame(maxWidth: .infinity)
                     .padding(.vertical)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
         .navigationTitle(en: Element.kind.title)
@@ -61,6 +63,9 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     var body: some View {
         if !groups.isEmpty {
             Header(title: title)
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             ForEach(groups) { group in
                 Row {
@@ -77,6 +82,9 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
                     )
                 } destination: {
                     destination(group)
+                }
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
             }
         }

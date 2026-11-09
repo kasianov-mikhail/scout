@@ -86,14 +86,15 @@ struct NetworkEndpointView: View {
 
         return InsetList {
             RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: component.networkTitle)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(rows) { row in
                 Row {
@@ -107,10 +108,8 @@ struct NetworkEndpointView: View {
                 } destination: {
                     destination(row, component: component)
                 }
-                .listRowSeparator(.hidden)
             }
         }
-        .scrollContentBackground(.hidden)
     }
 
     @ViewBuilder

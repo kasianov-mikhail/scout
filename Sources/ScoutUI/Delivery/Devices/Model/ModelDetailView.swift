@@ -59,8 +59,8 @@ struct ModelDetailView: View {
         } else {
             InsetList {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                    .listRowSeparator(.hidden)
+                    .padding(.top, 8)
+                    .frame(minHeight: 44)
 
                 subtitle(detail)
                     .padding(.top, 4)
@@ -68,11 +68,10 @@ struct ModelDetailView: View {
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 if !detail.osVersions.isEmpty {
                     SectionHeader(title: "OS VERSIONS", topPadding: 12)
-                        .listRowSeparator(.hidden)
 
                     ProportionBar(
                         items: detail.osVersions,
@@ -81,20 +80,19 @@ struct ModelDetailView: View {
                     )
                     .padding(.top, 14)
                     .padding(.bottom, 6)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                     ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
                         OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
-                            .listRowSeparator(.hidden)
+                            .frame(minHeight: 44)
                     }
                 }
 
                 SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
-                    .listRowSeparator(.hidden)
 
                 deviceColumns
                     .columnHeaderStyle(topPadding: 12)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 ForEach(detail.devices) { device in
                     Row {
@@ -102,10 +100,8 @@ struct ModelDetailView: View {
                     } destination: {
                         DeviceDetailView(device: device, range: provider.range)
                     }
-                    .listRowSeparator(.hidden)
                 }
             }
-            .scrollContentBackground(.hidden)
         }
     }
 

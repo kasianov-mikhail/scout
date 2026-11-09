@@ -50,12 +50,12 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
     private func list(_ tiles: [IncidentTile<Element>]) -> some View {
         InsetList {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .frame(minHeight: 44)
 
             summary(tiles)
-                .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 4)
+                .frame(minHeight: 44)
 
             IncidentGrid(count: tiles.count) { index in
                 let tile = tiles[index]
@@ -70,10 +70,8 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                 }
                 .buttonStyle(.plain)
             }
-            .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-            .listRowSeparator(.hidden)
+            .padding(.top, 8)
         }
-        .scrollContentBackground(.hidden)
     }
 
     private func summary(_ tiles: [IncidentTile<Element>]) -> some View {

@@ -68,13 +68,13 @@ struct NetworkDayView: View {
 
         return InsetList {
             ListTitle(title: title)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: "HOUR")
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(rows) { row in
                 Row {
@@ -88,10 +88,8 @@ struct NetworkDayView: View {
                 } destination: {
                     NetworkHourView(name: name, date: row.date)
                 }
-                .listRowSeparator(.hidden)
             }
         }
-        .scrollContentBackground(.hidden)
     }
 }
 

@@ -65,14 +65,13 @@ struct NetworkHourView: View {
 
         return InsetList {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             if breakdown.total > 0 {
                 SectionHeader(title: "STATUS")
-                    .listRowSeparator(.hidden)
 
                 ProportionBar(
                     items: breakdown.networkClasses,
@@ -81,26 +80,24 @@ struct NetworkHourView: View {
                 )
                 .padding(.top, 14)
                 .padding(.bottom, 6)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
                 ForEach(breakdown.networkClasses) { item in
                     NetworkStatusRow(item: item, total: breakdown.total)
-                        .listRowSeparator(.hidden)
+                        .frame(minHeight: 44)
                 }
             }
 
             if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
                 SectionHeader(title: "LATENCY")
-                    .listRowSeparator(.hidden)
 
                 NetworkLatencyChart(histogram: histogram)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
 
                 NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
     }
 }
 

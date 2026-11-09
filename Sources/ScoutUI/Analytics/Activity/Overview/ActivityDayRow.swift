@@ -57,6 +57,7 @@ struct ActivityDayRow: View {
     InsetList {
         ForEach(series.rows) { row in
             ActivityDayRow(row: row)
+                .frame(minHeight: 44)
         }
     }
 }

@@ -14,32 +14,29 @@ struct ActivityViewPlaceholder: View {
     var body: some View {
         InsetList {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             metrics
-                .listRowInsets(.activityRow(top: 4))
-                .listRowSeparator(.hidden)
+                .padding(.top, 4)
+                .frame(minHeight: 44)
 
             chart
-                .listRowInsets(.activityRow(top: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 16)
+                .frame(minHeight: 44)
 
             stickiness
-                .listRowInsets(.activityRow(top: 12))
-                .listRowSeparator(.hidden)
+                .padding(.top, 12)
+                .frame(minHeight: 44)
 
             ActivityRowsHeader()
-                .listRowInsets(.activityRow(top: 0))
-                .listRowSeparator(.hidden)
 
             ForEach(0..<8, id: \.self) { index in
                 row(index: index)
-                    .listRowInsets(.activityRow(top: 0))
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

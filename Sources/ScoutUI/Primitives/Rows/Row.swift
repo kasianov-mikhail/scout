@@ -12,19 +12,20 @@ struct Row<Content: View, Destination: View>: View {
     @ViewBuilder let destination: () -> Destination
 
     var body: some View {
-        ZStack {
-            HStack {
-                content()
-            }
-
+        HStack {
+            content()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minHeight: 44)
+        .overlay {
             NavigationLink {
                 destination()
             } label: {
-                EmptyView()
+                Color.clear
+                    .contentShape(.rect)
             }
             .opacity(0)
         }
-        .alignmentGuide(.listRowSeparatorTrailing) { $0[.trailing] }
     }
 }
 

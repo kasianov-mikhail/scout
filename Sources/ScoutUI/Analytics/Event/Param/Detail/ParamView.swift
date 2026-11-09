@@ -28,11 +28,16 @@ struct ParamView: View {
         Group {
             if value.isContainer {
                 InsetList {
-                    ForEach(value.nodes) { node in
+                    ForEach(Array(value.nodes.enumerated()), id: \.element.id) { index, node in
                         Row {
                             ParamValueRow(node: node)
                         } destination: {
                             ParamView(node: node)
+                        }
+                        .overlay(alignment: .bottom) {
+                            if index < value.nodes.count - 1 {
+                                Separator()
+                            }
                         }
                     }
                 }

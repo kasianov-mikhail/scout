@@ -68,13 +68,13 @@ struct NetworkMonthView: View {
 
         return InsetList {
             ListTitle(title: title)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: "DAY")
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(rows) { row in
                 Row {
@@ -88,10 +88,8 @@ struct NetworkMonthView: View {
                 } destination: {
                     NetworkDayView(name: name, date: row.date)
                 }
-                .listRowSeparator(.hidden)
             }
         }
-        .scrollContentBackground(.hidden)
     }
 }
 

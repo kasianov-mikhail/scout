@@ -15,16 +15,23 @@ struct IncidentGroupPlaceholder: View {
     var body: some View {
         InsetList {
             message
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             cards
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             Header(title: "Affected")
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
                 affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
+                    .frame(minHeight: 44)
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
             }
 
             Header(title: "Stack Trace") {
@@ -32,17 +39,27 @@ struct IncidentGroupPlaceholder: View {
                     .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
 
             frames
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             Header(title: "Occurrences")
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             ForEach(0..<4, id: \.self) { index in
                 occurrenceRow(index: index)
+                    .overlay(alignment: .bottom) {
+                        if index < 3 {
+                            Separator()
+                        }
+                    }
             }
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

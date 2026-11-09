@@ -75,7 +75,7 @@ private struct ReleaseRing: View {
         InsetList {
             ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
                 ReleaseRow(release: release, isLast: index == releases.count - 1)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
         }
         .navigationTitle(en: "Releases")

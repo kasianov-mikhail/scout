@@ -18,8 +18,8 @@ struct DeviceDetailPlaceholder: View {
     var body: some View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 16))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .frame(minHeight: 44)
 
             Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
                 .font(.weight450(size: 15))
@@ -30,46 +30,43 @@ struct DeviceDetailPlaceholder: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             stats
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "SESSIONS", topPadding: 12) {
                 Text(verbatim: "TIMELINE")
                     .font(.weight450(size: 16))
                     .foregroundStyle(.blue)
             }
-            .listRowSeparator(.hidden)
 
             ForEach(0..<5, id: \.self) { index in
                 sessionRow(index: index)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             Color.clear
                 .frame(height: 8)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "HISTORY", topPadding: 12)
-                .listRowSeparator(.hidden)
 
             ForEach(0..<4, id: \.self) { index in
                 historyRow(index: index, isLast: index == 3)
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
 
             Color.clear
                 .frame(height: 12)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 SkeletonBar(width: 74, height: 9, delay: 1.2)
             }
-            .listRowSeparator(.hidden)
 
             activity
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             VStack(alignment: .leading, spacing: 8) {
                 SkeletonBar(width: 300, height: 9, delay: 1.36)
@@ -77,14 +74,13 @@ struct DeviceDetailPlaceholder: View {
             }
             .padding(.top, 12)
             .padding(.bottom, 16)
-            .listRowSeparator(.hidden)
+            .frame(minHeight: 44)
 
             SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
-                .listRowSeparator(.hidden)
 
             usage
                 .padding(.top, 14)
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             VStack(alignment: .leading, spacing: 8) {
                 SkeletonBar(width: 300, height: 9, delay: 1.52)
@@ -92,9 +88,8 @@ struct DeviceDetailPlaceholder: View {
             }
             .padding(.top, 12)
             .padding(.bottom, 16)
-            .listRowSeparator(.hidden)
+            .frame(minHeight: 44)
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

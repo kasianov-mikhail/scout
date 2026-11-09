@@ -13,17 +13,16 @@ struct ReleasePlaceholder: View {
     var body: some View {
         InsetList {
             hero
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             grid
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             footer
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
         }
-        .scrollContentBackground(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

@@ -43,6 +43,7 @@ struct RowSummary: View {
                     color: .red
                 )
             }
+            .frame(minHeight: 44)
             HStack {
                 Text(verbatim: "Wide count")
                 Spacer()
@@ -52,6 +53,7 @@ struct RowSummary: View {
                     color: .green
                 )
             }
+            .frame(minHeight: 44)
             HStack {
                 Text(verbatim: "Loading")
                 Spacer()
@@ -61,6 +63,7 @@ struct RowSummary: View {
                     color: .purple
                 )
             }
+            .frame(minHeight: 44)
             HStack {
                 Text(verbatim: "Empty")
                 Spacer()
@@ -69,6 +72,7 @@ struct RowSummary: View {
                     color: .blue
                 )
             }
+            .frame(minHeight: 44)
         }
     }
 }

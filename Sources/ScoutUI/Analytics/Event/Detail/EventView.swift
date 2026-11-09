@@ -27,6 +27,9 @@ struct EventView: View {
 
         InsetList {
             EventHeader(event: event)
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             if let paramCount = event.paramCount, paramCount > 0 {
                 ParamSection(

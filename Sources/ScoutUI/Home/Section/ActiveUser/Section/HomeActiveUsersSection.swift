@@ -69,7 +69,6 @@ struct HomeActiveUsersSection: View {
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
-        .listRowSeparator(.hidden)
     }
 
     private func footer(users: ActiveUsers) -> some View {
@@ -148,7 +147,9 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample) { _ in }
+                .frame(minHeight: 44)
             HomeActiveUsersSection(users: nil) { _ in }
+                .frame(minHeight: 44)
         }
     }
 }
@@ -157,6 +158,7 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
+                .frame(minHeight: 44)
         }
     }
 }
@@ -165,6 +167,7 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
+                .frame(minHeight: 44)
         }
     }
 }

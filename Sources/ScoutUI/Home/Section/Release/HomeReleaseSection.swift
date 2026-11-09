@@ -58,7 +58,6 @@ struct HomeReleaseSection: View {
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
-        .listRowSeparator(.hidden)
     }
 
     @ViewBuilder
@@ -80,7 +79,9 @@ struct HomeReleaseSection: View {
     NavigationStack {
         InsetList {
             HomeReleaseSection(adoption: .sample) {}
+                .frame(minHeight: 44)
             HomeReleaseSection(adoption: nil) {}
+                .frame(minHeight: 44)
         }
     }
 }

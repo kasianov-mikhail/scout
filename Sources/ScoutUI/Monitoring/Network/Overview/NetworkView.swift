@@ -64,8 +64,9 @@ struct NetworkView: View {
 
         return InsetList {
             RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                .listRowSeparator(.hidden)
+                .padding(.top, 8)
+                .padding(.trailing, -16)
+                .frame(minHeight: 44)
 
             Text(verbatim: summary.text)
                 .font(.weight450(size: 15))
@@ -77,11 +78,11 @@ struct NetworkView: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .listRowInsets(EdgeInsets())
-                .listRowSeparator(.hidden)
+                .padding(.horizontal, -16)
+                .frame(minHeight: 44)
 
             NetworkEndpointListHeader()
-                .listRowSeparator(.hidden)
+                .frame(minHeight: 44)
 
             ForEach(endpoints) { endpoint in
                 Row {
@@ -89,10 +90,8 @@ struct NetworkView: View {
                 } destination: {
                     NetworkEndpointView(name: endpoint.name, initialRange: range)
                 }
-                .listRowSeparator(.hidden)
             }
         }
-        .scrollContentBackground(.hidden)
         .exportToolbar(text: NetworkReportExport(report: report, range: provider.query.range).text)
     }
 }

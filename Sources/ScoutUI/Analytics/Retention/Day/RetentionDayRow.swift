@@ -58,6 +58,7 @@ struct RetentionDayRow: View {
                 value: RetentionDayValue(day: day, size: 960, rate: rates[index], average: 0.2, pending: "in 2 d"),
                 showsDivider: day != .day30
             )
+            .frame(minHeight: 44)
         }
     }
 }

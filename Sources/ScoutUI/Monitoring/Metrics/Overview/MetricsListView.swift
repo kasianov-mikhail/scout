@@ -57,8 +57,9 @@ struct MetricsListView: View {
         } else {
             InsetList {
                 MetricRangeStrip(selection: $provider.range)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 0, trailing: 0))
-                    .listRowSeparator(.hidden)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
+                    .frame(minHeight: 44)
 
                 grid(tiles)
                     .overlay(alignment: .top) {
@@ -66,9 +67,8 @@ struct MetricsListView: View {
                             .fill(Color.separator)
                             .frame(height: 0.5)
                     }
-                    .listRowSeparator(.hidden)
+                    .frame(minHeight: 44)
             }
-            .scrollContentBackground(.hidden)
         }
     }
 
