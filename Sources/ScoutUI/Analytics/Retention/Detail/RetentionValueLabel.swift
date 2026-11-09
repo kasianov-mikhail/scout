@@ -16,7 +16,7 @@ struct RetentionValueLabel: View {
         if let kept, let rate {
             HStack(spacing: 0) {
                 Text(verbatim: kept)
-                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .font(.system(size: 13, weight: .bold, design: .monospaced))
                     .foregroundStyle(Color.trendPositive)
 
                 Text(verbatim: " · \(rate)")

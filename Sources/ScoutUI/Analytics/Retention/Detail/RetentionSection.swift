@@ -20,13 +20,7 @@ struct RetentionSection: View {
             Spacer()
 
             if let note {
-                if divider {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(width: 0.5, height: 13)
-                }
-
-                Text(verbatim: note)
+                Text(verbatim: divider ? "│ \(note)" : note)
                     .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }

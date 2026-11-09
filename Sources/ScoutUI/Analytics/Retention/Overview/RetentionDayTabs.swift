@@ -54,6 +54,7 @@ struct RetentionDayTabs: View {
                     .frame(height: 26, alignment: .leading)
 
                 SkeletonBar(width: 28, height: 6, delay: 0.16)
+                    .frame(height: 14, alignment: .leading)
             }
         }
         .padding(.top, 12)

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Row<Content: View, Destination: View>: View {
+    var minHeight: CGFloat = 44
     @ViewBuilder let content: () -> Content
     @ViewBuilder let destination: () -> Destination
 
@@ -16,7 +17,7 @@ struct Row<Content: View, Destination: View>: View {
             content()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(minHeight: 44)
+        .frame(minHeight: minHeight)
         .overlay {
             NavigationLink {
                 destination()
@@ -36,7 +37,7 @@ struct DashedLine: View {
                 path.move(to: CGPoint(x: 0, y: 0.25))
                 path.addLine(to: CGPoint(x: proxy.size.width, y: 0.25))
             }
-            .stroke(Color(.systemGray4), style: StrokeStyle(lineWidth: 0.5, dash: [2, 2]))
+            .stroke(Color(.systemGray4), style: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
         }
         .frame(height: 0.5)
     }

@@ -30,9 +30,11 @@ struct RetentionHero: View {
                 Text(verbatim: value)
                     .font(.system(size: 40, weight: .bold, design: .rounded))
                     .monospacedDigit()
+                    .frame(height: 40, alignment: .leading)
             } else {
                 SkeletonBar(width: placeholderWidth, height: 24, delay: 0.08)
                     .frame(height: 40, alignment: .leading)
+                    .alignmentGuide(.firstTextBaseline) { _ in 32 }
             }
 
             Text(verbatim: subtitle)

@@ -21,7 +21,7 @@ struct RetentionBar: View {
                     .frame(width: width)
 
                 if let rate = week.rate {
-                    leftRoundedRectangle
+                    LeftRoundedRectangle(cornerRadius: 3)
                         .fill(Color.green)
                         .frame(width: width * CGFloat(rate))
                 }
@@ -29,14 +29,6 @@ struct RetentionBar: View {
         }
         .frame(height: 18)
         .accessibilityHidden(true)
-    }
-
-    private var leftRoundedRectangle: AnyShape {
-        if #available(iOS 17.0, macOS 14.0, *) {
-            AnyShape(UnevenRoundedRectangle(topLeadingRadius: 3, bottomLeadingRadius: 3))
-        } else {
-            AnyShape(RoundedRectangle(cornerRadius: 3))
-        }
     }
 }
 

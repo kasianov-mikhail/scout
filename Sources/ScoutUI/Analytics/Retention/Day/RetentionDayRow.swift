@@ -22,7 +22,7 @@ struct RetentionDayRow: View {
                     RoundedRectangle(cornerRadius: 3)
                         .fill(value.rate == nil ? Color(.systemGray6) : Color(.systemGray5))
 
-                    RoundedRectangle(cornerRadius: 3)
+                    LeftRoundedRectangle(cornerRadius: 3)
                         .fill(Color.green)
                         .frame(width: proxy.size.width * value.fraction)
                 }
@@ -31,7 +31,7 @@ struct RetentionDayRow: View {
                         Rectangle()
                             .fill(value.rate == nil ? Color(.systemGray) : Color.primary)
                             .frame(width: 2, height: 24)
-                            .offset(x: min(max(proxy.size.width * average - 1, 0), proxy.size.width - 2))
+                            .offset(x: min(proxy.size.width * average, proxy.size.width - 2))
                     }
                 }
             }
