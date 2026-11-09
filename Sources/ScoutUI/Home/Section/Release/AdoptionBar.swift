@@ -22,7 +22,7 @@ struct AdoptionBar: View {
             HStack(spacing: 2) {
                 ForEach(Array(versions.enumerated()), id: \.element.id) { index, version in
                     Rectangle()
-                        .fill(version.stability.level.color.opacity(index == 0 ? 1 : 0.55))
+                        .fill(version.stability.level.color)
                         .frame(width: width * CGFloat(version.share))
                         .overlay(alignment: .leading) {
                             if version.showsLabel {
@@ -34,6 +34,7 @@ struct AdoptionBar: View {
                                     .padding(.leading, labelInset)
                             }
                         }
+                        .opacity(index == 0 ? 1 : 0.55)
                 }
             }
         }

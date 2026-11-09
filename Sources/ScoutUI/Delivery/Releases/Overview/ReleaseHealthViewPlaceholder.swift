@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private let rowCount = 7
+private let rowCount = 8
 
 struct ReleaseHealthViewPlaceholder: View {
     var body: some View {
@@ -33,6 +33,7 @@ struct ReleaseHealthViewPlaceholder: View {
                     .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
+            .frame(height: 33)
 
             SkeletonBar(height: 32, delay: 0.08, fill: Color(.systemGray6))
                 .padding(.top, 12)
@@ -59,16 +60,20 @@ struct ReleaseHealthViewPlaceholder: View {
 
             VStack(alignment: .leading, spacing: 3) {
                 SkeletonBar(width: 46, height: 12, delay: delay)
+                    .frame(height: 20, alignment: .leading)
 
                 SkeletonBar(width: 120, height: 9, delay: delay)
+                    .frame(height: 15, alignment: .leading)
             }
 
             Spacer(minLength: 0)
 
             VStack(alignment: .trailing, spacing: 3) {
                 SkeletonBar(width: 46, height: 11, delay: delay)
+                    .frame(height: 18, alignment: .trailing)
 
                 SkeletonBar(width: 46, height: 7, delay: delay)
+                    .frame(height: 14, alignment: .trailing)
             }
         }
         .padding(.vertical, 8)
