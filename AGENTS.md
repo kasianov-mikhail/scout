@@ -14,6 +14,13 @@
 
 - Use only `.listStyle(.plain)` for `List`s; section titles are `Header(title:)` rows (not `Section` headers/footers), with `.listRowSeparator(.hidden)` on non-row content.
 
+## UI verification
+
+- After a UI change, compare the rendered screen with the reference at the same size before reporting it done. Use a simulator screenshot, an Xcode preview, or a screenshot from the user.
+- A linked worktree does not build. Ask the user to render the branch when a screenshot is needed, or verify after the merge and say so.
+- For a visual fix, include the screenshot in the final report, or name the visual points that remain unverified.
+- Do not report a visual change as done from reading the code alone.
+
 ## Initializer assignments
 
 - In an initializer, if at least one property assignment needs `self.` (a parameter or local shadows the property), prefix every property assignment with `self.` for consistency; if none needs it, omit `self.` from all of them.
