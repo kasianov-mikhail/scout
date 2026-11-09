@@ -13,6 +13,7 @@ struct ActivityView: View {
 
     @State private var range = ActivityRange.month
     @State private var metric = ActivityPeriod.daily
+    @State private var isInked = true
 
     @Environment(\.database) private var database
 
@@ -32,6 +33,19 @@ struct ActivityView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: activity.isLoading)
+        .saturation(isInked ? 1 : 0)
+        .animation(.easeOut(duration: 0.3), value: isInked)
+        .task(id: activity.isLoading) {
+            guard activity.isLoading else {
+                try? await Task.sleep(for: .milliseconds(200))
+                guard !Task.isCancelled else {
+                    return
+                }
+                isInked = true
+                return
+            }
+            isInked = false
+        }
         .fetchTask([activity])
         .navigationTitle(en: "Active users")
         .inlineNavigationTitle()
@@ -44,7 +58,6 @@ struct ActivityView: View {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
                 .padding(.top, 8)
                 .padding(.trailing, -16)
-                .frame(minHeight: 44)
 
             ActivityMetricTabs(series: series, selection: $metric)
                 .padding(.top, 4)
@@ -56,13 +69,11 @@ struct ActivityView: View {
 
             ActivityStickiness(series: series)
                 .padding(.top, 12)
-                .frame(minHeight: 44)
 
             ActivityRowsHeader()
 
             ForEach(series.rows) { row in
                 ActivityDayRow(row: row)
-                    .frame(minHeight: 44)
             }
         }
     }
@@ -107,6 +118,7 @@ struct ActivityRowsHeader: View {
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
+        .padding(.top, 12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()

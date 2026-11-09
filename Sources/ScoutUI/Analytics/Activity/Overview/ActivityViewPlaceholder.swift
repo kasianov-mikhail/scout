@@ -16,7 +16,6 @@ struct ActivityViewPlaceholder: View {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
                 .padding(.top, 8)
                 .padding(.trailing, -16)
-                .frame(minHeight: 44)
 
             metrics
                 .padding(.top, 4)
@@ -28,13 +27,11 @@ struct ActivityViewPlaceholder: View {
 
             stickiness
                 .padding(.top, 12)
-                .frame(minHeight: 44)
 
             ActivityRowsHeader()
 
             ForEach(0..<8, id: \.self) { index in
                 row(index: index)
-                    .frame(minHeight: 44)
             }
         }
         .accessibilityElement(children: .ignore)
@@ -63,7 +60,6 @@ struct ActivityViewPlaceholder: View {
                         Rectangle()
                             .fill(Color(.systemGray5))
                             .frame(height: 2)
-                            .padding(.trailing, 12)
                     }
                 }
             }

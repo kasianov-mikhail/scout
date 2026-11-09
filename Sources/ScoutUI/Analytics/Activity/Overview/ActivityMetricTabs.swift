@@ -59,7 +59,6 @@ struct ActivityMetricTabs: View {
                 Rectangle()
                     .fill(Color.green)
                     .frame(height: 2)
-                    .padding(.trailing, 12)
             }
         }
     }
