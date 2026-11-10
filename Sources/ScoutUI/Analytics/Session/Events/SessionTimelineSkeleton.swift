@@ -94,6 +94,12 @@ struct SessionSkeletonRowView: View {
             marker
 
             HStack(spacing: 8) {
+                if row.kind == .start {
+                    Text(verbatim: "Session started")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.timelineUnknown)
+                }
+
                 SkeletonBar(width: row.width, height: row.titleHeight, delay: delay)
 
                 if let extraWidth = row.extraWidth {
