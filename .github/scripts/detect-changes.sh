@@ -19,6 +19,11 @@ case "$EVENT_NAME" in
     base="${BEFORE_SHA:-}"
     head=HEAD
     ;;
+  merge_group)
+    # Required checks must report on the queue's temporary branch, so validate everything.
+    emit true
+    exit 0
+    ;;
   *)
     emit true
     exit 0
