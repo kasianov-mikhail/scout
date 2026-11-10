@@ -9,7 +9,6 @@ import Foundation
 import Testing
 
 @testable import Scout
-@testable import Support
 
 @MainActor
 @Suite("MainThreadBacktrace")

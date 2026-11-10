@@ -8,12 +8,6 @@
 import Foundation
 import Scout
 
-extension Int {
-    var plain: String {
-        "\(self)"
-    }
-}
-
 extension Double {
     var decimal: String {
         let formatter: NumberFormatter

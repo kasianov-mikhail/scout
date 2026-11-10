@@ -51,7 +51,6 @@ extension ExportFormat {
 }
 
 extension ExportFormat.Noun {
-    static let backend = Self(singular: "backend", plural: "backends")
     static let crash = Self(singular: "crash", plural: "crashes")
     static let device = Self(singular: "device", plural: "devices")
     static let event = Self(singular: "event", plural: "events")

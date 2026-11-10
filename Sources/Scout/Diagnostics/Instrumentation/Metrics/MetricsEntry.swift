@@ -10,7 +10,6 @@ import CoreData
 package protocol MetricsValued: MetricsEntry {
     associatedtype Value
     var value: Value { get set }
-    init(entity: NSEntityDescription, insertInto context: NSManagedObjectContext?)
 }
 
 @objc(MetricsEntry)

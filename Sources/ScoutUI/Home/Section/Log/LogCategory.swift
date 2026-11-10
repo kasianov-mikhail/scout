@@ -34,23 +34,6 @@ enum LogCategory: String, CaseIterable, Identifiable {
         }
     }
 
-    var systemImage: String {
-        switch self {
-        case .events:
-            "list.bullet"
-        case .metrics:
-            "chart.bar"
-        case .network:
-            "network"
-        case .devices:
-            "iphone"
-        case .crashes:
-            "exclamationmark.triangle"
-        case .hangs:
-            "hourglass"
-        }
-    }
-
     var color: Color {
         switch self {
         case .events, .metrics:

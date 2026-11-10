@@ -25,7 +25,6 @@ struct DemoScenario {
         let id: UUID
         let device: DeviceInfo
         let date: Date
-        let version: AppVersion
         let locale: String
         let channel: String
     }
@@ -107,7 +106,6 @@ struct DemoScenario {
                 id: random.uuid(),
                 device: DeviceInfo(id: random.uuid(), model: model.0, os: model.1),
                 date: clock.momentDaysAgo(installDaysAgo),
-                version: activeVersion(daysAgo: installDaysAgo),
                 locale: locales[index % locales.count],
                 channel: channels[index % channels.count]
             )
