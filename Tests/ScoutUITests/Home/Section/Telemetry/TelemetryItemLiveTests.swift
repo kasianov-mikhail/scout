@@ -20,7 +20,17 @@ struct TelemetryItemLiveTests {
         #expect(items.count == 6)
         #expect(items.allSatisfy { $0.value >= 0 })
         #expect(items.first?.caption.hasSuffix("yesterday") == true)
+    }
+
+    @Test("The resource row counts kinds in the trailing year")
+    func resources() {
+        let report = LogSeries(snapshot: .sample(for: .today), period: .today, now: Date()).report
+        let items = [TelemetryItem](report: report, resources: [ReleaseHealth].samples)
+        let empty = [TelemetryItem](report: report, resources: [ReleaseHealth]())
+
         #expect(items.last?.value == 2)
-        #expect(items.last?.caption == "groups")
+        #expect(items.last?.caption == "in 365 days")
+        #expect(empty.last?.value == 0)
+        #expect(empty.last?.caption == "in 365 days")
     }
 }
