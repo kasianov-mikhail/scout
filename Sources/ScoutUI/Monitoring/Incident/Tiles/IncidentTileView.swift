@@ -49,6 +49,8 @@ struct IncidentTileView<Element: Incident>: View {
                 .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
+                .fixedSize(horizontal: false, vertical: true)
+                .frame(height: 34, alignment: .leading)
 
             if let change = tile.changeLabel {
                 Text(verbatim: change)
@@ -64,7 +66,7 @@ struct IncidentTileView<Element: Incident>: View {
 
         return HStack(alignment: .bottom, spacing: 3) {
             ForEach(Array(tile.bars.enumerated()), id: \.offset) { index, value in
-                RoundedRectangle(cornerRadius: 1.5)
+                barShape
                     .fill(fill(value: value, index: index))
                     .frame(maxWidth: .infinity)
                     .frame(height: barHeight(value: value, maxValue: maxValue))
@@ -72,6 +74,14 @@ struct IncidentTileView<Element: Incident>: View {
         }
         .frame(height: 28)
         .accessibilityHidden(true)
+    }
+
+    private var barShape: AnyShape {
+        if #available(iOS 17.0, macOS 14.0, *) {
+            AnyShape(UnevenRoundedRectangle(topLeadingRadius: 1.5, topTrailingRadius: 1.5))
+        } else {
+            AnyShape(RoundedRectangle(cornerRadius: 1.5))
+        }
     }
 
     private func barHeight(value: Int, maxValue: Int) -> CGFloat {

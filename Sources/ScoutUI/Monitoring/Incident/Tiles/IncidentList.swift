@@ -21,6 +21,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
             .animation(.easeOut(duration: 0.2), value: provider.result == nil)
             .navigationTitle(en: Element.kind.title)
             .inlineNavigationTitle()
+            .tint(.primary)
             .message($provider.message)
             .task(id: provider.range) {
                 await provider.fetchAgain(in: database)
@@ -51,11 +52,10 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
         InsetList {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
             summary(tiles)
                 .padding(.top, 4)
-                .frame(minHeight: 44)
+                .padding(.bottom, 6)
 
             IncidentGrid(count: tiles.count) { index in
                 let tile = tiles[index]

@@ -22,12 +22,11 @@ struct IncidentListPlaceholder: View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
             SkeletonBar(width: 160, height: 9, delay: 0)
                 .frame(height: 17.5)
                 .padding(.top, 4)
-                .frame(minHeight: 44)
+                .padding(.bottom, 6)
 
             IncidentGrid(count: rowCount) { index in
                 tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
@@ -43,13 +42,14 @@ struct IncidentListPlaceholder: View {
         let nameWidth = nameWidths[index % nameWidths.count]
 
         return VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .bottom, spacing: 8) {
                 SkeletonBar(width: 28, height: 24, delay: delay)
                 SkeletonBar(width: 28, height: 10, delay: delay)
             }
+            .frame(height: 34, alignment: .bottom)
 
-            SkeletonBar(width: nameWidth, height: 9, delay: delay)
-            SkeletonBar(width: 120, height: 8, delay: delay)
+            line(size: 13, width: nameWidth, height: 9, delay: delay)
+            line(size: 11, width: 120, height: 8, delay: delay)
             SkeletonBar(height: 28, delay: delay, cornerRadius: 2, fill: Color(.systemGray6))
                 .padding(.top, 4)
         }
@@ -57,6 +57,14 @@ struct IncidentListPlaceholder: View {
         .padding(.bottom, 14)
         .padding(.leading, side == .trailing ? 14 : 0)
         .padding(.trailing, side == .leading ? 14 : 0)
+    }
+
+    private func line(size: CGFloat, width: CGFloat, height: CGFloat, delay: Double) -> some View {
+        Text(verbatim: " ")
+            .font(.weight450(size: size, design: .monospaced))
+            .overlay(alignment: .leading) {
+                SkeletonBar(width: width, height: height, delay: delay)
+            }
     }
 }
 

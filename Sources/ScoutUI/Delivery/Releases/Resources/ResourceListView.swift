@@ -24,7 +24,6 @@ struct ResourceListView: View {
                 ResourceGroupDetailView(occurrences: occurrences)
             }
         }
-        .navigationTint(IncidentKind.resource.color)
     }
 }
 
