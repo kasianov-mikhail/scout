@@ -113,10 +113,6 @@ extension IncidentGroup {
         hasAllRecords ? "\(affectedDevices)" : "\(affectedDevices)+"
     }
 
-    var sessionsText: String {
-        hasAllRecords ? "\(affectedSessions)" : "\(affectedSessions)+"
-    }
-
     var firstSeenLabel: String {
         isPartial ? "Earliest loaded" : "First seen"
     }

@@ -9,7 +9,7 @@ import Foundation
 
 extension [TelemetryItem] {
     init(report: [LogCategory: Trend], resources: [ReleaseHealth]) {
-        let groups = Set(resources.flatMap { $0.resources.counts.keys }).count
+        let kinds = Set(resources.flatMap { $0.resources.counts.keys }).count
 
         self = [
             TelemetryItem(kind: .events, value: report[.events]?.count ?? 0, caption: Self.previousCaption(report[.events])),
@@ -17,7 +17,7 @@ extension [TelemetryItem] {
             TelemetryItem(kind: .metrics, value: report[.metrics]?.count ?? 0, caption: "kinds"),
             TelemetryItem(kind: .hangs, value: report[.hangs]?.count ?? 0, caption: "in period"),
             TelemetryItem(kind: .network, value: report[.network]?.count ?? 0, caption: "requests"),
-            TelemetryItem(kind: .resources, value: groups, caption: "groups"),
+            TelemetryItem(kind: .resources, value: kinds, caption: "in 365 days"),
         ]
     }
 

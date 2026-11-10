@@ -72,7 +72,7 @@ extension TimelineRowsBuilder {
                     appendClose(launch, date: end)
                 }
             } else if !live && fullyLoaded {
-                appendUnknown(root, start: start, crashes: launchCrashes)
+                appendUnknown(root, crashes: launchCrashes)
             }
         }
 

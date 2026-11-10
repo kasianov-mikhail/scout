@@ -100,10 +100,6 @@ extension NetworkRange {
             now.startOfDay.addingDay(-364)..<end
         }
     }
-
-    func rollups(initial: NetworkRange) -> [NetworkRange] {
-        Self.allCases.filter { $0 >= initial }
-    }
 }
 
 extension NetworkRange: Comparable {

@@ -31,12 +31,3 @@ struct StatusDistribution: Equatable {
             .reduce(StatusBreakdown(), +)
     }
 }
-
-extension StatusDistribution {
-    static func sample(success: Int, redirect: Int = 0, clientError: Int = 0, serverError: Int = 0) -> StatusDistribution {
-        let noon = Calendar.current.startOfDay(for: .now).addingTimeInterval(12 * .hour)
-        return StatusDistribution(breakdowns: [
-            noon: .sample(success: success, redirect: redirect, clientError: clientError, serverError: serverError)
-        ])
-    }
-}

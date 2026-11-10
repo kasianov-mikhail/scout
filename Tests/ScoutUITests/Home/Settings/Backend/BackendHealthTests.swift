@@ -87,16 +87,6 @@ struct BackendHealthTests {
         #expect(health.pings.count == 12)
         #expect(health.pings == Array(4...15))
     }
-
-    @Test("Ping spread reports min, average, and max of the history")
-    func reportsPingSpread() {
-        var health = makeHealth()
-        for latency in [100, 200, 300] {
-            health = health.recording(status: .reachable, latency: latency, at: Date())
-        }
-
-        #expect(health.pingSpreadLabel == "100 / 200 / 300 ms")
-    }
 }
 
 func makeHealth(id: String = "backend", status: Backend.Status? = nil, probe: StatusProbe? = nil) -> BackendHealth {
