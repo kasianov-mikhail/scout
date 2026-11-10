@@ -33,13 +33,14 @@ extension TimelineRowsBuilder {
         let endsWithCrash = sessionCrashes || !launchCrashes.isEmpty
         let live = launch.launchID == lastLaunchID && launch.endDate == nil && !endsWithCrash
         let subtitle = launchSubtitle(root, version: version, start: start, hasCrash: !launchCrashes.isEmpty, fullyLoaded: fullyLoaded)
+        let startsAtCenter = entries.contains { $0.kind == .launch }
 
         entries.append(
             TimelineEntry(
                 id: "launch-\(launch.id)",
                 kind: .launch,
                 height: Self.rowHeight,
-                launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: 0, bottom: 0),
+                launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: startsAtCenter ? Self.rowHeight / 2 : 0, bottom: 0),
                 session: nil,
                 connector: nil,
                 marker: .milestone(symbol: "play.fill", color: .timelineLaunch),

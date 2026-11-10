@@ -122,6 +122,19 @@ struct TimelineRowsTests {
         #expect(rows.contains { $0.kind == .gap && $0.title.text == "3 h" })
     }
 
+    @Test("Only the first launch starts its rail at the row top")
+    func testLaunchRail() {
+        let first = Launch.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.at(10))
+        let second = Launch.stub(launchID: UUID(), installID: installID, startDate: TimelineFixture.at(3_600))
+        let rows = entries(rail(launches: [first, second]))
+
+        let launches = rows.filter { $0.kind == .launch }
+
+        #expect(launches.count == 2)
+        #expect(launches.first?.launch?.top == 0)
+        #expect(launches.last?.launch?.top == 22)
+    }
+
     @Test("A session without events renders a loop row")
     func testLoop() {
         let launch = Launch.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.at(10))
