@@ -51,11 +51,15 @@ The border colors are the GitHub Primer muted divider (`borderColor-muted`), dra
    - The 8-bit palette keeps the alpha of the rounded corners.
    - Each file is about 60–100 KB, down from about 300 KB.
 3. Look at the result on a white page and on a `#0d1117` page before the upload.
-4. Create or reuse a draft PR. Ask the user to drop the files from `$WORK/out` into a comment on that PR. GitHub gives each file a `user-attachments` URL. The upload stays manual: GitHub has no API for comment attachments.
-5. Compare each URL with its local file: `curl -sL -o dl.png <url>` and `cmp dl.png $WORK/out/<name>.png`. Use only URLs that match.
+4. Create a new draft PR for this refresh before you ask for the uploads. Reuse an open draft PR only; never reuse a merged PR.
+   - When the working tree has no change yet, start the branch with an empty commit so the draft PR exists. The README commit follows after the uploads.
+   - Ask the user to drop the files from `$WORK/out` into a comment on that PR. GitHub gives each file a `user-attachments` URL. The upload stays manual: GitHub has no API for comment attachments.
+5. Download every URL with `curl -sL -o dl.png <url>`. Match each file to its screen and theme by content, not by the upload order. Run `cmp dl.png $WORK/out/<name>.png` and use only URLs that match.
 6. Put the URLs in the README, and keep the layout below.
    - After the URLs are in place, hide the comment with the images. Hiding keeps the attachments working; deleting the comment may break them.
-7. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
+7. Commit and push the README change.
+   - Mark the PR ready for review after the user uploads the screenshots. Do not wait for a separate request.
+8. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
 
 ## Logo
 
@@ -87,7 +91,7 @@ Recolor the dark version by coverage, not by a color swap. Each pixel is white m
 ## If a step fails
 
 - `pngquant` is missing: install it with `brew install pngquant`.
-- A downloaded file differs from the local one: re-read the URL from the screenshot of the comment, or ask the user to copy it as text. Do not use the URL.
+- A downloaded file differs from the local one: check first that you paired the right screen and theme. When the pair is right, re-read the URL from the screenshot of the comment, or ask the user to copy it as text. Do not use the URL.
 - The rendered page still shows the old pictures: open the README at the commit hash.
 
 ## Final report
