@@ -29,4 +29,24 @@ struct IncidentTilesProviderTests {
         #expect(tiles.map(\.count) == [1])
         #expect(database.readCount(of: Crash.recordType) == 1)
     }
+
+    @Test("Switching to a narrower range drops the records of the wider one")
+    func narrowerRange() async throws {
+        let database = DatabaseStub()
+        let now = Date()
+        database.add(Crash.stub(name: "Old", date: now.addingTimeInterval(-90 * 86_400)).record)
+        database.add(Crash.stub(name: "Recent", date: now).record)
+
+        let provider = IncidentTilesProvider<Crash>(range: .year)
+        await provider.fetchAgain(in: database)
+
+        provider.range = .week
+        await provider.fetchAgain(in: database)
+
+        let result = try #require(provider.result)
+        let tiles = try result.get()
+
+        #expect(tiles.map(\.name) == ["Recent"])
+        #expect(tiles.map(\.count) == [1])
+    }
 }

@@ -17,6 +17,7 @@ final class IncidentTilesProvider<Element: RecordDecodable & Incident>: Observab
     @Published var range: IncidentRange
 
     private let feed = IncidentProvider<Element>()
+    private var loadedRange: Range<Date>?
 
     init(range: IncidentRange = .week, _ result: ProviderResult<[IncidentTile<Element>]>? = nil) {
         self.range = range
@@ -30,6 +31,11 @@ final class IncidentTilesProvider<Element: RecordDecodable & Incident>: Observab
 
         async let currentIndex = database.incidentIndex(recordType: Element.recordType, in: current)
         async let previousIndex = database.incidentIndex(recordType: Element.recordType, in: previous)
+
+        if loadedRange != current {
+            feed.clear()
+            loadedRange = current
+        }
 
         await feed.fetchLatest(in: database, range: current)
 
