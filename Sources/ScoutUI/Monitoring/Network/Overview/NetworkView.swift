@@ -116,6 +116,6 @@ struct NetworkView: View {
 
 #Preview("Empty") {
     NavigationStack {
-        NetworkView(.success(NetworkReport(series: [])))
+        NetworkView(.success(NetworkReport(series: [], bucket: .hour)))
     }
 }
