@@ -9,9 +9,9 @@ import Foundation
 import Scout
 
 extension Range<Date> {
-    func label(using formatter: DateFormatter) -> String {
+    func label(using formatter: DateFormatter, now: Date = .now) -> String {
         let from = formatter.string(from: lowerBound)
-        let to = formatter.string(from: upperBound.addingDay(-1))
+        let to = formatter.string(from: min(upperBound.addingDay(-1), now.startOfDay))
 
         guard from == to else {
             return "\(from) – \(to)"
