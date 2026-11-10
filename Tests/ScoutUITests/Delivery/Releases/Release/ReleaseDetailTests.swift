@@ -31,7 +31,7 @@ struct ReleaseDetailTests {
     func order() {
         #expect(detail.tiles.map(\.kind) == [.crashFree, .adoption, .crashes, .hangs, .resources, .exits, .launchTime, .peakMemory])
         #expect(
-            detail.tiles.map(\.title) == [
+            detail.tiles.map(\.kind.title) == [
                 "Crash-free sessions", "Adoption", "Crashes", "Hangs", "Resources", "Abnormal exits", "Launch time", "Peak memory",
             ])
     }
