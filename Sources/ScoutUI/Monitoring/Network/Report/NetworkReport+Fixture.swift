@@ -44,28 +44,28 @@ extension NetworkReport: Fixture {
                 365
             }
 
-        return report(starts: starts, days: days)
+        return report(starts: starts, days: days, bucket: range.bucket)
     }
 
     static func sample(day: Date, now: Date = .now) -> NetworkReport {
-        report(starts: hours(in: day, now: now), days: 1)
+        report(starts: hours(in: day, now: now), days: 1, bucket: .hour)
     }
 
     static func sample(month: Date, now: Date = .now) -> NetworkReport {
         let start = month.startOfMonth
         let starts = days(in: start..<start.addingMonth(), now: now)
-        return report(starts: starts, days: Double(starts.count))
+        return report(starts: starts, days: Double(starts.count), bucket: .day)
     }
 
     static func sample(hour: Date) -> NetworkReport {
-        report(starts: [hour.startOfHour], days: 0.1)
+        report(starts: [hour.startOfHour], days: 0.1, bucket: .hour)
     }
 }
 
 extension NetworkReport {
-    private static func report(starts: [Date], days: Double) -> NetworkReport {
+    private static func report(starts: [Date], days: Double, bucket: SeriesBucket) -> NetworkReport {
         guard !starts.isEmpty else {
-            return NetworkReport(series: [])
+            return NetworkReport(series: [], bucket: bucket)
         }
 
         var series: [MetricSeries] = []
@@ -82,7 +82,7 @@ extension NetworkReport {
             }
         }
 
-        return NetworkReport(series: series)
+        return NetworkReport(series: series, bucket: bucket)
     }
 
     private static func hours(in day: Date, now: Date) -> [Date] {

@@ -33,15 +33,15 @@ struct MetricDistribution<H: QuantileHistogram>: Equatable {
         histograms.values.allSatisfy { $0.total == 0 }
     }
 
-    func histogram(in range: Range<Date>) -> H {
+    func histogram(in range: Range<Date>, bucket: SeriesBucket) -> H {
         histograms
-            .filter { range.contains($0.key) }
+            .filter { bucket.range(startingOn: $0.key).overlaps(range) }
             .values
             .reduce(H(), +)
     }
 
-    func summary(in range: Range<Date>) -> Percentiles? {
-        let combined = histogram(in: range)
+    func summary(in range: Range<Date>, bucket: SeriesBucket) -> Percentiles? {
+        let combined = histogram(in: range, bucket: bucket)
 
         guard let p50 = combined.percentile(0.5), let p90 = combined.percentile(0.9), let p99 = combined.percentile(0.99) else {
             return nil
@@ -53,30 +53,30 @@ struct MetricDistribution<H: QuantileHistogram>: Equatable {
 
 extension MetricDistribution {
     func buckets(range: MetricRange, quantile: MetricQuantile, now: Date) -> [MetricBucket] {
-        range.buckets(now: now).map { bucket in
-            let isFuture = range.isFuture(date: bucket.lowerBound, now: now)
-            let previous = range.shifted(bucket)
+        range.buckets(now: now).map { interval in
+            let isFuture = range.isFuture(date: interval.lowerBound, now: now)
+            let previous = range.shifted(interval)
 
             return MetricBucket(
-                date: bucket.lowerBound,
-                value: isFuture ? nil : histogram(in: bucket).percentile(quantile.value),
-                previous: isFuture ? nil : histogram(in: previous).percentile(quantile.value),
+                date: interval.lowerBound,
+                value: isFuture ? nil : histogram(in: interval, bucket: range.bucket).percentile(quantile.value),
+                previous: isFuture ? nil : histogram(in: previous, bucket: range.bucket).percentile(quantile.value),
                 isFuture: isFuture,
-                isCurrent: range.isCurrent(date: bucket.lowerBound, now: now)
+                isCurrent: range.isCurrent(date: interval.lowerBound, now: now)
             )
         }
     }
 
     func histogram(range: MetricRange, now: Date) -> H {
-        histogram(in: range.elapsedRange(now: now))
+        histogram(in: range.elapsedRange(now: now), bucket: range.bucket)
     }
 
     func summary(range: MetricRange, now: Date) -> Percentiles? {
-        summary(in: range.elapsedRange(now: now))
+        summary(in: range.elapsedRange(now: now), bucket: range.bucket)
     }
 
     func previousSummary(range: MetricRange, now: Date) -> Percentiles? {
-        summary(in: range.elapsedPreviousRange(now: now))
+        summary(in: range.elapsedPreviousRange(now: now), bucket: range.bucket)
     }
 }
 

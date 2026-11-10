@@ -41,7 +41,7 @@ struct StatusDistributionTests {
             makeSeries(category: "status_4xx", points: [(inside, 5)]),
         ])
 
-        let summary = distribution.summary(in: base..<base.adding(.day))
+        let summary = distribution.summary(in: base..<base.adding(.day), bucket: .day)
 
         #expect(summary.total == 55)
         #expect(summary.counts == [50, 0, 5, 0])

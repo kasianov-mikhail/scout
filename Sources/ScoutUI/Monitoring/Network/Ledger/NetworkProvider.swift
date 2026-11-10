@@ -27,6 +27,6 @@ final class NetworkProvider: ObservableObject, SeriesProvider {
                 range: query.range
             )
         )
-        return NetworkReport(series: series)
+        return NetworkReport(series: series, bucket: query.bucket)
     }
 }

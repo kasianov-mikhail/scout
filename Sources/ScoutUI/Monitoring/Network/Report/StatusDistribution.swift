@@ -24,9 +24,9 @@ struct StatusDistribution: Equatable {
         breakdowns.values.allSatisfy { $0.total == 0 }
     }
 
-    func summary(in range: Range<Date>) -> StatusBreakdown {
+    func summary(in range: Range<Date>, bucket: SeriesBucket) -> StatusBreakdown {
         breakdowns
-            .filter { range.contains($0.key) }
+            .filter { bucket.range(startingOn: $0.key).overlaps(range) }
             .values
             .reduce(StatusBreakdown(), +)
     }

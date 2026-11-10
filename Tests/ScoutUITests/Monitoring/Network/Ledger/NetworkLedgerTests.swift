@@ -20,12 +20,13 @@ struct NetworkLedgerTests {
 
     @Test("Hourly rows sum statuses and latency in each hour")
     func hourlyRows() throws {
-        let report = NetworkReport(series: [
-            makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 10)]),
-            makeSeries(name: "GET /a", category: "status_4xx", points: [(base, 1)]),
-            makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 11)]),
-            makeSeries(name: "GET /a", category: "timer_le_100", points: [(base.adding(.hour), 20)]),
-        ])
+        let report = NetworkReport(
+            series: [
+                makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 10)]),
+                makeSeries(name: "GET /a", category: "status_4xx", points: [(base, 1)]),
+                makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 11)]),
+                makeSeries(name: "GET /a", category: "timer_le_100", points: [(base.adding(.hour), 20)]),
+            ], bucket: .hour)
 
         let rows = report.rows(name: "GET /a", range: base..<base.addingDay(), component: .hour, now: now)
 
@@ -43,11 +44,12 @@ struct NetworkLedgerTests {
     @Test("Day rows sum hourly points and mark today")
     func dayRows() throws {
         let yesterday = base.addingDay(-1)
-        let report = NetworkReport(series: [
-            makeSeries(name: "GET /a", category: "status_2xx", points: [(yesterday, 3), (base, 7)]),
-            makeSeries(name: "GET /a", category: "status_5xx", points: [(base, 1)]),
-            makeSeries(name: "GET /a", category: "timer_le_1", points: [(yesterday, 3), (base, 8)]),
-        ])
+        let report = NetworkReport(
+            series: [
+                makeSeries(name: "GET /a", category: "status_2xx", points: [(yesterday, 3), (base, 7)]),
+                makeSeries(name: "GET /a", category: "status_5xx", points: [(base, 1)]),
+                makeSeries(name: "GET /a", category: "timer_le_1", points: [(yesterday, 3), (base, 8)]),
+            ], bucket: .day)
 
         let rows = report.rows(name: "GET /a", range: yesterday..<base.addingDay(), component: .day, now: now)
 
@@ -65,9 +67,10 @@ struct NetworkLedgerTests {
     @Test("Month rows combine days in the same month")
     func monthRows() {
         let may = Date(year: 2026, month: 5, day: 20)
-        let reports = NetworkReport(series: [
-            makeSeries(name: "GET /a", category: "status_2xx", points: [(may, 4), (base, 5), (base.addingDay(2), 6)])
-        ])
+        let reports = NetworkReport(
+            series: [
+                makeSeries(name: "GET /a", category: "status_2xx", points: [(may, 4), (base, 5), (base.addingDay(2), 6)])
+            ], bucket: .day)
 
         let rows = reports.rows(name: "GET /a", range: may..<base.addingDay(3), component: .month, now: now)
 
@@ -78,12 +81,13 @@ struct NetworkLedgerTests {
 
     @Test("Summary counts every endpoint and uses the combined p99")
     func summary() throws {
-        let report = NetworkReport(series: [
-            makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 9)]),
-            makeSeries(name: "GET /a", category: "status_5xx", points: [(base, 1)]),
-            makeSeries(name: "GET /a", category: "timer_le_100", points: [(base, 10)]),
-            makeSeries(name: "POST /b", category: "status_2xx", points: [(base, 20)]),
-        ])
+        let report = NetworkReport(
+            series: [
+                makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 9)]),
+                makeSeries(name: "GET /a", category: "status_5xx", points: [(base, 1)]),
+                makeSeries(name: "GET /a", category: "timer_le_100", points: [(base, 10)]),
+                makeSeries(name: "POST /b", category: "status_2xx", points: [(base, 20)]),
+            ], bucket: .day)
 
         let summary = report.summary(in: base..<base.addingDay())
 
