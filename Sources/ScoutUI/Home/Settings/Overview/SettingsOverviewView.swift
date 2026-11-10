@@ -21,7 +21,7 @@ struct SettingsOverviewView: View {
     @State private var pushes = true
     @State private var isClearing = false
 
-    init(backends: [Backend], activeID: Binding<String>, cache: any CacheClearing, health: BackendHealthProvider? = nil, send: SendSummary = .sample) {
+    init(backends: [Backend], activeID: Binding<String>, cache: any CacheClearing, health: BackendHealthProvider? = nil, send: SendSummary) {
         self._activeID = activeID
         self.send = send
         self._health = StateObject(wrappedValue: health ?? BackendHealthProvider(backends: backends))
@@ -228,7 +228,8 @@ private struct SendReadout: View {
             backends: [],
             activeID: $activeID,
             cache: CacheSample(size: 18_400_000),
-            health: BackendHealthProvider(healths: .samples)
+            health: BackendHealthProvider(healths: .samples),
+            send: .sample
         )
     }
 }
@@ -257,6 +258,6 @@ private struct SendReadout: View {
 #Preview("No Backends") {
     @Previewable @State var activeID = ""
     NavigationStack {
-        SettingsOverviewView(backends: [], activeID: $activeID, cache: CacheSample())
+        SettingsOverviewView(backends: [], activeID: $activeID, cache: CacheSample(), send: .loading)
     }
 }
