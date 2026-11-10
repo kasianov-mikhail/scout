@@ -36,4 +36,14 @@ extension ChartPoint: Fixture where T == Int {
 
 extension [ChartPoint<Int>] {
     static let empty: Self = []
+
+    static var sample: Self {
+        let end = Date()
+        return (0..<168).compactMap { i in
+            Calendar.utc.date(byAdding: .hour, value: -i, to: end).map {
+                ChartPoint(date: $0, value: .random(in: 0...20))
+            }
+        }
+        .sorted()
+    }
 }

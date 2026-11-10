@@ -147,6 +147,6 @@ struct NetworkEndpointView: View {
 
 #Preview("Endpoint empty") {
     NavigationStack {
-        NetworkEndpointView(name: NetworkEndpoint.samples[2].name, initialRange: .today, result: .success(NetworkReport(series: [])))
+        NetworkEndpointView(name: NetworkEndpoint.samples[2].name, initialRange: .today, result: .success(NetworkReport(series: [], bucket: .hour)))
     }
 }
