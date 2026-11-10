@@ -39,6 +39,7 @@ struct ReleaseView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+        .loadingInk(isLoading: provider.isLoading)
         .fetchTask([provider])
         .navigationTitle(en: "Release")
         .inlineNavigationTitle()

@@ -154,7 +154,7 @@ extension ReleaseDetail {
 }
 
 struct ReleaseTileValue {
-    enum Kind {
+    enum Kind: CaseIterable {
         case crashFree
         case adoption
         case crashes
@@ -163,6 +163,19 @@ struct ReleaseTileValue {
         case exits
         case launchTime
         case peakMemory
+
+        var title: String {
+            switch self {
+            case .crashFree: "Crash-free sessions"
+            case .adoption: "Adoption"
+            case .crashes: "Crashes"
+            case .hangs: "Hangs"
+            case .resources: "Resources"
+            case .exits: "Abnormal exits"
+            case .launchTime: "Launch time"
+            case .peakMemory: "Peak memory"
+            }
+        }
     }
 
     let kind: Kind
@@ -172,16 +185,7 @@ struct ReleaseTileValue {
     let footer: String?
 
     var title: String {
-        switch kind {
-        case .crashFree: "Crash-free sessions"
-        case .adoption: "Adoption"
-        case .crashes: "Crashes"
-        case .hangs: "Hangs"
-        case .resources: "Resources"
-        case .exits: "Abnormal exits"
-        case .launchTime: "Launch time"
-        case .peakMemory: "Peak memory"
-        }
+        kind.title
     }
 }
 

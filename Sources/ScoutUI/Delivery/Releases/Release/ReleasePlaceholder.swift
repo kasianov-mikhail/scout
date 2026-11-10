@@ -35,7 +35,9 @@ struct ReleasePlaceholder: View {
                     .tracking(-0.5)
 
                 SkeletonBar(width: 200, height: 9, delay: 0.08)
+                    .frame(height: 18, alignment: .leading)
                 SkeletonBar(width: 120, height: 9, delay: 0.08)
+                    .frame(height: 18, alignment: .leading)
             }
 
             Spacer(minLength: 0)
@@ -56,7 +58,9 @@ struct ReleasePlaceholder: View {
     private var badge: some View {
         VStack(spacing: 1) {
             SkeletonBar(width: 46, height: 6, delay: 0.08)
+                .frame(height: 12)
             SkeletonBar(width: 28, height: 9, delay: 0.08)
+                .frame(height: 16)
         }
         .frame(width: 76, height: 76)
         .overlay {
@@ -70,20 +74,25 @@ struct ReleasePlaceholder: View {
         VStack(spacing: 0) {
             ForEach(0..<4, id: \.self) { row in
                 HStack(spacing: 0) {
-                    cell(delay: 0.16 + Double(row) * 0.08, isLeading: true)
-                    cell(delay: 0.16 + Double(row) * 0.08, isLeading: false)
+                    cell(ReleaseTileValue.Kind.allCases[row * 2], delay: 0.16 + Double(row) * 0.08, isLeading: true)
+                    cell(ReleaseTileValue.Kind.allCases[row * 2 + 1], delay: 0.16 + Double(row) * 0.08, isLeading: false)
                 }
             }
         }
         .padding(.horizontal, 16)
     }
 
-    private func cell(delay: Double, isLeading: Bool) -> some View {
+    private func cell(_ kind: ReleaseTileValue.Kind, delay: Double, isLeading: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            SkeletonBar(width: 46, height: 9, delay: delay)
+            Text(verbatim: kind.title)
+                .font(.weight450(size: 13))
+                .foregroundStyle(Color(.systemGray))
+
             SkeletonBar(width: 74, height: 14, delay: delay)
+                .frame(height: 29, alignment: .leading)
             SkeletonBar(height: 24, delay: delay, cornerRadius: 4, fill: Color(.systemGray6))
             SkeletonBar(width: 120, height: 6, delay: delay)
+                .frame(height: 14, alignment: .leading)
         }
         .padding(.vertical, 14)
         .padding(.leading, isLeading ? 0 : 12)

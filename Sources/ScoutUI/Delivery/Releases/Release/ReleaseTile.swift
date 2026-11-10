@@ -105,7 +105,7 @@ private struct ReleaseChartView: View {
                 Rectangle()
                     .fill(Color.primary)
                     .frame(width: 2)
-                    .offset(x: min(max(width * fraction - 1, 0), width - 2))
+                    .offset(x: min(max(width * fraction, width * 0.005), width - 2))
             }
             .frame(height: 6)
             .clipShape(RoundedRectangle(cornerRadius: 3))
