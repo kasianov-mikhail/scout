@@ -34,12 +34,6 @@ extension ChartPoint: Fixture where T == Int {
     }
 }
 
-extension ChartPoint {
-    static func + (lhs: ChartPoint, rhs: ChartPoint) -> ChartPoint {
-        ChartPoint(date: lhs.date, value: lhs.value + rhs.value)
-    }
-}
-
 extension [ChartPoint<Int>] {
     static let empty: Self = []
 

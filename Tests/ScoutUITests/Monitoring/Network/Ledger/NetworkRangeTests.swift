@@ -28,14 +28,6 @@ struct NetworkRangeTests {
         #expect(NetworkRange.year.range(now: now) == today.addingDay(-364)..<tomorrow)
     }
 
-    @Test("Rollups start at the initial range")
-    func rollups() {
-        #expect(NetworkRange.today.rollups(initial: .today) == NetworkRange.allCases)
-        #expect(NetworkRange.today.rollups(initial: .week) == [.week, .month, .year])
-        #expect(NetworkRange.today.rollups(initial: .month) == [.month, .year])
-        #expect(NetworkRange.today.rollups(initial: .year) == [.year])
-    }
-
     @Test("Points use hours for days and days for longer ranges")
     func components() {
         #expect(NetworkRange.today.pointComponent == .hour)

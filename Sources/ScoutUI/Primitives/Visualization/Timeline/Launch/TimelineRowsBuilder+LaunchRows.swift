@@ -50,7 +50,7 @@ extension TimelineRowsBuilder {
         )
     }
 
-    mutating func appendUnknown(_ root: LaunchRoot, start: Date, crashes: [Crash]) {
+    mutating func appendUnknown(_ root: LaunchRoot, crashes: [Crash]) {
         let lastSeen = activityEnd(root, crashes: crashes)
 
         entries.append(

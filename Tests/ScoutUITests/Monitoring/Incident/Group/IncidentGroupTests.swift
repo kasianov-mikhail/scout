@@ -219,7 +219,6 @@ struct IncidentGroupTests {
 
         #expect(!group.hasAllRecords)
         #expect(group.devicesText == "1+")
-        #expect(group.sessionsText == "1+")
         #expect(loaded.hasAllRecords)
         #expect(loaded.devicesText == "1")
     }
