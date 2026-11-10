@@ -238,7 +238,7 @@ struct AlertThresholdCard: View {
             HStack(spacing: 0) {
                 HStack(alignment: .firstTextBaseline, spacing: 0) {
                     Text(verbatim: value)
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold))
                         .monospacedDigit()
 
                     Text(verbatim: " \(unit)")
@@ -304,11 +304,11 @@ struct AlertWeekCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
             if let count = counts?[draft.sensitivity] {
                 Text(verbatim: "\(count)")
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(.system(size: 20, weight: .bold))
                     .monospacedDigit()
             } else if isFailed {
                 Text(verbatim: "—")
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(.system(size: 20, weight: .bold))
             } else {
                 SkeletonBar(width: 28, height: 16, delay: 0)
             }

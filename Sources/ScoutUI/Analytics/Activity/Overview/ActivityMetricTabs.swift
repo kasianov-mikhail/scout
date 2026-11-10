@@ -42,7 +42,7 @@ struct ActivityMetricTabs: View {
                 .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
 
             Text(verbatim: metric.valueLabel)
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.system(size: 28, weight: .bold))
                 .monospacedDigit()
                 .foregroundStyle(isSelected ? Color.primary : Color.inactiveValue)
                 .frame(height: 33, alignment: .leading)

@@ -151,7 +151,7 @@ private struct IncidentSummaryCardView: View {
 
             HStack(alignment: .top) {
                 Text(verbatim: card.value)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 24, weight: .bold))
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)

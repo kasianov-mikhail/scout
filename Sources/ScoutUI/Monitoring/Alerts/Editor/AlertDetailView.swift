@@ -189,7 +189,7 @@ private struct AlertNowCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
             if let text = valueText {
                 Text(verbatim: text)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(status?.isFiring == true ? Color.red : Color.primary)
                     .monospacedDigit()
             } else {

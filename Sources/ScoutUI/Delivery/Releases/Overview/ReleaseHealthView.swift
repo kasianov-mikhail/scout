@@ -64,7 +64,7 @@ private struct ReleaseSummary: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(verbatim: adoption.headline)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold))
 
                 Text(verbatim: "of sessions")
                     .font(.weight450(size: 13))
