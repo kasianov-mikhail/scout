@@ -60,6 +60,28 @@ struct ProviderFetchTests {
         #expect(failed.value == 1)
         #expect(loaded.fetchCount == 0)
     }
+
+    @Test("fetchLatest keeps the loaded value when a refresh fails") func latestKeepsValue() async {
+        let provider = ProviderStub(outcome: .success(1), tracker: ConcurrencyTracker())
+        provider.result = .success(1)
+        provider.outcome = .failure(URLError(.timedOut))
+
+        await provider.fetchLatest(in: DatabaseStub())
+
+        #expect(provider.value == 1)
+        #expect(provider.error == nil)
+    }
+
+    @Test("fetchAgain replaces the loaded value when a refresh fails") func againReplacesValue() async {
+        let provider = ProviderStub(outcome: .success(1), tracker: ConcurrencyTracker())
+        provider.result = .success(1)
+        provider.outcome = .failure(URLError(.timedOut))
+
+        await provider.fetchAgain(in: DatabaseStub())
+
+        #expect(provider.value == nil)
+        #expect(provider.error != nil)
+    }
 }
 
 @MainActor
@@ -81,7 +103,7 @@ private final class ConcurrencyTracker {
 private final class ProviderStub: ObservableObject, Provider {
     @Published var result: ProviderResult<Int>?
 
-    let outcome: ProviderResult<Int>
+    var outcome: ProviderResult<Int>
     let tracker: ConcurrencyTracker
 
     private(set) var fetchCount = 0
