@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
+  merge_group:
+    types: [checks_requested]
   schedule:
     - cron: "0 3 * * *"
   workflow_dispatch:
@@ -36,8 +38,8 @@ jobs:
         id: filter
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
           BEFORE_SHA: ${{ github.event.before }}
           PATTERN: ^(Sources/|Tests/|Package(@swift-[0-9.]+)?\.swift$|\.swift-format$|\.github/)
           OUTPUT: code
@@ -47,8 +49,8 @@ jobs:
         id: api-filter
         env:
           EVENT_NAME: ${{ github.event_name }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha }}
           BEFORE_SHA: ${{ github.event.before }}
           PATTERN: ^(Sources/|Package(@swift-[0-9.]+)?\.swift$|\.github/)
           OUTPUT: api
@@ -61,6 +63,8 @@ jobs:
         run: |
           case "$EVENT_NAME" in
             schedule | workflow_dispatch) filter='.configuration = ["Release"]' ;;
+            # Pull requests run two runtimes; the merge queue runs the full matrix.
+            pull_request) filter='.configuration = ["Debug"] | .ios = [18, 26] | .include |= map(select(.ios == 18 or .ios == 26))' ;;
             *) filter='.configuration = ["Debug"]' ;;
           esac
           legs="$(jq -c "$filter" .github/matrix/ios.json)"
@@ -108,7 +112,7 @@ jobs:
           fi
 
   model-versions:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' || github.event_name == 'merge_group'
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
@@ -119,17 +123,21 @@ jobs:
           filter: blob:none
 
       - name: Check model version rules
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref || github.event.merge_group.base_ref }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha }}
         run: |
           dir=Sources/Scout/Persistence/ScoutModel.xcdatamodeld
+          base="${BASE_REF#refs/heads/}"
           git diff --name-status --no-renames \
-            "origin/${{ github.base_ref }}"...HEAD \
+            "$BASE_SHA"...HEAD \
             -- "$dir" > /tmp/model-changes
           cat /tmp/model-changes
 
           touched=$(awk -F'\t' '$1 != "A" && $2 !~ /\.xccurrentversion$/' /tmp/model-changes)
           if [ -n "$touched" ]; then
             echo
-            echo "Model versions in ScoutModel.xcdatamodeld are immutable once they are on ${{ github.base_ref }}:"
+            echo "Model versions in ScoutModel.xcdatamodeld are immutable once they are on $base:"
             echo "a store created by a shipped version can only be opened by migrating to a newer one."
             echo "Add a new model version (Xcode: Editor > Add Model Version) instead of editing or deleting these:"
             echo "$touched"
@@ -169,7 +177,7 @@ jobs:
               echo
               echo ".xccurrentversion points to \"$name\", but this change also adds the newer \"$newest\"."
               echo "Mark the newest added version as current, or remove the versions above \"$name\":"
-              echo "once on ${{ github.base_ref }}, a version is immutable, so a version that no build uses stays dead."
+              echo "once on $base, a version is immutable, so a version that no build uses stays dead."
               exit 1
             fi
           fi
@@ -437,7 +445,7 @@ jobs:
   api-gate:
     name: api-gate
     needs: [scope, lint, model-versions, api-breakage]
-    if: always() && github.event_name == 'pull_request'
+    if: always() && (github.event_name == 'pull_request' || github.event_name == 'merge_group')
     runs-on: ubuntu-latest
     timeout-minutes: 2
 
@@ -462,6 +470,11 @@ jobs:
             "The model-version check|${{ needs.model-versions.result }}"
           if [ "${{ needs.scope.outputs.api }}" != "true" ]; then
             echo "No source or manifest changed; the public API cannot have moved."
+            exit 0
+          fi
+          if [ "${{ github.event_name }}" = "merge_group" ]; then
+            echo "The API surface was checked on the pull request; a merge group adds no API changes of its own."
+            echo "Gate passes."
             exit 0
           fi
           .github/scripts/require-results.sh \
