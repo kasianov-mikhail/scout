@@ -63,8 +63,6 @@ jobs:
         run: |
           case "$EVENT_NAME" in
             schedule | workflow_dispatch) filter='.configuration = ["Release"]' ;;
-            # Pull requests run two runtimes; the merge queue runs the full matrix.
-            pull_request) filter='.configuration = ["Debug"] | .ios = [18, 26] | .include |= map(select(.ios == 18 or .ios == 26))' ;;
             *) filter='.configuration = ["Debug"]' ;;
           esac
           legs="$(jq -c "$filter" .github/matrix/ios.json)"
