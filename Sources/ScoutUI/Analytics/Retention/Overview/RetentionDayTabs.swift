@@ -42,7 +42,7 @@ struct RetentionDayTabs: View {
 
             if let metric {
                 Text(verbatim: metric.rateLabel)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 24, weight: .bold))
                     .monospacedDigit()
                     .frame(height: 26, alignment: .leading)
 

@@ -48,7 +48,7 @@ struct ReleaseTile: View {
                 .foregroundStyle(Color(.systemGray))
 
             Text(verbatim: value.value)
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.system(size: 24, weight: .bold))
                 .monospacedDigit()
                 .foregroundStyle(value.color)
 

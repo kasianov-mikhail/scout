@@ -184,7 +184,7 @@ private struct MetricQuantileSelector: View {
                 .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
 
             Text(verbatim: current.map { format.label($0) } ?? "—")
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.system(size: 28, weight: .bold))
                 .monospacedDigit()
                 .foregroundStyle(isSelected ? Color.primary : Color.inactiveValue)
                 .lineLimit(1)

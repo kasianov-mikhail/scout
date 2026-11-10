@@ -39,7 +39,7 @@ struct SettingsReadoutRow: View {
         HStack(alignment: .firstTextBaseline, spacing: 4) {
             if let value {
                 Text(verbatim: value)
-                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .font(.system(size: 20, weight: .bold))
             } else {
                 SkeletonBar(width: skeletonWidth, height: 16, delay: 0)
             }

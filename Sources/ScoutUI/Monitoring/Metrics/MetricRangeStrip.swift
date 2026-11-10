@@ -18,7 +18,7 @@ struct MetricRangeStrip: View {
                         selection = range
                     } label: {
                         Text(verbatim: range.title)
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .font(.system(size: 28, weight: .bold))
                             .foregroundStyle(range == selection ? Color.primary : Color.pending)
                     }
                     .buttonStyle(.plain)

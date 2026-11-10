@@ -16,7 +16,7 @@ import SwiftUI
 extension Font {
     static let placeholderTitle = Font.system(size: 18, weight: .semibold)
     static let codeChip = Font.weight450(size: 14, design: .monospaced)
-    static let listTitle = Font.system(size: 28, weight: .bold, design: .rounded)
+    static let listTitle = Font.system(size: 28, weight: .bold)
     static let telemetryTitle = Font.weight450(size: 16)
     static let telemetryCaption = Font.weight450(size: 13)
 

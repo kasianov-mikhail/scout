@@ -34,7 +34,7 @@ struct RetentionStabilitySection: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(verbatim: value.rateLabel)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .font(.system(size: 28, weight: .bold))
                     .foregroundStyle(value.color)
 
                 Text(verbatim: value.countLabel)

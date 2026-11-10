@@ -98,7 +98,7 @@ private struct ErrorCodeArtwork: View {
             context.stroke(baseline, with: .color(Color(.systemGray4)), lineWidth: 1)
 
             let text = Text(verbatim: code)
-                .font(.system(size: 120, weight: .heavy, design: .rounded))
+                .font(.system(size: 120, weight: .heavy))
                 .tracking(code.count > 1 ? -4 : 0)
                 .foregroundColor(Color(.systemGray5))
             let resolved = context.resolve(text)

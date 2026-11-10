@@ -32,7 +32,7 @@ struct TrendCard: View {
                         Text(verbatim: "0")
                     }
                 }
-                .font(.system(size: 24, weight: .bold, design: .rounded))
+                .font(.system(size: 24, weight: .bold))
 
                 Spacer()
 

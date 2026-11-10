@@ -28,7 +28,7 @@ struct RetentionHero: View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             if let value {
                 Text(verbatim: value)
-                    .font(.system(size: 40, weight: .bold, design: .rounded))
+                    .font(.system(size: 40, weight: .bold))
                     .monospacedDigit()
                     .frame(height: 40, alignment: .leading)
             } else {

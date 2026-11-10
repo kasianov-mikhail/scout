@@ -15,7 +15,7 @@ struct MetricSummaryView: View {
         VStack(alignment: .leading, spacing: 2) {
             HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(verbatim: summary.value)
-                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .font(.system(size: 34, weight: .bold))
                     .monospacedDigit()
 
                 Text(verbatim: summary.unit)

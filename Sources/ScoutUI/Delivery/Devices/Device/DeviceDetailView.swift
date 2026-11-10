@@ -154,7 +154,7 @@ struct DeviceDetailView: View {
     private func stat(_ title: String, value: Int, color: Color, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
         StatColumn(title: title, leading: leading, trailing: trailing, divider: divider) {
             Text(verbatim: "\(value)")
-                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .font(.system(size: 28, weight: .bold))
                 .monospacedDigit()
                 .foregroundStyle(value > 0 ? color : Color.primary)
         }

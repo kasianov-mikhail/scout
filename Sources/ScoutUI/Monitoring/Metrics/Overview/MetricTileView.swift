@@ -22,7 +22,7 @@ struct MetricTileView: View {
 
             HStack(alignment: .firstTextBaseline, spacing: 6) {
                 Text(verbatim: tile.valueLabel)
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: 24, weight: .bold))
                     .monospacedDigit()
 
                 Text(verbatim: tile.suffix)

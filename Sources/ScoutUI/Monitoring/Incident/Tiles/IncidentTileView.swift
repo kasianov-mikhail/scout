@@ -45,7 +45,7 @@ struct IncidentTileView<Element: Incident>: View {
     private var headline: some View {
         HStack(alignment: .firstTextBaseline, spacing: 8) {
             Text(verbatim: "\(tile.count)")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color.primary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
