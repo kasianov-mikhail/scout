@@ -68,6 +68,6 @@ extension TelemetryItem {
         TelemetryItem(kind: .metrics, value: 140, caption: "5 kinds"),
         TelemetryItem(kind: .hangs, value: 6, caption: "max 8.2 s"),
         TelemetryItem(kind: .network, value: 212, caption: "p99 840 ms"),
-        TelemetryItem(kind: .resources, value: 2, caption: "2 groups"),
+        TelemetryItem(kind: .resources, value: 2, caption: "in 365 days"),
     ]
 }

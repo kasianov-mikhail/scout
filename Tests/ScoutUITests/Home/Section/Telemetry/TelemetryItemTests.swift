@@ -20,7 +20,7 @@ struct TelemetryItemTests {
         #expect(items.map(\.value) == [48, 3, 140, 6, 212, 2])
         #expect(
             items.map(\.caption)
-                == ["41 yesterday", "2 groups", "5 kinds", "max 8.2 s", "p99 840 ms", "2 groups"]
+                == ["41 yesterday", "2 groups", "5 kinds", "max 8.2 s", "p99 840 ms", "in 365 days"]
         )
     }
 
