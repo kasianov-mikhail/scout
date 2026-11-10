@@ -113,7 +113,7 @@ struct AlertDetailView: View {
         Task {
             do {
                 try await provider.update(rule: rule, updated: draft.rule)
-                await provider.fetchAgain(in: database)
+                await provider.fetchLatest(in: database)
                 dismiss()
             } catch {
                 message = Message(error.localizedDescription, level: .error)
@@ -134,7 +134,7 @@ struct AlertDetailView: View {
         }
 
         Task {
-            await provider.fetchAgain(in: database)
+            await provider.fetchLatest(in: database)
             dismiss()
         }
     }
@@ -142,7 +142,7 @@ struct AlertDetailView: View {
     private func delete() {
         provider.remove(rule)
         Task {
-            await provider.fetchAgain(in: database)
+            await provider.fetchLatest(in: database)
             dismiss()
         }
     }

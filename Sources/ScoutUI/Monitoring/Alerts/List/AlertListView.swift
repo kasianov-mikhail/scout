@@ -47,7 +47,7 @@ struct AlertListView: View {
                 }
             }
             .sheet(item: $creation) {
-                Task { await provider.fetchAgain(in: database) }
+                Task { await provider.fetchLatest(in: database) }
             } content: { creation in
                 switch creation {
                 case .composer:
