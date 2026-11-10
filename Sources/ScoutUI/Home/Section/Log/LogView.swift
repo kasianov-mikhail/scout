@@ -13,21 +13,26 @@ struct LogView: View {
 
     @State var period: Period
 
-    @ObservedObject var log: HomeLogProvider
+    @StateObject var provider: HomeLogProvider
 
     private let columns = [
         GridItem(.flexible(), spacing: 24),
         GridItem(.flexible(), spacing: 24),
     ]
 
+    init(period: Period, provider: HomeLogProvider? = nil) {
+        _period = State(initialValue: period)
+        _provider = StateObject(wrappedValue: provider ?? HomeLogProvider(period: period))
+    }
+
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
                 SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
 
-                if let error = log.error {
+                if let error = provider.error {
                     ErrorView(description: error.localizedDescription) {
-                        await log.fetchAgain(in: database)
+                        await provider.fetchAgain(in: database)
                     }
                 } else {
                     LazyVGrid(columns: columns, spacing: 36) {
@@ -35,7 +40,7 @@ struct LogView: View {
                             NavigationLink {
                                 LogDestination(category: category)
                             } label: {
-                                TrendCard(category: category, trend: log.report?[category] ?? .loading)
+                                TrendCard(category: category, trend: provider.report?[category] ?? .loading)
                             }
                             .buttonStyle(.plain)
                         }
@@ -46,8 +51,8 @@ struct LogView: View {
         }
         .scrollIndicators(.hidden)
         .task(id: period) {
-            log.period = period
-            await log.fetchIfNeeded(in: database)
+            provider.period = period
+            await provider.fetchIfNeeded(in: database)
         }
         .navigationTitle(en: "Log")
     }
@@ -68,7 +73,7 @@ extension TrendCard {
     NavigationStack {
         LogView(
             period: .week,
-            log: .init(acrossAllPeriods: .sample(for: .week))
+            provider: HomeLogProvider(acrossAllPeriods: .sample(for: .week))
         )
     }
 }

@@ -146,7 +146,7 @@ struct HomeList: View {
             case .sessions:
                 statView
             case .log:
-                LogView(period: .today, log: logs)
+                LogView(period: .today)
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
             case .alerts:
