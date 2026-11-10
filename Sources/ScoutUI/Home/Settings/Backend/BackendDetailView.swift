@@ -17,7 +17,6 @@ struct BackendDetailView: View {
 
     @Environment(\.openURL) private var openURL
 
-    @State private var retention = BackendRetention.year
     @State private var copyCount = 0
 
     private var backend: BackendHealth? {
@@ -97,7 +96,7 @@ struct BackendDetailView: View {
                 errorsSection(for: backend, details: details)
 
                 if case .server = backend.engine {
-                    retentionSection
+                    BackendRetentionSection(id: backend.id)
                 }
 
                 SettingsButton(
@@ -197,7 +196,31 @@ struct BackendDetailView: View {
         }
     }
 
-    private var retentionSection: some View {
+    private func copy(_ text: String) {
+        #if os(iOS)
+            UIPasteboard.general.string = text
+        #else
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(text, forType: .string)
+        #endif
+        copyCount += 1
+    }
+
+    private func openConsole() {
+        if let url = URL(string: "https://icloud.developer.apple.com/dashboard/") {
+            openURL(url)
+        }
+    }
+}
+
+private struct BackendRetentionSection: View {
+    @AppStorage private var retention: BackendRetention
+
+    init(id: String) {
+        _retention = AppStorage(wrappedValue: .year, BackendRetention.key(id: id))
+    }
+
+    var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             SettingsLabel(title: "KEEP DATA FOR")
 
@@ -217,45 +240,7 @@ struct BackendDetailView: View {
             }
             .hapticFeedback(.selection, trigger: retention)
 
-            SettingsNote(text: "Older records are deleted on the server every night.")
-        }
-    }
-
-    private func copy(_ text: String) {
-        #if os(iOS)
-            UIPasteboard.general.string = text
-        #else
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(text, forType: .string)
-        #endif
-        copyCount += 1
-    }
-
-    private func openConsole() {
-        if let url = URL(string: "https://icloud.developer.apple.com/dashboard/") {
-            openURL(url)
-        }
-    }
-}
-
-private enum BackendRetention: CaseIterable, Identifiable {
-    case days30
-    case days90
-    case year
-    case forever
-
-    var id: Self { self }
-
-    var title: String {
-        switch self {
-        case .days30:
-            "30 days"
-        case .days90:
-            "90 days"
-        case .year:
-            "1 year"
-        case .forever:
-            "Forever"
+            SettingsNote(text: "Saved on this device. Server-side deletion is not available yet.")
         }
     }
 }
