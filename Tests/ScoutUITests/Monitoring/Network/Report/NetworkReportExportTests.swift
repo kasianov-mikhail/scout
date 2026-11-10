@@ -23,11 +23,12 @@ struct NetworkReportExportTests {
 
     @Test("A report with endpoints renders its summary, status codes, and endpoint rows")
     func testReportExport() throws {
-        let report = NetworkReport(series: [
-            makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 99)]),
-            makeSeries(name: "GET /a", category: "status_5xx", points: [(base, 1)]),
-            makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 100)]),
-        ])
+        let report = NetworkReport(
+            series: [
+                makeSeries(name: "GET /a", category: "status_2xx", points: [(base, 99)]),
+                makeSeries(name: "GET /a", category: "status_5xx", points: [(base, 1)]),
+                makeSeries(name: "GET /a", category: "timer_le_1", points: [(base, 100)]),
+            ], bucket: .day)
         let text = try #require(NetworkReportExport(report: report, range: range).text)
 
         #expect(text.hasPrefix("# Scout Network Report"))
@@ -41,7 +42,7 @@ struct NetworkReportExportTests {
 
     @Test("A report with no endpoints in range exports nothing")
     func testEmptyReportExport() {
-        let report = NetworkReport(series: [])
+        let report = NetworkReport(series: [], bucket: .day)
         #expect(NetworkReportExport(report: report, range: range).text == nil)
     }
 

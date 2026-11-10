@@ -74,7 +74,7 @@ struct NetworkProviderTests {
         await provider.fetchIfNeeded(in: database)
 
         let report = try #require(try provider.result?.get())
-        let expected = NetworkReport(series: network)
+        let expected = NetworkReport(series: network, bucket: .hour)
         let range = base..<base.adding(.day)
 
         #expect(database.queries.count == 1)

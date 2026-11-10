@@ -42,7 +42,7 @@ struct TimerDistributionTests {
             makeSeries(category: "timer_le_inf", points: [(outside, 100)]),
         ])
 
-        let summary = try #require(distribution.summary(in: base..<base.adding(.day)))
+        let summary = try #require(distribution.summary(in: base..<base.adding(.day), bucket: .day))
 
         #expect(abs(summary.p99 - 0.00099) < 0.000001)
         #expect(summary.p50 == 0.0005)
@@ -54,7 +54,7 @@ struct TimerDistributionTests {
             makeSeries(category: "timer_le_1", points: [(base, 5)])
         ])
 
-        #expect(distribution.summary(in: base.adding(.day)..<base.adding(.day, value: 2)) == nil)
+        #expect(distribution.summary(in: base.adding(.day)..<base.adding(.day, value: 2), bucket: .day) == nil)
     }
 
     @Test("isEmpty reflects total counts")

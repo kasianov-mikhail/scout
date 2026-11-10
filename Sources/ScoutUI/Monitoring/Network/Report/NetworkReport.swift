@@ -14,10 +14,12 @@ struct NetworkReport {
     let statuses: [String: StatusDistribution]
 
     private let combined: TimerDistribution
+    private let bucket: SeriesBucket
 
-    init(distributions: [String: TimerDistribution], statuses: [String: StatusDistribution]) {
+    init(distributions: [String: TimerDistribution], statuses: [String: StatusDistribution], bucket: SeriesBucket) {
         self.distributions = distributions
         self.statuses = statuses
+        self.bucket = bucket
 
         var merged: [Date: LatencyHistogram] = [:]
         for distribution in distributions.values {
@@ -28,7 +30,7 @@ struct NetworkReport {
         self.combined = TimerDistribution(histograms: merged)
     }
 
-    init(series: [MetricSeries]) {
+    init(series: [MetricSeries], bucket: SeriesBucket) {
         var latency: [String: [MetricSeries]] = [:]
         var status: [String: [MetricSeries]] = [:]
 
@@ -49,7 +51,8 @@ struct NetworkReport {
                 latency
                 .filter { status.keys.contains($0.key) || NetworkEndpoint.isEndpointName($0.key) }
                 .mapValues(TimerDistribution.init),
-            statuses: status.mapValues(StatusDistribution.init)
+            statuses: status.mapValues(StatusDistribution.init),
+            bucket: bucket
         )
     }
 }
@@ -76,7 +79,7 @@ extension NetworkReport {
         }
 
         let breakdown = statusBreakdown(name: name, range: range)
-        let histogram = distributions[name]?.histogram(in: range)
+        let histogram = distributions[name]?.histogram(in: range, bucket: bucket)
         let requests = breakdown.total > 0 ? breakdown.total : histogram?.total ?? 0
 
         return NetworkEndpoint(
@@ -94,29 +97,29 @@ extension NetworkReport {
         return NetworkSummary(
             requests: endpoints.reduce(0) { $0 + $1.requests },
             successRate: breakdown.total > 0 ? breakdown.successRate : nil,
-            p99: combined.summary(in: range)?.p99,
+            p99: combined.summary(in: range, bucket: bucket)?.p99,
             endpoints: endpoints.count
         )
     }
 
     func statusBreakdown(range: Range<Date>) -> StatusBreakdown {
-        statuses.values.reduce(StatusBreakdown()) { $0 + $1.summary(in: range) }
+        statuses.values.reduce(StatusBreakdown()) { $0 + $1.summary(in: range, bucket: bucket) }
     }
 
     func statusBreakdown(name: String, range: Range<Date>) -> StatusBreakdown {
-        statuses[name]?.summary(in: range) ?? StatusBreakdown()
+        statuses[name]?.summary(in: range, bucket: bucket) ?? StatusBreakdown()
     }
 
     func histogram(name: String, range: Range<Date>) -> LatencyHistogram? {
-        distributions[name]?.histogram(in: range)
+        distributions[name]?.histogram(in: range, bucket: bucket)
     }
 
     func percentiles(in range: Range<Date>) -> Percentiles? {
-        combined.summary(in: range)
+        combined.summary(in: range, bucket: bucket)
     }
 
     func percentiles(name: String, range: Range<Date>) -> Percentiles? {
-        distributions[name]?.summary(in: range)
+        distributions[name]?.summary(in: range, bucket: bucket)
     }
 
     func rows(name: String, range: Range<Date>, component: Calendar.Component, now: Date = .now) -> [NetworkLedgerRow] {
@@ -125,9 +128,9 @@ extension NetworkReport {
         return starts.map { start in
             let lower = max(start, range.lowerBound)
             let upper = min(bucketEnd(start, component: component), range.upperBound)
-            let bucket = lower..<upper
-            let breakdown = statusBreakdown(name: name, range: bucket)
-            let histogram = distributions[name]?.histogram(in: bucket)
+            let interval = lower..<upper
+            let breakdown = statusBreakdown(name: name, range: interval)
+            let histogram = distributions[name]?.histogram(in: interval, bucket: bucket)
             let requests = breakdown.total > 0 ? breakdown.total : histogram?.total ?? 0
 
             return NetworkLedgerRow(
