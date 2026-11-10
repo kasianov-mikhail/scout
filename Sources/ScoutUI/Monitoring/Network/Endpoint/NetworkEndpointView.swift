@@ -51,11 +51,17 @@ struct NetworkEndpointView: View {
                 list(report, rows: rows)
                     .transition(.opacity)
             } else {
-                Placeholder(
-                    text: "No requests",
-                    systemImage: "network",
-                    description: "No requests have been recorded for this endpoint in this period"
-                )
+                VStack(spacing: 0) {
+                    RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+                        .padding(.top, 8)
+                        .padding(.horizontal, 16)
+
+                    Placeholder(
+                        text: "No requests",
+                        systemImage: "network",
+                        description: "No requests have been recorded for this endpoint in this period"
+                    )
+                }
             }
         case .failure(let error):
             ErrorView(description: Text(error.localizedDescription)) {
@@ -136,5 +142,11 @@ struct NetworkEndpointView: View {
 #Preview("Endpoint loading") {
     NavigationStack {
         NetworkEndpointView(name: NetworkEndpoint.samples[2].name, initialRange: .today)
+    }
+}
+
+#Preview("Endpoint empty") {
+    NavigationStack {
+        NetworkEndpointView(name: NetworkEndpoint.samples[2].name, initialRange: .today, result: .success(NetworkReport(series: [])))
     }
 }
