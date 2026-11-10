@@ -44,11 +44,17 @@ struct NetworkView: View {
                 list(report)
                     .transition(.opacity)
             } else {
-                Placeholder(
-                    text: "No requests",
-                    systemImage: "network",
-                    description: "No network requests have been recorded in this period"
-                )
+                VStack(spacing: 0) {
+                    RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                        .padding(.top, 8)
+                        .padding(.horizontal, 16)
+
+                    Placeholder(
+                        text: "No requests",
+                        systemImage: "network",
+                        description: "No network requests have been recorded in this period"
+                    )
+                }
             }
         case .failure(let error):
             ErrorView(description: Text(error.localizedDescription)) {
@@ -105,5 +111,11 @@ struct NetworkView: View {
 #Preview("Loading") {
     NavigationStack {
         NetworkView()
+    }
+}
+
+#Preview("Empty") {
+    NavigationStack {
+        NetworkView(.success(NetworkReport(series: [])))
     }
 }
