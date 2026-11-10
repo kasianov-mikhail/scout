@@ -12,7 +12,7 @@ struct BackendReport {
     var statusDetail: String? = nil
     var database: String? = nil
     var schema: String? = nil
-    var symbolsVersion = "2.4.1"
+    var symbolsVersion: String? = nil
     var symbolsState: String? = nil
     var latestEvent: String? = nil
     var pendingRecords: String? = nil
@@ -30,6 +30,10 @@ struct BackendReport {
     var tooLarge: String? = nil
     var badKey: String? = nil
     var sendErrors: String? = nil
+
+    var symbolsTitle: String {
+        symbolsVersion.map { "Symbols \($0)" } ?? "Symbols"
+    }
 }
 
 extension BackendReport {
@@ -44,6 +48,7 @@ extension BackendReport {
 
     private static let server = BackendReport(
         statusDetail: "scout-server 0.3.9",
+        symbolsVersion: "2.4.1",
         symbolsState: "Uploaded",
         latestEvent: "2 min ago",
         pendingRecords: "24",
@@ -66,6 +71,7 @@ extension BackendReport {
         statusDetail: "signed in to iCloud",
         database: "Public",
         schema: "Up to date",
+        symbolsVersion: "2.4.1",
         symbolsState: "Uploaded",
         latestEvent: "6 min ago",
         pendingRecords: "3",

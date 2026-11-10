@@ -13,12 +13,13 @@ struct BackendDetailView: View {
     @ObservedObject var provider: BackendHealthProvider
     let id: String
     @Binding var activeID: String
-    var report: BackendReport? = nil
 
     @Environment(\.openURL) private var openURL
 
     @State private var retention = BackendRetention.year
     @State private var copyCount = 0
+
+    var report = BackendReport()
 
     private var backend: BackendHealth? {
         provider.backends.first { $0.id == id }
@@ -37,15 +38,13 @@ struct BackendDetailView: View {
     }
 
     private func content(for backend: BackendHealth) -> some View {
-        let details = report ?? .sample(engine: backend.engine)
-
-        return InsetList {
+        InsetList {
             VStack(alignment: .leading, spacing: 0) {
                 SettingsLabel(title: "STATUS")
                 SettingsCard {
                     SettingsReadoutRow(
                         value: backend.status == nil ? nil : backend.status.healthLabel,
-                        caption: details.statusDetail,
+                        caption: report.statusDetail,
                         captionSkeletonWidth: backend.status == nil ? 120 : nil,
                         skeletonWidth: 120
                     )
@@ -58,14 +57,14 @@ struct BackendDetailView: View {
                         copy(backend.endpoint)
                     }
 
-                    addressColumns(for: backend, details: details)
+                    addressColumns(for: backend)
                 }
 
                 SettingsLabel(title: "LATEST DATA")
 
                 SettingsCard {
                     SettingsReadoutRow(
-                        value: details.latestEvent,
+                        value: report.latestEvent,
                         caption: backend.isCloud ? "newest event in CloudKit" : "newest event on the server"
                     )
                 }
@@ -74,27 +73,27 @@ struct BackendDetailView: View {
 
                 SettingsCard {
                     SettingsReadoutRow(
-                        value: details.pendingRecords,
+                        value: report.pendingRecords,
                         caption: "records waiting",
                         skeletonWidth: 28
                     )
 
                     SettingsColumnRow {
-                        SettingsColumn(title: "Last sent", value: details.lastSent)
-                        SettingsColumn(title: "Given up", value: details.givenUp)
-                        SettingsColumn(title: "Last error", value: details.lastError, isLast: true)
+                        SettingsColumn(title: "Last sent", value: report.lastSent)
+                        SettingsColumn(title: "Given up", value: report.givenUp)
+                        SettingsColumn(title: "Last error", value: report.lastError, isLast: true)
                     }
                 }
 
                 SettingsLabel(title: "STORAGE")
 
-                storageCard(for: backend, details: details)
+                storageCard(for: backend)
 
                 if backend.isCloud {
                     SettingsNote(text: "CloudKit does not report its size to apps. The exact number is in CloudKit Console.")
                 }
 
-                errorsSection(for: backend, details: details)
+                errorsSection(for: backend)
 
                 if case .server = backend.engine {
                     retentionSection
@@ -113,34 +112,34 @@ struct BackendDetailView: View {
     }
 
     @ViewBuilder
-    private func addressColumns(for backend: BackendHealth, details: BackendReport) -> some View {
+    private func addressColumns(for backend: BackendHealth) -> some View {
         SettingsColumnRow {
             switch backend.engine {
             case .cloudKit:
-                SettingsColumn(title: "Database", value: details.database)
-                SettingsColumn(title: "Schema", value: details.schema)
-                SettingsColumn(title: "Symbols \(details.symbolsVersion)", value: details.symbolsState, isLast: true)
+                SettingsColumn(title: "Database", value: report.database)
+                SettingsColumn(title: "Schema", value: report.schema)
+                SettingsColumn(title: report.symbolsTitle, value: report.symbolsState, isLast: true)
             case let .server(info):
                 SettingsColumn(title: "Transport", value: info.isSecure ? "HTTPS" : "HTTP")
                 SettingsColumn(title: "API key", value: info.hasAPIKey ? "Set" : "Not set")
-                SettingsColumn(title: "Symbols \(details.symbolsVersion)", value: details.symbolsState, isLast: true)
+                SettingsColumn(title: report.symbolsTitle, value: report.symbolsState, isLast: true)
             case .local:
                 SettingsColumn(title: "Transport", value: "On Device")
                 SettingsColumn(title: "API key", value: "Not set")
-                SettingsColumn(title: "Symbols \(details.symbolsVersion)", value: details.symbolsState, isLast: true)
+                SettingsColumn(title: report.symbolsTitle, value: report.symbolsState, isLast: true)
             }
         }
     }
 
     @ViewBuilder
-    private func storageCard(for backend: BackendHealth, details: BackendReport) -> some View {
+    private func storageCard(for backend: BackendHealth) -> some View {
         SettingsCard {
             if backend.isCloud {
                 HStack(spacing: 0) {
                     SettingsReadoutRow(
-                        value: details.storage,
-                        caption: details.storageCaption,
-                        captionSkeletonWidth: details.storageCaption == nil ? 74 : nil
+                        value: report.storage,
+                        caption: report.storageCaption,
+                        captionSkeletonWidth: report.storageCaption == nil ? 74 : nil
                     )
 
                     SettingsCardAction(title: "Console") {
@@ -149,28 +148,28 @@ struct BackendDetailView: View {
                 }
             } else {
                 SettingsReadoutRow(
-                    value: details.storage,
-                    caption: details.storageCaption,
-                    captionSkeletonWidth: details.storageCaption == nil ? 74 : nil
+                    value: report.storage,
+                    caption: report.storageCaption,
+                    captionSkeletonWidth: report.storageCaption == nil ? 74 : nil
                 )
 
                 SettingsColumnRow {
-                    SettingsColumn(title: "Events", value: details.eventCount)
-                    SettingsColumn(title: "Sessions", value: details.sessionCount)
-                    SettingsColumn(title: "Metrics", value: details.metricCount, isLast: true)
+                    SettingsColumn(title: "Events", value: report.eventCount)
+                    SettingsColumn(title: "Sessions", value: report.sessionCount)
+                    SettingsColumn(title: "Metrics", value: report.metricCount, isLast: true)
                 }
             }
         }
     }
 
     @ViewBuilder
-    private func errorsSection(for backend: BackendHealth, details: BackendReport) -> some View {
+    private func errorsSection(for backend: BackendHealth) -> some View {
         if backend.isCloud {
             SettingsLabel(title: "SEND ERRORS · 24 H")
 
             SettingsCard {
                 SettingsReadoutRow(
-                    value: details.sendErrors,
+                    value: report.sendErrors,
                     caption: "devices could not send",
                     skeletonWidth: 28
                 )
@@ -182,16 +181,16 @@ struct BackendDetailView: View {
 
             SettingsCard {
                 SettingsReadoutRow(
-                    value: details.errorRate,
-                    caption: details.requestCount,
-                    captionSkeletonWidth: details.requestCount == nil ? 120 : nil,
+                    value: report.errorRate,
+                    caption: report.requestCount,
+                    captionSkeletonWidth: report.requestCount == nil ? 120 : nil,
                     skeletonWidth: 46
                 )
 
                 SettingsColumnRow {
-                    SettingsColumn(title: "Server 5xx", value: details.serverErrors)
-                    SettingsColumn(title: "Too large", value: details.tooLarge)
-                    SettingsColumn(title: "Bad key", value: details.badKey, isLast: true)
+                    SettingsColumn(title: "Server 5xx", value: report.serverErrors)
+                    SettingsColumn(title: "Too large", value: report.tooLarge)
+                    SettingsColumn(title: "Bad key", value: report.badKey, isLast: true)
                 }
             }
         }
@@ -349,7 +348,8 @@ private struct SettingsButton: View {
         BackendDetailView(
             provider: BackendHealthProvider(healths: .samples),
             id: [BackendHealth].samples[0].id,
-            activeID: $activeID
+            activeID: $activeID,
+            report: .sample(engine: [BackendHealth].samples[0].engine)
         )
     }
 }
@@ -361,7 +361,8 @@ private struct SettingsButton: View {
         BackendDetailView(
             provider: BackendHealthProvider(healths: .samples),
             id: [BackendHealth].samples[1].id,
-            activeID: $activeID
+            activeID: $activeID,
+            report: .sample(engine: [BackendHealth].samples[1].engine)
         )
     }
 }
@@ -386,7 +387,8 @@ private struct SettingsButton: View {
         BackendDetailView(
             provider: BackendHealthProvider(healths: .samples),
             id: [BackendHealth].samples[3].id,
-            activeID: $activeID
+            activeID: $activeID,
+            report: .sample(engine: [BackendHealth].samples[3].engine)
         )
     }
 }
