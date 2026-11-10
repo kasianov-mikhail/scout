@@ -11,9 +11,9 @@ GitHub strips `style` from README HTML. Bake the frame into each PNG, and never 
 
 | Name | Meaning |
 |---|---|
-| `ORIGINALS` | Folder with the simulator screenshots, 1206 × 2622, named `<screen>-light` and `<screen>-dark`. Keep it outside the repository. |
+| `ORIGINALS` | Folder with the simulator screenshots, named `<screen>-light` and `<screen>-dark`. Keep it outside the repository. |
 | `WORK` | Scratch folder for the framed files. |
-| `SCREENS` | `home event retention crash metric_distribution release_health` |
+| `SCREENS` | `home event crash metrics network timeline` |
 | `DISPLAY_WIDTH` | Width of the picture in the README, in CSS px. 240 for a screenshot. 774 for the logo, the README content width on a file page. |
 | `SCALE` | Pixels of the PNG per CSS px. 4. |
 | `RADIUS` | GitHub box corner radius, in CSS px. 6. |
@@ -23,7 +23,7 @@ GitHub strips `style` from README HTML. Bake the frame into each PNG, and never 
 
 | Property | Value |
 |---|---|
-| Width | `DISPLAY_WIDTH × SCALE`. For a screenshot 960 px, with the height from the aspect ratio (960 × 2087). |
+| Width | `DISPLAY_WIDTH × SCALE`. For a screenshot 960 px, with the height from the aspect ratio (960 × 2078 for a 780 × 1688 capture, 960 × 2087 for 1206 × 2622). |
 | Corner radius | `RADIUS × SCALE`. 24 px. |
 | Border | `BORDER × SCALE`, drawn inside the image. 4 px. |
 | Border color, light | `#dfe4e9`, the muted divider below. |
@@ -32,6 +32,14 @@ GitHub strips `style` from README HTML. Bake the frame into each PNG, and never 
 | Color space | sRGB, high-quality interpolation. |
 
 The border colors are the GitHub Primer muted divider (`borderColor-muted`), drawn opaque: `#d1d9e0` at 70 % over white, and `#3d444d` at 70 % over `#0d1117`. The default border color, `#d1d9e0` and `#3d444d`, looked heavier than the dividers under the README headings.
+
+## Before framing
+
+- Confirm the final screen set with the user before framing. It changes between refreshes.
+- Copy every source into `$ORIGINALS` as soon as the user provides it. Files in Downloads or Desktop move and disappear.
+- Confirm that every screen has a light and a dark capture. Replace a screen that lacks one before framing.
+- Confirm that every screen exists in `origin/HEAD`. A screen from an unmerged branch makes the README show UI that the release does not have.
+- Crop every screen to one height, top-aligned, so every frame has the same aspect ratio. Use the device screen, for example 780 × 1688 for a 2× capture. Scroll captures are taller and need the same crop.
 
 ## Steps
 
@@ -43,9 +51,10 @@ The border colors are the GitHub Primer muted divider (`borderColor-muted`), dra
    - The 8-bit palette keeps the alpha of the rounded corners.
    - Each file is about 60–100 KB, down from about 300 KB.
 3. Look at the result on a white page and on a `#0d1117` page before the upload.
-4. Ask the user to drop the files from `$WORK/out` into a comment on the PR. GitHub gives each file a `user-attachments` URL.
+4. Create or reuse a draft PR. Ask the user to drop the files from `$WORK/out` into a comment on that PR. GitHub gives each file a `user-attachments` URL. The upload stays manual: GitHub has no API for comment attachments.
 5. Compare each URL with its local file: `curl -sL -o dl.png <url>` and `cmp dl.png $WORK/out/<name>.png`. Use only URLs that match.
 6. Put the URLs in the README, and keep the layout below.
+   - After the URLs are in place, hide the comment with the images. Hiding keeps the attachments working; deleting the comment may break them.
 7. Open the README at the commit hash, not at the branch, and measure the gaps in a 1400 px wide window. GitHub caches the branch page.
 
 ## Logo
