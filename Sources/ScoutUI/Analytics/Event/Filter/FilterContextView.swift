@@ -51,7 +51,7 @@ private struct FilterIDField: View {
                     Button(action: toggle) {
                         Text(verbatim: text.isEmpty ? "Paste" : "Clear")
                             .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(Color.blue)
+                            .foregroundStyle(Color.filterAccent)
                             .padding(.horizontal, 16)
                             .frame(maxHeight: .infinity)
                             .overlay(alignment: .leading) {
@@ -62,7 +62,7 @@ private struct FilterIDField: View {
                     }
                     .buttonStyle(.plain)
                 }
-                .frame(height: 44)
+                .frame(height: 45)
             }
 
             if !isValid {

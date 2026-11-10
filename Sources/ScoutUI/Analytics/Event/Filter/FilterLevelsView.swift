@@ -31,7 +31,8 @@ struct FilterLevelsView: View {
                                         isSelected: draft.isSelected(levels[levelIndex]),
                                         ink: levels[levelIndex].filterInk,
                                         fill: levels[levelIndex].filterTint,
-                                        showsDivider: levelIndex < levels.count - 1
+                                        showsDivider: levelIndex < levels.count - 1,
+                                        alignment: .center
                                     ) {
                                         draft.toggle(levels[levelIndex])
                                     }
@@ -50,6 +51,7 @@ struct FilterLevelsView: View {
                 Text(verbatim: "Pick none to see every level.")
                     .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
+                    .frame(minHeight: 18)
             }
         }
     }
