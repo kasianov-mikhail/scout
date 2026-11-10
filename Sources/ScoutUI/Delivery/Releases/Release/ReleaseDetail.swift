@@ -183,10 +183,6 @@ struct ReleaseTileValue {
     let color: Color
     let chart: ReleaseChart
     let footer: String?
-
-    var title: String {
-        kind.title
-    }
 }
 
 enum ReleaseChart {

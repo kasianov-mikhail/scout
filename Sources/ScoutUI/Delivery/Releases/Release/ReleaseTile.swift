@@ -23,27 +23,12 @@ struct ReleaseTile: View {
                 content
             }
         }
-        .padding(.vertical, 14)
-        .padding(.leading, isLeading ? 0 : 12)
-        .padding(.trailing, isLeading ? 12 : 0)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .overlay(alignment: .trailing) {
-            if isLeading {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
-            }
-        }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .releaseGridCell(isLeading: isLeading)
     }
 
     private var content: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(verbatim: value.title)
+            Text(verbatim: value.kind.title)
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
 
@@ -63,6 +48,27 @@ struct ReleaseTile: View {
                     .minimumScaleFactor(0.85)
             }
         }
+    }
+}
+
+extension View {
+    func releaseGridCell(isLeading: Bool) -> some View {
+        padding(.vertical, 14)
+            .padding(.leading, isLeading ? 0 : 12)
+            .padding(.trailing, isLeading ? 12 : 0)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .overlay(alignment: .trailing) {
+                if isLeading {
+                    Rectangle()
+                        .fill(Color.separator)
+                        .frame(width: 0.5)
+                }
+            }
+            .overlay(alignment: .bottom) {
+                Rectangle()
+                    .fill(Color.separator)
+                    .frame(height: 0.5)
+            }
     }
 }
 

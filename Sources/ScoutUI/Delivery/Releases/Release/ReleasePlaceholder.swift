@@ -71,18 +71,20 @@ struct ReleasePlaceholder: View {
     }
 
     private var grid: some View {
-        VStack(spacing: 0) {
-            ForEach(0..<4, id: \.self) { row in
+        let kinds = ReleaseTileValue.Kind.allCases
+
+        return VStack(spacing: 0) {
+            ForEach(0..<(kinds.count / 2), id: \.self) { row in
                 HStack(spacing: 0) {
-                    cell(ReleaseTileValue.Kind.allCases[row * 2], delay: 0.16 + Double(row) * 0.08, isLeading: true)
-                    cell(ReleaseTileValue.Kind.allCases[row * 2 + 1], delay: 0.16 + Double(row) * 0.08, isLeading: false)
+                    cell(kind: kinds[row * 2], delay: 0.16 + Double(row) * 0.08, isLeading: true)
+                    cell(kind: kinds[row * 2 + 1], delay: 0.16 + Double(row) * 0.08, isLeading: false)
                 }
             }
         }
         .padding(.horizontal, 16)
     }
 
-    private func cell(_ kind: ReleaseTileValue.Kind, delay: Double, isLeading: Bool) -> some View {
+    private func cell(kind: ReleaseTileValue.Kind, delay: Double, isLeading: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(verbatim: kind.title)
                 .font(.weight450(size: 13))
@@ -94,22 +96,7 @@ struct ReleasePlaceholder: View {
             SkeletonBar(width: 120, height: 6, delay: delay)
                 .frame(height: 14, alignment: .leading)
         }
-        .padding(.vertical, 14)
-        .padding(.leading, isLeading ? 0 : 12)
-        .padding(.trailing, isLeading ? 12 : 0)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .overlay(alignment: .trailing) {
-            if isLeading {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
-            }
-        }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .releaseGridCell(isLeading: isLeading)
     }
 
     private var footer: some View {
