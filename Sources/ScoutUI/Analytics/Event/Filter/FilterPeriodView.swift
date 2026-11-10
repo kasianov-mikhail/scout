@@ -20,9 +20,10 @@ struct FilterPeriodView: View {
                         FilterSegment(
                             title: period.title,
                             isSelected: draft.period == period,
-                            ink: draft.period == period ? .blue : .primary,
-                            fill: Color.blue.opacity(0.12),
-                            showsDivider: period != periods.last
+                            ink: draft.period == period ? .filterAccent : .primary,
+                            fill: Color.filterAccent.opacity(0.12),
+                            showsDivider: period != periods.last,
+                            alignment: .leading
                         ) {
                             draft.period = period
                         }

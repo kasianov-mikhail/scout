@@ -45,9 +45,9 @@ struct FilterView: View {
         Button(action: draft.reset) {
             Text(verbatim: "Reset Filter")
                 .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(.red)
+                .foregroundStyle(Color.filterDestructive)
                 .frame(maxWidth: .infinity)
-                .frame(height: 46)
+                .frame(height: 47)
                 .background(Color(.systemBackground))
                 .overlay {
                     RoundedRectangle(cornerRadius: 3)
@@ -56,7 +56,6 @@ struct FilterView: View {
         }
         .buttonStyle(.plain)
         .padding(.horizontal, 16)
-        .padding(.vertical, 8)
         .background(Color(.systemBackground))
         .accessibilityLabel(Text(verbatim: "Reset Filter"))
     }
@@ -75,9 +74,9 @@ private struct FilterHeader: View {
     var body: some View {
         HStack(spacing: 0) {
             Button(action: close) {
-                Image(systemName: "xmark")
-                    .font(.system(size: 14, weight: .bold))
-                    .foregroundStyle(.primary)
+                CloseGlyph()
+                    .fill(.primary)
+                    .frame(width: 14, height: 14)
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(Color(.systemBackground).opacity(0.72)))
                     .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5))
@@ -93,12 +92,12 @@ private struct FilterHeader: View {
                 .frame(maxWidth: .infinity)
 
             Button(action: apply) {
-                Image(systemName: "checkmark")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundStyle(.white)
+                CheckGlyph()
+                    .fill(.white)
+                    .frame(width: 18, height: 14)
                     .frame(width: 44, height: 44)
-                    .background(Circle().fill(Color.blue.opacity(isApplyEnabled ? 1 : 0.35)))
-                    .shadow(color: Color.blue.opacity(isApplyEnabled ? 0.3 : 0), radius: 4, y: 1)
+                    .background(Circle().fill(Color.filterAccent.opacity(isApplyEnabled ? 1 : 0.35)))
+                    .shadow(color: Color.filterAccent.opacity(isApplyEnabled ? 0.3 : 0), radius: 4, y: 1)
             }
             .buttonStyle(.plain)
             .frame(width: 60)
@@ -149,6 +148,7 @@ struct FilterSegment: View {
     let ink: Color
     let fill: Color
     let showsDivider: Bool
+    let alignment: Alignment
     let action: () -> Void
 
     var body: some View {
@@ -159,7 +159,7 @@ struct FilterSegment: View {
                 .lineLimit(1)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 9)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: alignment)
                 .background(isSelected ? fill : Color.clear)
                 .overlay(alignment: .trailing) {
                     if showsDivider {
@@ -171,6 +171,29 @@ struct FilterSegment: View {
         }
         .buttonStyle(.plain)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
+    }
+}
+
+private struct CloseGlyph: Shape {
+    func path(in rect: CGRect) -> Path {
+        let unit = min(rect.width, rect.height) / 14
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + 2 * unit, y: rect.minY + 2 * unit))
+        path.addLine(to: CGPoint(x: rect.minX + 12 * unit, y: rect.minY + 12 * unit))
+        path.move(to: CGPoint(x: rect.minX + 12 * unit, y: rect.minY + 2 * unit))
+        path.addLine(to: CGPoint(x: rect.minX + 2 * unit, y: rect.minY + 12 * unit))
+        return path.strokedPath(StrokeStyle(lineWidth: 2 * unit, lineCap: .round))
+    }
+}
+
+private struct CheckGlyph: Shape {
+    func path(in rect: CGRect) -> Path {
+        let unit = min(rect.width / 18, rect.height / 14)
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + 2 * unit, y: rect.minY + 7.5 * unit))
+        path.addLine(to: CGPoint(x: rect.minX + 6.5 * unit, y: rect.minY + 12 * unit))
+        path.addLine(to: CGPoint(x: rect.minX + 16 * unit, y: rect.minY + 2 * unit))
+        return path.strokedPath(StrokeStyle(lineWidth: 2.2 * unit, lineCap: .round, lineJoin: .round))
     }
 }
 
