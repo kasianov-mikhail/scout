@@ -38,7 +38,8 @@ final class MetricsListProvider: ObservableObject, SeriesProvider {
 
     func fetch(in database: SeriesReader) async throws -> [MetricTile] {
         let selection = range
-        let metricRange = selection.range(now: now())
+        let timestamp = now()
+        let metricRange = selection.range(now: timestamp)
         let bucket = selection.bucket
 
         async let intSeries = database.metricSeries(
@@ -67,7 +68,7 @@ final class MetricsListProvider: ObservableObject, SeriesProvider {
             intSeries: try await intSeries,
             floatingSeries: try await floatingSeries,
             meterSeries: try await meterSeries,
-            range: metricRange
+            range: selection.elapsedRange(now: timestamp)
         ).tiles
     }
 }
