@@ -11,7 +11,7 @@ struct AlertStatus: Equatable {
     let rule: AlertRule
     let outcome: AlertOutcome
     let reading: MetricReading
-    let notified: Date? = nil
+    var notified: Date? = nil
 }
 
 extension AlertStatus {

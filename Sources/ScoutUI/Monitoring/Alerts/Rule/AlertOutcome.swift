@@ -10,7 +10,7 @@ import Foundation
 struct AlertOutcome: Equatable {
     let state: AlertState
     let shouldNotify: Bool
-    let isRecorded: Bool = false
+    var isRecorded = false
 }
 
 extension AlertRule {
