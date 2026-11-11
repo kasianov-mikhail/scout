@@ -42,7 +42,7 @@ struct MetricsListProviderTests {
 
         let counter = try #require(tiles.first { $0.name == "api_calls" })
         #expect(counter.value == 3)
-        #expect(counter.series == [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2])
+        #expect(counter.series == [1, 0, 0, 0, 2])
 
         let meter = try #require(tiles.first { $0.name == "queue_depth" })
         #expect(meter.value == 7)

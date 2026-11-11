@@ -68,7 +68,8 @@ final class MetricsListProvider: ObservableObject, SeriesProvider {
             intSeries: try await intSeries,
             floatingSeries: try await floatingSeries,
             meterSeries: try await meterSeries,
-            range: selection.elapsedRange(now: timestamp)
+            range: selection,
+            now: timestamp
         ).tiles
     }
 }

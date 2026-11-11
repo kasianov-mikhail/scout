@@ -40,11 +40,16 @@ struct MetricTileBuilder {
     let intSeries: [MetricSeries]
     let floatingSeries: [MetricSeries]
     let meterSeries: [MetricSeries]
-    let range: Range<Date>
+    let range: MetricRange
+    let now: Date
 }
 
 extension MetricTileBuilder {
     private static let sliceCount = 12
+
+    private var slices: [Range<Date>] { range.slices(now: now, count: Self.sliceCount) }
+
+    private var window: Range<Date> { range.elapsedRange(now: now) }
 
     var tiles: [MetricTile] {
         var tiles: [MetricTile] = []
@@ -69,7 +74,6 @@ extension MetricTileBuilder {
     }
 
     private func sumTiles(series: [MetricSeries], telemetry: Telemetry.Export) -> [MetricTile] {
-        let slices = range.slices(count: Self.sliceCount)
         let groups = Dictionary(grouping: series.filter { $0.category == telemetry.rawValue }, by: \.name)
 
         return
@@ -79,7 +83,7 @@ extension MetricTileBuilder {
                 return MetricTile(
                     name: name,
                     telemetry: telemetry,
-                    value: points.total(in: range),
+                    value: points.total(in: window),
                     series: slices.map { points.total(in: $0) }
                 )
             }
@@ -87,7 +91,6 @@ extension MetricTileBuilder {
     }
 
     private func distributionTiles<H: QuantileHistogram>(type: H.Type, telemetry: Telemetry.Export) -> [MetricTile] {
-        let slices = range.slices(count: Self.sliceCount)
         let series = intSeries.filter { item in
             guard let category = item.category else {
                 return false
@@ -116,20 +119,19 @@ extension MetricTileBuilder {
     }
 
     private func meterTiles() -> [MetricTile] {
-        let slices = range.slices(count: Self.sliceCount)
         let groups = Dictionary(grouping: meterSeries.filter { $0.category == Telemetry.Export.meter.rawValue }, by: \.name)
 
         return groups.compactMap { name, group in
             let points = group.flatMap(\.points).map { ChartPoint<Double>(date: $0.date, value: $0.value) }
 
-            guard points.contains(where: { range.contains($0.date) }) else {
+            guard points.contains(where: { window.contains($0.date) }) else {
                 return nil
             }
 
             return MetricTile(
                 name: name,
                 telemetry: .meter,
-                value: points.latest(in: range),
+                value: points.latest(in: window),
                 series: slices.map { points.latest(in: $0) }
             )
         }

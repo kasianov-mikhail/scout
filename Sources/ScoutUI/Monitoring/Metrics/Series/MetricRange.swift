@@ -178,6 +178,33 @@ extension MetricRange {
         return buckets
     }
 
+    func slices(now: Date, count: Int) -> [Range<Date>] {
+        let buckets = buckets(now: now)
+        let upperBound = elapsedRange(now: now).upperBound
+
+        guard buckets.count > count else {
+            return buckets.filter { $0.lowerBound < upperBound }
+        }
+
+        let size = buckets.count / count
+        let extra = buckets.count % count
+        var slices: [Range<Date>] = []
+        var start = 0
+
+        for position in 0..<count {
+            let length = size + (position < extra ? 1 : 0)
+            let lowerBound = buckets[start].lowerBound
+            let slice = lowerBound..<buckets[start + length - 1].upperBound
+
+            if lowerBound < upperBound {
+                slices.append(slice)
+            }
+            start += length
+        }
+
+        return slices
+    }
+
     func shifted(_ range: Range<Date>) -> Range<Date> {
         switch self {
         case .today, .yesterday:

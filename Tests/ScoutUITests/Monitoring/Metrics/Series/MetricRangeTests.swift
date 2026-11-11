@@ -46,6 +46,17 @@ struct MetricRangeTests {
         #expect(MetricRange.yesterday.elapsedRange(now: now) == MetricRange.yesterday.range(now: now))
     }
 
+    @Test("Sparkline slices follow the calendar buckets")
+    func sparklineSlices() {
+        #expect(MetricRange.week.slices(now: now, count: 12) == MetricRange.week.buckets(now: now))
+        #expect(MetricRange.year.slices(now: now, count: 12) == MetricRange.year.buckets(now: now))
+        #expect(MetricRange.month.slices(now: now, count: 12).count == 12)
+
+        let today = MetricRange.today.slices(now: now, count: 12)
+        #expect(today.count == 8)
+        #expect(today.first == Date(year: 2026, month: 6, day: 10)..<Date(year: 2026, month: 6, day: 10, hour: 2))
+    }
+
     @Test("A bucket shifts by one full period")
     func bucketShift() {
         let bucket = Date(year: 2026, month: 6, day: 10, hour: 13)..<Date(year: 2026, month: 6, day: 10, hour: 14)
