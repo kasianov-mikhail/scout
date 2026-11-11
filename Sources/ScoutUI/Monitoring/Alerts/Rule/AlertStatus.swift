@@ -11,6 +11,7 @@ struct AlertStatus: Equatable {
     let rule: AlertRule
     let outcome: AlertOutcome
     let reading: MetricReading
+    let notified: Date? = nil
 }
 
 extension AlertStatus {
@@ -54,11 +55,24 @@ extension AlertStatus {
     }
 
     func firingLabel(now: Date = .now) -> String? {
+        guard isFiring else {
+            return nil
+        }
+        guard let firingStart else {
+            return "Firing"
+        }
+        let hours = max(1, Int(now.timeIntervalSince(firingStart) / 3600))
+        return "Firing \(hours) h"
+    }
+
+    var firingStart: Date? {
+        guard outcome.isRecorded else {
+            return nil
+        }
         guard case .firing(let since) = outcome.state else {
             return nil
         }
-        let hours = max(1, Int(now.timeIntervalSince(since) / 3600))
-        return "Firing \(hours) h"
+        return since
     }
 
     var mutedLabel: String? {

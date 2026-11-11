@@ -30,8 +30,10 @@ final class AlertRegistry {
 
     func save(_ rules: [AlertRule]) throws {
         let states = try states()
+        let dates = try notifiedDates()
         try encode(rules, forKey: "scout_alert_rules")
         try encode(states.filter { rules.contains($0.key) }, forKey: "scout_alert_states")
+        try encode(dates.filter { rules.contains($0.key) }, forKey: "scout_alert_notified")
     }
 
     func state(for rule: AlertRule) throws -> AlertState {
@@ -44,8 +46,28 @@ final class AlertRegistry {
         try encode(updated, forKey: "scout_alert_states")
     }
 
+    func notified(for rule: AlertRule) throws -> Date? {
+        try notifiedDates()[rule]
+    }
+
+    func rememberNotified(_ date: Date, for rule: AlertRule) throws {
+        var updated = try notifiedDates()
+        updated[rule] = date
+        try encode(updated, forKey: "scout_alert_notified")
+    }
+
+    func forgetNotified(for rule: AlertRule) throws {
+        var updated = try notifiedDates()
+        updated[rule] = nil
+        try encode(updated, forKey: "scout_alert_notified")
+    }
+
     private func states() throws -> [AlertRule: AlertState] {
         try decode([AlertRule: AlertState].self, forKey: "scout_alert_states") ?? [:]
+    }
+
+    private func notifiedDates() throws -> [AlertRule: Date] {
+        try decode([AlertRule: Date].self, forKey: "scout_alert_notified") ?? [:]
     }
 
     private func decode<T: Decodable>(_ type: T.Type, forKey key: String) throws -> T? {

@@ -10,6 +10,7 @@ import Foundation
 struct AlertOutcome: Equatable {
     let state: AlertState
     let shouldNotify: Bool
+    let isRecorded: Bool = false
 }
 
 extension AlertRule {
@@ -23,7 +24,7 @@ extension AlertRule {
         }
 
         if case .firing(let since) = state {
-            return AlertOutcome(state: .firing(since: since), shouldNotify: false)
+            return AlertOutcome(state: .firing(since: since), shouldNotify: false, isRecorded: true)
         }
 
         return AlertOutcome(state: .firing(since: now), shouldNotify: true)

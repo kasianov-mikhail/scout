@@ -51,9 +51,18 @@ struct AlertStatusTests {
     @Test("The firing label counts whole hours")
     func firingLabel() {
         let since = Date(timeIntervalSince1970: 0)
-        let status = makeStatus(recent: [0.9], state: .firing(since: since))
+        let status = makeStatus(recent: [0.9], state: .firing(since: since), isRecorded: true)
 
         #expect(status.firingLabel(now: since.addingTimeInterval(2 * 3600 + 60)) == "Firing 2 h")
+    }
+
+    @Test("The firing label omits the hours while the start is unrecorded")
+    func unrecordedFiringLabel() {
+        let since = Date(timeIntervalSince1970: 0)
+        let status = makeStatus(recent: [0.9], state: .firing(since: since))
+
+        #expect(status.firingStart == nil)
+        #expect(status.firingLabel(now: since.addingTimeInterval(2 * 3600 + 60)) == "Firing")
     }
 
     @Test("Statuses group by their state")
@@ -80,13 +89,13 @@ struct AlertStatusTests {
         #expect(status.buckets.count == 24)
     }
 
-    private func makeStatus(recent: [Double], state: AlertState) -> AlertStatus {
+    private func makeStatus(recent: [Double], state: AlertState, isRecorded: Bool = false) -> AlertStatus {
         AlertStatus(
             rule: AlertRule(
                 metric: .crashFreeSessions,
                 condition: AlertCondition(comparison: .below, reference: .constant(0.995))
             ),
-            outcome: AlertOutcome(state: state, shouldNotify: false),
+            outcome: AlertOutcome(state: state, shouldNotify: false, isRecorded: isRecorded),
             reading: MetricReading(baseline: 0.998, recent: recent)
         )
     }

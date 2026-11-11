@@ -7,6 +7,11 @@
 
 import UserNotifications
 
+struct AlertDelivery: Equatable {
+    let delivered: [AlertStatus]
+    let undelivered: [AlertStatus]
+}
+
 struct AlertNotifier {
     let center: AlertNotificationCenter
 
@@ -15,7 +20,8 @@ struct AlertNotifier {
     }
 
     @discardableResult
-    func deliver(_ statuses: [AlertStatus]) async -> [AlertStatus] {
+    func deliver(_ statuses: [AlertStatus]) async -> AlertDelivery {
+        var delivered: [AlertStatus] = []
         var undelivered: [AlertStatus] = []
 
         for status in statuses {
@@ -36,11 +42,12 @@ struct AlertNotifier {
 
             do {
                 try await center.add(request)
+                delivered.append(status)
             } catch {
                 undelivered.append(status)
             }
         }
 
-        return undelivered
+        return AlertDelivery(delivered: delivered, undelivered: undelivered)
     }
 }

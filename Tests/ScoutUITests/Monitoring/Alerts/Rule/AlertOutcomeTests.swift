@@ -28,6 +28,7 @@ struct AlertOutcomeTests {
         let outcome = rule.outcome(reading: breached, state: .armed, now: now)
 
         #expect(outcome == AlertOutcome(state: .firing(since: now), shouldNotify: true))
+        #expect(!outcome.isRecorded)
     }
 
     @Test("An armed rule stays quiet while the metric is healthy")
@@ -42,7 +43,7 @@ struct AlertOutcomeTests {
         let since = Date(year: 2026, month: 7, day: 20, hour: 12)
         let outcome = rule.outcome(reading: breached, state: .firing(since: since), now: now)
 
-        #expect(outcome == AlertOutcome(state: .firing(since: since), shouldNotify: false))
+        #expect(outcome == AlertOutcome(state: .firing(since: since), shouldNotify: false, isRecorded: true))
     }
 
     @Test("A firing rule re-arms silently once the breach clears")
@@ -67,6 +68,7 @@ struct AlertOutcomeTests {
         let outcome = rule.outcome(reading: breached, state: .muted(until: until), now: now)
 
         #expect(outcome == AlertOutcome(state: .firing(since: now), shouldNotify: true))
+        #expect(!outcome.isRecorded)
     }
 
     @Test("An expired mute re-arms silently when the metric is healthy")
