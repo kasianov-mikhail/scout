@@ -33,37 +33,20 @@ struct ParamList: View {
 }
 
 struct ParamRow: View {
-    let item: ParamProvider.Item?
+    let item: ParamProvider.Item
 
     var body: some View {
-        Group {
-            if let item {
-                let value = ParamValue(parsing: item.value)
+        let value = ParamValue(parsing: item.value)
 
-                Row {
-                    ParamValueRow(
-                        value: value,
-                        label: item.key,
-                        labelStyle: .secondary,
-                        summaryStyle: value.isContainer ? .secondary : .primary
-                    )
-                } destination: {
-                    ParamView(item: item)
-                }
-            } else {
-                HStack(spacing: 13) {
-                    Redacted(length: 2)
-                        .frame(width: 24)
-                        .opacity(0.5)
-
-                    Redacted(length: 8).opacity(0.5)
-
-                    Spacer()
-
-                    Redacted(length: 8).opacity(0.5)
-                }
-                .frame(minHeight: 44)
-            }
+        Row {
+            ParamValueRow(
+                value: value,
+                label: item.key,
+                labelStyle: .secondary,
+                summaryStyle: value.isContainer ? .secondary : .primary
+            )
+        } destination: {
+            ParamView(item: item)
         }
         .lineLimit(1)
     }
