@@ -46,33 +46,21 @@ struct SessionHeader: View {
     private var chips: some View {
         FlowLayout(spacing: 6) {
             if let model = info.model.map(DeviceModel.init) {
-                chip(model.name)
+                OutlineChip(text: model.name)
             }
             if let osVersion = info.osVersion {
-                chip(osVersion)
+                OutlineChip(text: osVersion)
             }
             if let locale = info.locale {
-                chip(locale, monospaced: true)
+                OutlineChip(text: locale, monospaced: true)
             }
             if let version = info.version {
-                chip(version, monospaced: true)
+                OutlineChip(text: version, monospaced: true)
             }
             if let channel = info.channel {
-                chip(channel)
+                OutlineChip(text: channel)
             }
         }
-    }
-
-    private func chip(_ text: String, monospaced: Bool = false) -> some View {
-        Text(verbatim: text)
-            .font(.weight450(size: 13))
-            .monospaced(monospaced)
-            .lineLimit(1)
-            .padding(.horizontal, 9)
-            .frame(height: 26)
-            .overlay {
-                Capsule().stroke(Color(.systemGray4), lineWidth: 0.5)
-            }
     }
 
     private var divider: some View {

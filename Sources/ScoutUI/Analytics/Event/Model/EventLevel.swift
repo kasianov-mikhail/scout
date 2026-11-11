@@ -9,10 +9,6 @@ import Scout
 import SwiftUI
 
 extension EventLevel {
-    var descriptionText: Text {
-        Text(description.uppercased()).foregroundColor(color ?? .blue)
-    }
-
     var description: String {
         switch self {
         case .notice:

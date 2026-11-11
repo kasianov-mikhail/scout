@@ -34,7 +34,7 @@ struct Header<Trailing: View>: View {
     InsetList {
         Header(title: "Section Title")
         Header(title: "Section Title") {
-            AllButton {}
+            Text(verbatim: "Trailing")
         }
     }
 }
