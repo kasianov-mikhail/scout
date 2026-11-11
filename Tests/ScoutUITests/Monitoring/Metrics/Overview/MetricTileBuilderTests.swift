@@ -74,12 +74,15 @@ struct MetricTileBuilderTests {
 
     @Test("Week slices give one non-zero point per day")
     func weekSlices() throws {
+        let points: [(Double, Double)] = (0..<7).map { index in
+            (Double(index - 6) * 24 + 6, Double(index + 1))
+        }
         let builder = MetricTileBuilder(
             intSeries: [
                 makeSeries(
                     name: "api_calls",
                     category: "counter",
-                    points: (0..<7).map { index in (Double(index - 6) * 24 + 6, Double(index + 1)) }
+                    points: points
                 )
             ],
             floatingSeries: [],
