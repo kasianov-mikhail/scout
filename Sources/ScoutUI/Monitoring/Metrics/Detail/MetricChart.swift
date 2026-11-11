@@ -8,6 +8,8 @@
 import Foundation
 import SwiftUI
 
+private let monospacedAdvance: CGFloat = 6
+
 struct MetricChart: View {
     enum Style {
         case bars
@@ -204,21 +206,24 @@ struct MetricChartScale {
 }
 
 struct MetricAxisLabels: View {
-    let labels: [String]
+    let labels: [MetricAxisLabel]
 
     var body: some View {
-        HStack(spacing: 0) {
+        GeometryReader { proxy in
             ForEach(labels.indices, id: \.self) { index in
-                Text(verbatim: labels[index])
-
-                if index < labels.count - 1 {
-                    Spacer(minLength: 0)
-                }
+                Text(verbatim: labels[index].text)
+                    .position(x: x(labels[index], width: proxy.size.width), y: proxy.size.height / 2)
             }
         }
+        .frame(height: 12)
+        .padding(.top, 4)
         .font(.weight450(size: 10, design: .monospaced))
         .foregroundStyle(Color(.systemGray))
-        .padding(.top, 4)
+    }
+
+    private func x(_ label: MetricAxisLabel, width: CGFloat) -> CGFloat {
+        let half = CGFloat(label.text.count) * monospacedAdvance / 2
+        return min(max(width * CGFloat(label.position), half), width - half)
     }
 }
 

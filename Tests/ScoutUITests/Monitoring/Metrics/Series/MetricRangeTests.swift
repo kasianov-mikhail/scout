@@ -65,7 +65,28 @@ struct MetricRangeTests {
     @Test("Labels follow the granularity")
     func labels() {
         #expect(MetricRange.today.rowLabel(date: Date(year: 2026, month: 6, day: 10, hour: 13)) == "13:00")
-        #expect(MetricRange.today.axisLabels(now: now) == ["00:00", "06:00", "12:00", "18:00", "24:00"])
+        #expect(
+            MetricRange.today.axisLabels(now: now) == [
+                MetricAxisLabel(text: "00:00", position: 0),
+                MetricAxisLabel(text: "06:00", position: 0.25),
+                MetricAxisLabel(text: "12:00", position: 0.5),
+                MetricAxisLabel(text: "18:00", position: 0.75),
+                MetricAxisLabel(text: "24:00", position: 1),
+            ]
+        )
         #expect(MetricRange.year.axisLabels(now: now).count == 6)
+    }
+
+    @Test("Day axis labels mark the edges of the plot")
+    func dayAxisLabelPositions() {
+        #expect(MetricRange.today.axisLabels(now: now).map(\.position) == [0, 0.25, 0.5, 0.75, 1])
+        #expect(MetricRange.yesterday.axisLabels(now: now).map(\.position) == [0, 0.25, 0.5, 0.75, 1])
+    }
+
+    @Test("Axis labels sit over the center of their bucket")
+    func axisLabelPositions() {
+        #expect(MetricRange.week.axisLabels(now: now).map(\.position) == [1.0 / 14, 5.0 / 14, 9.0 / 14, 13.0 / 14])
+        #expect(MetricRange.month.axisLabels(now: now).map(\.position) == [0.5 / 30, 7.5 / 30, 14.5 / 30, 21.5 / 30, 29.5 / 30])
+        #expect(MetricRange.year.axisLabels(now: now).map(\.position) == [0.5 / 12, 2.5 / 12, 4.5 / 12, 6.5 / 12, 8.5 / 12, 10.5 / 12])
     }
 }
