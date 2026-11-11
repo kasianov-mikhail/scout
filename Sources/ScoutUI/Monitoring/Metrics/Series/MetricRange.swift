@@ -18,6 +18,11 @@ enum MetricRange: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
+struct MetricAxisLabel: Equatable {
+    let text: String
+    let position: Double
+}
+
 extension MetricRange {
     var title: String {
         switch self {
@@ -232,24 +237,39 @@ extension MetricRange {
         }
     }
 
-    func axisLabels(now: Date) -> [String] {
+    func axisLabels(now: Date) -> [MetricAxisLabel] {
         let buckets = buckets(now: now)
 
         return switch self {
         case .today, .yesterday:
-            ["00:00", "06:00", "12:00", "18:00", "24:00"]
+            [
+                MetricAxisLabel(text: "00:00", position: 0),
+                MetricAxisLabel(text: "06:00", position: 0.25),
+                MetricAxisLabel(text: "12:00", position: 0.5),
+                MetricAxisLabel(text: "18:00", position: 0.75),
+                MetricAxisLabel(text: "24:00", position: 1),
+            ]
         case .week:
-            [0, 2, 4, 6].compactMap { index in
-                buckets.indices.contains(index) ? DateFormatter.weekdayShort.string(from: buckets[index].lowerBound) : nil
-            }
+            axisLabels(buckets: buckets, indices: [0, 2, 4, 6], formatter: .weekdayShort)
         case .month:
-            [0, 7, 14, 21, 29].compactMap { index in
-                buckets.indices.contains(index) ? DateFormatter.monthDayShort.string(from: buckets[index].lowerBound) : nil
-            }
+            axisLabels(buckets: buckets, indices: [0, 7, 14, 21, 29], formatter: .monthDayShort)
         case .year:
-            [0, 2, 4, 6, 8, 10].compactMap { index in
-                buckets.indices.contains(index) ? DateFormatter.monthShort.string(from: buckets[index].lowerBound) : nil
+            axisLabels(buckets: buckets, indices: [0, 2, 4, 6, 8, 10], formatter: .monthShort)
+        }
+    }
+
+    private func axisLabels(buckets: [Range<Date>], indices: [Int], formatter: DateFormatter) -> [MetricAxisLabel] {
+        let count = Double(buckets.count)
+
+        return indices.compactMap { index in
+            guard buckets.indices.contains(index) else {
+                return nil
             }
+
+            return MetricAxisLabel(
+                text: formatter.string(from: buckets[index].lowerBound),
+                position: (Double(index) + 0.5) / count
+            )
         }
     }
 }
