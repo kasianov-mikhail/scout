@@ -112,6 +112,101 @@ struct AlertEngineTests {
         #expect(center.requests.count == 1)
     }
 
+    @Test("A read infers a firing start without recording it")
+    func readInfersStart() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "Error", counts: errorCounts))
+
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let engine = AlertEngine(registry: registry, notifier: nil)
+
+        let first = try await engine.statuses(in: database)
+        let second = try await engine.statuses(in: database)
+
+        #expect(!first[0].outcome.isRecorded)
+        #expect(!second[0].outcome.isRecorded)
+        #expect(first[0].firingLabel() == "Firing")
+        #expect(second[0].firingLabel() == "Firing")
+        #expect(first[0].notified == nil)
+        #expect(try registry.state(for: errorRule) == .armed)
+    }
+
+    @Test("A run records the firing start and the delivery time")
+    func runRecordsStart() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "Error", counts: errorCounts))
+
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let engine = AlertEngine(registry: registry, notifier: AlertNotifier(center: NotificationCenterStub()))
+
+        _ = try await engine.run(in: database)
+        let statuses = try await engine.statuses(in: database)
+
+        #expect(statuses[0].outcome.isRecorded)
+        #expect(statuses[0].firingLabel() == "Firing 1 h")
+        #expect(statuses[0].notified != nil)
+        #expect(try registry.notified(for: errorRule) != nil)
+    }
+
+    @Test("A rule that does not notify records no delivery time")
+    func silentRule() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "Error", counts: errorCounts))
+
+        let registry = AlertRegistry(defaults: defaults)
+        let rule = AlertRule(
+            metric: .eventCount(name: "Error"),
+            condition: AlertCondition(comparison: .above, reference: .baselineFactor(2)),
+            notifies: false
+        )
+        try registry.save([rule])
+        let center = NotificationCenterStub()
+        let engine = AlertEngine(registry: registry, notifier: AlertNotifier(center: center))
+
+        let statuses = try await engine.run(in: database)
+
+        #expect(statuses[0].outcome.shouldNotify)
+        #expect(center.requests.isEmpty)
+        #expect(try registry.notified(for: rule) == nil)
+    }
+
+    @Test("A refused notification records no delivery time")
+    func refusedNotificationRecordsNothing() async throws {
+        let database = DatabaseStub()
+        database.add(series: makeSeries(name: "Error", counts: errorCounts))
+
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let center = NotificationCenterStub()
+        center.addError = NSError(domain: UNErrorDomain, code: 1)
+        let engine = AlertEngine(registry: registry, notifier: AlertNotifier(center: center))
+
+        _ = try await engine.run(in: database)
+
+        #expect(try registry.notified(for: errorRule) == nil)
+    }
+
+    @Test("A recovered rule forgets its delivery time")
+    func recoveryForgetsNotified() async throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([errorRule])
+        let engine = AlertEngine(registry: registry, notifier: AlertNotifier(center: NotificationCenterStub()))
+
+        let firing = DatabaseStub()
+        firing.add(series: makeSeries(name: "Error", counts: errorCounts))
+        _ = try await engine.run(in: firing)
+
+        #expect(try registry.notified(for: errorRule) != nil)
+
+        let healthy = DatabaseStub()
+        healthy.add(series: makeSeries(name: "Error", counts: (25...48).map { (hoursAgo: $0, count: 4) }))
+        _ = try await engine.run(in: healthy)
+
+        #expect(try registry.notified(for: errorRule) == nil)
+    }
+
     @Test("A healthy metric stays armed")
     func healthy() async throws {
         let database = DatabaseStub()

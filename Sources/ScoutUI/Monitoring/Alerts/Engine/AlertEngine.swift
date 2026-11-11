@@ -34,7 +34,12 @@ final class AlertEngine {
                 state: try registry.state(for: rule),
                 now: now
             )
-            return AlertStatus(rule: rule, outcome: outcome, reading: reading)
+            return AlertStatus(
+                rule: rule,
+                outcome: outcome,
+                reading: reading,
+                notified: try registry.notified(for: rule)
+            )
         }
     }
 
@@ -60,10 +65,19 @@ final class AlertEngine {
 
         for status in statuses {
             try registry.remember(status.outcome.state, for: status.rule)
+            if status.isArmed {
+                try registry.forgetNotified(for: status.rule)
+            }
         }
 
-        for status in await notifier?.deliver(statuses) ?? [] {
-            try registry.remember(.armed, for: status.rule)
+        if let delivery = await notifier?.deliver(statuses) {
+            let deliveredAt = Date()
+            for status in delivery.delivered {
+                try registry.rememberNotified(deliveredAt, for: status.rule)
+            }
+            for status in delivery.undelivered {
+                try registry.remember(.armed, for: status.rule)
+            }
         }
 
         return statuses

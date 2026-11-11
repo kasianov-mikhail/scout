@@ -21,13 +21,15 @@ extension AlertStatus: Fixture {
             ),
             outcome: AlertOutcome(
                 state: .firing(since: Date(timeIntervalSinceNow: -2 * 3600)),
-                shouldNotify: false
+                shouldNotify: false,
+                isRecorded: true
             ),
             reading: MetricReading(
                 baseline: 0.998,
                 recent: Array(repeating: 0.998, count: 17)
                     + [0.994, 0.993, 0.9925, 0.9922, 0.992, 0.9919, 0.9918]
-            )
+            ),
+            notified: Date(timeIntervalSinceNow: -2 * 3600)
         )
     }
 

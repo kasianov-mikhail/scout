@@ -213,7 +213,7 @@ private struct AlertNowCard: View {
                 color: status?.isFiring == true ? Color.red : Color.primary,
                 showsDivider: true
             )
-            stat(title: "Notified", text: alertingSince, color: Color.primary, showsDivider: false)
+            stat(title: "Notified", text: notified, color: Color.primary, showsDivider: false)
         }
     }
 
@@ -264,10 +264,20 @@ private struct AlertNowCard: View {
         guard let status else {
             return nil
         }
-        guard case .firing(let since) = status.outcome.state else {
+        guard let start = status.firingStart else {
             return "—"
         }
-        return alertTimeFormatter.string(from: since)
+        return alertTimeFormatter.string(from: start)
+    }
+
+    private var notified: String? {
+        guard let status else {
+            return nil
+        }
+        guard let date = status.notified else {
+            return "—"
+        }
+        return alertTimeFormatter.string(from: date)
     }
 }
 

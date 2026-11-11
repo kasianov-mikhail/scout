@@ -55,6 +55,43 @@ struct AlertRegistryTests {
         #expect(try registry.state(for: rule) == .armed)
     }
 
+    @Test("Delivery times survive a new registry instance")
+    func notifiedPersist() throws {
+        let date = Date(timeIntervalSince1970: 1_000_000)
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([rule])
+        try registry.rememberNotified(date, for: rule)
+
+        #expect(try AlertRegistry(defaults: defaults).notified(for: rule) == date)
+    }
+
+    @Test("An unknown rule has no delivery time")
+    func unknownNotified() throws {
+        #expect(try AlertRegistry(defaults: defaults).notified(for: rule) == nil)
+    }
+
+    @Test("Removing a rule clears its delivery time")
+    func removalClearsNotified() throws {
+        let registry = AlertRegistry(defaults: defaults)
+        try registry.save([rule])
+        try registry.rememberNotified(Date(timeIntervalSince1970: 0), for: rule)
+
+        try registry.save([])
+        try registry.save([rule])
+
+        #expect(try registry.notified(for: rule) == nil)
+    }
+
+    @Test("Saving over unreadable delivery times fails without touching the rules")
+    func saveOverUnreadableNotified() {
+        defaults.set(Data("garbage".utf8), forKey: "scout_alert_notified")
+
+        #expect(throws: AlertRegistry.UnreadableStoreError.self) {
+            try AlertRegistry(defaults: defaults).save([rule])
+        }
+        #expect(defaults.data(forKey: "scout_alert_rules") == nil)
+    }
+
     @Test("Unreadable stored rules surface an error instead of an empty list")
     func unreadableRules() {
         defaults.set(Data("garbage".utf8), forKey: "scout_alert_rules")

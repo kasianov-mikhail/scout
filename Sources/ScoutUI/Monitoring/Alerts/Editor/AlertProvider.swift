@@ -99,7 +99,8 @@ final class AlertProvider: ObservableObject, SeriesProvider {
                 AlertStatus(
                     rule: status.rule,
                     outcome: AlertOutcome(state: .muted(until: until), shouldNotify: false),
-                    reading: status.reading
+                    reading: status.reading,
+                    notified: status.notified
                 )
             }
         } catch {

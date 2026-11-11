@@ -16,9 +16,10 @@ struct AlertNotifierTests {
     func delivers() async throws {
         let center = NotificationCenterStub()
         let notifier = AlertNotifier(center: center)
+        let notifying = makeStatus(shouldNotify: true)
 
-        await notifier.deliver([
-            makeStatus(shouldNotify: true),
+        let delivery = await notifier.deliver([
+            notifying,
             makeStatus(shouldNotify: false),
         ])
 
@@ -28,6 +29,8 @@ struct AlertNotifierTests {
         #expect(request.content.title == "Crash-free sessions")
         #expect(request.content.body == "90.00% — below 99.50%")
         #expect(request.trigger == nil)
+        #expect(delivery.delivered.map(\.rule) == [notifying.rule])
+        #expect(delivery.undelivered.isEmpty)
     }
 
     @Test("A refused notification is reported as undelivered")
@@ -37,9 +40,10 @@ struct AlertNotifierTests {
 
         let notifier = AlertNotifier(center: center)
         let status = makeStatus(shouldNotify: true)
-        let undelivered = await notifier.deliver([status])
+        let delivery = await notifier.deliver([status])
 
-        #expect(undelivered.map(\.rule) == [status.rule])
+        #expect(delivery.undelivered.map(\.rule) == [status.rule])
+        #expect(delivery.delivered.isEmpty)
         #expect(center.requests.isEmpty)
     }
 
@@ -47,18 +51,33 @@ struct AlertNotifierTests {
     func acceptedDelivery() async {
         let center = NotificationCenterStub()
         let notifier = AlertNotifier(center: center)
+        let status = makeStatus(shouldNotify: true)
 
-        let undelivered = await notifier.deliver([makeStatus(shouldNotify: true)])
+        let delivery = await notifier.deliver([status])
 
-        #expect(undelivered.isEmpty)
+        #expect(delivery.delivered.map(\.rule) == [status.rule])
+        #expect(delivery.undelivered.isEmpty)
         #expect(center.requests.count == 1)
     }
 
-    private func makeStatus(shouldNotify: Bool) -> AlertStatus {
+    @Test("A rule that does not notify delivers nothing")
+    func silentRule() async {
+        let center = NotificationCenterStub()
+        let notifier = AlertNotifier(center: center)
+
+        let delivery = await notifier.deliver([makeStatus(shouldNotify: true, notifies: false)])
+
+        #expect(delivery.delivered.isEmpty)
+        #expect(delivery.undelivered.isEmpty)
+        #expect(center.requests.isEmpty)
+    }
+
+    private func makeStatus(shouldNotify: Bool, notifies: Bool = true) -> AlertStatus {
         AlertStatus(
             rule: AlertRule(
                 metric: .crashFreeSessions,
-                condition: AlertCondition(comparison: .below, reference: .constant(0.995))
+                condition: AlertCondition(comparison: .below, reference: .constant(0.995)),
+                notifies: notifies
             ),
             outcome: AlertOutcome(state: .firing(since: Date(timeIntervalSince1970: 0)), shouldNotify: shouldNotify),
             reading: MetricReading(baseline: 0, recent: [0.9])
