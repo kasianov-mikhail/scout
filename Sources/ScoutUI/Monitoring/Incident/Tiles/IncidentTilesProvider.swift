@@ -45,14 +45,14 @@ final class IncidentTilesProvider<Element: RecordDecodable & Incident>: Observab
             throw error
         }
 
-        let index = try await currentIndex
+        let index = try? await currentIndex
 
         return IncidentTile.tiles(
             records: feed.records ?? [],
             legacy: try await legacyRecords(in: database, index: index, range: current),
             keys: feed.keys,
             current: index,
-            previous: try await previousIndex,
+            previous: try? await previousIndex,
             range: current
         )
     }
