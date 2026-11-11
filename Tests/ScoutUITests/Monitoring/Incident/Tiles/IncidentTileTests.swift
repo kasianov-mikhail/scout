@@ -52,6 +52,7 @@ struct IncidentTileTests {
         #expect(tiles.map(\.count) == [0])
         #expect(tiles.map(\.previous) == [2])
         #expect(tiles.map(\.changeLabel) == ["−2"])
+        #expect(tiles.map(\.subtitle) == [""])
     }
 
     @Test("A group without previous occurrences reads as new")
@@ -90,13 +91,57 @@ struct IncidentTileTests {
         #expect(tiles.first?.todayCount == 1)
     }
 
+    @Test("Unkeyed records raise the tally and fill the bars")
+    func unkeyedRecords() {
+        let tiles = tileList(
+            records: [],
+            legacy: [.stub(name: "NSRangeException", fingerprint: "A", date: now)],
+            current: [tally("A", name: "NSRangeException", count: 3)],
+            previous: []
+        )
+
+        #expect(tiles.map(\.count) == [4])
+        #expect(tiles.first?.bars.reduce(0, +) == 1)
+        #expect(tiles.first?.todayCount == 1)
+    }
+
+    @Test("A group that only appears in the unkeyed records becomes a tile")
+    func unkeyedOnlyGroup() {
+        let tiles = tileList(
+            records: [],
+            legacy: [.stub(name: "SIGABRT", fingerprint: "B", date: now)],
+            current: [tally("A", name: "NSRangeException", count: 3)],
+            previous: []
+        )
+
+        #expect(tiles.map(\.name) == ["NSRangeException", "SIGABRT"])
+        #expect(tiles.map(\.count) == [3, 1])
+    }
+
+    @Test("A record in both the page and the unkeyed read counts once")
+    func unkeyedOverlap() {
+        let record: Crash = .stub(name: "NSRangeException", fingerprint: "A", date: now)
+        let tiles = tileList(
+            records: [record],
+            legacy: [record],
+            current: [],
+            previous: []
+        )
+
+        #expect(tiles.map(\.count) == [1])
+        #expect(tiles.first?.records.count == 1)
+        #expect(tiles.first?.todayCount == 1)
+    }
+
     private func tileList(
         records: [Crash],
+        legacy: [Crash] = [],
         current: [IncidentTally],
         previous: [IncidentTally]
     ) -> [IncidentTile<Crash>] {
         IncidentTile.tiles(
             records: records,
+            legacy: legacy,
             keys: [:],
             current: IncidentIndex(tallies: current, unkeyed: nil),
             previous: IncidentIndex(tallies: previous, unkeyed: nil),
