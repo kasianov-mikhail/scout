@@ -11,6 +11,7 @@ import Scout
 
 struct EventListExport {
     let events: [Event]
+    var isTruncated = false
 
     var text: String? {
         guard !events.isEmpty else { return nil }
@@ -28,7 +29,8 @@ extension EventListExport {
     }
 
     private var summary: String {
-        ExportFormat.counted(events.count, .event)
+        let counted = ExportFormat.counted(events.count, .event)
+        return isTruncated ? "\(counted) loaded · more available" : counted
     }
 
     private func row(for event: Event) -> ExportLine {

@@ -45,7 +45,9 @@ private struct EventFilter: ViewModifier {
                 FilterButton(query: $filter)
             }
         }
-        .exportToolbar(text: EventListExport(events: activeProvider.records ?? []).text)
+        .exportToolbar(
+            text: EventListExport(events: activeProvider.records ?? [], isTruncated: activeProvider.cursor != nil).text
+        )
         .onSubmit(of: .search) {
             #if os(iOS)
                 UIApplication.shared.sendAction(
