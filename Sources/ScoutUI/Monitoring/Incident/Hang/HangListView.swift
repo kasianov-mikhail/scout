@@ -17,7 +17,7 @@ struct HangListView: View {
             placeholder: Placeholder(
                 text: "No hangs",
                 systemImage: "checkmark.shield",
-                description: "No unresponsive main thread has been recorded"
+                description: "No unresponsive main threads in this period"
             )
         ) { tally in
             IncidentGroupLoader(tally: tally) { occurrences in
@@ -36,11 +36,7 @@ struct HangListView: View {
 
 #Preview("Empty State") {
     NavigationStack {
-        Placeholder(
-            text: "No hangs",
-            systemImage: "checkmark.shield",
-            description: "No unresponsive main thread has been recorded"
-        )
-        .navigationTitle(en: "Hangs")
+        HangListView(provider: .init(.success([])))
     }
+    .environmentObject(Tint())
 }

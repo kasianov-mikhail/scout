@@ -36,7 +36,13 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                 .transition(.opacity)
         case .success(let tiles):
             if tiles.isEmpty {
-                placeholder
+                VStack(spacing: 0) {
+                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                        .padding(.top, 8)
+                        .padding(.horizontal, 16)
+
+                    placeholder
+                }
             } else {
                 list(tiles)
                     .transition(.opacity)

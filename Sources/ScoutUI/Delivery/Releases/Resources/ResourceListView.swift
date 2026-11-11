@@ -17,7 +17,7 @@ struct ResourceListView: View {
             placeholder: Placeholder(
                 text: "No resource exceptions",
                 systemImage: "checkmark.shield",
-                description: "Resource exceptions appear once your app reports them"
+                description: "No resource exceptions in this period"
             )
         ) { tally in
             IncidentGroupLoader(tally: tally) { occurrences in

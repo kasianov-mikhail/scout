@@ -17,7 +17,7 @@ struct CrashListView: View {
             placeholder: Placeholder(
                 text: "No crashes",
                 systemImage: "checkmark.shield",
-                description: "No crash reports have been recorded"
+                description: "No crash reports in this period"
             )
         ) { tally in
             IncidentGroupLoader(tally: tally) { occurrences in
@@ -35,11 +35,6 @@ struct CrashListView: View {
 
 #Preview("Empty State") {
     NavigationStack {
-        Placeholder(
-            text: "No crashes",
-            systemImage: "checkmark.shield",
-            description: "No crash reports have been recorded"
-        )
-        .navigationTitle(en: "Crashes")
+        CrashListView(provider: .init(.success([])))
     }
 }
