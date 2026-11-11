@@ -79,14 +79,20 @@ struct MetricRangeTests {
 
     @Test("Day axis labels mark the edges of the plot")
     func dayAxisLabelPositions() {
-        #expect(MetricRange.today.axisLabels(now: now).map(\.position) == [0, 0.25, 0.5, 0.75, 1])
-        #expect(MetricRange.yesterday.axisLabels(now: now).map(\.position) == [0, 0.25, 0.5, 0.75, 1])
+        let edges: [Double] = [0, 0.25, 0.5, 0.75, 1]
+
+        #expect(MetricRange.today.axisLabels(now: now).map(\.position) == edges)
+        #expect(MetricRange.yesterday.axisLabels(now: now).map(\.position) == edges)
     }
 
     @Test("Axis labels sit over the center of their bucket")
     func axisLabelPositions() {
-        #expect(MetricRange.week.axisLabels(now: now).map(\.position) == [1.0 / 14, 5.0 / 14, 9.0 / 14, 13.0 / 14])
-        #expect(MetricRange.month.axisLabels(now: now).map(\.position) == [0.5 / 30, 7.5 / 30, 14.5 / 30, 21.5 / 30, 29.5 / 30])
-        #expect(MetricRange.year.axisLabels(now: now).map(\.position) == [0.5 / 12, 2.5 / 12, 4.5 / 12, 6.5 / 12, 8.5 / 12, 10.5 / 12])
+        let week: [Double] = [1, 5, 9, 13].map { $0 / 14 }
+        let month: [Double] = [0.5, 7.5, 14.5, 21.5, 29.5].map { $0 / 30 }
+        let year: [Double] = [0.5, 2.5, 4.5, 6.5, 8.5, 10.5].map { $0 / 12 }
+
+        #expect(MetricRange.week.axisLabels(now: now).map(\.position) == week)
+        #expect(MetricRange.month.axisLabels(now: now).map(\.position) == month)
+        #expect(MetricRange.year.axisLabels(now: now).map(\.position) == year)
     }
 }
