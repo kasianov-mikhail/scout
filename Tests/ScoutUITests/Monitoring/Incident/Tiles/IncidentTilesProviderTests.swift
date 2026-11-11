@@ -49,4 +49,30 @@ struct IncidentTilesProviderTests {
         #expect(tiles.map(\.name) == ["Recent"])
         #expect(tiles.map(\.count) == [1])
     }
+
+    @Test("Unkeyed incidents are read raw and counted")
+    func unkeyedRecords() async throws {
+        let database = DatabaseStub()
+        let now = Date()
+        let keyed = Crash.stub(name: "Keyed", fingerprint: "A", date: now)
+        let unkeyed = Crash.stub(name: "Unkeyed", fingerprint: "B", date: now.addingTimeInterval(-2 * 3600))
+        database.add(keyed.record, unkeyed.record)
+        database.add(
+            index: IncidentIndex(
+                tallies: [IncidentTally(fingerprint: "A", name: "Keyed", count: 1, firstHour: now.startOfHour)],
+                unkeyed: now.addingTimeInterval(-3 * 3600)..<now.addingTimeInterval(-3600)
+            ),
+            for: Crash.recordType
+        )
+
+        let provider = IncidentTilesProvider<Crash>()
+        await provider.fetchAgain(in: database)
+
+        let result = try #require(provider.result)
+        let tiles = try result.get()
+
+        #expect(tiles.map(\.name) == ["Keyed", "Unkeyed"])
+        #expect(tiles.map(\.count) == [1, 1])
+        #expect(database.readCount(of: Crash.recordType) == 2)
+    }
 }

@@ -87,41 +87,41 @@ extension IncidentTile {
     }
 
     private var lastDate: Date? {
-        records.compactMap(\.date).max() ?? tally.firstHour
+        records.compactMap(\.date).max()
     }
 }
 
 extension IncidentTile {
-    static func tiles(
-        records: [Element],
-        keys: [String: String],
-        current: IncidentIndex?,
-        previous: IncidentIndex?,
-        range: Range<Date>
-    ) -> [IncidentTile] {
-        let grouped = Dictionary(grouping: records, by: \.fingerprint)
+    static func tiles(records: [Element], legacy: [Element] = [], keys: [String: String], current: IncidentIndex?, previous: IncidentIndex?, range: Range<Date>) -> [IncidentTile] {
+        let legacyIDs = Set(legacy.map(\.id))
+        let loaded = Dictionary(grouping: records.filter { !legacyIDs.contains($0.id) }, by: \.fingerprint)
+        let unkeyed = Dictionary(grouping: legacy, by: \.fingerprint)
+
         var tallies: [String: IncidentTally] = [:]
         for tally in current?.tallies ?? [] {
             tallies[tally.fingerprint] = tally
         }
 
-        for (fingerprint, loaded) in grouped {
-            let name = loaded.first?.name ?? ""
-            guard let first = loaded.compactMap(\.date).min() else {
+        for fingerprint in Set(loaded.keys).union(unkeyed.keys) {
+            let group = (loaded[fingerprint] ?? []) + (unkeyed[fingerprint] ?? [])
+            let name = group.first?.name ?? ""
+            guard let first = group.compactMap(\.date).min() else {
                 continue
             }
+            let pageCount = loaded[fingerprint]?.count ?? 0
+            let legacyCount = unkeyed[fingerprint]?.count ?? 0
             if let tally = tallies[fingerprint] {
                 tallies[fingerprint] = IncidentTally(
                     fingerprint: fingerprint,
                     name: tally.name.isEmpty ? name : tally.name,
-                    count: max(tally.count, loaded.count),
+                    count: max(tally.count, pageCount) + legacyCount,
                     firstHour: tally.firstHour
                 )
             } else {
                 tallies[fingerprint] = IncidentTally(
                     fingerprint: fingerprint,
                     name: name,
-                    count: loaded.count,
+                    count: pageCount + legacyCount,
                     firstHour: first.startOfHour
                 )
             }
@@ -145,11 +145,11 @@ extension IncidentTile {
         }
 
         return tallies.values.map { tally in
-            let loaded = grouped[tally.fingerprint] ?? []
+            let records = (loaded[tally.fingerprint] ?? []) + (unkeyed[tally.fingerprint] ?? [])
             return IncidentTile(
                 tally: tally,
-                records: loaded,
-                symbol: symbol(for: loaded, keys: keys),
+                records: records,
+                symbol: symbol(for: records, keys: keys),
                 previous: previousCounts.map { $0[tally.fingerprint] ?? 0 },
                 range: range
             )
