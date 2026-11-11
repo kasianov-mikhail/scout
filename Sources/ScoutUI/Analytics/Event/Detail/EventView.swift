@@ -14,22 +14,25 @@ struct EventView: View {
     @Environment(\.database) private var database
     @StateObject var param: ParamProvider
     @StateObject var stat: StatProvider
+    @StateObject var context: EventContextProvider
     @State private var isParamPresented = false
 
-    init(event: Event, param: ParamProvider? = nil, stat: StatProvider? = nil) {
+    init(event: Event, param: ParamProvider? = nil, stat: StatProvider? = nil, context: EventContextProvider? = nil) {
         self.event = event
         self._param = StateObject(wrappedValue: param ?? ParamProvider(recordID: event.id))
         self._stat = StateObject(wrappedValue: stat ?? StatProvider(subject: .event(event.name)))
+        self._context = StateObject(
+            wrappedValue: context ?? EventContextProvider(sessionID: event.sessionID ?? UUID(), deviceID: event.deviceID)
+        )
     }
 
     var body: some View {
-        let color = event.level?.color
-
         InsetList {
             EventHeader(event: event)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
+
+            if let sessionID = event.sessionID {
+                ContextSection(sessionID: sessionID, deviceID: event.deviceID, context: context)
+            }
 
             if let paramCount = event.paramCount, paramCount > 0 {
                 ParamSection(
@@ -40,9 +43,10 @@ struct EventView: View {
             }
 
             StatSection(stat: stat)
-            HistorySection(event: event)
+            TimelineSection(event: event)
         }
-        .navigationTint(color)
+        .animation(.easeOut(duration: 0.2), value: [param.isLoading, stat.isLoading, context.isLoading])
+        .navigationTint(event.level?.color)
         .monospacedNavigationTitle(en: event.name)
         .navigationDestination(isPresented: $isParamPresented) {
             switch param.result {
@@ -56,7 +60,11 @@ struct EventView: View {
                 RingIndicator().frame(maxHeight: .infinity)
             }
         }
-        .fetchTask([stat, param])
+        .fetchTask(providers)
+    }
+
+    private var providers: [any Refreshable] {
+        event.sessionID == nil ? [stat, param] : [stat, param, context]
     }
 }
 
@@ -65,25 +73,41 @@ extension EventView {
         let event: Event
 
         var body: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                if let date = event.date {
-                    UTCTimestampText(date: date)
+            HStack(spacing: 10) {
+                if let level = event.level {
+                    Text(verbatim: level.description.uppercased())
+                        .font(.system(size: 11, weight: .bold))
+                        .tracking(0.3)
+                        .foregroundStyle(level.badgeInk)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(level.badgeFill, in: RoundedRectangle(cornerRadius: 4))
                 }
 
-                if let level = event.level {
-                    (Text(verbatim: "LEVEL:   ") + level.descriptionText).bold()
+                if let date = event.date {
+                    Text(verbatim: eventDateFormatter.string(from: date) + " UTC")
+                        .font(.weight450(size: 15))
+                        .monospacedDigit()
+                        .foregroundStyle(Color.eventTimestamp)
                 }
             }
-            .frame(height: 90)
+            .padding(.top, 18)
+            .padding(.bottom, 16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
         }
     }
 }
 
+private let eventDateFormatter = DateFormatter(format: "d MMM y, HH:mm")
+
 #Preview {
     let params = ParamProvider.Item.samplePurchase
     let event = Event(
-        name: "event_name",
-        level: .info,
+        name: "IPRecordFailed",
+        level: .warning,
         date: Date(),
         paramCount: params.count,
         uuid: UUID(),
@@ -95,9 +119,33 @@ extension EventView {
 
     let param = ParamProvider(.success(params.sorted()), recordID: event.id)
     let stat = StatProvider(.success(.samples), subject: .event(event.name))
+    let context = EventContextProvider(.success(.sample), sessionID: UUID(), deviceID: UUID())
 
     return NavigationStack {
-        EventView(event: event, param: param, stat: stat)
+        EventView(event: event, param: param, stat: stat, context: context)
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("Loading") {
+    let event = Event(
+        name: "IPRecordFailed",
+        level: .warning,
+        date: Date(),
+        paramCount: 3,
+        uuid: UUID(),
+        id: UUID().uuidString,
+        installID: UUID(),
+        sessionID: UUID(),
+        deviceID: UUID()
+    )
+
+    let param = ParamProvider(recordID: event.id)
+    let stat = StatProvider(subject: .event(event.name))
+    let context = EventContextProvider(sessionID: UUID(), deviceID: UUID())
+
+    return NavigationStack {
+        EventView(event: event, param: param, stat: stat, context: context)
     }
     .environmentObject(Tint())
 }

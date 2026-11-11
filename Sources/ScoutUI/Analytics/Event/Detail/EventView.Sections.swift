@@ -9,122 +9,53 @@ import Scout
 import SwiftUI
 
 extension EventView {
-    struct ParamSection: View {
-        static let previewLimit = 3
-
-        let count: Int
-
-        @Environment(\.database) private var database
-        @ObservedObject var param: ParamProvider
-        @Binding var isParamPresented: Bool
+    struct SectionHeader<Trailing: View>: View {
+        let title: String
+        @ViewBuilder var trailing: () -> Trailing
 
         var body: some View {
-            Header(title: "Params") {
-                switch param.result {
-                case .success where count > Self.previewLimit:
-                    AllButton { isParamPresented = true }
-                case .success, .failure, nil:
-                    EmptyView()
-                }
+            HStack {
+                Text(verbatim: title.uppercased())
+                    .font(.system(size: 16, weight: .bold))
+
+                Spacer()
+
+                trailing()
             }
+            .padding(.top, 12)
+            .frame(height: 56)
             .overlay(alignment: .bottom) {
                 Separator()
             }
-
-            switch param.result {
-            case .success(let items):
-                ForEach(items.prefix(Self.previewLimit)) { item in
-                    ParamRow(item: item)
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
-                }
-            case .failure(let error):
-                ErrorRow(description: error.localizedDescription) {
-                    await param.fetchAgain(in: database)
-                }
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-            case nil:
-                ForEach(0..<min(Self.previewLimit, count), id: \.self) { _ in
-                    ParamRow(item: nil)
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
-                }
-            }
         }
     }
 }
 
 extension EventView {
-    struct StatSection: View {
-        @Environment(\.database) private var database
-        @ObservedObject var stat: StatProvider
-
-        var body: some View {
-            Header(title: "Stats")
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-
-            switch stat.result {
-            case .success, nil:
-                ForEach(Period.allCases) { period in
-                    StatRow(
-                        color: .blue,
-                        period: period,
-                        systemImage: "calendar",
-                        stat: stat
-                    ) {
-                        StatView(
-                            showList: true,
-                            extent: ChartExtent(period: period),
-                            stat: stat
-                        )
-                        .navigationTitle(en: "Stats")
-                        .largeNavigationTitle()
-                    }
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                }
-            case .failure(let error):
-                ErrorRow(description: error.localizedDescription) {
-                    await stat.fetchAgain(in: database)
-                }
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-            }
-        }
-    }
-}
-
-extension EventView {
-    struct HistorySection: View {
+    struct TimelineSection: View {
         let event: Event
 
         var body: some View {
             if let deviceID = event.deviceID {
-                Header(title: "History")
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                timelineRow(deviceID: deviceID)
-            }
-        }
+                Row(minHeight: 52) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "calendar.day.timeline.left")
+                            .font(.weight450(size: 17))
+                            .foregroundStyle(.blue)
+                            .frame(width: 24)
 
-        func timelineRow(deviceID: UUID) -> some View {
-            Row {
-                Image(systemName: "calendar.day.timeline.left")
-                    .frame(width: 24)
-                    .foregroundStyle(.blue)
-                Text(verbatim: "Timeline")
-                Spacer()
-            } destination: {
-                Timeline(deviceID: deviceID, focus: TimelineFocus(event: event))
+                        Text(verbatim: "Show in timeline")
+                            .font(.weight450(size: 17))
+                            .foregroundStyle(.blue)
+
+                        Spacer(minLength: 0)
+                    }
+                } destination: {
+                    Timeline(deviceID: deviceID, focus: TimelineFocus(event: event))
+                }
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
             }
         }
     }
