@@ -55,29 +55,33 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
     }
 
     private func list(_ tiles: [IncidentTile<Element>]) -> some View {
-        InsetList {
-            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, 8)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                    .padding(.top, 8)
 
-            summary(tiles)
-                .padding(.top, 4)
-                .padding(.bottom, 6)
+                summary(tiles)
+                    .padding(.top, 4)
+                    .padding(.bottom, 6)
 
-            IncidentGrid(count: tiles.count) { index in
-                let tile = tiles[index]
+                IncidentGrid(count: tiles.count) { index in
+                    let tile = tiles[index]
 
-                NavigationLink {
-                    destination(tile.tally)
-                } label: {
-                    IncidentTileView(
-                        tile: tile,
-                        side: index.isMultiple(of: 2) ? .leading : .trailing
-                    )
+                    NavigationLink {
+                        destination(tile.tally)
+                    } label: {
+                        IncidentTileView(
+                            tile: tile,
+                            side: index.isMultiple(of: 2) ? .leading : .trailing
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
+                .padding(.top, 8)
             }
-            .padding(.top, 8)
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 
     private func summary(_ tiles: [IncidentTile<Element>]) -> some View {

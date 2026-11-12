@@ -30,25 +30,29 @@ extension View {
 }
 
 #Preview {
-    InsetList {
-        HStack(spacing: 8) {
-            ColumnHeader(title: "SESSIONS")
-                .frame(maxWidth: .infinity, alignment: .leading)
-            ColumnHeader(title: "OS")
-                .frame(width: 112, alignment: .leading)
-            ColumnHeader(title: "CRASHES")
-                .frame(width: 56, alignment: .trailing)
-        }
-        .columnHeaderStyle()
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            HStack(spacing: 8) {
+                ColumnHeader(title: "SESSIONS")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ColumnHeader(title: "OS")
+                    .frame(width: 112, alignment: .leading)
+                ColumnHeader(title: "CRASHES")
+                    .frame(width: 56, alignment: .trailing)
+            }
+            .columnHeaderStyle()
 
-        HStack(spacing: 8) {
-            ColumnHeader(title: "REQUESTS ↓", color: .blue)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            ColumnHeader(title: "OK")
-                .frame(width: 56, alignment: .trailing)
-            ColumnHeader(title: "P99")
-                .frame(width: 64, alignment: .trailing)
+            HStack(spacing: 8) {
+                ColumnHeader(title: "REQUESTS ↓", color: .blue)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ColumnHeader(title: "OK")
+                    .frame(width: 56, alignment: .trailing)
+                ColumnHeader(title: "P99")
+                    .frame(width: 64, alignment: .trailing)
+            }
+            .columnHeaderStyle(topPadding: 12)
         }
-        .columnHeaderStyle(topPadding: 12)
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

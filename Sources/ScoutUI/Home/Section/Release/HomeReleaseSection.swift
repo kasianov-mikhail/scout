@@ -78,9 +78,13 @@ struct HomeReleaseSection: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeReleaseSection(adoption: .sample) {}
-            HomeReleaseSection(adoption: nil) {}
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeReleaseSection(adoption: .sample) {}
+                HomeReleaseSection(adoption: nil) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

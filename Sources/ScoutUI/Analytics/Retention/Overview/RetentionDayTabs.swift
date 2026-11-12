@@ -81,8 +81,12 @@ struct RetentionDayTabs: View {
 }
 
 #Preview {
-    InsetList {
-        RetentionDayTabs(overview: RetentionOverview(cohorts: .samples), day: .constant(.day7))
-        RetentionDayTabs(overview: nil, day: .constant(.day7))
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RetentionDayTabs(overview: RetentionOverview(cohorts: .samples), day: .constant(.day7))
+            RetentionDayTabs(overview: nil, day: .constant(.day7))
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

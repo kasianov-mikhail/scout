@@ -145,25 +145,37 @@ private struct ActiveUserMetricView: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSection(users: .sample) { _ in }
-            HomeActiveUsersSection(users: nil) { _ in }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSection(users: .sample) { _ in }
+                HomeActiveUsersSection(users: nil) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Active · devices") {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Active · sessions") {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

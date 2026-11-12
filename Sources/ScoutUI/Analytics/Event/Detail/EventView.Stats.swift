@@ -70,9 +70,13 @@ extension EventView {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            EventView.StatSection(stat: StatProvider(.success(.samples), subject: .event("event_name")))
-            EventView.StatSection(stat: StatProvider(subject: .event("event_name")))
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                EventView.StatSection(stat: StatProvider(.success(.samples), subject: .event("event_name")))
+                EventView.StatSection(stat: StatProvider(subject: .event("event_name")))
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

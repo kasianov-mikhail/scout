@@ -67,31 +67,35 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                 )
             }
         } else {
-            InsetList {
-                MetricRangeStrip(selection: $range)
-                    .padding(.top, 8)
-                    .padding(.trailing, -16)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    MetricRangeStrip(selection: $range)
+                        .padding(.top, 8)
+                        .padding(.trailing, -16)
 
-                MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
+                    MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
 
-                MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
-                    .padding(.top, 16)
+                    MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
+                        .padding(.top, 16)
 
-                MetricAxisLabels(labels: range.axisLabels(now: now))
+                    MetricAxisLabels(labels: range.axisLabels(now: now))
 
-                MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
+                    MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
 
-                MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
+                    MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
 
-                ForEach(buckets.rows) { row in
-                    MetricBucketRow(
-                        row: row,
-                        label: range.rowLabel(date: row.date),
-                        format: format,
-                        tone: tone(row)
-                    )
+                    ForEach(buckets.rows) { row in
+                        MetricBucketRow(
+                            row: row,
+                            label: range.rowLabel(date: row.date),
+                            format: format,
+                            tone: tone(row)
+                        )
+                    }
                 }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(title: name, rangeLabel: range.title) {

@@ -22,61 +22,65 @@ struct StatView: View {
             let segment = extent.segment(from: points)
             let canCompare = extent.canCompare(points: points, segment: segment)
 
-            InsetList {
-                PeriodPicker(extent: $extent, title: \.shortTitle)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    PeriodPicker(extent: $extent, title: \.shortTitle)
 
-                RangeControl(extent: $extent)
+                    RangeControl(extent: $extent)
+                        .padding(.bottom)
+
+                    ComparableChart(
+                        segment: segment,
+                        points: points,
+                        extent: extent,
+                        color: color,
+                        isComparing: isComparing
+                    )
                     .padding(.bottom)
 
-                ComparableChart(
-                    segment: segment,
-                    points: points,
-                    extent: extent,
-                    color: color,
-                    isComparing: isComparing
-                )
-                .padding(.bottom)
-
-                ComparisonToggle(isOn: $isComparing)
-                    .disabled(!canCompare)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-
-                if showList {
-                    NavigationLink {
-                        EventStatList(eventName: stat.subject.name, range: extent.domain)
-                    } label: {
-                        HStack(spacing: 8) {
-                            Text(verbatim: "Events")
-                            Spacer()
-                            RedactedText(count: segment.total)
+                    ComparisonToggle(isOn: $isComparing)
+                        .disabled(!canCompare)
+                        .overlay(alignment: .bottom) {
+                            Separator()
                         }
-                        .lineLimit(1)
-                        .frame(height: 44)
-                        .contentShape(.rect)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                }
 
-                Header(title: "Weekly Pattern") {
-                    Text(verbatim: "Last 4 weeks")
-                        .font(.weight450(size: 13))
-                        .foregroundStyle(.secondary)
-                }
+                    if showList {
+                        NavigationLink {
+                            EventStatList(eventName: stat.subject.name, range: extent.domain)
+                        } label: {
+                            HStack(spacing: 8) {
+                                Text(verbatim: "Events")
+                                Spacer()
+                                RedactedText(count: segment.total)
+                            }
+                            .lineLimit(1)
+                            .frame(height: 44)
+                            .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
+                        .foregroundStyle(.blue)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
+                    }
 
-                HeatmapView(
-                    grid: HeatmapGrid(
-                        points: points,
-                        range: HeatmapGrid.recentRange(weeks: 4),
-                        calendar: .utc
+                    Header(title: "Weekly Pattern") {
+                        Text(verbatim: "Last 4 weeks")
+                            .font(.weight450(size: 13))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    HeatmapView(
+                        grid: HeatmapGrid(
+                            points: points,
+                            range: HeatmapGrid.recentRange(weeks: 4),
+                            calendar: .utc
+                        )
                     )
-                )
+                }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(

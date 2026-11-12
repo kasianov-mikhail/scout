@@ -49,14 +49,18 @@ extension MetricTone {
 }
 
 #Preview("Summary") {
-    InsetList {
-        MetricSummaryView(
-            summary: MetricSummary(
-                total: 1_284,
-                previous: 1_189,
-                range: .today,
-                format: .counter
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            MetricSummaryView(
+                summary: MetricSummary(
+                    total: 1_284,
+                    previous: 1_189,
+                    range: .today,
+                    format: .counter
+                )
             )
-        )
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

@@ -18,32 +18,36 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
     @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     var body: some View {
-        InsetList {
-            IncidentTrendChart(kind: Element.kind, days: days)
-                .padding(.top)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                IncidentTrendChart(kind: Element.kind, days: days)
+                    .padding(.top)
 
-            if let records = provider.records {
-                IncidentIssuesSection(
-                    title: issuesTitle,
-                    groups: IncidentGroup.groups(from: records, hasMore: provider.cursor != nil),
-                    destination: destination
-                )
+                if let records = provider.records {
+                    IncidentIssuesSection(
+                        title: issuesTitle,
+                        groups: IncidentGroup.groups(from: records, hasMore: provider.cursor != nil),
+                        destination: destination
+                    )
 
-                if let cursor = provider.cursor {
-                    PaginationFooter {
-                        await provider.fetchMore(cursor: cursor, in: database)
+                    if let cursor = provider.cursor {
+                        PaginationFooter {
+                            await provider.fetchMore(cursor: cursor, in: database)
+                        }
                     }
+                } else if let error = provider.error {
+                    ErrorRow(description: error.localizedDescription) {
+                        await provider.fetchAgain(in: database)
+                    }
+                } else {
+                    RingIndicator()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical)
                 }
-            } else if let error = provider.error {
-                ErrorRow(description: error.localizedDescription) {
-                    await provider.fetchAgain(in: database)
-                }
-            } else {
-                RingIndicator()
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical)
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle(en: Element.kind.title)
         .largeNavigationTitle()
         .message($provider.message)

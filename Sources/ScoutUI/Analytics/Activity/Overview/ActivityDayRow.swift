@@ -54,9 +54,13 @@ struct ActivityDayRow: View {
         now: Date()
     )
 
-    InsetList {
-        ForEach(series.rows) { row in
-            ActivityDayRow(row: row)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ForEach(series.rows) { row in
+                ActivityDayRow(row: row)
+            }
         }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

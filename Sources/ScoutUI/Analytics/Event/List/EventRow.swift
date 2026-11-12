@@ -112,11 +112,15 @@ private struct EventLevelGlyph: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            ForEach(Event.samples.prefix(7)) { event in
-                EventRow(event: event)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(Event.samples.prefix(7)) { event in
+                    EventRow(event: event)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle(en: "Events")
     }
     .environmentObject(Tint())

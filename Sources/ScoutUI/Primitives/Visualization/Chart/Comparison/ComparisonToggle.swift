@@ -25,10 +25,14 @@ struct ComparisonToggle: View {
 }
 
 #Preview("ComparisonToggle") {
-    InsetList {
-        ComparisonToggle(isOn: .constant(true))
-        ComparisonToggle(isOn: .constant(false))
-        ComparisonToggle(isOn: .constant(false))
-            .disabled(true)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ComparisonToggle(isOn: .constant(true))
+            ComparisonToggle(isOn: .constant(false))
+            ComparisonToggle(isOn: .constant(false))
+                .disabled(true)
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

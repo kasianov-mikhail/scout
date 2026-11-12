@@ -13,27 +13,31 @@ struct NetworkViewPlaceholder: View {
     @Binding var range: NetworkRange
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            SkeletonBar(width: 160, height: 9, delay: 0)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 4)
-                .padding(.bottom, 12)
-                .padding(.horizontal, 16)
-                .overlay(alignment: .bottom) {
-                    Separator()
+                SkeletonBar(width: 160, height: 9, delay: 0)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 4)
+                    .padding(.bottom, 12)
+                    .padding(.horizontal, 16)
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
+                    .padding(.horizontal, -16)
+
+                NetworkEndpointListHeader()
+
+                ForEach(0..<10, id: \.self) { index in
+                    NetworkEndpointRowPlaceholder(index: index)
                 }
-                .padding(.horizontal, -16)
-
-            NetworkEndpointListHeader()
-
-            ForEach(0..<10, id: \.self) { index in
-                NetworkEndpointRowPlaceholder(index: index)
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

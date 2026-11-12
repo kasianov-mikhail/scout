@@ -11,15 +11,19 @@ struct ReleasePlaceholder: View {
     let version: String
 
     var body: some View {
-        InsetList {
-            hero
-                .padding(.horizontal, -16)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                hero
+                    .padding(.horizontal, -16)
 
-            grid
-                .padding(.horizontal, -16)
+                grid
+                    .padding(.horizontal, -16)
 
-            footer
+                footer
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

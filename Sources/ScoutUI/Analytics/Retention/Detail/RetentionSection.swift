@@ -36,9 +36,13 @@ struct RetentionSection: View {
 }
 
 #Preview {
-    InsetList {
-        RetentionSection(title: "Come back on", note: "average of 7 weeks", divider: true)
-        RetentionSection(title: "By OS version", note: "day 7")
-        RetentionSection(title: "Stability")
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RetentionSection(title: "Come back on", note: "average of 7 weeks", divider: true)
+            RetentionSection(title: "By OS version", note: "day 7")
+            RetentionSection(title: "Stability")
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

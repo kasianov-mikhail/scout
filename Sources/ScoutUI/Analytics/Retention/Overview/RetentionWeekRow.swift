@@ -34,9 +34,13 @@ struct RetentionWeekRow: View {
 }
 
 #Preview {
-    InsetList {
-        ForEach([RetentionWeek].samples) { week in
-            RetentionWeekRow(week: week, maxInstalls: [RetentionWeek].samples.maxInstalls, showsDivider: week.kept != nil)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ForEach([RetentionWeek].samples) { week in
+                RetentionWeekRow(week: week, maxInstalls: [RetentionWeek].samples.maxInstalls, showsDivider: week.kept != nil)
+            }
         }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

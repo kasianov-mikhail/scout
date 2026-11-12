@@ -52,8 +52,12 @@ struct ErrorRow: View {
 }
 
 #Preview {
-    InsetList {
-        ErrorRow(description: "The request timed out.") {}
-        ErrorRow(description: "A much longer error description that explains what exactly went wrong while loading.") {}
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ErrorRow(description: "The request timed out.") {}
+            ErrorRow(description: "A much longer error description that explains what exactly went wrong while loading.") {}
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

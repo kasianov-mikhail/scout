@@ -41,16 +41,24 @@ struct PaginationFooter: View {
 }
 
 #Preview("Loading") {
-    InsetList {
-        PaginationFooter {
-            try? await Task.sleep(for: .seconds(60))
-            return true
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            PaginationFooter {
+                try? await Task.sleep(for: .seconds(60))
+                return true
+            }
         }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }
 
 #Preview("Failed") {
-    InsetList {
-        PaginationFooter { false }
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            PaginationFooter { false }
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

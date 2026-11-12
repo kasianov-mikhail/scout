@@ -57,47 +57,51 @@ struct ModelDetailView: View {
                 )
             }
         } else {
-            InsetList {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                        .padding(.top, 8)
 
-                subtitle(detail)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
-                    .overlay(alignment: .bottom) {
-                        Separator()
+                    subtitle(detail)
+                        .padding(.top, 4)
+                        .padding(.bottom, 12)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
+
+                    if !detail.osVersions.isEmpty {
+                        SectionHeader(title: "OS VERSIONS", topPadding: 12)
+
+                        ProportionBar(
+                            items: detail.osVersions,
+                            color: { index, _ in deviceOSColor(index) },
+                            share: { Double($0.percentage) / 100 }
+                        )
+                        .padding(.top, 14)
+                        .padding(.bottom, 6)
+
+                        ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
+                            OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
+                        }
                     }
 
-                if !detail.osVersions.isEmpty {
-                    SectionHeader(title: "OS VERSIONS", topPadding: 12)
+                    SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
 
-                    ProportionBar(
-                        items: detail.osVersions,
-                        color: { index, _ in deviceOSColor(index) },
-                        share: { Double($0.percentage) / 100 }
-                    )
-                    .padding(.top, 14)
-                    .padding(.bottom, 6)
+                    deviceColumns
+                        .columnHeaderStyle(topPadding: 12)
 
-                    ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
-                        OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
+                    ForEach(detail.devices) { device in
+                        NavigationLink {
+                            DeviceDetailView(device: device, range: provider.range)
+                        } label: {
+                            ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
-
-                SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
-
-                deviceColumns
-                    .columnHeaderStyle(topPadding: 12)
-
-                ForEach(detail.devices) { device in
-                    NavigationLink {
-                        DeviceDetailView(device: device, range: provider.range)
-                    } label: {
-                        ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
-                    }
-                    .buttonStyle(.plain)
-                }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
         }
     }
 

@@ -39,28 +39,32 @@ struct RetentionView: View {
     private func content(cohorts: [RetentionCohort]) -> some View {
         let overview = RetentionOverview(cohorts: cohorts)
 
-        return InsetList {
-            RetentionHero(value: overview.keptLabel(day: day), subtitle: "people kept")
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RetentionHero(value: overview.keptLabel(day: day), subtitle: "people kept")
 
-            RetentionDayTabs(overview: overview, day: $day)
+                RetentionDayTabs(overview: overview, day: $day)
 
-            RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
+                RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
 
-            ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in
-                NavigationLink {
-                    RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
-                } label: {
-                    RetentionWeekRow(
-                        week: RetentionWeek(cohort: cohort, day: day),
-                        maxInstalls: overview.maxInstalls,
-                        showsDivider: index < overview.weeks.count - 1
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(.rect)
+                ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in
+                    NavigationLink {
+                        RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
+                    } label: {
+                        RetentionWeekRow(
+                            week: RetentionWeek(cohort: cohort, day: day),
+                            maxInstalls: overview.maxInstalls,
+                            showsDivider: index < overview.weeks.count - 1
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 

@@ -44,13 +44,17 @@ struct ReleaseHealthView: View {
                 description: "Release health appears once your app reports versions"
             )
         } else {
-            InsetList {
-                ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
 
-                ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
-                    ReleaseRow(release: release, isLast: index == releases.count - 1)
+                    ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                        ReleaseRow(release: release, isLast: index == releases.count - 1)
+                    }
                 }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
         }
     }
 }

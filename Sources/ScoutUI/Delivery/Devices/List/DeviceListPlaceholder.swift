@@ -13,21 +13,25 @@ struct DeviceListPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, 8)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                    .padding(.top, 8)
 
-            SkeletonBar(width: 200, height: 9, delay: 0)
-                .frame(height: 17.5, alignment: .leading)
-                .padding(.top, 4)
+                SkeletonBar(width: 200, height: 9, delay: 0)
+                    .frame(height: 17.5, alignment: .leading)
+                    .padding(.top, 4)
 
-            columns
-                .columnHeaderStyle()
+                columns
+                    .columnHeaderStyle()
 
-            ForEach(0..<9, id: \.self) { index in
-                row(index: index, isLast: index == 8)
+                ForEach(0..<9, id: \.self) { index in
+                    row(index: index, isLast: index == 8)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

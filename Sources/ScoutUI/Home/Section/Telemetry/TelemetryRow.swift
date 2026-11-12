@@ -63,9 +63,13 @@ struct TelemetryRow: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            TelemetryRow(item: TelemetryItem.sample[0], side: .leading, showsDivider: true) {}
-            TelemetryRow(item: TelemetryItem.sample[1], side: .trailing, showsDivider: false) {}
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                TelemetryRow(item: TelemetryItem.sample[0], side: .leading, showsDivider: true) {}
+                TelemetryRow(item: TelemetryItem.sample[1], side: .trailing, showsDivider: false) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

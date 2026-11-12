@@ -73,9 +73,13 @@ struct HomeTelemetrySection: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
-            HomeTelemetrySection(items: nil) { _ in }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
+                HomeTelemetrySection(items: nil) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

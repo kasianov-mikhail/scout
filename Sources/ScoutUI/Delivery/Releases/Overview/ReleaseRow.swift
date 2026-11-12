@@ -76,11 +76,15 @@ private struct ReleaseRing: View {
     let releases = [ReleaseHealth].samples
 
     return NavigationStack {
-        InsetList {
-            ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
-                ReleaseRow(release: release, isLast: index == releases.count - 1)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                    ReleaseRow(release: release, isLast: index == releases.count - 1)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle(en: "Releases")
     }
 }

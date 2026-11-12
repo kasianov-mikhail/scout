@@ -68,34 +68,38 @@ struct NetworkView: View {
         let summary = report.summary(in: provider.query.range)
         let maxRequests = endpoints.map(\.requests).max() ?? 0
 
-        return InsetList {
-            RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            Text(verbatim: summary.text)
-                .font(.weight450(size: 15))
-                .foregroundStyle(Color(.systemGray))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.top, 4)
-                .padding(.bottom, 12)
-                .padding(.horizontal, 16)
-                .overlay(alignment: .bottom) {
-                    Separator()
+                Text(verbatim: summary.text)
+                    .font(.weight450(size: 15))
+                    .foregroundStyle(Color(.systemGray))
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.top, 4)
+                    .padding(.bottom, 12)
+                    .padding(.horizontal, 16)
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
+                    .padding(.horizontal, -16)
+
+                NetworkEndpointListHeader()
+
+                ForEach(endpoints) { endpoint in
+                    NavigationLink {
+                        NetworkEndpointView(name: endpoint.name, initialRange: range)
+                    } label: {
+                        NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .padding(.horizontal, -16)
-
-            NetworkEndpointListHeader()
-
-            ForEach(endpoints) { endpoint in
-                NavigationLink {
-                    NetworkEndpointView(name: endpoint.name, initialRange: range)
-                } label: {
-                    NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
-                }
-                .buttonStyle(.plain)
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .exportToolbar(text: NetworkReportExport(report: report, range: provider.query.range).text)
     }
 }

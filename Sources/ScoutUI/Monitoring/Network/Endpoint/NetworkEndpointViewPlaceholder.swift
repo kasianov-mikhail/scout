@@ -12,19 +12,23 @@ struct NetworkEndpointViewPlaceholder: View {
     let ranges: [NetworkRange]
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            NetworkEndpointHeaderPlaceholder()
+                NetworkEndpointHeaderPlaceholder()
 
-            NetworkLedgerHeader(primary: range.pointComponent.networkTitle)
+                NetworkLedgerHeader(primary: range.pointComponent.networkTitle)
 
-            ForEach(0..<14, id: \.self) { index in
-                NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
+                ForEach(0..<14, id: \.self) { index in
+                    NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

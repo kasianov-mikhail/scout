@@ -29,9 +29,13 @@ struct Redacted: View {
 }
 
 #Preview {
-    InsetList {
-        Redacted(length: 3)
-        Redacted(length: 5)
-        Redacted(length: 8)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            Redacted(length: 3)
+            Redacted(length: 5)
+            Redacted(length: 8)
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

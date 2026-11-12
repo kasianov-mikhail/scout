@@ -50,8 +50,12 @@ struct NotificationsDeniedRow: View {
 }
 
 #Preview {
-    InsetList {
-        Header(title: "Rules")
-        NotificationsDeniedRow()
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            Header(title: "Rules")
+            NotificationsDeniedRow()
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

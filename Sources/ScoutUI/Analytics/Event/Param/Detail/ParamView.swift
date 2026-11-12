@@ -27,24 +27,28 @@ struct ParamView: View {
     var body: some View {
         Group {
             if value.isContainer {
-                InsetList {
-                    ForEach(Array(value.nodes.enumerated()), id: \.element.id) { index, node in
-                        NavigationLink {
-                            ParamView(node: node)
-                        } label: {
-                            ParamValueRow(node: node)
-                                .lineLimit(1)
-                                .frame(height: 44)
-                                .contentShape(.rect)
-                        }
-                        .buttonStyle(.plain)
-                        .overlay(alignment: .bottom) {
-                            if index < value.nodes.count - 1 {
-                                Separator()
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(value.nodes.enumerated()), id: \.element.id) { index, node in
+                            NavigationLink {
+                                ParamView(node: node)
+                            } label: {
+                                ParamValueRow(node: node)
+                                    .lineLimit(1)
+                                    .frame(height: 44)
+                                    .contentShape(.rect)
+                            }
+                            .buttonStyle(.plain)
+                            .overlay(alignment: .bottom) {
+                                if index < value.nodes.count - 1 {
+                                    Separator()
+                                }
                             }
                         }
                     }
+                    .padding(.horizontal, 16)
                 }
+                .scrollIndicators(.hidden)
             } else {
                 ParamScalarView(raw: raw, value: value)
             }

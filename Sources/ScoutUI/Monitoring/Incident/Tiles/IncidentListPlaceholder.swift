@@ -19,20 +19,24 @@ struct IncidentListPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                    .padding(.top, 8)
+
+                SkeletonBar(width: 160, height: 9, delay: 0)
+                    .frame(height: 17.5)
+                    .padding(.top, 4)
+                    .padding(.bottom, 6)
+
+                IncidentGrid(count: rowCount) { index in
+                    tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
+                }
                 .padding(.top, 8)
-
-            SkeletonBar(width: 160, height: 9, delay: 0)
-                .frame(height: 17.5)
-                .padding(.top, 4)
-                .padding(.bottom, 6)
-
-            IncidentGrid(count: rowCount) { index in
-                tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
             }
-            .padding(.top, 8)
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
