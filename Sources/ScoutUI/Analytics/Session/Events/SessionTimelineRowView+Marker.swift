@@ -150,12 +150,7 @@ extension SessionTimelineRowView {
             .font(.system(size: 11, weight: .bold))
             .tracking(0.3)
             .foregroundStyle(level.sessionChipInk)
-            .padding(.horizontal, 6)
-            .padding(.vertical, 2)
-            .background {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(level.sessionChipBackground)
-            }
+            .badgeStyle(fill: level.sessionChipBackground)
             .fixedSize()
     }
 }

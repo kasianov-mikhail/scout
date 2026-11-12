@@ -83,9 +83,7 @@ extension EventView {
                         .font(.system(size: 11, weight: .bold))
                         .tracking(0.3)
                         .foregroundStyle(level.badgeInk)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(level.badgeFill, in: RoundedRectangle(cornerRadius: 4))
+                        .badgeStyle(fill: level.badgeFill)
                 }
 
                 if let date = event.date {
