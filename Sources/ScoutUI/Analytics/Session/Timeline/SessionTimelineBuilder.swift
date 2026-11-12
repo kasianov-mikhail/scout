@@ -19,7 +19,7 @@ extension SessionTimeline {
             SessionTimelineRow(
                 id: "start",
                 kind: .start,
-                height: 36,
+                height: .rowStep,
                 title: "Session started",
                 subtitle: SessionTimeline.startSubtitle(info: info, start: start),
                 time: TimeInterval(0).sessionOffset
@@ -37,7 +37,7 @@ extension SessionTimeline {
                         SessionTimelineRow(
                             id: "gap-\(index)",
                             kind: .gap,
-                            height: 36,
+                            height: .rowStep,
                             title: gap.sessionDuration,
                             subtitle: nil,
                             time: nil
@@ -58,7 +58,7 @@ extension SessionTimeline {
                     SessionTimelineRow(
                         id: "gap-end",
                         kind: .gap,
-                        height: 36,
+                        height: .rowStep,
                         title: gap.sessionDuration,
                         subtitle: nil,
                         time: nil
@@ -88,7 +88,7 @@ extension SessionTimeline {
                 row: SessionTimelineRow(
                     id: "end",
                     kind: .end(.crash),
-                    height: 36,
+                    height: .rowStep,
                     title: "App crashed",
                     subtitle: nil,
                     time: crash.date.timeIntervalSince(start).sessionOffset
@@ -102,7 +102,7 @@ extension SessionTimeline {
                 row: SessionTimelineRow(
                     id: "end",
                     kind: .end(.live),
-                    height: 36,
+                    height: .rowStep,
                     title: "Live",
                     subtitle: "the device is still sending",
                     time: "now"
@@ -116,7 +116,7 @@ extension SessionTimeline {
                 row: SessionTimelineRow(
                     id: "end",
                     kind: .end(.background),
-                    height: 36,
+                    height: .rowStep,
                     title: "Went to background",
                     subtitle: nil,
                     time: endDate.timeIntervalSince(start).sessionOffset
@@ -130,7 +130,7 @@ extension SessionTimeline {
             row: SessionTimelineRow(
                 id: "end",
                 kind: .end(.unknown),
-                height: 36,
+                height: .rowStep,
                 title: "Session end not recorded",
                 subtitle: nil,
                 time: date.map { "≈" + $0.timeIntervalSince(start).sessionOffset }

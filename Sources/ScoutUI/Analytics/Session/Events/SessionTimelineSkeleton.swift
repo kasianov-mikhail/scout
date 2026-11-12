@@ -37,11 +37,11 @@ struct SessionSkeletonRow {
     var height: CGFloat {
         switch kind {
         case .start:
-            36
+            .rowStep
         case .screen:
-            52
+            .rowRegular
         case .event:
-            44
+            .rowRegular
         }
     }
 

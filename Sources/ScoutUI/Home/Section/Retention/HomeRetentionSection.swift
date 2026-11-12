@@ -86,7 +86,7 @@ private struct RetentionRowContent: View {
             value
                 .frame(width: 84, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .contentShape(Rectangle())
         .overlay(alignment: .bottom) {
             if showsDivider {

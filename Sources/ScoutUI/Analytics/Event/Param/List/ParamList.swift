@@ -51,7 +51,7 @@ struct ParamRow: View {
                 labelStyle: .secondary,
                 summaryStyle: value.isContainer ? .secondary : .primary
             )
-            .frame(height: 44)
+            .frame(height: .rowRegular)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

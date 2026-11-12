@@ -165,7 +165,7 @@ extension EventView {
                 value()
                     .frame(width: 44, alignment: .trailing)
             }
-            .frame(height: 40)
+            .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
                 DashedLine()
             }

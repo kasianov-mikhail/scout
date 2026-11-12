@@ -51,7 +51,7 @@ struct NetworkEndpointRow: View {
         }
         .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 10)
+        .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
             DashedLine()
         }

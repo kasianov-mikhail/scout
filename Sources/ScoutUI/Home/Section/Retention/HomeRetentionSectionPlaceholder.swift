@@ -38,7 +38,7 @@ struct HomeRetentionSectionPlaceholder: View {
             SkeletonBar(width: 46, height: 8, delay: delay)
                 .frame(width: 84, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if index < 3 {
                 Rectangle()

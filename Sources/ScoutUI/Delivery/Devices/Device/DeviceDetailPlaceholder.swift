@@ -122,8 +122,7 @@ struct DeviceDetailPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: delay)
                 .frame(width: 44, alignment: .trailing)
         }
-        .padding(.vertical, 6)
-        .frame(height: 44)
+        .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             DashedLine()
         }
@@ -155,7 +154,7 @@ struct DeviceDetailPlaceholder: View {
             SkeletonBar(width: widths[index], height: 9, delay: delay)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(height: 44)
+        .frame(height: .rowRegular)
     }
 
     private var activity: some View {

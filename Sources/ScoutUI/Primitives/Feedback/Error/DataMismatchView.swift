@@ -71,8 +71,7 @@ struct DataMismatchView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .font(.weight450(size: 13, design: .monospaced))
-        .lineSpacing(3)
-        .padding(.vertical, 3)
+        .frame(height: .codeStep)
     }
 }
 

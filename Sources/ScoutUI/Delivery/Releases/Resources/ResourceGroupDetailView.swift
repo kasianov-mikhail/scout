@@ -114,7 +114,7 @@ struct ResourceGroupDetailView: View {
                 }
             }
             .lineLimit(1)
-            .frame(height: 44)
+            .frame(height: .rowRegular)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

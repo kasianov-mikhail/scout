@@ -78,8 +78,7 @@ struct ReleaseHealthViewPlaceholder: View {
                     .frame(height: 14, alignment: .trailing)
             }
         }
-        .padding(.vertical, 8)
-        .frame(height: 64)
+        .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
             if index < rowCount - 1 {
                 DashedLine()

@@ -109,8 +109,7 @@ struct ReleasePlaceholder: View {
 
             SkeletonBar(width: 74, height: 9, delay: 0.56)
         }
-        .padding(.vertical, 6)
-        .frame(height: 44)
+        .frame(height: .rowRegular)
     }
 }
 

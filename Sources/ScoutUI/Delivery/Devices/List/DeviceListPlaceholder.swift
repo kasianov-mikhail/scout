@@ -75,8 +75,7 @@ struct DeviceListPlaceholder: View {
                     .frame(width: 56, alignment: .trailing)
             }
         }
-        .padding(.vertical, 10)
-        .frame(height: 64)
+        .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()

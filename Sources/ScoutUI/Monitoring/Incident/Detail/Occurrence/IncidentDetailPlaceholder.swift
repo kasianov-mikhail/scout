@@ -56,7 +56,7 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
     }
 
     private var stack: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(stackSymbolWidths.indices, id: \.self) { index in
                 let delay = 0.8 + Double(index) * 0.08
                 HStack(spacing: 6) {
@@ -67,7 +67,7 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
                     SkeletonBar(width: stackSymbolWidths[index], height: 9, delay: delay)
                     Spacer(minLength: 0)
                 }
-                .frame(height: 16)
+                .frame(height: .codeStep)
             }
         }
         .padding(.vertical, 16)

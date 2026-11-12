@@ -84,7 +84,7 @@ extension EventView {
                         .foregroundStyle(value.isContainer ? .secondary : .primary)
                 }
                 .lineLimit(1)
-                .frame(height: 52)
+                .frame(height: .rowRegular)
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
@@ -110,7 +110,7 @@ extension EventView {
 
                 SkeletonBar(width: 74, height: 11, delay: delay)
             }
-            .frame(height: 52)
+            .frame(height: .rowRegular)
             .overlay(alignment: .bottom) {
                 Separator()
             }

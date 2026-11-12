@@ -37,7 +37,7 @@ struct ActivityDayRow: View {
                 .foregroundStyle(row.isRising ? Color.trendPositive : Color(.systemGray))
                 .frame(width: 52, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if !row.isOldest {
                 DashedLine()

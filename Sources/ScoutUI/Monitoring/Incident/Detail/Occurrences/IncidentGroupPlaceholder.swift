@@ -131,7 +131,7 @@ struct IncidentGroupPlaceholder: View {
     }
 
     private func affectedRow(title: String, delay: Double) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 7) {
             HStack {
                 Text(verbatim: title)
                     .font(.weight450(size: 15))
@@ -149,11 +149,11 @@ struct IncidentGroupPlaceholder: View {
                 SkeletonBar(width: 46, height: 9, delay: delay)
             }
         }
-        .padding(.vertical, 16)
+        .frame(height: .rowSubtitle)
     }
 
     private var frames: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(0..<6, id: \.self) { index in
                 let delay = 0.40 + Double(index) * 0.08
 
@@ -166,7 +166,7 @@ struct IncidentGroupPlaceholder: View {
 
                     SkeletonBar(width: [158, 115, 141, 92, 126, 104][index % 6], height: 9, delay: delay)
                 }
-                .frame(height: 16)
+                .frame(height: .codeStep)
             }
         }
         .padding(.vertical, 16)
@@ -187,7 +187,7 @@ struct IncidentGroupPlaceholder: View {
 
             SkeletonBar(width: 120, height: 9, delay: delay)
         }
-        .frame(height: 44)
+        .frame(height: .rowRegular)
     }
 
     private var cardTitles: [String] {

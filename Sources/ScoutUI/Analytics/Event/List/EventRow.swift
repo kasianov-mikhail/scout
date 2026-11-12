@@ -34,7 +34,7 @@ struct EventRow: View {
                 }
             }
             .padding(.horizontal, 16)
-            .frame(height: 44)
+            .frame(height: .rowRegular)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

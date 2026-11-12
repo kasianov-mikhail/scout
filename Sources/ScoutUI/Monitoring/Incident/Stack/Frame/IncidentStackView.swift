@@ -13,7 +13,7 @@ struct IncidentStackView: View {
     let color: Color
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(stack.rows) { row in
                 IncidentStackRowView(row: row, isCulprit: stack.culprit?.id == row.id, color: color)
             }
@@ -47,7 +47,7 @@ private struct IncidentStackRowView: View {
         .font(.weighted(size: 12, weight: weight, design: .monospaced))
         .foregroundStyle(foreground)
         .lineLimit(1)
-        .frame(height: 16)
+        .frame(height: .codeStep)
         .accessibilityElement(children: .combine)
     }
 

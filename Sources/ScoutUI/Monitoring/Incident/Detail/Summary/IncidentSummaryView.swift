@@ -125,7 +125,7 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
     }
 
     private var frames: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: 0) {
             ForEach(summary.frames) { frame in
                 IncidentSummaryFrameRow(frame: frame)
             }
@@ -201,7 +201,7 @@ private struct IncidentAffectedRow: View {
     let affected: IncidentAffected
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 7) {
             HStack {
                 Text(verbatim: affected.title)
                     .font(.weight450(size: 15))
@@ -224,7 +224,7 @@ private struct IncidentAffectedRow: View {
                 legend(visible: affected.segments.count - 4)
             }
         }
-        .padding(.vertical, 16)
+        .frame(height: .rowSubtitle)
     }
 
     private func legend(visible count: Int) -> some View {
@@ -297,7 +297,7 @@ private struct IncidentSummaryFrameRow: View {
         .font(frame.isApp ? .system(size: 12, weight: .semibold, design: .monospaced) : .weight450(size: 12, design: .monospaced))
         .foregroundStyle(frame.isApp ? Color.primary : Color(.systemGray))
         .lineLimit(1)
-        .frame(height: 16)
+        .frame(height: .codeStep)
     }
 }
 
