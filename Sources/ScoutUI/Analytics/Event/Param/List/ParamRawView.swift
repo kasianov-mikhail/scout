@@ -19,7 +19,7 @@ struct ParamRawView: View {
                 }
 
             Text(raw.attributed)
-                .font(.weight450(size: 13, design: .monospaced))
+                .font(.book(size: 13, design: .monospaced))
                 .foregroundStyle(Color.jsonPunctuation)
                 .lineSpacing(3.7)
                 .textSelection(.enabled)
@@ -39,10 +39,7 @@ struct ParamRawView: View {
                 ParamProvider.Item(key: "currency", value: "USD"),
                 ParamProvider.Item(key: "family_shared", value: "false"),
                 ParamProvider.Item(key: "introductory", value: "true"),
-                ParamProvider.Item(
-                    key: "offer",
-                    value: #"{"discount": 0.2, "ends_at": "2026-10-31T23:59:59Z", "id": "FALL26"}"#
-                ),
+                ParamProvider.Item(key: "offer", value: #"{"discount": 0.2, "ends_at": "2026-10-31T23:59:59Z", "id": "FALL26"}"#),
                 ParamProvider.Item(key: "price", value: "49.99"),
                 ParamProvider.Item(key: "product_id", value: "com.scout.pro.yearly"),
                 ParamProvider.Item(key: "promo_codes", value: #"["FALL26", "WELCOME"]"#),

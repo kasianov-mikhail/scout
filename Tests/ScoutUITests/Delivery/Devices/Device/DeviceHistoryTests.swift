@@ -58,8 +58,7 @@ struct DeviceHistoryTests {
         let day = Date(timeIntervalSince1970: 1_700_000_000)
         let versions = [
             Version(appVersion: "1.0", buildNumber: "1", launchID: nil, date: day, id: "version-1"),
-            Version(
-                appVersion: "1.1", buildNumber: "2", launchID: nil, date: day.addingDay(3), id: "version-2"),
+            Version(appVersion: "1.1", buildNumber: "2", launchID: nil, date: day.addingDay(3), id: "version-2"),
         ]
 
         let events = [DeviceHistoryEvent](installs: [], versions: versions, sessions: [])
