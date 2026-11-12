@@ -74,7 +74,7 @@ struct AlertEventCard: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: name.isEmpty ? "Choose event" : name)
-                    .font(.weight450(size: 15, design: name.isEmpty ? .default : .monospaced))
+                    .font(.book(size: 15, design: name.isEmpty ? .default : .monospaced))
                     .lineLimit(1)
                     .truncationMode(.middle)
 
@@ -97,15 +97,15 @@ struct AlertEventCard: View {
     @ViewBuilder private var detail: some View {
         if name.isEmpty {
             Text(verbatim: "Tap to pick an event")
-                .font(.weight450(size: 11))
+                .font(.book(size: 11))
                 .foregroundStyle(Color(.systemGray))
         } else if let range {
             Text(verbatim: rangeText(range))
-                .font(.weight450(size: 11))
+                .font(.book(size: 11))
                 .foregroundStyle(Color(.systemGray))
         } else if isFailed {
             Text(verbatim: "—")
-                .font(.weight450(size: 11))
+                .font(.book(size: 11))
                 .foregroundStyle(Color(.systemGray))
         } else {
             SkeletonBar(width: 120, height: 7, delay: 0)
@@ -212,11 +212,11 @@ private struct AlertSensitivityCell: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
             Text(verbatim: title)
-                .font(isSelected ? .system(size: 15, weight: .bold) : .weight450(size: 15))
+                .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
                 .foregroundStyle(isSelected ? Color.blue : Color.primary)
 
             Text(verbatim: detail)
-                .font(.weight450(size: 11))
+                .font(.book(size: 11))
                 .foregroundStyle(isSelected ? Color.blue.opacity(0.75) : Color(.systemGray))
                 .lineLimit(1)
         }
@@ -243,7 +243,7 @@ struct AlertThresholdCard: View {
                         .monospacedDigit()
 
                     Text(verbatim: " \(unit)")
-                        .font(.weight450(size: 13))
+                        .font(.book(size: 13))
                         .foregroundStyle(Color(.systemGray))
                 }
                 .padding(.vertical, 10)
@@ -319,7 +319,7 @@ struct AlertWeekCard: View {
             }
 
             Text(verbatim: " alerts with \(draft.sensitivity.title)")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.vertical, 10)
@@ -334,7 +334,7 @@ struct AlertWeekCard: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(verbatim: sensitivity.title)
-                        .font(.weight450(size: 11))
+                        .font(.book(size: 11))
                         .foregroundStyle(Color(.systemGray))
 
                     if let count = counts?[sensitivity] {
@@ -365,7 +365,7 @@ struct AlertWeekCard: View {
             ForEach(dates.indices, id: \.self) { day in
                 HStack(spacing: 2) {
                     Text(verbatim: alertWeekdayFormatter.string(from: dates[day]))
-                        .font(.weight450(size: 10, design: .monospaced))
+                        .font(.book(size: 10, design: .monospaced))
                         .foregroundStyle(Color(.systemGray))
                         .frame(width: 34, alignment: .leading)
 
@@ -395,7 +395,7 @@ struct AlertWeekCard: View {
                     Spacer()
                     Text(verbatim: "24")
                 }
-                .font(.weight450(size: 10, design: .monospaced))
+                .font(.book(size: 10, design: .monospaced))
                 .foregroundStyle(Color(.systemGray))
             }
             .padding(.top, 4)
@@ -433,7 +433,7 @@ struct AlertNotifyCard: View {
                             .foregroundStyle(notifies ? Color.blue : Color.primary)
 
                         Text(verbatim: notifies ? "Push notification" : "Off")
-                            .font(.weight450(size: 11))
+                            .font(.book(size: 11))
                             .foregroundStyle(notifies ? Color.blue.opacity(0.75) : Color(.systemGray))
                     }
 
@@ -459,7 +459,7 @@ struct AlertNotifyCard: View {
 struct AlertFooter: View {
     var body: some View {
         Text(footerText)
-            .font(.weight450(size: 13))
+            .font(.book(size: 13))
             .lineSpacing(2)
             .foregroundStyle(Color(.systemGray))
             .padding(.top, 4)

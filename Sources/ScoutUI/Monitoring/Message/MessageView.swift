@@ -13,7 +13,7 @@ struct MessageView: View {
 
     var body: some View {
         Text(text)
-            .font(.weight450(size: 16))
+            .font(.book(size: 16))
             .multilineTextAlignment(.center)
             .lineSpacing(4)
             .padding(.horizontal)

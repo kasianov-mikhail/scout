@@ -39,7 +39,7 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 if !summary.frames.isEmpty {
                     Header(title: "Stack Trace") {
                         Text(verbatim: summary.stackCaption)
-                            .font(.weight450(size: 13))
+                            .font(.book(size: 13))
                             .foregroundStyle(Color(.systemGray))
                     }
                     .overlay(alignment: .bottom) {
@@ -54,7 +54,7 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                         destination()
                     } label: {
                         Image(systemName: "arrow.up.right.and.arrow.down.left")
-                            .font(.weight450(size: 20))
+                            .font(.book(size: 20))
                             .frame(width: 44, height: 44)
                             .padding(.trailing, -12)
                     }
@@ -85,12 +85,12 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
     private var message: some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(verbatim: summary.message)
-                .font(.weight450(size: 15, design: .monospaced))
+                .font(.book(size: 15, design: .monospaced))
                 .lineSpacing(3)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: summary.meta)
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.top, 20)
@@ -146,7 +146,7 @@ private struct IncidentSummaryCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: card.title)
-                .font(.weight450(size: 14))
+                .font(.book(size: 14))
                 .foregroundStyle(Color(.systemGray))
 
             HStack(alignment: .top) {
@@ -204,12 +204,12 @@ private struct IncidentAffectedRow: View {
         VStack(alignment: .leading, spacing: 7) {
             HStack {
                 Text(verbatim: affected.title)
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
 
                 Spacer()
 
                 Text(verbatim: "\(affected.total)")
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .monospacedDigit()
                     .foregroundStyle(Color(.systemGray))
             }
@@ -246,7 +246,7 @@ private struct IncidentAffectedRow: View {
                 Text(verbatim: "+\(affected.segments.count - visible)")
             }
         }
-        .font(.weight450(size: 12))
+        .font(.book(size: 12))
         .foregroundStyle(Color(.systemGray))
         .fixedSize(horizontal: true, vertical: false)
     }
@@ -294,7 +294,7 @@ private struct IncidentSummaryFrameRow: View {
             Text(verbatim: frame.symbol)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .font(frame.isApp ? .system(size: 12, weight: .semibold, design: .monospaced) : .weight450(size: 12, design: .monospaced))
+        .font(frame.isApp ? .system(size: 12, weight: .semibold, design: .monospaced) : .book(size: 12, design: .monospaced))
         .foregroundStyle(frame.isApp ? Color.primary : Color(.systemGray))
         .lineLimit(1)
         .frame(height: .codeStep)

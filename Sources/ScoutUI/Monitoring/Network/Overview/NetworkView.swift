@@ -76,7 +76,7 @@ struct NetworkView: View {
                     .padding(.trailing, -16)
 
                 Text(verbatim: summary.text)
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .foregroundStyle(Color(.systemGray))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 4)

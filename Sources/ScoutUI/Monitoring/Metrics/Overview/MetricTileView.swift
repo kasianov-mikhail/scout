@@ -14,7 +14,7 @@ struct MetricTileView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(verbatim: tile.displayName)
-                .font(.weight450(size: 12, design: .monospaced))
+                .font(.book(size: 12, design: .monospaced))
                 .foregroundStyle(Color(.systemGray))
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
@@ -26,7 +26,7 @@ struct MetricTileView: View {
                     .monospacedDigit()
 
                 Text(verbatim: tile.suffix)
-                    .font(.weight450(size: 12))
+                    .font(.book(size: 12))
                     .foregroundStyle(Color(.systemGray))
             }
             .lineLimit(1)

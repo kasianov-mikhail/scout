@@ -24,7 +24,7 @@ struct EventStatList: View {
             EventList(provider: provider)
                 .fetchTask([provider])
                 .navigationTitle(en: range.label(using: rangeDateFormatter))
-                .font(.weight450(size: 12))
+                .font(.book(size: 12))
         }
     }
 }

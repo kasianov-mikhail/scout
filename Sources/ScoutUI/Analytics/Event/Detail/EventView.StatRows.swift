@@ -19,7 +19,7 @@ extension EventView {
                             .font(.system(size: 15, weight: .semibold))
 
                         Text(verbatim: "so far")
-                            .font(.weight450(size: 11))
+                            .font(.book(size: 11))
                             .foregroundStyle(Color(.systemGray))
                     }
 
@@ -51,7 +51,7 @@ extension EventView {
                         Text(verbatim: label)
                     }
                 }
-                .font(.weight450(size: 10, design: .monospaced))
+                .font(.book(size: 10, design: .monospaced))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 7)
             }
@@ -155,7 +155,7 @@ extension EventView {
         var body: some View {
             HStack(spacing: 8) {
                 Text(verbatim: title)
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .lineLimit(1)
                     .frame(width: 76, alignment: .leading)
 
@@ -177,7 +177,7 @@ extension EventView {
 
         var body: some View {
             Text(verbatim: EventStats.countLabel(count))
-                .font(.weight450(size: 14, design: .monospaced))
+                .font(.book(size: 14, design: .monospaced))
                 .monospacedDigit()
                 .lineLimit(1)
                 .foregroundStyle(count == 0 ? Color(.systemGray3) : Color.primary)

@@ -113,7 +113,7 @@ struct ReleaseView: View {
     private func hangRate(_ value: ReleaseHangRate) -> some View {
         HStack(spacing: 8) {
             Text(verbatim: "Hang rate")
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
 
             Spacer()
 

@@ -29,7 +29,7 @@ extension EventView {
                 }
                 sessionRow {
                     Text(verbatim: value.sessionSummary)
-                        .font(.weight450(size: 17))
+                        .font(.book(size: 17))
                         .lineLimit(1)
                 }
             case .failure(let error):
@@ -71,12 +71,12 @@ extension EventView {
             } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "clock")
-                        .font(.weight450(size: 17))
+                        .font(.book(size: 17))
                         .foregroundStyle(.blue)
                         .frame(width: 24)
 
                     Text(verbatim: "Session")
-                        .font(.weight450(size: 15))
+                        .font(.book(size: 15))
                         .foregroundStyle(Color.eventContextLabel)
 
                     Spacer(minLength: 0)

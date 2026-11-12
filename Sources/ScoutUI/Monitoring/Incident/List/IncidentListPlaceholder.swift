@@ -65,7 +65,7 @@ struct IncidentListPlaceholder: View {
 
     private func line(size: CGFloat, width: CGFloat, height: CGFloat, delay: Double) -> some View {
         Text(verbatim: " ")
-            .font(.weight450(size: size, design: .monospaced))
+            .font(.book(size: size, design: .monospaced))
             .overlay(alignment: .leading) {
                 SkeletonBar(width: width, height: height, delay: delay)
             }

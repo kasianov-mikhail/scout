@@ -13,7 +13,7 @@ struct OutlineChip: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.weight450(size: 13))
+            .font(.book(size: 13))
             .monospaced(monospaced)
             .lineLimit(1)
             .padding(.horizontal, 9)

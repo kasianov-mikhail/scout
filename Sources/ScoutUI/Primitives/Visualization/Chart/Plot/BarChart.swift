@@ -99,7 +99,7 @@ struct AxisLabelRow: View {
 
             Text(verbatim: end)
         }
-        .font(.weight450(size: 10, design: design))
+        .font(.book(size: 10, design: design))
         .foregroundStyle(Color(.systemGray))
         .padding(.top, topInset)
     }

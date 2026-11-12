@@ -35,7 +35,7 @@ struct RetentionDayTabs: View {
 
         return VStack(alignment: .leading, spacing: 3) {
             Text(verbatim: item.title)
-                .font(isSelected ? .system(size: 13, weight: .semibold) : .weight450(size: 13))
+                .font(isSelected ? .system(size: 13, weight: .semibold) : .book(size: 13))
                 .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
 
             if let metric {

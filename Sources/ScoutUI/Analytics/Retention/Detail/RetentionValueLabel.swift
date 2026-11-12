@@ -22,10 +22,10 @@ struct RetentionValueLabel: View {
                 Text(verbatim: " · \(rate)")
                     .foregroundStyle(Color(.systemGray))
             }
-            .font(.weight450(size: 13, design: .monospaced))
+            .font(.book(size: 13, design: .monospaced))
         } else {
             Text(verbatim: pending ?? "—")
-                .font(.weight450(size: 13, design: .monospaced))
+                .font(.book(size: 13, design: .monospaced))
                 .foregroundStyle(Color.pending)
         }
     }

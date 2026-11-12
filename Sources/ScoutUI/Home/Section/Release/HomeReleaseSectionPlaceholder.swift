@@ -16,7 +16,7 @@ struct HomeReleaseSectionPlaceholder: View {
                 SkeletonBar(width: 120, height: 15, delay: 0.96)
 
                 Text(verbatim: "of sessions")
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
             .frame(height: 28)

@@ -36,10 +36,10 @@ struct SessionHeader: View {
     private var summary: some View {
         if let duration = info.duration, let detail = info.detail {
             (Text(verbatim: duration).font(.system(size: 15, weight: .semibold)) + Text(verbatim: " · \(detail)"))
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
         } else if let text = info.summary {
             Text(verbatim: text)
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
         }
     }
 

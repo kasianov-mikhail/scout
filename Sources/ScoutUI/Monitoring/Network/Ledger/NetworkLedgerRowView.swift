@@ -43,7 +43,7 @@ struct NetworkLedgerRowView: View {
 
                 if component == .day && row.isCurrent {
                     Text(verbatim: "today")
-                        .font(.weight450(size: 11))
+                        .font(.book(size: 11))
                         .foregroundStyle(Color(.systemGray))
                 }
             }
@@ -62,7 +62,7 @@ struct NetworkLedgerRowView: View {
                 .foregroundStyle(row.p99.networkP99Color)
                 .frame(width: 64, alignment: .trailing)
         }
-        .font(.weight450(size: 13, design: .monospaced))
+        .font(.book(size: 13, design: .monospaced))
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {

@@ -83,14 +83,12 @@ extension EventView {
                         .font(.system(size: 11, weight: .bold))
                         .tracking(0.3)
                         .foregroundStyle(level.badgeInk)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(level.badgeFill, in: RoundedRectangle(cornerRadius: 4))
+                        .badgeStyle(fill: level.badgeFill)
                 }
 
                 if let date = event.date {
                     Text(verbatim: eventDateFormatter.string(from: date) + " UTC")
-                        .font(.weight450(size: 15))
+                        .font(.book(size: 15))
                         .monospacedDigit()
                         .foregroundStyle(Color.eventTimestamp)
                 }

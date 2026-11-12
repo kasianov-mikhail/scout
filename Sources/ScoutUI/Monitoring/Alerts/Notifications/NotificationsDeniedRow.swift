@@ -13,15 +13,15 @@ struct NotificationsDeniedRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: "bell.slash")
-                .font(.weight450(size: 20))
+                .font(.book(size: 20))
                 .foregroundStyle(Color(.systemOrange))
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: "Notifications are off")
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
 
                 Text(verbatim: "Firing rules won't reach this device.")
-                    .font(.weight450(size: 12))
+                    .font(.book(size: 12))
                     .foregroundStyle(Color(.systemGray))
             }
 
@@ -32,7 +32,7 @@ struct NotificationsDeniedRow: View {
                     openURL(settingsURL)
                 } label: {
                     Text(verbatim: "Settings")
-                        .font(.weight450(size: 15))
+                        .font(.book(size: 15))
                 }
                 .buttonStyle(.borderless)
             }

@@ -88,7 +88,7 @@ struct ReleasePlaceholder: View {
     private func cell(kind: ReleaseTileValue.Kind, delay: Double, isLeading: Bool) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             Text(verbatim: kind.title)
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
 
             SkeletonBar(width: 74, height: 14, delay: delay)
@@ -103,7 +103,7 @@ struct ReleasePlaceholder: View {
     private var footer: some View {
         HStack(spacing: 8) {
             Text(verbatim: "Hang rate")
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
 
             Spacer()
 

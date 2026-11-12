@@ -57,7 +57,7 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     private var segments: some View {
         ForEach(values, id: \.self) { value in
             Text(title(value).uppercased())
-                .font(value == selection ? .system(size: 14, weight: .bold) : .weight450(size: 14))
+                .font(value == selection ? .system(size: 14, weight: .bold) : .book(size: 14))
                 .foregroundStyle(value == selection ? .primary : .secondary)
                 .padding(.horizontal, 8)
                 .padding(.bottom, 6)

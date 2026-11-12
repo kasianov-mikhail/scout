@@ -21,7 +21,7 @@ struct ConnectionRow: View {
                     .foregroundStyle(connection.status.healthColor)
                     .accessibilityLabel(Text(verbatim: connection.status.healthLabel))
                 HStack {
-                    Text(verbatim: connection.name).font(.weight450(size: 16))
+                    Text(verbatim: connection.name).font(.book(size: 16))
                     Spacer(minLength: 0)
                 }
                 .padding(.vertical, 12)

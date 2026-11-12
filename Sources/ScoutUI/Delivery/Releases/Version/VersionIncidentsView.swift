@@ -74,7 +74,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
                 } label: {
                     HStack(spacing: 8) {
                         Text(verbatim: group.name)
-                            .font(.weight450(size: 16, design: .monospaced))
+                            .font(.book(size: 16, design: .monospaced))
                             .lineLimit(1)
 
                         Spacer()

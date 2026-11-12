@@ -22,10 +22,7 @@ struct BacktraceDetailTests {
             images: [Backtrace.Image(name: "UIKitCore", uuid: UUID()), Backtrace.Image(name: "MyApp", uuid: app)],
             threads: [
                 Backtrace.Thread(attributed: false, frames: [Backtrace.Frame(image: 1, offset: 0x90)]),
-                Backtrace.Thread(
-                    attributed: true,
-                    frames: [Backtrace.Frame(image: 0, offset: 0x500), Backtrace.Frame(image: 1, offset: 0x11)]
-                ),
+                Backtrace.Thread(attributed: true, frames: [Backtrace.Frame(image: 0, offset: 0x500), Backtrace.Frame(image: 1, offset: 0x11)]),
             ]
         )
     }

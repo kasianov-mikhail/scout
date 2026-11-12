@@ -57,16 +57,14 @@ struct TimelineRow: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(.white)
                     .lineLimit(1)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(Capsule().fill(chipColor))
+                    .badgeStyle(fill: chipColor)
             }
 
             Spacer(minLength: 8)
 
             if let time = entry.time {
                 Text(verbatim: time)
-                    .font(.weight450(size: 12, design: .monospaced))
+                    .font(.book(size: 12, design: .monospaced))
                     .foregroundStyle(Color.timelineMuted)
                     .layoutPriority(1)
             }

@@ -33,7 +33,7 @@ extension EventView {
                     Text(verbatim: "now")
                 }
             }
-            .font(.weight450(size: 12))
+            .font(.book(size: 12))
             .foregroundStyle(Color(.systemGray))
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)

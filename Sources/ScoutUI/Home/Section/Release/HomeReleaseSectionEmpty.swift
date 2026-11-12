@@ -20,7 +20,7 @@ struct HomeReleaseSectionEmpty: View {
                 EmptyBar(width: 150, height: 26, cornerRadius: 4)
 
                 Text(verbatim: "of sessions")
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
             .frame(height: 28)
@@ -32,7 +32,7 @@ struct HomeReleaseSectionEmpty: View {
                 .padding(.top, 8)
 
             Text(verbatim: "No releases yet")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 10)
                 .padding(.bottom, 6)

@@ -16,7 +16,7 @@ extension EventView {
         var body: some View {
             SectionHeader(title: "Stats") {
                 Text(verbatim: "average per day")
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
 
