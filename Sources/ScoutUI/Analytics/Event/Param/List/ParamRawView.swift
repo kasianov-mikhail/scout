@@ -19,7 +19,7 @@ struct ParamRawView: View {
                 }
 
             Text(raw.attributed)
-                .font(.weight450(size: 13, design: .monospaced))
+                .font(.book(size: 13, design: .monospaced))
                 .foregroundStyle(Color.jsonPunctuation)
                 .lineSpacing(3.7)
                 .textSelection(.enabled)
