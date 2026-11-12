@@ -13,10 +13,8 @@ struct RetentionViewPlaceholder: View {
     var body: some View {
         InsetList {
             RetentionHero(subtitle: "people kept", placeholderWidth: 120)
-                .frame(minHeight: 44)
 
             RetentionDayTabs(overview: nil, day: $day)
-                .frame(minHeight: 44)
 
             RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
 

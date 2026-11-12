@@ -16,10 +16,8 @@ struct IncidentGroupPlaceholder: View {
         InsetList {
             message
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             cards
-                .frame(minHeight: 44)
 
             Header(title: "Affected")
                 .overlay(alignment: .bottom) {
@@ -28,7 +26,6 @@ struct IncidentGroupPlaceholder: View {
 
             ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
                 affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
-                    .frame(minHeight: 44)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
@@ -44,7 +41,6 @@ struct IncidentGroupPlaceholder: View {
             }
 
             frames
-                .frame(minHeight: 44)
 
             Header(title: "Occurrences")
                 .overlay(alignment: .bottom) {

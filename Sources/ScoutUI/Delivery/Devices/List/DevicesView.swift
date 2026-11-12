@@ -56,7 +56,6 @@ struct DevicesView: View {
             InsetList {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                     .padding(.top, 8)
-                    .frame(minHeight: 44)
 
                 summary(models)
                     .padding(.top, 4)
@@ -64,16 +63,12 @@ struct DevicesView: View {
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
-                    .frame(minHeight: 44)
 
                 columns
                     .columnHeaderStyle()
-                    .frame(minHeight: 44)
 
                 ForEach(models) { model in
-                    Row {
-                        DeviceModelRow(model: model, maxSessions: maxSessions)
-                    } destination: {
+                    NavigationLink {
                         ModelDetailView(
                             model: model.model,
                             range: provider.range,
@@ -81,7 +76,11 @@ struct DevicesView: View {
                                 ? provider.activities.filter { $0.model == model.model }
                                 : nil
                         )
+                    } label: {
+                        DeviceModelRow(model: model, maxSessions: maxSessions)
+                            .contentShape(.rect)
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .exportToolbar(text: DevicesExport(models: models).text)
@@ -152,6 +151,7 @@ private struct DeviceModelRow: View {
                     .frame(width: 56, alignment: .trailing)
             }
         }
+        .lineLimit(1)
         .padding(.vertical, 10)
         .overlay(alignment: .bottom) {
             DashedLine()

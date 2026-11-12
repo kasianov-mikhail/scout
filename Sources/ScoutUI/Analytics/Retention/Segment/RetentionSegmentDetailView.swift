@@ -18,19 +18,16 @@ struct RetentionSegmentDetailView: View {
 
         InsetList {
             RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
-                .frame(minHeight: 44)
 
             RetentionSection(title: "Come back on", note: "whole week", divider: true)
 
             ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
                 RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
-                    .frame(minHeight: 44)
             }
 
             RetentionSection(title: "Stability")
 
             RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
-                .frame(minHeight: 44)
 
             if !detail.weeks.isEmpty {
                 RetentionSection(title: "\(segment.name) by week", note: "day 7")

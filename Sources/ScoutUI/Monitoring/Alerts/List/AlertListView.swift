@@ -108,7 +108,6 @@ struct AlertListView: View {
 
             AlertListLegend()
                 .padding(.top, 10)
-                .frame(minHeight: 44)
 
             section(statuses.firing, title: "FIRING")
             section(statuses.armed, title: "ARMED")
@@ -139,7 +138,6 @@ struct AlertListView: View {
                     }
                 )
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
             }
         }
     }

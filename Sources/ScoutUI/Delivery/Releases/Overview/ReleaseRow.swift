@@ -12,35 +12,39 @@ struct ReleaseRow: View {
     let isLast: Bool
 
     var body: some View {
-        Row {
-            ReleaseRing(adoption: release.adoption, color: release.freeSessions.color)
-
-            VStack(alignment: .leading, spacing: 3) {
-                Text(verbatim: release.id)
-                    .font(.system(size: 17, weight: .bold, design: .monospaced))
-                    .lineLimit(1)
-
-                Text(verbatim: release.adoptionLabel)
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .lineLimit(1)
-            }
-
-            Spacer(minLength: 0)
-
-            VStack(alignment: .trailing, spacing: 3) {
-                Text(verbatim: release.freeSessions.formatted)
-                    .font(.system(size: 15, weight: .bold, design: .monospaced))
-
-                Text(verbatim: release.freeSessions.level.displayTitle)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(release.freeSessions.level.labelColor)
-            }
-        } destination: {
+        NavigationLink {
             ReleaseView(release: release)
+        } label: {
+            HStack(spacing: 8) {
+                ReleaseRing(adoption: release.adoption, color: release.freeSessions.color)
+
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(verbatim: release.id)
+                        .font(.system(size: 17, weight: .bold, design: .monospaced))
+                        .lineLimit(1)
+
+                    Text(verbatim: release.adoptionLabel)
+                        .font(.weight450(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                        .lineLimit(1)
+                }
+
+                Spacer(minLength: 0)
+
+                VStack(alignment: .trailing, spacing: 3) {
+                    Text(verbatim: release.freeSessions.formatted)
+                        .font(.system(size: 15, weight: .bold, design: .monospaced))
+
+                    Text(verbatim: release.freeSessions.level.displayTitle)
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(release.freeSessions.level.labelColor)
+                }
+            }
+            .lineLimit(1)
+            .frame(height: 64)
+            .contentShape(.rect)
         }
-        .padding(.vertical, 8)
-        .frame(minHeight: 64)
+        .buttonStyle(.plain)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()
@@ -75,7 +79,6 @@ private struct ReleaseRing: View {
         InsetList {
             ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
                 ReleaseRow(release: release, isLast: index == releases.count - 1)
-                    .frame(minHeight: 44)
             }
         }
         .navigationTitle(en: "Releases")

@@ -18,10 +18,8 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
         InsetList {
             message
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             cards
-                .frame(minHeight: 44)
 
             if !summary.affected.isEmpty {
                 Header(title: "Affected")
@@ -31,7 +29,6 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
 
                 ForEach(summary.affected) { affected in
                     IncidentAffectedRow(affected: affected)
-                        .frame(minHeight: 44)
                         .overlay(alignment: .bottom) {
                             Separator()
                         }
@@ -49,7 +46,6 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 }
 
                 frames
-                    .frame(minHeight: 44)
             }
 
             Header(title: "Occurrences") {
@@ -318,11 +314,7 @@ private struct IncidentSummaryFrameRow: View {
             ),
             records: [Crash].samples,
             row: { crash in
-                Row {
-                    Text(verbatim: crash.name)
-                } destination: {
-                    Text(verbatim: crash.name)
-                }
+                Text(verbatim: crash.name)
             },
             destination: {
                 Text(verbatim: "All occurrences")

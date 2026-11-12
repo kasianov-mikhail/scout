@@ -14,14 +14,11 @@ struct ReleasePlaceholder: View {
         InsetList {
             hero
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             grid
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             footer
-                .frame(minHeight: 44)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
@@ -109,7 +106,7 @@ struct ReleasePlaceholder: View {
             SkeletonBar(width: 74, height: 9, delay: 0.56)
         }
         .padding(.vertical, 6)
-        .frame(minHeight: 44)
+        .frame(height: 44)
     }
 }
 

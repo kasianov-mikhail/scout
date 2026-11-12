@@ -23,6 +23,7 @@ struct RetentionWeekRow: View {
             RetentionValueLabel(kept: week.keptLabel, rate: week.rateLabel, pending: week.pendingLabel)
                 .frame(width: 76, alignment: .trailing)
         }
+        .lineLimit(1)
         .frame(height: 40)
         .overlay(alignment: .bottom) {
             if showsDivider {
@@ -36,7 +37,6 @@ struct RetentionWeekRow: View {
     InsetList {
         ForEach([RetentionWeek].samples) { week in
             RetentionWeekRow(week: week, maxInstalls: [RetentionWeek].samples.maxInstalls, showsDivider: week.kept != nil)
-                .frame(minHeight: 44)
         }
     }
 }

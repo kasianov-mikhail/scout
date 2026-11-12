@@ -29,6 +29,7 @@ struct ParamValueRow: View {
                 .foregroundStyle(summaryStyle)
                 .lineLimit(1)
         }
+        .lineLimit(1)
     }
 }
 

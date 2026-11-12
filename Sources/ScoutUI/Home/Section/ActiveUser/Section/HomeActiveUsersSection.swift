@@ -108,7 +108,6 @@ struct HomeActiveUsersSection: View {
         }
         .font(.weight450(size: 13))
         .foregroundStyle(Color(.systemGray))
-        .frame(minHeight: 18, alignment: .leading)
     }
 }
 
@@ -148,9 +147,7 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample) { _ in }
-                .frame(minHeight: 44)
             HomeActiveUsersSection(users: nil) { _ in }
-                .frame(minHeight: 44)
         }
     }
 }
@@ -159,7 +156,6 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
-                .frame(minHeight: 44)
         }
     }
 }
@@ -168,7 +164,6 @@ private struct ActiveUserMetricView: View {
     NavigationStack {
         InsetList {
             HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
-                .frame(minHeight: 44)
         }
     }
 }

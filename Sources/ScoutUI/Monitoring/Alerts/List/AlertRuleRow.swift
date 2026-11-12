@@ -100,15 +100,12 @@ struct AlertRuleRow: View {
                 onOpen: {}
             )
             .padding(.horizontal, -16)
-            .frame(minHeight: 44)
         }
 
         AlertRuleRow(status: .firingSample, isLast: false, onDelete: {}, onMute: {}, onOpen: {})
             .padding(.horizontal, -16)
-            .frame(minHeight: 44)
 
         AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {}, onOpen: {})
             .padding(.horizontal, -16)
-            .frame(minHeight: 44)
     }
 }

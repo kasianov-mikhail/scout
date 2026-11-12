@@ -95,23 +95,29 @@ struct ResourceGroupDetailView: View {
     }
 
     private func occurrenceRow(_ resource: ResourceException) -> some View {
-        Row {
-            if let date = resource.date {
-                Text(verbatim: date.relativeString)
-                    .font(.weight450(size: 15))
-            }
-
-            Spacer()
-
-            if let label = breakdown.value?.occurrenceLabel(record: resource) {
-                Text(verbatim: label)
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .lineLimit(1)
-            }
-        } destination: {
+        NavigationLink {
             ResourceDetailView(resource: resource, group: occurrences.group)
+        } label: {
+            HStack(spacing: 8) {
+                if let date = resource.date {
+                    Text(verbatim: date.relativeString)
+                        .font(.weight450(size: 15))
+                }
+
+                Spacer()
+
+                if let label = breakdown.value?.occurrenceLabel(record: resource) {
+                    Text(verbatim: label)
+                        .font(.weight450(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                        .lineLimit(1)
+                }
+            }
+            .lineLimit(1)
+            .frame(height: 44)
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
     }
 }
 

@@ -73,7 +73,6 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                 MetricRangeStrip(selection: $range)
                     .padding(.top, 8)
                     .padding(.trailing, -16)
-                    .frame(minHeight: 44)
 
                 MetricQuantileSelector(
                     summary: summary,
@@ -83,27 +82,21 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                     selection: $quantile
                 )
                 .padding(.top, 4)
-                .frame(minHeight: 44)
 
                 Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
                     .font(.weight450(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 8)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(minHeight: 44)
 
                 MetricChart(buckets: buckets, style: .line(filled: true), format: format)
                     .padding(.top, 16)
-                    .frame(minHeight: 44)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .frame(minHeight: 44)
 
                 MetricLegend(title: range.previousTitle, note: nil)
-                    .frame(minHeight: 44)
 
                 MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption)
-                    .frame(minHeight: 44)
 
                 MetricHistogramChart(
                     counts: histogram.counts,
@@ -112,10 +105,8 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                     format: histogramFormat
                 )
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
                 MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
-                    .frame(minHeight: 44)
 
                 ForEach(buckets.rows) { row in
                     MetricBucketRow(
@@ -124,7 +115,6 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                         format: format,
                         tone: .neutral
                     )
-                    .frame(minHeight: 44)
                 }
             }
             .toolbar {

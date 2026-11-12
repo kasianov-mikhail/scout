@@ -29,11 +29,15 @@ struct ParamView: View {
             if value.isContainer {
                 InsetList {
                     ForEach(Array(value.nodes.enumerated()), id: \.element.id) { index, node in
-                        Row {
-                            ParamValueRow(node: node)
-                        } destination: {
+                        NavigationLink {
                             ParamView(node: node)
+                        } label: {
+                            ParamValueRow(node: node)
+                                .lineLimit(1)
+                                .frame(height: 44)
+                                .contentShape(.rect)
                         }
+                        .buttonStyle(.plain)
                         .overlay(alignment: .bottom) {
                             if index < value.nodes.count - 1 {
                                 Separator()

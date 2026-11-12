@@ -16,20 +16,16 @@ struct DeviceListPlaceholder: View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
             SkeletonBar(width: 200, height: 9, delay: 0)
                 .frame(height: 17.5, alignment: .leading)
                 .padding(.top, 4)
-                .frame(minHeight: 44)
 
             columns
                 .columnHeaderStyle()
-                .frame(minHeight: 44)
 
             ForEach(0..<9, id: \.self) { index in
                 row(index: index, isLast: index == 8)
-                    .frame(minHeight: 44)
             }
         }
         .accessibilityElement(children: .ignore)
@@ -76,6 +72,7 @@ struct DeviceListPlaceholder: View {
             }
         }
         .padding(.vertical, 10)
+        .frame(height: 64)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()

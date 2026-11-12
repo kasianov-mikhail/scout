@@ -51,15 +51,10 @@ struct HomeList: View {
         InsetList {
             HomeAlertSection(history: nil) {}
                 .padding(.top, 6)
-                .frame(minHeight: 44)
             HomeActiveUsersSection(users: nil) { _ in }
-                .frame(minHeight: 44)
             HomeTelemetrySection(items: nil) { _ in }
-                .frame(minHeight: 44)
             HomeReleaseSection(adoption: nil) {}
-                .frame(minHeight: 44)
             HomeRetentionSection(weeks: nil) {}
-                .frame(minHeight: 44)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
@@ -97,7 +92,6 @@ struct HomeList: View {
             }
             .padding(.top, 6)
             .loadingInk(isLoading: isLoading, delay: 0.05)
-            .frame(minHeight: 44)
             HomeActiveUsersSection(users: snapshot.users) { kind in
                 switch kind {
                 case .sessions:
@@ -107,7 +101,6 @@ struct HomeList: View {
                 }
             }
             .loadingInk(isLoading: isLoading, delay: 0.10)
-            .frame(minHeight: 44)
             HomeTelemetrySection(items: snapshot.telemetry) { kind in
                 switch kind {
                 case .events:
@@ -125,17 +118,14 @@ struct HomeList: View {
                 }
             }
             .loadingInk(isLoading: isLoading, delay: 0.20)
-            .frame(minHeight: 44)
             HomeReleaseSection(adoption: snapshot.releases) {
                 path.append(.releaseHealth)
             }
             .loadingInk(isLoading: isLoading, delay: 0.30)
-            .frame(minHeight: 44)
             HomeRetentionSection(weeks: snapshot.retention) {
                 path.append(.retention)
             }
             .loadingInk(isLoading: isLoading, delay: 0.40)
-            .frame(minHeight: 44)
         }
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {

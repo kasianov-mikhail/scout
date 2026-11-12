@@ -76,7 +76,6 @@ struct ActivityMetricTabs: View {
                 ),
                 selection: .constant(.daily)
             )
-            .frame(minHeight: 44)
         }
     }
 }

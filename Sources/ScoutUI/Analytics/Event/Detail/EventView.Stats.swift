@@ -52,13 +52,18 @@ extension EventView {
         private func statRow(_ period: Period, @ViewBuilder content makeContent: () -> some View) -> some View {
             let content = makeContent()
 
-            return Row(minHeight: 40) {
-                content
-            } destination: {
+            return NavigationLink {
                 StatView(showList: true, extent: ChartExtent(period: period), stat: stat)
                     .navigationTitle(en: "Stats")
                     .largeNavigationTitle()
+            } label: {
+                content
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 40)
+                    .contentShape(.rect)
             }
+            .buttonStyle(.plain)
         }
     }
 }

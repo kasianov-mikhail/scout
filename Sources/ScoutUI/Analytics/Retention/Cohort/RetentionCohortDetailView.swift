@@ -17,24 +17,24 @@ struct RetentionCohortDetailView: View {
 
         InsetList {
             RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
-                .frame(minHeight: 44)
 
             RetentionSection(title: "Come back on", note: detail.averageNote, divider: true)
 
             ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
                 RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
-                    .frame(minHeight: 44)
             }
 
             if !detail.segments.isEmpty {
                 RetentionSection(title: "By OS version", note: "day 7")
 
                 ForEach(Array(detail.segments.enumerated()), id: \.element.id) { index, segment in
-                    Row {
-                        RetentionSegmentRow(value: segment, showsDivider: index < detail.segments.count - 1)
-                    } destination: {
+                    NavigationLink {
                         RetentionSegmentDetailView(segment: segment.segment, cohort: cohort, cohorts: cohorts)
+                    } label: {
+                        RetentionSegmentRow(value: segment, showsDivider: index < detail.segments.count - 1)
+                            .contentShape(.rect)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -71,8 +71,9 @@ private struct RetentionSegmentRow: View {
             RetentionValueLabel(kept: value.keptLabel, rate: value.rateLabel, pending: value.pendingLabel)
                 .frame(width: 76, alignment: .trailing)
         }
+        .lineLimit(1)
         .padding(.vertical, 6)
-        .frame(minHeight: 52)
+        .frame(height: 52)
         .overlay(alignment: .bottom) {
             if showsDivider {
                 DashedLine()

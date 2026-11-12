@@ -71,23 +71,17 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                 MetricRangeStrip(selection: $range)
                     .padding(.top, 8)
                     .padding(.trailing, -16)
-                    .frame(minHeight: 44)
 
                 MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
-                    .frame(minHeight: 44)
 
                 MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
                     .padding(.top, 16)
-                    .frame(minHeight: 44)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .frame(minHeight: 44)
 
                 MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
-                    .frame(minHeight: 44)
 
                 MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
-                    .frame(minHeight: 44)
 
                 ForEach(buckets.rows) { row in
                     MetricBucketRow(
@@ -96,7 +90,6 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                         format: format,
                         tone: tone(row)
                     )
-                    .frame(minHeight: 44)
                 }
             }
             .toolbar {

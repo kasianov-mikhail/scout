@@ -56,7 +56,6 @@ struct HomeReleaseSection: View {
                 .padding(.top, 8)
 
             caption(adoption: adoption)
-                .frame(minHeight: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
@@ -81,9 +80,7 @@ struct HomeReleaseSection: View {
     NavigationStack {
         InsetList {
             HomeReleaseSection(adoption: .sample) {}
-                .frame(minHeight: 44)
             HomeReleaseSection(adoption: nil) {}
-                .frame(minHeight: 44)
         }
     }
 }

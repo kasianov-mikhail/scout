@@ -41,23 +41,24 @@ struct RetentionView: View {
 
         return InsetList {
             RetentionHero(value: overview.keptLabel(day: day), subtitle: "people kept")
-                .frame(minHeight: 44)
 
             RetentionDayTabs(overview: overview, day: $day)
-                .frame(minHeight: 44)
 
             RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
 
             ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in
-                Row(minHeight: 40) {
+                NavigationLink {
+                    RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
+                } label: {
                     RetentionWeekRow(
                         week: RetentionWeek(cohort: cohort, day: day),
                         maxInstalls: overview.maxInstalls,
                         showsDivider: index < overview.weeks.count - 1
                     )
-                } destination: {
-                    RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .contentShape(.rect)
                 }
+                .buttonStyle(.plain)
             }
         }
     }

@@ -122,9 +122,7 @@ private struct RetentionRowContent: View {
     NavigationStack {
         InsetList {
             HomeRetentionSection(weeks: .samples) {}
-                .frame(minHeight: 44)
             HomeRetentionSection(weeks: nil) {}
-                .frame(minHeight: 44)
         }
     }
 }

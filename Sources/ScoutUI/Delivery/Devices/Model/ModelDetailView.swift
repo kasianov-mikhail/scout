@@ -60,7 +60,6 @@ struct ModelDetailView: View {
             InsetList {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                     .padding(.top, 8)
-                    .frame(minHeight: 44)
 
                 subtitle(detail)
                     .padding(.top, 4)
@@ -68,7 +67,6 @@ struct ModelDetailView: View {
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
-                    .frame(minHeight: 44)
 
                 if !detail.osVersions.isEmpty {
                     SectionHeader(title: "OS VERSIONS", topPadding: 12)
@@ -80,11 +78,9 @@ struct ModelDetailView: View {
                     )
                     .padding(.top, 14)
                     .padding(.bottom, 6)
-                    .frame(minHeight: 44)
 
                     ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
                         OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
-                            .frame(minHeight: 44)
                     }
                 }
 
@@ -92,14 +88,14 @@ struct ModelDetailView: View {
 
                 deviceColumns
                     .columnHeaderStyle(topPadding: 12)
-                    .frame(minHeight: 44)
 
                 ForEach(detail.devices) { device in
-                    Row {
-                        ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
-                    } destination: {
+                    NavigationLink {
                         DeviceDetailView(device: device, range: provider.range)
+                    } label: {
+                        ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
                     }
+                    .buttonStyle(.plain)
                 }
             }
         }
@@ -158,6 +154,7 @@ private struct OSVersionRow: View {
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .trailing)
         }
+        .lineLimit(1)
         .frame(height: 40)
         .overlay(alignment: .bottom) {
             DashedLine()
@@ -195,8 +192,9 @@ private struct ModelDeviceRow: View {
                 .foregroundStyle(device.crashes > 0 ? Color.crashText : Color.pending)
                 .frame(width: 56, alignment: .trailing)
         }
+        .lineLimit(1)
         .padding(.vertical, 6)
-        .frame(minHeight: 40)
+        .frame(height: 40)
         .overlay(alignment: .bottom) {
             DashedLine()
         }

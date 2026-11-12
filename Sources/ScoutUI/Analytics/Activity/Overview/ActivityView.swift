@@ -48,11 +48,9 @@ struct ActivityView: View {
 
             ActivityMetricTabs(series: series, selection: $metric)
                 .padding(.top, 4)
-                .frame(minHeight: 44)
 
             ActivityChart(series: series)
                 .padding(.top, 16)
-                .frame(minHeight: 44)
 
             ActivityStickiness(series: series)
                 .padding(.top, 12)

@@ -40,6 +40,7 @@ struct RetentionDayRow: View {
             RetentionValueLabel(kept: value.keptLabel, rate: value.rateLabel, pending: value.pendingLabel)
                 .frame(width: 76, alignment: .trailing)
         }
+        .lineLimit(1)
         .frame(height: 44)
         .overlay(alignment: .bottom) {
             if showsDivider {
@@ -58,7 +59,6 @@ struct RetentionDayRow: View {
                 value: RetentionDayValue(day: day, size: 960, rate: rates[index], average: 0.2, pending: "in 2 d"),
                 showsDivider: day != .day30
             )
-            .frame(minHeight: 44)
         }
     }
 }

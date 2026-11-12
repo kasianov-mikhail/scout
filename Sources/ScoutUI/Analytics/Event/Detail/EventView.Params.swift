@@ -65,7 +65,9 @@ extension EventView {
         var body: some View {
             let value = ParamValue(parsing: item.value)
 
-            Row(minHeight: 52) {
+            NavigationLink {
+                ParamView(item: item)
+            } label: {
                 HStack(spacing: 13) {
                     ParamIcon(value: value)
 
@@ -81,9 +83,11 @@ extension EventView {
                     FadingText(text: value.summary)
                         .foregroundStyle(value.isContainer ? .secondary : .primary)
                 }
-            } destination: {
-                ParamView(item: item)
+                .lineLimit(1)
+                .frame(height: 52)
+                .contentShape(.rect)
             }
+            .buttonStyle(.plain)
             .overlay(alignment: .bottom) {
                 Separator()
             }

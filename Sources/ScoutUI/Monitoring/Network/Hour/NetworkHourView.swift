@@ -65,10 +65,8 @@ struct NetworkHourView: View {
 
         return InsetList {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
-                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
-                .frame(minHeight: 44)
 
             if breakdown.total > 0 {
                 SectionHeader(title: "STATUS")
@@ -80,11 +78,9 @@ struct NetworkHourView: View {
                 )
                 .padding(.top, 14)
                 .padding(.bottom, 6)
-                .frame(minHeight: 44)
 
                 ForEach(breakdown.networkClasses) { item in
                     NetworkStatusRow(item: item, total: breakdown.total)
-                        .frame(minHeight: 44)
                 }
             }
 
@@ -92,10 +88,8 @@ struct NetworkHourView: View {
                 SectionHeader(title: "LATENCY")
 
                 NetworkLatencyChart(histogram: histogram)
-                    .frame(minHeight: 44)
 
                 NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
-                    .frame(minHeight: 44)
             }
         }
     }

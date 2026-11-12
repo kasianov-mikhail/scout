@@ -83,8 +83,6 @@ struct RetentionDayTabs: View {
 #Preview {
     InsetList {
         RetentionDayTabs(overview: RetentionOverview(cohorts: .samples), day: .constant(.day7))
-            .frame(minHeight: 44)
         RetentionDayTabs(overview: nil, day: .constant(.day7))
-            .frame(minHeight: 44)
     }
 }

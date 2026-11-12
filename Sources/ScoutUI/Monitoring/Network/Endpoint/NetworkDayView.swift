@@ -68,16 +68,15 @@ struct NetworkDayView: View {
 
         return InsetList {
             ListTitle(title: title)
-                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
-                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: "HOUR")
-                .frame(minHeight: 44)
 
             ForEach(rows) { row in
-                Row {
+                NavigationLink {
+                    NetworkHourView(name: name, date: row.date)
+                } label: {
                     NetworkLedgerRowView(
                         row: row,
                         maxRequests: maxRequests,
@@ -85,9 +84,8 @@ struct NetworkDayView: View {
                         component: .hour,
                         showsDivider: row.id != rows.last?.id
                     )
-                } destination: {
-                    NetworkHourView(name: name, date: row.date)
                 }
+                .buttonStyle(.plain)
             }
         }
     }

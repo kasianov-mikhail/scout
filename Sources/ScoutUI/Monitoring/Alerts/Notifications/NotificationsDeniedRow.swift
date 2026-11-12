@@ -37,7 +37,7 @@ struct NotificationsDeniedRow: View {
                 .buttonStyle(.borderless)
             }
         }
-        .frame(minHeight: 60)
+        .frame(height: 60)
     }
 
     private var settingsURL: URL? {

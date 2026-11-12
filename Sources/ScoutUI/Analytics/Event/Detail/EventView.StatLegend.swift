@@ -36,7 +36,8 @@ extension EventView {
             .font(.weight450(size: 12))
             .foregroundStyle(Color(.systemGray))
             .lineLimit(1)
-            .frame(maxWidth: .infinity, minHeight: 30, maxHeight: 30, alignment: .leading)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(height: 30)
             .overlay(alignment: .bottom) {
                 Separator()
             }
@@ -46,7 +47,8 @@ extension EventView {
     struct StatLegendPlaceholder: View {
         var body: some View {
             SkeletonBar(width: 150, height: 9, delay: 1.12)
-                .frame(maxWidth: .infinity, minHeight: 30, maxHeight: 30, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 30)
                 .overlay(alignment: .bottom) {
                     Separator()
                 }

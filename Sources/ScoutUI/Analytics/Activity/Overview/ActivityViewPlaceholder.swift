@@ -19,11 +19,9 @@ struct ActivityViewPlaceholder: View {
 
             metrics
                 .padding(.top, 4)
-                .frame(minHeight: 44)
 
             chart
                 .padding(.top, 16)
-                .frame(minHeight: 44)
 
             stickiness
                 .padding(.top, 12)

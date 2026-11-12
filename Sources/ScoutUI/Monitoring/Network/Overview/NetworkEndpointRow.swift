@@ -49,6 +49,7 @@ struct NetworkEndpointRow: View {
             }
             .font(.weight450(size: 13, design: .monospaced))
         }
+        .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, 10)
         .overlay(alignment: .bottom) {

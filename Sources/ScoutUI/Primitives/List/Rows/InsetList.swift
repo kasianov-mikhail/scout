@@ -26,17 +26,22 @@ struct InsetList<Content: View>: View {
         InsetList {
             Header(title: "Section Title")
 
-            Row {
-                Text(verbatim: "Label")
-                Spacer()
-                Text(verbatim: "Value")
-            } destination: {
+            NavigationLink {
                 Text(verbatim: "Detail")
+            } label: {
+                HStack(spacing: 8) {
+                    Text(verbatim: "Label")
+                    Spacer()
+                    Text(verbatim: "Value")
+                }
+                .lineLimit(1)
+                .frame(height: 44)
+                .contentShape(.rect)
             }
+            .buttonStyle(.plain)
 
             Text(verbatim: "Full width")
                 .frame(maxWidth: .infinity)
-                .frame(minHeight: 44)
                 .background(.blue.opacity(0.1))
         }
     }

@@ -17,7 +17,6 @@ struct NetworkViewPlaceholder: View {
             RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
                 .padding(.top, 8)
                 .padding(.trailing, -16)
-                .frame(minHeight: 44)
 
             SkeletonBar(width: 160, height: 9, delay: 0)
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -28,14 +27,11 @@ struct NetworkViewPlaceholder: View {
                     Separator()
                 }
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             NetworkEndpointListHeader()
-                .frame(minHeight: 44)
 
             ForEach(0..<10, id: \.self) { index in
                 NetworkEndpointRowPlaceholder(index: index)
-                    .frame(minHeight: 44)
             }
         }
         .accessibilityElement(children: .ignore)

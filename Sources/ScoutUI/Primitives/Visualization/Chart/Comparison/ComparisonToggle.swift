@@ -27,11 +27,8 @@ struct ComparisonToggle: View {
 #Preview("ComparisonToggle") {
     InsetList {
         ComparisonToggle(isOn: .constant(true))
-            .frame(minHeight: 44)
         ComparisonToggle(isOn: .constant(false))
-            .frame(minHeight: 44)
         ComparisonToggle(isOn: .constant(false))
             .disabled(true)
-            .frame(minHeight: 44)
     }
 }

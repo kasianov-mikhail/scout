@@ -94,16 +94,15 @@ struct NetworkEndpointView: View {
             RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
                 .padding(.top, 8)
                 .padding(.trailing, -16)
-                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
-                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: component.networkTitle)
-                .frame(minHeight: 44)
 
             ForEach(rows) { row in
-                Row {
+                NavigationLink {
+                    destination(row, component: component)
+                } label: {
                     NetworkLedgerRowView(
                         row: row,
                         maxRequests: maxRequests,
@@ -111,9 +110,8 @@ struct NetworkEndpointView: View {
                         component: component,
                         showsDivider: row.id != rows.last?.id
                     )
-                } destination: {
-                    destination(row, component: component)
                 }
+                .buttonStyle(.plain)
             }
         }
     }

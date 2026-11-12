@@ -14,7 +14,6 @@ struct AlertListPlaceholder: View {
 
             AlertListLegend(showsAxis: false)
                 .padding(.top, 10)
-                .frame(minHeight: 44)
 
             header(delay: 0)
             row(titleWidth: 95, delay: 0, isLast: true)
@@ -90,7 +89,6 @@ struct AlertListPlaceholder: View {
                 separator
             }
         }
-        .frame(minHeight: 44)
     }
 
     private var separator: some View {

@@ -95,23 +95,29 @@ struct CrashGroupDetailView: View {
     }
 
     private func occurrenceRow(_ crash: Crash) -> some View {
-        Row {
-            if let date = crash.date {
-                Text(verbatim: date.relativeString)
-                    .font(.weight450(size: 15))
-            }
-
-            Spacer()
-
-            if let label = breakdown.value?.occurrenceLabel(record: crash) {
-                Text(verbatim: label)
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .lineLimit(1)
-            }
-        } destination: {
+        NavigationLink {
             CrashDetailView(crash: crash, group: occurrences.group)
+        } label: {
+            HStack(spacing: 8) {
+                if let date = crash.date {
+                    Text(verbatim: date.relativeString)
+                        .font(.weight450(size: 15))
+                }
+
+                Spacer()
+
+                if let label = breakdown.value?.occurrenceLabel(record: crash) {
+                    Text(verbatim: label)
+                        .font(.weight450(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                        .lineLimit(1)
+                }
+            }
+            .lineLimit(1)
+            .frame(height: 44)
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
     }
 }
 

@@ -51,7 +51,7 @@ struct ChartExportSheet<ChartContent: View>: View {
                 .frame(width: 140)
             }
             .frame(height: 22)
-            .frame(minHeight: 44)
+            .frame(height: 44)
             .overlay(alignment: .bottom) {
                 Separator()
             }
@@ -69,7 +69,7 @@ struct ChartExportSheet<ChartContent: View>: View {
                 .pickerStyle(.menu)
             }
             .frame(height: 22)
-            .frame(minHeight: 44)
+            .frame(height: 44)
             .overlay(alignment: .bottom) {
                 Separator()
             }
@@ -82,7 +82,7 @@ struct ChartExportSheet<ChartContent: View>: View {
             Toggle(isOn: $options.includesTitle) {
                 Text(verbatim: "Chart Title")
             }
-            .frame(minHeight: 44)
+            .frame(height: 44)
             .overlay(alignment: .bottom) {
                 Separator()
             }
@@ -90,7 +90,7 @@ struct ChartExportSheet<ChartContent: View>: View {
             Toggle(isOn: $options.includesRange) {
                 Text(verbatim: "Period Label")
             }
-            .frame(minHeight: 44)
+            .frame(height: 44)
         }
         .disabledBounce()
         .background(.background)

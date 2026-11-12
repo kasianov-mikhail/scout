@@ -20,13 +20,13 @@ struct ErrorRow: View {
 
             Text(verbatim: description)
                 .font(.weight450(size: 16))
-                .lineLimit(2)
+                .lineLimit(1)
 
             Spacer()
 
             retryControl
         }
-        .frame(minHeight: 44)
+        .frame(height: 44)
     }
 
     private var retryControl: some View {

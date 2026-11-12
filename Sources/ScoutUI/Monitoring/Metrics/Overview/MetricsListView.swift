@@ -60,7 +60,6 @@ struct MetricsListView: View {
                 MetricRangeStrip(selection: $provider.range)
                     .padding(.top, 8)
                     .padding(.trailing, -16)
-                    .frame(minHeight: 44)
 
                 grid(tiles)
                     .overlay(alignment: .top) {
@@ -68,7 +67,6 @@ struct MetricsListView: View {
                             .fill(Color.separator)
                             .frame(height: 0.5)
                     }
-                    .frame(minHeight: 44)
             }
         }
     }

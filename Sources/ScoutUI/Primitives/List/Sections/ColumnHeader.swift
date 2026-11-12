@@ -40,7 +40,6 @@ extension View {
                 .frame(width: 56, alignment: .trailing)
         }
         .columnHeaderStyle()
-        .frame(minHeight: 44)
 
         HStack(spacing: 8) {
             ColumnHeader(title: "REQUESTS ↓", color: .blue)
@@ -51,6 +50,5 @@ extension View {
                 .frame(width: 64, alignment: .trailing)
         }
         .columnHeaderStyle(topPadding: 12)
-        .frame(minHeight: 44)
     }
 }

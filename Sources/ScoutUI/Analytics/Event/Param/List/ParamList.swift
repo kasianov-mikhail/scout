@@ -38,16 +38,19 @@ struct ParamRow: View {
     var body: some View {
         let value = ParamValue(parsing: item.value)
 
-        Row {
+        NavigationLink {
+            ParamView(item: item)
+        } label: {
             ParamValueRow(
                 value: value,
                 label: item.key,
                 labelStyle: .secondary,
                 summaryStyle: value.isContainer ? .secondary : .primary
             )
-        } destination: {
-            ParamView(item: item)
+            .frame(height: 44)
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
         .lineLimit(1)
     }
 }

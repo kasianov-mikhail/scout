@@ -46,11 +46,9 @@ struct ReleaseHealthView: View {
         } else {
             InsetList {
                 ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
-                    .frame(minHeight: 44)
 
                 ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
                     ReleaseRow(release: release, isLast: index == releases.count - 1)
-                        .frame(minHeight: 44)
                 }
             }
         }

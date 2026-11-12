@@ -19,7 +19,6 @@ struct DeviceDetailPlaceholder: View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
             Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
                 .font(.weight450(size: 15))
@@ -30,10 +29,8 @@ struct DeviceDetailPlaceholder: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .frame(minHeight: 44)
 
             stats
-                .frame(minHeight: 44)
 
             SectionHeader(title: "SESSIONS", topPadding: 12) {
                 Text(verbatim: "TIMELINE")
@@ -43,30 +40,25 @@ struct DeviceDetailPlaceholder: View {
 
             ForEach(0..<5, id: \.self) { index in
                 sessionRow(index: index)
-                    .frame(minHeight: 44)
             }
 
             Color.clear
                 .frame(height: 8)
-                .frame(minHeight: 44)
 
             SectionHeader(title: "HISTORY", topPadding: 12)
 
             ForEach(0..<4, id: \.self) { index in
                 historyRow(index: index, isLast: index == 3)
-                    .frame(minHeight: 44)
             }
 
             Color.clear
                 .frame(height: 12)
-                .frame(minHeight: 44)
 
             SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 SkeletonBar(width: 74, height: 9, delay: 1.2)
             }
 
             activity
-                .frame(minHeight: 44)
 
             VStack(alignment: .leading, spacing: 8) {
                 SkeletonBar(width: 300, height: 9, delay: 1.36)
@@ -74,13 +66,11 @@ struct DeviceDetailPlaceholder: View {
             }
             .padding(.top, 12)
             .padding(.bottom, 16)
-            .frame(minHeight: 44)
 
             SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
 
             usage
                 .padding(.top, 14)
-                .frame(minHeight: 44)
 
             VStack(alignment: .leading, spacing: 8) {
                 SkeletonBar(width: 300, height: 9, delay: 1.52)
@@ -88,7 +78,6 @@ struct DeviceDetailPlaceholder: View {
             }
             .padding(.top, 12)
             .padding(.bottom, 16)
-            .frame(minHeight: 44)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
@@ -130,7 +119,7 @@ struct DeviceDetailPlaceholder: View {
                 .frame(width: 44, alignment: .trailing)
         }
         .padding(.vertical, 6)
-        .frame(minHeight: 44)
+        .frame(height: 44)
         .overlay(alignment: .bottom) {
             DashedLine()
         }
@@ -162,7 +151,7 @@ struct DeviceDetailPlaceholder: View {
             SkeletonBar(width: widths[index], height: 9, delay: delay)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(minHeight: 44)
+        .frame(height: 44)
     }
 
     private var activity: some View {

@@ -17,7 +17,6 @@ struct MetricsListPlaceholder: View {
             MetricRangeStrip(selection: $range)
                 .padding(.top, 8)
                 .padding(.trailing, -16)
-                .frame(minHeight: 44)
 
             grid
                 .overlay(alignment: .top) {
@@ -25,7 +24,6 @@ struct MetricsListPlaceholder: View {
                         .fill(Color.separator)
                         .frame(height: 0.5)
                 }
-                .frame(minHeight: 44)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))

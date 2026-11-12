@@ -16,21 +16,17 @@ struct NetworkHourViewPlaceholder: View {
     var body: some View {
         InsetList {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
-                .frame(minHeight: 44)
 
             NetworkEndpointHeaderPlaceholder()
-                .frame(minHeight: 44)
 
             SectionHeader(title: "STATUS")
 
             SkeletonBar(height: 10, delay: 0.16, cornerRadius: 5)
                 .padding(.top, 14)
                 .padding(.bottom, 6)
-                .frame(minHeight: 44)
 
             ForEach(0..<3, id: \.self) { index in
                 NetworkStatusRowPlaceholder(index: index)
-                    .frame(minHeight: 44)
             }
 
             SectionHeader(title: "LATENCY")
@@ -45,7 +41,6 @@ struct NetworkHourViewPlaceholder: View {
                 }
             }
             .padding(.top, 14)
-            .frame(minHeight: 44)
 
             HStack(spacing: 16) {
                 SkeletonBar(width: 76, height: 9, delay: 0.8)
@@ -54,7 +49,6 @@ struct NetworkHourViewPlaceholder: View {
             }
             .padding(.top, 10)
             .padding(.bottom, 14)
-            .frame(minHeight: 44)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))

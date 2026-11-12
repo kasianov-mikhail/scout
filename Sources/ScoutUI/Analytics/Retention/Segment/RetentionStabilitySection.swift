@@ -59,6 +59,5 @@ struct RetentionStabilitySection: View {
 
     InsetList {
         RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
-            .frame(minHeight: 44)
     }
 }

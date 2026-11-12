@@ -75,9 +75,7 @@ struct HomeTelemetrySection: View {
     NavigationStack {
         InsetList {
             HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
-                .frame(minHeight: 44)
             HomeTelemetrySection(items: nil) { _ in }
-                .frame(minHeight: 44)
         }
     }
 }

@@ -87,7 +87,6 @@ struct ReleaseView: View {
         InsetList {
             ReleaseHero(detail: detail)
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             ReleaseGrid(detail: detail) { kind in
                 switch kind {
@@ -102,10 +101,8 @@ struct ReleaseView: View {
                 }
             }
             .padding(.horizontal, -16)
-            .frame(minHeight: 44)
 
             hangRate(detail.hangRate)
-                .frame(minHeight: 44)
         }
     }
 
@@ -127,7 +124,6 @@ struct ReleaseView: View {
             .foregroundStyle(value.color)
         }
         .padding(.vertical, 6)
-        .frame(minHeight: 44)
     }
 }
 

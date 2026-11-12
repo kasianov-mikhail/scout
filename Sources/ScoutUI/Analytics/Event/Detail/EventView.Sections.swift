@@ -37,7 +37,9 @@ extension EventView {
 
         var body: some View {
             if let deviceID = event.deviceID {
-                Row(minHeight: 52) {
+                NavigationLink {
+                    Timeline(deviceID: deviceID, focus: TimelineFocus(event: event))
+                } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "calendar.day.timeline.left")
                             .font(.weight450(size: 17))
@@ -50,9 +52,11 @@ extension EventView {
 
                         Spacer(minLength: 0)
                     }
-                } destination: {
-                    Timeline(deviceID: deviceID, focus: TimelineFocus(event: event))
+                    .lineLimit(1)
+                    .frame(height: 52)
+                    .contentShape(.rect)
                 }
+                .buttonStyle(.plain)
                 .overlay(alignment: .bottom) {
                     Separator()
                 }

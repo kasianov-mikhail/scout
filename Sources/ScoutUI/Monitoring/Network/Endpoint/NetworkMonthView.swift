@@ -68,16 +68,15 @@ struct NetworkMonthView: View {
 
         return InsetList {
             ListTitle(title: title)
-                .frame(minHeight: 44)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
-                .frame(minHeight: 44)
 
             NetworkLedgerHeader(primary: "DAY")
-                .frame(minHeight: 44)
 
             ForEach(rows) { row in
-                Row {
+                NavigationLink {
+                    NetworkDayView(name: name, date: row.date)
+                } label: {
                     NetworkLedgerRowView(
                         row: row,
                         maxRequests: maxRequests,
@@ -85,9 +84,8 @@ struct NetworkMonthView: View {
                         component: .day,
                         showsDivider: row.id != rows.last?.id
                     )
-                } destination: {
-                    NetworkDayView(name: name, date: row.date)
                 }
+                .buttonStyle(.plain)
             }
         }
     }

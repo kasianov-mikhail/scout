@@ -48,7 +48,6 @@ struct DeviceDetailView: View {
         InsetList {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
             subtitle(detail.summary)
                 .padding(.top, 4)
@@ -56,10 +55,8 @@ struct DeviceDetailView: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .frame(minHeight: 44)
 
             stats(detail)
-                .frame(minHeight: 44)
 
             SectionHeader(title: "SESSIONS", topPadding: 12) {
                 Button {
@@ -76,29 +73,26 @@ struct DeviceDetailView: View {
                 Text(verbatim: "No sessions in this period")
                     .font(.weight450(size: 15))
                     .foregroundStyle(Color(.systemGray))
+                    .lineLimit(1)
                     .padding(.vertical, 12)
-                    .frame(minHeight: 44)
+                    .frame(height: 44)
             } else {
                 ForEach(detail.recentSessions) { session in
                     sessionRow(session, deviceID: detail.summary.id, maxDuration: detail.maxSessionDuration)
-                        .frame(minHeight: 44)
                 }
             }
 
             if !detail.history.isEmpty {
                 spacer(8)
-                    .frame(minHeight: 44)
 
                 SectionHeader(title: "HISTORY", topPadding: 12)
 
                 ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
                     HistoryRow(event: event, isLast: index == detail.history.count - 1)
-                        .frame(minHeight: 44)
                 }
             }
 
             spacer(12)
-                .frame(minHeight: 44)
 
             SectionHeader(title: "ACTIVITY", topPadding: 12) {
                 Text(verbatim: detail.activeDaysLabel)
@@ -108,27 +102,23 @@ struct DeviceDetailView: View {
 
             DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
                 .padding(.top, 14)
-                .frame(minHeight: 44)
 
             Text(verbatim: detail.activityCaption)
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 12)
                 .padding(.bottom, 16)
-                .frame(minHeight: 44)
 
             SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
 
             UsageGrid(usage: detail.usage)
                 .padding(.top, 14)
-                .frame(minHeight: 44)
 
             Text(verbatim: detail.usageCaption)
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 12)
                 .padding(.bottom, 16)
-                .frame(minHeight: 44)
         }
     }
 
@@ -163,11 +153,12 @@ struct DeviceDetailView: View {
     @ViewBuilder
     private func sessionRow(_ session: DeviceSession, deviceID: UUID, maxDuration: TimeInterval) -> some View {
         if let sessionID = session.sessionID {
-            Row {
-                SessionLine(session: session, maxDuration: maxDuration)
-            } destination: {
+            NavigationLink {
                 SessionInspector(sessionID: sessionID, deviceID: deviceID)
+            } label: {
+                SessionLine(session: session, maxDuration: maxDuration)
             }
+            .buttonStyle(.plain)
         } else {
             SessionLine(session: session, maxDuration: maxDuration)
         }
@@ -232,8 +223,9 @@ private struct SessionLine: View {
                 .lineLimit(1)
                 .frame(width: 44, alignment: .trailing)
         }
+        .lineLimit(1)
         .padding(.vertical, 6)
-        .frame(minHeight: 44)
+        .frame(height: 44)
         .overlay(alignment: .bottom) {
             DashedLine()
         }
@@ -282,7 +274,8 @@ private struct HistoryRow: View {
                 .font(.weight450(size: 15))
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(minHeight: 44)
+        .lineLimit(1)
+        .frame(height: 44)
     }
 
     private var color: Color {

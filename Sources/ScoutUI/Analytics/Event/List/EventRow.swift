@@ -12,7 +12,9 @@ struct EventRow: View {
     let event: Event
 
     var body: some View {
-        Row {
+        NavigationLink {
+            EventView(event: event)
+        } label: {
             HStack(spacing: 10) {
                 EventLevelGlyph(level: event.level)
                     .frame(width: 16, height: 16)
@@ -33,9 +35,9 @@ struct EventRow: View {
             }
             .padding(.horizontal, 16)
             .frame(height: 44)
-        } destination: {
-            EventView(event: event)
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
         .background(cell)
         .padding(.horizontal, -16)
     }

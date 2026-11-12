@@ -160,7 +160,8 @@ private struct IncidentContextRow: View {
                     .lineLimit(1)
             }
         }
-        .frame(minHeight: 48)
+        .lineLimit(1)
+        .frame(height: 48)
         .contentShape(Rectangle())
         .overlay(alignment: .bottom) {
             if showsDivider {

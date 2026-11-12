@@ -17,7 +17,6 @@ struct ModelDetailPlaceholder: View {
         InsetList {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, 8)
-                .frame(minHeight: 44)
 
             SkeletonBar(width: 194, height: 9, delay: 0.08)
                 .padding(.top, 4)
@@ -25,29 +24,24 @@ struct ModelDetailPlaceholder: View {
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
-                .frame(minHeight: 44)
 
             SectionHeader(title: "OS VERSIONS", topPadding: 12)
 
             SkeletonBar(height: 10, delay: 0.24, cornerRadius: 5, fill: Color.deviceShade)
                 .padding(.top, 14)
                 .padding(.bottom, 6)
-                .frame(minHeight: 44)
 
             ForEach(0..<2, id: \.self) { index in
                 osRow(index: index)
-                    .frame(minHeight: 44)
             }
 
             SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
 
             columns
                 .columnHeaderStyle(topPadding: 12)
-                .frame(minHeight: 44)
 
             ForEach(0..<11, id: \.self) { index in
                 deviceRow(index: index, isLast: index == 10)
-                    .frame(minHeight: 44)
             }
         }
         .navigationTitle(en: model)
@@ -112,7 +106,7 @@ struct ModelDetailPlaceholder: View {
                 .frame(width: 56, alignment: .trailing)
         }
         .padding(.vertical, 6)
-        .frame(minHeight: 40)
+        .frame(height: 40)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()

@@ -13,11 +13,9 @@ struct ReleaseHealthViewPlaceholder: View {
     var body: some View {
         InsetList {
             header
-                .frame(minHeight: 44)
 
             ForEach(0..<rowCount, id: \.self) { index in
                 row(index: index)
-                    .frame(minHeight: 44)
             }
         }
         .accessibilityElement(children: .ignore)
@@ -77,7 +75,7 @@ struct ReleaseHealthViewPlaceholder: View {
             }
         }
         .padding(.vertical, 8)
-        .frame(minHeight: 64)
+        .frame(height: 64)
         .overlay(alignment: .bottom) {
             if index < rowCount - 1 {
                 DashedLine()

@@ -24,7 +24,6 @@ struct StatView: View {
 
             InsetList {
                 PeriodPicker(extent: $extent, title: \.shortTitle)
-                    .frame(minHeight: 44)
 
                 RangeControl(extent: $extent)
                     .padding(.bottom)
@@ -40,19 +39,24 @@ struct StatView: View {
 
                 ComparisonToggle(isOn: $isComparing)
                     .disabled(!canCompare)
-                    .frame(minHeight: 44)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
 
                 if showList {
-                    Row {
-                        Text(verbatim: "Events")
-                        Spacer()
-                        RedactedText(count: segment.total)
-                    } destination: {
+                    NavigationLink {
                         EventStatList(eventName: stat.subject.name, range: extent.domain)
+                    } label: {
+                        HStack(spacing: 8) {
+                            Text(verbatim: "Events")
+                            Spacer()
+                            RedactedText(count: segment.total)
+                        }
+                        .lineLimit(1)
+                        .frame(height: 44)
+                        .contentShape(.rect)
                     }
+                    .buttonStyle(.plain)
                     .foregroundStyle(.blue)
                     .overlay(alignment: .bottom) {
                         Separator()

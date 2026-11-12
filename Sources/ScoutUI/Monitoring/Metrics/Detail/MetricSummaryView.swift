@@ -58,6 +58,5 @@ extension MetricTone {
                 format: .counter
             )
         )
-        .frame(minHeight: 44)
     }
 }

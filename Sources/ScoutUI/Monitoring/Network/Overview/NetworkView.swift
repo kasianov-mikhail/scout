@@ -72,7 +72,6 @@ struct NetworkView: View {
             RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
                 .padding(.top, 8)
                 .padding(.trailing, -16)
-                .frame(minHeight: 44)
 
             Text(verbatim: summary.text)
                 .font(.weight450(size: 15))
@@ -85,17 +84,16 @@ struct NetworkView: View {
                     Separator()
                 }
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
 
             NetworkEndpointListHeader()
-                .frame(minHeight: 44)
 
             ForEach(endpoints) { endpoint in
-                Row {
-                    NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
-                } destination: {
+                NavigationLink {
                     NetworkEndpointView(name: endpoint.name, initialRange: range)
+                } label: {
+                    NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
                 }
+                .buttonStyle(.plain)
             }
         }
         .exportToolbar(text: NetworkReportExport(report: report, range: provider.query.range).text)
