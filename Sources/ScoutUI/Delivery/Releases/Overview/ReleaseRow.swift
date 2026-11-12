@@ -41,7 +41,7 @@ struct ReleaseRow: View {
                 }
             }
             .lineLimit(1)
-            .frame(height: 64)
+            .frame(height: .rowChart)
             .contentShape(.rect)
         }
         .buttonStyle(.plain)

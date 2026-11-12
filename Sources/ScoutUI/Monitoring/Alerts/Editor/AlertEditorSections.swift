@@ -88,7 +88,7 @@ struct AlertEventCard: View {
                     .foregroundStyle(Color.blue)
             }
         }
-        .padding(.vertical, 10)
+        .frame(height: .rowSubtitle)
         .padding(.horizontal, 8)
         .contentShape(Rectangle())
     }
@@ -440,9 +440,9 @@ struct AlertNotifyCard: View {
                             .foregroundStyle(Color.blue)
                     }
                 }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 8)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: .rowSubtitle)
+                .padding(.horizontal, 8)
                 .background(notifies ? Color.blue.opacity(0.12) : Color.clear)
                 .contentShape(Rectangle())
             }

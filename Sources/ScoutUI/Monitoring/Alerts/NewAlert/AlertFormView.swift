@@ -168,7 +168,7 @@ private struct AlertWatchSummary: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.vertical, 10)
+            .frame(height: .rowSubtitle)
             .padding(.horizontal, 8)
         }
     }

@@ -156,7 +156,7 @@ private struct DeviceModelRow: View {
             }
         }
         .lineLimit(1)
-        .padding(.vertical, 10)
+        .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
             DashedLine()
         }

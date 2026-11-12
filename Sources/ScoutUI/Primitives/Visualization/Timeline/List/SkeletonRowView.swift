@@ -36,9 +36,9 @@ struct SkeletonRowView: View {
     var height: CGFloat {
         switch row.track {
         case .milestone, .event:
-            44
+            .rowRegular
         case .fork, .merge, .gap:
-            36
+            .rowStep
         }
     }
 

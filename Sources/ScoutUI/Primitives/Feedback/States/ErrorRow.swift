@@ -26,7 +26,7 @@ struct ErrorRow: View {
 
             retryControl
         }
-        .frame(height: 44)
+        .frame(height: .rowRegular)
     }
 
     private var retryControl: some View {

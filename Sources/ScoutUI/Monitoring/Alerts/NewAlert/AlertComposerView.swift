@@ -187,9 +187,9 @@ private struct AlertWatchPickerRow: View {
             }
         }
         .foregroundStyle(isSelected ? Color.blue : Color.primary)
-        .padding(.vertical, 10)
-        .padding(.horizontal, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: .rowSubtitle)
+        .padding(.horizontal, 8)
         .background(isSelected ? Color.blue.opacity(0.12) : Color.clear)
         .contentShape(Rectangle())
     }

@@ -75,8 +75,7 @@ struct DeviceDetailView: View {
                         .font(.weight450(size: 15))
                         .foregroundStyle(Color(.systemGray))
                         .lineLimit(1)
-                        .padding(.vertical, 12)
-                        .frame(height: 44)
+                        .frame(height: .rowRegular)
                 } else {
                     ForEach(detail.recentSessions) { session in
                         sessionRow(session, deviceID: detail.summary.id, maxDuration: detail.maxSessionDuration)
@@ -228,8 +227,7 @@ private struct SessionLine: View {
                 .frame(width: 44, alignment: .trailing)
         }
         .lineLimit(1)
-        .padding(.vertical, 6)
-        .frame(height: 44)
+        .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             DashedLine()
         }
@@ -279,7 +277,7 @@ private struct HistoryRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .lineLimit(1)
-        .frame(height: 44)
+        .frame(height: .rowRegular)
     }
 
     private var color: Color {

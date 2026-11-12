@@ -54,7 +54,7 @@ struct StatView: View {
                                 RedactedText(count: segment.total)
                             }
                             .lineLimit(1)
-                            .frame(height: 44)
+                            .frame(height: .rowRegular)
                             .contentShape(.rect)
                         }
                         .buttonStyle(.plain)

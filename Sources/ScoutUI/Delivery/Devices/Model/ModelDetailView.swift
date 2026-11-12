@@ -159,7 +159,7 @@ private struct OSVersionRow: View {
                 .frame(width: 56, alignment: .trailing)
         }
         .lineLimit(1)
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             DashedLine()
         }
@@ -197,8 +197,7 @@ private struct ModelDeviceRow: View {
                 .frame(width: 56, alignment: .trailing)
         }
         .lineLimit(1)
-        .padding(.vertical, 6)
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             DashedLine()
         }

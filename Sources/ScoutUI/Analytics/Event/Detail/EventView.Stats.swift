@@ -60,7 +60,7 @@ extension EventView {
                 content
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: 40)
+                    .frame(height: .rowTable)
                     .contentShape(.rect)
             }
             .buttonStyle(.plain)

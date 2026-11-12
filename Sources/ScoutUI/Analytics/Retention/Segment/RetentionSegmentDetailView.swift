@@ -74,7 +74,7 @@ private struct RetentionSegmentWeekRow: View {
             RetentionValueLabel(kept: week.keptLabel, rate: week.rateLabel, pending: nil)
                 .frame(width: 76, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if showsDivider {
                 DashedLine()

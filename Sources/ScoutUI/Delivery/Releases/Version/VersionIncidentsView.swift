@@ -86,7 +86,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
                         )
                     }
                     .lineLimit(1)
-                    .frame(height: 44)
+                    .frame(height: .rowRegular)
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)

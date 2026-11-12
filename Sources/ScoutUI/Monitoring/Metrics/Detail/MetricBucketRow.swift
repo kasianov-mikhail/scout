@@ -79,7 +79,7 @@ struct MetricBucketRow: View {
                 .foregroundStyle(row.isCurrent ? Color(.systemGray) : tone.color)
                 .frame(width: 48, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if !row.isOldest {
                 DashedLine()

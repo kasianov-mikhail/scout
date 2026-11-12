@@ -153,7 +153,7 @@ struct MetricDetailPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: delay)
                 .frame(width: 48, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if index < dates.count - 1 {
                 DashedLine()

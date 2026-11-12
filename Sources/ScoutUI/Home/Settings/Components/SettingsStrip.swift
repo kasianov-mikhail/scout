@@ -76,8 +76,8 @@ struct SettingsSegmentCell: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(height: hasDetail ? .rowSubtitle : .rowTable)
         .padding(.horizontal, 8)
-        .padding(.vertical, hasDetail ? 10 : 9)
         .background(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
         .overlay(alignment: .trailing) {
             if showsDivider {

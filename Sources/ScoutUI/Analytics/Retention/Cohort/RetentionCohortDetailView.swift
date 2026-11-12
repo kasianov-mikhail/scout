@@ -76,8 +76,7 @@ private struct RetentionSegmentRow: View {
                 .frame(width: 76, alignment: .trailing)
         }
         .lineLimit(1)
-        .padding(.vertical, 6)
-        .frame(height: 52)
+        .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             if showsDivider {
                 DashedLine()

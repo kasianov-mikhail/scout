@@ -84,7 +84,7 @@ extension EventView {
                     value
                 }
                 .lineLimit(1)
-                .frame(height: 52)
+                .frame(height: .rowRegular)
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)

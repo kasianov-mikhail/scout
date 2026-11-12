@@ -35,7 +35,7 @@ struct ParamView: View {
                             } label: {
                                 ParamValueRow(node: node)
                                     .lineLimit(1)
-                                    .frame(height: 44)
+                                    .frame(height: .rowRegular)
                                     .contentShape(.rect)
                             }
                             .buttonStyle(.plain)

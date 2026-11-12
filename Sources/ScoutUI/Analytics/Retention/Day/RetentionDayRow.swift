@@ -41,7 +41,7 @@ struct RetentionDayRow: View {
                 .frame(width: 76, alignment: .trailing)
         }
         .lineLimit(1)
-        .frame(height: 44)
+        .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             if showsDivider {
                 DashedLine()

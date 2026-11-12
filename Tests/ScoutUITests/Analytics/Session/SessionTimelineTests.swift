@@ -183,4 +183,18 @@ struct SessionTimelineTests {
 
         #expect(timeline.rows.first?.subtitle == "app launched 4 s before")
     }
+
+    @Test("timeline steps and rows follow the shared list scale")
+    func rowHeights() {
+        let rows = timeline(
+            events: [Event.stub(name: "opened", date: at(10))],
+            screens: [screen(name: "Home", offset: 20, duration: 10)],
+            endDate: at(100)
+        ).rows
+
+        #expect(rows.first?.height == .rowStep)
+        #expect(rows.last?.height == .rowStep)
+        #expect(rows.first { if case .event = $0.kind { true } else { false } }?.height == .rowRegular)
+        #expect(rows.first { if case .screen = $0.kind { true } else { false } }?.height == .rowRegular)
+    }
 }

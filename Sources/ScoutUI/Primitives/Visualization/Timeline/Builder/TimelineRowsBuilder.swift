@@ -10,8 +10,8 @@ import Scout
 import SwiftUI
 
 struct TimelineRowsBuilder {
-    static let rowHeight: CGFloat = 44
-    static let compactHeight: CGFloat = 36
+    static let rowHeight: CGFloat = .rowRegular
+    static let compactHeight: CGFloat = .rowStep
 
     private static let gapThreshold: TimeInterval = 10 * 60
 

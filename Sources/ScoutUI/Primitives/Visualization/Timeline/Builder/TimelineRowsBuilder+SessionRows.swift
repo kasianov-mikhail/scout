@@ -45,7 +45,7 @@ extension TimelineRowsBuilder {
             TimelineEntry(
                 id: "loop-\(session.id)",
                 kind: .loop,
-                height: Self.rowHeight,
+                height: Self.compactHeight,
                 launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: 0, bottom: 0),
                 session: nil,
                 connector: .loop(color: .timelineSession),

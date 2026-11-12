@@ -42,7 +42,7 @@ struct RetentionViewPlaceholder: View {
             SkeletonBar(width: 74, height: 9, delay: delay)
                 .frame(width: 76, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if index < 11 {
                 DashedLine()

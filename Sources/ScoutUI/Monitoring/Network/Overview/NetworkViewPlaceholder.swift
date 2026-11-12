@@ -64,7 +64,7 @@ struct NetworkEndpointRowPlaceholder: View {
                     .frame(width: 64, alignment: .trailing)
             }
         }
-        .padding(.vertical, 10)
+        .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
             if index < 9 {
                 DashedLine()

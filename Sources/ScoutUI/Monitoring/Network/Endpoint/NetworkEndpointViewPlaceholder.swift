@@ -51,8 +51,7 @@ struct NetworkLedgerRowPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: delay)
                 .frame(width: 64, alignment: .trailing)
         }
-        .frame(height: 40)
-        .padding(.vertical, 6)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if showsDivider {
                 DashedLine()

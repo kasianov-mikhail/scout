@@ -73,7 +73,7 @@ struct ModelDetailPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: delay)
                 .frame(width: 56, alignment: .trailing)
         }
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             DashedLine()
         }
@@ -109,8 +109,7 @@ struct ModelDetailPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: delay)
                 .frame(width: 56, alignment: .trailing)
         }
-        .padding(.vertical, 6)
-        .frame(height: 40)
+        .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()

@@ -55,7 +55,7 @@ enum SessionOccurrence {
             SessionTimelineRow(
                 id: event.id,
                 kind: .event(event),
-                height: 44,
+                height: .rowRegular,
                 title: event.name,
                 subtitle: nil,
                 time: date.timeIntervalSince(start).sessionOffset
@@ -64,7 +64,7 @@ enum SessionOccurrence {
             SessionTimelineRow(
                 id: screen.id,
                 kind: .screen(screen),
-                height: 52,
+                height: .rowRegular,
                 title: screen.name,
                 subtitle: screen.duration(now: now, live: info.isLive),
                 time: date.timeIntervalSince(start).sessionOffset
@@ -73,7 +73,7 @@ enum SessionOccurrence {
             SessionTimelineRow(
                 id: crash.id,
                 kind: .crash(crash),
-                height: 44,
+                height: .rowRegular,
                 title: "Crash",
                 subtitle: crash.name,
                 time: date.timeIntervalSince(start).sessionOffset
@@ -82,7 +82,7 @@ enum SessionOccurrence {
             SessionTimelineRow(
                 id: hang.id,
                 kind: .hang(hang),
-                height: 44,
+                height: .rowRegular,
                 title: "Hang",
                 subtitle: hang.duration.duration,
                 time: date.timeIntervalSince(start).sessionOffset
@@ -91,7 +91,7 @@ enum SessionOccurrence {
             SessionTimelineRow(
                 id: resource.id,
                 kind: .resource(resource),
-                height: 44,
+                height: .rowRegular,
                 title: resource.name,
                 subtitle: resource.reason,
                 time: "~"

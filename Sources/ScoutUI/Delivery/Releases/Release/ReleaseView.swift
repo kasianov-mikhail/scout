@@ -127,7 +127,7 @@ struct ReleaseView: View {
             .font(.system(size: 13, weight: .semibold, design: .monospaced))
             .foregroundStyle(value.color)
         }
-        .padding(.vertical, 6)
+        .frame(height: .rowRegular)
     }
 }
 
