@@ -10,6 +10,13 @@ import SwiftUI
 struct ParamList: View {
     let items: [ParamProvider.Item]
 
+    @StateObject private var model: ParamListModel
+
+    init(items: [ParamProvider.Item]) {
+        self.items = items
+        self._model = StateObject(wrappedValue: ParamListModel(items: items))
+    }
+
     private var text: String {
         items.map(\.description).joined(separator: "\n")
     }
@@ -25,6 +32,8 @@ struct ParamList: View {
                             }
                         }
                 }
+
+                ParamRawView(raw: model.raw)
             }
             .padding(.horizontal, 16)
         }
