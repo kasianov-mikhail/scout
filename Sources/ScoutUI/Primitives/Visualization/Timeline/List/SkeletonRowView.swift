@@ -27,7 +27,7 @@ struct SkeletonRowView: View {
                     .fill(Color.timelineTrack)
                     .frame(height: 1)
                     .padding(.leading, 72)
-                    .padding(.trailing, 16)
+                    .padding(.trailing, .gutter)
             }
         }
         .accessibilityHidden(true)
@@ -51,12 +51,12 @@ struct SkeletonRowView: View {
                     .fill(Color.timelineBackground)
                     .frame(width: 26, height: 26)
 
-                SkeletonBar(width: 20, height: 20, delay: delay, cornerRadius: 10, fill: Color.timelineTrack)
+                SkeletonBar(width: 20, height: 20, delay: delay, cornerRadius: .radiusBlock, fill: Color.timelineTrack)
             }
             .offset(x: 11, y: height / 2 - 13)
         case .event:
             ZStack {
-                SkeletonBar(width: 12, height: 12, delay: delay, cornerRadius: 6, fill: Color.timelineTrack)
+                SkeletonBar(width: 12, height: 12, delay: delay, cornerRadius: .radiusBadge, fill: Color.timelineTrack)
 
                 Circle()
                     .fill(Color.timelineBackground)
@@ -69,7 +69,7 @@ struct SkeletonRowView: View {
     }
 
     private var bars: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             SkeletonBar(
                 width: row.width,
                 height: row.track == .event ? 12 : row.track == .milestone ? 11 : 9,
@@ -93,7 +93,7 @@ struct SkeletonRowView: View {
             }
         }
         .padding(.leading, 72)
-        .padding(.trailing, 16)
+        .padding(.trailing, .gutter)
         .frame(height: height)
     }
 }

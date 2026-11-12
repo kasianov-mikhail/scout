@@ -49,7 +49,7 @@ struct HomeTelemetrySection: View {
                     .allowsHitTesting(false)
             }
         }
-        .padding(.bottom, 6)
+        .padding(.bottom, .space6)
     }
 
     private var header: some View {
@@ -58,11 +58,11 @@ struct HomeTelemetrySection: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: "INCIDENTS")
-                .padding(.leading, 12)
+                .padding(.leading, .space12)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .font(.callout.weight(.bold))
-        .padding(.top, 12)
+        .font(.scoutSection)
+        .padding(.top, .space12)
         .frame(height: 70)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -79,7 +79,7 @@ struct HomeTelemetrySection: View {
                 HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
                 HomeTelemetrySection(items: nil) { _ in }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

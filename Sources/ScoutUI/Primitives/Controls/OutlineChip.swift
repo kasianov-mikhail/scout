@@ -13,19 +13,19 @@ struct OutlineChip: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.book(size: 13))
+            .font(.scoutCaption)
             .monospaced(monospaced)
             .lineLimit(1)
-            .padding(.horizontal, 9)
+            .padding(.horizontal, .space8)
             .frame(height: 26)
             .overlay {
-                Capsule().stroke(Color(.systemGray4), lineWidth: 0.5)
+                Capsule().stroke(Color.lineSubtle, lineWidth: .hairline)
             }
     }
 }
 
 #Preview {
-    HStack(spacing: 6) {
+    HStack(spacing: .space6) {
         OutlineChip(text: "iPhone 15 Pro")
         OutlineChip(text: "2.4.1 (214)", monospaced: true)
     }

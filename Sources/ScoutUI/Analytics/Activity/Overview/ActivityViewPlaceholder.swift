@@ -15,17 +15,17 @@ struct ActivityViewPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 metrics
-                    .padding(.top, 4)
+                    .padding(.top, .space4)
 
                 chart
-                    .padding(.top, 16)
+                    .padding(.top, .space16)
 
                 stickiness
-                    .padding(.top, 12)
+                    .padding(.top, .space12)
 
                 ActivityRowsHeader()
 
@@ -33,7 +33,7 @@ struct ActivityViewPlaceholder: View {
                     row(index: index)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -41,12 +41,12 @@ struct ActivityViewPlaceholder: View {
     }
 
     private var metrics: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: .space12) {
             ForEach(ActivityPeriod.allCases) { period in
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: .space2) {
                     Text(verbatim: period.rawValue)
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(period == metric ? Color.primary : Color(.systemGray))
+                        .font(.scoutCaptionStrong)
+                        .foregroundStyle(period == metric ? Color.textPrimary : Color.fillLevel)
 
                     SkeletonBar(width: 74, height: 20, delay: 0.08)
                         .frame(height: 33, alignment: .leading)
@@ -54,13 +54,13 @@ struct ActivityViewPlaceholder: View {
                     SkeletonBar(width: 28, height: 6, delay: 0.08)
                         .frame(height: 15, alignment: .leading)
                 }
-                .padding(.top, 10)
-                .padding(.bottom, 12)
+                .padding(.top, .space10)
+                .padding(.bottom, .space12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .overlay(alignment: .bottom) {
                     if period == metric {
                         Rectangle()
-                            .fill(Color(.systemGray5))
+                            .fill(Color.surfaceSkeleton)
                             .frame(height: 2)
                     }
                 }
@@ -75,7 +75,7 @@ struct ActivityViewPlaceholder: View {
         let axis = range.axis(now: Date())
 
         return VStack(spacing: 0) {
-            SkeletonBar(height: 96, delay: 0.16, cornerRadius: 4, fill: Color(.systemGray6))
+            SkeletonBar(height: 96, delay: 0.16, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
 
             AxisLabelRow(
                 start: axis.start,
@@ -88,15 +88,15 @@ struct ActivityViewPlaceholder: View {
     }
 
     private var stickiness: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: .space6) {
             Text(verbatim: "Stickiness")
 
             SkeletonBar(width: 28, height: 9, delay: 0.24)
             SkeletonBar(width: 194, height: 9, delay: 0.24)
         }
-        .font(.book(size: 13))
-        .foregroundStyle(Color(.systemGray))
-        .padding(.bottom, 12)
+        .font(.scoutCaption)
+        .foregroundStyle(Color.textMuted)
+        .padding(.bottom, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -107,11 +107,11 @@ struct ActivityViewPlaceholder: View {
     private func row(index: Int) -> some View {
         let delay = 0.32 + Double(index) * 0.08
 
-        return HStack(spacing: 8) {
+        return HStack(spacing: .space8) {
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 64, alignment: .leading)
 
-            SkeletonBar(height: 8, delay: delay, cornerRadius: 2, fill: Color(.systemGray6))
+            SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
 
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 52, alignment: .trailing)

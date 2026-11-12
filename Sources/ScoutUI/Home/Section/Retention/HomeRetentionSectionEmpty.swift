@@ -20,21 +20,21 @@ struct HomeRetentionSectionEmpty: View {
             }
 
             Text(verbatim: "Needs one full week of installs")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 
     private func row(start: Date, fraction: CGFloat) -> some View {
-        HStack(spacing: 10) {
+        HStack(spacing: .space10) {
             Text(verbatim: DateFormatter.monthDay.string(from: start))
-                .font(.book(size: 15))
+                .font(.scoutRow)
                 .frame(width: 56, alignment: .leading)
 
             GeometryReader { proxy in
-                EmptyBar(width: proxy.size.width * fraction, height: 18, cornerRadius: 2)
+                EmptyBar(width: proxy.size.width * fraction, height: 18, cornerRadius: .radiusBar)
             }
             .frame(height: 18)
             .frame(maxWidth: .infinity)
@@ -63,7 +63,7 @@ struct HomeRetentionSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeRetentionSectionEmpty(now: HomeSnapshot.date)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

@@ -16,13 +16,13 @@ struct RetentionBar: View {
             let width = maxInstalls > 0 ? proxy.size.width * CGFloat(week.installs) / CGFloat(maxInstalls) : 0
 
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(Color(.systemGray5))
+                RoundedRectangle(cornerRadius: .radiusBlock)
+                    .fill(Color.surfaceSkeleton)
                     .frame(width: width)
 
                 if let rate = week.rate {
-                    LeftRoundedRectangle(cornerRadius: 3)
-                        .fill(Color.green)
+                    LeftRoundedRectangle(cornerRadius: .radiusBlock)
+                        .fill(Color.fillSuccess)
                         .frame(width: width * CGFloat(rate))
                 }
             }

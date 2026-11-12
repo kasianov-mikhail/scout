@@ -51,7 +51,7 @@ struct BarChart: View {
 
     private func color(index: Int) -> Color {
         guard let accent, accent.index == index else {
-            return Color(.systemGray4)
+            return Color.surfaceBarIdle
         }
         return accent.color
     }
@@ -100,7 +100,7 @@ struct AxisLabelRow: View {
             Text(verbatim: end)
         }
         .font(.book(size: 10, design: design))
-        .foregroundStyle(Color(.systemGray))
+        .foregroundStyle(Color.textMuted)
         .padding(.top, topInset)
     }
 }
@@ -112,11 +112,11 @@ struct AxisLabelRow: View {
         middleLabel: "Oct 10",
         endLabel: "today",
         height: 72,
-        spacing: 2,
-        cornerRadius: 1,
+        spacing: .space2,
+        cornerRadius: .radiusBar,
         labelGap: 4,
         labelDesign: .default,
-        accent: .init(index: 6, color: .green)
+        accent: .init(index: 6, color: .fillSuccess)
     )
     .padding()
 }

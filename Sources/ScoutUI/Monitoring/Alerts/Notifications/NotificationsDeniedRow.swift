@@ -11,18 +11,18 @@ struct NotificationsDeniedRow: View {
     @Environment(\.openURL) private var openURL
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .space12) {
             Image(systemName: "bell.slash")
                 .font(.book(size: 20))
-                .foregroundStyle(Color(.systemOrange))
+                .foregroundStyle(Color.textWarning)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: "Notifications are off")
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
 
                 Text(verbatim: "Firing rules won't reach this device.")
-                    .font(.book(size: 12))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutFootnote)
+                    .foregroundStyle(Color.textMuted)
             }
 
             Spacer()
@@ -32,7 +32,7 @@ struct NotificationsDeniedRow: View {
                     openURL(settingsURL)
                 } label: {
                     Text(verbatim: "Settings")
-                        .font(.book(size: 15))
+                        .font(.scoutRow)
                 }
                 .buttonStyle(.borderless)
             }
@@ -55,7 +55,7 @@ struct NotificationsDeniedRow: View {
             Header(title: "Rules")
             NotificationsDeniedRow()
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

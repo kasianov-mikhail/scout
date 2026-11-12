@@ -54,37 +54,37 @@ extension Stability {
 
         var color: Color {
             switch self {
-            case .healthy: .green
-            case .watch: .yellow
-            case .atRisk: .orange
-            case .critical: .red
+            case .healthy: .fillSuccess
+            case .watch: .fillCaution
+            case .atRisk: .fillWarning
+            case .critical: .fillDanger
             }
         }
 
         var labelColor: Color {
             switch self {
-            case .healthy: Color(red: 0x1E / 255, green: 0x7D / 255, blue: 0x34 / 255)
-            case .watch: Color(red: 0x8A / 255, green: 0x6D / 255, blue: 0x00 / 255)
-            case .atRisk: Color(red: 0xB3 / 255, green: 0x5C / 255, blue: 0x00 / 255)
-            case .critical: Color(red: 0xC4 / 255, green: 0x00 / 255, blue: 0x1A / 255)
+            case .healthy: .textSuccess
+            case .watch: .textCaution
+            case .atRisk: .textWarning
+            case .critical: .textDanger
             }
         }
 
         var background: Color {
             switch self {
-            case .healthy: Color(red: 0xE9 / 255, green: 0xF8 / 255, blue: 0xEE / 255)
-            case .watch: Color(red: 0xFF / 255, green: 0xF8 / 255, blue: 0xDB / 255)
-            case .atRisk: Color(red: 0xFF / 255, green: 0xF1 / 255, blue: 0xE0 / 255)
-            case .critical: Color(red: 0xFF / 255, green: 0xEB / 255, blue: 0xEA / 255)
+            case .healthy: .tintSuccess
+            case .watch: .tintCaution
+            case .atRisk: .tintWarning
+            case .critical: .tintDanger
             }
         }
 
         var border: Color {
             switch self {
             case .healthy: Color(red: 0xC5 / 255, green: 0xE8 / 255, blue: 0xCF / 255)
-            case .watch: Color(red: 0xF0 / 255, green: 0xE2 / 255, blue: 0xA8 / 255)
-            case .atRisk: Color(red: 0xF3 / 255, green: 0xD2 / 255, blue: 0xA9 / 255)
-            case .critical: Color(red: 0xF3 / 255, green: 0xC1 / 255, blue: 0xBE / 255)
+            case .watch: .lineTintCaution
+            case .atRisk: .lineTintWarning
+            case .critical: .lineTintDanger
             }
         }
     }

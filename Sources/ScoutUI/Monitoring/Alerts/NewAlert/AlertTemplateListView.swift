@@ -18,14 +18,14 @@ struct AlertTemplateListView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
                     Text(verbatim: "What should Scout watch?")
-                        .font(.system(size: 28, weight: .bold))
-                        .padding(.top, 20)
+                        .font(.listTitle)
+                        .padding(.top, .space20)
 
                     Text(verbatim: "Pick a starting point. You can change everything on the next step.")
-                        .font(.book(size: 15))
-                        .foregroundStyle(Color(.systemGray))
-                        .padding(.top, 8)
-                        .padding(.bottom, 8)
+                        .font(.scoutRow)
+                        .foregroundStyle(Color.textMuted)
+                        .padding(.top, .space8)
+                        .padding(.bottom, .space8)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .overlay(alignment: .bottom) {
                             AlertDivider()
@@ -45,10 +45,10 @@ struct AlertTemplateListView: View {
                         }
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
-            .background(Color(.systemBackground))
+            .background(Color.surface)
             .navigationTitle(en: "New Alert")
             .inlineNavigationTitle()
             .toolbar {
@@ -78,25 +78,25 @@ private struct AlertTemplateRow: View {
     let watch: AlertDraft.Watch
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: .space12) {
             Image(systemName: symbol)
                 .font(.book(size: 20))
                 .foregroundStyle(tint)
                 .frame(width: 32, alignment: .leading)
-                .padding(.top, 1)
+                .padding(.top, .space2)
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: watch.templateTitle)
-                    .font(.system(size: 17, weight: .semibold))
+                    .font(.scoutTitle)
 
                 Text(verbatim: watch.templateDetail)
-                    .font(.book(size: 14))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
 
             Spacer(minLength: 0)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, .space12)
         .contentShape(Rectangle())
     }
 
@@ -114,7 +114,7 @@ private struct AlertTemplateRow: View {
     }
 
     private var tint: Color {
-        watch == .crashFreeDrop ? .red : .blue
+        watch == .crashFreeDrop ? Color.textDanger : Color.textLink
     }
 }
 

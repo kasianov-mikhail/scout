@@ -34,7 +34,7 @@ struct LeftRoundedRectangle: Shape {
 
 #Preview {
     LeftRoundedRectangle()
-        .fill(.green)
+        .fill(Color.fillSuccess)
         .frame(width: 120, height: 18)
         .padding()
 }

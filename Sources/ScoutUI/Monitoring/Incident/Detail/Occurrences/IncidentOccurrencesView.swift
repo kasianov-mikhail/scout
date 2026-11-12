@@ -37,7 +37,7 @@ struct IncidentOccurrencesView<Element: RecordDecodable & Incident, Row: View>: 
                                 }
                             }
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, .gutter)
                     }
                     .scrollIndicators(.hidden)
                 }

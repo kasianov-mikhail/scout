@@ -14,22 +14,22 @@ struct Placeholder: View {
     var code: String?
 
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: .space12) {
             if let systemImage {
                 Image(systemName: systemImage)
                     .font(.book(size: 36))
-                    .foregroundStyle(.gray.opacity(0.5))
+                    .foregroundStyle(Color.textMuted.opacity(0.5))
             }
 
             Text(text)
                 .font(.placeholderTitle)
-                .foregroundStyle(.gray.opacity(0.7))
+                .foregroundStyle(Color.textMuted.opacity(0.7))
 
             if let description {
                 Text(description)
-                    .font(.book(size: 17))
+                    .font(.scoutBody)
                     .kerning(0.3)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(Color.textSecondary)
                     .multilineTextAlignment(.center)
             }
 

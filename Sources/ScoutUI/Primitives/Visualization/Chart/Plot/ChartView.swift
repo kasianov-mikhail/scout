@@ -28,7 +28,7 @@ struct ChartView<T: ChartNumeric>: View {
 
             ForEach(markers, id: \.self) { marker in
                 RuleMark(x: .value("Reset", marker, unit: timing.unit))
-                    .foregroundStyle(Color.gray.opacity(0.55))
+                    .foregroundStyle(Color.textMuted.opacity(0.55))
                     .lineStyle(StrokeStyle(lineWidth: 1, dash: [3, 3]))
             }
         }
@@ -48,11 +48,11 @@ struct ChartView<T: ChartNumeric>: View {
 }
 
 #Preview("ChartView – Month") {
-    VStack(alignment: .leading, spacing: 24) {
-        Text(verbatim: "With Data").font(.headline)
+    VStack(alignment: .leading, spacing: .space24) {
+        Text(verbatim: "With Data").font(.scoutTitle)
         ChartView(segment: .sample, timing: ChartExtent(period: Period.month))
 
-        Text(verbatim: "Empty State").font(.headline)
+        Text(verbatim: "Empty State").font(.scoutTitle)
         ChartView(segment: .empty, timing: ChartExtent(period: Period.month))
     }
     .padding()

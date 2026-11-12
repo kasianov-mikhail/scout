@@ -37,11 +37,11 @@ enum LogCategory: String, CaseIterable, Identifiable {
     var color: Color {
         switch self {
         case .events, .metrics:
-            .blue
+            .fillAccent
         case .network:
-            .teal
+            .fillSession
         case .devices:
-            .cyan
+            .fillDevice
         case .crashes:
             IncidentKind.crash.color
         case .hangs:

@@ -16,8 +16,8 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     @Binding var selection: Value
 
     var values: [Value] = Array(Value.allCases)
-    var distribution: Distribution = .compact(spacing: 20)
-    var tint: (Value) -> Color = { _ in .blue }
+    var distribution: Distribution = .compact(spacing: .space20)
+    var tint: (Value) -> Color = { _ in .fillAccent }
     let title: (Value) -> String
 
     @Namespace private var namespace
@@ -57,13 +57,13 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
     private var segments: some View {
         ForEach(values, id: \.self) { value in
             Text(title(value).uppercased())
-                .font(value == selection ? .system(size: 14, weight: .bold) : .book(size: 14))
-                .foregroundStyle(value == selection ? .primary : .secondary)
-                .padding(.horizontal, 8)
-                .padding(.bottom, 6)
+                .font(value == selection ? .scoutRowStrong : .scoutRow)
+                .foregroundStyle(value == selection ? Color.textPrimary : Color.textSecondary)
+                .padding(.horizontal, .space8)
+                .padding(.bottom, .space6)
                 .overlay(alignment: .bottom) {
                     if value == indicator {
-                        Capsule()
+                        RoundedRectangle(cornerRadius: .radiusBar)
                             .fill(tint(value))
                             .frame(height: 2)
                             .matchedGeometryEffect(id: "indicator", in: namespace)
@@ -81,9 +81,9 @@ struct SegmentStrip<Value: Hashable & CaseIterable>: View {
 #Preview {
     @Previewable @State var selection = Period.today
 
-    VStack(spacing: 24) {
+    VStack(spacing: .space24) {
         SegmentStrip(selection: $selection, distribution: .justified, title: \.shortTitle)
-        SegmentStrip(selection: $selection, distribution: .compact(spacing: 12), title: \.shortTitle)
+        SegmentStrip(selection: $selection, distribution: .compact(spacing: .space12), title: \.shortTitle)
     }
     .padding()
 }

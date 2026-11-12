@@ -24,56 +24,56 @@ struct AlertRuleRow: View {
     }
 
     private var content: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
+        VStack(alignment: .leading, spacing: .space6) {
+            HStack(alignment: .firstTextBaseline, spacing: .space12) {
                 Text(verbatim: status.rule.metric.title)
                     .font(titleFont)
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(Color.textPrimary)
 
                 Spacer(minLength: 0)
 
                 if let label = status.firingLabel() {
                     Text(verbatim: label)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(.systemRed))
+                        .font(.scoutCaptionStrong)
+                        .foregroundStyle(Color.textDanger)
                         .fixedSize()
                 } else if let label = status.mutedLabel {
                     Text(verbatim: label)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                         .fixedSize()
                 }
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
+            HStack(alignment: .firstTextBaseline, spacing: .space12) {
                 Text(verbatim: status.summary)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
 
                 Spacer(minLength: 0)
 
                 if let value = status.value {
                     Text(verbatim: value)
-                        .font(.book(size: 14, design: .monospaced))
+                        .font(.scoutValue)
                         .monospacedDigit()
-                        .foregroundStyle(status.isFiring ? Color(.systemRed) : .primary)
+                        .foregroundStyle(status.isFiring ? Color.textDanger : .primary)
                         .fixedSize()
                 }
             }
 
             AlertHealthStrip(buckets: status.buckets)
-                .padding(.top, 4)
+                .padding(.top, .space4)
         }
-        .padding(.top, 12)
-        .padding(.bottom, 14)
-        .padding(.horizontal, 16)
+        .padding(.top, .space12)
+        .padding(.bottom, .space12)
+        .padding(.horizontal, .gutter)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if !isLast {
                 Rectangle()
                     .fill(Color.separator)
                     .frame(height: 0.5)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .gutter)
             }
         }
         .accessibilityElement(children: .combine)
@@ -82,7 +82,7 @@ struct AlertRuleRow: View {
     private var titleFont: Font {
         switch status.rule.metric {
         case .eventCount:
-            .book(size: 15, design: .monospaced)
+            .scoutRowMono
         case .crashFreeSessions:
             .system(size: 16, weight: .semibold)
         }
@@ -109,7 +109,7 @@ struct AlertRuleRow: View {
             AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {}, onOpen: {})
                 .padding(.horizontal, -16)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

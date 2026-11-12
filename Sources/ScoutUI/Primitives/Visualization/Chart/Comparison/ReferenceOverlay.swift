@@ -28,7 +28,7 @@ struct ReferenceOverlay<T: ChartNumeric>: View {
                 .fill(color.opacity(0.12))
             gains.lines
                 .stroke(style: referenceDash)
-                .foregroundStyle(.white)
+                .foregroundStyle(Color.textOnFill)
             drops.contours
                 .stroke(style: referenceDash)
                 .foregroundStyle(color)

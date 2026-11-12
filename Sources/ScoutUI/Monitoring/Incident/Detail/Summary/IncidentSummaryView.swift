@@ -39,8 +39,8 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 if !summary.frames.isEmpty {
                     Header(title: "Stack Trace") {
                         Text(verbatim: summary.stackCaption)
-                            .font(.book(size: 13))
-                            .foregroundStyle(Color(.systemGray))
+                            .font(.scoutCaption)
+                            .foregroundStyle(Color.textMuted)
                     }
                     .overlay(alignment: .bottom) {
                         Separator()
@@ -59,7 +59,7 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                             .padding(.trailing, -12)
                     }
                     .buttonStyle(.plain)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.textLink)
                     .accessibilityLabel(Text(verbatim: "Show all occurrences"))
                 }
                 .overlay(alignment: .bottom) {
@@ -77,25 +77,25 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                         }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
 
     private var message: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: summary.message)
-                .font(.book(size: 15, design: .monospaced))
+                .font(.scoutRowMono)
                 .lineSpacing(3)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: summary.meta)
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.top, 20)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
+        .padding(.top, .space20)
+        .padding(.horizontal, .gutter)
+        .padding(.bottom, .space16)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(summary.kind.border)
@@ -105,18 +105,18 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
             Rectangle()
                 .fill(Color.separator)
                 .frame(height: 0.5)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
         }
     }
 
     private var cards: some View {
-        HStack(alignment: .top, spacing: 24) {
+        HStack(alignment: .top, spacing: .space24) {
             ForEach(summary.cards) { card in
                 IncidentSummaryCardView(card: card, kind: summary.kind)
             }
         }
-        .padding(.top, 20)
-        .padding(.bottom, 14)
+        .padding(.top, .space20)
+        .padding(.bottom, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -130,7 +130,7 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 IncidentSummaryFrameRow(frame: frame)
             }
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .space16)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -144,14 +144,14 @@ private struct IncidentSummaryCardView: View {
     let kind: IncidentKind
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: .space4) {
             Text(verbatim: card.title)
-                .font(.book(size: 14))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
 
             HStack(alignment: .top) {
                 Text(verbatim: card.value)
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.scoutNumberM)
                     .monospacedDigit()
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
@@ -160,16 +160,16 @@ private struct IncidentSummaryCardView: View {
 
                 if let change = card.change {
                     Text(verbatim: change)
-                        .font(.system(size: 14, weight: .semibold))
+                        .font(.scoutCaptionStrong)
                         .foregroundStyle(kind.textColor)
                         .lineLimit(1)
-                        .padding(.top, 2)
+                        .padding(.top, .space2)
                 }
             }
             .frame(height: 28)
 
             bars
-                .padding(.top, 4)
+                .padding(.top, .space4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -177,9 +177,9 @@ private struct IncidentSummaryCardView: View {
     private var bars: some View {
         let maximum = card.bars.max() ?? 0
 
-        return HStack(alignment: .bottom, spacing: 4) {
+        return HStack(alignment: .bottom, spacing: .space4) {
             ForEach(card.bars.indices, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 2)
+                RoundedRectangle(cornerRadius: .radiusBar)
                     .fill(kind.color)
                     .opacity(index == card.bars.count - 1 ? 1 : 0.3)
                     .frame(maxWidth: .infinity)
@@ -201,17 +201,17 @@ private struct IncidentAffectedRow: View {
     let affected: IncidentAffected
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 7) {
+        VStack(alignment: .leading, spacing: .space6) {
             HStack {
                 Text(verbatim: affected.title)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
 
                 Spacer()
 
                 Text(verbatim: "\(affected.total)")
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
                     .monospacedDigit()
-                    .foregroundStyle(Color(.systemGray))
+                    .foregroundStyle(Color.textMuted)
             }
 
             bar
@@ -230,9 +230,9 @@ private struct IncidentAffectedRow: View {
     private func legend(visible count: Int) -> some View {
         let visible = min(max(count, 1), affected.segments.count)
 
-        return HStack(spacing: 14) {
+        return HStack(spacing: .space12) {
             ForEach(affected.segments.prefix(visible)) { segment in
-                HStack(spacing: 5) {
+                HStack(spacing: .space4) {
                     Circle()
                         .fill(segment.color)
                         .frame(width: 7, height: 7)
@@ -246,8 +246,8 @@ private struct IncidentAffectedRow: View {
                 Text(verbatim: "+\(affected.segments.count - visible)")
             }
         }
-        .font(.book(size: 12))
-        .foregroundStyle(Color(.systemGray))
+        .font(.scoutFootnote)
+        .foregroundStyle(Color.textMuted)
         .fixedSize(horizontal: true, vertical: false)
     }
 
@@ -256,7 +256,7 @@ private struct IncidentAffectedRow: View {
             let gaps = CGFloat(max(affected.segments.count - 1, 0)) * 2
             let width = max(proxy.size.width - gaps, 0)
 
-            HStack(spacing: 2) {
+            HStack(spacing: .space2) {
                 ForEach(affected.segments) { segment in
                     Rectangle()
                         .fill(segment.color)
@@ -265,7 +265,7 @@ private struct IncidentAffectedRow: View {
             }
         }
         .frame(height: 8)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .clipShape(RoundedRectangle(cornerRadius: .radiusBadge))
     }
 
     private func label(segment: Segment) -> String {
@@ -284,7 +284,7 @@ private struct IncidentSummaryFrameRow: View {
     let frame: IncidentStackFrame
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: .space6) {
             Text(verbatim: frame.index)
                 .frame(width: 18, alignment: .leading)
 
@@ -294,8 +294,8 @@ private struct IncidentSummaryFrameRow: View {
             Text(verbatim: frame.symbol)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .font(frame.isApp ? .system(size: 12, weight: .semibold, design: .monospaced) : .book(size: 12, design: .monospaced))
-        .foregroundStyle(frame.isApp ? Color.primary : Color(.systemGray))
+        .font(frame.isApp ? .scoutCodeStrong : .scoutCode)
+        .foregroundStyle(frame.isApp ? Color.textPrimary : Color.fillLevel)
         .lineLimit(1)
         .frame(height: .codeStep)
     }

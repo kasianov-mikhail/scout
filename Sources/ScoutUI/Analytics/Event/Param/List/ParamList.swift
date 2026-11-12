@@ -35,7 +35,7 @@ struct ParamList: View {
 
                 ParamRawView(raw: model.raw)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Params")

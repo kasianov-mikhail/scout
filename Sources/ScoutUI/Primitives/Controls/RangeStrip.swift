@@ -15,14 +15,14 @@ struct RangeStrip<Value: Hashable>: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 20) {
+            HStack(spacing: .space20) {
                 ForEach(ranges, id: \.self) { range in
                     Button {
                         selection = range
                     } label: {
                         Text(verbatim: title(range))
-                            .font(.listTitle)
-                            .foregroundStyle(range == selection ? Color.primary : Color.pending)
+                            .font(.scoutNumberL)
+                            .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(range == selection ? .isSelected : [])

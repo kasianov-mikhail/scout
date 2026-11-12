@@ -59,12 +59,12 @@ struct HomeActiveUsersSection: View {
 
             if let metric = users.metric(selected) {
                 HomeActiveUsersChart(metric: metric, start: users.start, end: users.end)
-                    .padding(.top, 14)
+                    .padding(.top, .space12)
             }
 
             footer(users: users)
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 
@@ -75,8 +75,8 @@ struct HomeActiveUsersSection: View {
                 Text(verbatim: "Stickiness ")
 
                 Text(verbatim: users.stickinessLabel)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    .font(.scoutCaptionStrong)
+                    .foregroundStyle(Color.textPrimary)
 
                 Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
             case .sessions:
@@ -84,8 +84,8 @@ struct HomeActiveUsersSection: View {
                     Text(verbatim: "Median ")
 
                     Text(verbatim: median)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(.primary)
+                        .font(.scoutCaptionStrong)
+                        .foregroundStyle(Color.textPrimary)
 
                     Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
                 } else {
@@ -97,14 +97,14 @@ struct HomeActiveUsersSection: View {
                 }
 
                 Text(verbatim: users.devicesThisWeekLabel)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(.primary)
+                    .font(.scoutCaptionStrong)
+                    .foregroundStyle(Color.textPrimary)
 
                 Text(verbatim: " this week")
             }
         }
-        .font(.book(size: 13))
-        .foregroundStyle(Color(.systemGray))
+        .font(.scoutCaption)
+        .foregroundStyle(Color.textMuted)
     }
 }
 
@@ -113,28 +113,28 @@ private struct ActiveUserMetricView: View {
     let isSelected: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: metric.kind.title.uppercased())
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
 
             Text(verbatim: metric.valueLabel)
-                .font(.system(size: 28, weight: .bold))
-                .foregroundStyle(isSelected ? Color.primary : Color.inactiveValue)
+                .font(.scoutNumberL)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.inactiveValue)
                 .frame(height: 34, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel)
-                .font(.book(size: 13))
-                .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.red)
+                .font(.scoutCaption)
+                .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.fillDanger)
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, .space10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if isSelected {
                 Rectangle()
                     .fill(metric.kind.accent)
                     .frame(height: 2)
-                    .padding(.trailing, 12)
+                    .padding(.trailing, .space12)
             }
         }
     }
@@ -147,7 +147,7 @@ private struct ActiveUserMetricView: View {
                 HomeActiveUsersSection(users: .sample) { _ in }
                 HomeActiveUsersSection(users: nil) { _ in }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -159,7 +159,7 @@ private struct ActiveUserMetricView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -171,7 +171,7 @@ private struct ActiveUserMetricView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

@@ -17,7 +17,7 @@ struct MetricQuantileSelector: View {
     @Binding var selection: MetricQuantile
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .space12) {
             ForEach(MetricQuantile.allCases) { quantile in
                 Button {
                     selection = quantile
@@ -38,30 +38,30 @@ struct MetricQuantileSelector: View {
         let current = summary?.value(quantile)
         let delta = delta(current: current, previous: previous?.value(quantile))
 
-        return VStack(alignment: .leading, spacing: 2) {
+        return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: quantile.title)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
 
             Text(verbatim: current.map { format.label($0) } ?? "—")
-                .font(.system(size: 28, weight: .bold))
+                .font(.scoutNumberL)
                 .monospacedDigit()
-                .foregroundStyle(isSelected ? Color.primary : Color.inactiveValue)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.inactiveValue)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
             Text(verbatim: delta?.formatted ?? "—")
-                .font(.book(size: 13))
+                .font(.scoutCaption)
                 .foregroundStyle(tone(delta, quantile).color)
         }
-        .padding(.top, 10)
-        .padding(.bottom, 12)
+        .padding(.top, .space10)
+        .padding(.bottom, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if isSelected {
                 Rectangle()
-                    .fill(Color.blue)
-                    .frame(height: 2)
+                    .fill(Color.fillAccent)
+                    .frame(height: .ruleThick)
             }
         }
         .contentShape(.rect)

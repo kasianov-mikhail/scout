@@ -22,19 +22,19 @@ struct IncidentListPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                 SkeletonBar(width: 160, height: 9, delay: 0)
                     .frame(height: 17.5)
-                    .padding(.top, 4)
-                    .padding(.bottom, 6)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space6)
 
                 IncidentGrid(count: rowCount) { index in
                     tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
                 }
-                .padding(.top, 8)
+                .padding(.top, .space8)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -45,8 +45,8 @@ struct IncidentListPlaceholder: View {
         let delay = Double(index / 2) * 0.08
         let nameWidth = nameWidths[index % nameWidths.count]
 
-        return VStack(alignment: .leading, spacing: 6) {
-            HStack(alignment: .bottom, spacing: 8) {
+        return VStack(alignment: .leading, spacing: .space6) {
+            HStack(alignment: .bottom, spacing: .space8) {
                 SkeletonBar(width: 28, height: 24, delay: delay)
                 SkeletonBar(width: 28, height: 10, delay: delay)
             }
@@ -54,11 +54,11 @@ struct IncidentListPlaceholder: View {
 
             line(size: 13, width: nameWidth, height: 9, delay: delay)
             line(size: 11, width: 120, height: 8, delay: delay)
-            SkeletonBar(height: 28, delay: delay, cornerRadius: 2, fill: Color(.systemGray6))
-                .padding(.top, 4)
+            SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
+                .padding(.top, .space4)
         }
-        .padding(.top, 16)
-        .padding(.bottom, 14)
+        .padding(.top, .space16)
+        .padding(.bottom, .space12)
         .padding(.leading, side == .trailing ? 14 : 0)
         .padding(.trailing, side == .leading ? 14 : 0)
     }

@@ -13,18 +13,18 @@ struct SessionHeader: View {
     var body: some View {
         VStack(spacing: 0) {
             summary
-                .padding(.top, 16)
-                .padding(.bottom, 14)
-                .padding(.horizontal, 16)
+                .padding(.top, .space16)
+                .padding(.bottom, .space12)
+                .padding(.horizontal, .gutter)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .overlay(alignment: .bottom) {
                     divider
                 }
 
             chips
-                .padding(.top, 12)
-                .padding(.bottom, 14)
-                .padding(.horizontal, 16)
+                .padding(.top, .space12)
+                .padding(.bottom, .space12)
+                .padding(.horizontal, .gutter)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .overlay(alignment: .bottom) {
                     divider
@@ -35,16 +35,16 @@ struct SessionHeader: View {
     @ViewBuilder
     private var summary: some View {
         if let duration = info.duration, let detail = info.detail {
-            (Text(verbatim: duration).font(.system(size: 15, weight: .semibold)) + Text(verbatim: " · \(detail)"))
-                .font(.book(size: 15))
+            (Text(verbatim: duration).font(.scoutRowStrong) + Text(verbatim: " · \(detail)"))
+                .font(.scoutRow)
         } else if let text = info.summary {
             Text(verbatim: text)
-                .font(.book(size: 15))
+                .font(.scoutRow)
         }
     }
 
     private var chips: some View {
-        FlowLayout(spacing: 6) {
+        FlowLayout(spacing: .space6) {
             if let model = info.model.map(DeviceModel.init) {
                 OutlineChip(text: model.name)
             }
@@ -65,9 +65,9 @@ struct SessionHeader: View {
 
     private var divider: some View {
         Rectangle()
-            .fill(Color(.systemGray3))
+            .fill(Color.lineSeparator)
             .frame(height: 0.5)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
     }
 }
 

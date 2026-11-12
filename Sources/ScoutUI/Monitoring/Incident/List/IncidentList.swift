@@ -21,7 +21,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
             .animation(.easeOut(duration: 0.2), value: provider.result == nil)
             .navigationTitle(en: Element.kind.title)
             .inlineNavigationTitle()
-            .tint(.primary)
+            .tint(Color.textPrimary)
             .message($provider.message)
             .task(id: provider.range) {
                 await provider.fetchAgain(in: database)
@@ -38,8 +38,8 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
             if tiles.isEmpty {
                 VStack(spacing: 0) {
                     RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, 8)
-                        .padding(.horizontal, 16)
+                        .padding(.top, .space8)
+                        .padding(.horizontal, .gutter)
 
                     placeholder
                 }
@@ -58,11 +58,11 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                 summary(tiles)
-                    .padding(.top, 4)
-                    .padding(.bottom, 6)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space6)
 
                 IncidentGrid(count: tiles.count) { index in
                     let tile = tiles[index]
@@ -77,9 +77,9 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                     }
                     .buttonStyle(.plain)
                 }
-                .padding(.top, 8)
+                .padding(.top, .space8)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -92,8 +92,8 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
             (Text(verbatim: "\(count) \(Element.kind.noun(for: count)) in \(groups) \(groups == 1 ? "group" : "groups") · ")
             + Text(verbatim: Element.kind.captionName).foregroundColor(Element.kind.detailColor)
             + Text(verbatim: " is today"))
-            .font(.book(size: 15))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutRow)
+            .foregroundStyle(Color.textMuted)
     }
 }
 

@@ -44,17 +44,17 @@ struct ActivityView: View {
         return ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 ActivityMetricTabs(series: series, selection: $metric)
-                    .padding(.top, 4)
+                    .padding(.top, .space4)
 
                 ActivityChart(series: series)
-                    .padding(.top, 16)
+                    .padding(.top, .space16)
 
                 ActivityStickiness(series: series)
-                    .padding(.top, 12)
+                    .padding(.top, .space12)
 
                 ActivityRowsHeader()
 
@@ -62,7 +62,7 @@ struct ActivityView: View {
                     ActivityDayRow(row: row)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -76,17 +76,17 @@ private struct ActivityStickiness: View {
             Text(verbatim: "Stickiness ")
 
             Text(verbatim: series.stickinessLabel)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(.primary)
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(Color.textPrimary)
 
             Text(verbatim: " · a monthly user comes \(series.daysPerMonthLabel) days a month")
         }
-        .font(.book(size: 13))
-        .foregroundStyle(Color(.systemGray))
+        .font(.scoutCaption)
+        .foregroundStyle(Color.textMuted)
         .lineLimit(1)
         .minimumScaleFactor(0.8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, 12)
+        .padding(.bottom, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -99,15 +99,15 @@ struct ActivityRowsHeader: View {
     var body: some View {
         HStack(spacing: 0) {
             Text(verbatim: "PER DAY")
-                .font(.system(size: 16, weight: .bold))
+                .font(.scoutSection)
 
             Spacer()
 
             Text(verbatim: "vs day before")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()

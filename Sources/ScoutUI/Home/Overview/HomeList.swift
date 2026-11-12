@@ -51,13 +51,13 @@ struct HomeList: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeAlertSection(history: nil) {}
-                    .padding(.top, 6)
+                    .padding(.top, .space6)
                 HomeActiveUsersSection(users: nil) { _ in }
                 HomeTelemetrySection(items: nil) { _ in }
                 HomeReleaseSection(adoption: nil) {}
                 HomeRetentionSection(weeks: nil) {}
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -95,7 +95,7 @@ struct HomeList: View {
                 HomeAlertSection(history: snapshot.alerts) {
                     path.append(.alerts)
                 }
-                .padding(.top, 6)
+                .padding(.top, .space6)
                 .loadingInk(isLoading: isLoading, delay: 0.05)
                 HomeActiveUsersSection(users: snapshot.users) { kind in
                     switch kind {
@@ -132,7 +132,7 @@ struct HomeList: View {
                 }
                 .loadingInk(isLoading: isLoading, delay: 0.40)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationDestination(for: HomeDestination.self) { destination in

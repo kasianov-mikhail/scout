@@ -35,16 +35,16 @@ struct NetworkLedgerRowView: View {
     let showsDivider: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: .space8) {
+            VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: label.formatter.string(from: row.date))
                     .font(.weighted(size: 13, weight: row.isCurrent ? .semibold : .regular, design: .monospaced))
                     .lineLimit(1)
 
                 if component == .day && row.isCurrent {
                     Text(verbatim: "today")
-                        .font(.book(size: 11))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutMicro)
+                        .foregroundStyle(Color.textMuted)
                 }
             }
             .frame(width: 58, alignment: .leading)
@@ -62,7 +62,7 @@ struct NetworkLedgerRowView: View {
                 .foregroundStyle(row.p99.networkP99Color)
                 .frame(width: 64, alignment: .trailing)
         }
-        .font(.book(size: 13, design: .monospaced))
+        .font(.scoutValue)
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {

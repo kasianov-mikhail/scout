@@ -21,7 +21,7 @@ struct ReleasePlaceholder: View {
 
                 footer
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -29,10 +29,10 @@ struct ReleasePlaceholder: View {
     }
 
     private var hero: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 6) {
+        HStack(spacing: .space16) {
+            VStack(alignment: .leading, spacing: .space6) {
                 Text(verbatim: version)
-                    .font(.system(size: 34, weight: .bold, design: .monospaced))
+                    .font(.scoutNumberXL)
                     .tracking(-0.5)
 
                 SkeletonBar(width: 200, height: 9, delay: 0.08)
@@ -45,19 +45,19 @@ struct ReleasePlaceholder: View {
 
             badge
         }
-        .padding(.top, 14)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
-        .background(Color(.systemGray6))
+        .padding(.top, .space12)
+        .padding(.horizontal, .gutter)
+        .padding(.bottom, .space16)
+        .background(Color.surfaceGrey)
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color(.systemGray5))
+                .fill(Color.surfaceSkeleton)
                 .frame(height: 0.5)
         }
     }
 
     private var badge: some View {
-        VStack(spacing: 1) {
+        VStack(spacing: .space2) {
             SkeletonBar(width: 46, height: 6, delay: 0.08)
                 .frame(height: 12)
             SkeletonBar(width: 28, height: 9, delay: 0.08)
@@ -66,7 +66,7 @@ struct ReleasePlaceholder: View {
         .frame(width: 76, height: 76)
         .overlay {
             Circle()
-                .strokeBorder(Color(.systemGray4), style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                .strokeBorder(Color.surfaceBarIdle, style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
         }
         .rotationEffect(.degrees(-12))
     }
@@ -82,18 +82,18 @@ struct ReleasePlaceholder: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
 
     private func cell(kind: ReleaseTileValue.Kind, delay: Double, isLeading: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: kind.title)
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
 
             SkeletonBar(width: 74, height: 14, delay: delay)
                 .frame(height: 29, alignment: .leading)
-            SkeletonBar(height: 24, delay: delay, cornerRadius: 4, fill: Color(.systemGray6))
+            SkeletonBar(height: 24, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
             SkeletonBar(width: 120, height: 6, delay: delay)
                 .frame(height: 14, alignment: .leading)
         }
@@ -101,9 +101,9 @@ struct ReleasePlaceholder: View {
     }
 
     private var footer: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: "Hang rate")
-                .font(.book(size: 15))
+                .font(.scoutRow)
 
             Spacer()
 

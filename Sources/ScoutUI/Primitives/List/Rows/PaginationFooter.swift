@@ -48,7 +48,7 @@ struct PaginationFooter: View {
                 return true
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }
@@ -58,7 +58,7 @@ struct PaginationFooter: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             PaginationFooter { false }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

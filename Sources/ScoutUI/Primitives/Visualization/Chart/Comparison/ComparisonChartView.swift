@@ -73,17 +73,17 @@ struct ComparisonChartView<T: ChartNumeric>: View {
     }
     let segment = extent.segment(from: points)
 
-    return VStack(alignment: .leading, spacing: 24) {
-        Text(verbatim: "With Data").font(.headline)
+    return VStack(alignment: .leading, spacing: .space24) {
+        Text(verbatim: "With Data").font(.scoutTitle)
         ComparisonChartView(
             segment: segment,
             reference: extent.referenceSegment(from: points, alignedTo: segment),
             timing: extent,
-            color: .blue
+            color: .fillAccent
         )
 
-        Text(verbatim: "Empty State").font(.headline)
-        ComparisonChartView(segment: .empty, reference: .empty, timing: extent, color: .blue)
+        Text(verbatim: "Empty State").font(.scoutTitle)
+        ComparisonChartView(segment: .empty, reference: .empty, timing: extent, color: .fillAccent)
     }
     .padding()
 }

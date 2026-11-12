@@ -11,9 +11,9 @@ struct AlertHealthStrip: View {
     let buckets: [AlertHistory.Bucket]
 
     var body: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: .space2) {
             ForEach(buckets.indices, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 2)
+                RoundedRectangle(cornerRadius: .radiusBar)
                     .fill(buckets[index].color)
                     .frame(maxWidth: .infinity)
             }
@@ -26,9 +26,9 @@ struct AlertHealthStrip: View {
 extension AlertHistory.Bucket {
     fileprivate var color: Color {
         switch self {
-        case .clear: Color(.systemGray5)
-        case .muted: Color(.systemGray)
-        case .firing: .red
+        case .clear: Color.surfaceSkeleton
+        case .muted: Color.fillLevel
+        case .firing: .fillDanger
         }
     }
 }

@@ -98,18 +98,18 @@ struct HangGroupDetailView: View {
         NavigationLink {
             HangDetailView(hang: hang, group: occurrences.group)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 if let date = hang.date {
                     Text(verbatim: date.relativeString)
-                        .font(.book(size: 15))
+                        .font(.scoutRow)
                 }
 
                 Spacer()
 
                 if let label = breakdown.value?.occurrenceLabel(record: hang) {
                     Text(verbatim: label)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                         .lineLimit(1)
                 }
             }

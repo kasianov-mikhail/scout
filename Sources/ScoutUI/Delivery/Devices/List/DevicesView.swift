@@ -41,8 +41,8 @@ struct DevicesView: View {
         if models.isEmpty {
             VStack(spacing: 0) {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
-                    .padding(.horizontal, 16)
+                    .padding(.top, .space8)
+                    .padding(.horizontal, .gutter)
 
                 Placeholder(
                     text: "No devices",
@@ -56,11 +56,11 @@ struct DevicesView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
 
                     summary(models)
-                        .padding(.top, 4)
-                        .padding(.bottom, 12)
+                        .padding(.top, .space4)
+                        .padding(.bottom, .space12)
                         .overlay(alignment: .bottom) {
                             Separator()
                         }
@@ -84,7 +84,7 @@ struct DevicesView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
             .exportToolbar(text: DevicesExport(models: models).text)
@@ -97,15 +97,15 @@ struct DevicesView: View {
 
         return
             (Text(verbatim: "\(devices) \(devices == 1 ? "device" : "devices") in \(models.count) \(models.count == 1 ? "model" : "models") · ")
-            + Text(verbatim: "\(crashing)").foregroundColor(crashing > 0 ? .crashText : Color(.systemGray))
+            + Text(verbatim: "\(crashing)").foregroundColor(crashing > 0 ? .crashText : Color.fillLevel)
             + Text(verbatim: " \(crashing == 1 ? "model" : "models") with crashes"))
-            .font(.book(size: 15))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutRow)
+            .foregroundStyle(Color.textMuted)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var columns: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
             ColumnHeader(title: "OS")
@@ -121,35 +121,35 @@ private struct DeviceModelRow: View {
     let maxSessions: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
+        VStack(alignment: .leading, spacing: .space8) {
+            HStack(spacing: .space8) {
                 Image(systemName: model.symbol)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.textLink)
                     .frame(width: 20)
 
                 Text(verbatim: model.name)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
                     .lineLimit(1)
 
                 Spacer(minLength: 8)
 
                 Text(verbatim: "\(model.devices) \(model.devices == 1 ? "device" : "devices")")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
                     .lineLimit(1)
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 BarValue(text: model.sessions.compact, fraction: share, color: .deviceTrack)
 
                 Text(verbatim: model.osLabel ?? "—")
-                    .font(.book(size: 12, design: .monospaced))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCode)
+                    .foregroundStyle(Color.textMuted)
                     .lineLimit(1)
                     .frame(width: 112, alignment: .leading)
 
                 Text(verbatim: model.crashes > 0 ? "\(model.crashes)" : "—")
-                    .font(model.crashes > 0 ? .system(size: 13, weight: .bold, design: .monospaced) : .book(size: 13, design: .monospaced))
+                    .font(model.crashes > 0 ? .scoutValueStrong : .scoutValue)
                     .monospacedDigit()
                     .foregroundStyle(model.crashes > 0 ? Color.crashText : Color.pending)
                     .frame(width: 56, alignment: .trailing)

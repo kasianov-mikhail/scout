@@ -8,6 +8,6 @@
 import SwiftUI
 
 extension Color {
-    static let trendPositive = Color(red: 0x1E / 255, green: 0x7D / 255, blue: 0x34 / 255)
-    static let trendTrack = Color(red: 0xE3 / 255, green: 0xF6 / 255, blue: 0xE8 / 255)
+    static let trendPositive = textSuccess
+    static let trendTrack = tintSuccess
 }

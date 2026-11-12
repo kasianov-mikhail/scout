@@ -53,7 +53,7 @@ struct MetricChart: View {
             var path = Path()
             path.move(to: CGPoint(x: 0, y: y))
             path.addLine(to: CGPoint(x: size.width, y: y))
-            context.stroke(path, with: .color(Color(.systemGray5)), lineWidth: 0.5)
+            context.stroke(path, with: .color(Color.surfaceSkeleton), lineWidth: 0.5)
         }
     }
 
@@ -61,8 +61,8 @@ struct MetricChart: View {
         for tick in scale.ticks {
             let y = y(tick, scale: scale, size: size)
             let label = Text(verbatim: format.label(tick, compact: true))
-                .font(.book(size: 10, design: .monospaced))
-                .foregroundColor(Color(.systemGray))
+                .font(.scoutAxis)
+                .foregroundColor(Color.textMuted)
             let resolved = context.resolve(label)
             context.draw(resolved, at: CGPoint(x: size.width - 2, y: y - 6), anchor: .trailing)
         }
@@ -85,8 +85,8 @@ struct MetricChart: View {
                 height: size.height - top
             )
             context.fill(
-                Path(roundedRect: rect, cornerRadius: 2),
-                with: .color(bucket.isCurrent ? .metricSoft : .blue)
+                Path(roundedRect: rect, cornerRadius: .radiusBar),
+                with: .color(bucket.isCurrent ? .metricSoft : .fillAccent)
             )
         }
 
@@ -110,18 +110,18 @@ struct MetricChart: View {
             area.addLines(points)
             area.addLine(to: CGPoint(x: last.x, y: size.height))
             area.closeSubpath()
-            context.fill(area, with: .color(.blue.opacity(0.1)))
+            context.fill(area, with: .color(Color.fillAccent.opacity(0.1)))
         }
 
         if points.count > 1 {
             var line = Path()
             line.addLines(points)
-            context.stroke(line, with: .color(.blue), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
+            context.stroke(line, with: .color(Color.fillAccent), style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round))
         }
 
         if let last = points.last {
             let dot = CGRect(x: last.x - 3.5, y: last.y - 3.5, width: 7, height: 7)
-            context.fill(Path(ellipseIn: dot), with: .color(.blue))
+            context.fill(Path(ellipseIn: dot), with: .color(Color.fillAccent))
         }
     }
 
@@ -142,7 +142,7 @@ struct MetricChart: View {
         path.addLines(points)
         context.stroke(
             path,
-            with: .color(Color(.systemGray3)),
+            with: .color(Color.lineSeparator),
             style: StrokeStyle(lineWidth: 1.5, dash: [4, 3])
         )
     }
@@ -159,11 +159,11 @@ struct MetricChart: View {
             var path = Path()
             path.move(to: CGPoint(x: x, y: 0))
             path.addLine(to: CGPoint(x: x, y: size.height))
-            context.stroke(path, with: .color(Color(.systemGray)), style: StrokeStyle(lineWidth: 1, dash: [2, 3]))
+            context.stroke(path, with: .color(Color.fillLevel), style: StrokeStyle(lineWidth: 1, dash: [2, 3]))
 
             let label = Text(verbatim: "reset")
-                .font(.book(size: 11))
-                .foregroundColor(Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundColor(Color.textMuted)
             let resolved = context.resolve(label)
             context.draw(resolved, at: CGPoint(x: x + 4, y: 8), anchor: .leading)
         }
@@ -216,9 +216,9 @@ struct MetricAxisLabels: View {
             }
         }
         .frame(height: 12)
-        .padding(.top, 4)
-        .font(.book(size: 10, design: .monospaced))
-        .foregroundStyle(Color(.systemGray))
+        .padding(.top, .space4)
+        .font(.scoutAxis)
+        .foregroundStyle(Color.textMuted)
     }
 
     private func x(_ label: MetricAxisLabel, width: CGFloat) -> CGFloat {
@@ -232,8 +232,8 @@ struct MetricLegend: View {
     let note: String?
 
     var body: some View {
-        HStack(spacing: 14) {
-            HStack(spacing: 4) {
+        HStack(spacing: .space12) {
+            HStack(spacing: .space4) {
                 MetricDashedSample()
                 Text(verbatim: title)
             }
@@ -243,10 +243,10 @@ struct MetricLegend: View {
                     .lineLimit(2)
             }
         }
-        .font(.book(size: 12))
-        .foregroundStyle(Color(.systemGray))
+        .font(.scoutFootnote)
+        .foregroundStyle(Color.textMuted)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, 10)
+        .padding(.top, .space10)
     }
 }
 
@@ -257,7 +257,7 @@ private struct MetricDashedSample: View {
                 path.move(to: CGPoint(x: 0, y: 1))
                 path.addLine(to: CGPoint(x: proxy.size.width, y: 1))
             }
-            .stroke(Color(.systemGray3), style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
+            .stroke(Color.lineSeparator, style: StrokeStyle(lineWidth: 1.5, dash: [4, 3]))
         }
         .frame(width: 16, height: 2)
     }
@@ -273,5 +273,5 @@ private struct MetricDashedSample: View {
         style: .bars,
         format: .counter
     )
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .gutter)
 }

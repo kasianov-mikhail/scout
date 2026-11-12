@@ -32,7 +32,7 @@ private struct MessagePresenter: ViewModifier {
 
     func body(content: Content) -> some View {
         content.overlay(alignment: .top) {
-            VStack(spacing: 8) {
+            VStack(spacing: .space8) {
                 ForEach(stack) { message in
                     MessageView(text: message.text, level: message.level)
                         .transition(
@@ -71,7 +71,7 @@ private struct MessagePresenter: ViewModifier {
     @Previewable @State var message: Message?
 
     NavigationStack {
-        VStack(spacing: 32) {
+        VStack(spacing: .space24) {
             Button {
                 message = Message(
                     Message.Level.info.text,

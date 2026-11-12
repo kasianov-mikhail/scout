@@ -24,15 +24,15 @@ struct HeatmapView: View {
                     .gridCellUnsizedAxes([.horizontal, .vertical])
                 ForEach(0..<24 / hours, id: \.self) { block in
                     Text(verbatim: "\(block * hours)–\(block * hours + hours)")
-                        .font(.book(size: 11))
-                        .foregroundStyle(.secondary)
+                        .font(.scoutMicro)
+                        .foregroundStyle(Color.textSecondary)
                 }
             }
             ForEach(0..<7) { day in
                 GridRow {
                     Text(verbatim: HeatmapGrid.dayLabels[day])
-                        .font(.book(size: 11))
-                        .foregroundStyle(.secondary)
+                        .font(.scoutMicro)
+                        .foregroundStyle(Color.textSecondary)
                         .frame(width: 30, alignment: .leading)
                     ForEach(0..<24 / hours, id: \.self) { block in
                         cell(day: day, block: block, maxBlock: maxBlock)
@@ -46,13 +46,13 @@ struct HeatmapView: View {
     private func cell(day: Int, block: Int, maxBlock: Int) -> some View {
         let count = grid.blockCount(day: day, block: block, hours: hours)
         let intensity = maxBlock > 0 ? Double(count) / Double(maxBlock) : 0
-        return RoundedRectangle(cornerRadius: 6)
-            .fill(count > 0 ? color.opacity(0.12 + 0.88 * intensity) : Color(.systemGray5))
+        return RoundedRectangle(cornerRadius: .radiusBadge)
+            .fill(count > 0 ? color.opacity(0.12 + 0.88 * intensity) : Color.surfaceSkeleton)
             .frame(height: 32)
             .overlay {
                 if count > 0 {
                     Text(verbatim: "\(count)")
-                        .font(.book(size: 11).monospacedDigit())
+                        .font(.scoutMicro.monospacedDigit())
                         .foregroundStyle(intensity > 0.55 ? Color.white : .secondary)
                 }
             }
@@ -60,11 +60,11 @@ struct HeatmapView: View {
 }
 
 #Preview("HeatmapView") {
-    VStack(alignment: .leading, spacing: 24) {
-        Text(verbatim: "With Data").font(.headline)
+    VStack(alignment: .leading, spacing: .space24) {
+        Text(verbatim: "With Data").font(.scoutTitle)
         HeatmapView(grid: .sample)
 
-        Text(verbatim: "Empty State").font(.headline)
+        Text(verbatim: "Empty State").font(.scoutTitle)
         HeatmapView(grid: HeatmapGrid(points: [], range: HeatmapGrid.recentRange(weeks: 4), calendar: .utc))
     }
     .padding()

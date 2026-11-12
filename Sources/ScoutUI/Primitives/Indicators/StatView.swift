@@ -48,7 +48,7 @@ struct StatView: View {
                         NavigationLink {
                             EventStatList(eventName: stat.subject.name, range: extent.domain)
                         } label: {
-                            HStack(spacing: 8) {
+                            HStack(spacing: .space8) {
                                 Text(verbatim: "Events")
                                 Spacer()
                                 RedactedText(count: segment.total)
@@ -58,7 +58,7 @@ struct StatView: View {
                             .contentShape(.rect)
                         }
                         .buttonStyle(.plain)
-                        .foregroundStyle(.blue)
+                        .foregroundStyle(Color.textLink)
                         .overlay(alignment: .bottom) {
                             Separator()
                         }
@@ -66,8 +66,8 @@ struct StatView: View {
 
                     Header(title: "Weekly Pattern") {
                         Text(verbatim: "Last 4 weeks")
-                            .font(.book(size: 13))
-                            .foregroundStyle(.secondary)
+                            .font(.scoutCaption)
+                            .foregroundStyle(Color.textSecondary)
                     }
 
                     HeatmapView(
@@ -78,7 +78,7 @@ struct StatView: View {
                         )
                     )
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
             .toolbar {
@@ -98,7 +98,7 @@ struct StatView: View {
 }
 
 extension EnvironmentValues {
-    @Entry var chartColor: Color = .blue
+    @Entry var chartColor: Color = .fillAccent
 }
 
 #Preview("StatView") {

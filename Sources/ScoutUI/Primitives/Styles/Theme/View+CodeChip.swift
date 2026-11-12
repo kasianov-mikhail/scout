@@ -10,12 +10,12 @@ import SwiftUI
 extension View {
     func codeChipStyle() -> some View {
         font(.codeChip)
-            .foregroundStyle(.primary)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
+            .foregroundStyle(Color.textPrimary)
+            .padding(.horizontal, .space12)
+            .padding(.vertical, .space10)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.12))
+                RoundedRectangle(cornerRadius: .radiusBadge)
+                    .fill(Color.surfaceGrey)
             )
     }
 }

@@ -21,30 +21,30 @@ struct TelemetryRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(alignment: .top, spacing: 8) {
+            HStack(alignment: .top, spacing: .space8) {
                 Image(systemName: item.kind.systemImage)
                     .font(.book(size: 18))
                     .foregroundStyle(item.kind.color)
                     .frame(width: 24)
                     .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: .space2) {
                     if showsValues {
-                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        HStack(alignment: .firstTextBaseline, spacing: .space8) {
                             title
 
                             Spacer(minLength: 0)
 
                             Text(verbatim: item.valueLabel)
-                                .font(.body.weight(.semibold))
+                                .font(.scoutTitle)
                                 .monospacedDigit()
                         }
 
                         Text(verbatim: item.caption)
                             .font(.telemetryCaption)
-                            .foregroundStyle(Color(.systemGray))
+                            .foregroundStyle(Color.textMuted)
                     } else {
-                        HStack(spacing: 8) {
+                        HStack(spacing: .space8) {
                             title
 
                             Spacer(minLength: 0)
@@ -89,7 +89,7 @@ struct TelemetryRow: View {
                 TelemetryRow(item: TelemetryItem.sample[2], side: .leading, showsDivider: true, showsValues: false) {}
                 TelemetryRow(item: TelemetryItem.sample[3], side: .trailing, showsDivider: false, showsValues: false) {}
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

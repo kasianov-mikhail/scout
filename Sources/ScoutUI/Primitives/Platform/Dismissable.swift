@@ -31,7 +31,7 @@ private struct DismissableModifier: ViewModifier {
                     Image(systemName: "xmark")
                         .font(.system(size: 14, weight: .semibold))
                 }
-                .foregroundStyle(.primary)
+                .foregroundStyle(Color.textPrimary)
                 .accessibilityLabel(Text(verbatim: "Close"))
             }
         }

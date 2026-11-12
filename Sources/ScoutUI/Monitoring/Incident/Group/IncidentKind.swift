@@ -28,11 +28,11 @@ extension IncidentKind {
     var color: Color {
         switch self {
         case .crash:
-            .red
+            .fillDanger
         case .hang:
-            .orange
+            .fillWarning
         case .resource:
-            .indigo
+            .fillResource
         }
     }
 
@@ -79,26 +79,25 @@ extension IncidentKind {
             .resourceText
         }
     }
-
     var background: Color {
         switch self {
         case .crash:
-            Color(red: 0xFD / 255, green: 0xEE / 255, blue: 0xEE / 255)
+            .tintDanger
         case .hang:
-            Color(red: 0xFF / 255, green: 0xF4 / 255, blue: 0xE5 / 255)
+            .tintWarning
         case .resource:
-            Color(red: 0xEF / 255, green: 0xEF / 255, blue: 0xFC / 255)
+            .tintResource
         }
     }
 
     var border: Color {
         switch self {
         case .crash:
-            Color(red: 0xEE / 255, green: 0xD5 / 255, blue: 0xD5 / 255)
+            .lineTintDanger
         case .hang:
-            Color(red: 0xF2 / 255, green: 0xDF / 255, blue: 0xC4 / 255)
+            .lineTintWarning
         case .resource:
-            Color(red: 0xDA / 255, green: 0xDA / 255, blue: 0xF2 / 255)
+            .lineTintResource
         }
     }
 

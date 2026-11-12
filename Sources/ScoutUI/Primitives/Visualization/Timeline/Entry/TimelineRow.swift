@@ -37,14 +37,14 @@ struct TimelineRow: View {
                     .fill(Color.timelineSeparator)
                     .frame(height: 1)
                     .padding(.leading, 72)
-                    .padding(.trailing, 16)
+                    .padding(.trailing, .gutter)
             }
         }
         .accessibilityElement(children: .combine)
     }
 
     private var content: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             text(entry.title)
 
             if let subtitle = entry.subtitle {
@@ -54,8 +54,8 @@ struct TimelineRow: View {
 
             if let chip = entry.chip {
                 Text(verbatim: chip)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .font(.scoutBadge)
+                    .foregroundStyle(Color.textOnFill)
                     .lineLimit(1)
                     .badgeStyle(fill: chipColor)
             }
@@ -64,13 +64,13 @@ struct TimelineRow: View {
 
             if let time = entry.time {
                 Text(verbatim: time)
-                    .font(.book(size: 12, design: .monospaced))
+                    .font(.scoutCode)
                     .foregroundStyle(Color.timelineMuted)
                     .layoutPriority(1)
             }
         }
         .padding(.leading, 72)
-        .padding(.trailing, 16)
+        .padding(.trailing, .gutter)
         .frame(height: entry.height)
     }
 
@@ -83,7 +83,7 @@ struct TimelineRow: View {
     }
 
     private var chipColor: Color {
-        entry.kind.incident?.timelineColor ?? .accentColor
+        entry.kind.incident?.timelineColor ?? Color.fillAccent
     }
 }
 

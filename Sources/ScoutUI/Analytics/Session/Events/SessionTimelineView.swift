@@ -34,22 +34,22 @@ struct SessionEventsHeader: View {
     var body: some View {
         HStack {
             Text(verbatim: "EVENTS")
-                .font(.system(size: 16, weight: .bold))
+                .font(.scoutSection)
 
             Spacer()
 
             Text(verbatim: "from session start")
-                .font(.book(size: 13))
+                .font(.scoutCaption)
                 .foregroundStyle(Color.timelineUnknown)
         }
-        .padding(.top, 12)
-        .padding(.horizontal, 16)
+        .padding(.top, .space12)
+        .padding(.horizontal, .gutter)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color(.systemGray3))
+                .fill(Color.lineSeparator)
                 .frame(height: 0.5)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
         }
     }
 }

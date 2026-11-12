@@ -88,14 +88,14 @@ struct AlertSwipeRow<Content: View>: View {
     private var actions: some View {
         ZStack {
             if displayOffset > 0, let onMute {
-                actionButton(color: Color(.systemOrange), icon: "bell.slash", side: .trailing) {
+                actionButton(color: Color.textWarning, icon: "bell.slash", side: .trailing) {
                     perform(direction: 1, action: onMute)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
             if displayOffset < 0 {
-                actionButton(color: Color(.systemRed), icon: "trash", side: .leading) {
+                actionButton(color: Color.textDanger, icon: "trash", side: .leading) {
                     perform(direction: -1, action: onDelete)
                 }
                 .frame(maxWidth: .infinity, alignment: .trailing)
@@ -110,8 +110,8 @@ struct AlertSwipeRow<Content: View>: View {
                 .frame(width: capsuleWidth, height: swipeActionSize)
                 .overlay(alignment: side.alignment) {
                     Image(systemName: icon)
-                        .font(.book(size: 17))
-                        .foregroundStyle(.white)
+                        .font(.scoutBody)
+                        .foregroundStyle(Color.textOnFill)
                         .padding(side.iconPadding, 14)
                 }
         }

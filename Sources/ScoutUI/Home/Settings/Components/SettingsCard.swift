@@ -21,9 +21,9 @@ struct SettingsCard<Content: View>: View {
 
 extension View {
     func settingsCardStyle() -> some View {
-        clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        clipShape(RoundedRectangle(cornerRadius: .radiusBlock, style: .continuous))
             .overlay {
-                RoundedRectangle(cornerRadius: 3, style: .continuous)
+                RoundedRectangle(cornerRadius: .radiusBlock, style: .continuous)
                     .stroke(Color.separator, lineWidth: 0.5)
             }
     }
@@ -36,40 +36,40 @@ struct SettingsReadoutRow: View {
     var skeletonWidth: CGFloat = 74
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
+        HStack(alignment: .firstTextBaseline, spacing: .space4) {
             if let value {
                 Text(verbatim: value)
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.scoutNumberS)
             } else {
                 SkeletonBar(width: skeletonWidth, height: 16, delay: 0)
             }
 
             if let caption {
                 Text(verbatim: caption)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             } else if let captionSkeletonWidth {
                 SkeletonBar(width: captionSkeletonWidth, height: 9, delay: 0)
             }
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 10)
+        .padding(.horizontal, .space8)
+        .padding(.vertical, .space10)
     }
 }
 
 struct SettingsCardAction: View {
     let title: String
-    var color = Color.accentColor
+    var color = Color.fillAccent
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
             Text(verbatim: title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.scoutRowStrong)
                 .foregroundStyle(color)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
                 .frame(maxHeight: .infinity)
                 .overlay(alignment: .leading) {
                     Separator(axis: .vertical)

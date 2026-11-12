@@ -11,9 +11,9 @@ struct NetworkLatencyChart: View {
     let histogram: LatencyHistogram
 
     var body: some View {
-        HStack(alignment: .bottom, spacing: 4) {
+        HStack(alignment: .bottom, spacing: .space4) {
             ForEach(histogram.networkBands) { band in
-                VStack(spacing: 4) {
+                VStack(spacing: .space4) {
                     ZStack(alignment: .bottom) {
                         Color.clear
                             .frame(height: 64)
@@ -24,13 +24,13 @@ struct NetworkLatencyChart: View {
                     }
 
                     Text(verbatim: band.label)
-                        .font(.book(size: 10, design: .monospaced))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutAxis)
+                        .foregroundStyle(Color.textMuted)
                 }
                 .frame(maxWidth: .infinity)
             }
         }
-        .padding(.top, 14)
+        .padding(.top, .space12)
     }
 
     private var maximum: Int {
@@ -52,20 +52,20 @@ struct NetworkPercentileRow: View {
     let percentiles: Percentiles?
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: .space16) {
             item(label: "p50", value: percentiles?.p50.duration ?? "—", color: .primary, weight: .regular)
             item(label: "p90", value: percentiles?.p90.duration ?? "—", color: .primary, weight: .regular)
-            item(label: "p99", value: percentiles.map(\.p99.duration) ?? "—", color: percentiles.map(\.p99.networkP99Color) ?? Color(.systemGray), weight: percentiles.map(\.p99.networkP99Weight) ?? .regular)
+            item(label: "p99", value: percentiles.map(\.p99.duration) ?? "—", color: percentiles.map(\.p99.networkP99Color) ?? Color.fillLevel, weight: percentiles.map(\.p99.networkP99Weight) ?? .regular)
         }
-        .font(.book(size: 12, design: .monospaced))
-        .padding(.top, 10)
-        .padding(.bottom, 14)
+        .font(.scoutCode)
+        .padding(.top, .space10)
+        .padding(.bottom, .space12)
     }
 
     private func item(label: String, value: String, color: Color, weight: Font.Weight) -> some View {
-        HStack(spacing: 6) {
+        HStack(spacing: .space6) {
             Text(verbatim: label)
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
             Text(verbatim: value)
                 .font(.weighted(size: 12, weight: weight, design: .monospaced))
                 .foregroundStyle(color)

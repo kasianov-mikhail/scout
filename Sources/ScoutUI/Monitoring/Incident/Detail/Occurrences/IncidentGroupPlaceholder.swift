@@ -34,8 +34,8 @@ struct IncidentGroupPlaceholder: View {
 
                 Header(title: "Stack Trace") {
                     Text(verbatim: kind.stackCaption)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                 }
                 .overlay(alignment: .bottom) {
                     Separator()
@@ -57,7 +57,7 @@ struct IncidentGroupPlaceholder: View {
                         }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -65,7 +65,7 @@ struct IncidentGroupPlaceholder: View {
     }
 
     private var message: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             VStack(alignment: .leading, spacing: 0) {
                 SkeletonBar(height: 11, delay: 0)
                     .frame(maxWidth: .infinity)
@@ -78,9 +78,9 @@ struct IncidentGroupPlaceholder: View {
             SkeletonBar(width: 194, height: 9, delay: 0)
                 .frame(height: 15, alignment: .leading)
         }
-        .padding(.top, 20)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
+        .padding(.top, .space20)
+        .padding(.horizontal, .gutter)
+        .padding(.bottom, .space16)
         .overlay(alignment: .top) {
             Rectangle()
                 .fill(kind.border)
@@ -90,18 +90,18 @@ struct IncidentGroupPlaceholder: View {
             Rectangle()
                 .fill(Color.separator)
                 .frame(height: 0.5)
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
         }
     }
 
     private var cards: some View {
-        HStack(alignment: .top, spacing: 24) {
+        HStack(alignment: .top, spacing: .space24) {
             ForEach(Array(cardTitles.enumerated()), id: \.offset) { item in
                 card(title: item.element)
             }
         }
-        .padding(.top, 20)
-        .padding(.bottom, 14)
+        .padding(.top, .space20)
+        .padding(.bottom, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -110,10 +110,10 @@ struct IncidentGroupPlaceholder: View {
     }
 
     private func card(title: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: .space4) {
             Text(verbatim: title)
-                .font(.book(size: 14))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
 
             HStack {
                 SkeletonBar(width: 46, height: 20, delay: 0.08)
@@ -124,26 +124,26 @@ struct IncidentGroupPlaceholder: View {
             }
             .frame(height: 28)
 
-            SkeletonBar(height: 52, delay: 0.08, cornerRadius: 4, fill: Color(.systemGray6))
-                .padding(.top, 4)
+            SkeletonBar(height: 52, delay: 0.08, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+                .padding(.top, .space4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func affectedRow(title: String, delay: Double) -> some View {
-        VStack(alignment: .leading, spacing: 7) {
+        VStack(alignment: .leading, spacing: .space6) {
             HStack {
                 Text(verbatim: title)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
 
                 Spacer()
 
                 SkeletonBar(width: 28, height: 11, delay: delay)
             }
 
-            SkeletonBar(height: 8, delay: delay, cornerRadius: 4)
+            SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBadge)
 
-            HStack(spacing: 14) {
+            HStack(spacing: .space12) {
                 SkeletonBar(width: 74, height: 9, delay: delay)
                 SkeletonBar(width: 46, height: 9, delay: delay)
                 SkeletonBar(width: 46, height: 9, delay: delay)
@@ -157,7 +157,7 @@ struct IncidentGroupPlaceholder: View {
             ForEach(0..<6, id: \.self) { index in
                 let delay = 0.40 + Double(index) * 0.08
 
-                HStack(spacing: 6) {
+                HStack(spacing: .space6) {
                     SkeletonBar(width: 8, height: 9, delay: delay)
                         .frame(width: 18, alignment: .leading)
 
@@ -169,7 +169,7 @@ struct IncidentGroupPlaceholder: View {
                 .frame(height: .codeStep)
             }
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .space16)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)

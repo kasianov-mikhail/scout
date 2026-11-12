@@ -14,11 +14,11 @@ struct TrendCard: View {
     let risesAreBad: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: .space4) {
             Text(verbatim: title.uppercased())
-                .font(.book(size: 14))
-                .foregroundStyle(.secondary)
-                .padding(.leading, 1)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textSecondary)
+                .padding(.leading, .space2)
 
             HStack(alignment: .top) {
                 ZStack(alignment: .leading) {
@@ -27,20 +27,20 @@ struct TrendCard: View {
                     if let count = trend?.count {
                         Text(count == 0 ? "—" : count.compact)
                     } else if trend != nil {
-                        Redacted(length: 5).font(.book(size: 17))
+                        Redacted(length: 5).font(.scoutBody)
                     } else {
                         Text(verbatim: "0")
                     }
                 }
-                .font(.system(size: 24, weight: .bold))
+                .font(.scoutNumberM)
 
                 Spacer()
 
                 if let delta = trend?.delta {
                     Text(verbatim: delta.formatted)
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundStyle(delta.isFavorable(risesAreBad: risesAreBad) ? .green : .red)
-                        .padding(.top, 2)
+                        .font(.scoutCaptionStrong)
+                        .foregroundStyle(delta.isFavorable(risesAreBad: risesAreBad) ? Color.textSuccess : Color.textDanger)
+                        .padding(.top, .space2)
                 }
             }
 
@@ -59,9 +59,9 @@ struct TrendCard: View {
 }
 
 #Preview("TrendCard") {
-    let columns = [GridItem(.fixed(162), spacing: 24), GridItem(.fixed(162), spacing: 24)]
+    let columns = [GridItem(.fixed(162), spacing: .space24), GridItem(.fixed(162), spacing: .space24)]
 
-    LazyVGrid(columns: columns, spacing: 24) {
+    LazyVGrid(columns: columns, spacing: .space24) {
         TrendCard(
             title: "Sessions",
             color: .purple,
@@ -70,25 +70,25 @@ struct TrendCard: View {
         )
         TrendCard(
             title: "Crashes",
-            color: .red,
+            color: .fillDanger,
             trend: Trend(count: 87, previous: 101, values: [9, 7, 8, 6, 7, 5, 4]),
             risesAreBad: true
         )
         TrendCard(
             title: "Empty",
-            color: .red,
+            color: .fillDanger,
             trend: Trend(count: 0, previous: 0, values: [0, 0, 0, 0, 0, 0, 0]),
             risesAreBad: true
         )
         TrendCard(
             title: "Loading",
-            color: .green,
+            color: .fillSuccess,
             trend: .loading,
             risesAreBad: false
         )
         TrendCard(
             title: "Missing",
-            color: .green,
+            color: .fillSuccess,
             trend: nil,
             risesAreBad: false
         )

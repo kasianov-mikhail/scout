@@ -26,16 +26,16 @@ struct MetricDetailPlaceholder: View {
         return ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 MetricRangeStrip(selection: $range)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 switch kind {
                 case .series(let telemetry):
                     headline(telemetry)
-                        .padding(.top, 12)
+                        .padding(.top, .space12)
 
                     chartSkeleton(height: 150, delay: 0.16)
-                        .padding(.top, 16)
+                        .padding(.top, .space16)
 
                     MetricAxisLabels(labels: range.axisLabels(now: now))
 
@@ -44,14 +44,14 @@ struct MetricDetailPlaceholder: View {
                     MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
                 case .distribution(let telemetry):
                     percentileSelector
-                        .padding(.top, 4)
+                        .padding(.top, .space4)
 
                     SkeletonBar(width: 120, height: 9, delay: 0.08)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     chartSkeleton(height: 150, delay: 0.16)
-                        .padding(.top, 16)
+                        .padding(.top, .space16)
 
                     MetricAxisLabels(labels: range.axisLabels(now: now))
 
@@ -60,7 +60,7 @@ struct MetricDetailPlaceholder: View {
                     MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
 
                     chartSkeleton(height: 126, delay: 0.24)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
 
                     MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
                 }
@@ -69,7 +69,7 @@ struct MetricDetailPlaceholder: View {
                     row(index: index, dates: dates, now: now)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -77,16 +77,16 @@ struct MetricDetailPlaceholder: View {
     }
 
     private func headline(_ telemetry: Telemetry.Export) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+        VStack(alignment: .leading, spacing: .space2) {
+            HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 74, height: 24, delay: 0.08)
 
                 if telemetry == .meter {
                     SkeletonBar(width: 74, height: 11, delay: 0.08)
                 } else {
                     Text(verbatim: range.totalTitle)
-                        .font(.book(size: 15))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutRow)
+                        .foregroundStyle(Color.textMuted)
                 }
             }
 
@@ -96,19 +96,19 @@ struct MetricDetailPlaceholder: View {
     }
 
     private var percentileSelector: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .space12) {
             ForEach(MetricQuantile.allCases) { quantile in
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: .space2) {
                     Text(verbatim: quantile.title)
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaptionStrong)
+                        .foregroundStyle(Color.textMuted)
 
                     SkeletonBar(width: 74, height: 20, delay: 0.08)
 
                     SkeletonBar(width: 28, height: 9, delay: 0.08)
                 }
-                .padding(.top, 10)
-                .padding(.bottom, 12)
+                .padding(.top, .space10)
+                .padding(.bottom, .space12)
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
@@ -120,28 +120,28 @@ struct MetricDetailPlaceholder: View {
     }
 
     private func chartSkeleton(height: CGFloat, delay: Double) -> some View {
-        SkeletonBar(height: height, delay: delay, cornerRadius: 4, fill: Color(.systemGray6))
+        SkeletonBar(height: height, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
     }
 
     private func row(index: Int, dates: [Date], now: Date) -> some View {
         let date = dates[index]
         let delay = 0.24 + Double(index) * 0.08
 
-        return HStack(spacing: 8) {
+        return HStack(spacing: .space8) {
             Text(verbatim: range.rowLabel(date: date))
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .frame(width: 56, alignment: .leading)
 
-            HStack(spacing: 6) {
-                SkeletonBar(height: 8, delay: delay, cornerRadius: 2)
+            HStack(spacing: .space6) {
+                SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar)
                     .frame(maxWidth: .infinity)
 
                 if range.isCurrent(date: date, now: now) {
                     Text(verbatim: "so far")
-                        .font(.book(size: 12))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutFootnote)
+                        .foregroundStyle(Color.textMuted)
                         .frame(width: 34, alignment: .leading)
                 }
             }

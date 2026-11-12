@@ -108,13 +108,13 @@ struct AlertListView: View {
                 }
 
                 AlertListLegend()
-                    .padding(.top, 10)
+                    .padding(.top, .space10)
 
                 section(statuses.firing, title: "FIRING")
                 section(statuses.armed, title: "ARMED")
                 section(statuses.muted, title: "MUTED")
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -154,15 +154,15 @@ private struct AlertListSectionHeader: View {
     var body: some View {
         HStack {
             Text(verbatim: title)
-                .font(.system(size: 16, weight: .bold))
+                .font(.scoutSection)
 
             Spacer()
 
             Text(verbatim: "\(count)")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -176,7 +176,7 @@ struct AlertListLegend: View {
     var showsAxis = true
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: .space4) {
             HStack {
                 Text(verbatim: "24 h ago")
                 Spacer()
@@ -184,22 +184,22 @@ struct AlertListLegend: View {
                 Spacer()
                 Text(verbatim: "now")
             }
-            .font(.book(size: 10, design: .monospaced))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutAxis)
+            .foregroundStyle(Color.textMuted)
             .opacity(showsAxis ? 1 : 0)
 
-            HStack(spacing: 14) {
-                legendItem(color: Color(.systemGray), title: "breached")
-                legendItem(color: Color(.systemRed), title: "firing now")
+            HStack(spacing: .space12) {
+                legendItem(color: Color.fillLevel, title: "breached")
+                legendItem(color: Color.textDanger, title: "firing now")
             }
-            .font(.book(size: 12))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutFootnote)
+            .foregroundStyle(Color.textMuted)
         }
     }
 
     private func legendItem(color: Color, title: String) -> some View {
-        HStack(spacing: 4) {
-            RoundedRectangle(cornerRadius: 2)
+        HStack(spacing: .space4) {
+            RoundedRectangle(cornerRadius: .radiusBar)
                 .fill(color)
                 .frame(width: 10, height: 10)
 

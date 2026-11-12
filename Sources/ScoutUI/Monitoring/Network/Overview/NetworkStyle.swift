@@ -9,18 +9,18 @@ import Foundation
 import SwiftUI
 
 extension Color {
-    static let networkAccent = Color(red: 0x00 / 255, green: 0x7A / 255, blue: 0xFF / 255)
-    static let networkTrack = Color(red: 0xD1 / 255, green: 0xD1 / 255, blue: 0xD6 / 255)
-    static let networkWarning = Color(red: 0xB3 / 255, green: 0x5C / 255, blue: 0x00 / 255)
-    static let networkCritical = Color(red: 0xC4 / 255, green: 0x00 / 255, blue: 0x1A / 255)
+    static let networkAccent = fillAccent
+    static let networkTrack = surfaceBarIdle
+    static let networkWarning = textWarning
+    static let networkCritical = textDanger
     static let networkSlow = Color(red: 0xFF / 255, green: 0xB3 / 255, blue: 0x40 / 255)
-    static let networkClient = Color(red: 0xFF / 255, green: 0x95 / 255, blue: 0x00 / 255)
-    static let networkServer = Color(red: 0xFF / 255, green: 0x3B / 255, blue: 0x30 / 255)
-    static let networkRedirect = Color(red: 0x00 / 255, green: 0x7A / 255, blue: 0xFF / 255)
-    static let networkGet = Color(red: 0x1E / 255, green: 0x7D / 255, blue: 0x34 / 255)
+    static let networkClient = fillWarning
+    static let networkServer = fillDanger
+    static let networkRedirect = fillAccent
+    static let networkGet = textSuccess
     static let networkPost = Color(red: 0x00 / 255, green: 0x62 / 255, blue: 0xCC / 255)
-    static let networkPut = Color(red: 0xB3 / 255, green: 0x5C / 255, blue: 0x00 / 255)
-    static let networkDelete = Color(red: 0xC4 / 255, green: 0x00 / 255, blue: 0x1A / 255)
+    static let networkPut = textWarning
+    static let networkDelete = textDanger
 }
 
 extension Stability {
@@ -35,7 +35,7 @@ extension Stability {
     var networkColor: Color {
         switch value {
         case 0.985...:
-            .primary
+            .textPrimary
         case 0.95..<0.985:
             .networkWarning
         default:
@@ -50,17 +50,17 @@ extension Optional where Wrapped == Stability {
     }
 
     var networkColor: Color {
-        map(\.networkColor) ?? Color(.systemGray)
+        map(\.networkColor) ?? .textMuted
     }
 }
 
 extension TimeInterval {
     var networkP99Color: Color {
-        self >= 1 ? .networkWarning : .primary
+        self >= 1 ? .networkWarning : .textPrimary
     }
 
     var networkP99Weight: Font.Weight {
-        self >= 1 ? .bold : .regular
+        self >= 1 ? .semibold : .regular
     }
 }
 
@@ -70,7 +70,7 @@ extension Optional where Wrapped == TimeInterval {
     }
 
     var networkP99Color: Color {
-        map(\.networkP99Color) ?? Color(.systemGray)
+        map(\.networkP99Color) ?? .textMuted
     }
 
     var networkP99Weight: Font.Weight {

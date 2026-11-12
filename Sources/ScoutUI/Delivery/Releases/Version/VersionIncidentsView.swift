@@ -45,7 +45,7 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
                         .padding(.vertical)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: Element.kind.title)
@@ -72,9 +72,9 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
                 NavigationLink {
                     destination(group)
                 } label: {
-                    HStack(spacing: 8) {
+                    HStack(spacing: .space8) {
                         Text(verbatim: group.name)
-                            .font(.book(size: 16, design: .monospaced))
+                            .font(.scoutEventName)
                             .lineLimit(1)
 
                         Spacer()

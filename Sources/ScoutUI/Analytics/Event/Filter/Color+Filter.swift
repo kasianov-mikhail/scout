@@ -8,6 +8,6 @@
 import SwiftUI
 
 extension Color {
-    static let filterAccent = Color(red: 0, green: 0x7A / 255, blue: 1)
-    static let filterDestructive = Color(red: 1, green: 0x3B / 255, blue: 0x30 / 255)
+    static let filterAccent = fillAccent
+    static let filterDestructive = fillDanger
 }

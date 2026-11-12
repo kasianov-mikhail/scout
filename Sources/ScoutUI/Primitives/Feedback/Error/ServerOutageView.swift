@@ -20,25 +20,25 @@ struct ServerOutageView: View {
     var body: some View {
         ErrorScreen {
             VStack(alignment: .leading, spacing: 0) {
-                HStack(spacing: 8) {
+                HStack(spacing: .space8) {
                     Circle()
                         .fill(Color.errorAccent)
                         .frame(width: 8, height: 8)
 
                     Text(verbatim: "Down for \(downFor)")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color.errorAccent)
+                        .font(.scoutRowStrong)
+                        .foregroundStyle(Color.textDanger)
                 }
 
                 Text(verbatim: "Scout server is down")
-                    .font(.system(size: 34, weight: .bold))
-                    .padding(.top, 6)
+                    .font(.scoutHeadline)
+                    .padding(.top, .space6)
 
                 Text(verbatim: "No answer since \(since). Events wait on the devices and upload when it is back.")
-                    .font(.book(size: 17))
+                    .font(.scoutBody)
                     .lineSpacing(4)
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 8)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space8)
 
                 strip
                     .padding(.top, 28)
@@ -48,16 +48,16 @@ struct ServerOutageView: View {
                     Spacer(minLength: 0)
                     Text(verbatim: "now")
                 }
-                .font(.book(size: 12))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 6)
+                .font(.scoutFootnote)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space6)
 
                 details
-                    .padding(.top, 20)
+                    .padding(.top, .space20)
 
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
             .padding(.top, 120)
         } actions: {
             Button(action: check) {
@@ -68,10 +68,10 @@ struct ServerOutageView: View {
     }
 
     private var strip: some View {
-        HStack(spacing: 2) {
+        HStack(spacing: .space2) {
             ForEach(0..<24, id: \.self) { index in
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
-                    .fill(index == 23 ? Color.errorAccent : Color(.systemGray5))
+                RoundedRectangle(cornerRadius: .radiusBar, style: .continuous)
+                    .fill(index == 23 ? Color.errorAccent : Color.surfaceSkeleton)
                     .frame(maxWidth: .infinity)
                     .frame(height: 36)
             }
@@ -94,14 +94,14 @@ struct ServerOutageView: View {
     private func detailRow(title: String, value: String) -> some View {
         HStack {
             Text(verbatim: title)
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
 
             Spacer(minLength: 8)
 
             Text(verbatim: value)
                 .monospacedDigit()
         }
-        .font(.book(size: 17))
+        .font(.scoutBody)
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             Rectangle()

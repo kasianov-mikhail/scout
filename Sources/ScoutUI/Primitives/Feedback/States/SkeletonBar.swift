@@ -12,7 +12,7 @@ struct SkeletonBar: View {
     let height: CGFloat
     let delay: Double
     var cornerRadius: CGFloat = 3
-    var fill = Color(.systemGray5)
+    var fill = Color.surfaceSkeleton
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dimmed = false
@@ -33,10 +33,10 @@ struct SkeletonBar: View {
 }
 
 #Preview {
-    VStack(spacing: 8) {
+    VStack(spacing: .space8) {
         SkeletonBar(width: 194, height: 9, delay: 0)
         SkeletonBar(height: 18, delay: 0.1)
-        SkeletonBar(width: 46, height: 8, delay: 0.2, fill: Color(.systemGray6))
+        SkeletonBar(width: 46, height: 8, delay: 0.2, fill: Color.surfaceGrey)
     }
     .padding()
 }

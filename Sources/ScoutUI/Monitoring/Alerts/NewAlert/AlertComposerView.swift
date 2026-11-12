@@ -57,9 +57,9 @@ struct AlertComposerView: View {
                 }
 
                 Text(verbatim: draft.hint)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 4)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space4)
 
                 AlertSection(title: "Last week") {
                     AlertWeekCard(week: backtest.week, draft: draft, isFailed: backtest.error != nil)
@@ -68,7 +68,7 @@ struct AlertComposerView: View {
                         ErrorRow(description: error.localizedDescription) {
                             await backtest.fetchAgain(in: database)
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                     }
                 }
 
@@ -78,17 +78,17 @@ struct AlertComposerView: View {
 
                 if provider.notificationsDenied, draft.notifies {
                     NotificationsDeniedRow()
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                 }
 
                 AlertFooter()
 
                 Color.clear.frame(height: 24)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
-        .background(Color(.systemBackground))
+        .background(Color.surface)
         .navigationTitle(en: "New Alert")
         .inlineNavigationTitle()
         .toolbar {
@@ -170,28 +170,28 @@ private struct AlertWatchPickerRow: View {
     let isSelected: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: .space8) {
+            VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: watch.title)
-                    .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
+                    .font(isSelected ? .scoutRowStrong : .scoutRow)
 
                 Text(verbatim: watch.detail)
-                    .font(.book(size: 11))
-                    .foregroundStyle(isSelected ? Color.blue.opacity(0.75) : Color(.systemGray))
+                    .font(.scoutMicro)
+                    .foregroundStyle(isSelected ? Color.textLink.opacity(0.75) : Color.textMuted)
             }
 
             Spacer(minLength: 0)
 
             if isSelected {
                 Image(systemName: "checkmark")
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.scoutLabelCaps)
             }
         }
-        .foregroundStyle(isSelected ? Color.blue : Color.primary)
+        .foregroundStyle(isSelected ? Color.fillAccent : Color.textPrimary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: .rowSubtitle)
-        .padding(.horizontal, 8)
-        .background(isSelected ? Color.blue.opacity(0.12) : Color.clear)
+        .padding(.horizontal, .space8)
+        .background(isSelected ? Color.surfaceSelected : Color.clear)
         .contentShape(Rectangle())
     }
 }

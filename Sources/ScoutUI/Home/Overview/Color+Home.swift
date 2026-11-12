@@ -8,8 +8,8 @@
 import SwiftUI
 
 extension Color {
-    static let positive = Color(red: 36 / 255, green: 138 / 255, blue: 61 / 255)
-    static let inactiveValue = Color(red: 108 / 255, green: 108 / 255, blue: 112 / 255)
-    static let pending = Color(red: 199 / 255, green: 199 / 255, blue: 204 / 255)
-    static let separator = Color(red: 198 / 255, green: 198 / 255, blue: 200 / 255)
+    static let positive = textSuccess
+    static let inactiveValue = textSecondary
+    static let pending = textDisabled
+    static let separator = lineSeparator
 }

@@ -108,7 +108,7 @@ struct BackendDetailView: View {
                     .padding(.top, 26)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .hapticFeedback(.success, trigger: copyCount)
@@ -255,9 +255,9 @@ private struct SettingsAddressRow: View {
     var body: some View {
         HStack(spacing: 0) {
             Text(verbatim: value)
-                .font(.book(size: 15, design: .monospaced))
-                .padding(.horizontal, 8)
-                .padding(.vertical, 10)
+                .font(.scoutRowMono)
+                .padding(.horizontal, .space8)
+                .padding(.vertical, .space10)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             SettingsCardAction(title: "Copy", action: action)
@@ -284,15 +284,15 @@ private struct SettingsColumn: View {
     var isLast = false
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: title)
-                .font(.book(size: 11))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundStyle(Color.textMuted)
                 .lineLimit(1)
 
             if let value {
                 Text(verbatim: value)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.scoutRowStrong)
                     .lineLimit(1)
             } else {
                 SkeletonBar(width: 46, height: 11, delay: 0)
@@ -300,8 +300,8 @@ private struct SettingsColumn: View {
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 8)
-        .padding(.vertical, 9)
+        .padding(.horizontal, .space8)
+        .padding(.vertical, .space8)
         .overlay(alignment: .trailing) {
             if !isLast {
                 Separator(axis: .vertical)
@@ -318,8 +318,8 @@ private struct SettingsButton: View {
     var body: some View {
         Button(action: action) {
             Text(verbatim: title)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(isEnabled ? Color.accentColor : Color(.systemGray2))
+                .font(.scoutRowStrong)
+                .foregroundStyle(isEnabled ? Color.fillAccent : Color.textMuted)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
                 .settingsCardStyle()

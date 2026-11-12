@@ -21,21 +21,21 @@ struct FilterView: View {
             FilterHeader(isApplyEnabled: draft.isApplyEnabled, close: dismiss.callAsFunction, apply: apply)
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 22) {
+                VStack(alignment: .leading, spacing: .space22) {
                     FilterLevelsView(draft: draft)
                     FilterPeriodView(draft: draft)
                     FilterContextView(draft: draft)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 22)
-                .padding(.bottom, 16)
+                .padding(.horizontal, .gutter)
+                .padding(.top, .space22)
+                .padding(.bottom, .space16)
             }
             .scrollIndicators(.hidden)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 resetBar
             }
         }
-        .background(Color(.systemBackground).ignoresSafeArea())
+        .background(Color.surface.ignoresSafeArea())
         #if os(macOS)
             .frame(minWidth: 390, minHeight: 560)
         #endif
@@ -44,19 +44,19 @@ struct FilterView: View {
     private var resetBar: some View {
         Button(action: draft.reset) {
             Text(verbatim: "Reset Filter")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.scoutRowStrong)
                 .foregroundStyle(Color.filterDestructive)
                 .frame(maxWidth: .infinity)
                 .frame(height: 47)
-                .background(Color(.systemBackground))
+                .background(Color.surface)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 3)
-                        .strokeBorder(Color(.systemGray3), lineWidth: 0.5)
+                    RoundedRectangle(cornerRadius: .radiusBlock)
+                        .strokeBorder(Color.lineSeparator, lineWidth: 0.5)
                 }
         }
         .buttonStyle(.plain)
-        .padding(.horizontal, 16)
-        .background(Color(.systemBackground))
+        .padding(.horizontal, .gutter)
+        .background(Color.surface)
         .accessibilityLabel(Text(verbatim: "Reset Filter"))
     }
 
@@ -75,11 +75,11 @@ private struct FilterHeader: View {
         HStack(spacing: 0) {
             Button(action: close) {
                 CloseGlyph()
-                    .fill(.primary)
+                    .fill(Color.textPrimary)
                     .frame(width: 14, height: 14)
                     .frame(width: 44, height: 44)
-                    .background(Circle().fill(Color(.systemBackground).opacity(0.72)))
-                    .overlay(Circle().strokeBorder(Color.primary.opacity(0.08), lineWidth: 0.5))
+                    .background(Circle().fill(Color.surface.opacity(0.72)))
+                    .overlay(Circle().strokeBorder(Color.textPrimary.opacity(0.08), lineWidth: 0.5))
                     .shadow(color: .black.opacity(0.08), radius: 4, y: 1)
             }
             .buttonStyle(.plain)
@@ -87,13 +87,13 @@ private struct FilterHeader: View {
             .accessibilityLabel(Text(verbatim: "Close"))
 
             Text(verbatim: "Filter")
-                .font(.system(size: 17, weight: .semibold))
+                .font(.scoutTitle)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity)
 
             Button(action: apply) {
                 CheckGlyph()
-                    .fill(.white)
+                    .fill(Color.textOnFill)
                     .frame(width: 18, height: 14)
                     .frame(width: 44, height: 44)
                     .background(Circle().fill(Color.filterAccent.opacity(isApplyEnabled ? 1 : 0.35)))
@@ -107,7 +107,7 @@ private struct FilterHeader: View {
         .frame(height: 52)
         .overlay(alignment: .bottom) {
             Rectangle()
-                .fill(Color(.systemGray4))
+                .fill(Color.surfaceBarIdle)
                 .frame(height: 0.5)
         }
     }
@@ -118,11 +118,11 @@ struct FilterSection<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .space8) {
             Text(verbatim: title.uppercased())
-                .font(.system(size: 12, weight: .semibold))
-                .tracking(0.4)
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutFootnoteStrong)
+                .tracking(0.3)
+                .foregroundStyle(Color.textMuted)
 
             content()
         }
@@ -134,10 +134,10 @@ struct FilterBox<Content: View>: View {
 
     var body: some View {
         content()
-            .clipShape(RoundedRectangle(cornerRadius: 3))
+            .clipShape(RoundedRectangle(cornerRadius: .radiusBlock))
             .overlay {
-                RoundedRectangle(cornerRadius: 3)
-                    .strokeBorder(Color(.systemGray3), lineWidth: 0.5)
+                RoundedRectangle(cornerRadius: .radiusBlock)
+                    .strokeBorder(Color.lineSeparator, lineWidth: 0.5)
             }
     }
 }
@@ -154,17 +154,17 @@ struct FilterSegment: View {
     var body: some View {
         Button(action: action) {
             Text(verbatim: title)
-                .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
+                .font(isSelected ? .scoutRowStrong : .scoutRow)
                 .foregroundStyle(ink)
                 .lineLimit(1)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 9)
+                .padding(.horizontal, .space8)
+                .padding(.vertical, .space8)
                 .frame(maxWidth: .infinity, alignment: alignment)
                 .background(isSelected ? fill : Color.clear)
                 .overlay(alignment: .trailing) {
                     if showsDivider {
                         Rectangle()
-                            .fill(Color(.systemGray3))
+                            .fill(Color.lineSeparator)
                             .frame(width: 0.5)
                     }
                 }
@@ -193,7 +193,7 @@ private struct CheckGlyph: Shape {
         path.move(to: CGPoint(x: rect.minX + 2 * unit, y: rect.minY + 7.5 * unit))
         path.addLine(to: CGPoint(x: rect.minX + 6.5 * unit, y: rect.minY + 12 * unit))
         path.addLine(to: CGPoint(x: rect.minX + 16 * unit, y: rect.minY + 2 * unit))
-        return path.strokedPath(StrokeStyle(lineWidth: 2.2 * unit, lineCap: .round, lineJoin: .round))
+        return path.strokedPath(StrokeStyle(lineWidth: 2 * unit, lineCap: .round, lineJoin: .round))
     }
 }
 

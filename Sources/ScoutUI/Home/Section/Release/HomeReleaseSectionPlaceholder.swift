@@ -12,25 +12,25 @@ struct HomeReleaseSectionPlaceholder: View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Releases")
 
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 15, delay: 0.96)
 
                 Text(verbatim: "of sessions")
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
             }
             .frame(height: 28)
 
-            SkeletonBar(height: 24, delay: 1.04, fill: Color(.systemGray6))
-                .padding(.top, 10)
+            SkeletonBar(height: 24, delay: 1.04, fill: Color.surfaceGrey)
+                .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: Color(.systemGray5))
-                .padding(.top, 8)
+            AdoptionLegend(squareSize: 7, squareColor: Color.surfaceSkeleton)
+                .padding(.top, .space8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
                 .frame(height: 18, alignment: .leading)
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 }

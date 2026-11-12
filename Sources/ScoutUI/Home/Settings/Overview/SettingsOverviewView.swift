@@ -37,11 +37,11 @@ struct SettingsOverviewView: View {
                     if health.backends.isEmpty {
                         SettingsCard {
                             Text(verbatim: "No backends configured.")
-                                .font(.book(size: 15))
-                                .foregroundStyle(Color(.systemGray))
+                                .font(.scoutRow)
+                                .foregroundStyle(Color.textMuted)
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 10)
+                                .padding(.horizontal, .space8)
+                                .padding(.vertical, .space10)
                         }
                     } else {
                         SettingsStrip {
@@ -114,19 +114,19 @@ struct SettingsOverviewView: View {
                                 caption: "on this iPhone"
                             )
 
-                            SettingsCardAction(title: "Clear", color: .red) {
+                            SettingsCardAction(title: "Clear", color: .textDanger) {
                                 isClearing = true
                             }
                         }
                     }
 
                     Text(verbatim: version)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
-                        .padding(.top, 22)
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
+                        .padding(.top, .space22)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Settings")
@@ -194,33 +194,33 @@ private struct SendReadout: View {
     let summary: SendSummary
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 4) {
+        HStack(alignment: .firstTextBaseline, spacing: .space4) {
             if let pending = summary.pending {
                 Text(verbatim: "\(pending)")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.scoutNumberS)
             } else {
                 SkeletonBar(width: 28, height: 16, delay: 0)
             }
 
             Text(verbatim: "records waiting")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
 
             if let lastSent = summary.lastSent {
                 Text(verbatim: "· sent \(lastSent)")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             } else {
                 Text(verbatim: "·")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
                 SkeletonBar(width: 74, height: 9, delay: 0)
             }
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 10)
+        .padding(.horizontal, .space8)
+        .padding(.vertical, .space10)
     }
 }
 

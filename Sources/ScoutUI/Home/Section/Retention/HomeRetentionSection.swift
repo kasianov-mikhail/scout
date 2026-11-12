@@ -42,15 +42,15 @@ struct HomeRetentionSection: View {
             }
 
             footer
-                .padding(.top, 4)
-                .padding(.bottom, 6)
+                .padding(.top, .space4)
+                .padding(.bottom, .space6)
         }
     }
 
     private var footer: some View {
         Text(verbatim: "Gray: installs that week · green: kept")
-            .font(.book(size: 13))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutCaption)
+            .foregroundStyle(Color.textMuted)
     }
 }
 
@@ -58,8 +58,8 @@ struct HomeRetentionHeader: View {
     var body: some View {
         Header(title: "Retention") {
             Text(verbatim: "kept on day 7")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -75,9 +75,9 @@ private struct RetentionRowContent: View {
     let showsDivider: Bool
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: .space10) {
             Text(verbatim: DateFormatter.monthDay.string(from: week.start))
-                .font(.book(size: 15))
+                .font(.scoutRow)
                 .frame(width: 56, alignment: .leading)
 
             RetentionBar(week: week, maxInstalls: maxInstalls)
@@ -102,16 +102,16 @@ private struct RetentionRowContent: View {
         if let kept = week.kept, let rate = week.rate {
             HStack(spacing: 0) {
                 Text(verbatim: "\(kept)")
-                    .font(.system(size: 13, weight: .semibold, design: .monospaced))
+                    .font(.scoutValueStrong)
                     .foregroundStyle(Color.positive)
 
                 Text(verbatim: " · \(Int((rate * 100).rounded()))%")
-                    .foregroundStyle(Color(.systemGray))
+                    .foregroundStyle(Color.textMuted)
             }
-            .font(.book(size: 13, design: .monospaced))
+            .font(.scoutValue)
         } else {
             Text(verbatim: week.pendingLabel ?? "—")
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .foregroundStyle(Color.pending)
         }
     }
@@ -124,7 +124,7 @@ private struct RetentionRowContent: View {
                 HomeRetentionSection(weeks: .samples) {}
                 HomeRetentionSection(weeks: nil) {}
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

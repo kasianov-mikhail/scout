@@ -18,24 +18,24 @@ struct IncidentTileView<Element: Incident>: View {
     let side: Side
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             headline
 
             Text(verbatim: tile.name)
-                .font(.book(size: 13, design: .monospaced))
-                .foregroundStyle(.primary)
+                .font(.scoutValue)
+                .foregroundStyle(Color.textPrimary)
                 .lineLimit(1)
 
             Text(verbatim: tile.subtitle)
-                .font(.book(size: 11, design: .monospaced))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutMonoCaption)
+                .foregroundStyle(Color.textMuted)
                 .lineLimit(1)
 
             bars
-                .padding(.top, 4)
+                .padding(.top, .space4)
         }
-        .padding(.top, 16)
-        .padding(.bottom, 14)
+        .padding(.top, .space16)
+        .padding(.bottom, .space12)
         .padding(.leading, side == .trailing ? 14 : 0)
         .padding(.trailing, side == .leading ? 14 : 0)
         .contentShape(Rectangle())
@@ -43,10 +43,10 @@ struct IncidentTileView<Element: Incident>: View {
     }
 
     private var headline: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
+        HStack(alignment: .firstTextBaseline, spacing: .space8) {
             Text(verbatim: "\(tile.count)")
-                .font(.system(size: 34, weight: .bold))
-                .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color.primary)
+                .font(.scoutNumberXL)
+                .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color.textPrimary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .fixedSize(horizontal: false, vertical: true)
@@ -54,8 +54,8 @@ struct IncidentTileView<Element: Incident>: View {
 
             if let change = tile.changeLabel {
                 Text(verbatim: change)
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color(.systemGray))
+                    .font(.scoutCaptionStrong)
+                    .foregroundStyle(tile.isAccented ? Element.kind.detailColor : Color.fillLevel)
                     .lineLimit(1)
             }
         }
@@ -64,7 +64,7 @@ struct IncidentTileView<Element: Incident>: View {
     private var bars: some View {
         let maxValue = max(tile.bars.max() ?? 0, 1)
 
-        return HStack(alignment: .bottom, spacing: 3) {
+        return HStack(alignment: .bottom, spacing: .space2) {
             ForEach(Array(tile.bars.enumerated()), id: \.offset) { index, value in
                 barShape
                     .fill(fill(value: value, index: index))
@@ -80,7 +80,7 @@ struct IncidentTileView<Element: Incident>: View {
         if #available(iOS 17.0, macOS 14.0, *) {
             AnyShape(UnevenRoundedRectangle(topLeadingRadius: 1.5, topTrailingRadius: 1.5))
         } else {
-            AnyShape(RoundedRectangle(cornerRadius: 1.5))
+            AnyShape(RoundedRectangle(cornerRadius: .radiusBar))
         }
     }
 
@@ -96,9 +96,9 @@ struct IncidentTileView<Element: Incident>: View {
             return Element.kind.color
         }
         if value == 0 {
-            return Color(.systemGray4)
+            return Color.surfaceBarIdle
         }
-        return Color(red: 60 / 255, green: 60 / 255, blue: 67 / 255).opacity(0.2)
+        return Color.fillLevel.opacity(0.2)
     }
 }
 
@@ -112,7 +112,7 @@ struct IncidentTileView<Element: Incident>: View {
                 )
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
     .navigationTitle(en: "Crashes")

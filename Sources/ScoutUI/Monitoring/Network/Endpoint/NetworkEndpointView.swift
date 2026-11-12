@@ -53,8 +53,8 @@ struct NetworkEndpointView: View {
             } else {
                 VStack(spacing: 0) {
                     RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                        .padding(.top, 8)
-                        .padding(.horizontal, 16)
+                        .padding(.top, .space8)
+                        .padding(.horizontal, .gutter)
 
                     Placeholder(
                         text: "No requests",
@@ -93,7 +93,7 @@ struct NetworkEndpointView: View {
         return ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
@@ -115,7 +115,7 @@ struct NetworkEndpointView: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

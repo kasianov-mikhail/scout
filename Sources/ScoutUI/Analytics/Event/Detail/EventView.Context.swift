@@ -29,7 +29,7 @@ extension EventView {
                 }
                 sessionRow {
                     Text(verbatim: value.sessionSummary)
-                        .font(.book(size: 17))
+                        .font(.scoutBody)
                         .lineLimit(1)
                 }
             case .failure(let error):
@@ -42,7 +42,7 @@ extension EventView {
             case nil:
                 chipRow {
                     ForEach([120, 74, 74], id: \.self) { width in
-                        SkeletonBar(width: CGFloat(width), height: 27, delay: 0.08, cornerRadius: 13.5)
+                        SkeletonBar(width: CGFloat(width), height: 27, delay: 0.08, cornerRadius: .radiusBlock)
                     }
                 }
                 sessionRow {
@@ -52,11 +52,11 @@ extension EventView {
         }
 
         private func chipRow(@ViewBuilder content: () -> some View) -> some View {
-            FlowLayout(spacing: 6) {
+            FlowLayout(spacing: .space6) {
                 content()
             }
-            .padding(.top, 12)
-            .padding(.bottom, 14)
+            .padding(.top, .space12)
+            .padding(.bottom, .space12)
             .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(alignment: .bottom) {
                 Separator()
@@ -69,14 +69,14 @@ extension EventView {
             return NavigationLink {
                 SessionInspector(sessionID: sessionID, deviceID: deviceID)
             } label: {
-                HStack(spacing: 12) {
+                HStack(spacing: .space12) {
                     Image(systemName: "clock")
-                        .font(.book(size: 17))
-                        .foregroundStyle(.blue)
+                        .font(.scoutBody)
+                        .foregroundStyle(Color.textLink)
                         .frame(width: 24)
 
                     Text(verbatim: "Session")
-                        .font(.book(size: 15))
+                        .font(.scoutRow)
                         .foregroundStyle(Color.eventContextLabel)
 
                     Spacer(minLength: 0)

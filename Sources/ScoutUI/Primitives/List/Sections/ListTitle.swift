@@ -12,9 +12,9 @@ struct ListTitle: View {
 
     var body: some View {
         Text(verbatim: title)
-            .font(.listTitle)
+            .font(.scoutNumberL)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 8)
+            .padding(.top, .space8)
     }
 }
 
@@ -23,7 +23,7 @@ struct ListTitle: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             ListTitle(title: "Today")
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

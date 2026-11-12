@@ -12,29 +12,29 @@ extension EventView {
         let usual: String
 
         var body: some View {
-            HStack(spacing: 12) {
-                HStack(spacing: 6) {
+            HStack(spacing: .space12) {
+                HStack(spacing: .space6) {
                     VerticalDash()
                         .frame(height: 12)
                     Text(verbatim: "usual pace · \(usual) a day")
                 }
 
-                HStack(spacing: 6) {
-                    RoundedRectangle(cornerRadius: 2)
+                HStack(spacing: .space6) {
+                    RoundedRectangle(cornerRadius: .radiusBar)
                         .fill(Color.eventAboveUsual)
                         .frame(width: 10, height: 8)
                     Text(verbatim: "above usual")
                 }
 
-                HStack(spacing: 6) {
+                HStack(spacing: .space6) {
                     Rectangle()
-                        .fill(Color.primary)
+                        .fill(Color.textPrimary)
                         .frame(width: 1.5, height: 12)
                     Text(verbatim: "now")
                 }
             }
-            .font(.book(size: 12))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutFootnote)
+            .foregroundStyle(Color.textMuted)
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: 30)
@@ -62,7 +62,7 @@ extension EventView {
                     path.move(to: CGPoint(x: 0.5, y: 0))
                     path.addLine(to: CGPoint(x: 0.5, y: proxy.size.height))
                 }
-                .stroke(Color(.systemGray), style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
+                .stroke(Color.fillLevel, style: StrokeStyle(lineWidth: 1, dash: [3, 3]))
             }
             .frame(width: 1)
         }
@@ -74,5 +74,5 @@ extension EventView {
         EventView.StatLegend(usual: "5.4")
         EventView.StatLegendPlaceholder()
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .gutter)
 }

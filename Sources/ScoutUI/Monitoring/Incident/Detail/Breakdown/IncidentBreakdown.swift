@@ -66,7 +66,7 @@ extension IncidentBreakdown {
         return segments
     }
 
-    private static let colors: [Color] = [.blue, .indigo, .purple, .teal]
+    private static let colors: [Color] = [.fillAccent, .fillResource, .purple, .fillSession]
 }
 
 extension IncidentBreakdown {

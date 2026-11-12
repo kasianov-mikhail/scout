@@ -16,29 +16,29 @@ struct FilterChips: View {
 
         if !chips.isEmpty {
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: 8) {
+                HStack(spacing: .space8) {
                     ForEach(chips) { chip in
                         Button {
                             withAnimation {
                                 query.remove(chip.kind)
                             }
                         } label: {
-                            HStack(spacing: 5) {
+                            HStack(spacing: .space4) {
                                 Text(verbatim: chip.label)
                                 Image(systemName: "xmark")
                                     .imageScale(.small)
                             }
-                            .font(.book(size: 12))
-                            .foregroundStyle(Color.blue)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 6)
-                            .background(Color.blue.opacity(0.13), in: Capsule())
+                            .font(.scoutFootnote)
+                            .foregroundStyle(Color.textLink)
+                            .padding(.horizontal, .space10)
+                            .padding(.vertical, .space6)
+                            .background(Color.fillAccent.opacity(0.12), in: RoundedRectangle(cornerRadius: .radiusBlock))
                         }
                         .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal)
-                .padding(.vertical, 8)
+                .padding(.vertical, .space8)
             }
         }
     }

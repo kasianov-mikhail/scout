@@ -29,7 +29,7 @@ struct FilterButton: View {
                 .opaquePresentation()
             }
         #endif
-        .tint(.primary)
+        .tint(Color.textPrimary)
     }
 }
 

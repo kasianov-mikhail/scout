@@ -27,13 +27,13 @@ struct ReleaseTile: View {
     }
 
     private var content: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: value.kind.title)
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
 
             Text(verbatim: value.value)
-                .font(.system(size: 24, weight: .bold))
+                .font(.scoutNumberM)
                 .monospacedDigit()
                 .foregroundStyle(value.color)
 
@@ -42,8 +42,8 @@ struct ReleaseTile: View {
 
             if let footer = value.footer {
                 Text(verbatim: footer)
-                    .font(.book(size: 12))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutFootnote)
+                    .foregroundStyle(Color.textMuted)
                     .lineLimit(1)
                     .minimumScaleFactor(0.85)
             }
@@ -96,25 +96,25 @@ private struct ReleaseChartView: View {
             ZStack(alignment: .leading) {
                 HStack(spacing: 0) {
                     Rectangle()
-                        .fill(Color(red: 0xFF / 255, green: 0xE5 / 255, blue: 0xE5 / 255))
+                        .fill(Color.tintDanger)
                         .frame(width: width * 0.5)
 
                     Rectangle()
-                        .fill(Color(red: 0xFF / 255, green: 0xF3 / 255, blue: 0xD6 / 255))
+                        .fill(Color.tintWarning)
                         .frame(width: width * 0.25)
 
                     Rectangle()
-                        .fill(Color(red: 0xE3 / 255, green: 0xF5 / 255, blue: 0xE8 / 255))
+                        .fill(Color.tintSuccess)
                         .frame(width: width * 0.25)
                 }
 
                 Rectangle()
-                    .fill(Color.primary)
+                    .fill(Color.textPrimary)
                     .frame(width: 2)
                     .offset(x: min(max(width * fraction, width * 0.005), width - 2))
             }
             .frame(height: 6)
-            .clipShape(RoundedRectangle(cornerRadius: 3))
+            .clipShape(RoundedRectangle(cornerRadius: .radiusBlock))
             .position(x: width / 2, y: proxy.size.height / 2)
         }
     }
@@ -122,11 +122,11 @@ private struct ReleaseChartView: View {
     private func progress(_ value: Double) -> some View {
         GeometryReader { proxy in
             ZStack(alignment: .leading) {
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(Color(.systemGray5))
+                RoundedRectangle(cornerRadius: .radiusBlock)
+                    .fill(Color.surfaceSkeleton)
 
-                RoundedRectangle(cornerRadius: 3)
-                    .fill(Color(.systemGray2))
+                RoundedRectangle(cornerRadius: .radiusBlock)
+                    .fill(Color.textMuted)
                     .frame(width: proxy.size.width * min(max(value, 0), 1))
             }
             .frame(height: 6)
@@ -137,7 +137,7 @@ private struct ReleaseChartView: View {
     private func bars(_ values: [Int], accent: Color?) -> some View {
         let maximum = values.max() ?? 0
 
-        return HStack(alignment: .bottom, spacing: 2) {
+        return HStack(alignment: .bottom, spacing: .space2) {
             ForEach(values.indices, id: \.self) { index in
                 let value = values[index]
                 let isLast = index == values.count - 1
@@ -156,7 +156,7 @@ private struct ReleaseChartView: View {
         if isLast, let accent, value > 0 {
             return accent
         }
-        return value > 0 ? Color(.systemGray4) : Color(.systemGray5)
+        return value > 0 ? Color.surfaceBarIdle : Color.surfaceSkeleton
     }
 
     private func segments(_ values: [Double]) -> some View {
@@ -166,7 +166,7 @@ private struct ReleaseChartView: View {
             let gaps = CGFloat(max(values.count - 1, 0)) * 2
             let room = max(proxy.size.width - gaps, 0)
 
-            HStack(spacing: 2) {
+            HStack(spacing: .space2) {
                 ForEach(values.indices, id: \.self) { index in
                     Rectangle()
                         .fill(shade(index))
@@ -180,10 +180,10 @@ private struct ReleaseChartView: View {
 
     private func shade(_ index: Int) -> Color {
         switch index {
-        case 0: Color(.systemGray)
-        case 1: Color(.systemGray2)
-        case 2: Color(.systemGray3)
-        default: Color(.systemGray4)
+        case 0: Color.fillLevel
+        case 1: Color.textMuted
+        case 2: Color.lineSeparator
+        default: Color.surfaceBarIdle
         }
     }
 }
@@ -202,5 +202,5 @@ private struct ReleaseChartView: View {
             ReleaseTile(value: detail.tiles[3], isLeading: false, action: {})
         }
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .gutter)
 }

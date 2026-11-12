@@ -98,18 +98,18 @@ struct ResourceGroupDetailView: View {
         NavigationLink {
             ResourceDetailView(resource: resource, group: occurrences.group)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 if let date = resource.date {
                     Text(verbatim: date.relativeString)
-                        .font(.book(size: 15))
+                        .font(.scoutRow)
                 }
 
                 Spacer()
 
                 if let label = breakdown.value?.occurrenceLabel(record: resource) {
                     Text(verbatim: label)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                         .lineLimit(1)
                 }
             }

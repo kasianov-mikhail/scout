@@ -97,9 +97,9 @@ struct AlertFormView: View {
                 }
 
                 Text(verbatim: draft.hint)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 4)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space4)
 
                 AlertSection(title: "Last week") {
                     AlertWeekCard(week: backtest.week, draft: draft, isFailed: backtest.error != nil)
@@ -108,7 +108,7 @@ struct AlertFormView: View {
                         ErrorRow(description: error.localizedDescription) {
                             await backtest.fetchAgain(in: database)
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                     }
                 }
 
@@ -118,17 +118,17 @@ struct AlertFormView: View {
 
                 if provider.notificationsDenied, draft.notifies {
                     NotificationsDeniedRow()
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                 }
 
                 AlertFooter()
 
                 Color.clear.frame(height: 24)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
-        .background(Color(.systemBackground))
+        .background(Color.surface)
     }
 
     private func save() {
@@ -149,27 +149,27 @@ private struct AlertWatchSummary: View {
 
     var body: some View {
         AlertCard {
-            HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 2) {
+            HStack(spacing: .space8) {
+                VStack(alignment: .leading, spacing: .space2) {
                     Text(verbatim: watch.templateTitle)
-                        .font(.system(size: 15, weight: .semibold))
+                        .font(.scoutRowStrong)
 
                     Text(verbatim: watch.summary)
-                        .font(.book(size: 11))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutMicro)
+                        .foregroundStyle(Color.textMuted)
                 }
 
                 Spacer(minLength: 0)
 
                 Button(action: change) {
                     Text(verbatim: "Change")
-                        .font(.system(size: 15, weight: .semibold))
-                        .foregroundStyle(Color.blue)
+                        .font(.scoutRowStrong)
+                        .foregroundStyle(Color.textLink)
                 }
                 .buttonStyle(.plain)
             }
             .frame(height: .rowSubtitle)
-            .padding(.horizontal, 8)
+            .padding(.horizontal, .space8)
         }
     }
 }

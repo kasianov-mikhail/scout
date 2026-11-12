@@ -19,9 +19,9 @@ struct Separator: View {
 }
 
 #Preview {
-    VStack(spacing: 16) {
+    VStack(spacing: .space16) {
         Separator()
-        HStack(spacing: 16) {
+        HStack(spacing: .space16) {
             Text(verbatim: "Left")
             Separator(axis: .vertical)
                 .frame(height: 40)

@@ -14,15 +14,15 @@ struct MetricSectionHeader: View {
     var body: some View {
         HStack {
             Text(verbatim: title.uppercased())
-                .font(.system(size: 16, weight: .bold))
+                .font(.scoutSection)
 
             Spacer()
 
             Text(verbatim: trailing)
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -39,22 +39,22 @@ struct MetricBucketRow: View {
     let tone: MetricTone
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: label)
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .frame(width: 56, alignment: .leading)
 
-            HStack(spacing: 6) {
+            HStack(spacing: .space6) {
                 GeometryReader { proxy in
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 2)
+                        RoundedRectangle(cornerRadius: .radiusBar)
                             .fill(Color.metricTrack)
 
                         if row.fraction > 0 {
-                            RoundedRectangle(cornerRadius: 2)
-                                .fill(Color.blue)
+                            RoundedRectangle(cornerRadius: .radiusBar)
+                                .fill(Color.fillAccent)
                                 .frame(width: proxy.size.width * CGFloat(row.fraction))
                         }
                     }
@@ -63,20 +63,20 @@ struct MetricBucketRow: View {
 
                 if row.isCurrent {
                     Text(verbatim: "so far")
-                        .font(.book(size: 12))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutFootnote)
+                        .foregroundStyle(Color.textMuted)
                         .frame(width: 34, alignment: .leading)
                 }
             }
 
             Text(verbatim: row.value.map { format.label($0) } ?? "—")
-                .font(.book(size: 14, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
                 .frame(width: 56, alignment: .trailing)
 
             Text(verbatim: deltaLabel)
-                .font(.book(size: 13))
-                .foregroundStyle(row.isCurrent ? Color(.systemGray) : tone.color)
+                .font(.scoutCaption)
+                .foregroundStyle(row.isCurrent ? Color.fillLevel : tone.color)
                 .frame(width: 48, alignment: .trailing)
         }
         .frame(height: .rowTable)

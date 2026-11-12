@@ -49,7 +49,7 @@ struct NetworkEndpoint: Identifiable {
         case "DELETE":
             .networkDelete
         default:
-            Color(.systemGray)
+            Color.fillLevel
         }
     }
 }

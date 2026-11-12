@@ -30,7 +30,7 @@ struct ChartSnapshot<ChartContent: View>: View {
     }
 
     private var fadingHeader: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             titleText.opacity(showsTitle ? 1 : 0)
             rangeText.opacity(showsRange ? 1 : 0)
         }
@@ -40,7 +40,7 @@ struct ChartSnapshot<ChartContent: View>: View {
     }
 
     private var staticHeader: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             if showsTitle {
                 titleText
             }
@@ -52,12 +52,12 @@ struct ChartSnapshot<ChartContent: View>: View {
     }
 
     private var titleText: some View {
-        Text(verbatim: title).font(.headline)
+        Text(verbatim: title).font(.scoutTitle)
     }
 
     private var rangeText: some View {
         Text(verbatim: rangeLabel)
-            .font(.book(size: 12))
-            .foregroundStyle(.secondary)
+            .font(.scoutFootnote)
+            .foregroundStyle(Color.textSecondary)
     }
 }

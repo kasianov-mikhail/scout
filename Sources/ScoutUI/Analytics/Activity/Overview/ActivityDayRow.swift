@@ -12,29 +12,29 @@ struct ActivityDayRow: View {
     let row: ActivityRow
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: row.dayLabel)
-                .font(.book(size: 15))
+                .font(.scoutRow)
                 .frame(width: 64, alignment: .leading)
 
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 2)
+                    RoundedRectangle(cornerRadius: .radiusBar)
                         .fill(Color.trendTrack)
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.green)
+                    RoundedRectangle(cornerRadius: .radiusBar)
+                        .fill(Color.fillSuccess)
                         .frame(width: proxy.size.width * row.fraction)
                 }
             }
             .frame(height: 8)
 
             Text(verbatim: row.valueLabel)
-                .font(.book(size: 15, design: .monospaced))
+                .font(.scoutRowMono)
                 .frame(width: 52, alignment: .trailing)
 
             Text(verbatim: row.deltaLabel)
-                .font(.book(size: 13))
-                .foregroundStyle(row.isRising ? Color.trendPositive : Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(row.isRising ? Color.trendPositive : Color.fillLevel)
                 .frame(width: 52, alignment: .trailing)
         }
         .frame(height: .rowTable)
@@ -60,7 +60,7 @@ struct ActivityDayRow: View {
                 ActivityDayRow(row: row)
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

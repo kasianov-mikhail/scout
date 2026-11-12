@@ -21,18 +21,18 @@ struct ConnectionRow: View {
                     .foregroundStyle(connection.status.healthColor)
                     .accessibilityLabel(Text(verbatim: connection.status.healthLabel))
                 HStack {
-                    Text(verbatim: connection.name).font(.book(size: 16))
+                    Text(verbatim: connection.name).font(.scoutRow)
                     Spacer(minLength: 0)
                 }
-                .padding(.vertical, 12)
+                .padding(.vertical, .space12)
                 .overlay(alignment: .bottom) {
                     if showsSeparator {
                         Separator()
                     }
                 }
-                .padding(.trailing, 16)
+                .padding(.trailing, .gutter)
             }
-            .padding(.leading, 16)
+            .padding(.leading, .gutter)
             .background {
                 if isActive {
                     Rectangle().fill(.tint.opacity(0.12))

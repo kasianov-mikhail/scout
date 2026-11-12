@@ -19,7 +19,7 @@ struct AdoptionBar: View {
             let gaps = CGFloat(max(versions.count - 1, 0)) * 2
             let width = max(proxy.size.width - gaps, 0)
 
-            HStack(spacing: 2) {
+            HStack(spacing: .space2) {
                 ForEach(Array(versions.enumerated()), id: \.element.id) { index, version in
                     Rectangle()
                         .fill(version.stability.level.color)
@@ -28,7 +28,7 @@ struct AdoptionBar: View {
                             if version.showsLabel {
                                 Text(verbatim: version.id)
                                     .font(.weighted(size: labelSize, weight: labelWeight, design: .monospaced))
-                                    .foregroundStyle(.white)
+                                    .foregroundStyle(Color.textOnFill)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
                                     .padding(.leading, labelInset)
@@ -39,7 +39,7 @@ struct AdoptionBar: View {
             }
         }
         .frame(height: height)
-        .clipShape(RoundedRectangle(cornerRadius: 3))
+        .clipShape(RoundedRectangle(cornerRadius: .radiusBlock))
         .accessibilityHidden(true)
     }
 }
@@ -48,8 +48,8 @@ struct AdoptionBar: View {
     AdoptionBar(
         versions: ReleaseAdoption.sample.versions,
         height: 32,
-        labelSize: 11,
-        labelWeight: .bold,
+        labelSize: 10,
+        labelWeight: .semibold,
         labelInset: 6
     )
     .padding()

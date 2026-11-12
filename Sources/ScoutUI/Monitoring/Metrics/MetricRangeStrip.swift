@@ -12,14 +12,14 @@ struct MetricRangeStrip: View {
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 20) {
+            HStack(spacing: .space20) {
                 ForEach(MetricRange.allCases) { range in
                     Button {
                         selection = range
                     } label: {
                         Text(verbatim: range.title)
-                            .font(.system(size: 28, weight: .bold))
-                            .foregroundStyle(range == selection ? Color.primary : Color.pending)
+                            .font(.scoutNumberL)
+                            .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
                     }
                     .buttonStyle(.plain)
                     .accessibilityAddTraits(range == selection ? .isSelected : [])

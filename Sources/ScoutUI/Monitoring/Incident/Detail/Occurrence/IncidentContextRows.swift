@@ -50,7 +50,7 @@ struct IncidentContextRows<Element: Incident & IncidentDetailInfo>: View {
     private var deviceRow: some View {
         IncidentContextRow(
             systemImage: "iphone",
-            color: .blue,
+            color: .fillAccent,
             label: isLoading ? nil : deviceLabel,
             value: isLoading ? nil : context?.osVersion,
             skeleton: isLoading,
@@ -69,7 +69,7 @@ struct IncidentContextRows<Element: Incident & IncidentDetailInfo>: View {
         } label: {
             IncidentContextRow(
                 systemImage: "list.bullet.rectangle.portrait",
-                color: .indigo,
+                color: .fillResource,
                 label: "Session",
                 value: isLoading ? nil : sessionValue(sessionID),
                 skeleton: isLoading,
@@ -90,7 +90,7 @@ struct IncidentContextRows<Element: Incident & IncidentDetailInfo>: View {
         } label: {
             IncidentContextRow(
                 systemImage: "calendar.day.timeline.left",
-                color: .blue,
+                color: .fillAccent,
                 label: "Timeline",
                 value: isLoading ? nil : "this device",
                 skeleton: isLoading,
@@ -130,13 +130,13 @@ private struct IncidentContextRow: View {
     let delay: Double
 
     var body: some View {
-        HStack(spacing: 10) {
+        HStack(spacing: .space10) {
             if skeleton {
-                SkeletonBar(width: 18, height: 18, delay: delay, cornerRadius: 4)
+                SkeletonBar(width: 18, height: 18, delay: delay, cornerRadius: .radiusBadge)
                     .frame(width: 24)
             } else {
                 Image(systemName: systemImage)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
                     .frame(width: 24)
                     .foregroundStyle(color)
             }
@@ -145,7 +145,7 @@ private struct IncidentContextRow: View {
                 SkeletonBar(width: 88, height: 9, delay: delay)
             } else if let label {
                 Text(verbatim: label)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
                     .lineLimit(1)
             }
 
@@ -155,8 +155,8 @@ private struct IncidentContextRow: View {
                 SkeletonBar(width: 74, height: 9, delay: delay)
             } else if let value {
                 Text(verbatim: value)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
                     .lineLimit(1)
             }
         }

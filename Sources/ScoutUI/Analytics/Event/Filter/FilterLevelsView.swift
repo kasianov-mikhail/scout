@@ -18,7 +18,7 @@ struct FilterLevelsView: View {
 
     var body: some View {
         FilterSection(title: "Levels") {
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: .space4) {
                 FilterBox {
                     VStack(spacing: 0) {
                         ForEach(Self.rows.indices, id: \.self) { index in
@@ -41,7 +41,7 @@ struct FilterLevelsView: View {
                             .overlay(alignment: .bottom) {
                                 if index < Self.rows.count - 1 {
                                     Rectangle()
-                                        .fill(Color(.systemGray3))
+                                        .fill(Color.lineSeparator)
                                         .frame(height: 0.5)
                                 }
                             }
@@ -50,19 +50,19 @@ struct FilterLevelsView: View {
                 }
 
                 Text(verbatim: "Pick none to see every level.")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
         }
     }
 }
 
-private let warningInk = Color(red: 0x9A / 255, green: 0x72 / 255, blue: 0)
-private let warningFill = Color(red: 0x9A / 255, green: 0x72 / 255, blue: 0).opacity(0.14)
-private let errorInk = Color(red: 0xB3 / 255, green: 0x5C / 255, blue: 0)
-private let errorFill = Color(red: 1, green: 0x95 / 255, blue: 0).opacity(0.14)
-private let criticalInk = Color(red: 0xC4 / 255, green: 0, blue: 0x1A / 255)
-private let criticalFill = Color(red: 0xC4 / 255, green: 0, blue: 0x1A / 255).opacity(0.14)
+private let warningInk = Color.textCaution
+private let warningFill = Color.tintCaution
+private let errorInk = Color.textWarning
+private let errorFill = Color.tintWarning
+private let criticalInk = Color.textDanger
+private let criticalFill = Color.tintDanger
 
 extension EventLevel {
     fileprivate var filterInk: Color {
@@ -74,7 +74,7 @@ extension EventLevel {
         case .critical:
             criticalInk
         default:
-            .primary
+            .textPrimary
         }
     }
 
@@ -87,12 +87,12 @@ extension EventLevel {
         case .critical:
             criticalFill
         default:
-            Color(.systemGray6)
+            .surfaceGrey
         }
     }
 }
 
 #Preview {
     FilterLevelsView(draft: FilterDraft(query: .constant(EventQuery(levels: [.error]))))
-        .padding(16)
+        .padding(.space16)
 }

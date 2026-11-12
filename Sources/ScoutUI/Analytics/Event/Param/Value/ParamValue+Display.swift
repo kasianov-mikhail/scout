@@ -50,11 +50,11 @@ extension ParamValue {
     var color: Color {
         switch self {
         case .string:
-            .primary
+            .textPrimary
         case .stringConvertible(let convertible):
             convertible.color
         case .dictionary:
-            .indigo
+            .textResource
         case .array:
             .brown
         }

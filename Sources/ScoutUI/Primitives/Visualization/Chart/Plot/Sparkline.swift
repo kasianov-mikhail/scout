@@ -68,14 +68,14 @@ struct Sparkline: View {
 }
 
 #Preview {
-    VStack(spacing: 24) {
+    VStack(spacing: .space24) {
         Sparkline(series: MiniChartSeries(values: [3, 5, 4, 7, 6, 9, 12]), color: .purple)
             .frame(height: 60)
-        Sparkline(series: MiniChartSeries(values: [9, 7, 8, 6, 7, 5, 4]), color: .red)
+        Sparkline(series: MiniChartSeries(values: [9, 7, 8, 6, 7, 5, 4]), color: .fillDanger)
             .frame(height: 60)
-        Sparkline(series: MiniChartSeries(values: [4, 4, 4, 4, 4, 4, 4]), color: .green)
+        Sparkline(series: MiniChartSeries(values: [4, 4, 4, 4, 4, 4, 4]), color: .fillSuccess)
             .frame(height: 60)
-        Sparkline(series: .empty, color: .orange)
+        Sparkline(series: .empty, color: .fillWarning)
             .frame(height: 60)
     }
     .padding()

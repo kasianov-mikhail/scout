@@ -17,23 +17,23 @@ struct HomeRetentionSectionPlaceholder: View {
             }
 
             Text(verbatim: "Gray: installs that week · green: kept")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 4)
-                .padding(.bottom, 6)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space4)
+                .padding(.bottom, .space6)
         }
     }
 
     private func row(index: Int) -> some View {
         let delay = 1.2 + Double(index) * 0.08
 
-        return HStack(spacing: 10) {
+        return HStack(spacing: .space10) {
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 56, alignment: .leading)
 
             SkeletonBar(height: 18, delay: delay)
                 .frame(maxWidth: .infinity)
-                .padding(.trailing, 4)
+                .padding(.trailing, .space4)
 
             SkeletonBar(width: 46, height: 8, delay: delay)
                 .frame(width: 84, alignment: .trailing)

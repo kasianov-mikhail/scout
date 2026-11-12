@@ -91,15 +91,15 @@ extension SessionTimelineRowView {
 
     fileprivate var screenMarker: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 9)
+            RoundedRectangle(cornerRadius: .radiusBadge)
                 .fill(Color.timelineBackground)
                 .frame(width: 26, height: 26)
-            RoundedRectangle(cornerRadius: 6)
+            RoundedRectangle(cornerRadius: .radiusBadge)
                 .fill(Color.timelineSession)
                 .frame(width: 20, height: 20)
             Image(systemName: "iphone")
                 .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(.white)
+                .foregroundStyle(Color.textOnFill)
         }
     }
 
@@ -147,7 +147,7 @@ extension SessionTimelineRowView {
 
     func chip(_ text: String, level: EventLevel) -> some View {
         Text(verbatim: text)
-            .font(.system(size: 11, weight: .bold))
+            .font(.scoutBadge)
             .tracking(0.3)
             .foregroundStyle(level.sessionChipInk)
             .badgeStyle(fill: level.sessionChipBackground)

@@ -47,8 +47,8 @@ struct NetworkView: View {
             } else {
                 VStack(spacing: 0) {
                     RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                        .padding(.top, 8)
-                        .padding(.horizontal, 16)
+                        .padding(.top, .space8)
+                        .padding(.horizontal, .gutter)
 
                     Placeholder(
                         text: "No requests",
@@ -72,16 +72,16 @@ struct NetworkView: View {
         return ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 Text(verbatim: summary.text)
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
-                    .padding(.horizontal, 16)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space12)
+                    .padding(.horizontal, .gutter)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
@@ -98,7 +98,7 @@ struct NetworkView: View {
                     .buttonStyle(.plain)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .exportToolbar(text: NetworkReportExport(report: report, range: provider.query.range).text)

@@ -98,13 +98,13 @@ extension EnvironmentValues {
                     Text(verbatim: "Row \(row)").monospaced()
                     Spacer()
                     if row == anchor {
-                        Text(verbatim: "anchor").foregroundStyle(.tint).font(.book(size: 12))
+                        Text(verbatim: "anchor").foregroundStyle(.tint).font(.scoutFootnote)
                     }
                 }
                 .padding()
                 .background {
                     if row == anchor {
-                        Color.accentColor.opacity(0.12)
+                        Color.surfaceSelected
                         GeometryReader { geo in
                             Color.clear.preference(key: AnchorFrameKey.self, value: geo.frame(in: .global))
                         }

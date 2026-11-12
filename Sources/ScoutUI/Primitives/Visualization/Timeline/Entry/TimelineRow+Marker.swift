@@ -23,7 +23,7 @@ extension TimelineRow {
                     .overlay {
                         Image(systemName: symbol)
                             .font(.system(size: 9, weight: .bold))
-                            .foregroundStyle(.white)
+                            .foregroundStyle(Color.textOnFill)
                     }
             }
             .offset(x: 11, y: entry.height / 2 - 13)

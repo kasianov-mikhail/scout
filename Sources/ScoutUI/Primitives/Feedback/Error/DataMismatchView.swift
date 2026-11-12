@@ -17,23 +17,23 @@ struct DataMismatchView: View {
         ErrorScreen {
             VStack(alignment: .leading, spacing: 0) {
                 Text(verbatim: "Data didn't match")
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scoutHeadline)
 
                 Text(verbatim: "The server answered, but Scout couldn't read the reply. The app and the server may run different Scout versions.")
-                    .font(.book(size: 17))
+                    .font(.scoutBody)
                     .lineSpacing(4)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 8)
+                    .foregroundStyle(Color.textSecondary)
+                    .padding(.top, .space8)
 
                 logView
-                    .padding(.top, 24)
+                    .padding(.top, .space24)
 
                 Spacer(minLength: 0)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
             .padding(.top, 120)
         } actions: {
-            HStack(spacing: 12) {
+            HStack(spacing: .space12) {
                 Button(action: copy) {
                     Text(verbatim: "Copy log")
                 }
@@ -51,18 +51,18 @@ struct DataMismatchView: View {
         VStack(alignment: .leading, spacing: 0) {
             logRow(time: log.time, text: log.request, color: .secondary)
             logRow(time: log.time, text: log.response, color: .secondary)
-            logRow(time: log.time, text: log.failure, color: .errorAccent)
-            logRow(time: "", text: log.versions, color: Color(.systemGray))
+            logRow(time: log.time, text: log.failure, color: .textDanger)
+            logRow(time: "", text: log.versions, color: Color.fillLevel)
         }
-        .padding(12)
-        .background(Color(.systemGray6))
-        .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+        .padding(.space12)
+        .background(Color.surfaceGrey)
+        .clipShape(RoundedRectangle(cornerRadius: .radiusBlock, style: .continuous))
     }
 
     private func logRow(time: String, text: String, color: Color) -> some View {
-        HStack(alignment: .top, spacing: 8) {
+        HStack(alignment: .top, spacing: .space8) {
             Text(verbatim: time)
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .fixedSize(horizontal: true, vertical: false)
                 .frame(width: 64, alignment: .leading)
 
@@ -70,7 +70,7 @@ struct DataMismatchView: View {
                 .foregroundStyle(color)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .font(.book(size: 13, design: .monospaced))
+        .font(.scoutValue)
         .frame(height: .codeStep)
     }
 }

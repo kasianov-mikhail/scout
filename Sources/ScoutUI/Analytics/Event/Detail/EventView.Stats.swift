@@ -16,8 +16,8 @@ extension EventView {
         var body: some View {
             SectionHeader(title: "Stats") {
                 Text(verbatim: "average per day")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
 
             switch stat.result {
@@ -75,7 +75,7 @@ extension EventView {
                 EventView.StatSection(stat: StatProvider(.success(.samples), subject: .event("event_name")))
                 EventView.StatSection(stat: StatProvider(subject: .event("event_name")))
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

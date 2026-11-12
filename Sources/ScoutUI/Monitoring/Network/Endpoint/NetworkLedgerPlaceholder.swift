@@ -24,7 +24,7 @@ struct NetworkLedgerPlaceholder: View {
                     NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)

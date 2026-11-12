@@ -93,7 +93,7 @@ struct ChartExportSheet<ChartContent: View>: View {
                 }
                 .frame(height: .rowRegular)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .disabledBounce()
@@ -135,7 +135,7 @@ struct ChartExportSheet<ChartContent: View>: View {
             ShareLink(item: fileURL) {
                 Text(verbatim: "Share Image")
             }
-            .buttonStyle(.pill)
+            .buttonStyle(.prominent)
         }
     }
 
@@ -145,12 +145,12 @@ struct ChartExportSheet<ChartContent: View>: View {
             if let fileURL {
                 ShareLink(item: fileURL) {
                     Text(verbatim: "Share Image")
-                        .bold()
+                        .font(.scoutTitle)
                         .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, .space8)
                 }
                 .buttonStyle(.glassProminent)
-                .tint(.blue)
+                .tint(Color.fillAccent)
             }
         }
     #endif

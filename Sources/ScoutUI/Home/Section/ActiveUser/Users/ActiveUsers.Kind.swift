@@ -29,11 +29,11 @@ extension ActiveUsers {
         var accent: Color {
             switch self {
             case .dau:
-                .green
+                .fillSuccess
             case .sessions:
-                Color(red: 0x12 / 255, green: 0xA5 / 255, blue: 0x94 / 255)
+                .fillSession
             case .devices:
-                Color(red: 0x5A / 255, green: 0xC8 / 255, blue: 0xFA / 255)
+                .fillDevice
             }
         }
     }

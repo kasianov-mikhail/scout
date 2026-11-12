@@ -12,29 +12,29 @@ struct MetricTileView: View {
     let isLeading: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: .space4) {
             Text(verbatim: tile.displayName)
-                .font(.book(size: 12, design: .monospaced))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCode)
+                .foregroundStyle(Color.textMuted)
                 .lineLimit(2)
                 .multilineTextAlignment(.leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: .space6) {
                 Text(verbatim: tile.valueLabel)
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.scoutNumberM)
                     .monospacedDigit()
 
                 Text(verbatim: tile.suffix)
-                    .font(.book(size: 12))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutFootnote)
+                    .foregroundStyle(Color.textMuted)
             }
             .lineLimit(1)
 
             MetricSparkline(values: tile.series)
                 .frame(height: 28)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, .space12)
         .padding(.leading, isLeading ? 0 : 12)
         .padding(.trailing, isLeading ? 12 : 0)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -64,10 +64,10 @@ private struct MetricSparkline: View {
             ZStack {
                 if points.count > 1 {
                     area(points, size: proxy.size)
-                        .fill(Color.blue.opacity(0.12))
+                        .fill(Color.fillAccent.opacity(0.12))
 
                     line(points)
-                        .stroke(Color.blue, style: StrokeStyle(lineWidth: 1.5, lineJoin: .round))
+                        .stroke(Color.fillAccent, style: StrokeStyle(lineWidth: 1.5, lineJoin: .round))
                 }
             }
         }
@@ -118,5 +118,5 @@ private struct MetricSparkline: View {
             }
         }
     }
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .gutter)
 }

@@ -14,12 +14,12 @@ struct ErrorRow: View {
     @State private var isRetrying = false
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .space12) {
             Image(systemName: "exclamationmark.triangle")
-                .foregroundStyle(.yellow)
+                .foregroundStyle(Color.textCaution)
 
             Text(verbatim: description)
-                .font(.book(size: 16))
+                .font(.scoutRow)
                 .lineLimit(1)
 
             Spacer()
@@ -57,7 +57,7 @@ struct ErrorRow: View {
             ErrorRow(description: "The request timed out.") {}
             ErrorRow(description: "A much longer error description that explains what exactly went wrong while loading.") {}
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

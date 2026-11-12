@@ -13,7 +13,7 @@ struct ActivityMetricTabs: View {
     @Binding var selection: ActivityPeriod
 
     var body: some View {
-        HStack(alignment: .top, spacing: 12) {
+        HStack(alignment: .top, spacing: .space12) {
             ForEach(ActivityPeriod.allCases) { period in
                 Button {
                     selection = period
@@ -33,28 +33,28 @@ struct ActivityMetricTabs: View {
         let metric = series.summary(period: period)
         let isSelected = period == selection
 
-        return VStack(alignment: .leading, spacing: 2) {
+        return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: period.rawValue)
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
 
             Text(verbatim: metric.valueLabel)
-                .font(.system(size: 28, weight: .bold))
+                .font(.scoutNumberL)
                 .monospacedDigit()
-                .foregroundStyle(isSelected ? Color.primary : Color.inactiveValue)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.inactiveValue)
                 .frame(height: 33, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel(precision: 1))
-                .font(.book(size: 13))
-                .foregroundStyle(metric.isRising ? Color.trendPositive : Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(metric.isRising ? Color.trendPositive : Color.textMuted)
         }
-        .padding(.top, 10)
-        .padding(.bottom, 12)
+        .padding(.top, .space10)
+        .padding(.bottom, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if isSelected {
                 Rectangle()
-                    .fill(Color.green)
+                    .fill(Color.fillSuccess)
                     .frame(height: 2)
             }
         }
@@ -75,7 +75,7 @@ struct ActivityMetricTabs: View {
                     selection: .constant(.daily)
                 )
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

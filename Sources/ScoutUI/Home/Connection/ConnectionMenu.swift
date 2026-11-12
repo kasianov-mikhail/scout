@@ -27,7 +27,7 @@ struct ConnectionMenu: View {
         } label: {
             Image(systemName: "server.rack")
         }
-        .foregroundStyle(.primary)
+        .foregroundStyle(Color.textPrimary)
         .accessibilityLabel(Text(verbatim: "Backend"))
         .popover(isPresented: $isPresented) {
             VStack(spacing: 0) {
@@ -50,15 +50,15 @@ struct ConnectionMenu: View {
                             onSettings()
                         }
                     } label: {
-                        HStack(spacing: 10) {
+                        HStack(spacing: .space10) {
                             Image(systemName: "gearshape")
                             Text(verbatim: "Settings")
                             Spacer(minLength: 0)
                         }
-                        .font(.book(size: 16))
-                        .padding(.leading, 16)
-                        .padding(.trailing, 16)
-                        .padding(.vertical, 12)
+                        .font(.scoutRow)
+                        .padding(.leading, .gutter)
+                        .padding(.trailing, .gutter)
+                        .padding(.vertical, .space12)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
@@ -67,7 +67,7 @@ struct ConnectionMenu: View {
                     }
                 }
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .space8)
             .frame(minWidth: 240)
             .hapticFeedback(.selection, trigger: activeID)
             .task {

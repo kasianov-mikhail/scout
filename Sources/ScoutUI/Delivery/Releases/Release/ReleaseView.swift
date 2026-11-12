@@ -43,7 +43,7 @@ struct ReleaseView: View {
         .fetchTask([provider])
         .navigationTitle(en: "Release")
         .inlineNavigationTitle()
-        .toolbarBackground(provider.isLoading ? Color(.systemGray6) : release.freeSessions.level.background, for: .navigationBar)
+        .toolbarBackground(provider.isLoading ? Color.surfaceGrey : release.freeSessions.level.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationDestination(isPresented: $showAllCrashes) {
             VersionIncidentsView(
@@ -105,15 +105,15 @@ struct ReleaseView: View {
 
                 hangRate(detail.hangRate)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
 
     private func hangRate(_ value: ReleaseHangRate) -> some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: "Hang rate")
-                .font(.book(size: 15))
+                .font(.scoutRow)
 
             Spacer()
 
@@ -124,7 +124,7 @@ struct ReleaseView: View {
                     Text(verbatim: " · \(change)")
                 }
             }
-            .font(.system(size: 13, weight: .semibold, design: .monospaced))
+            .font(.scoutValueStrong)
             .foregroundStyle(value.color)
         }
         .frame(height: .rowRegular)
@@ -146,7 +146,7 @@ private struct ReleaseGrid: View {
                 }
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
 
     private func tile(_ value: ReleaseTileValue, isLeading: Bool) -> some View {

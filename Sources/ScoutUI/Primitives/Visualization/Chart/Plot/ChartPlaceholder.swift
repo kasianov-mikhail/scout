@@ -11,6 +11,6 @@ struct ChartPlaceholder: View {
     var body: some View {
         Text(verbatim: "No results")
             .font(.placeholderTitle)
-            .foregroundStyle(.gray.opacity(0.7))
+            .foregroundStyle(Color.textMuted.opacity(0.7))
     }
 }

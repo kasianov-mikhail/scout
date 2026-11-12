@@ -35,7 +35,7 @@ struct Redacted: View {
             Redacted(length: 5)
             Redacted(length: 8)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

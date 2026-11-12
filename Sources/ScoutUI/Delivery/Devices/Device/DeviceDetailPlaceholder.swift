@@ -19,14 +19,14 @@ struct DeviceDetailPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                 Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
                     .lineLimit(2)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space12)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
@@ -35,8 +35,8 @@ struct DeviceDetailPlaceholder: View {
 
                 SectionHeader(title: "SESSIONS", topPadding: 12) {
                     Text(verbatim: "TIMELINE")
-                        .font(.book(size: 16))
-                        .foregroundStyle(.blue)
+                        .font(.scoutSectionAction)
+                        .foregroundStyle(Color.textLink)
                 }
 
                 ForEach(0..<5, id: \.self) { index in
@@ -61,26 +61,26 @@ struct DeviceDetailPlaceholder: View {
 
                 activity
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: .space8) {
                     SkeletonBar(width: 300, height: 9, delay: 1.36)
                     SkeletonBar(width: 120, height: 9, delay: 1.36)
                 }
-                .padding(.top, 12)
-                .padding(.bottom, 16)
+                .padding(.top, .space12)
+                .padding(.bottom, .space16)
 
                 SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
 
                 usage
-                    .padding(.top, 14)
+                    .padding(.top, .space12)
 
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: .space8) {
                     SkeletonBar(width: 300, height: 9, delay: 1.52)
                     SkeletonBar(width: 120, height: 9, delay: 1.52)
                 }
-                .padding(.top, 12)
-                .padding(.bottom, 16)
+                .padding(.top, .space12)
+                .padding(.bottom, .space16)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -107,7 +107,7 @@ struct DeviceDetailPlaceholder: View {
     private func sessionRow(index: Int) -> some View {
         let delay = 0.24 + Double(index) * 0.08
 
-        return HStack(spacing: 8) {
+        return HStack(spacing: .space8) {
             Circle()
                 .fill(Color.clear)
                 .frame(width: 8, height: 8)
@@ -116,7 +116,7 @@ struct DeviceDetailPlaceholder: View {
                 .frame(width: 76, alignment: .leading)
 
             SkeletonBar(width: 28, height: 9, delay: delay)
-                .padding(.leading, 4)
+                .padding(.leading, .space4)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             SkeletonBar(width: 28, height: 9, delay: delay)
@@ -132,18 +132,18 @@ struct DeviceDetailPlaceholder: View {
         let delay = 0.8 + Double(index) * 0.08
         let widths: [CGFloat] = [88, 64, 112, 48]
 
-        return HStack(spacing: 12) {
+        return HStack(spacing: .space12) {
             ZStack {
                 if !isLast {
                     Rectangle()
-                        .fill(Color(.systemGray4))
+                        .fill(Color.surfaceBarIdle)
                         .frame(width: 1)
                         .frame(maxHeight: .infinity)
                         .offset(y: 22)
                 }
 
                 Circle()
-                    .fill(Color(.systemGray5))
+                    .fill(Color.surfaceSkeleton)
                     .frame(width: 8, height: 8)
             }
             .frame(width: 8, height: 44)
@@ -158,34 +158,34 @@ struct DeviceDetailPlaceholder: View {
     }
 
     private var activity: some View {
-        HStack(alignment: .bottom, spacing: 6) {
+        HStack(alignment: .bottom, spacing: .space6) {
             ForEach(Array(weekdays.enumerated()), id: \.offset) { index, weekday in
-                VStack(spacing: 4) {
+                VStack(spacing: .space4) {
                     SkeletonBar(width: 28, height: 6, delay: 1.28)
-                    SkeletonBar(height: 56, delay: 1.28, cornerRadius: 3, fill: Color.deviceShade)
+                    SkeletonBar(height: 56, delay: 1.28, cornerRadius: .radiusBlock, fill: Color.deviceShade)
                         .frame(maxWidth: .infinity)
                     Text(verbatim: weekday.label)
-                        .font(weekday.isCurrent ? .system(size: 11, weight: .semibold) : .book(size: 11))
-                        .foregroundStyle(weekday.isCurrent ? Color.primary : Color(.systemGray))
+                        .font(weekday.isCurrent ? .system(size: 10, weight: .semibold) : .system(size: 10))
+                        .foregroundStyle(weekday.isCurrent ? Color.textPrimary : Color.fillLevel)
                 }
                 .frame(maxWidth: .infinity)
             }
         }
-        .padding(.top, 14)
+        .padding(.top, .space12)
     }
 
     private var usage: some View {
-        VStack(spacing: 3) {
+        VStack(spacing: .space2) {
             ForEach(0..<7, id: \.self) { day in
-                HStack(spacing: 6) {
+                HStack(spacing: .space6) {
                     Text(verbatim: placeholderDayLabels[day])
                         .font(.book(size: 10))
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(Color.textMuted)
                         .frame(width: 10, alignment: .leading)
 
-                    HStack(spacing: 2) {
+                    HStack(spacing: .space2) {
                         ForEach(0..<24, id: \.self) { _ in
-                            RoundedRectangle(cornerRadius: 2)
+                            RoundedRectangle(cornerRadius: .radiusBar)
                                 .fill(Color.deviceShade)
                                 .frame(height: 12)
                         }
@@ -204,10 +204,10 @@ struct DeviceDetailPlaceholder: View {
                 Spacer()
                 Text(verbatim: "23")
             }
-            .font(.book(size: 10, design: .monospaced))
-            .foregroundStyle(Color(.systemGray))
-            .padding(.leading, 16)
-            .padding(.top, 3)
+            .font(.scoutAxis)
+            .foregroundStyle(Color.textMuted)
+            .padding(.leading, .gutter)
+            .padding(.top, .space2)
         }
     }
 

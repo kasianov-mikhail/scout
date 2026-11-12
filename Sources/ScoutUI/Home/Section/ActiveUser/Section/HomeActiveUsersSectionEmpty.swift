@@ -29,43 +29,43 @@ struct HomeActiveUsersSectionEmpty: View {
             }
 
             chart
-                .padding(.top, 14)
+                .padding(.top, .space12)
 
             Text(verbatim: "No sessions in the last 30 days")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 
     private func metric(kind: ActiveUsers.Kind) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: kind.title.uppercased())
-                .font(.footnote.weight(.semibold))
+                .font(.scoutCaptionStrong)
 
-            EmptyBar(width: 83, height: 28, cornerRadius: 4)
+            EmptyBar(width: 83, height: 28, cornerRadius: .radiusBadge)
                 .frame(height: 34, alignment: .leading)
 
             EmptyBar(width: 48, height: 10)
                 .frame(height: 15, alignment: .leading)
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, .space10)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var chart: some View {
         VStack(spacing: 0) {
-            HStack(alignment: .bottom, spacing: 3) {
+            HStack(alignment: .bottom, spacing: .space2) {
                 ForEach(Array(Self.heights.enumerated()), id: \.offset) { _, height in
-                    EmptyBar(height: height, cornerRadius: 2)
+                    EmptyBar(height: height, cornerRadius: .radiusBar)
                         .frame(maxWidth: .infinity)
                 }
             }
             .frame(height: 72, alignment: .bottom)
             .overlay(alignment: .bottom) {
                 Rectangle()
-                    .fill(Color(.systemGray4))
+                    .fill(Color.surfaceBarIdle)
                     .frame(height: 0.5)
             }
 
@@ -96,7 +96,7 @@ struct HomeActiveUsersSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeActiveUsersSectionEmpty(start: HomeSnapshot.date.addingDay(-29), end: HomeSnapshot.date) {}
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

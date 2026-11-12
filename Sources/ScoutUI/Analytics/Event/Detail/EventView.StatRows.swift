@@ -14,13 +14,13 @@ extension EventView {
         var body: some View {
             VStack(spacing: 0) {
                 HStack(alignment: .firstTextBaseline) {
-                    HStack(alignment: .firstTextBaseline, spacing: 6) {
+                    HStack(alignment: .firstTextBaseline, spacing: .space6) {
                         Text(verbatim: "Today")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.scoutRowStrong)
 
                         Text(verbatim: "so far")
-                            .font(.book(size: 11))
-                            .foregroundStyle(Color(.systemGray))
+                            .font(.scoutMicro)
+                            .foregroundStyle(Color.textMuted)
                     }
 
                     Spacer()
@@ -37,11 +37,11 @@ extension EventView {
                     if let stats {
                         TodayBar(stats: stats)
                     } else {
-                        SkeletonBar(height: 8, delay: 0.72, cornerRadius: 2, fill: Color(.systemGray6))
+                        SkeletonBar(height: 8, delay: 0.72, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
                     }
                 }
                 .frame(height: 8)
-                .padding(.top, 9)
+                .padding(.top, .space8)
 
                 HStack {
                     ForEach(Array(hourLabels.enumerated()), id: \.offset) { index, label in
@@ -51,11 +51,11 @@ extension EventView {
                         Text(verbatim: label)
                     }
                 }
-                .font(.book(size: 10, design: .monospaced))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 7)
+                .font(.scoutAxis)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space6)
             }
-            .padding(.top, 10)
+            .padding(.top, .space10)
             .frame(height: 72, alignment: .top)
             .overlay(alignment: .bottom) {
                 Separator()
@@ -73,11 +73,11 @@ extension EventView {
                 let width = proxy.size.width
 
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 2)
+                    RoundedRectangle(cornerRadius: .radiusBar)
                         .fill(Color.metricTrack)
 
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Color.blue)
+                    RoundedRectangle(cornerRadius: .radiusBar)
+                        .fill(Color.fillAccent)
                         .frame(width: width * stats.todayBlue)
 
                     UnevenRoundedRectangle(bottomTrailingRadius: 2, topTrailingRadius: 2)
@@ -86,7 +86,7 @@ extension EventView {
                         .offset(x: width * stats.dayFraction)
 
                     Rectangle()
-                        .fill(Color.primary)
+                        .fill(Color.textPrimary)
                         .frame(width: 1.5, height: 16)
                         .offset(x: width * stats.dayFraction - 0.75)
                 }
@@ -105,7 +105,7 @@ extension EventView {
                     let usualX = width * usualFraction
 
                     ZStack(alignment: .leading) {
-                        RoundedRectangle(cornerRadius: 2)
+                        RoundedRectangle(cornerRadius: .radiusBar)
                             .fill(Color.metricTrack)
                             .frame(height: 8)
 
@@ -115,7 +115,7 @@ extension EventView {
                             bottomTrailingRadius: row.above > 0 ? 0 : 2,
                             topTrailingRadius: row.above > 0 ? 0 : 2
                         )
-                        .fill(Color.blue)
+                        .fill(Color.fillAccent)
                         .frame(width: width * row.blue, height: 8)
 
                         UnevenRoundedRectangle(bottomTrailingRadius: 2, topTrailingRadius: 2)
@@ -140,7 +140,7 @@ extension EventView {
 
         var body: some View {
             PeriodLayout(title: period.title) {
-                SkeletonBar(height: 8, delay: delay, cornerRadius: 2, fill: Color(.systemGray6))
+                SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
             } value: {
                 SkeletonBar(width: 28, height: 11, delay: delay)
             }
@@ -153,9 +153,9 @@ extension EventView {
         @ViewBuilder let value: () -> Value
 
         var body: some View {
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 Text(verbatim: title)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
                     .lineLimit(1)
                     .frame(width: 76, alignment: .leading)
 
@@ -177,10 +177,10 @@ extension EventView {
 
         var body: some View {
             Text(verbatim: EventStats.countLabel(count))
-                .font(.book(size: 14, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
                 .lineLimit(1)
-                .foregroundStyle(count == 0 ? Color(.systemGray3) : Color.primary)
+                .foregroundStyle(count == 0 ? Color.lineSeparator : Color.textPrimary)
         }
     }
 }

@@ -33,20 +33,20 @@ struct RetentionDayTabs: View {
         let metric = overview?.metric(day: item)
         let isSelected = item == day
 
-        return VStack(alignment: .leading, spacing: 3) {
+        return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: item.title)
-                .font(isSelected ? .system(size: 13, weight: .semibold) : .book(size: 13))
-                .foregroundStyle(isSelected ? Color.primary : Color(.systemGray))
+                .font(isSelected ? .scoutCaptionStrong : .scoutCaption)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
 
             if let metric {
                 Text(verbatim: metric.rateLabel)
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.scoutNumberM)
                     .monospacedDigit()
                     .frame(height: 26, alignment: .leading)
 
                 Text(verbatim: metric.pointsLabel)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(metric.isRising ? Color.trendPositive : Color(.systemGray))
+                    .font(.scoutFootnoteStrong)
+                    .foregroundStyle(metric.isRising ? Color.trendPositive : Color.textMuted)
             } else {
                 SkeletonBar(width: 46, height: 14, delay: 0.16)
                     .frame(height: 26, alignment: .leading)
@@ -55,8 +55,8 @@ struct RetentionDayTabs: View {
                     .frame(height: 14, alignment: .leading)
             }
         }
-        .padding(.top, 12)
-        .padding(.bottom, 14)
+        .padding(.top, .space12)
+        .padding(.bottom, .space12)
         .padding(.leading, isFirst ? 0 : 10)
         .padding(.trailing, isLast ? 0 : 10)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -70,9 +70,9 @@ struct RetentionDayTabs: View {
         .overlay(alignment: .bottom) {
             if isSelected {
                 Rectangle()
-                    .fill(metric == nil ? Color(.systemGray5) : Color.green)
+                    .fill(metric == nil ? Color.surfaceSkeleton : Color.fillSuccess)
                     .frame(height: 2)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, .space10)
             }
         }
     }
@@ -84,7 +84,7 @@ struct RetentionDayTabs: View {
             RetentionDayTabs(overview: RetentionOverview(cohorts: .samples), day: .constant(.day7))
             RetentionDayTabs(overview: nil, day: .constant(.day7))
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }
