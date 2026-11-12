@@ -46,7 +46,7 @@ struct SettingsReadoutRow: View {
 
             if let caption {
                 Text(verbatim: caption)
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(Color(.systemGray))
             } else if let captionSkeletonWidth {
                 SkeletonBar(width: captionSkeletonWidth, height: 9, delay: 0)

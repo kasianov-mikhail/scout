@@ -55,7 +55,7 @@ struct ConnectionMenu: View {
                             Text(verbatim: "Settings")
                             Spacer(minLength: 0)
                         }
-                        .font(.weight450(size: 16))
+                        .font(.book(size: 16))
                         .padding(.leading, 16)
                         .padding(.trailing, 16)
                         .padding(.vertical, 12)

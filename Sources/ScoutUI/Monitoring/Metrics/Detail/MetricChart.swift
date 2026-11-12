@@ -61,7 +61,7 @@ struct MetricChart: View {
         for tick in scale.ticks {
             let y = y(tick, scale: scale, size: size)
             let label = Text(verbatim: format.label(tick, compact: true))
-                .font(.weight450(size: 10, design: .monospaced))
+                .font(.book(size: 10, design: .monospaced))
                 .foregroundColor(Color(.systemGray))
             let resolved = context.resolve(label)
             context.draw(resolved, at: CGPoint(x: size.width - 2, y: y - 6), anchor: .trailing)
@@ -162,7 +162,7 @@ struct MetricChart: View {
             context.stroke(path, with: .color(Color(.systemGray)), style: StrokeStyle(lineWidth: 1, dash: [2, 3]))
 
             let label = Text(verbatim: "reset")
-                .font(.weight450(size: 11))
+                .font(.book(size: 11))
                 .foregroundColor(Color(.systemGray))
             let resolved = context.resolve(label)
             context.draw(resolved, at: CGPoint(x: x + 4, y: 8), anchor: .leading)
@@ -217,7 +217,7 @@ struct MetricAxisLabels: View {
         }
         .frame(height: 12)
         .padding(.top, 4)
-        .font(.weight450(size: 10, design: .monospaced))
+        .font(.book(size: 10, design: .monospaced))
         .foregroundStyle(Color(.systemGray))
     }
 
@@ -243,7 +243,7 @@ struct MetricLegend: View {
                     .lineLimit(2)
             }
         }
-        .font(.weight450(size: 12))
+        .font(.book(size: 12))
         .foregroundStyle(Color(.systemGray))
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 10)

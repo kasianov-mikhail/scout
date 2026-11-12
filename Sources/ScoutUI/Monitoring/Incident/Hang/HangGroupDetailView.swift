@@ -101,14 +101,14 @@ struct HangGroupDetailView: View {
             HStack(spacing: 8) {
                 if let date = hang.date {
                     Text(verbatim: date.relativeString)
-                        .font(.weight450(size: 15))
+                        .font(.book(size: 15))
                 }
 
                 Spacer()
 
                 if let label = breakdown.value?.occurrenceLabel(record: hang) {
                     Text(verbatim: label)
-                        .font(.weight450(size: 13))
+                        .font(.book(size: 13))
                         .foregroundStyle(Color(.systemGray))
                         .lineLimit(1)
                 }

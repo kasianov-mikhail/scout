@@ -57,7 +57,7 @@ struct ChartSnapshot<ChartContent: View>: View {
 
     private var rangeText: some View {
         Text(verbatim: rangeLabel)
-            .font(.weight450(size: 12))
+            .font(.book(size: 12))
             .foregroundStyle(.secondary)
     }
 }

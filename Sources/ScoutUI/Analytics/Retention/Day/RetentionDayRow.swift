@@ -14,7 +14,7 @@ struct RetentionDayRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(verbatim: value.day.title)
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
                 .frame(width: 52, alignment: .leading)
 
             GeometryReader { proxy in

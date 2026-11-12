@@ -72,7 +72,7 @@ extension EventView {
                     ParamIcon(value: value)
 
                     Text(verbatim: item.key)
-                        .font(.weight450(size: 17))
+                        .font(.book(size: 17))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .fixedSize()
@@ -139,7 +139,7 @@ extension EventView {
 
         private var label: some View {
             Text(verbatim: text)
-                .font(.weight450(size: 16, design: .monospaced))
+                .font(.book(size: 16, design: .monospaced))
                 .lineLimit(1)
                 .fixedSize()
         }

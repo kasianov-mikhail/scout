@@ -14,7 +14,7 @@ struct HomeSectionExpandButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "arrow.up.right.and.arrow.down.left")
-                .font(.weight450(size: 20))
+                .font(.book(size: 20))
                 .frame(width: 44, height: 44)
                 .padding(.trailing, -12)
         }

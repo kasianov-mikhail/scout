@@ -56,7 +56,7 @@ private struct RetentionSegmentWeekRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(verbatim: week.dateLabel)
-                .font(week.isCurrent ? .system(size: 15, weight: .semibold) : .weight450(size: 15))
+                .font(week.isCurrent ? .system(size: 15, weight: .semibold) : .book(size: 15))
                 .frame(width: 64, alignment: .leading)
 
             GeometryReader { proxy in

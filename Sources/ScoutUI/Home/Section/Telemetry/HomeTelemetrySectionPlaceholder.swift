@@ -47,7 +47,7 @@ struct HomeTelemetrySectionPlaceholder: View {
 
         return HStack(alignment: .top, spacing: 8) {
             Image(systemName: kind.systemImage)
-                .font(.weight450(size: 18))
+                .font(.book(size: 18))
                 .foregroundStyle(kind.color)
                 .frame(width: 24)
                 .accessibilityHidden(true)
@@ -55,7 +55,7 @@ struct HomeTelemetrySectionPlaceholder: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(alignment: .firstTextBaseline, spacing: 8) {
                     Text(verbatim: kind.title)
-                        .font(.weight450(size: 16))
+                        .font(.book(size: 16))
 
                     Spacer(minLength: 0)
 

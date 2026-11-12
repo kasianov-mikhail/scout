@@ -66,7 +66,7 @@ struct TimelineRow: View {
 
             if let time = entry.time {
                 Text(verbatim: time)
-                    .font(.weight450(size: 12, design: .monospaced))
+                    .font(.book(size: 12, design: .monospaced))
                     .foregroundStyle(Color.timelineMuted)
                     .layoutPriority(1)
             }

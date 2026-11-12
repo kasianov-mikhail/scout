@@ -28,13 +28,13 @@ struct ErrorCodeScreen: View {
                     .padding(.top, 8)
 
                 Text(verbatim: message)
-                    .font(.weight450(size: 17))
+                    .font(.book(size: 17))
                     .lineSpacing(4)
                     .foregroundStyle(.secondary)
                     .padding(.top, 10)
 
                 Text(verbatim: endpoint)
-                    .font(.weight450(size: 13, design: .monospaced))
+                    .font(.book(size: 13, design: .monospaced))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 16)
 

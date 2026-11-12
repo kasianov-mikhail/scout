@@ -42,12 +42,12 @@ extension EventView {
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: "calendar.day.timeline.left")
-                            .font(.weight450(size: 17))
+                            .font(.book(size: 17))
                             .foregroundStyle(.blue)
                             .frame(width: 24)
 
                         Text(verbatim: "Show in timeline")
-                            .font(.weight450(size: 17))
+                            .font(.book(size: 17))
                             .foregroundStyle(.blue)
 
                         Spacer(minLength: 0)

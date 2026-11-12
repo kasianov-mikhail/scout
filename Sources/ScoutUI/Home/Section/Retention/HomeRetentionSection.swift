@@ -49,7 +49,7 @@ struct HomeRetentionSection: View {
 
     private var footer: some View {
         Text(verbatim: "Gray: installs that week · green: kept")
-            .font(.weight450(size: 13))
+            .font(.book(size: 13))
             .foregroundStyle(Color(.systemGray))
     }
 }
@@ -58,7 +58,7 @@ struct HomeRetentionHeader: View {
     var body: some View {
         Header(title: "Retention") {
             Text(verbatim: "kept on day 7")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .overlay(alignment: .bottom) {
@@ -77,7 +77,7 @@ private struct RetentionRowContent: View {
     var body: some View {
         HStack(spacing: 10) {
             Text(verbatim: DateFormatter.monthDay.string(from: week.start))
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
                 .frame(width: 56, alignment: .leading)
 
             RetentionBar(week: week, maxInstalls: maxInstalls)
@@ -108,10 +108,10 @@ private struct RetentionRowContent: View {
                 Text(verbatim: " · \(Int((rate * 100).rounded()))%")
                     .foregroundStyle(Color(.systemGray))
             }
-            .font(.weight450(size: 13, design: .monospaced))
+            .font(.book(size: 13, design: .monospaced))
         } else {
             Text(verbatim: week.pendingLabel ?? "—")
-                .font(.weight450(size: 13, design: .monospaced))
+                .font(.book(size: 13, design: .monospaced))
                 .foregroundStyle(Color.pending)
         }
     }

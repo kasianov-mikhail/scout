@@ -15,12 +15,12 @@ import SwiftUI
 
 extension Font {
     static let placeholderTitle = Font.system(size: 18, weight: .semibold)
-    static let codeChip = Font.weight450(size: 14, design: .monospaced)
+    static let codeChip = Font.book(size: 14, design: .monospaced)
     static let listTitle = Font.system(size: 28, weight: .bold)
-    static let telemetryTitle = Font.weight450(size: 16)
-    static let telemetryCaption = Font.weight450(size: 13)
+    static let telemetryTitle = Font.book(size: 16)
+    static let telemetryCaption = Font.book(size: 13)
 
-    static func weight450(size: CGFloat, design: Font.Design = .default) -> Font {
+    static func book(size: CGFloat, design: Font.Design = .default) -> Font {
         #if os(iOS)
             let weight = UIFont.Weight(rawValue: 0.12)
             switch design {
@@ -53,7 +53,7 @@ extension Font {
     static func weighted(size: CGFloat, weight: Font.Weight, design: Font.Design) -> Font {
         switch weight {
         case .regular, .medium:
-            .weight450(size: size, design: design)
+            .book(size: size, design: design)
         default:
             .system(size: size, weight: weight, design: design)
         }

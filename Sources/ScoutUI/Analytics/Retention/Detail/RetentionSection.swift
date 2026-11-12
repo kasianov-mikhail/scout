@@ -21,7 +21,7 @@ struct RetentionSection: View {
 
             if let note {
                 Text(verbatim: divider ? "│ \(note)" : note)
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
         }

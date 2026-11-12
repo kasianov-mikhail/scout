@@ -69,7 +69,7 @@ private struct ReleaseSummary: View {
                     .font(.system(size: 28, weight: .bold))
 
                 Text(verbatim: "of sessions")
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
 

@@ -13,7 +13,7 @@ struct ParamBadge: View {
 
     var body: some View {
         Label(convertible.label, systemImage: convertible.iconName)
-            .font(.weight450(size: 12))
+            .font(.book(size: 12))
             .foregroundStyle(convertible.color)
             .padding(.horizontal, 8)
             .padding(.vertical, 5)

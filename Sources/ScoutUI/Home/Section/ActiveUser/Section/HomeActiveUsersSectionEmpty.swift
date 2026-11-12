@@ -32,7 +32,7 @@ struct HomeActiveUsersSectionEmpty: View {
                 .padding(.top, 14)
 
             Text(verbatim: "No sessions in the last 30 days")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 10)
                 .padding(.bottom, 6)
