@@ -13,10 +13,8 @@ struct NetworkEndpointListHeader: View {
             ColumnHeader(title: "REQUESTS ↓", color: .networkAccent)
                 .frame(maxWidth: .infinity, alignment: .leading)
             ColumnHeader(title: "OK")
-                .hidden()
                 .frame(width: 56, alignment: .trailing)
             ColumnHeader(title: "P99")
-                .hidden()
                 .frame(width: 64, alignment: .trailing)
         }
         .columnHeaderStyle()
