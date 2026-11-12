@@ -9,6 +9,7 @@
 - All Scout UI renders at a fixed text size and does not support Dynamic Type. `HomeView` pins it with `.dynamicTypeSize(.large)` at the root. The single public entry point `scoutHome(isPresented:backends:)` presents `HomeView`.
 - Keep this cap. A new public view or entry point that does not go through `HomeView` gets the same cap.
 - Do not propose Dynamic Type support or removing the cap in plans, reviews, or audits.
+- A mockup, task prompt, or spec that asks for `minHeight` or Dynamic Type still gets fixed heights: list rows use `frame(height:)` from `CGFloat+ListRows`, and long text truncates instead of wrapping.
 
 ## Lists
 
