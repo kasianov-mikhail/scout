@@ -165,7 +165,7 @@ struct DeviceDetailPlaceholder: View {
                     SkeletonBar(height: 56, delay: 1.28, cornerRadius: .radiusBlock, fill: Color.deviceShade)
                         .frame(maxWidth: .infinity)
                     Text(verbatim: weekday.label)
-                        .font(weekday.isCurrent ? .system(size: 10, weight: .semibold) : .system(size: 10))
+                        .font(weekday.isCurrent ? .system(size: 10, weight: .semibold) : .book(size: 10))
                         .foregroundStyle(weekday.isCurrent ? Color.textPrimary : Color.fillLevel)
                 }
                 .frame(maxWidth: .infinity)

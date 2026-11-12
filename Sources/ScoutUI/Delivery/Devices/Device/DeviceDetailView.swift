@@ -319,7 +319,7 @@ private struct DeviceActivityChart: View {
                     .frame(height: 56)
 
                     Text(verbatim: point.showsLabel ? point.label : "")
-                        .font(point.isCurrent ? .system(size: 10, weight: .semibold) : .system(size: 10))
+                        .font(point.isCurrent ? .system(size: 10, weight: .semibold) : .book(size: 10))
                         .foregroundStyle(point.isCurrent ? Color.textPrimary : Color.fillLevel)
                         .lineLimit(1)
                 }
