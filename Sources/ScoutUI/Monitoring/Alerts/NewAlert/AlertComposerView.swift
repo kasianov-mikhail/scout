@@ -57,7 +57,7 @@ struct AlertComposerView: View {
                 }
 
                 Text(verbatim: draft.hint)
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(Color(.systemGray))
                     .padding(.top, 4)
 
@@ -173,10 +173,10 @@ private struct AlertWatchPickerRow: View {
         HStack(spacing: 8) {
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: watch.title)
-                    .font(isSelected ? .system(size: 15, weight: .bold) : .weight450(size: 15))
+                    .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
 
                 Text(verbatim: watch.detail)
-                    .font(.weight450(size: 11))
+                    .font(.book(size: 11))
                     .foregroundStyle(isSelected ? Color.blue.opacity(0.75) : Color(.systemGray))
             }
 

@@ -39,7 +39,7 @@ struct SessionEventsHeader: View {
             Spacer()
 
             Text(verbatim: "from session start")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color.timelineUnknown)
         }
         .padding(.top, 12)

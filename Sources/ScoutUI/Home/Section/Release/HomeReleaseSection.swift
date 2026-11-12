@@ -34,7 +34,7 @@ struct HomeReleaseSection: View {
                     .font(.system(size: 24, weight: .bold))
 
                 Text(verbatim: "of sessions")
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .foregroundStyle(Color(.systemGray))
             }
             .frame(height: 28)
@@ -67,7 +67,7 @@ struct HomeReleaseSection: View {
                 .foregroundColor(top.stability.level == .healthy ? Color.positive : top.stability.level.labelColor)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
                 .foregroundColor(Color(.systemGray)))
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
         }
     }
 }

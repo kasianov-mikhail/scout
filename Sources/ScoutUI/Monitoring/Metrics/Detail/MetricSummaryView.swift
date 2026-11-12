@@ -19,14 +19,14 @@ struct MetricSummaryView: View {
                     .monospacedDigit()
 
                 Text(verbatim: summary.unit)
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(1)
             }
 
             if let detail = summary.detail {
                 Text(verbatim: detail)
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(summary.tone.color)
             }
         }

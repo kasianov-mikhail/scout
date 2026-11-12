@@ -154,7 +154,7 @@ struct FilterSegment: View {
     var body: some View {
         Button(action: action) {
             Text(verbatim: title)
-                .font(isSelected ? .system(size: 15, weight: .bold) : .weight450(size: 15))
+                .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
                 .foregroundStyle(ink)
                 .lineLimit(1)
                 .padding(.horizontal, 8)

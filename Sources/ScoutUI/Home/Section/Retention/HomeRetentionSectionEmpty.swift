@@ -20,7 +20,7 @@ struct HomeRetentionSectionEmpty: View {
             }
 
             Text(verbatim: "Needs one full week of installs")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
                 .padding(.top, 10)
                 .padding(.bottom, 6)
@@ -30,7 +30,7 @@ struct HomeRetentionSectionEmpty: View {
     private func row(start: Date, fraction: CGFloat) -> some View {
         HStack(spacing: 10) {
             Text(verbatim: DateFormatter.monthDay.string(from: start))
-                .font(.weight450(size: 15))
+                .font(.book(size: 15))
                 .frame(width: 56, alignment: .leading)
 
             GeometryReader { proxy in

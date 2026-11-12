@@ -85,7 +85,7 @@ struct MetricDetailPlaceholder: View {
                     SkeletonBar(width: 74, height: 11, delay: 0.08)
                 } else {
                     Text(verbatim: range.totalTitle)
-                        .font(.weight450(size: 15))
+                        .font(.book(size: 15))
                         .foregroundStyle(Color(.systemGray))
                 }
             }
@@ -129,7 +129,7 @@ struct MetricDetailPlaceholder: View {
 
         return HStack(spacing: 8) {
             Text(verbatim: range.rowLabel(date: date))
-                .font(.weight450(size: 13, design: .monospaced))
+                .font(.book(size: 13, design: .monospaced))
                 .monospacedDigit()
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .leading)
@@ -140,7 +140,7 @@ struct MetricDetailPlaceholder: View {
 
                 if range.isCurrent(date: date, now: now) {
                     Text(verbatim: "so far")
-                        .font(.weight450(size: 12))
+                        .font(.book(size: 12))
                         .foregroundStyle(Color(.systemGray))
                         .frame(width: 34, alignment: .leading)
                 }

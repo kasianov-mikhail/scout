@@ -72,7 +72,7 @@ struct HomeView: View {
         }
         .imageScale(.medium)
         .dynamicTypeSize(.large)
-        .font(.weight450(size: 17))
+        .font(.book(size: 17))
         .environment(\.locale, Locale(identifier: "en_US"))
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())

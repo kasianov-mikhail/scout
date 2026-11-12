@@ -32,7 +32,7 @@ struct NetworkStatusRow: View {
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .trailing)
         }
-        .font(.weight450(size: 13, design: .monospaced))
+        .font(.book(size: 13, design: .monospaced))
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {

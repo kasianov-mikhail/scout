@@ -19,7 +19,7 @@ struct HomeAlertSectionEmpty: View {
                 Spacer()
 
                 Text(verbatim: rulesLabel)
-                    .font(.weight450(size: 13))
+                    .font(.book(size: 13))
                     .foregroundStyle(Color(.systemGray))
             }
 
@@ -39,7 +39,7 @@ struct HomeAlertSectionEmpty: View {
                 Text(verbatim: "Add rule")
                     .foregroundStyle(.blue)
             }
-            .font(.weight450(size: 13))
+            .font(.book(size: 13))
             .foregroundStyle(Color(.systemGray))
             .padding(.top, 2)
         }

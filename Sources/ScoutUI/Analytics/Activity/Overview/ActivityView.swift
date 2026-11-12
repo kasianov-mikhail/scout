@@ -81,7 +81,7 @@ private struct ActivityStickiness: View {
 
             Text(verbatim: " · a monthly user comes \(series.daysPerMonthLabel) days a month")
         }
-        .font(.weight450(size: 13))
+        .font(.book(size: 13))
         .foregroundStyle(Color(.systemGray))
         .lineLimit(1)
         .minimumScaleFactor(0.8)
@@ -104,7 +104,7 @@ struct ActivityRowsHeader: View {
             Spacer()
 
             Text(verbatim: "vs day before")
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
         .padding(.top, 12)

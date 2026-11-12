@@ -19,7 +19,7 @@ struct ErrorRow: View {
                 .foregroundStyle(.yellow)
 
             Text(verbatim: description)
-                .font(.weight450(size: 16))
+                .font(.book(size: 16))
                 .lineLimit(1)
 
             Spacer()

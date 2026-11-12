@@ -22,12 +22,12 @@ struct IncidentTileView<Element: Incident>: View {
             headline
 
             Text(verbatim: tile.name)
-                .font(.weight450(size: 13, design: .monospaced))
+                .font(.book(size: 13, design: .monospaced))
                 .foregroundStyle(.primary)
                 .lineLimit(1)
 
             Text(verbatim: tile.subtitle)
-                .font(.weight450(size: 11, design: .monospaced))
+                .font(.book(size: 11, design: .monospaced))
                 .foregroundStyle(Color(.systemGray))
                 .lineLimit(1)
 

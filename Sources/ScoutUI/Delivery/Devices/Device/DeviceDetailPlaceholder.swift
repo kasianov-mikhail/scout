@@ -22,7 +22,7 @@ struct DeviceDetailPlaceholder: View {
                     .padding(.top, 8)
 
                 Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
-                    .font(.weight450(size: 15))
+                    .font(.book(size: 15))
                     .foregroundStyle(Color(.systemGray))
                     .lineLimit(2)
                     .padding(.top, 4)
@@ -35,7 +35,7 @@ struct DeviceDetailPlaceholder: View {
 
                 SectionHeader(title: "SESSIONS", topPadding: 12) {
                     Text(verbatim: "TIMELINE")
-                        .font(.weight450(size: 16))
+                        .font(.book(size: 16))
                         .foregroundStyle(.blue)
                 }
 
@@ -165,7 +165,7 @@ struct DeviceDetailPlaceholder: View {
                     SkeletonBar(height: 56, delay: 1.28, cornerRadius: 3, fill: Color.deviceShade)
                         .frame(maxWidth: .infinity)
                     Text(verbatim: weekday.label)
-                        .font(weekday.isCurrent ? .system(size: 11, weight: .semibold) : .weight450(size: 11))
+                        .font(weekday.isCurrent ? .system(size: 11, weight: .semibold) : .book(size: 11))
                         .foregroundStyle(weekday.isCurrent ? Color.primary : Color(.systemGray))
                 }
                 .frame(maxWidth: .infinity)
@@ -179,7 +179,7 @@ struct DeviceDetailPlaceholder: View {
             ForEach(0..<7, id: \.self) { day in
                 HStack(spacing: 6) {
                     Text(verbatim: placeholderDayLabels[day])
-                        .font(.weight450(size: 10))
+                        .font(.book(size: 10))
                         .foregroundStyle(Color(.systemGray))
                         .frame(width: 10, alignment: .leading)
 
@@ -204,7 +204,7 @@ struct DeviceDetailPlaceholder: View {
                 Spacer()
                 Text(verbatim: "23")
             }
-            .font(.weight450(size: 10, design: .monospaced))
+            .font(.book(size: 10, design: .monospaced))
             .foregroundStyle(Color(.systemGray))
             .padding(.leading, 16)
             .padding(.top, 3)

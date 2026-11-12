@@ -28,7 +28,7 @@ struct FilterChips: View {
                                 Image(systemName: "xmark")
                                     .imageScale(.small)
                             }
-                            .font(.weight450(size: 12))
+                            .font(.book(size: 12))
                             .foregroundStyle(Color.blue)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 6)

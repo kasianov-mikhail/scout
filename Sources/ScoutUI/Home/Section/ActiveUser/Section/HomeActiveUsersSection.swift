@@ -103,7 +103,7 @@ struct HomeActiveUsersSection: View {
                 Text(verbatim: " this week")
             }
         }
-        .font(.weight450(size: 13))
+        .font(.book(size: 13))
         .foregroundStyle(Color(.systemGray))
     }
 }
@@ -124,7 +124,7 @@ private struct ActiveUserMetricView: View {
                 .frame(height: 34, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel)
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.red)
         }
         .padding(.vertical, 10)

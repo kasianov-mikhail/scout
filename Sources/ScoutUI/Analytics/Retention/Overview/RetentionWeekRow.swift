@@ -15,7 +15,7 @@ struct RetentionWeekRow: View {
     var body: some View {
         HStack(spacing: 8) {
             Text(verbatim: week.label)
-                .font(.weight450(size: 13))
+                .font(.book(size: 13))
                 .frame(width: 52, alignment: .leading)
 
             RetentionBar(week: week, maxInstalls: maxInstalls)

@@ -23,15 +23,15 @@ struct ErrorView: View {
             Spacer()
 
             Image(systemName: "exclamationmark.triangle")
-                .font(.weight450(size: 48))
+                .font(.book(size: 48))
                 .foregroundStyle(.yellow)
 
             Text(verbatim: "An error occurred")
-                .font(.weight450(size: 22))
+                .font(.book(size: 22))
                 .bold()
 
             description
-                .font(.weight450(size: 17))
+                .font(.book(size: 17))
                 .multilineTextAlignment(.center)
 
             if let retry {

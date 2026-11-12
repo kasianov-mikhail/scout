@@ -90,7 +90,7 @@ extension EventView {
 
                 if let date = event.date {
                     Text(verbatim: eventDateFormatter.string(from: date) + " UTC")
-                        .font(.weight450(size: 15))
+                        .font(.book(size: 15))
                         .monospacedDigit()
                         .foregroundStyle(Color.eventTimestamp)
                 }
