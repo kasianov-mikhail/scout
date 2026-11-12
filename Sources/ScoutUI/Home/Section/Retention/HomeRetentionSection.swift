@@ -14,7 +14,11 @@ struct HomeRetentionSection: View {
 
     var body: some View {
         if let weeks {
-            content(weeks: weeks)
+            if weeks.isEmpty {
+                HomeRetentionSectionEmpty(now: Date())
+            } else {
+                content(weeks: weeks)
+            }
         } else {
             HomeRetentionSectionPlaceholder()
         }
@@ -24,7 +28,7 @@ struct HomeRetentionSection: View {
         let maxInstalls = weeks.maxInstalls
 
         return VStack(alignment: .leading, spacing: 0) {
-            header
+            HomeRetentionHeader()
 
             ForEach(Array(weeks.enumerated()), id: \.element.id) { index, week in
                 Button(action: onSelect) {
@@ -43,30 +47,25 @@ struct HomeRetentionSection: View {
         }
     }
 
-    private var header: some View {
-        HStack(alignment: .center) {
-            Text(verbatim: "RETENTION")
-                .font(.callout.weight(.bold))
+    private var footer: some View {
+        Text(verbatim: "Gray: installs that week · green: kept")
+            .font(.weight450(size: 13))
+            .foregroundStyle(Color(.systemGray))
+    }
+}
 
-            Spacer()
-
+struct HomeRetentionHeader: View {
+    var body: some View {
+        Header(title: "Retention") {
             Text(verbatim: "kept on day 7")
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
         }
-        .padding(.top, 12)
-        .frame(height: 70)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
                 .frame(height: 0.5)
         }
-    }
-
-    private var footer: some View {
-        Text(verbatim: "Gray: installs that week · green: kept")
-            .font(.weight450(size: 13))
-            .foregroundStyle(Color(.systemGray))
     }
 }
 

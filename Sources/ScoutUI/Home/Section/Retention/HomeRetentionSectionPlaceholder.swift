@@ -10,23 +10,7 @@ import SwiftUI
 struct HomeRetentionSectionPlaceholder: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .center) {
-                Text(verbatim: "RETENTION")
-                    .font(.callout.weight(.bold))
-
-                Spacer()
-
-                Text(verbatim: "kept on day 7")
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-            }
-            .padding(.top, 12)
-            .frame(height: 70)
-            .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
-            }
+            HomeRetentionHeader()
 
             ForEach(0..<4) { index in
                 row(index: index)

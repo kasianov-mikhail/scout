@@ -43,6 +43,10 @@ struct ReleaseAdoption {
         }
         return "\(top.shareLabel) on \(top.id)"
     }
+
+    var isEmpty: Bool {
+        versions.isEmpty
+    }
 }
 
 extension ReleaseAdoption {

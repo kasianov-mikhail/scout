@@ -14,7 +14,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
             Header(title: "Active Users")
 
             HStack(alignment: .top, spacing: 0) {
-                ForEach([ActiveUsers.Kind.dau, .sessions, .devices]) { kind in
+                ForEach(ActiveUsers.Kind.allCases) { kind in
                     metric(kind: kind)
                 }
             }

@@ -31,6 +31,10 @@ extension AlertHistory {
     var rulesLabel: String {
         "\(total) rule\(total == 1 ? "" : "s")"
     }
+
+    var isEmpty: Bool {
+        total == 0
+    }
 }
 
 extension AlertHistory {

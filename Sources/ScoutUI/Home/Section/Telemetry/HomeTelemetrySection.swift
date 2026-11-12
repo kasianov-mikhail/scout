@@ -35,7 +35,8 @@ struct HomeTelemetrySection: View {
                     TelemetryRow(
                         item: item,
                         side: index.isMultiple(of: 2) ? .leading : .trailing,
-                        showsDivider: index / 2 < (items.count - 1) / 2
+                        showsDivider: index / 2 < (items.count - 1) / 2,
+                        showsValues: items.hasValues
                     ) {
                         onSelect(item.kind)
                     }

@@ -55,4 +55,10 @@ extension ActiveUsers {
     var devicesThisWeekLabel: String {
         devicesThisWeek.formatted(.number.locale(Locale(identifier: "en_US")))
     }
+
+    var isEmpty: Bool {
+        metrics.allSatisfy { metric in
+            metric.series.allSatisfy { $0 == 0 }
+        }
+    }
 }

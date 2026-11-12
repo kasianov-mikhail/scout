@@ -17,12 +17,4 @@ struct HomeSnapshot {
     let telemetry: [TelemetryItem]
     let releases: ReleaseAdoption
     let retention: [RetentionWeek]
-
-    static let sample = HomeSnapshot(
-        alerts: .sample,
-        users: .sample,
-        telemetry: TelemetryItem.sample,
-        releases: .sample,
-        retention: [RetentionWeek].samples
-    )
 }

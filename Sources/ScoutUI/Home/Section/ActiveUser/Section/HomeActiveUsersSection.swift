@@ -22,7 +22,13 @@ struct HomeActiveUsersSection: View {
 
     var body: some View {
         if let users {
-            content(users: users)
+            if users.isEmpty {
+                HomeActiveUsersSectionEmpty(start: users.start, end: users.end) {
+                    onShowAll(selected)
+                }
+            } else {
+                content(users: users)
+            }
         } else {
             HomeActiveUsersSectionPlaceholder()
         }
@@ -31,17 +37,9 @@ struct HomeActiveUsersSection: View {
     private func content(users: ActiveUsers) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Active Users") {
-                Button {
+                HomeSectionExpandButton(label: "Show all active users") {
                     onShowAll(selected)
-                } label: {
-                    Image(systemName: "arrow.up.right.and.arrow.down.left")
-                        .font(.weight450(size: 20))
-                        .frame(width: 44, height: 44)
-                        .padding(.trailing, -12)
                 }
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
-                .accessibilityLabel(Text(verbatim: "Show all active users"))
             }
 
             HStack(alignment: .top, spacing: 0) {

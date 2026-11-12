@@ -20,4 +20,15 @@ struct HomeSnapshotTests {
         #expect(snapshot.releases.versions.count == 5)
         #expect(snapshot.retention.count == 4)
     }
+
+    @Test("The empty snapshot empties every home section")
+    func empty() {
+        let snapshot = HomeSnapshot.empty
+
+        #expect(snapshot.alerts.isEmpty)
+        #expect(snapshot.users.isEmpty)
+        #expect(!snapshot.telemetry.hasValues)
+        #expect(snapshot.releases.isEmpty)
+        #expect(snapshot.retention.isEmpty)
+    }
 }

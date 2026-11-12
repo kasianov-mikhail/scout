@@ -24,4 +24,10 @@ struct ReleaseAdoptionTests {
     func headline() {
         #expect(ReleaseAdoption.sample.headline == "62% on 3.2.0")
     }
+
+    @Test("No releases make the section empty")
+    func empty() {
+        #expect(ReleaseAdoption(releases: []).isEmpty)
+        #expect(!ReleaseAdoption.sample.isEmpty)
+    }
 }
