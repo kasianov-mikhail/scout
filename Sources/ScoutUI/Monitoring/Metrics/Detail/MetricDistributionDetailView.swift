@@ -69,64 +69,58 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                 )
             }
         } else {
-            InsetList {
-                MetricRangeStrip(selection: $range)
-                    .padding(.top, 8)
-                    .padding(.trailing, -16)
-                    .frame(minHeight: 44)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    MetricRangeStrip(selection: $range)
+                        .padding(.top, 8)
+                        .padding(.trailing, -16)
 
-                MetricQuantileSelector(
-                    summary: summary,
-                    previous: previous,
-                    telemetry: telemetry,
-                    format: format,
-                    selection: $quantile
-                )
-                .padding(.top, 4)
-                .frame(minHeight: 44)
-
-                Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(minHeight: 44)
-
-                MetricChart(buckets: buckets, style: .line(filled: true), format: format)
-                    .padding(.top, 16)
-                    .frame(minHeight: 44)
-
-                MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .frame(minHeight: 44)
-
-                MetricLegend(title: range.previousTitle, note: nil)
-                    .frame(minHeight: 44)
-
-                MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption)
-                    .frame(minHeight: 44)
-
-                MetricHistogramChart(
-                    counts: histogram.counts,
-                    bounds: H.bounds,
-                    percentiles: summary,
-                    format: histogramFormat
-                )
-                .padding(.top, 8)
-                .frame(minHeight: 44)
-
-                MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
-                    .frame(minHeight: 44)
-
-                ForEach(buckets.rows) { row in
-                    MetricBucketRow(
-                        row: row,
-                        label: range.rowLabel(date: row.date),
+                    MetricQuantileSelector(
+                        summary: summary,
+                        previous: previous,
+                        telemetry: telemetry,
                         format: format,
-                        tone: .neutral
+                        selection: $quantile
                     )
-                    .frame(minHeight: 44)
+                    .padding(.top, 4)
+
+                    Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
+                        .font(.weight450(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                        .padding(.top, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    MetricChart(buckets: buckets, style: .line(filled: true), format: format)
+                        .padding(.top, 16)
+
+                    MetricAxisLabels(labels: range.axisLabels(now: now))
+
+                    MetricLegend(title: range.previousTitle, note: nil)
+
+                    MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption)
+
+                    MetricHistogramChart(
+                        counts: histogram.counts,
+                        bounds: H.bounds,
+                        percentiles: summary,
+                        format: histogramFormat
+                    )
+                    .padding(.top, 8)
+
+                    MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
+
+                    ForEach(buckets.rows) { row in
+                        MetricBucketRow(
+                            row: row,
+                            label: range.rowLabel(date: row.date),
+                            format: format,
+                            tone: .neutral
+                        )
+                    }
                 }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(title: name, rangeLabel: range.title) {

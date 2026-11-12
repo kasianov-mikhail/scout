@@ -29,102 +29,106 @@ struct SettingsOverviewView: View {
     }
 
     var body: some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 0) {
-                SettingsLabel(title: "READ FROM")
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    SettingsLabel(title: "READ FROM")
 
-                if health.backends.isEmpty {
-                    SettingsCard {
-                        Text(verbatim: "No backends configured.")
-                            .font(.weight450(size: 15))
-                            .foregroundStyle(Color(.systemGray))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 10)
+                    if health.backends.isEmpty {
+                        SettingsCard {
+                            Text(verbatim: "No backends configured.")
+                                .font(.weight450(size: 15))
+                                .foregroundStyle(Color(.systemGray))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 10)
+                        }
+                    } else {
+                        SettingsStrip {
+                            ForEach(health.backends) { backend in
+                                NavigationLink {
+                                    BackendDetailView(provider: health, id: backend.id, activeID: $activeID)
+                                } label: {
+                                    SettingsSegmentCell(
+                                        title: backend.name,
+                                        detail: backend.detailLabel,
+                                        state: backend.segmentState,
+                                        isSelected: backend.id == activeID,
+                                        showsDivider: backend.id != health.backends.last?.id
+                                    )
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
                     }
-                } else {
+
+                    SettingsNote(text: "All backends get the data. Scout reads from the one you pick.")
+
+                    SettingsLabel(title: "START ON")
+
                     SettingsStrip {
-                        ForEach(health.backends) { backend in
-                            NavigationLink {
-                                BackendDetailView(provider: health, id: backend.id, activeID: $activeID)
+                        ForEach(StartPeriod.allCases) { period in
+                            Button {
+                                start = period
                             } label: {
                                 SettingsSegmentCell(
-                                    title: backend.name,
-                                    detail: backend.detailLabel,
-                                    state: backend.segmentState,
-                                    isSelected: backend.id == activeID,
-                                    showsDivider: backend.id != health.backends.last?.id
+                                    title: period.title,
+                                    isSelected: start == period,
+                                    showsDivider: period != StartPeriod.allCases.last
                                 )
                             }
                             .buttonStyle(.plain)
                         }
                     }
-                }
+                    .hapticFeedback(.selection, trigger: start)
 
-                SettingsNote(text: "All backends get the data. Scout reads from the one you pick.")
+                    SettingsLabel(title: "ALERT PUSHES")
 
-                SettingsLabel(title: "START ON")
+                    SettingsStrip {
+                        segment(title: "On", isSelected: pushes, showsDivider: true) {
+                            pushes = true
+                        }
 
-                SettingsStrip {
-                    ForEach(StartPeriod.allCases) { period in
-                        Button {
-                            start = period
-                        } label: {
-                            SettingsSegmentCell(
-                                title: period.title,
-                                isSelected: start == period,
-                                showsDivider: period != StartPeriod.allCases.last
+                        segment(title: "Off", isSelected: !pushes, showsDivider: false) {
+                            pushes = false
+                        }
+                    }
+                    .hapticFeedback(.selection, trigger: pushes)
+
+                    SettingsNote(text: "Firing rules notify this iPhone.")
+
+                    SettingsLabel(title: "SENDING FROM THIS IPHONE")
+
+                    SettingsCard {
+                        SendReadout(summary: send)
+                    }
+
+                    SettingsNote(text: "Scout sends and checks in the background on its own.")
+
+                    SettingsLabel(title: "CACHE")
+
+                    SettingsCard {
+                        HStack(spacing: 0) {
+                            SettingsReadoutRow(
+                                value: cacheStatus.bytes == nil ? nil : cacheStatus.sizeLabel,
+                                caption: "on this iPhone"
                             )
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                .hapticFeedback(.selection, trigger: start)
 
-                SettingsLabel(title: "ALERT PUSHES")
-
-                SettingsStrip {
-                    segment(title: "On", isSelected: pushes, showsDivider: true) {
-                        pushes = true
-                    }
-
-                    segment(title: "Off", isSelected: !pushes, showsDivider: false) {
-                        pushes = false
-                    }
-                }
-                .hapticFeedback(.selection, trigger: pushes)
-
-                SettingsNote(text: "Firing rules notify this iPhone.")
-
-                SettingsLabel(title: "SENDING FROM THIS IPHONE")
-
-                SettingsCard {
-                    SendReadout(summary: send)
-                }
-
-                SettingsNote(text: "Scout sends and checks in the background on its own.")
-
-                SettingsLabel(title: "CACHE")
-
-                SettingsCard {
-                    HStack(spacing: 0) {
-                        SettingsReadoutRow(
-                            value: cacheStatus.bytes == nil ? nil : cacheStatus.sizeLabel,
-                            caption: "on this iPhone"
-                        )
-
-                        SettingsCardAction(title: "Clear", color: .red) {
-                            isClearing = true
+                            SettingsCardAction(title: "Clear", color: .red) {
+                                isClearing = true
+                            }
                         }
                     }
-                }
 
-                Text(verbatim: version)
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 22)
+                    Text(verbatim: version)
+                        .font(.weight450(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                        .padding(.top, 22)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle(en: "Settings")
         .inlineNavigationTitle()
         .dismissable()

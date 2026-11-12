@@ -18,35 +18,36 @@ struct VersionIncidentsView<Element: RecordDecodable & Incident, Destination: Vi
     @ViewBuilder let destination: (IncidentGroup<Element>) -> Destination
 
     var body: some View {
-        InsetList {
-            IncidentTrendChart(kind: Element.kind, days: days)
-                .padding(.top)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                IncidentTrendChart(kind: Element.kind, days: days)
+                    .padding(.top)
 
-            if let records = provider.records {
-                IncidentIssuesSection(
-                    title: issuesTitle,
-                    groups: IncidentGroup.groups(from: records, hasMore: provider.cursor != nil),
-                    destination: destination
-                )
+                if let records = provider.records {
+                    IncidentIssuesSection(
+                        title: issuesTitle,
+                        groups: IncidentGroup.groups(from: records, hasMore: provider.cursor != nil),
+                        destination: destination
+                    )
 
-                if let cursor = provider.cursor {
-                    PaginationFooter {
-                        await provider.fetchMore(cursor: cursor, in: database)
+                    if let cursor = provider.cursor {
+                        PaginationFooter {
+                            await provider.fetchMore(cursor: cursor, in: database)
+                        }
                     }
+                } else if let error = provider.error {
+                    ErrorRow(description: error.localizedDescription) {
+                        await provider.fetchAgain(in: database)
+                    }
+                } else {
+                    RingIndicator()
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical)
                 }
-            } else if let error = provider.error {
-                ErrorRow(description: error.localizedDescription) {
-                    await provider.fetchAgain(in: database)
-                }
-                .frame(minHeight: 44)
-            } else {
-                RingIndicator()
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical)
-                    .frame(minHeight: 44)
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle(en: Element.kind.title)
         .largeNavigationTitle()
         .message($provider.message)
@@ -68,21 +69,27 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
                 }
 
             ForEach(groups) { group in
-                Row {
-                    Text(verbatim: group.name)
-                        .font(.weight450(size: 16, design: .monospaced))
-                        .lineLimit(1)
-
-                    Spacer()
-
-                    CountBadge(
-                        count: group.count,
-                        suffix: group.countSuffix,
-                        color: Element.kind.color
-                    )
-                } destination: {
+                NavigationLink {
                     destination(group)
+                } label: {
+                    HStack(spacing: 8) {
+                        Text(verbatim: group.name)
+                            .font(.weight450(size: 16, design: .monospaced))
+                            .lineLimit(1)
+
+                        Spacer()
+
+                        CountBadge(
+                            count: group.count,
+                            suffix: group.countSuffix,
+                            color: Element.kind.color
+                        )
+                    }
+                    .lineLimit(1)
+                    .frame(height: 44)
+                    .contentShape(.rect)
                 }
+                .buttonStyle(.plain)
                 .overlay(alignment: .bottom) {
                     Separator()
                 }

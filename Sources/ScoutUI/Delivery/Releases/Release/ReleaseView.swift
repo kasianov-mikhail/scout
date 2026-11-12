@@ -84,29 +84,30 @@ struct ReleaseView: View {
     }
 
     private func content(detail: ReleaseDetail) -> some View {
-        InsetList {
-            ReleaseHero(detail: detail)
-                .padding(.horizontal, -16)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ReleaseHero(detail: detail)
+                    .padding(.horizontal, -16)
 
-            ReleaseGrid(detail: detail) { kind in
-                switch kind {
-                case .crashes:
-                    showAllCrashes = true
-                case .hangs:
-                    showAllHangs = true
-                case .resources:
-                    showAllResources = true
-                default:
-                    break
+                ReleaseGrid(detail: detail) { kind in
+                    switch kind {
+                    case .crashes:
+                        showAllCrashes = true
+                    case .hangs:
+                        showAllHangs = true
+                    case .resources:
+                        showAllResources = true
+                    default:
+                        break
+                    }
                 }
-            }
-            .padding(.horizontal, -16)
-            .frame(minHeight: 44)
+                .padding(.horizontal, -16)
 
-            hangRate(detail.hangRate)
-                .frame(minHeight: 44)
+                hangRate(detail.hangRate)
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 
     private func hangRate(_ value: ReleaseHangRate) -> some View {
@@ -127,7 +128,6 @@ struct ReleaseView: View {
             .foregroundStyle(value.color)
         }
         .padding(.vertical, 6)
-        .frame(minHeight: 44)
     }
 }
 

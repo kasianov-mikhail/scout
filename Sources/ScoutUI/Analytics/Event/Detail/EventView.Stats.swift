@@ -52,22 +52,31 @@ extension EventView {
         private func statRow(_ period: Period, @ViewBuilder content makeContent: () -> some View) -> some View {
             let content = makeContent()
 
-            return Row(minHeight: 40) {
-                content
-            } destination: {
+            return NavigationLink {
                 StatView(showList: true, extent: ChartExtent(period: period), stat: stat)
                     .navigationTitle(en: "Stats")
                     .largeNavigationTitle()
+            } label: {
+                content
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(height: 40)
+                    .contentShape(.rect)
             }
+            .buttonStyle(.plain)
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        InsetList {
-            EventView.StatSection(stat: StatProvider(.success(.samples), subject: .event("event_name")))
-            EventView.StatSection(stat: StatProvider(subject: .event("event_name")))
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                EventView.StatSection(stat: StatProvider(.success(.samples), subject: .event("event_name")))
+                EventView.StatSection(stat: StatProvider(subject: .event("event_name")))
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

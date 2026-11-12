@@ -11,15 +11,17 @@ private let rowCount = 8
 
 struct ReleaseHealthViewPlaceholder: View {
     var body: some View {
-        InsetList {
-            header
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                header
 
-            ForEach(0..<rowCount, id: \.self) { index in
-                row(index: index)
-                    .frame(minHeight: 44)
+                ForEach(0..<rowCount, id: \.self) { index in
+                    row(index: index)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -77,7 +79,7 @@ struct ReleaseHealthViewPlaceholder: View {
             }
         }
         .padding(.vertical, 8)
-        .frame(minHeight: 64)
+        .frame(height: 64)
         .overlay(alignment: .bottom) {
             if index < rowCount - 1 {
                 DashedLine()

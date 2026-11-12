@@ -12,28 +12,30 @@ struct ActivityViewPlaceholder: View {
     let metric: ActivityPeriod
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            metrics
-                .padding(.top, 4)
-                .frame(minHeight: 44)
+                metrics
+                    .padding(.top, 4)
 
-            chart
-                .padding(.top, 16)
-                .frame(minHeight: 44)
+                chart
+                    .padding(.top, 16)
 
-            stickiness
-                .padding(.top, 12)
+                stickiness
+                    .padding(.top, 12)
 
-            ActivityRowsHeader()
+                ActivityRowsHeader()
 
-            ForEach(0..<8, id: \.self) { index in
-                row(index: index)
+                ForEach(0..<8, id: \.self) { index in
+                    row(index: index)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

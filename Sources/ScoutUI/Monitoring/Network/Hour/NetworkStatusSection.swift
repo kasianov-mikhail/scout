@@ -33,6 +33,7 @@ struct NetworkStatusRow: View {
                 .frame(width: 56, alignment: .trailing)
         }
         .font(.weight450(size: 13, design: .monospaced))
+        .lineLimit(1)
         .frame(height: 40)
         .overlay(alignment: .bottom) {
             DashedLine()

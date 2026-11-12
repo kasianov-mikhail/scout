@@ -66,30 +66,32 @@ struct NetworkMonthView: View {
         let endpoint = report.endpoint(name: name, range: provider.query.range) ?? NetworkEndpoint(name: name, requests: 0, successRate: nil, p99: nil)
         let maxRequests = rows.map(\.requests).max() ?? 0
 
-        return InsetList {
-            ListTitle(title: title)
-                .frame(minHeight: 44)
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ListTitle(title: title)
 
-            NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
-                .frame(minHeight: 44)
+                NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
 
-            NetworkLedgerHeader(primary: "DAY")
-                .frame(minHeight: 44)
+                NetworkLedgerHeader(primary: "DAY")
 
-            ForEach(rows) { row in
-                Row {
-                    NetworkLedgerRowView(
-                        row: row,
-                        maxRequests: maxRequests,
-                        label: .monthDay,
-                        component: .day,
-                        showsDivider: row.id != rows.last?.id
-                    )
-                } destination: {
-                    NetworkDayView(name: name, date: row.date)
+                ForEach(rows) { row in
+                    NavigationLink {
+                        NetworkDayView(name: name, date: row.date)
+                    } label: {
+                        NetworkLedgerRowView(
+                            row: row,
+                            maxRequests: maxRequests,
+                            label: .monthDay,
+                            component: .day,
+                            showsDivider: row.id != rows.last?.id
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 

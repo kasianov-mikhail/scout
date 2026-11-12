@@ -120,11 +120,13 @@ private struct RetentionRowContent: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeRetentionSection(weeks: .samples) {}
-                .frame(minHeight: 44)
-            HomeRetentionSection(weeks: nil) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeRetentionSection(weeks: .samples) {}
+                HomeRetentionSection(weeks: nil) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

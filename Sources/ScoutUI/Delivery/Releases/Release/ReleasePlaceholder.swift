@@ -11,18 +11,19 @@ struct ReleasePlaceholder: View {
     let version: String
 
     var body: some View {
-        InsetList {
-            hero
-                .padding(.horizontal, -16)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                hero
+                    .padding(.horizontal, -16)
 
-            grid
-                .padding(.horizontal, -16)
-                .frame(minHeight: 44)
+                grid
+                    .padding(.horizontal, -16)
 
-            footer
-                .frame(minHeight: 44)
+                footer
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -109,7 +110,7 @@ struct ReleasePlaceholder: View {
             SkeletonBar(width: 74, height: 9, delay: 0.56)
         }
         .padding(.vertical, 6)
-        .frame(minHeight: 44)
+        .frame(height: 44)
     }
 }
 

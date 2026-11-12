@@ -57,8 +57,11 @@ struct RetentionStabilitySection: View {
     let segment = cohort.segments[2]
     let detail = RetentionSegmentDetail(segment: segment, cohort: cohort, cohorts: .samples, now: Date())
 
-    InsetList {
-        RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
-            .frame(minHeight: 44)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

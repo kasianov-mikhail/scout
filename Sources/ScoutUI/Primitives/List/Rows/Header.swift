@@ -31,10 +31,14 @@ struct Header<Trailing: View>: View {
 }
 
 #Preview {
-    InsetList {
-        Header(title: "Section Title")
-        Header(title: "Section Title") {
-            Text(verbatim: "Trailing")
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            Header(title: "Section Title")
+            Header(title: "Section Title") {
+                Text(verbatim: "Trailing")
+            }
         }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

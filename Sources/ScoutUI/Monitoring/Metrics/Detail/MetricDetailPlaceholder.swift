@@ -23,66 +23,55 @@ struct MetricDetailPlaceholder: View {
         let now = Date()
         let dates = placeholderRows(now: now)
 
-        return InsetList {
-            MetricRangeStrip(selection: $range)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
-                .frame(minHeight: 44)
-
-            switch kind {
-            case .series(let telemetry):
-                headline(telemetry)
-                    .padding(.top, 12)
-                    .frame(minHeight: 44)
-
-                chartSkeleton(height: 150, delay: 0.16)
-                    .padding(.top, 16)
-                    .frame(minHeight: 44)
-
-                MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .frame(minHeight: 44)
-
-                MetricLegend(title: range.previousTitle, note: nil)
-                    .frame(minHeight: 44)
-
-                MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-                    .frame(minHeight: 44)
-            case .distribution(let telemetry):
-                percentileSelector
-                    .padding(.top, 4)
-                    .frame(minHeight: 44)
-
-                SkeletonBar(width: 120, height: 9, delay: 0.08)
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                MetricRangeStrip(selection: $range)
                     .padding(.top, 8)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(minHeight: 44)
+                    .padding(.trailing, -16)
 
-                chartSkeleton(height: 150, delay: 0.16)
-                    .padding(.top, 16)
-                    .frame(minHeight: 44)
+                switch kind {
+                case .series(let telemetry):
+                    headline(telemetry)
+                        .padding(.top, 12)
 
-                MetricAxisLabels(labels: range.axisLabels(now: now))
-                    .frame(minHeight: 44)
+                    chartSkeleton(height: 150, delay: 0.16)
+                        .padding(.top, 16)
 
-                MetricLegend(title: range.previousTitle, note: nil)
-                    .frame(minHeight: 44)
+                    MetricAxisLabels(labels: range.axisLabels(now: now))
 
-                MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
-                    .frame(minHeight: 44)
+                    MetricLegend(title: range.previousTitle, note: nil)
 
-                chartSkeleton(height: 126, delay: 0.24)
-                    .padding(.top, 8)
-                    .frame(minHeight: 44)
+                    MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
+                case .distribution(let telemetry):
+                    percentileSelector
+                        .padding(.top, 4)
 
-                MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-                    .frame(minHeight: 44)
+                    SkeletonBar(width: 120, height: 9, delay: 0.08)
+                        .padding(.top, 8)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    chartSkeleton(height: 150, delay: 0.16)
+                        .padding(.top, 16)
+
+                    MetricAxisLabels(labels: range.axisLabels(now: now))
+
+                    MetricLegend(title: range.previousTitle, note: nil)
+
+                    MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
+
+                    chartSkeleton(height: 126, delay: 0.24)
+                        .padding(.top, 8)
+
+                    MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
+                }
+
+                ForEach(dates.indices, id: \.self) { index in
+                    row(index: index, dates: dates, now: now)
+                }
             }
-
-            ForEach(dates.indices, id: \.self) { index in
-                row(index: index, dates: dates, now: now)
-                    .frame(minHeight: 44)
-            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

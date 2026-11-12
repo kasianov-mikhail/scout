@@ -19,8 +19,11 @@ struct ListTitle: View {
 }
 
 #Preview {
-    InsetList {
-        ListTitle(title: "Today")
-            .frame(minHeight: 44)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ListTitle(title: "Today")
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

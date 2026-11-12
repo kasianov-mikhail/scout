@@ -15,16 +15,20 @@ struct ParamList: View {
     }
 
     var body: some View {
-        InsetList {
-            ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
-                ParamRow(item: item)
-                    .overlay(alignment: .bottom) {
-                        if index < items.count - 1 {
-                            Separator()
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
+                    ParamRow(item: item)
+                        .overlay(alignment: .bottom) {
+                            if index < items.count - 1 {
+                                Separator()
+                            }
                         }
-                    }
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationTitle(en: "Params")
         .largeNavigationTitle()
         .exportToolbar(text: text)
@@ -38,16 +42,19 @@ struct ParamRow: View {
     var body: some View {
         let value = ParamValue(parsing: item.value)
 
-        Row {
+        NavigationLink {
+            ParamView(item: item)
+        } label: {
             ParamValueRow(
                 value: value,
                 label: item.key,
                 labelStyle: .secondary,
                 summaryStyle: value.isContainer ? .secondary : .primary
             )
-        } destination: {
-            ParamView(item: item)
+            .frame(height: 44)
+            .contentShape(.rect)
         }
+        .buttonStyle(.plain)
         .lineLimit(1)
     }
 }

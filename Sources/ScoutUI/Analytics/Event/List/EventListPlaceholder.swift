@@ -11,12 +11,16 @@ private let nameWidths: [CGFloat] = [106, 77, 134, 58]
 
 struct EventListPlaceholder: View {
     var body: some View {
-        InsetList {
-            ForEach(0..<16, id: \.self) { index in
-                row(index)
-                    .padding(.horizontal, -16)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ForEach(0..<16, id: \.self) { index in
+                    row(index)
+                        .padding(.horizontal, -16)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

@@ -102,7 +102,7 @@ struct ServerOutageView: View {
                 .monospacedDigit()
         }
         .font(.weight450(size: 17))
-        .frame(minHeight: 44)
+        .frame(height: 44)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)

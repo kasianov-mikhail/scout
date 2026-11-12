@@ -12,21 +12,21 @@ struct NetworkLedgerPlaceholder: View {
     let primary: String
 
     var body: some View {
-        InsetList {
-            ListTitle(title: title)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ListTitle(title: title)
 
-            NetworkEndpointHeaderPlaceholder()
-                .frame(minHeight: 44)
+                NetworkEndpointHeaderPlaceholder()
 
-            NetworkLedgerHeader(primary: primary)
-                .frame(minHeight: 44)
+                NetworkLedgerHeader(primary: primary)
 
-            ForEach(0..<14, id: \.self) { index in
-                NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
-                    .frame(minHeight: 44)
+                ForEach(0..<14, id: \.self) { index in
+                    NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

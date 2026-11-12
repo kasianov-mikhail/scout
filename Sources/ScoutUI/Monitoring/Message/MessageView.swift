@@ -18,7 +18,7 @@ struct MessageView: View {
             .lineSpacing(4)
             .padding(.horizontal)
             .padding(.vertical, 12)
-            .frame(maxWidth: .infinity, minHeight: 44)
+            .frame(maxWidth: .infinity)
             .background(level.color.opacity(0.1))
             .background()
             .cornerRadius(12)

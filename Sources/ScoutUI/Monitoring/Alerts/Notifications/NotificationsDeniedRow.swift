@@ -37,7 +37,7 @@ struct NotificationsDeniedRow: View {
                 .buttonStyle(.borderless)
             }
         }
-        .frame(minHeight: 60)
+        .frame(height: 60)
     }
 
     private var settingsURL: URL? {
@@ -50,8 +50,12 @@ struct NotificationsDeniedRow: View {
 }
 
 #Preview {
-    InsetList {
-        Header(title: "Rules")
-        NotificationsDeniedRow()
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            Header(title: "Rules")
+            NotificationsDeniedRow()
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

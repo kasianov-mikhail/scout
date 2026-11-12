@@ -41,13 +41,17 @@ struct SectionHeader<Trailing: View>: View {
 }
 
 #Preview {
-    InsetList {
-        SectionHeader(title: "HISTORY", topPadding: 12)
-        SectionHeader(title: "SESSIONS", topPadding: 12) {
-            Text(verbatim: "TIMELINE")
-                .font(.weight450(size: 16))
-                .foregroundStyle(.blue)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            SectionHeader(title: "HISTORY", topPadding: 12)
+            SectionHeader(title: "SESSIONS", topPadding: 12) {
+                Text(verbatim: "TIMELINE")
+                    .font(.weight450(size: 16))
+                    .foregroundStyle(.blue)
+            }
+            SectionHeader(title: "DEVICES", showsSeparator: false)
         }
-        SectionHeader(title: "DEVICES", showsSeparator: false)
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }
