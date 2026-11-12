@@ -13,22 +13,19 @@ struct ActivityMetricTabs: View {
     @Binding var selection: ActivityPeriod
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(alignment: .top, spacing: 12) {
-                ForEach(ActivityPeriod.allCases) { period in
-                    Button {
-                        selection = period
-                    } label: {
-                        cell(period: period)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(period == selection ? .isSelected : [])
+        HStack(alignment: .top, spacing: 12) {
+            ForEach(ActivityPeriod.allCases) { period in
+                Button {
+                    selection = period
+                } label: {
+                    cell(period: period)
                 }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(period == selection ? .isSelected : [])
             }
-
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+        }
+        .background(alignment: .bottom) {
+            Separator()
         }
     }
 

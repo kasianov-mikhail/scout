@@ -18,10 +18,9 @@ struct HomeActiveUsersSectionPlaceholder: View {
                     metric(kind: kind)
                 }
             }
-
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            .background(alignment: .bottom) {
+                Separator()
+            }
 
             SkeletonBar(height: 72, delay: 0.56, fill: Color(.systemGray6))
                 .padding(.top, 14)

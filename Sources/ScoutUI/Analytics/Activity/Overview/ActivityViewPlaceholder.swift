@@ -66,6 +66,9 @@ struct ActivityViewPlaceholder: View {
                 }
             }
         }
+        .background(alignment: .bottom) {
+            Separator()
+        }
     }
 
     private var chart: some View {

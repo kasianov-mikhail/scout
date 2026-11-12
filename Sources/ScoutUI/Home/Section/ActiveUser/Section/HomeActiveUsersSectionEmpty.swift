@@ -24,10 +24,9 @@ struct HomeActiveUsersSectionEmpty: View {
                     metric(kind: kind)
                 }
             }
-
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            .background(alignment: .bottom) {
+                Separator()
+            }
 
             chart
                 .padding(.top, 14)

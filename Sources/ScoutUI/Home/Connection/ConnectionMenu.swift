@@ -43,8 +43,6 @@ struct ConnectionMenu: View {
                 }
 
                 if let onSettings {
-                    Divider()
-
                     Button {
                         isPresented = false
                         Task { @MainActor in
@@ -64,6 +62,9 @@ struct ConnectionMenu: View {
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .overlay(alignment: .top) {
+                        Separator()
+                    }
                 }
             }
             .padding(.vertical, 8)

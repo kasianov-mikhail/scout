@@ -17,5 +17,6 @@ struct DashedLine: View {
             .stroke(Color(.systemGray4), style: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
         }
         .frame(height: 0.5)
+        .allowsHitTesting(false)
     }
 }

@@ -15,10 +15,9 @@ struct RetentionStabilitySection: View {
     var body: some View {
         HStack(spacing: 0) {
             stat(value: crash)
-
-            Rectangle()
-                .fill(Color.separator)
-                .frame(width: 0.5)
+                .overlay(alignment: .trailing) {
+                    Separator(axis: .vertical)
+                }
 
             stat(value: hang)
                 .padding(.leading, 12)

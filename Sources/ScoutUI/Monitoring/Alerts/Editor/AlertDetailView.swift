@@ -178,7 +178,9 @@ private struct AlertNowCard: View {
         AlertCard {
             VStack(spacing: 0) {
                 value
-                AlertDivider()
+                    .overlay(alignment: .bottom) {
+                        AlertDivider()
+                    }
                 stats
             }
         }

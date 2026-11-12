@@ -14,6 +14,7 @@ struct Separator: View {
         Rectangle()
             .fill(Color.separator)
             .frame(width: axis == .vertical ? 0.5 : nil, height: axis == .horizontal ? 0.5 : nil)
+            .allowsHitTesting(false)
     }
 }
 
