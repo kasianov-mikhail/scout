@@ -57,9 +57,12 @@ struct HomeAlertSectionEmpty: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeAlertSectionEmpty(rulesLabel: "0 rules")
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSectionEmpty(rulesLabel: "0 rules")
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

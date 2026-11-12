@@ -12,23 +12,23 @@ struct NetworkEndpointViewPlaceholder: View {
     let ranges: [NetworkRange]
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            NetworkEndpointHeaderPlaceholder()
-                .frame(minHeight: 44)
+                NetworkEndpointHeaderPlaceholder()
 
-            NetworkLedgerHeader(primary: range.pointComponent.networkTitle)
-                .frame(minHeight: 44)
+                NetworkLedgerHeader(primary: range.pointComponent.networkTitle)
 
-            ForEach(0..<14, id: \.self) { index in
-                NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
-                    .frame(minHeight: 44)
+                ForEach(0..<14, id: \.self) { index in
+                    NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -51,7 +51,7 @@ struct NetworkLedgerRowPlaceholder: View {
             SkeletonBar(width: 28, height: 9, delay: delay)
                 .frame(width: 64, alignment: .trailing)
         }
-        .frame(minHeight: 40)
+        .frame(height: 40)
         .padding(.vertical, 6)
         .overlay(alignment: .bottom) {
             if showsDivider {

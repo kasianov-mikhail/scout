@@ -59,9 +59,12 @@ struct HomeRetentionSectionEmpty: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeRetentionSectionEmpty(now: HomeSnapshot.date)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeRetentionSectionEmpty(now: HomeSnapshot.date)
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

@@ -13,53 +13,53 @@ struct IncidentGroupPlaceholder: View {
     var resourceKind: ResourceKind? = nil
 
     var body: some View {
-        InsetList {
-            message
-                .padding(.horizontal, -16)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                message
+                    .padding(.horizontal, -16)
 
-            cards
-                .frame(minHeight: 44)
+                cards
 
-            Header(title: "Affected")
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-
-            ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
-                affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
-                    .frame(minHeight: 44)
+                Header(title: "Affected")
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
-            }
 
-            Header(title: "Stack Trace") {
-                Text(verbatim: kind.stackCaption)
-                    .font(.weight450(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-            }
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
+                ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
+                    affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
+                }
 
-            frames
-                .frame(minHeight: 44)
-
-            Header(title: "Occurrences")
+                Header(title: "Stack Trace") {
+                    Text(verbatim: kind.stackCaption)
+                        .font(.weight450(size: 13))
+                        .foregroundStyle(Color(.systemGray))
+                }
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
 
-            ForEach(0..<4, id: \.self) { index in
-                occurrenceRow(index: index)
+                frames
+
+                Header(title: "Occurrences")
                     .overlay(alignment: .bottom) {
-                        if index < 3 {
-                            Separator()
-                        }
+                        Separator()
                     }
+
+                ForEach(0..<4, id: \.self) { index in
+                    occurrenceRow(index: index)
+                        .overlay(alignment: .bottom) {
+                            if index < 3 {
+                                Separator()
+                            }
+                        }
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

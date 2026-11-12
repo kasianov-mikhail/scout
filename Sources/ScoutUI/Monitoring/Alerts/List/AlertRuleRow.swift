@@ -90,25 +90,26 @@ struct AlertRuleRow: View {
 }
 
 #Preview("Alert rows") {
-    InsetList {
-        ForEach(Array(AlertStatus.armedSamples.enumerated()), id: \.element.rule) { index, status in
-            AlertRuleRow(
-                status: status,
-                isLast: index == AlertStatus.armedSamples.count - 1,
-                onDelete: {},
-                onMute: {},
-                onOpen: {}
-            )
-            .padding(.horizontal, -16)
-            .frame(minHeight: 44)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(AlertStatus.armedSamples.enumerated()), id: \.element.rule) { index, status in
+                AlertRuleRow(
+                    status: status,
+                    isLast: index == AlertStatus.armedSamples.count - 1,
+                    onDelete: {},
+                    onMute: {},
+                    onOpen: {}
+                )
+                .padding(.horizontal, -16)
+            }
+
+            AlertRuleRow(status: .firingSample, isLast: false, onDelete: {}, onMute: {}, onOpen: {})
+                .padding(.horizontal, -16)
+
+            AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {}, onOpen: {})
+                .padding(.horizontal, -16)
         }
-
-        AlertRuleRow(status: .firingSample, isLast: false, onDelete: {}, onMute: {}, onOpen: {})
-            .padding(.horizontal, -16)
-            .frame(minHeight: 44)
-
-        AlertRuleRow(status: .mutedSample, isLast: true, onDelete: {}, onMute: {}, onOpen: {})
-            .padding(.horizontal, -16)
-            .frame(minHeight: 44)
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

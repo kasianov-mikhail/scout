@@ -69,38 +69,49 @@ struct HomeAlertSection: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeAlertSection(history: .sample) {}
-                .frame(minHeight: 44)
-            HomeAlertSection(history: nil) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: .sample) {}
+                HomeAlertSection(history: nil) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Summary · 40") {
     NavigationStack {
-        InsetList {
-            HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 2, armed: 31, muted: 7, total: 40)) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 2, armed: 31, muted: 7, total: 40)) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Summary · firing") {
     NavigationStack {
-        InsetList {
-            HomeAlertSection(history: .sample) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: .sample) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Summary · many") {
     NavigationStack {
-        InsetList {
-            HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 3, armed: 2, muted: 1, total: 6)) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 3, armed: 2, muted: 1, total: 6)) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

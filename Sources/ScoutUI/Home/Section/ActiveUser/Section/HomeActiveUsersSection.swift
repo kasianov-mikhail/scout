@@ -106,7 +106,6 @@ struct HomeActiveUsersSection: View {
         }
         .font(.weight450(size: 13))
         .foregroundStyle(Color(.systemGray))
-        .frame(minHeight: 18, alignment: .leading)
     }
 }
 
@@ -144,29 +143,37 @@ private struct ActiveUserMetricView: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSection(users: .sample) { _ in }
-                .frame(minHeight: 44)
-            HomeActiveUsersSection(users: nil) { _ in }
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSection(users: .sample) { _ in }
+                HomeActiveUsersSection(users: nil) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Active · devices") {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 
 #Preview("Active · sessions") {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

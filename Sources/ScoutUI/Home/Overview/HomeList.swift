@@ -48,19 +48,18 @@ struct HomeList: View {
     }
 
     fileprivate var skeleton: some View {
-        InsetList {
-            HomeAlertSection(history: nil) {}
-                .padding(.top, 6)
-                .frame(minHeight: 44)
-            HomeActiveUsersSection(users: nil) { _ in }
-                .frame(minHeight: 44)
-            HomeTelemetrySection(items: nil) { _ in }
-                .frame(minHeight: 44)
-            HomeReleaseSection(adoption: nil) {}
-                .frame(minHeight: 44)
-            HomeRetentionSection(weeks: nil) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: nil) {}
+                    .padding(.top, 6)
+                HomeActiveUsersSection(users: nil) { _ in }
+                HomeTelemetrySection(items: nil) { _ in }
+                HomeReleaseSection(adoption: nil) {}
+                HomeRetentionSection(weeks: nil) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -91,52 +90,51 @@ struct HomeList: View {
     }
 
     private func list(_ snapshot: HomeSnapshot) -> some View {
-        InsetList {
-            HomeAlertSection(history: snapshot.alerts) {
-                path.append(.alerts)
-            }
-            .padding(.top, 6)
-            .loadingInk(isLoading: isLoading, delay: 0.05)
-            .frame(minHeight: 44)
-            HomeActiveUsersSection(users: snapshot.users) { kind in
-                switch kind {
-                case .sessions:
-                    path.append(.sessions)
-                case .dau, .devices:
-                    path.append(.activity)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: snapshot.alerts) {
+                    path.append(.alerts)
                 }
-            }
-            .loadingInk(isLoading: isLoading, delay: 0.10)
-            .frame(minHeight: 44)
-            HomeTelemetrySection(items: snapshot.telemetry) { kind in
-                switch kind {
-                case .events:
-                    path.append(.log)
-                case .crashes:
-                    path.append(.telemetry(.crashes))
-                case .metrics:
-                    path.append(.telemetry(.metrics))
-                case .hangs:
-                    path.append(.telemetry(.hangs))
-                case .network:
-                    path.append(.telemetry(.network))
-                case .resources:
-                    path.append(.resources)
+                .padding(.top, 6)
+                .loadingInk(isLoading: isLoading, delay: 0.05)
+                HomeActiveUsersSection(users: snapshot.users) { kind in
+                    switch kind {
+                    case .sessions:
+                        path.append(.sessions)
+                    case .dau, .devices:
+                        path.append(.activity)
+                    }
                 }
+                .loadingInk(isLoading: isLoading, delay: 0.10)
+                HomeTelemetrySection(items: snapshot.telemetry) { kind in
+                    switch kind {
+                    case .events:
+                        path.append(.log)
+                    case .crashes:
+                        path.append(.telemetry(.crashes))
+                    case .metrics:
+                        path.append(.telemetry(.metrics))
+                    case .hangs:
+                        path.append(.telemetry(.hangs))
+                    case .network:
+                        path.append(.telemetry(.network))
+                    case .resources:
+                        path.append(.resources)
+                    }
+                }
+                .loadingInk(isLoading: isLoading, delay: 0.20)
+                HomeReleaseSection(adoption: snapshot.releases) {
+                    path.append(.releaseHealth)
+                }
+                .loadingInk(isLoading: isLoading, delay: 0.30)
+                HomeRetentionSection(weeks: snapshot.retention) {
+                    path.append(.retention)
+                }
+                .loadingInk(isLoading: isLoading, delay: 0.40)
             }
-            .loadingInk(isLoading: isLoading, delay: 0.20)
-            .frame(minHeight: 44)
-            HomeReleaseSection(adoption: snapshot.releases) {
-                path.append(.releaseHealth)
-            }
-            .loadingInk(isLoading: isLoading, delay: 0.30)
-            .frame(minHeight: 44)
-            HomeRetentionSection(weeks: snapshot.retention) {
-                path.append(.retention)
-            }
-            .loadingInk(isLoading: isLoading, delay: 0.40)
-            .frame(minHeight: 44)
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:

@@ -34,7 +34,6 @@ struct HomeReleaseSectionEmpty: View {
             Text(verbatim: "No releases yet")
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
-                .frame(minHeight: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
@@ -43,9 +42,12 @@ struct HomeReleaseSectionEmpty: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeReleaseSectionEmpty {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeReleaseSectionEmpty {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

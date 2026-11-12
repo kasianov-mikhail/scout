@@ -56,20 +56,22 @@ struct MetricsListView: View {
                 )
             }
         } else {
-            InsetList {
-                MetricRangeStrip(selection: $provider.range)
-                    .padding(.top, 8)
-                    .padding(.trailing, -16)
-                    .frame(minHeight: 44)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    MetricRangeStrip(selection: $provider.range)
+                        .padding(.top, 8)
+                        .padding(.trailing, -16)
 
-                grid(tiles)
-                    .overlay(alignment: .top) {
-                        Rectangle()
-                            .fill(Color.separator)
-                            .frame(height: 0.5)
-                    }
-                    .frame(minHeight: 44)
+                    grid(tiles)
+                        .overlay(alignment: .top) {
+                            Rectangle()
+                                .fill(Color.separator)
+                                .frame(height: 0.5)
+                        }
+                }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
         }
     }
 

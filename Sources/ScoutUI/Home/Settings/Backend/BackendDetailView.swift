@@ -37,76 +37,80 @@ struct BackendDetailView: View {
     }
 
     private func content(for backend: BackendHealth) -> some View {
-        InsetList {
-            VStack(alignment: .leading, spacing: 0) {
-                SettingsLabel(title: "STATUS")
-                SettingsCard {
-                    SettingsReadoutRow(
-                        value: backend.status == nil ? nil : backend.status.healthLabel,
-                        caption: report.statusDetail,
-                        captionSkeletonWidth: backend.status == nil ? 120 : nil,
-                        skeletonWidth: 120
-                    )
-                }
-
-                SettingsLabel(title: backend.isCloud ? "CONTAINER" : "ADDRESS")
-
-                SettingsCard {
-                    SettingsAddressRow(value: backend.endpoint) {
-                        copy(backend.endpoint)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                VStack(alignment: .leading, spacing: 0) {
+                    SettingsLabel(title: "STATUS")
+                    SettingsCard {
+                        SettingsReadoutRow(
+                            value: backend.status == nil ? nil : backend.status.healthLabel,
+                            caption: report.statusDetail,
+                            captionSkeletonWidth: backend.status == nil ? 120 : nil,
+                            skeletonWidth: 120
+                        )
                     }
 
-                    addressColumns(for: backend)
-                }
+                    SettingsLabel(title: backend.isCloud ? "CONTAINER" : "ADDRESS")
 
-                SettingsLabel(title: "LATEST DATA")
+                    SettingsCard {
+                        SettingsAddressRow(value: backend.endpoint) {
+                            copy(backend.endpoint)
+                        }
 
-                SettingsCard {
-                    SettingsReadoutRow(
-                        value: report.latestEvent,
-                        caption: backend.isCloud ? "newest event in CloudKit" : "newest event on the server"
-                    )
-                }
-
-                SettingsLabel(title: "THIS IPHONE SENDS")
-
-                SettingsCard {
-                    SettingsReadoutRow(
-                        value: report.pendingRecords,
-                        caption: "records waiting",
-                        skeletonWidth: 28
-                    )
-
-                    SettingsColumnRow {
-                        SettingsColumn(title: "Last sent", value: report.lastSent)
-                        SettingsColumn(title: "Given up", value: report.givenUp)
-                        SettingsColumn(title: "Last error", value: report.lastError, isLast: true)
+                        addressColumns(for: backend)
                     }
+
+                    SettingsLabel(title: "LATEST DATA")
+
+                    SettingsCard {
+                        SettingsReadoutRow(
+                            value: report.latestEvent,
+                            caption: backend.isCloud ? "newest event in CloudKit" : "newest event on the server"
+                        )
+                    }
+
+                    SettingsLabel(title: "THIS IPHONE SENDS")
+
+                    SettingsCard {
+                        SettingsReadoutRow(
+                            value: report.pendingRecords,
+                            caption: "records waiting",
+                            skeletonWidth: 28
+                        )
+
+                        SettingsColumnRow {
+                            SettingsColumn(title: "Last sent", value: report.lastSent)
+                            SettingsColumn(title: "Given up", value: report.givenUp)
+                            SettingsColumn(title: "Last error", value: report.lastError, isLast: true)
+                        }
+                    }
+
+                    SettingsLabel(title: "STORAGE")
+
+                    storageCard(for: backend)
+
+                    if backend.isCloud {
+                        SettingsNote(text: "CloudKit does not report its size to apps. The exact number is in CloudKit Console.")
+                    }
+
+                    errorsSection(for: backend)
+
+                    if case .server = backend.engine {
+                        BackendRetentionSection(id: backend.id)
+                    }
+
+                    SettingsButton(
+                        title: backend.id == activeID ? "Reading From \(backend.name)" : "Read From \(backend.name)",
+                        isEnabled: backend.id != activeID
+                    ) {
+                        activeID = backend.id
+                    }
+                    .padding(.top, 26)
                 }
-
-                SettingsLabel(title: "STORAGE")
-
-                storageCard(for: backend)
-
-                if backend.isCloud {
-                    SettingsNote(text: "CloudKit does not report its size to apps. The exact number is in CloudKit Console.")
-                }
-
-                errorsSection(for: backend)
-
-                if case .server = backend.engine {
-                    BackendRetentionSection(id: backend.id)
-                }
-
-                SettingsButton(
-                    title: backend.id == activeID ? "Reading From \(backend.name)" : "Read From \(backend.name)",
-                    isEnabled: backend.id != activeID
-                ) {
-                    activeID = backend.id
-                }
-                .padding(.top, 26)
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .hapticFeedback(.success, trigger: copyCount)
     }
 

@@ -41,28 +41,30 @@ struct ActivityView: View {
     private func content(points: [ActivityPoint]) -> some View {
         let series = ActivitySeries(points: points, range: range, metric: metric, now: Date())
 
-        return InsetList {
-            RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            ActivityMetricTabs(series: series, selection: $metric)
-                .padding(.top, 4)
-                .frame(minHeight: 44)
+                ActivityMetricTabs(series: series, selection: $metric)
+                    .padding(.top, 4)
 
-            ActivityChart(series: series)
-                .padding(.top, 16)
-                .frame(minHeight: 44)
+                ActivityChart(series: series)
+                    .padding(.top, 16)
 
-            ActivityStickiness(series: series)
-                .padding(.top, 12)
+                ActivityStickiness(series: series)
+                    .padding(.top, 12)
 
-            ActivityRowsHeader()
+                ActivityRowsHeader()
 
-            ForEach(series.rows) { row in
-                ActivityDayRow(row: row)
+                ForEach(series.rows) { row in
+                    ActivityDayRow(row: row)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 

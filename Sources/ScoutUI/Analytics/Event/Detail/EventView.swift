@@ -27,24 +27,28 @@ struct EventView: View {
     }
 
     var body: some View {
-        InsetList {
-            EventHeader(event: event)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                EventHeader(event: event)
 
-            if let sessionID = event.sessionID {
-                ContextSection(sessionID: sessionID, deviceID: event.deviceID, context: context)
+                if let sessionID = event.sessionID {
+                    ContextSection(sessionID: sessionID, deviceID: event.deviceID, context: context)
+                }
+
+                if let paramCount = event.paramCount, paramCount > 0 {
+                    ParamSection(
+                        count: paramCount,
+                        param: param,
+                        isParamPresented: $isParamPresented
+                    )
+                }
+
+                StatSection(stat: stat)
+                TimelineSection(event: event)
             }
-
-            if let paramCount = event.paramCount, paramCount > 0 {
-                ParamSection(
-                    count: paramCount,
-                    param: param,
-                    isParamPresented: $isParamPresented
-                )
-            }
-
-            StatSection(stat: stat)
-            TimelineSection(event: event)
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .animation(.easeOut(duration: 0.2), value: [param.isLoading, stat.isLoading, context.isLoading])
         .navigationTint(event.level?.color)
         .monospacedNavigationTitle(en: event.name)

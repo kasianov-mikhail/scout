@@ -53,37 +53,40 @@ struct DevicesView: View {
         } else {
             let maxSessions = models.map(\.sessions).max() ?? 0
 
-            InsetList {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
-                    .frame(minHeight: 44)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                        .padding(.top, 8)
 
-                summary(models)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                    .frame(minHeight: 44)
+                    summary(models)
+                        .padding(.top, 4)
+                        .padding(.bottom, 12)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
 
-                columns
-                    .columnHeaderStyle()
-                    .frame(minHeight: 44)
+                    columns
+                        .columnHeaderStyle()
 
-                ForEach(models) { model in
-                    Row {
-                        DeviceModelRow(model: model, maxSessions: maxSessions)
-                    } destination: {
-                        ModelDetailView(
-                            model: model.model,
-                            range: provider.range,
-                            activities: provider.activitiesRange == provider.range
-                                ? provider.activities.filter { $0.model == model.model }
-                                : nil
-                        )
+                    ForEach(models) { model in
+                        NavigationLink {
+                            ModelDetailView(
+                                model: model.model,
+                                range: provider.range,
+                                activities: provider.activitiesRange == provider.range
+                                    ? provider.activities.filter { $0.model == model.model }
+                                    : nil
+                            )
+                        } label: {
+                            DeviceModelRow(model: model, maxSessions: maxSessions)
+                                .contentShape(.rect)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
             .exportToolbar(text: DevicesExport(models: models).text)
         }
     }
@@ -152,6 +155,7 @@ private struct DeviceModelRow: View {
                     .frame(width: 56, alignment: .trailing)
             }
         }
+        .lineLimit(1)
         .padding(.vertical, 10)
         .overlay(alignment: .bottom) {
             DashedLine()

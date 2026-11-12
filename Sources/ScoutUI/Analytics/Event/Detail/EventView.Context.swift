@@ -66,7 +66,9 @@ extension EventView {
         private func sessionRow(@ViewBuilder value makeValue: () -> some View) -> some View {
             let value = makeValue()
 
-            return Row(minHeight: 52) {
+            return NavigationLink {
+                SessionInspector(sessionID: sessionID, deviceID: deviceID)
+            } label: {
                 HStack(spacing: 12) {
                     Image(systemName: "clock")
                         .font(.weight450(size: 17))
@@ -81,9 +83,11 @@ extension EventView {
 
                     value
                 }
-            } destination: {
-                SessionInspector(sessionID: sessionID, deviceID: deviceID)
+                .lineLimit(1)
+                .frame(height: 52)
+                .contentShape(.rect)
             }
+            .buttonStyle(.plain)
             .overlay(alignment: .bottom) {
                 Separator()
             }

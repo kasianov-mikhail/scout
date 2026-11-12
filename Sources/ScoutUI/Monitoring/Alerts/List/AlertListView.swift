@@ -96,24 +96,27 @@ struct AlertListView: View {
     }
 
     private func list(_ statuses: [AlertStatus]) -> some View {
-        InsetList {
-            if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
-                NotificationsDeniedRow()
-                    .overlay(alignment: .bottom) {
-                        Rectangle()
-                            .fill(Color.separator)
-                            .frame(height: 0.5)
-                    }
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
+                    NotificationsDeniedRow()
+                        .overlay(alignment: .bottom) {
+                            Rectangle()
+                                .fill(Color.separator)
+                                .frame(height: 0.5)
+                        }
+                }
+
+                AlertListLegend()
+                    .padding(.top, 10)
+
+                section(statuses.firing, title: "FIRING")
+                section(statuses.armed, title: "ARMED")
+                section(statuses.muted, title: "MUTED")
             }
-
-            AlertListLegend()
-                .padding(.top, 10)
-                .frame(minHeight: 44)
-
-            section(statuses.firing, title: "FIRING")
-            section(statuses.armed, title: "ARMED")
-            section(statuses.muted, title: "MUTED")
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 
     @ViewBuilder private func section(_ statuses: [AlertStatus], title: String) -> some View {
@@ -139,7 +142,6 @@ struct AlertListView: View {
                     }
                 )
                 .padding(.horizontal, -16)
-                .frame(minHeight: 44)
             }
         }
     }

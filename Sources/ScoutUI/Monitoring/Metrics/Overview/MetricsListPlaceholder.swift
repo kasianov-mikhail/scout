@@ -13,20 +13,22 @@ struct MetricsListPlaceholder: View {
     private static let nameWidths: [CGFloat] = [77, 56, 98, 42, 77, 56]
 
     var body: some View {
-        InsetList {
-            MetricRangeStrip(selection: $range)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                MetricRangeStrip(selection: $range)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            grid
-                .overlay(alignment: .top) {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(height: 0.5)
-                }
-                .frame(minHeight: 44)
+                grid
+                    .overlay(alignment: .top) {
+                        Rectangle()
+                            .fill(Color.separator)
+                            .frame(height: 0.5)
+                    }
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

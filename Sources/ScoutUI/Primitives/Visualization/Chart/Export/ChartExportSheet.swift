@@ -22,76 +22,80 @@ struct ChartExportSheet<ChartContent: View>: View {
     @Environment(\.displayScale) private var displayScale
 
     var body: some View {
-        InsetList {
-            ChartSnapshot(
-                title: title,
-                rangeLabel: rangeLabel,
-                showsTitle: options.includesTitle,
-                showsRange: options.includesRange,
-                fadesHeader: true,
-                chart: chart
-            )
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ChartSnapshot(
+                    title: title,
+                    rangeLabel: rangeLabel,
+                    showsTitle: options.includesTitle,
+                    showsRange: options.includesRange,
+                    fadesHeader: true,
+                    chart: chart
+                )
 
-            Header(title: "Format")
+                Header(title: "Format")
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
+
+                HStack {
+                    Text(verbatim: "File Type")
+                    Spacer()
+                    Picker(selection: $options.format) {
+                        ForEach(ChartExportFormat.allCases) { format in
+                            Text(verbatim: format.rawValue).tag(format)
+                        }
+                    } label: {
+                        EmptyView()
+                    }
+                    .pickerStyle(.segmented)
+                    .frame(width: 140)
+                }
+                .frame(height: 22)
+                .frame(height: 44)
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
 
-            HStack {
-                Text(verbatim: "File Type")
-                Spacer()
-                Picker(selection: $options.format) {
-                    ForEach(ChartExportFormat.allCases) { format in
-                        Text(verbatim: format.rawValue).tag(format)
+                HStack {
+                    Text(verbatim: "Appearance")
+                    Spacer()
+                    Picker(selection: $options.appearance) {
+                        ForEach(ChartExportAppearance.allCases) { appearance in
+                            Text(verbatim: appearance.rawValue).tag(appearance)
+                        }
+                    } label: {
+                        EmptyView()
                     }
-                } label: {
-                    EmptyView()
+                    .pickerStyle(.menu)
                 }
-                .pickerStyle(.segmented)
-                .frame(width: 140)
-            }
-            .frame(height: 22)
-            .frame(minHeight: 44)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
-
-            HStack {
-                Text(verbatim: "Appearance")
-                Spacer()
-                Picker(selection: $options.appearance) {
-                    ForEach(ChartExportAppearance.allCases) { appearance in
-                        Text(verbatim: appearance.rawValue).tag(appearance)
-                    }
-                } label: {
-                    EmptyView()
-                }
-                .pickerStyle(.menu)
-            }
-            .frame(height: 22)
-            .frame(minHeight: 44)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
-
-            Header(title: "Content")
+                .frame(height: 22)
+                .frame(height: 44)
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
 
-            Toggle(isOn: $options.includesTitle) {
-                Text(verbatim: "Chart Title")
-            }
-            .frame(minHeight: 44)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
+                Header(title: "Content")
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
 
-            Toggle(isOn: $options.includesRange) {
-                Text(verbatim: "Period Label")
+                Toggle(isOn: $options.includesTitle) {
+                    Text(verbatim: "Chart Title")
+                }
+                .frame(height: 44)
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
+
+                Toggle(isOn: $options.includesRange) {
+                    Text(verbatim: "Period Label")
+                }
+                .frame(height: 44)
             }
-            .frame(minHeight: 44)
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .disabledBounce()
         .background(.background)
         .safeAreaInset(edge: .bottom) {

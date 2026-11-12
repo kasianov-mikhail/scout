@@ -13,25 +13,25 @@ struct DeviceListPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        InsetList {
-            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, 8)
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                    .padding(.top, 8)
 
-            SkeletonBar(width: 200, height: 9, delay: 0)
-                .frame(height: 17.5, alignment: .leading)
-                .padding(.top, 4)
-                .frame(minHeight: 44)
+                SkeletonBar(width: 200, height: 9, delay: 0)
+                    .frame(height: 17.5, alignment: .leading)
+                    .padding(.top, 4)
 
-            columns
-                .columnHeaderStyle()
-                .frame(minHeight: 44)
+                columns
+                    .columnHeaderStyle()
 
-            ForEach(0..<9, id: \.self) { index in
-                row(index: index, isLast: index == 8)
-                    .frame(minHeight: 44)
+                ForEach(0..<9, id: \.self) { index in
+                    row(index: index, isLast: index == 8)
+                }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -76,6 +76,7 @@ struct DeviceListPlaceholder: View {
             }
         }
         .padding(.vertical, 10)
+        .frame(height: 64)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()

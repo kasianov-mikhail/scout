@@ -20,22 +20,26 @@ struct IncidentOccurrencesView<Element: RecordDecodable & Incident, Row: View>: 
                 if records.isEmpty {
                     Placeholder(text: "No occurrences")
                 } else {
-                    InsetList {
-                        ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
-                            row(record)
-                                .overlay(alignment: .bottom) {
-                                    if index < records.count - 1 || occurrences.cursor != nil {
-                                        Separator()
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            ForEach(Array(records.enumerated()), id: \.element.id) { index, record in
+                                row(record)
+                                    .overlay(alignment: .bottom) {
+                                        if index < records.count - 1 || occurrences.cursor != nil {
+                                            Separator()
+                                        }
                                     }
-                                }
-                        }
+                            }
 
-                        if let cursor = occurrences.cursor {
-                            PaginationFooter {
-                                await occurrences.fetchMore(cursor: cursor, in: database)
+                            if let cursor = occurrences.cursor {
+                                PaginationFooter {
+                                    await occurrences.fetchMore(cursor: cursor, in: database)
+                                }
                             }
                         }
+                        .padding(.horizontal, 16)
                     }
+                    .scrollIndicators(.hidden)
                 }
             } else if let error = occurrences.error {
                 ErrorView(description: error.localizedDescription) {

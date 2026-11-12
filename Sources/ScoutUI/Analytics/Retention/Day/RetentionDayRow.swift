@@ -40,6 +40,7 @@ struct RetentionDayRow: View {
             RetentionValueLabel(kept: value.keptLabel, rate: value.rateLabel, pending: value.pendingLabel)
                 .frame(width: 76, alignment: .trailing)
         }
+        .lineLimit(1)
         .frame(height: 44)
         .overlay(alignment: .bottom) {
             if showsDivider {
@@ -52,13 +53,16 @@ struct RetentionDayRow: View {
 #Preview {
     let rates: [Double?] = [0.43, 0.29, 0.2, nil, nil]
 
-    InsetList {
-        ForEach(Array(RetentionDay.allCases.enumerated()), id: \.element) { index, day in
-            RetentionDayRow(
-                value: RetentionDayValue(day: day, size: 960, rate: rates[index], average: 0.2, pending: "in 2 d"),
-                showsDivider: day != .day30
-            )
-            .frame(minHeight: 44)
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ForEach(Array(RetentionDay.allCases.enumerated()), id: \.element) { index, day in
+                RetentionDayRow(
+                    value: RetentionDayValue(day: day, size: 960, rate: rates[index], average: 0.2, pending: "in 2 d"),
+                    showsDivider: day != .day30
+                )
+            }
         }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

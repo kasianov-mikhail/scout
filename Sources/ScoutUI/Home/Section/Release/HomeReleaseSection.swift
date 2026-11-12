@@ -52,7 +52,6 @@ struct HomeReleaseSection: View {
                 .padding(.top, 8)
 
             caption(adoption: adoption)
-                .frame(minHeight: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
@@ -75,11 +74,13 @@ struct HomeReleaseSection: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeReleaseSection(adoption: .sample) {}
-                .frame(minHeight: 44)
-            HomeReleaseSection(adoption: nil) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeReleaseSection(adoption: .sample) {}
+                HomeReleaseSection(adoption: nil) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

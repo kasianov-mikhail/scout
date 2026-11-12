@@ -20,13 +20,13 @@ struct ErrorRow: View {
 
             Text(verbatim: description)
                 .font(.weight450(size: 16))
-                .lineLimit(2)
+                .lineLimit(1)
 
             Spacer()
 
             retryControl
         }
-        .frame(minHeight: 44)
+        .frame(height: 44)
     }
 
     private var retryControl: some View {
@@ -52,8 +52,12 @@ struct ErrorRow: View {
 }
 
 #Preview {
-    InsetList {
-        ErrorRow(description: "The request timed out.") {}
-        ErrorRow(description: "A much longer error description that explains what exactly went wrong while loading.") {}
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ErrorRow(description: "The request timed out.") {}
+            ErrorRow(description: "A much longer error description that explains what exactly went wrong while loading.") {}
+        }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
 }

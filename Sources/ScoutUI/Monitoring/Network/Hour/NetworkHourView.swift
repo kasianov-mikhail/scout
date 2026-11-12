@@ -63,41 +63,39 @@ struct NetworkHourView: View {
         let endpoint = report.endpoint(name: name, range: range) ?? NetworkEndpoint(name: name, requests: 0, successRate: nil, p99: nil)
         let breakdown = report.statusBreakdown(name: name, range: range)
 
-        return InsetList {
-            ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
-                .frame(minHeight: 44)
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
 
-            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
-                .frame(minHeight: 44)
+                NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
 
-            if breakdown.total > 0 {
-                SectionHeader(title: "STATUS")
+                if breakdown.total > 0 {
+                    SectionHeader(title: "STATUS")
 
-                ProportionBar(
-                    items: breakdown.networkClasses,
-                    color: { _, item in item.color },
-                    share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
-                )
-                .padding(.top, 14)
-                .padding(.bottom, 6)
-                .frame(minHeight: 44)
+                    ProportionBar(
+                        items: breakdown.networkClasses,
+                        color: { _, item in item.color },
+                        share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
+                    )
+                    .padding(.top, 14)
+                    .padding(.bottom, 6)
 
-                ForEach(breakdown.networkClasses) { item in
-                    NetworkStatusRow(item: item, total: breakdown.total)
-                        .frame(minHeight: 44)
+                    ForEach(breakdown.networkClasses) { item in
+                        NetworkStatusRow(item: item, total: breakdown.total)
+                    }
+                }
+
+                if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
+                    SectionHeader(title: "LATENCY")
+
+                    NetworkLatencyChart(histogram: histogram)
+
+                    NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
                 }
             }
-
-            if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
-                SectionHeader(title: "LATENCY")
-
-                NetworkLatencyChart(histogram: histogram)
-                    .frame(minHeight: 44)
-
-                NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
-                    .frame(minHeight: 44)
-            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }
 

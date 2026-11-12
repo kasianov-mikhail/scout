@@ -35,7 +35,6 @@ struct HomeActiveUsersSectionEmpty: View {
             Text(verbatim: "No sessions in the last 30 days")
                 .font(.weight450(size: 13))
                 .foregroundStyle(Color(.systemGray))
-                .frame(minHeight: 18, alignment: .leading)
                 .padding(.top, 10)
                 .padding(.bottom, 6)
         }
@@ -94,9 +93,12 @@ struct HomeActiveUsersSectionEmpty: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            HomeActiveUsersSectionEmpty(start: HomeSnapshot.date.addingDay(-29), end: HomeSnapshot.date) {}
-                .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeActiveUsersSectionEmpty(start: HomeSnapshot.date.addingDay(-29), end: HomeSnapshot.date) {}
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

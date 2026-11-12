@@ -103,13 +103,17 @@ struct IncidentTileView<Element: Incident>: View {
 }
 
 #Preview {
-    InsetList {
-        IncidentGrid(count: IncidentTile<Crash>.samples.count) { index in
-            IncidentTileView(
-                tile: IncidentTile<Crash>.samples[index],
-                side: index.isMultiple(of: 2) ? .leading : .trailing
-            )
+    ScrollView {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            IncidentGrid(count: IncidentTile<Crash>.samples.count) { index in
+                IncidentTileView(
+                    tile: IncidentTile<Crash>.samples[index],
+                    side: index.isMultiple(of: 2) ? .leading : .trailing
+                )
+            }
         }
+        .padding(.horizontal, 16)
     }
+    .scrollIndicators(.hidden)
     .navigationTitle(en: "Crashes")
 }

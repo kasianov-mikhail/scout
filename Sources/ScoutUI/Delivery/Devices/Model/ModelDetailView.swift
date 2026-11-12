@@ -57,51 +57,51 @@ struct ModelDetailView: View {
                 )
             }
         } else {
-            InsetList {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
-                    .frame(minHeight: 44)
+            ScrollView {
+                LazyVStack(alignment: .leading, spacing: 0) {
+                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                        .padding(.top, 8)
 
-                subtitle(detail)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
-                    .overlay(alignment: .bottom) {
-                        Separator()
+                    subtitle(detail)
+                        .padding(.top, 4)
+                        .padding(.bottom, 12)
+                        .overlay(alignment: .bottom) {
+                            Separator()
+                        }
+
+                    if !detail.osVersions.isEmpty {
+                        SectionHeader(title: "OS VERSIONS", topPadding: 12)
+
+                        ProportionBar(
+                            items: detail.osVersions,
+                            color: { index, _ in deviceOSColor(index) },
+                            share: { Double($0.percentage) / 100 }
+                        )
+                        .padding(.top, 14)
+                        .padding(.bottom, 6)
+
+                        ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
+                            OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
+                        }
                     }
-                    .frame(minHeight: 44)
 
-                if !detail.osVersions.isEmpty {
-                    SectionHeader(title: "OS VERSIONS", topPadding: 12)
+                    SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
 
-                    ProportionBar(
-                        items: detail.osVersions,
-                        color: { index, _ in deviceOSColor(index) },
-                        share: { Double($0.percentage) / 100 }
-                    )
-                    .padding(.top, 14)
-                    .padding(.bottom, 6)
-                    .frame(minHeight: 44)
+                    deviceColumns
+                        .columnHeaderStyle(topPadding: 12)
 
-                    ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
-                        OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
-                            .frame(minHeight: 44)
-                    }
-                }
-
-                SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
-
-                deviceColumns
-                    .columnHeaderStyle(topPadding: 12)
-                    .frame(minHeight: 44)
-
-                ForEach(detail.devices) { device in
-                    Row {
-                        ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
-                    } destination: {
-                        DeviceDetailView(device: device, range: provider.range)
+                    ForEach(detail.devices) { device in
+                        NavigationLink {
+                            DeviceDetailView(device: device, range: provider.range)
+                        } label: {
+                            ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
+                        }
+                        .buttonStyle(.plain)
                     }
                 }
+                .padding(.horizontal, 16)
             }
+            .scrollIndicators(.hidden)
         }
     }
 
@@ -158,6 +158,7 @@ private struct OSVersionRow: View {
                 .foregroundStyle(Color(.systemGray))
                 .frame(width: 56, alignment: .trailing)
         }
+        .lineLimit(1)
         .frame(height: 40)
         .overlay(alignment: .bottom) {
             DashedLine()
@@ -195,8 +196,9 @@ private struct ModelDeviceRow: View {
                 .foregroundStyle(device.crashes > 0 ? Color.crashText : Color.pending)
                 .frame(width: 56, alignment: .trailing)
         }
+        .lineLimit(1)
         .padding(.vertical, 6)
-        .frame(minHeight: 40)
+        .frame(height: 40)
         .overlay(alignment: .bottom) {
             DashedLine()
         }

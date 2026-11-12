@@ -66,17 +66,20 @@ struct ActivityMetricTabs: View {
 
 #Preview {
     NavigationStack {
-        InsetList {
-            ActivityMetricTabs(
-                series: ActivitySeries(
-                    points: ActivityPoint.samples,
-                    range: .month,
-                    metric: .daily,
-                    now: Date()
-                ),
-                selection: .constant(.daily)
-            )
-            .frame(minHeight: 44)
+        ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ActivityMetricTabs(
+                    series: ActivitySeries(
+                        points: ActivityPoint.samples,
+                        range: .month,
+                        metric: .daily,
+                        now: Date()
+                    ),
+                    selection: .constant(.daily)
+                )
+            }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 }

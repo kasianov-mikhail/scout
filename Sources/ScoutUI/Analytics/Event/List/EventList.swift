@@ -25,10 +25,14 @@ struct EventList<Header: View>: View {
                         code: "logger.info(\"button_tapped\")"
                     )
                 } else {
-                    InsetList {
-                        header()
-                        rows(for: events)
+                    ScrollView {
+                        LazyVStack(alignment: .leading, spacing: 0) {
+                            header()
+                            rows(for: events)
+                        }
+                        .padding(.horizontal, 16)
                     }
+                    .scrollIndicators(.hidden)
                     .animation(nil, value: UUID())
                     .transition(.opacity)
                 }

@@ -90,32 +90,34 @@ struct NetworkEndpointView: View {
                 .month
             }
 
-        return InsetList {
-            RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .padding(.top, 8)
-                .padding(.trailing, -16)
-                .frame(minHeight: 44)
+        return ScrollView {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+                    .padding(.top, 8)
+                    .padding(.trailing, -16)
 
-            NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
-                .frame(minHeight: 44)
+                NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
 
-            NetworkLedgerHeader(primary: component.networkTitle)
-                .frame(minHeight: 44)
+                NetworkLedgerHeader(primary: component.networkTitle)
 
-            ForEach(rows) { row in
-                Row {
-                    NetworkLedgerRowView(
-                        row: row,
-                        maxRequests: maxRequests,
-                        label: label,
-                        component: component,
-                        showsDivider: row.id != rows.last?.id
-                    )
-                } destination: {
-                    destination(row, component: component)
+                ForEach(rows) { row in
+                    NavigationLink {
+                        destination(row, component: component)
+                    } label: {
+                        NetworkLedgerRowView(
+                            row: row,
+                            maxRequests: maxRequests,
+                            label: label,
+                            component: component,
+                            showsDivider: row.id != rows.last?.id
+                        )
+                    }
+                    .buttonStyle(.plain)
                 }
             }
+            .padding(.horizontal, 16)
         }
+        .scrollIndicators(.hidden)
     }
 
     @ViewBuilder

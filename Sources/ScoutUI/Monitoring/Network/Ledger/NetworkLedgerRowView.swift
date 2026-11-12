@@ -63,7 +63,8 @@ struct NetworkLedgerRowView: View {
                 .frame(width: 64, alignment: .trailing)
         }
         .font(.weight450(size: 13, design: .monospaced))
-        .frame(minHeight: 40)
+        .lineLimit(1)
+        .frame(height: 40)
         .padding(.vertical, 6)
         .overlay(alignment: .bottom) {
             if showsDivider {
