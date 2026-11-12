@@ -20,6 +20,7 @@ struct NetworkViewPlaceholder: View {
                     .padding(.trailing, -16)
 
                 SkeletonBar(width: 160, height: 9, delay: 0)
+                    .frame(height: 17.5, alignment: .leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 4)
                     .padding(.bottom, 12)
@@ -57,6 +58,7 @@ struct NetworkEndpointRowPlaceholder: View {
 
             HStack(spacing: 8) {
                 SkeletonBar(width: 46, height: 9, delay: delay)
+                    .padding(.horizontal, 4)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 SkeletonBar(width: 28, height: 9, delay: delay)
                     .frame(width: 56, alignment: .trailing)

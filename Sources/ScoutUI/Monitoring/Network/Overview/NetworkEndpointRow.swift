@@ -34,7 +34,7 @@ struct NetworkEndpointRow: View {
             }
 
             HStack(spacing: 8) {
-                BarValue(text: endpoint.requests.compact, fraction: fraction, color: .networkTrack, barHeight: 28, minimumWidth: 4)
+                BarValue(text: endpoint.requests.compact, fraction: fraction, color: .networkTrack, barHeight: 25.5, minimumWidth: 4)
                     .frame(maxWidth: .infinity)
                     .frame(height: 18)
 
