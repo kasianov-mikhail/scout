@@ -18,10 +18,7 @@ struct ParamRawTests {
             ParamProvider.Item(key: "price", value: "49.99"),
             ParamProvider.Item(key: "currency", value: "USD"),
             ParamProvider.Item(key: "family_shared", value: "false"),
-            ParamProvider.Item(
-                key: "offer",
-                value: #"{"id": "FALL26", "discount": 0.2, "ends_at": "2026-10-31T23:59:59Z"}"#
-            ),
+            ParamProvider.Item(key: "offer", value: #"{"id": "FALL26", "discount": 0.2, "ends_at": "2026-10-31T23:59:59Z"}"#),
             ParamProvider.Item(key: "promo_codes", value: #"["FALL26", "WELCOME"]"#),
             ParamProvider.Item(key: "quantity", value: "1"),
         ])

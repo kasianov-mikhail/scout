@@ -112,23 +112,14 @@ extension TimelineSample.Records {
             device: Device(date: base, id: deviceID.uuidString, deviceID: deviceID),
             installs: [
                 Install(date: at(0), id: install1ID.uuidString, installID: install1ID, deviceID: deviceID),
-                Install(
-                    date: at(2 * 86_400), id: install2ID.uuidString, installID: install2ID, deviceID: deviceID),
+                Install(date: at(2 * 86_400), id: install2ID.uuidString, installID: install2ID, deviceID: deviceID),
             ],
             launches: [
                 Launch(startDate: at(60), endDate: nil, id: launch1ID.uuidString, launchID: launch1ID, installID: install1ID),
-                Launch(
-                    startDate: at(3 * 3_600), endDate: at(3 * 3_600 + 120), id: launch2ID.uuidString,
-                    launchID: launch2ID, installID: install1ID),
-                Launch(
-                    startDate: at(20 * 3_600), endDate: nil, id: launch3ID.uuidString, launchID: launch3ID,
-                    installID: install1ID),
-                Launch(
-                    startDate: at(20 * 3_600 + 2_700), endDate: nil, id: launch4ID.uuidString, launchID: launch4ID,
-                    installID: install1ID),
-                Launch(
-                    startDate: at(2 * 86_400 + 60), endDate: nil, id: launch5ID.uuidString, launchID: launch5ID,
-                    installID: install2ID),
+                Launch(startDate: at(3 * 3_600), endDate: at(3 * 3_600 + 120), id: launch2ID.uuidString, launchID: launch2ID, installID: install1ID),
+                Launch(startDate: at(20 * 3_600), endDate: nil, id: launch3ID.uuidString, launchID: launch3ID, installID: install1ID),
+                Launch(startDate: at(20 * 3_600 + 2_700), endDate: nil, id: launch4ID.uuidString, launchID: launch4ID, installID: install1ID),
+                Launch(startDate: at(2 * 86_400 + 60), endDate: nil, id: launch5ID.uuidString, launchID: launch5ID, installID: install2ID),
             ],
             sessions: [
                 Session(

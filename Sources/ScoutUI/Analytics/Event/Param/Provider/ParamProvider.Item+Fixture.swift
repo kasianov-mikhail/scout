@@ -72,10 +72,7 @@ extension ParamProvider.Item {
             ParamProvider.Item(key: "signal", value: "SIGSEGV"),
             ParamProvider.Item(key: "thread", value: "12"),
             ParamProvider.Item(key: "uptime_s", value: "3724.6"),
-            ParamProvider.Item(
-                key: "memory",
-                value: #"{"footprint_mb": 412.7, "peak_mb": 523.1, "pressure": "warning"}"#
-            ),
+            ParamProvider.Item(key: "memory", value: #"{"footprint_mb": 412.7, "peak_mb": 523.1, "pressure": "warning"}"#),
             ParamProvider.Item(
                 key: "stack_trace",
                 value: """
