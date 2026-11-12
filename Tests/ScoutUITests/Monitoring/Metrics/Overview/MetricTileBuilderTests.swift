@@ -14,7 +14,8 @@ import Testing
 
 @Suite("MetricTileBuilder")
 struct MetricTileBuilderTests {
-    private let range = Date(year: 2026, month: 6, day: 10)..<Date(year: 2026, month: 6, day: 11)
+    private let now = Date(year: 2026, month: 6, day: 10, hour: 23)
+    private let day = Date(year: 2026, month: 6, day: 10)
 
     @Test("Tiles group by kind, rank by value and keep the list suffixes")
     func tiles() throws {
@@ -32,7 +33,8 @@ struct MetricTileBuilderTests {
             meterSeries: [
                 makeSeries(name: "queue_depth", category: "meter", points: [(0.001, 12), (0.002, 14)])
             ],
-            range: range
+            range: .today,
+            now: now
         )
 
         let tiles = builder.tiles
@@ -63,10 +65,37 @@ struct MetricTileBuilderTests {
             intSeries: [makeSeries(name: "idle", category: "counter", points: [])],
             floatingSeries: [],
             meterSeries: [makeSeries(name: "absent", category: "meter", points: [])],
-            range: range
+            range: .today,
+            now: now
         )
 
         #expect(builder.tiles.isEmpty)
+    }
+
+    @Test("Week slices give one non-zero point per day")
+    func weekSlices() throws {
+        let hours: [Double] = [-138, -114, -90, -66, -42, -18, 6]
+        let values: [Double] = [1, 2, 3, 4, 5, 6, 7]
+        let points = zip(hours, values).map { ($0, $1) }
+        let builder = MetricTileBuilder(
+            intSeries: [
+                makeSeries(
+                    name: "api_calls",
+                    category: "counter",
+                    points: points
+                )
+            ],
+            floatingSeries: [],
+            meterSeries: [],
+            range: .week,
+            now: now
+        )
+
+        let tile = try #require(builder.tiles.first)
+
+        #expect(tile.series == [1, 2, 3, 4, 5, 6, 7])
+        #expect(tile.series.allSatisfy { $0 > 0 })
+        #expect(tile.value == 28)
     }
 
     private func makeSeries(name: String, category: String, points: [(Double, Double)]) -> MetricSeries {
@@ -74,7 +103,7 @@ struct MetricTileBuilderTests {
             name: name,
             category: category,
             points: points.map { offset, value in
-                MetricSeriesPoint(date: range.lowerBound.addingTimeInterval(offset * .hour), value: value)
+                MetricSeriesPoint(date: day.addingTimeInterval(offset * .hour), value: value)
             }
         )
     }
