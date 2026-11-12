@@ -16,6 +16,7 @@ struct TelemetryRow: View {
     let item: TelemetryItem
     let side: Side
     let showsDivider: Bool
+    let showsValues: Bool
     let action: () -> Void
 
     var body: some View {
@@ -28,20 +29,33 @@ struct TelemetryRow: View {
                     .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack(alignment: .firstTextBaseline, spacing: 8) {
-                        Text(verbatim: item.kind.title)
-                            .font(.telemetryTitle)
+                    if showsValues {
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            title
 
-                        Spacer(minLength: 0)
+                            Spacer(minLength: 0)
 
-                        Text(verbatim: item.valueLabel)
-                            .font(.body.weight(.semibold))
-                            .monospacedDigit()
+                            Text(verbatim: item.valueLabel)
+                                .font(.body.weight(.semibold))
+                                .monospacedDigit()
+                        }
+
+                        Text(verbatim: item.caption)
+                            .font(.telemetryCaption)
+                            .foregroundStyle(Color(.systemGray))
+                    } else {
+                        HStack(spacing: 8) {
+                            title
+
+                            Spacer(minLength: 0)
+
+                            EmptyBar(width: 28, height: 14)
+                        }
+                        .frame(height: 20)
+
+                        EmptyBar(width: 74, height: 8)
+                            .frame(height: 15, alignment: .leading)
                     }
-
-                    Text(verbatim: item.caption)
-                        .font(.telemetryCaption)
-                        .foregroundStyle(Color(.systemGray))
                 }
             }
             .padding(.leading, side == .trailing ? 12 : 0)
@@ -59,14 +73,21 @@ struct TelemetryRow: View {
         }
         .buttonStyle(.plain)
     }
+
+    private var title: some View {
+        Text(verbatim: item.kind.title)
+            .font(.telemetryTitle)
+    }
 }
 
 #Preview {
     NavigationStack {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
-                TelemetryRow(item: TelemetryItem.sample[0], side: .leading, showsDivider: true) {}
-                TelemetryRow(item: TelemetryItem.sample[1], side: .trailing, showsDivider: false) {}
+                TelemetryRow(item: TelemetryItem.sample[0], side: .leading, showsDivider: true, showsValues: true) {}
+                TelemetryRow(item: TelemetryItem.sample[1], side: .trailing, showsDivider: false, showsValues: true) {}
+                TelemetryRow(item: TelemetryItem.sample[2], side: .leading, showsDivider: true, showsValues: false) {}
+                TelemetryRow(item: TelemetryItem.sample[3], side: .trailing, showsDivider: false, showsValues: false) {}
             }
             .padding(.horizontal, 16)
         }

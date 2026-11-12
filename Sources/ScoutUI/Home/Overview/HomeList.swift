@@ -173,6 +173,15 @@ struct HomeList: View {
     .environmentObject(Tint())
 }
 
+#Preview("Empty") {
+    NavigationStack {
+        HomeList(snapshot: .empty, path: .constant([]))
+            .navigationTitle(en: "Home")
+            .inlineNavigationTitle()
+    }
+    .environmentObject(Tint())
+}
+
 #Preview("Loading") {
     NavigationStack {
         HomeList(path: .constant([])).skeleton

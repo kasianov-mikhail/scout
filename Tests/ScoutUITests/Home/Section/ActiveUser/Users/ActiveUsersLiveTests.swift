@@ -43,4 +43,12 @@ struct ActiveUsersLiveTests {
         #expect(users.stickiness > 0)
         #expect(users.sessionsPerUser > 0)
     }
+
+    @Test("No activity makes the section empty")
+    func empty() {
+        let users = ActiveUsers(activity: [], sessions: [], devices: [])
+
+        #expect(users.isEmpty)
+        #expect(!ActiveUsers.sample.isEmpty)
+    }
 }

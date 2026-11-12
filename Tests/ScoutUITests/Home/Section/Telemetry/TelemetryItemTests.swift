@@ -28,4 +28,12 @@ struct TelemetryItemTests {
     func values() {
         #expect(TelemetryItem.sample.map(\.valueLabel) == ["48", "3", "140", "6", "212", "2"])
     }
+
+    @Test("A report without records has no values")
+    func empty() {
+        let items = [TelemetryItem](report: [:], resources: [])
+
+        #expect(!items.hasValues)
+        #expect(TelemetryItem.sample.hasValues)
+    }
 }

@@ -13,7 +13,11 @@ struct HomeReleaseSection: View {
 
     var body: some View {
         if let adoption {
-            content(adoption: adoption)
+            if adoption.isEmpty {
+                HomeReleaseSectionEmpty(onShowAll: onShowAll)
+            } else {
+                content(adoption: adoption)
+            }
         } else {
             HomeReleaseSectionPlaceholder()
         }
@@ -22,15 +26,7 @@ struct HomeReleaseSection: View {
     private func content(adoption: ReleaseAdoption) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Releases") {
-                Button(action: onShowAll) {
-                    Image(systemName: "arrow.up.right.and.arrow.down.left")
-                        .font(.weight450(size: 20))
-                        .frame(width: 44, height: 44)
-                        .padding(.trailing, -12)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.blue)
-                .accessibilityLabel(Text(verbatim: "Show all releases"))
+                HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
             }
 
             HStack(alignment: .firstTextBaseline, spacing: 8) {

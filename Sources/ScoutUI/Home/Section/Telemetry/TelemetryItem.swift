@@ -61,6 +61,12 @@ struct TelemetryItem: Identifiable {
     }
 }
 
+extension [TelemetryItem] {
+    var hasValues: Bool {
+        contains { $0.value > 0 }
+    }
+}
+
 extension TelemetryItem {
     static let sample: [TelemetryItem] = [
         TelemetryItem(kind: .events, value: 48, caption: "41 yesterday"),

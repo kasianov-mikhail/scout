@@ -56,4 +56,13 @@ struct AlertHistoryTests {
 
         #expect(history.rulesLabel == "1 rule")
     }
+
+    @Test("A history without rules is empty")
+    func empty() {
+        let history = AlertHistory(statuses: [])
+
+        #expect(history.isEmpty)
+        #expect(history.rulesLabel == "0 rules")
+        #expect(!AlertHistory.sample.isEmpty)
+    }
 }

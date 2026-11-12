@@ -13,53 +13,57 @@ struct HomeAlertSection: View {
 
     var body: some View {
         if let history {
-            content(history: history)
+            Button(action: action) {
+                if history.isEmpty {
+                    HomeAlertSectionEmpty(rulesLabel: history.rulesLabel)
+                } else {
+                    content(history: history)
+                }
+            }
+            .buttonStyle(.plain)
         } else {
             HomeAlertSectionPlaceholder()
         }
     }
 
     private func content(history: AlertHistory) -> some View {
-        Button(action: action) {
-            VStack(alignment: .leading, spacing: 6) {
-                HStack(alignment: .firstTextBaseline) {
-                    Text(verbatim: "ALERTS")
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(verbatim: "ALERTS")
+                    .font(.footnote.weight(.semibold))
+
+                Spacer()
+
+                if history.firing > 0 {
+                    Text(verbatim: "\(history.firing) firing")
                         .font(.footnote.weight(.semibold))
-
-                    Spacer()
-
-                    if history.firing > 0 {
-                        Text(verbatim: "\(history.firing) firing")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.red)
-                    }
+                        .foregroundStyle(.red)
                 }
-
-                AlertHealthStrip(buckets: history.buckets)
-                    .padding(.top, 4)
-
-                HStack(alignment: .firstTextBaseline) {
-                    Text(verbatim: history.summary)
-
-                    Spacer()
-
-                    Text(verbatim: history.rulesLabel)
-                }
-                .font(.weight450(size: 13))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 2)
             }
-            .padding(.top, 12)
-            .padding(.bottom, 14)
-            .contentShape(Rectangle())
-            .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
+
+            AlertHealthStrip(buckets: history.buckets)
+                .padding(.top, 4)
+
+            HStack(alignment: .firstTextBaseline) {
+                Text(verbatim: history.summary)
+
+                Spacer()
+
+                Text(verbatim: history.rulesLabel)
             }
-            .accessibilityElement(children: .combine)
+            .font(.weight450(size: 13))
+            .foregroundStyle(Color(.systemGray))
+            .padding(.top, 2)
         }
-        .buttonStyle(.plain)
+        .padding(.top, 12)
+        .padding(.bottom, 14)
+        .contentShape(Rectangle())
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
+        .accessibilityElement(children: .combine)
     }
 }
 

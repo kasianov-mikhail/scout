@@ -8,7 +8,7 @@
 import SwiftUI
 
 extension ActiveUsers {
-    enum Kind: Hashable, Identifiable {
+    enum Kind: CaseIterable, Hashable, Identifiable {
         case dau
         case sessions
         case devices
