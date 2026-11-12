@@ -46,6 +46,7 @@ struct AlertDivider: View {
         Rectangle()
             .fill(Color.separator)
             .frame(height: 0.5)
+            .allowsHitTesting(false)
     }
 }
 
@@ -284,9 +285,13 @@ struct AlertWeekCard: View {
         AlertCard {
             VStack(spacing: 0) {
                 summary(counts)
-                AlertDivider()
+                    .overlay(alignment: .bottom) {
+                        AlertDivider()
+                    }
                 countsRow(counts)
-                AlertDivider()
+                    .overlay(alignment: .bottom) {
+                        AlertDivider()
+                    }
                 grid(breaches)
             }
         }

@@ -154,9 +154,10 @@ private struct AlertWatchPicker: View {
                         AlertWatchPickerRow(watch: option, isSelected: option == watch)
                     }
                     .buttonStyle(.plain)
-
-                    if index < AlertDraft.Watch.allCases.count - 1 {
-                        AlertDivider()
+                    .overlay(alignment: .bottom) {
+                        if index < AlertDraft.Watch.allCases.count - 1 {
+                            AlertDivider()
+                        }
                     }
                 }
             }

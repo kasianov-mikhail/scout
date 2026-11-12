@@ -53,10 +53,9 @@ struct HomeActiveUsersSection: View {
                     .accessibilityAddTraits(metric.kind == selected ? .isSelected : [])
                 }
             }
-
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            .background(alignment: .bottom) {
+                Separator()
+            }
 
             if let metric = users.metric(selected) {
                 HomeActiveUsersChart(metric: metric, start: users.start, end: users.end)

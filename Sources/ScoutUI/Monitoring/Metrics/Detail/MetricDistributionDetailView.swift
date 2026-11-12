@@ -160,10 +160,8 @@ private struct MetricQuantileSelector: View {
                 .accessibilityAddTraits(quantile == selection ? .isSelected : [])
             }
         }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+        .background(alignment: .bottom) {
+            Separator()
         }
     }
 

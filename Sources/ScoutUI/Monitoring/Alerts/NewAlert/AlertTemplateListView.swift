@@ -26,8 +26,10 @@ struct AlertTemplateListView: View {
                         .foregroundStyle(Color(.systemGray))
                         .padding(.top, 8)
                         .padding(.bottom, 8)
-
-                    AlertDivider()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .overlay(alignment: .bottom) {
+                            AlertDivider()
+                        }
 
                     ForEach(AlertDraft.Watch.allCases.indices, id: \.self) { index in
                         let watch = AlertDraft.Watch.allCases[index]
@@ -36,9 +38,10 @@ struct AlertTemplateListView: View {
                             AlertTemplateRow(watch: watch)
                         }
                         .buttonStyle(.plain)
-
-                        if index < AlertDraft.Watch.allCases.count - 1 {
-                            AlertDivider()
+                        .overlay(alignment: .bottom) {
+                            if index < AlertDraft.Watch.allCases.count - 1 {
+                                AlertDivider()
+                            }
                         }
                     }
                 }

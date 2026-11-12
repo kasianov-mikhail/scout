@@ -20,15 +20,14 @@ struct ConnectionRow: View {
                     .imageScale(.medium)
                     .foregroundStyle(connection.status.healthColor)
                     .accessibilityLabel(Text(verbatim: connection.status.healthLabel))
-                VStack(spacing: 0) {
-                    HStack {
-                        Text(verbatim: connection.name).font(.weight450(size: 16))
-                        Spacer(minLength: 0)
-                    }
-                    .padding(.vertical, 12)
-
+                HStack {
+                    Text(verbatim: connection.name).font(.weight450(size: 16))
+                    Spacer(minLength: 0)
+                }
+                .padding(.vertical, 12)
+                .overlay(alignment: .bottom) {
                     if showsSeparator {
-                        Divider()
+                        Separator()
                     }
                 }
                 .padding(.trailing, 16)

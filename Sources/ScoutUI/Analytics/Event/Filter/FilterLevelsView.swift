@@ -38,11 +38,12 @@ struct FilterLevelsView: View {
                                     }
                                 }
                             }
-
-                            if index < Self.rows.count - 1 {
-                                Rectangle()
-                                    .fill(Color(.systemGray3))
-                                    .frame(height: 0.5)
+                            .overlay(alignment: .bottom) {
+                                if index < Self.rows.count - 1 {
+                                    Rectangle()
+                                        .fill(Color(.systemGray3))
+                                        .frame(height: 0.5)
+                                }
                             }
                         }
                     }

@@ -23,10 +23,8 @@ struct RetentionDayTabs: View {
                 .accessibilityAddTraits(item == day ? .isSelected : [])
             }
         }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+        .background(alignment: .bottom) {
+            Separator()
         }
         .hapticFeedback(.selection, trigger: day)
     }
