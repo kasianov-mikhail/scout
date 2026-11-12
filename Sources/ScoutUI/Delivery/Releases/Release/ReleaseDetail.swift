@@ -53,21 +53,21 @@ struct ReleaseDetail {
                 kind: .crashes,
                 value: "\(release.crashes)",
                 color: .crashText,
-                chart: .bars(trend.crashes.map(\.count), .red),
+                chart: .bars(trend.crashes.map(\.count), .fillDanger),
                 footer: "\(trend.crashes.today) today"
             ),
             ReleaseTileValue(
                 kind: .hangs,
                 value: "\(release.hangs)",
                 color: .hangText,
-                chart: .bars(trend.hangs.map(\.count), .orange),
+                chart: .bars(trend.hangs.map(\.count), .fillWarning),
                 footer: "\(trend.hangs.today) today"
             ),
             ReleaseTileValue(
                 kind: .resources,
                 value: "\(release.resources.total)",
                 color: .resourceText,
-                chart: .bars(trend.resources.map(\.count), .indigo),
+                chart: .bars(trend.resources.map(\.count), .fillResource),
                 footer: resourceFooter
             ),
             ReleaseTileValue(
@@ -97,9 +97,9 @@ struct ReleaseDetail {
     var hangRate: ReleaseHangRate {
         let value = release.performance.current.hangRate.map { String(format: "%.1f s/h", $0) } ?? "—"
         guard let change = release.performance.change(\.hangRate) else {
-            return ReleaseHangRate(value: value, change: nil, color: Color(.systemGray))
+            return ReleaseHangRate(value: value, change: nil, color: Color.fillLevel)
         }
-        return ReleaseHangRate(value: value, change: percentLabel(change), color: change > 0 ? .orange : Stability.Level.healthy.labelColor)
+        return ReleaseHangRate(value: value, change: percentLabel(change), color: change > 0 ? Color.textWarning : Stability.Level.healthy.labelColor)
     }
 }
 

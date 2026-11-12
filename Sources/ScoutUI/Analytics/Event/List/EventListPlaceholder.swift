@@ -18,7 +18,7 @@ struct EventListPlaceholder: View {
                         .padding(.horizontal, -16)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -28,8 +28,8 @@ struct EventListPlaceholder: View {
     private func row(_ index: Int) -> some View {
         let delay = Double(index) * 0.08
 
-        return HStack(spacing: 10) {
-            SkeletonBar(width: 13, height: 13, delay: delay, cornerRadius: 7)
+        return HStack(spacing: .space10) {
+            SkeletonBar(width: 13, height: 13, delay: delay, cornerRadius: .radiusBadge)
                 .frame(width: 16, height: 16)
 
             SkeletonBar(width: nameWidths[index % nameWidths.count], height: 10, delay: delay)
@@ -38,7 +38,7 @@ struct EventListPlaceholder: View {
             SkeletonBar(width: 46, height: 8, delay: delay)
                 .frame(width: 68, alignment: .trailing)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             Rectangle()

@@ -23,8 +23,8 @@ struct SectionHeader<Trailing: View>: View {
 
     var body: some View {
         HStack {
-            Text(verbatim: title)
-                .font(.system(size: 16, weight: .bold))
+            Text(verbatim: title.uppercased())
+                .font(.scoutSection)
 
             Spacer()
 
@@ -46,12 +46,12 @@ struct SectionHeader<Trailing: View>: View {
             SectionHeader(title: "HISTORY", topPadding: 12)
             SectionHeader(title: "SESSIONS", topPadding: 12) {
                 Text(verbatim: "TIMELINE")
-                    .font(.book(size: 16))
-                    .foregroundStyle(.blue)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textLink)
             }
             SectionHeader(title: "DEVICES", showsSeparator: false)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

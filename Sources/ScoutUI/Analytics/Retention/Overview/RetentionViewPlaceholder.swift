@@ -23,7 +23,7 @@ struct RetentionViewPlaceholder: View {
                     row(index: index)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -33,11 +33,11 @@ struct RetentionViewPlaceholder: View {
     private func row(index: Int) -> some View {
         let delay = 0.24 + Double(index) * 0.08
 
-        return HStack(spacing: 8) {
+        return HStack(spacing: .space8) {
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 52, alignment: .leading)
 
-            SkeletonBar(height: 18, delay: delay, fill: Color(.systemGray6))
+            SkeletonBar(height: 18, delay: delay, fill: Color.surfaceGrey)
 
             SkeletonBar(width: 74, height: 9, delay: delay)
                 .frame(width: 76, alignment: .trailing)

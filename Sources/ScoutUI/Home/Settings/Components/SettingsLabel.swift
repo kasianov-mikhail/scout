@@ -13,11 +13,11 @@ struct SettingsLabel: View {
 
     var body: some View {
         Text(verbatim: title)
-            .font(.system(size: 12, weight: .semibold))
-            .tracking(0.4)
-            .foregroundStyle(Color(.systemGray))
-            .padding(.top, 22)
-            .padding(.bottom, 8)
+            .font(.scoutFootnoteStrong)
+            .tracking(0.3)
+            .foregroundStyle(Color.textMuted)
+            .padding(.top, .space22)
+            .padding(.bottom, .space8)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -27,9 +27,9 @@ struct SettingsNote: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.book(size: 13))
-            .foregroundStyle(Color(.systemGray))
-            .padding(.top, 4)
+            .font(.scoutCaption)
+            .foregroundStyle(Color.textMuted)
+            .padding(.top, .space4)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

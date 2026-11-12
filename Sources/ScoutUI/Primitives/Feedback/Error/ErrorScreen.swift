@@ -17,11 +17,11 @@ struct ErrorScreen<Content: View, Actions: View>: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 actions()
-                    .padding(.horizontal, 16)
-                    .padding(.top, 10)
-                    .background(Color(.systemBackground))
+                    .padding(.horizontal, .gutter)
+                    .padding(.top, .space10)
+                    .background(Color.surface)
             }
-            .background(Color(.systemBackground).ignoresSafeArea())
+            .background(Color.surface.ignoresSafeArea())
             .inlineNavigationTitle()
     }
 }
@@ -36,12 +36,12 @@ struct ErrorActionButtonStyle: ButtonStyle {
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .font(.system(size: 17, weight: .semibold))
+            .font(.scoutTitle)
             .foregroundStyle(foreground)
             .frame(maxWidth: .infinity)
             .frame(height: 50)
             .background(background)
-            .clipShape(RoundedRectangle(cornerRadius: 3, style: .continuous))
+            .clipShape(RoundedRectangle(cornerRadius: .radiusBlock, style: .continuous))
             .opacity(configuration.isPressed ? 0.7 : 1)
     }
 
@@ -57,13 +57,13 @@ struct ErrorActionButtonStyle: ButtonStyle {
     private var background: Color {
         switch role {
         case .primary:
-            .blue
+            .fillAccent
         case .secondary:
-            Color(red: 0xEE / 255, green: 0xEE / 255, blue: 0xF0 / 255)
+            .surfaceGrey
         }
     }
 }
 
 extension Color {
-    static let errorAccent = Color(red: 0xD7 / 255, green: 0x00 / 255, blue: 0x15 / 255)
+    static let errorAccent = fillDanger
 }

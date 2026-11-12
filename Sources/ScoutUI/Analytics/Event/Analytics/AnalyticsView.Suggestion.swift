@@ -14,9 +14,9 @@ extension AnalyticsView {
         var body: some View {
             HStack {
                 Text(text)
-                    .font(.book(size: 17, design: .monospaced))
+                    .font(.scoutNavEvent)
                     .searchCompletion(text)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.textLink)
                 Spacer()
             }
         }

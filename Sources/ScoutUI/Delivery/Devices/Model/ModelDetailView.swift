@@ -47,8 +47,8 @@ struct ModelDetailView: View {
         if detail.devices.isEmpty {
             VStack(spacing: 0) {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
-                    .padding(.horizontal, 16)
+                    .padding(.top, .space8)
+                    .padding(.horizontal, .gutter)
 
                 Placeholder(
                     text: "No devices",
@@ -60,11 +60,11 @@ struct ModelDetailView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
 
                     subtitle(detail)
-                        .padding(.top, 4)
-                        .padding(.bottom, 12)
+                        .padding(.top, .space4)
+                        .padding(.bottom, .space12)
                         .overlay(alignment: .bottom) {
                             Separator()
                         }
@@ -77,8 +77,8 @@ struct ModelDetailView: View {
                             color: { index, _ in deviceOSColor(index) },
                             share: { Double($0.percentage) / 100 }
                         )
-                        .padding(.top, 14)
-                        .padding(.bottom, 6)
+                        .padding(.top, .space12)
+                        .padding(.bottom, .space6)
 
                         ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
                             OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
@@ -99,7 +99,7 @@ struct ModelDetailView: View {
                         .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
         }
@@ -107,16 +107,16 @@ struct ModelDetailView: View {
 
     private func subtitle(_ detail: ModelDetail) -> some View {
         (Text(verbatim: "\(detail.deviceCount) \(detail.deviceCount == 1 ? "device" : "devices") · \(detail.sessionCount.compact) sessions · ")
-            + Text(verbatim: "\(detail.crashCount)").foregroundColor(detail.crashCount > 0 ? .crashText : Color(.systemGray)).font(.system(size: 15, weight: .semibold))
+            + Text(verbatim: "\(detail.crashCount)").foregroundColor(detail.crashCount > 0 ? .crashText : Color.fillLevel).font(.scoutRowStrong)
             + Text(verbatim: " \(detail.crashCount == 1 ? "crash" : "crashes")"))
-            .font(.book(size: 15))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutRow)
+            .foregroundStyle(Color.textMuted)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var deviceColumns: some View {
-        HStack(spacing: 8) {
-            ColumnHeader(title: "LAST SEEN ↓", color: .blue)
+        HStack(spacing: .space8) {
+            ColumnHeader(title: "LAST SEEN ↓", color: .textLink)
                 .frame(width: 84, alignment: .leading)
             ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -133,29 +133,29 @@ private struct OSVersionRow: View {
     let color: Color
 
     var body: some View {
-        HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 2)
+        HStack(spacing: .space8) {
+            RoundedRectangle(cornerRadius: .radiusBar)
                 .fill(color)
                 .frame(width: 8, height: 8)
                 .frame(width: 14, alignment: .leading)
 
-            (Text(verbatim: osVersion.version).font(.system(size: 13, weight: .semibold, design: .monospaced))
+            (Text(verbatim: osVersion.version).font(.scoutValueStrong)
                 + Text(verbatim: " · \(osVersion.devices) \(osVersion.devices == 1 ? "device" : "devices")")
-                .font(.book(size: 13))
-                .foregroundColor(Color(.systemGray)))
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutCaption)
+                .foregroundColor(Color.textMuted))
+                .font(.scoutValue)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: osVersion.sessions.compact)
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
                 .frame(width: 72, alignment: .trailing)
 
             Text(verbatim: osVersion.percentageText)
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .frame(width: 56, alignment: .trailing)
         }
         .lineLimit(1)
@@ -176,22 +176,22 @@ private struct ModelDeviceRow: View {
     let maxSessions: Int
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: device.lastSeen.relativeString)
-                .font(.book(size: 13))
+                .font(.scoutCaption)
                 .lineLimit(1)
                 .frame(width: 84, alignment: .leading)
 
             BarValue(text: device.sessions.compact, fraction: share, color: .deviceTrack)
 
             Text(verbatim: osVersion)
-                .font(.book(size: 12, design: .monospaced))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCode)
+                .foregroundStyle(Color.textMuted)
                 .lineLimit(1)
                 .frame(width: 44, alignment: .leading)
 
             Text(verbatim: device.crashes > 0 ? "\(device.crashes)" : "—")
-                .font(device.crashes > 0 ? .system(size: 13, weight: .bold, design: .monospaced) : .book(size: 13, design: .monospaced))
+                .font(device.crashes > 0 ? .scoutValueStrong : .scoutValue)
                 .monospacedDigit()
                 .foregroundStyle(device.crashes > 0 ? Color.crashText : Color.pending)
                 .frame(width: 56, alignment: .trailing)

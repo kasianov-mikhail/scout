@@ -33,14 +33,14 @@ struct SessionTimelinePlaceholder: View {
     }
 
     private var summary: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: .space4) {
             SkeletonBar(width: 74, height: 9, delay: 0.08)
             SkeletonBar(width: 120, height: 9, delay: 0.08)
             Spacer()
         }
-        .padding(.top, 16)
-        .padding(.bottom, 14)
-        .padding(.horizontal, 16)
+        .padding(.top, .space16)
+        .padding(.bottom, .space12)
+        .padding(.horizontal, .gutter)
         .frame(height: 39)
         .overlay(alignment: .bottom) {
             divider
@@ -48,19 +48,19 @@ struct SessionTimelinePlaceholder: View {
     }
 
     private var chips: some View {
-        FlowLayout(spacing: 6) {
+        FlowLayout(spacing: .space6) {
             ForEach(SessionSkeletonChip.samples) { chip in
                 SkeletonBar(width: chip.width, height: 9, delay: 0.16)
-                    .padding(.horizontal, 9)
+                    .padding(.horizontal, .space8)
                     .frame(height: 26)
                     .overlay {
-                        Capsule().stroke(Color.timelineTrack, lineWidth: 0.5)
+                        RoundedRectangle(cornerRadius: .radiusBadge).stroke(Color.timelineTrack, lineWidth: .hairline)
                     }
             }
         }
-        .padding(.top, 12)
-        .padding(.bottom, 14)
-        .padding(.horizontal, 16)
+        .padding(.top, .space12)
+        .padding(.bottom, .space12)
+        .padding(.horizontal, .gutter)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             divider
@@ -69,9 +69,9 @@ struct SessionTimelinePlaceholder: View {
 
     private var divider: some View {
         Rectangle()
-            .fill(Color(.systemGray3))
+            .fill(Color.lineSeparator)
             .frame(height: 0.5)
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
     }
 }
 

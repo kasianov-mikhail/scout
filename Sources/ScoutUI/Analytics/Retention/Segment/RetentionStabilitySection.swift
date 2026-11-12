@@ -20,7 +20,7 @@ struct RetentionStabilitySection: View {
                 }
 
             stat(value: hang)
-                .padding(.leading, 12)
+                .padding(.leading, .space12)
         }
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -30,23 +30,23 @@ struct RetentionStabilitySection: View {
     }
 
     private func stat(value: RetentionIncidentValue) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space2) {
+            HStack(alignment: .firstTextBaseline, spacing: .space6) {
                 Text(verbatim: value.rateLabel)
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scoutNumberL)
                     .foregroundStyle(value.color)
 
                 Text(verbatim: value.countLabel)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
             .frame(height: 31)
 
             Text(verbatim: value.subtitle)
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.vertical, 12)
+        .padding(.vertical, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -60,7 +60,7 @@ struct RetentionStabilitySection: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

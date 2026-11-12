@@ -14,8 +14,8 @@ struct NetworkStatusRow: View {
     let total: Int
 
     var body: some View {
-        HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 2)
+        HStack(spacing: .space8) {
+            RoundedRectangle(cornerRadius: .radiusBar)
                 .fill(item.color)
                 .frame(width: 8, height: 8)
                 .frame(width: 14, alignment: .leading)
@@ -29,10 +29,10 @@ struct NetworkStatusRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Text(verbatim: item.percent(total: total))
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .frame(width: 56, alignment: .trailing)
         }
-        .font(.book(size: 13, design: .monospaced))
+        .font(.scoutValue)
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {

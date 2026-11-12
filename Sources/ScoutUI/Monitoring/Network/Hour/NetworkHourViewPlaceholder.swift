@@ -22,9 +22,9 @@ struct NetworkHourViewPlaceholder: View {
 
                 SectionHeader(title: "STATUS")
 
-                SkeletonBar(height: 10, delay: 0.16, cornerRadius: 5)
-                    .padding(.top, 14)
-                    .padding(.bottom, 6)
+                SkeletonBar(height: 10, delay: 0.16, cornerRadius: .radiusBadge)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space6)
 
                 ForEach(0..<3, id: \.self) { index in
                     NetworkStatusRowPlaceholder(index: index)
@@ -32,26 +32,26 @@ struct NetworkHourViewPlaceholder: View {
 
                 SectionHeader(title: "LATENCY")
 
-                HStack(alignment: .bottom, spacing: 4) {
+                HStack(alignment: .bottom, spacing: .space4) {
                     ForEach(latencySkeletonHeights.indices, id: \.self) { index in
-                        VStack(spacing: 4) {
+                        VStack(spacing: .space4) {
                             SkeletonBar(width: 34, height: latencySkeletonHeights[index], delay: 0.72, cornerRadius: 0)
                             SkeletonBar(width: 24, height: 8, delay: 0.72)
                         }
                         .frame(maxWidth: .infinity)
                     }
                 }
-                .padding(.top, 14)
+                .padding(.top, .space12)
 
-                HStack(spacing: 16) {
+                HStack(spacing: .space16) {
                     SkeletonBar(width: 76, height: 9, delay: 0.8)
                     SkeletonBar(width: 76, height: 9, delay: 0.8)
                     SkeletonBar(width: 76, height: 9, delay: 0.8)
                 }
-                .padding(.top, 10)
-                .padding(.bottom, 14)
+                .padding(.top, .space10)
+                .padding(.bottom, .space12)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -65,8 +65,8 @@ private struct NetworkStatusRowPlaceholder: View {
     var body: some View {
         let delay = 0.24 + Double(index) * 0.08
 
-        HStack(spacing: 8) {
-            SkeletonBar(width: 8, height: 8, delay: delay, cornerRadius: 2)
+        HStack(spacing: .space8) {
+            SkeletonBar(width: 8, height: 8, delay: delay, cornerRadius: .radiusBar)
                 .frame(width: 14, alignment: .leading)
             SkeletonBar(width: 24, height: 9, delay: delay)
                 .frame(width: 44, alignment: .leading)

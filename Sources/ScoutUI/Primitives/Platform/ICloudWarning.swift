@@ -28,7 +28,7 @@ private struct ICloudWarningModifier: ViewModifier {
                         Button {
                             isAlertPresented = true
                         } label: {
-                            Image(systemName: "icloud.slash").foregroundStyle(.orange)
+                            Image(systemName: "icloud.slash").foregroundStyle(Color.textWarning)
                         }
                         .alert(Text(verbatim: issue.title), isPresented: $isAlertPresented) {
                             Button(role: .cancel, action: {}) {

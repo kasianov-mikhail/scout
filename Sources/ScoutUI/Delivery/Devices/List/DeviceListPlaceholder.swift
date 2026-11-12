@@ -16,11 +16,11 @@ struct DeviceListPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                 SkeletonBar(width: 200, height: 9, delay: 0)
                     .frame(height: 17.5, alignment: .leading)
-                    .padding(.top, 4)
+                    .padding(.top, .space4)
 
                 columns
                     .columnHeaderStyle()
@@ -29,7 +29,7 @@ struct DeviceListPlaceholder: View {
                     row(index: index, isLast: index == 8)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -37,7 +37,7 @@ struct DeviceListPlaceholder: View {
     }
 
     private var columns: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             ColumnHeader(title: "SESSIONS")
                 .frame(maxWidth: .infinity, alignment: .leading)
             ColumnHeader(title: "OS")
@@ -51,8 +51,8 @@ struct DeviceListPlaceholder: View {
         let delay = Double(index) * 0.08
         let nameWidth = deviceNameWidths[index % deviceNameWidths.count]
 
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 8) {
+        return VStack(alignment: .leading, spacing: .space8) {
+            HStack(spacing: .space8) {
                 SkeletonBar(width: 12, height: 16, delay: delay)
                     .frame(width: 20)
 
@@ -63,9 +63,9 @@ struct DeviceListPlaceholder: View {
                 SkeletonBar(width: 74, height: 9, delay: delay)
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 SkeletonBar(width: 34, height: 9, delay: delay)
-                    .padding(.horizontal, 4)
+                    .padding(.horizontal, .space4)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 SkeletonBar(width: 80, height: 9, delay: delay)

@@ -39,7 +39,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
         .toolbarBackground(Element.kind.detailBackground, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .monospacedNavigationTitle(en: element.name)
-        .tint(.primary)
+        .tint(Color.textPrimary)
         .task {
             await backtrace.fetchIfNeeded(in: database)
         }
@@ -58,7 +58,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
                 IncidentDetailHeader(title: "Stack Trace", caption: "\(element.detailThread) · \(stack.isSymbolicated ? "symbolicated" : "unsymbolicated")")
                 IncidentStackView(stack: stack, color: Element.kind.detailColor)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -71,10 +71,10 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
     }
 
     private func summary(stack: IncidentStack) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             if let reason = element.reason {
                 Text(verbatim: reason)
-                    .font(.book(size: 15, design: .monospaced))
+                    .font(.scoutRowMono)
                     .foregroundStyle(Element.kind.detailColor)
                     .lineSpacing(3)
                     .fixedSize(horizontal: false, vertical: true)
@@ -82,17 +82,17 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
 
             if let meta = metaText(version: contextValue?.appVersion) {
                 meta
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
 
             if let culprit = stack.culprit {
                 IncidentCulpritCard(element: element, culprit: culprit, caller: stack.caller)
-                    .padding(.top, 4)
+                    .padding(.top, .space4)
             }
         }
-        .padding(.top, 18)
-        .padding(.bottom, 16)
+        .padding(.top, .space18)
+        .padding(.bottom, .space16)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -108,13 +108,13 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
             parts.append(Text(verbatim: date))
         }
         if let accent = meta.accent {
-            parts.append(Text(verbatim: accent).foregroundColor(Element.kind.detailColor).font(.system(size: 13, weight: .semibold)))
+            parts.append(Text(verbatim: accent).foregroundColor(Element.kind.detailColor).font(.scoutCaptionStrong))
         }
         if let source = meta.source {
             parts.append(Text(verbatim: source))
         }
         if let version {
-            parts.append(Text(verbatim: version).font(.book(size: 13, design: .monospaced)))
+            parts.append(Text(verbatim: version).font(.scoutValue))
         }
 
         guard let first = parts.first else {
@@ -139,15 +139,15 @@ struct IncidentDetailHeader<Trailing: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: title.uppercased())
-                .font(.system(size: 16, weight: .bold))
+                .font(.scoutSection)
 
             Spacer()
 
             trailing()
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -162,8 +162,8 @@ extension IncidentDetailHeader where Trailing == Text {
     init(title: String, caption: String) {
         self.init(title: title) {
             Text(verbatim: caption)
-                .font(.book(size: 13))
-                .foregroundColor(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundColor(Color.textMuted)
         }
     }
 }
@@ -174,37 +174,37 @@ private struct IncidentCulpritCard<Element: Incident & IncidentDetailInfo>: View
     let caller: IncidentStackRow?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 3) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: element.detailCulprit)
-                .font(.book(size: 12))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutFootnote)
+                .foregroundStyle(Color.textMuted)
 
             if let symbol = culprit.symbol {
                 Text(verbatim: symbol)
-                    .font(.system(size: 17, weight: .bold, design: .monospaced))
+                    .font(.scoutNavEvent)
                     .fixedSize(horizontal: false, vertical: true)
             }
 
             if let location = culprit.location {
                 Text(verbatim: location.text)
-                    .font(.book(size: 12, design: .monospaced))
+                    .font(.scoutCode)
                     .foregroundStyle(Element.kind.detailColor)
             }
 
             if let caller, let callerSymbol = caller.bareSymbol, let callerLocation = caller.location {
                 (Text(verbatim: "called from ")
-                    + Text(verbatim: callerSymbol).font(.book(size: 12, design: .monospaced)).foregroundColor(.primary)
+                    + Text(verbatim: callerSymbol).font(.scoutCode).foregroundColor(Color.textPrimary)
                     + Text(verbatim: " · line \(callerLocation.line)"))
-                    .font(.book(size: 12))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutFootnote)
+                    .foregroundStyle(Color.textMuted)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 12)
+        .padding(.horizontal, .space12)
+        .padding(.vertical, .space12)
         .background {
-            RoundedRectangle(cornerRadius: 3)
-                .fill(Color(.systemGray6))
+            RoundedRectangle(cornerRadius: .radiusBlock)
+                .fill(Color.surfaceGrey)
         }
     }
 }

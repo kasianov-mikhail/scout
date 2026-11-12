@@ -28,7 +28,7 @@ struct RingIndicator: View {
     private var blueArc: some View {
         Circle()
             .trim(from: 0, to: 0.3)
-            .stroke(.blue, style: StrokeStyle(lineWidth: Self.lineWidth, lineCap: .round))
+            .stroke(Color.fillAccent, style: StrokeStyle(lineWidth: Self.lineWidth, lineCap: .round))
     }
 }
 

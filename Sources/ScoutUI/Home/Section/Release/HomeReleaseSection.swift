@@ -29,13 +29,13 @@ struct HomeReleaseSection: View {
                 HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 Text(verbatim: adoption.headline)
-                    .font(.system(size: 24, weight: .bold))
+                    .font(.scoutNumberM)
 
                 Text(verbatim: "of sessions")
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
             }
             .frame(height: 28)
 
@@ -46,14 +46,14 @@ struct HomeReleaseSection: View {
                 labelWeight: .semibold,
                 labelInset: 6
             )
-            .padding(.top, 10)
+            .padding(.top, .space10)
 
             AdoptionLegend(squareSize: 7, squareColor: nil)
-                .padding(.top, 8)
+                .padding(.top, .space8)
 
             caption(adoption: adoption)
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 
@@ -61,13 +61,13 @@ struct HomeReleaseSection: View {
     private func caption(adoption: ReleaseAdoption) -> some View {
         if let top = adoption.top {
             (Text(verbatim: "\(top.id) is ")
-                .foregroundColor(Color(.systemGray))
+                .foregroundColor(Color.textMuted)
                 + Text(verbatim: top.stability.level.title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.scoutCaptionStrong)
                 .foregroundColor(top.stability.level == .healthy ? Color.positive : top.stability.level.labelColor)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
-                .foregroundColor(Color(.systemGray)))
-                .font(.book(size: 13))
+                .foregroundColor(Color.textMuted))
+                .font(.scoutCaption)
         }
     }
 }
@@ -79,7 +79,7 @@ struct HomeReleaseSection: View {
                 HomeReleaseSection(adoption: .sample) {}
                 HomeReleaseSection(adoption: nil) {}
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

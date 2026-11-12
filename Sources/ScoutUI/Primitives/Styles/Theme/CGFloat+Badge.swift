@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension CGFloat {
-    static let badgeCornerRadius: CGFloat = 4
     static let badgeHorizontalPadding: CGFloat = 6
     static let badgeVerticalPadding: CGFloat = 2
 }

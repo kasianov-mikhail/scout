@@ -13,10 +13,10 @@ struct ParamBadge: View {
 
     var body: some View {
         Label(convertible.label, systemImage: convertible.iconName)
-            .font(.book(size: 12))
+            .font(.scoutFootnote)
             .foregroundStyle(convertible.color)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 5)
-            .background(convertible.color.opacity(0.13), in: Capsule())
+            .padding(.horizontal, .space8)
+            .padding(.vertical, .space4)
+            .background(convertible.color.opacity(0.12), in: RoundedRectangle(cornerRadius: .radiusBadge))
     }
 }

@@ -12,25 +12,25 @@ struct MetricSummaryView: View {
     let summary: MetricSummary
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+        VStack(alignment: .leading, spacing: .space2) {
+            HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 Text(verbatim: summary.value)
-                    .font(.system(size: 34, weight: .bold))
+                    .font(.scoutNumberXL)
                     .monospacedDigit()
 
                 Text(verbatim: summary.unit)
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
                     .lineLimit(1)
             }
 
             if let detail = summary.detail {
                 Text(verbatim: detail)
-                    .font(.book(size: 13))
+                    .font(.scoutCaption)
                     .foregroundStyle(summary.tone.color)
             }
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
@@ -41,7 +41,7 @@ extension MetricTone {
         case .positive:
             .trendPositive
         case .neutral:
-            Color(.systemGray)
+            Color.fillLevel
         case .warning:
             .hangText
         }
@@ -60,7 +60,7 @@ extension MetricTone {
                 )
             )
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

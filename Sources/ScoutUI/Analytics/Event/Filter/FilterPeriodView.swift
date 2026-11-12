@@ -36,5 +36,5 @@ struct FilterPeriodView: View {
 
 #Preview {
     FilterPeriodView(draft: FilterDraft(query: .constant(EventQuery())))
-        .padding(16)
+        .padding(.space16)
 }

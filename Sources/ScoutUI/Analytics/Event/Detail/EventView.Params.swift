@@ -26,8 +26,8 @@ extension EventView {
                         isParamPresented = true
                     } label: {
                         Image(systemName: "arrow.up.left.and.arrow.down.right")
-                            .font(.system(size: 15, weight: .semibold))
-                            .foregroundStyle(.blue)
+                            .font(.scoutRowStrong)
+                            .foregroundStyle(Color.textLink)
                             .frame(width: 44, height: 44)
                             .contentShape(.rect)
                     }
@@ -68,12 +68,12 @@ extension EventView {
             NavigationLink {
                 ParamView(item: item)
             } label: {
-                HStack(spacing: 13) {
+                HStack(spacing: .space12) {
                     ParamIcon(value: value)
 
                     Text(verbatim: item.key)
-                        .font(.book(size: 17))
-                        .foregroundStyle(.secondary)
+                        .font(.scoutBody)
+                        .foregroundStyle(Color.textSecondary)
                         .lineLimit(1)
                         .fixedSize()
                         .layoutPriority(1)
@@ -100,8 +100,8 @@ extension EventView {
         var body: some View {
             let delay = 0.48 + Double(index) * 0.08
 
-            HStack(spacing: 13) {
-                SkeletonBar(width: 20, height: 20, delay: delay, cornerRadius: 5)
+            HStack(spacing: .space12) {
+                SkeletonBar(width: 20, height: 20, delay: delay, cornerRadius: .radiusBadge)
                     .frame(width: 24, alignment: .leading)
 
                 SkeletonBar(width: [72, 52, 91][index % 3], height: 11, delay: delay)
@@ -139,7 +139,7 @@ extension EventView {
 
         private var label: some View {
             Text(verbatim: text)
-                .font(.book(size: 16, design: .monospaced))
+                .font(.scoutEventName)
                 .lineLimit(1)
                 .fixedSize()
         }

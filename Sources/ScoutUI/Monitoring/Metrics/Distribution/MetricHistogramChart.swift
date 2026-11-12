@@ -122,10 +122,10 @@ struct MetricHistogramChart: View {
         VStack(spacing: 0) {
             GeometryReader { proxy in
                 ZStack(alignment: .topLeading) {
-                    HStack(alignment: .bottom, spacing: 2) {
+                    HStack(alignment: .bottom, spacing: .space2) {
                         ForEach(counts.indices, id: \.self) { index in
-                            RoundedRectangle(cornerRadius: 2)
-                                .fill(counts[index] > 0 ? Color.metricBar : Color(.systemGray6))
+                            RoundedRectangle(cornerRadius: .radiusBar)
+                                .fill(counts[index] > 0 ? Color.metricBar : Color.surfaceGrey)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 96 * CGFloat(layout.fraction(counts[index])))
                         }
@@ -133,7 +133,7 @@ struct MetricHistogramChart: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
 
                     if let percentiles {
-                        marker(value: percentiles.p50, color: .blue, title: "p50", layout: layout, width: proxy.size.width)
+                        marker(value: percentiles.p50, color: .fillAccent, title: "p50", layout: layout, width: proxy.size.width)
                         marker(value: percentiles.p90, color: .metricTeal, title: "p90", layout: layout, width: proxy.size.width)
                         marker(value: percentiles.p99, color: .hangText, title: "p99", layout: layout, width: proxy.size.width)
                     }
@@ -158,7 +158,7 @@ struct MetricHistogramChart: View {
                 .offset(x: x)
 
             Text(verbatim: title)
-                .font(.system(size: 11, weight: .semibold))
+                .font(.scoutLabelCaps)
                 .foregroundStyle(color)
                 .offset(x: min(x + 3, width - 26))
         }
@@ -170,7 +170,7 @@ struct MetricHistogramChart: View {
                 ForEach(layout.labelIndices, id: \.self) { index in
                     Text(verbatim: layout.label(at: index, format: format))
                         .font(.book(size: 9, design: .monospaced))
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(Color.textMuted)
                         .position(
                             x: (CGFloat(index) + 0.5) / CGFloat(counts.count) * proxy.size.width,
                             y: 8
@@ -188,5 +188,5 @@ struct MetricHistogramChart: View {
         percentiles: .sample,
         format: .timer
     )
-    .padding(.horizontal, 16)
+    .padding(.horizontal, .gutter)
 }

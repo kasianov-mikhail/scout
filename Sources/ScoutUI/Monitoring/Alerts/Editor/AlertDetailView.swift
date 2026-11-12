@@ -51,9 +51,9 @@ struct AlertDetailView: View {
                 }
 
                 Text(verbatim: draft.hint)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 4)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space4)
 
                 AlertSection(title: "Last week") {
                     AlertWeekCard(week: backtest.week, draft: draft, isFailed: backtest.error != nil)
@@ -62,7 +62,7 @@ struct AlertDetailView: View {
                         ErrorRow(description: error.localizedDescription) {
                             await backtest.fetchAgain(in: database)
                         }
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                     }
                 }
 
@@ -72,27 +72,27 @@ struct AlertDetailView: View {
 
                 if provider.notificationsDenied, draft.notifies {
                     NotificationsDeniedRow()
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                 }
 
                 AlertFooter()
 
-                AlertActionButton(title: status?.isMuted == true ? "Unmute" : "Mute for 1 Hour", color: .blue) {
+                AlertActionButton(title: status?.isMuted == true ? "Unmute" : "Mute for 1 Hour", color: .textLink) {
                     mute()
                 }
-                .padding(.top, 18)
+                .padding(.top, .space18)
 
-                AlertActionButton(title: "Delete Alert", color: .red) {
+                AlertActionButton(title: "Delete Alert", color: .textDanger) {
                     delete()
                 }
-                .padding(.top, 8)
+                .padding(.top, .space8)
 
                 Color.clear.frame(height: 24)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
-        .background(Color(.systemBackground))
+        .background(Color.surface)
         .navigationTitle(en: rule.metric.title)
         .inlineNavigationTitle()
         .toolbar {
@@ -156,12 +156,12 @@ private struct AlertActionButton: View {
     var body: some View {
         Button(action: action) {
             Text(verbatim: title)
-                .font(.system(size: 15, weight: .semibold))
+                .font(.scoutRowStrong)
                 .foregroundStyle(color)
                 .frame(maxWidth: .infinity)
                 .frame(height: 46)
                 .background {
-                    RoundedRectangle(cornerRadius: 3)
+                    RoundedRectangle(cornerRadius: .radiusBlock)
                         .stroke(Color.separator, lineWidth: 0.5)
                 }
                 .contentShape(Rectangle())
@@ -191,19 +191,19 @@ private struct AlertNowCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
             if let text = valueText {
                 Text(verbatim: text)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(status?.isFiring == true ? Color.red : Color.primary)
+                    .font(.scoutNumberS)
+                    .foregroundStyle(status?.isFiring == true ? Color.fillDanger : Color.textPrimary)
                     .monospacedDigit()
             } else {
                 SkeletonBar(width: 74, height: 16, delay: 0)
             }
 
             Text(verbatim: " \(unit)")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 8)
+        .padding(.vertical, .space10)
+        .padding(.horizontal, .space8)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -212,29 +212,29 @@ private struct AlertNowCard: View {
             stat(
                 title: "Alerting since",
                 text: alertingSince,
-                color: status?.isFiring == true ? Color.red : Color.primary,
+                color: status?.isFiring == true ? Color.fillDanger : Color.textPrimary,
                 showsDivider: true
             )
-            stat(title: "Notified", text: notified, color: Color.primary, showsDivider: false)
+            stat(title: "Notified", text: notified, color: Color.textPrimary, showsDivider: false)
         }
     }
 
     private func stat(title: String, text: String?, color: Color, showsDivider: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: title)
-                .font(.book(size: 11))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundStyle(Color.textMuted)
 
             if let text {
                 Text(verbatim: text)
-                    .font(.system(size: 15, weight: .semibold))
+                    .font(.scoutRowStrong)
                     .foregroundStyle(color)
             } else {
                 SkeletonBar(width: 46, height: 11, delay: 0)
             }
         }
-        .padding(.vertical, 9)
-        .padding(.horizontal, 8)
+        .padding(.vertical, .space8)
+        .padding(.horizontal, .space8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .trailing) {
             if showsDivider {

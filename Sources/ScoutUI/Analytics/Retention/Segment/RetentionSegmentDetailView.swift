@@ -41,7 +41,7 @@ struct RetentionSegmentDetailView: View {
                         .frame(height: 24)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: segment.name)
@@ -54,18 +54,18 @@ private struct RetentionSegmentWeekRow: View {
     let showsDivider: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: week.dateLabel)
-                .font(week.isCurrent ? .system(size: 15, weight: .semibold) : .book(size: 15))
+                .font(week.isCurrent ? .scoutRowStrong : .scoutRow)
                 .frame(width: 64, alignment: .leading)
 
             GeometryReader { proxy in
                 ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 3)
-                        .fill(Color(.systemGray5))
+                    RoundedRectangle(cornerRadius: .radiusBlock)
+                        .fill(Color.surfaceSkeleton)
 
-                    LeftRoundedRectangle(cornerRadius: 3)
-                        .fill(week.isCurrent ? Color.green : Color(.systemGray2))
+                    LeftRoundedRectangle(cornerRadius: .radiusBlock)
+                        .fill(week.isCurrent ? Color.fillSuccess : Color.textMuted)
                         .frame(width: proxy.size.width * week.fraction)
                 }
             }

@@ -39,7 +39,7 @@ struct RetentionCohortDetailView: View {
                     }
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Week of \(cohort.label)")
@@ -52,22 +52,22 @@ private struct RetentionSegmentRow: View {
     let showsDivider: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: .space8) {
+            VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: value.name)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
 
                 HStack(spacing: 0) {
                     Text(verbatim: "\(value.installsLabel) · ")
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(Color.textMuted)
 
                     Text(verbatim: value.crashRateLabel)
                         .foregroundStyle(Color.crashText)
 
                     Text(verbatim: " crashed")
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(Color.textMuted)
                 }
-                .font(.book(size: 12))
+                .font(.scoutFootnote)
             }
 
             Spacer(minLength: 0)

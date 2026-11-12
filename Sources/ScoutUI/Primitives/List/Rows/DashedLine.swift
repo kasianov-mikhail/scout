@@ -14,7 +14,7 @@ struct DashedLine: View {
                 path.move(to: CGPoint(x: 0, y: 0.25))
                 path.addLine(to: CGPoint(x: proxy.size.width, y: 0.25))
             }
-            .stroke(Color(.systemGray4), style: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
+            .stroke(Color.lineSubtle, style: StrokeStyle(lineWidth: 0.5, dash: [3, 3]))
         }
         .frame(height: 0.5)
         .allowsHitTesting(false)

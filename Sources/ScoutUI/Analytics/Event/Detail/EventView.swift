@@ -46,7 +46,7 @@ struct EventView: View {
                 StatSection(stat: stat)
                 TimelineSection(event: event)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .animation(.easeOut(duration: 0.2), value: [param.isLoading, stat.isLoading, context.isLoading])
@@ -77,10 +77,10 @@ extension EventView {
         let event: Event
 
         var body: some View {
-            HStack(spacing: 10) {
+            HStack(spacing: .space10) {
                 if let level = event.level {
                     Text(verbatim: level.description.uppercased())
-                        .font(.system(size: 11, weight: .bold))
+                        .font(.scoutBadge)
                         .tracking(0.3)
                         .foregroundStyle(level.badgeInk)
                         .badgeStyle(fill: level.badgeFill)
@@ -88,13 +88,13 @@ extension EventView {
 
                 if let date = event.date {
                     Text(verbatim: eventDateFormatter.string(from: date) + " UTC")
-                        .font(.book(size: 15))
+                        .font(.scoutRow)
                         .monospacedDigit()
                         .foregroundStyle(Color.eventTimestamp)
                 }
             }
-            .padding(.top, 18)
-            .padding(.bottom, 16)
+            .padding(.top, .space18)
+            .padding(.bottom, .space16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(alignment: .bottom) {
                 Separator()

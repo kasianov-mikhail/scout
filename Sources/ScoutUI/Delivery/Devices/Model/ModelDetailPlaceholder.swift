@@ -17,20 +17,20 @@ struct ModelDetailPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                 SkeletonBar(width: 194, height: 9, delay: 0.08)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space12)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
 
                 SectionHeader(title: "OS VERSIONS", topPadding: 12)
 
-                SkeletonBar(height: 10, delay: 0.24, cornerRadius: 5, fill: Color.deviceShade)
-                    .padding(.top, 14)
-                    .padding(.bottom, 6)
+                SkeletonBar(height: 10, delay: 0.24, cornerRadius: .radiusBadge, fill: Color.deviceShade)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space6)
 
                 ForEach(0..<2, id: \.self) { index in
                     osRow(index: index)
@@ -45,7 +45,7 @@ struct ModelDetailPlaceholder: View {
                     deviceRow(index: index, isLast: index == 10)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: model)
@@ -58,9 +58,9 @@ struct ModelDetailPlaceholder: View {
         let delay = 0.32 + Double(index) * 0.08
         let width: CGFloat = index == 0 ? 77 : 56
 
-        return HStack(spacing: 8) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Color(.systemGray5))
+        return HStack(spacing: .space8) {
+            RoundedRectangle(cornerRadius: .radiusBar)
+                .fill(Color.surfaceSkeleton)
                 .frame(width: 8, height: 8)
                 .frame(width: 14, alignment: .leading)
 
@@ -80,7 +80,7 @@ struct ModelDetailPlaceholder: View {
     }
 
     private var columns: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             ColumnHeader(title: "LAST SEEN ↓")
                 .frame(width: 84, alignment: .leading)
             ColumnHeader(title: "SESSIONS")
@@ -95,12 +95,12 @@ struct ModelDetailPlaceholder: View {
     private func deviceRow(index: Int, isLast: Bool) -> some View {
         let delay = 0.64 + Double(index) * 0.08
 
-        return HStack(spacing: 8) {
+        return HStack(spacing: .space8) {
             SkeletonBar(width: deviceLastSeenWidths[index % deviceLastSeenWidths.count], height: 9, delay: delay)
                 .frame(width: 84, alignment: .leading)
 
             SkeletonBar(width: 46, height: 9, delay: delay)
-                .padding(.horizontal, 4)
+                .padding(.horizontal, .space4)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             SkeletonBar(width: 28, height: 9, delay: delay)

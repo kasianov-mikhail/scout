@@ -19,13 +19,13 @@ struct Header<Trailing: View>: View {
 
     var body: some View {
         HStack {
-            Text(verbatim: title.uppercased()).font(.callout.weight(.bold))
+            Text(verbatim: title.uppercased()).font(.scoutSection)
 
             Spacer()
 
             trailing()
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 70)
     }
 }
@@ -38,7 +38,7 @@ struct Header<Trailing: View>: View {
                 Text(verbatim: "Trailing")
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

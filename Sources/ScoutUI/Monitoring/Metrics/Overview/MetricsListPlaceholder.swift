@@ -16,7 +16,7 @@ struct MetricsListPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 MetricRangeStrip(selection: $range)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 grid
@@ -26,7 +26,7 @@ struct MetricsListPlaceholder: View {
                             .frame(height: 0.5)
                     }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -48,20 +48,20 @@ struct MetricsListPlaceholder: View {
         let delay = Double(index / 2) * 0.08
         let nameWidth = Self.nameWidths[index % Self.nameWidths.count]
 
-        return VStack(alignment: .leading, spacing: 4) {
+        return VStack(alignment: .leading, spacing: .space4) {
             SkeletonBar(width: nameWidth, height: 9, delay: delay)
                 .frame(height: 15)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            HStack(alignment: .firstTextBaseline, spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: .space6) {
                 SkeletonBar(width: 74, height: 20, delay: delay)
                 SkeletonBar(width: 28, height: 6, delay: delay)
             }
             .frame(height: 29, alignment: .leading)
 
-            SkeletonBar(height: 28, delay: delay, cornerRadius: 4, fill: Color(.systemGray6))
+            SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, .space12)
         .padding(.leading, isLeading ? 0 : 12)
         .padding(.trailing, isLeading ? 12 : 0)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)

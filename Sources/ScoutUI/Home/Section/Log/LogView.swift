@@ -16,8 +16,8 @@ struct LogView: View {
     @StateObject var provider: HomeLogProvider
 
     private let columns = [
-        GridItem(.flexible(), spacing: 24),
-        GridItem(.flexible(), spacing: 24),
+        GridItem(.flexible(), spacing: .space24),
+        GridItem(.flexible(), spacing: .space24),
     ]
 
     init(period: Period, provider: HomeLogProvider? = nil) {
@@ -27,7 +27,7 @@ struct LogView: View {
 
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: .space24) {
                 SegmentStrip(selection: $period, distribution: .justified, title: \.shortTitle)
 
                 if let error = provider.error {
@@ -35,7 +35,7 @@ struct LogView: View {
                         await provider.fetchAgain(in: database)
                     }
                 } else {
-                    LazyVGrid(columns: columns, spacing: 36) {
+                    LazyVGrid(columns: columns, spacing: .space24) {
                         ForEach(LogCategory.allCases) { category in
                             NavigationLink {
                                 LogDestination(category: category)
@@ -47,7 +47,7 @@ struct LogView: View {
                     }
                 }
             }
-            .padding(16)
+            .padding(.space16)
         }
         .scrollIndicators(.hidden)
         .task(id: period) {

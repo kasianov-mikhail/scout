@@ -19,15 +19,15 @@ struct ParamRawView: View {
                 }
 
             Text(raw.attributed)
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .foregroundStyle(Color.jsonPunctuation)
                 .lineSpacing(3.7)
                 .textSelection(.enabled)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 14)
+                .padding(.vertical, .space12)
+                .padding(.horizontal, .space12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.jsonBackground, in: RoundedRectangle(cornerRadius: 3))
-                .padding(.bottom, 16)
+                .background(Color.jsonBackground, in: RoundedRectangle(cornerRadius: .radiusBlock))
+                .padding(.bottom, .space16)
         }
     }
 }
@@ -49,6 +49,6 @@ struct ParamRawView: View {
                 ParamProvider.Item(key: "transaction_id", value: "1B2F4A89-0C3D-4E5F-A6B7-C8D9E0F1A2B3"),
             ])
         )
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
 }

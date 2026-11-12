@@ -41,11 +41,11 @@ struct TelemetryItem: Identifiable {
 
         var color: Color {
             switch self {
-            case .events, .metrics: .blue
-            case .crashes: .red
-            case .hangs: .orange
-            case .network: .teal
-            case .resources: .indigo
+            case .events, .metrics: .fillAccent
+            case .crashes: .textDanger
+            case .hangs: .fillWarning
+            case .network: .fillSession
+            case .resources: .fillResource
             }
         }
     }

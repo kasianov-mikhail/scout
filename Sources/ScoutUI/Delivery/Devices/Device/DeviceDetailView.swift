@@ -48,11 +48,11 @@ struct DeviceDetailView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                 subtitle(detail.summary)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space12)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
@@ -64,16 +64,16 @@ struct DeviceDetailView: View {
                         showTimeline = true
                     } label: {
                         Text(verbatim: "TIMELINE")
-                            .font(.book(size: 16))
-                            .foregroundStyle(.blue)
+                            .font(.scoutSectionAction)
+                            .foregroundStyle(Color.textLink)
                     }
                     .buttonStyle(.plain)
                 }
 
                 if detail.recentSessions.isEmpty {
                     Text(verbatim: "No sessions in this period")
-                        .font(.book(size: 15))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutRow)
+                        .foregroundStyle(Color.textMuted)
                         .lineLimit(1)
                         .frame(height: .rowRegular)
                 } else {
@@ -96,39 +96,39 @@ struct DeviceDetailView: View {
 
                 SectionHeader(title: "ACTIVITY", topPadding: 12) {
                     Text(verbatim: detail.activeDaysLabel)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                 }
 
                 DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
-                    .padding(.top, 14)
+                    .padding(.top, .space12)
 
                 Text(verbatim: detail.activityCaption)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 12)
-                    .padding(.bottom, 16)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space16)
 
                 SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
 
                 UsageGrid(usage: detail.usage)
-                    .padding(.top, 14)
+                    .padding(.top, .space12)
 
                 Text(verbatim: detail.usageCaption)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 12)
-                    .padding(.bottom, 16)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space16)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
 
     private func subtitle(_ summary: DeviceSummary) -> some View {
         Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
-            .font(.book(size: 15))
-            .foregroundStyle(Color(.systemGray))
+            .font(.scoutRow)
+            .foregroundStyle(Color.textMuted)
             .lineLimit(2)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -147,9 +147,9 @@ struct DeviceDetailView: View {
     private func stat(_ title: String, value: Int, color: Color, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
         StatColumn(title: title, leading: leading, trailing: trailing, divider: divider) {
             Text(verbatim: "\(value)")
-                .font(.system(size: 28, weight: .bold))
+                .font(.scoutNumberL)
                 .monospacedDigit()
-                .foregroundStyle(value > 0 ? color : Color.primary)
+                .foregroundStyle(value > 0 ? color : Color.textPrimary)
         }
     }
 
@@ -182,14 +182,14 @@ struct StatColumn<Value: View>: View {
     @ViewBuilder let value: () -> Value
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             value()
 
             Text(verbatim: title)
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, .space12)
         .padding(.leading, leading)
         .padding(.trailing, trailing)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -206,13 +206,13 @@ private struct SessionLine: View {
     let maxDuration: TimeInterval
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Circle()
-                .fill(session.crashed ? Color(.systemRed) : Color.clear)
+                .fill(session.crashed ? Color.textDanger : Color.clear)
                 .frame(width: 8, height: 8)
 
             Text(verbatim: session.time)
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
                 .lineLimit(1)
                 .frame(width: 76, alignment: .leading)
@@ -220,9 +220,9 @@ private struct SessionLine: View {
             BarValue(text: session.durationText ?? "—", fraction: share, color: .deviceTrack)
 
             Text(verbatim: session.appVersion ?? "—")
-                .font(.book(size: 12, design: .monospaced))
+                .font(.scoutCode)
                 .monospacedDigit()
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .lineLimit(1)
                 .frame(width: 44, alignment: .trailing)
         }
@@ -248,11 +248,11 @@ private struct HistoryRow: View {
     let isLast: Bool
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .space12) {
             ZStack {
                 if !isLast {
                     Rectangle()
-                        .fill(Color(.systemGray4))
+                        .fill(Color.surfaceBarIdle)
                         .frame(width: 1)
                         .frame(maxHeight: .infinity)
                         .offset(y: 22)
@@ -265,15 +265,15 @@ private struct HistoryRow: View {
             .frame(width: 8, height: 44)
 
             Text(verbatim: event.dateText)
-                .font(.book(size: 13, design: .monospaced))
+                .font(.scoutValue)
                 .monospacedDigit()
-                .foregroundStyle(Color(.systemGray))
+                .foregroundStyle(Color.textMuted)
                 .frame(width: 56, alignment: .leading)
 
             (Text(verbatim: event.title)
                 + Text(verbatim: event.version.map { " " + $0 } ?? "")
-                .font(.system(size: 14, weight: .semibold, design: .monospaced)))
-                .font(.book(size: 15))
+                .font(.scoutValueStrong))
+                .font(.scoutRow)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
         .lineLimit(1)
@@ -285,9 +285,9 @@ private struct HistoryRow: View {
         case .installed, .reinstalled:
             .deviceAccent
         case .updated:
-            .blue
+            .fillAccent
         case .os:
-            Color(.systemGray)
+            Color.fillLevel
         }
     }
 }
@@ -299,28 +299,28 @@ private struct DeviceActivityChart: View {
     var body: some View {
         let maxCount = points.map(\.count).max() ?? 0
 
-        HStack(alignment: .bottom, spacing: 6) {
+        HStack(alignment: .bottom, spacing: .space6) {
             ForEach(points) { point in
-                VStack(spacing: 4) {
+                VStack(spacing: .space4) {
                     if showsCounts {
                         Text(verbatim: point.count > 0 ? "\(point.count)" : "—")
-                            .font(.book(size: 10, design: .monospaced))
+                            .font(.scoutAxis)
                             .monospacedDigit()
-                            .foregroundStyle(point.count > 0 ? Color(.systemGray) : Color.pending)
+                            .foregroundStyle(point.count > 0 ? Color.fillLevel : Color.pending)
                             .lineLimit(1)
                     }
 
                     VStack {
                         Spacer(minLength: 0)
-                        RoundedRectangle(cornerRadius: 3)
+                        RoundedRectangle(cornerRadius: .radiusBlock)
                             .fill(color(for: point))
                             .frame(height: height(for: point, maxCount: maxCount))
                     }
                     .frame(height: 56)
 
                     Text(verbatim: point.showsLabel ? point.label : "")
-                        .font(point.isCurrent ? .system(size: 11, weight: .semibold) : .book(size: 11))
-                        .foregroundStyle(point.isCurrent ? Color.primary : Color(.systemGray))
+                        .font(point.isCurrent ? .system(size: 10, weight: .semibold) : .book(size: 10))
+                        .foregroundStyle(point.isCurrent ? Color.textPrimary : Color.fillLevel)
                         .lineLimit(1)
                 }
                 .frame(maxWidth: .infinity)
@@ -339,7 +339,7 @@ private struct DeviceActivityChart: View {
 
     private func color(for point: DeviceActivityPoint) -> Color {
         guard point.count > 0 else {
-            return Color(.systemGray5)
+            return Color.surfaceSkeleton
         }
         return point.isCurrent ? .deviceAccent : .deviceAccentSoft
     }
@@ -351,17 +351,17 @@ private struct UsageGrid: View {
     private let labels = ["S", "M", "T", "W", "T", "F", "S"]
 
     var body: some View {
-        VStack(spacing: 3) {
+        VStack(spacing: .space2) {
             ForEach(0..<7, id: \.self) { day in
-                HStack(spacing: 6) {
+                HStack(spacing: .space6) {
                     Text(verbatim: labels[day])
                         .font(.book(size: 10))
-                        .foregroundStyle(Color(.systemGray))
+                        .foregroundStyle(Color.textMuted)
                         .frame(width: 10, alignment: .leading)
 
-                    HStack(spacing: 2) {
+                    HStack(spacing: .space2) {
                         ForEach(0..<24, id: \.self) { hour in
-                            RoundedRectangle(cornerRadius: 2)
+                            RoundedRectangle(cornerRadius: .radiusBar)
                                 .fill(color(day: day, hour: hour))
                                 .frame(height: 12)
                         }
@@ -380,10 +380,10 @@ private struct UsageGrid: View {
                 Spacer()
                 Text(verbatim: "23")
             }
-            .font(.book(size: 10, design: .monospaced))
-            .foregroundStyle(Color(.systemGray))
-            .padding(.leading, 16)
-            .padding(.top, 3)
+            .font(.scoutAxis)
+            .foregroundStyle(Color.textMuted)
+            .padding(.leading, .gutter)
+            .padding(.top, .space2)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Sessions by weekday and hour"))

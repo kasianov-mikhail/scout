@@ -43,7 +43,7 @@ struct SessionTimelineRowView: View {
 
             marker
 
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 Text(verbatim: row.title)
                     .font(titleFont)
                     .italic(isGap)
@@ -67,13 +67,13 @@ struct SessionTimelineRowView: View {
 
                 if let time = row.time {
                     Text(verbatim: time)
-                        .font(.book(size: 12, design: .monospaced))
+                        .font(.scoutCode)
                         .foregroundStyle(Color.timelineMuted)
                         .layoutPriority(1)
                 }
             }
             .padding(.leading, 56)
-            .padding(.trailing, 16)
+            .padding(.trailing, .gutter)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(height: row.height)

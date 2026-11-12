@@ -30,7 +30,7 @@ struct EventList<Header: View>: View {
                             header()
                             rows(for: events)
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, .gutter)
                     }
                     .scrollIndicators(.hidden)
                     .animation(nil, value: UUID())

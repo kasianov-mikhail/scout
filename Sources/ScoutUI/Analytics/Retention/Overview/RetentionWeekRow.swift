@@ -13,9 +13,9 @@ struct RetentionWeekRow: View {
     let showsDivider: Bool
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             Text(verbatim: week.label)
-                .font(.book(size: 13))
+                .font(.scoutCaption)
                 .frame(width: 52, alignment: .leading)
 
             RetentionBar(week: week, maxInstalls: maxInstalls)
@@ -40,7 +40,7 @@ struct RetentionWeekRow: View {
                 RetentionWeekRow(week: week, maxInstalls: [RetentionWeek].samples.maxInstalls, showsDivider: week.kept != nil)
             }
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

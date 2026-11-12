@@ -32,7 +32,7 @@ struct ComparisonToggle: View {
             ComparisonToggle(isOn: .constant(false))
                 .disabled(true)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

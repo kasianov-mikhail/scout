@@ -31,7 +31,7 @@ extension String {
                     index = self.index(after: index)
                 }
                 var segment = AttributedString(self[start..<index])
-                segment.foregroundColor = .red
+                segment.foregroundColor = .textDanger
                 result += segment
             } else if character.isLetter || character == "_" {
                 let start = index

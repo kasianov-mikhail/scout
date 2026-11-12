@@ -16,15 +16,15 @@ struct NetworkViewPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 SkeletonBar(width: 160, height: 9, delay: 0)
                     .frame(height: 17.5, alignment: .leading)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, 4)
-                    .padding(.bottom, 12)
-                    .padding(.horizontal, 16)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space12)
+                    .padding(.horizontal, .gutter)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
@@ -36,7 +36,7 @@ struct NetworkViewPlaceholder: View {
                     NetworkEndpointRowPlaceholder(index: index)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -50,13 +50,13 @@ struct NetworkEndpointRowPlaceholder: View {
     var body: some View {
         let delay = 0.08 + Double(index) * 0.08
 
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: .space8) {
+            HStack(spacing: .space4) {
                 SkeletonBar(width: 28, height: 9, delay: delay)
                 SkeletonBar(width: skeletonPathWidths[index % skeletonPathWidths.count], height: 9, delay: delay)
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 SkeletonBar(width: 46, height: 9, delay: delay)
                     .padding(.horizontal, 4)
                     .frame(maxWidth: .infinity, alignment: .leading)

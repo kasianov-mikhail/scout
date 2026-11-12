@@ -59,8 +59,8 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
         if histogram.total == 0 {
             VStack(spacing: 0) {
                 MetricRangeStrip(selection: $range)
-                    .padding(.top, 8)
-                    .padding(.leading, 16)
+                    .padding(.top, .space8)
+                    .padding(.leading, .gutter)
 
                 Placeholder(
                     text: "No data",
@@ -72,7 +72,7 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     MetricRangeStrip(selection: $range)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                         .padding(.trailing, -16)
 
                     MetricQuantileSelector(
@@ -82,16 +82,16 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                         format: format,
                         selection: $quantile
                     )
-                    .padding(.top, 4)
+                    .padding(.top, .space4)
 
                     Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
-                        .padding(.top, 8)
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
+                        .padding(.top, .space8)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     MetricChart(buckets: buckets, style: .line(filled: true), format: format)
-                        .padding(.top, 16)
+                        .padding(.top, .space16)
 
                     MetricAxisLabels(labels: range.axisLabels(now: now))
 
@@ -105,7 +105,7 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                         percentiles: summary,
                         format: histogramFormat
                     )
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
 
                     MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
 
@@ -118,7 +118,7 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                         )
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
             .toolbar {

@@ -11,25 +11,25 @@ struct HomeAlertSectionEmpty: View {
     let rulesLabel: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: "ALERTS")
-                    .font(.footnote.weight(.semibold))
+                    .font(.scoutCaptionStrong)
 
                 Spacer()
 
                 Text(verbatim: rulesLabel)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
 
-            HStack(spacing: 2) {
+            HStack(spacing: .space2) {
                 ForEach(0..<24) { _ in
-                    EmptyBar(height: 10, cornerRadius: 2)
+                    EmptyBar(height: 10, cornerRadius: .radiusBar)
                         .frame(maxWidth: .infinity)
                 }
             }
-            .padding(.top, 4)
+            .padding(.top, .space4)
 
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: "No rules yet")
@@ -37,14 +37,14 @@ struct HomeAlertSectionEmpty: View {
                 Spacer()
 
                 Text(verbatim: "Add rule")
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.textLink)
             }
-            .font(.book(size: 13))
-            .foregroundStyle(Color(.systemGray))
-            .padding(.top, 2)
+            .font(.scoutCaption)
+            .foregroundStyle(Color.textMuted)
+            .padding(.top, .space2)
         }
-        .padding(.top, 12)
-        .padding(.bottom, 14)
+        .padding(.top, .space12)
+        .padding(.bottom, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -61,7 +61,7 @@ struct HomeAlertSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeAlertSectionEmpty(rulesLabel: "0 rules")
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

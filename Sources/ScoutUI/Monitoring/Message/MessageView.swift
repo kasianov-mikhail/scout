@@ -13,11 +13,11 @@ struct MessageView: View {
 
     var body: some View {
         Text(text)
-            .font(.book(size: 16))
+            .font(.scoutBody)
             .multilineTextAlignment(.center)
             .lineSpacing(4)
             .padding(.horizontal)
-            .padding(.vertical, 12)
+            .padding(.vertical, .space12)
             .frame(maxWidth: .infinity)
             .background(level.color.opacity(0.1))
             .background()
@@ -31,5 +31,5 @@ struct MessageView: View {
         MessageView(text: level.text, level: level)
         MessageView(text: level.longText, level: level)
     }
-    .padding(.vertical, 4)
+    .padding(.vertical, .space4)
 }

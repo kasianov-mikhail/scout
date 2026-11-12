@@ -82,13 +82,13 @@ extension Backend.Status? {
     var healthColor: Color {
         switch self {
         case .reachable:
-            .green
+            .fillSuccess
         case .readOnly:
-            .orange
+            .fillWarning
         case .unreachable:
-            .red
+            .fillDanger
         case nil:
-            .gray
+            .textMuted
         }
     }
 }

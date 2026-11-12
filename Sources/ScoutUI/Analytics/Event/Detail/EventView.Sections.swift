@@ -16,13 +16,13 @@ extension EventView {
         var body: some View {
             HStack {
                 Text(verbatim: title.uppercased())
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.scoutSection)
 
                 Spacer()
 
                 trailing()
             }
-            .padding(.top, 12)
+            .padding(.top, .space12)
             .frame(height: 56)
             .overlay(alignment: .bottom) {
                 Separator()
@@ -40,15 +40,15 @@ extension EventView {
                 NavigationLink {
                     Timeline(deviceID: deviceID, focus: TimelineFocus(event: event))
                 } label: {
-                    HStack(spacing: 12) {
+                    HStack(spacing: .space12) {
                         Image(systemName: "calendar.day.timeline.left")
-                            .font(.book(size: 17))
-                            .foregroundStyle(.blue)
+                            .font(.scoutBody)
+                            .foregroundStyle(Color.textLink)
                             .frame(width: 24)
 
                         Text(verbatim: "Show in timeline")
-                            .font(.book(size: 17))
-                            .foregroundStyle(.blue)
+                            .font(.scoutBody)
+                            .foregroundStyle(Color.textLink)
 
                         Spacer(minLength: 0)
                     }

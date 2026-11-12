@@ -14,7 +14,7 @@ struct AlertListPlaceholder: View {
                 banner
 
                 AlertListLegend(showsAxis: false)
-                    .padding(.top, 10)
+                    .padding(.top, .space10)
 
                 header(delay: 0)
                 row(titleWidth: 95, delay: 0, isLast: true)
@@ -28,7 +28,7 @@ struct AlertListPlaceholder: View {
                 header(delay: 0.40)
                 row(titleWidth: 69, delay: 0.40, isLast: true)
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -36,10 +36,10 @@ struct AlertListPlaceholder: View {
     }
 
     private var banner: some View {
-        HStack(spacing: 12) {
-            SkeletonBar(width: 20, height: 20, delay: 0, cornerRadius: 5)
+        HStack(spacing: .space12) {
+            SkeletonBar(width: 20, height: 20, delay: 0, cornerRadius: .radiusBadge)
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: .space2) {
                 SkeletonBar(width: 120, height: 11, delay: 0)
                 SkeletonBar(width: 74, height: 9, delay: 0)
             }
@@ -62,7 +62,7 @@ struct AlertListPlaceholder: View {
 
             SkeletonBar(width: 28, height: 10, delay: delay)
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             separator
@@ -70,7 +70,7 @@ struct AlertListPlaceholder: View {
     }
 
     private func row(titleWidth: CGFloat, delay: Double, isLast: Bool) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             SkeletonBar(width: titleWidth, height: 11, delay: delay)
                 .frame(height: 19, alignment: .leading)
 
@@ -84,10 +84,10 @@ struct AlertListPlaceholder: View {
             .frame(height: 16)
 
             AlertHealthStripPlaceholder(delay: delay)
-                .padding(.top, 4)
+                .padding(.top, .space4)
         }
-        .padding(.top, 12)
-        .padding(.bottom, 14)
+        .padding(.top, .space12)
+        .padding(.bottom, .space12)
         .overlay(alignment: .bottom) {
             if !isLast {
                 separator

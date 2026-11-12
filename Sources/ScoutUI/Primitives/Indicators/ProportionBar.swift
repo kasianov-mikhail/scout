@@ -17,7 +17,7 @@ struct ProportionBar<Item: Identifiable>: View {
             let gaps = CGFloat(max(items.count - 1, 0)) * 2
             let width = max(proxy.size.width - gaps, 0)
 
-            HStack(spacing: 2) {
+            HStack(spacing: .space2) {
                 ForEach(Array(items.enumerated()), id: \.element.id) { index, item in
                     Rectangle()
                         .fill(color(index, item))
@@ -26,7 +26,7 @@ struct ProportionBar<Item: Identifiable>: View {
             }
         }
         .frame(height: 10)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+        .clipShape(RoundedRectangle(cornerRadius: .radiusBadge))
     }
 }
 
@@ -39,13 +39,13 @@ struct BarValue: View {
 
     var body: some View {
         Text(verbatim: text)
-            .font(.book(size: 13, design: .monospaced))
+            .font(.scoutValue)
             .monospacedDigit()
-            .padding(.horizontal, 4)
+            .padding(.horizontal, .space4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(alignment: .leading) {
                 GeometryReader { proxy in
-                    RoundedRectangle(cornerRadius: 3)
+                    RoundedRectangle(cornerRadius: .radiusBlock)
                         .fill(color)
                         .frame(width: max(proxy.size.width * CGFloat(fraction), fraction > 0 ? minimumWidth : 0), height: barHeight)
                 }
@@ -54,7 +54,7 @@ struct BarValue: View {
 }
 
 #Preview {
-    VStack(spacing: 24) {
+    VStack(spacing: .space24) {
         ProportionBar(
             items: PreviewItem.samples,
             color: { _, item in item.color },
@@ -72,7 +72,7 @@ private struct PreviewItem: Identifiable {
     let color: Color
 
     static let samples: [PreviewItem] = [
-        PreviewItem(id: 0, share: 0.5, color: .blue),
+        PreviewItem(id: 0, share: 0.5, color: .fillAccent),
         PreviewItem(id: 1, share: 0.3, color: .cyan),
         PreviewItem(id: 2, share: 0.2, color: .gray),
     ]

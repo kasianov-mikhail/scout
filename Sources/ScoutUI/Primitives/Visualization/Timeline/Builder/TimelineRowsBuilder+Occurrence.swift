@@ -65,7 +65,7 @@ extension TimelineRowsBuilder {
                 subtitle: nil,
                 time: date.timelineSecond,
                 chip: nil,
-                tint: focused ? Color.accentColor.opacity(0.12) : nil
+                tint: focused ? Color.surfaceSelected : nil
             )
         )
     }

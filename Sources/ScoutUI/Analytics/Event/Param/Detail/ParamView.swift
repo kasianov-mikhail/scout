@@ -46,7 +46,7 @@ struct ParamView: View {
                             }
                         }
                     }
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, .gutter)
                 }
                 .scrollIndicators(.hidden)
             } else {
@@ -65,13 +65,13 @@ private struct ParamScalarView: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 13) {
+            VStack(alignment: .leading, spacing: .space12) {
                 if case .stringConvertible(let convertible) = value {
                     ParamBadge(convertible: convertible)
                 }
 
                 Text(raw)
-                    .font(.book(size: 17, design: .monospaced))
+                    .font(.scoutNavEvent)
                     .textSelection(.enabled)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

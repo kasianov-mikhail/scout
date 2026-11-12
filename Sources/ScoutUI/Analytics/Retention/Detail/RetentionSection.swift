@@ -13,19 +13,19 @@ struct RetentionSection: View {
     var divider = false
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: .space6) {
             Text(verbatim: title.uppercased())
-                .font(.system(size: 16, weight: .bold))
+                .font(.scoutSection)
 
             Spacer()
 
             if let note {
                 Text(verbatim: divider ? "│ \(note)" : note)
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
         }
-        .padding(.top, 12)
+        .padding(.top, .space12)
         .frame(height: 56)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -42,7 +42,7 @@ struct RetentionSection: View {
             RetentionSection(title: "By OS version", note: "day 7")
             RetentionSection(title: "Stability")
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

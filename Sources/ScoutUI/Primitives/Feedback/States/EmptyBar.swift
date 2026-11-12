@@ -14,15 +14,15 @@ struct EmptyBar: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
-            .strokeBorder(Color(.systemGray4), style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
+            .strokeBorder(Color.lineSubtle, style: StrokeStyle(lineWidth: 1, dash: [3, 2]))
             .frame(width: width, height: height)
             .accessibilityHidden(true)
     }
 }
 
 #Preview {
-    VStack(spacing: 8) {
-        EmptyBar(width: 150, height: 26, cornerRadius: 4)
+    VStack(spacing: .space8) {
+        EmptyBar(width: 150, height: 26, cornerRadius: .radiusBadge)
         EmptyBar(height: 18)
         EmptyBar(width: 48, height: 10)
     }

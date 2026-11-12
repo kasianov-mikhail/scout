@@ -11,6 +11,6 @@ extension View {
     func badgeStyle(fill: Color) -> some View {
         padding(.horizontal, .badgeHorizontalPadding)
             .padding(.vertical, .badgeVerticalPadding)
-            .background(fill, in: RoundedRectangle(cornerRadius: .badgeCornerRadius))
+            .background(fill, in: RoundedRectangle(cornerRadius: .radiusBadge))
     }
 }

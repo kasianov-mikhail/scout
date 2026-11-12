@@ -24,23 +24,23 @@ struct ErrorCodeScreen: View {
                 ErrorCodeArtwork(code: code, cloud: cloud)
 
                 Text(verbatim: title)
-                    .font(.system(size: 28, weight: .bold))
-                    .padding(.top, 8)
+                    .font(.scoutHeadline)
+                    .padding(.top, .space8)
 
                 Text(verbatim: message)
-                    .font(.book(size: 17))
+                    .font(.scoutBody)
                     .lineSpacing(4)
-                    .foregroundStyle(.secondary)
-                    .padding(.top, 10)
+                    .foregroundStyle(Color.textSecondary)
+                    .padding(.top, .space10)
 
                 Text(verbatim: endpoint)
-                    .font(.book(size: 13, design: .monospaced))
-                    .foregroundStyle(Color(.systemGray))
-                    .padding(.top, 16)
+                    .font(.scoutValue)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space16)
 
                 Spacer(minLength: 24)
             }
-            .padding(.horizontal, 24)
+            .padding(.horizontal, .space24)
         } actions: {
             Button(action: retry) {
                 Text(verbatim: "Retry")
@@ -71,7 +71,7 @@ private struct ErrorCodeArtwork: View {
                 grid.move(to: CGPoint(x: 0, y: y))
                 grid.addLine(to: CGPoint(x: size.width, y: y))
             }
-            context.stroke(grid, with: .color(Color(.systemGray6)), lineWidth: 1)
+            context.stroke(grid, with: .color(Color.surfaceGrey), lineWidth: 1)
 
             if cloud {
                 let left = CGRect(x: 0, y: 42.6, width: 67.4, height: 67.4)
@@ -83,24 +83,24 @@ private struct ErrorCodeArtwork: View {
                 fill.addEllipse(in: middle)
                 fill.addEllipse(in: right)
                 fill.addRect(CGRect(x: 33.7, y: 76.3, width: 90.9, height: 33.7))
-                context.fill(fill, with: .color(Color(.systemGray6)))
+                context.fill(fill, with: .color(Color.surfaceGrey))
 
                 var outline = Path()
                 outline.addEllipse(in: left)
                 outline.addEllipse(in: middle)
                 outline.addEllipse(in: right)
-                context.stroke(outline, with: .color(Color(.systemGray4)), lineWidth: 1)
+                context.stroke(outline, with: .color(Color.surfaceBarIdle), lineWidth: 1)
             }
 
             var baseline = Path()
             baseline.move(to: CGPoint(x: 0, y: Self.baseline))
             baseline.addLine(to: CGPoint(x: size.width, y: Self.baseline))
-            context.stroke(baseline, with: .color(Color(.systemGray4)), lineWidth: 1)
+            context.stroke(baseline, with: .color(Color.surfaceBarIdle), lineWidth: 1)
 
             let text = Text(verbatim: code)
                 .font(.system(size: 120, weight: .heavy))
                 .tracking(code.count > 1 ? -4 : 0)
-                .foregroundColor(Color(.systemGray5))
+                .foregroundColor(Color.surfaceSkeleton)
             let resolved = context.resolve(text)
             let measured = resolved.measure(in: CGSize(width: size.width, height: Self.height))
             let baselineOffset = resolved.firstBaseline(in: measured)

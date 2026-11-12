@@ -57,8 +57,8 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
         if !seriesTimeline.containsData(range: range, now: now) {
             VStack(spacing: 0) {
                 MetricRangeStrip(selection: $range)
-                    .padding(.top, 8)
-                    .padding(.leading, 16)
+                    .padding(.top, .space8)
+                    .padding(.leading, .gutter)
 
                 Placeholder(
                     text: "No data",
@@ -70,13 +70,13 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     MetricRangeStrip(selection: $range)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                         .padding(.trailing, -16)
 
                     MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
 
                     MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
-                        .padding(.top, 16)
+                        .padding(.top, .space16)
 
                     MetricAxisLabels(labels: range.axisLabels(now: now))
 
@@ -93,7 +93,7 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                         )
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
             .toolbar {

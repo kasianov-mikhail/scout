@@ -18,7 +18,7 @@ struct IncidentStackView: View {
                 IncidentStackRowView(row: row, isCulprit: stack.culprit?.id == row.id, color: color)
             }
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .space16)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -33,7 +33,7 @@ private struct IncidentStackRowView: View {
     let color: Color
 
     var body: some View {
-        HStack(spacing: 6) {
+        HStack(spacing: .space6) {
             Text(verbatim: "\(row.id)")
                 .frame(width: 18, alignment: .leading)
 
@@ -53,7 +53,7 @@ private struct IncidentStackRowView: View {
 
     private var weight: Font.Weight {
         if isCulprit {
-            return .bold
+            return .semibold
         }
         if row.location != nil {
             return .semibold
@@ -66,8 +66,8 @@ private struct IncidentStackRowView: View {
             return color
         }
         if row.location != nil {
-            return .primary
+            return .textPrimary
         }
-        return Color(.systemGray)
+        return Color.textMuted
     }
 }

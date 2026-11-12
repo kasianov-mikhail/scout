@@ -9,11 +9,11 @@ import SwiftUI
 
 struct ColumnHeader: View {
     let title: String
-    var color = Color(.systemGray)
+    var color = Color.fillLevel
 
     var body: some View {
         Text(verbatim: title)
-            .font(.system(size: 11, weight: .semibold))
+            .font(.scoutLabelCaps)
             .tracking(0.3)
             .foregroundStyle(color)
     }
@@ -22,7 +22,7 @@ struct ColumnHeader: View {
 extension View {
     func columnHeaderStyle(topPadding: CGFloat = 14) -> some View {
         padding(.top, topPadding)
-            .padding(.bottom, 8)
+            .padding(.bottom, .space8)
             .overlay(alignment: .bottom) {
                 Separator()
             }
@@ -32,7 +32,7 @@ extension View {
 #Preview {
     ScrollView {
         LazyVStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 ColumnHeader(title: "SESSIONS")
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ColumnHeader(title: "OS")
@@ -42,8 +42,8 @@ extension View {
             }
             .columnHeaderStyle()
 
-            HStack(spacing: 8) {
-                ColumnHeader(title: "REQUESTS ↓", color: .blue)
+            HStack(spacing: .space8) {
+                ColumnHeader(title: "REQUESTS ↓", color: .textLink)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 ColumnHeader(title: "OK")
                     .frame(width: 56, alignment: .trailing)
@@ -52,7 +52,7 @@ extension View {
             }
             .columnHeaderStyle(topPadding: 12)
         }
-        .padding(.horizontal, 16)
+        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

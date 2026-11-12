@@ -42,8 +42,8 @@ struct MetricsListView: View {
         if tiles.isEmpty {
             VStack(spacing: 0) {
                 MetricRangeStrip(selection: $provider.range)
-                    .padding(.top, 8)
-                    .padding(.leading, 16)
+                    .padding(.top, .space8)
+                    .padding(.leading, .gutter)
 
                 Placeholder(
                     text: "No metrics",
@@ -59,7 +59,7 @@ struct MetricsListView: View {
             ScrollView {
                 LazyVStack(alignment: .leading, spacing: 0) {
                     MetricRangeStrip(selection: $provider.range)
-                        .padding(.top, 8)
+                        .padding(.top, .space8)
                         .padding(.trailing, -16)
 
                     grid(tiles)
@@ -69,7 +69,7 @@ struct MetricsListView: View {
                                 .frame(height: 0.5)
                         }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
         }

@@ -15,11 +15,11 @@ struct HomeTelemetrySectionPlaceholder: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Text(verbatim: "INCIDENTS")
-                    .padding(.leading, 12)
+                    .padding(.leading, .space12)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .font(.callout.weight(.bold))
-            .padding(.top, 12)
+            .font(.scoutSection)
+            .padding(.top, .space12)
             .frame(height: 70)
             .overlay(alignment: .bottom) {
                 Rectangle()
@@ -39,23 +39,23 @@ struct HomeTelemetrySectionPlaceholder: View {
                     .allowsHitTesting(false)
             }
         }
-        .padding(.bottom, 6)
+        .padding(.bottom, .space6)
     }
 
     private func row(kind: TelemetryItem.Kind, index: Int) -> some View {
         let delay = 0.72 + Double(index / 2) * 0.08
 
-        return HStack(alignment: .top, spacing: 8) {
+        return HStack(alignment: .top, spacing: .space8) {
             Image(systemName: kind.systemImage)
                 .font(.book(size: 18))
                 .foregroundStyle(kind.color)
                 .frame(width: 24)
                 .accessibilityHidden(true)
 
-            VStack(alignment: .leading, spacing: 2) {
-                HStack(alignment: .firstTextBaseline, spacing: 8) {
+            VStack(alignment: .leading, spacing: .space2) {
+                HStack(alignment: .firstTextBaseline, spacing: .space8) {
                     Text(verbatim: kind.title)
-                        .font(.book(size: 16))
+                        .font(.scoutRow)
 
                     Spacer(minLength: 0)
 

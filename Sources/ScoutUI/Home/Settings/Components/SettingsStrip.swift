@@ -38,35 +38,35 @@ struct SettingsSegmentCell: View {
 
     private var foreground: Color {
         if isSelected {
-            return .accentColor
+            return .fillAccent
         }
         if state == .error {
-            return .red
+            return .textDanger
         }
-        return .primary
+        return .textPrimary
     }
 
     private var detailForeground: Color {
         if isSelected {
-            return Color.accentColor.opacity(0.75)
+            return Color.fillAccent.opacity(0.75)
         }
         if state == .error {
-            return .red
+            return .textDanger
         }
-        return Color(.systemGray)
+        return Color.fillLevel
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: title)
-                .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
+                .font(isSelected ? .scoutRowStrong : .scoutRow)
                 .foregroundStyle(foreground)
                 .lineLimit(1)
 
             if hasDetail {
                 if let detail, state != .loading {
                     Text(verbatim: detail)
-                        .font(.book(size: 11))
+                        .font(.scoutMicro)
                         .foregroundStyle(detailForeground)
                         .lineLimit(1)
                 } else {
@@ -77,8 +77,8 @@ struct SettingsSegmentCell: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: hasDetail ? .rowSubtitle : .rowTable)
-        .padding(.horizontal, 8)
-        .background(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
+        .padding(.horizontal, .space8)
+        .background(isSelected ? Color.surfaceSelected : Color.clear)
         .overlay(alignment: .trailing) {
             if showsDivider {
                 Separator(axis: .vertical)

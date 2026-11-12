@@ -77,8 +77,8 @@ struct NetworkHourView: View {
                         color: { _, item in item.color },
                         share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
                     )
-                    .padding(.top, 14)
-                    .padding(.bottom, 6)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space6)
 
                     ForEach(breakdown.networkClasses) { item in
                         NetworkStatusRow(item: item, total: breakdown.total)
@@ -93,7 +93,7 @@ struct NetworkHourView: View {
                     NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

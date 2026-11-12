@@ -22,8 +22,8 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 Separator()
             }
 
-            SkeletonBar(height: 72, delay: 0.56, fill: Color(.systemGray6))
-                .padding(.top, 14)
+            SkeletonBar(height: 72, delay: 0.56, fill: Color.surfaceGrey)
+                .padding(.top, .space12)
 
             AxisLabelRow(
                 start: DateFormatter.monthDay.string(from: start),
@@ -35,16 +35,16 @@ struct HomeActiveUsersSectionPlaceholder: View {
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
                 .frame(height: 18, alignment: .leading)
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 
     private func metric(kind: ActiveUsers.Kind) -> some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: kind.title.uppercased())
-                .font(.footnote.weight(.semibold))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(Color.textMuted)
 
             SkeletonBar(width: 74, height: 17, delay: 0.4)
                 .frame(height: 34, alignment: .leading)
@@ -52,14 +52,14 @@ struct HomeActiveUsersSectionPlaceholder: View {
             SkeletonBar(width: 46, height: 8, delay: 0.48)
                 .frame(height: 15, alignment: .leading)
         }
-        .padding(.vertical, 10)
+        .padding(.vertical, .space10)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if kind == .dau {
                 Rectangle()
-                    .fill(Color(.systemGray5))
+                    .fill(Color.surfaceSkeleton)
                     .frame(height: 2)
-                    .padding(.trailing, 12)
+                    .padding(.trailing, .space12)
             }
         }
     }

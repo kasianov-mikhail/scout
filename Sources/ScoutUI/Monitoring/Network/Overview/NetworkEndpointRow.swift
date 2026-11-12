@@ -12,16 +12,16 @@ struct NetworkEndpointRow: View {
     let maxRequests: Int
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 4) {
+        VStack(alignment: .leading, spacing: .space8) {
+            HStack(spacing: .space4) {
                 if let method = endpoint.method {
                     Text(verbatim: method)
-                        .font(.system(size: 11, weight: .bold, design: .monospaced))
+                        .font(.scoutMonoLabel)
                         .foregroundStyle(endpoint.methodColor)
                 }
 
                 Text(verbatim: endpoint.path)
-                    .font(.book(size: 13, design: .monospaced))
+                    .font(.scoutValue)
                     .lineLimit(1)
                     .mask(alignment: .trailing) {
                         HStack(spacing: 0) {
@@ -33,7 +33,7 @@ struct NetworkEndpointRow: View {
                     }
             }
 
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 BarValue(text: endpoint.requests.compact, fraction: fraction, color: .networkTrack, barHeight: 25.5, minimumWidth: 4)
                     .frame(maxWidth: .infinity)
                     .frame(height: 18)
@@ -47,7 +47,7 @@ struct NetworkEndpointRow: View {
                     .foregroundStyle(endpoint.p99.networkP99Color)
                     .frame(width: 64, alignment: .trailing)
             }
-            .font(.book(size: 13, design: .monospaced))
+            .font(.scoutValue)
         }
         .lineLimit(1)
         .frame(maxWidth: .infinity, alignment: .leading)

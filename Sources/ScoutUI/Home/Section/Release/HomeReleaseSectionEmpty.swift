@@ -16,26 +16,26 @@ struct HomeReleaseSectionEmpty: View {
                 HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
             }
 
-            HStack(alignment: .center, spacing: 8) {
-                EmptyBar(width: 150, height: 26, cornerRadius: 4)
+            HStack(alignment: .center, spacing: .space8) {
+                EmptyBar(width: 150, height: 26, cornerRadius: .radiusBadge)
 
                 Text(verbatim: "of sessions")
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
             }
             .frame(height: 28)
 
-            EmptyBar(height: 22, cornerRadius: 2)
-                .padding(.top, 10)
+            EmptyBar(height: 22, cornerRadius: .radiusBar)
+                .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: Color(.systemGray4), dashed: true)
-                .padding(.top, 8)
+            AdoptionLegend(squareSize: 7, squareColor: Color.surfaceBarIdle, dashed: true)
+                .padding(.top, .space8)
 
             Text(verbatim: "No releases yet")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
-                .padding(.top, 10)
-                .padding(.bottom, 6)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space10)
+                .padding(.bottom, .space6)
         }
     }
 }
@@ -46,7 +46,7 @@ struct HomeReleaseSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeReleaseSectionEmpty {}
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

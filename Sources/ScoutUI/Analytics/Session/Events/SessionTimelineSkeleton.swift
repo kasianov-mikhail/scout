@@ -93,10 +93,10 @@ struct SessionSkeletonRowView: View {
 
             marker
 
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 if row.kind == .start {
                     Text(verbatim: "Session started")
-                        .font(.system(size: 13, weight: .semibold))
+                        .font(.scoutCaptionStrong)
                         .foregroundStyle(Color.timelineUnknown)
                 }
 
@@ -111,7 +111,7 @@ struct SessionSkeletonRowView: View {
                 SkeletonBar(width: 36, height: 9, delay: delay)
             }
             .padding(.leading, 56)
-            .padding(.trailing, 16)
+            .padding(.trailing, .gutter)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(height: row.height)
@@ -128,10 +128,10 @@ struct SessionSkeletonRowView: View {
                 .offset(x: 21, y: row.height / 2 - 3)
         case .screen:
             ZStack {
-                RoundedRectangle(cornerRadius: 9)
+                RoundedRectangle(cornerRadius: .radiusBadge)
                     .fill(Color.timelineBackground)
                     .frame(width: 26, height: 26)
-                RoundedRectangle(cornerRadius: 6)
+                RoundedRectangle(cornerRadius: .radiusBadge)
                     .fill(Color.timelineTrack)
                     .frame(width: 20, height: 20)
             }

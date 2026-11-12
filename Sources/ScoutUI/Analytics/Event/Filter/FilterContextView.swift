@@ -11,7 +11,7 @@ struct FilterContextView: View {
     @ObservedObject var draft: FilterDraft
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 22) {
+        VStack(alignment: .leading, spacing: .space22) {
             FilterSection(title: "Session ID") {
                 FilterIDField(
                     placeholder: "From a session or timeline",
@@ -37,26 +37,26 @@ private struct FilterIDField: View {
     let isValid: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: .space4) {
             FilterBox {
                 HStack(spacing: 0) {
                     Text(verbatim: text.isEmpty ? placeholder : text)
-                        .font(text.isEmpty ? .book(size: 17) : .book(size: 15, design: .monospaced))
-                        .foregroundStyle(!isValid ? Color.red : text.isEmpty ? Color(.systemGray3) : Color.primary)
+                        .font(text.isEmpty ? .scoutBody : .scoutRowMono)
+                        .foregroundStyle(!isValid ? Color.fillDanger : text.isEmpty ? Color.lineSeparator : Color.textPrimary)
                         .lineLimit(1)
                         .truncationMode(.middle)
-                        .padding(.horizontal, 8)
+                        .padding(.horizontal, .space8)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                     Button(action: toggle) {
                         Text(verbatim: text.isEmpty ? "Paste" : "Clear")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.scoutRowStrong)
                             .foregroundStyle(Color.filterAccent)
-                            .padding(.horizontal, 16)
+                            .padding(.horizontal, .gutter)
                             .frame(maxHeight: .infinity)
                             .overlay(alignment: .leading) {
                                 Rectangle()
-                                    .fill(Color(.systemGray3))
+                                    .fill(Color.lineSeparator)
                                     .frame(width: 0.5)
                             }
                     }
@@ -67,8 +67,8 @@ private struct FilterIDField: View {
 
             if !isValid {
                 Text(verbatim: "Not a valid ID")
-                    .font(.book(size: 13))
-                    .foregroundStyle(.red)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textDanger)
             }
         }
     }
@@ -92,5 +92,5 @@ private struct FilterIDField: View {
 
 #Preview {
     FilterContextView(draft: FilterDraft(query: .constant(EventQuery())))
-        .padding(16)
+        .padding(.space16)
 }

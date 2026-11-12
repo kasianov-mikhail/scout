@@ -15,28 +15,28 @@ struct ReleaseRow: View {
         NavigationLink {
             ReleaseView(release: release)
         } label: {
-            HStack(spacing: 8) {
+            HStack(spacing: .space8) {
                 ReleaseRing(adoption: release.adoption, color: release.freeSessions.color)
 
-                VStack(alignment: .leading, spacing: 3) {
+                VStack(alignment: .leading, spacing: .space2) {
                     Text(verbatim: release.id)
-                        .font(.system(size: 17, weight: .bold, design: .monospaced))
+                        .font(.scoutRowMonoStrong)
                         .lineLimit(1)
 
                     Text(verbatim: release.adoptionLabel)
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                         .lineLimit(1)
                 }
 
                 Spacer(minLength: 0)
 
-                VStack(alignment: .trailing, spacing: 3) {
+                VStack(alignment: .trailing, spacing: .space2) {
                     Text(verbatim: release.freeSessions.formatted)
-                        .font(.system(size: 15, weight: .bold, design: .monospaced))
+                        .font(.scoutRowMonoStrong)
 
                     Text(verbatim: release.freeSessions.level.displayTitle)
-                        .font(.system(size: 12, weight: .semibold))
+                        .font(.scoutFootnoteStrong)
                         .foregroundStyle(release.freeSessions.level.labelColor)
                 }
             }
@@ -61,7 +61,7 @@ private struct ReleaseRing: View {
         ZStack {
             Circle()
                 .inset(by: 1.5)
-                .stroke(Color(.systemGray5), lineWidth: 3)
+                .stroke(Color.surfaceSkeleton, lineWidth: 3)
             Circle()
                 .inset(by: 1.5)
                 .trim(from: 0, to: adoption.value)
@@ -82,7 +82,7 @@ private struct ReleaseRing: View {
                     ReleaseRow(release: release, isLast: index == releases.count - 1)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Releases")

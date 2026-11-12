@@ -21,13 +21,13 @@ extension SessionTimelineRowView {
     var titleFont: Font {
         switch row.kind {
         case .event:
-            .book(size: 16, design: .monospaced)
+            .scoutEventName
         case .screen, .crash, .hang, .resource:
             .system(size: 16, weight: .semibold)
         case .start, .end:
-            .system(size: 13, weight: .semibold)
+            .scoutCaptionStrong
         case .gap:
-            .book(size: 13)
+            .scoutCaption
         }
     }
 
@@ -53,9 +53,9 @@ extension SessionTimelineRowView {
     var subtitleFont: Font {
         switch row.kind {
         case .crash, .hang, .resource:
-            .book(size: 13, design: .monospaced)
+            .scoutValue
         default:
-            .book(size: 13)
+            .scoutCaption
         }
     }
 
@@ -123,9 +123,9 @@ extension EventLevel {
     }
 }
 
-let sessionError = Color(red: 255 / 255, green: 59 / 255, blue: 48 / 255)
-let sessionLive = Color(red: 52 / 255, green: 199 / 255, blue: 89 / 255)
-let sessionLiveInk = Color(red: 30 / 255, green: 125 / 255, blue: 52 / 255)
-let sessionLiveHalo = Color(red: 227 / 255, green: 246 / 255, blue: 232 / 255)
-let sessionWarningTint = Color(red: 255 / 255, green: 204 / 255, blue: 0 / 255).opacity(0.12)
-let sessionCriticalTint = sessionError.opacity(0.10)
+let sessionError = Color.fillDanger
+let sessionLive = Color.fillSuccess
+let sessionLiveInk = Color.textSuccess
+let sessionLiveHalo = Color.tintSuccess
+let sessionWarningTint = Color.tintCaution
+let sessionCriticalTint = Color.tintDanger

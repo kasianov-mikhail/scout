@@ -26,7 +26,7 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
                 }
                 stack
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -34,8 +34,8 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
     }
 
     private var summary: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
+            VStack(alignment: .leading, spacing: .space6) {
                 SkeletonBar(height: 9, delay: 0.08)
                     .frame(maxWidth: 300)
                 SkeletonBar(width: 120, height: 9, delay: 0.16)
@@ -43,11 +43,11 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
 
             SkeletonBar(width: 120, height: 9, delay: 0.24)
 
-            SkeletonBar(height: 82, delay: 0.32, cornerRadius: 4, fill: Color(.systemGray6))
-                .padding(.top, 4)
+            SkeletonBar(height: 82, delay: 0.32, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+                .padding(.top, .space4)
         }
-        .padding(.top, 18)
-        .padding(.bottom, 16)
+        .padding(.top, .space18)
+        .padding(.bottom, .space16)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -59,7 +59,7 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
         VStack(alignment: .leading, spacing: 0) {
             ForEach(stackSymbolWidths.indices, id: \.self) { index in
                 let delay = 0.8 + Double(index) * 0.08
-                HStack(spacing: 6) {
+                HStack(spacing: .space6) {
                     SkeletonBar(width: 8, height: 9, delay: delay)
                         .frame(width: 18, alignment: .leading)
                     SkeletonBar(width: 74, height: 9, delay: delay)
@@ -70,6 +70,6 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
                 .frame(height: .codeStep)
             }
         }
-        .padding(.vertical, 16)
+        .padding(.vertical, .space16)
     }
 }

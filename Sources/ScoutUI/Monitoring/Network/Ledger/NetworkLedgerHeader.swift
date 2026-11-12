@@ -9,7 +9,7 @@ import SwiftUI
 
 struct NetworkEndpointListHeader: View {
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             ColumnHeader(title: "REQUESTS ↓", color: .networkAccent)
                 .frame(maxWidth: .infinity, alignment: .leading)
             ColumnHeader(title: "OK")
@@ -25,7 +25,7 @@ struct NetworkLedgerHeader: View {
     let primary: String
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             ColumnHeader(title: primary + " ↓", color: .networkAccent)
                 .frame(width: 58, alignment: .leading)
             ColumnHeader(title: "REQUESTS")

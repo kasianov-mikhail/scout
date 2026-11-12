@@ -15,7 +15,7 @@ struct NetworkEndpointViewPlaceholder: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                    .padding(.top, 8)
+                    .padding(.top, .space8)
                     .padding(.trailing, -16)
 
                 NetworkEndpointHeaderPlaceholder()
@@ -26,7 +26,7 @@ struct NetworkEndpointViewPlaceholder: View {
                     NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -41,7 +41,7 @@ struct NetworkLedgerRowPlaceholder: View {
     var body: some View {
         let delay = 0.08 + Double(index) * 0.08
 
-        HStack(spacing: 8) {
+        HStack(spacing: .space8) {
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 58, alignment: .leading)
             SkeletonBar(width: 46, height: 9, delay: delay)

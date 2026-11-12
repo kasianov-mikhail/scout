@@ -15,17 +15,18 @@ struct ParamValueRow: View {
     let summaryStyle: HierarchicalShapeStyle
 
     var body: some View {
-        HStack(spacing: 13) {
+        HStack(spacing: .space12) {
             ParamIcon(value: value)
 
             Text(label)
+                .font(.scoutRow)
                 .foregroundStyle(labelStyle)
 
             Spacer()
 
             Text(value.summary)
                 .monospaced()
-                .font(.book(size: 16))
+                .font(.scoutRowMono)
                 .foregroundStyle(summaryStyle)
                 .lineLimit(1)
         }

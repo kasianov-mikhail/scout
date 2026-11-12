@@ -14,15 +14,15 @@ struct AlertSection<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .space8) {
             Text(verbatim: title.uppercased())
-                .font(.system(size: 12, weight: .semibold))
-                .tracking(0.4)
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutFootnoteStrong)
+                .tracking(0.3)
+                .foregroundStyle(Color.textMuted)
 
             content()
         }
-        .padding(.top, 22)
+        .padding(.top, .space22)
     }
 }
 
@@ -32,10 +32,10 @@ struct AlertCard<Content: View>: View {
     var body: some View {
         content()
             .frame(maxWidth: .infinity)
-            .background(Color(.systemBackground))
-            .clipShape(RoundedRectangle(cornerRadius: 3))
+            .background(Color.surface)
+            .clipShape(RoundedRectangle(cornerRadius: .radiusBlock))
             .overlay {
-                RoundedRectangle(cornerRadius: 3)
+                RoundedRectangle(cornerRadius: .radiusBlock)
                     .stroke(Color.separator, lineWidth: 0.5)
             }
     }
@@ -71,8 +71,8 @@ struct AlertEventCard: View {
     }
 
     private func row(showsChange: Bool) -> some View {
-        HStack(spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
+        HStack(spacing: .space8) {
+            VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: name.isEmpty ? "Choose event" : name)
                     .font(.book(size: 15, design: name.isEmpty ? .default : .monospaced))
                     .lineLimit(1)
@@ -85,28 +85,28 @@ struct AlertEventCard: View {
 
             if showsChange {
                 Text(verbatim: "Change")
-                    .font(.system(size: 15, weight: .semibold))
-                    .foregroundStyle(Color.blue)
+                    .font(.scoutRowStrong)
+                    .foregroundStyle(Color.textLink)
             }
         }
         .frame(height: .rowSubtitle)
-        .padding(.horizontal, 8)
+        .padding(.horizontal, .space8)
         .contentShape(Rectangle())
     }
 
     @ViewBuilder private var detail: some View {
         if name.isEmpty {
             Text(verbatim: "Tap to pick an event")
-                .font(.book(size: 11))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundStyle(Color.textMuted)
         } else if let range {
             Text(verbatim: rangeText(range))
-                .font(.book(size: 11))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundStyle(Color.textMuted)
         } else if isFailed {
             Text(verbatim: "—")
-                .font(.book(size: 11))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundStyle(Color.textMuted)
         } else {
             SkeletonBar(width: 120, height: 7, delay: 0)
         }
@@ -133,7 +133,7 @@ struct AlertEventNameView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: .space12) {
                 TextField(text: $name, prompt: Text(verbatim: "Event name")) {
                     Text(verbatim: "Event name")
                 }
@@ -143,7 +143,7 @@ struct AlertEventNameView: View {
 
                 Spacer()
             }
-            .padding(16)
+            .padding(.space16)
             .navigationTitle(en: "Event")
             .inlineNavigationTitle()
             .toolbar {
@@ -210,20 +210,20 @@ private struct AlertSensitivityCell: View {
     let isSelected: Bool
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: title)
-                .font(isSelected ? .system(size: 15, weight: .bold) : .book(size: 15))
-                .foregroundStyle(isSelected ? Color.blue : Color.primary)
+                .font(isSelected ? .scoutRowStrong : .scoutRow)
+                .foregroundStyle(isSelected ? Color.fillAccent : Color.textPrimary)
 
             Text(verbatim: detail)
-                .font(.book(size: 11))
-                .foregroundStyle(isSelected ? Color.blue.opacity(0.75) : Color(.systemGray))
+                .font(.scoutMicro)
+                .foregroundStyle(isSelected ? Color.textLink.opacity(0.75) : Color.textMuted)
                 .lineLimit(1)
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 8)
+        .padding(.vertical, .space10)
+        .padding(.horizontal, .space8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(isSelected ? Color.blue.opacity(0.12) : Color.clear)
+        .background(isSelected ? Color.surfaceSelected : Color.clear)
         .contentShape(Rectangle())
     }
 }
@@ -239,15 +239,15 @@ struct AlertThresholdCard: View {
             HStack(spacing: 0) {
                 HStack(alignment: .firstTextBaseline, spacing: 0) {
                     Text(verbatim: value)
-                        .font(.system(size: 20, weight: .bold))
+                        .font(.scoutNumberS)
                         .monospacedDigit()
 
                     Text(verbatim: " \(unit)")
-                        .font(.book(size: 13))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
                 }
-                .padding(.vertical, 10)
-                .padding(.horizontal, 8)
+                .padding(.vertical, .space10)
+                .padding(.horizontal, .space8)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 stepButton(symbol: "−", label: "Decrease", action: decrement)
@@ -260,8 +260,8 @@ struct AlertThresholdCard: View {
     private func stepButton(symbol: String, label: String, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             Text(verbatim: symbol)
-                .font(.system(size: 15, weight: .semibold))
-                .foregroundStyle(Color.blue)
+                .font(.scoutRowStrong)
+                .foregroundStyle(Color.textLink)
                 .frame(width: 48, height: 44)
                 .contentShape(Rectangle())
         }
@@ -309,21 +309,21 @@ struct AlertWeekCard: View {
         HStack(alignment: .firstTextBaseline, spacing: 0) {
             if let count = counts?[draft.sensitivity] {
                 Text(verbatim: "\(count)")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.scoutNumberS)
                     .monospacedDigit()
             } else if isFailed {
                 Text(verbatim: "—")
-                    .font(.system(size: 20, weight: .bold))
+                    .font(.scoutNumberS)
             } else {
                 SkeletonBar(width: 28, height: 16, delay: 0)
             }
 
             Text(verbatim: " alerts with \(draft.sensitivity.title)")
-                .font(.book(size: 13))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 8)
+        .padding(.vertical, .space10)
+        .padding(.horizontal, .space8)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
@@ -332,24 +332,24 @@ struct AlertWeekCard: View {
             ForEach(AlertDraft.Sensitivity.allCases.indices, id: \.self) { index in
                 let sensitivity = AlertDraft.Sensitivity.allCases[index]
 
-                VStack(alignment: .leading, spacing: 2) {
+                VStack(alignment: .leading, spacing: .space2) {
                     Text(verbatim: sensitivity.title)
-                        .font(.book(size: 11))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutMicro)
+                        .foregroundStyle(Color.textMuted)
 
                     if let count = counts?[sensitivity] {
                         Text(verbatim: "\(count)")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.scoutRowStrong)
                             .monospacedDigit()
                     } else if isFailed {
                         Text(verbatim: "—")
-                            .font(.system(size: 15, weight: .semibold))
+                            .font(.scoutRowStrong)
                     } else {
                         SkeletonBar(width: 28, height: 11, delay: 0)
                     }
                 }
-                .padding(.vertical, 9)
-                .padding(.horizontal, 8)
+                .padding(.vertical, .space8)
+                .padding(.horizontal, .space8)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .overlay(alignment: .trailing) {
                     if index < AlertDraft.Sensitivity.allCases.count - 1 {
@@ -361,17 +361,17 @@ struct AlertWeekCard: View {
     }
 
     private func grid(_ breaches: [[Bool]]?) -> some View {
-        VStack(spacing: 3) {
+        VStack(spacing: .space2) {
             ForEach(dates.indices, id: \.self) { day in
-                HStack(spacing: 2) {
+                HStack(spacing: .space2) {
                     Text(verbatim: alertWeekdayFormatter.string(from: dates[day]))
-                        .font(.book(size: 10, design: .monospaced))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutAxis)
+                        .foregroundStyle(Color.textMuted)
                         .frame(width: 34, alignment: .leading)
 
-                    HStack(spacing: 2) {
+                    HStack(spacing: .space2) {
                         ForEach(0..<24, id: \.self) { hour in
-                            RoundedRectangle(cornerRadius: 2)
+                            RoundedRectangle(cornerRadius: .radiusBar)
                                 .fill(cellColor(breaches, day: day, hour: hour))
                                 .frame(height: 12)
                                 .frame(maxWidth: .infinity)
@@ -395,26 +395,26 @@ struct AlertWeekCard: View {
                     Spacer()
                     Text(verbatim: "24")
                 }
-                .font(.book(size: 10, design: .monospaced))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutAxis)
+                .foregroundStyle(Color.textMuted)
             }
-            .padding(.top, 4)
+            .padding(.top, .space4)
         }
-        .padding(.vertical, 10)
-        .padding(.horizontal, 8)
+        .padding(.vertical, .space10)
+        .padding(.horizontal, .space8)
     }
 
     private func cellColor(_ breaches: [[Bool]]?, day: Int, hour: Int) -> Color {
         guard let breaches else {
-            return Color(.systemGray6)
+            return Color.surfaceGrey
         }
         guard breaches.indices.contains(day) else {
-            return Color(.systemGray6)
+            return Color.surfaceGrey
         }
         guard breaches[day].indices.contains(hour) else {
-            return Color(.systemGray6)
+            return Color.surfaceGrey
         }
-        return breaches[day][hour] ? Color.red : Color(.systemGray5)
+        return breaches[day][hour] ? Color.fillDanger : Color.surfaceSkeleton
     }
 }
 
@@ -426,29 +426,29 @@ struct AlertNotifyCard: View {
             Button {
                 notifies.toggle()
             } label: {
-                HStack(spacing: 8) {
-                    VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: .space8) {
+                    VStack(alignment: .leading, spacing: .space2) {
                         Text(verbatim: "This iPhone")
-                            .font(.system(size: 15, weight: .bold))
-                            .foregroundStyle(notifies ? Color.blue : Color.primary)
+                            .font(.scoutRowStrong)
+                            .foregroundStyle(notifies ? Color.fillAccent : Color.textPrimary)
 
                         Text(verbatim: notifies ? "Push notification" : "Off")
-                            .font(.book(size: 11))
-                            .foregroundStyle(notifies ? Color.blue.opacity(0.75) : Color(.systemGray))
+                            .font(.scoutMicro)
+                            .foregroundStyle(notifies ? Color.fillAccent.opacity(0.75) : Color.fillLevel)
                     }
 
                     Spacer(minLength: 0)
 
                     if notifies {
                         Image(systemName: "checkmark")
-                            .font(.system(size: 11, weight: .semibold))
-                            .foregroundStyle(Color.blue)
+                            .font(.scoutLabelCaps)
+                            .foregroundStyle(Color.textLink)
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: .rowSubtitle)
-                .padding(.horizontal, 8)
-                .background(notifies ? Color.blue.opacity(0.12) : Color.clear)
+                .padding(.horizontal, .space8)
+                .background(notifies ? Color.surfaceSelected : Color.clear)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -459,17 +459,17 @@ struct AlertNotifyCard: View {
 struct AlertFooter: View {
     var body: some View {
         Text(footerText)
-            .font(.book(size: 13))
+            .font(.scoutCaption)
             .lineSpacing(2)
-            .foregroundStyle(Color(.systemGray))
-            .padding(.top, 4)
+            .foregroundStyle(Color.textMuted)
+            .padding(.top, .space4)
     }
 
     private var footerText: AttributedString {
         var text = AttributedString("Alerts for your whole team and Slack come with Hosted Scout. ")
         var link = AttributedString("Learn more")
         link.link = URL(string: "https://github.com/kasianov-mikhail/scout-server")
-        link.foregroundColor = .blue
+        link.foregroundColor = .textLink
         text.append(link)
         return text
     }
@@ -481,9 +481,9 @@ struct AlertCloseButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "xmark")
-                .font(.system(size: 14, weight: .semibold))
+                .font(.scoutCaptionStrong)
         }
-        .foregroundStyle(.primary)
+        .foregroundStyle(Color.textPrimary)
         .accessibilityLabel(Text(verbatim: "Close"))
     }
 }
@@ -495,7 +495,7 @@ struct AlertSaveButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: "checkmark")
-                .font(.system(size: 15, weight: .semibold))
+                .font(.scoutRowStrong)
         }
         .disabled(!isEnabled)
         .accessibilityLabel(Text(verbatim: "Save"))

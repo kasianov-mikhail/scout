@@ -15,25 +15,25 @@ struct EventRow: View {
         NavigationLink {
             EventView(event: event)
         } label: {
-            HStack(spacing: 10) {
+            HStack(spacing: .space10) {
                 EventLevelGlyph(level: event.level)
                     .frame(width: 16, height: 16)
 
                 Text(verbatim: event.name)
-                    .font(.book(size: 16, design: .monospaced))
-                    .foregroundStyle(event.level == .critical ? criticalNameColor : Color.primary)
+                    .font(.scoutEventName)
+                    .foregroundStyle(event.level == .critical ? criticalNameColor : Color.textPrimary)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 if let date = event.date {
                     Text(verbatim: eventTimeFormatter.string(from: date))
-                        .font(.book(size: 13, design: .monospaced))
-                        .foregroundStyle(Color(.systemGray))
+                        .font(.scoutValue)
+                        .foregroundStyle(Color.textMuted)
                         .lineLimit(1)
                         .frame(width: 68, alignment: .trailing)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
             .frame(height: .rowRegular)
             .contentShape(.rect)
         }
@@ -55,7 +55,7 @@ struct EventRow: View {
 
 private let eventTimeFormatter = DateFormatter(format: "HH:mm:ss")
 
-private let criticalNameColor = Color(red: 196 / 255, green: 0, blue: 26 / 255)
+private let criticalNameColor = Color.textDanger
 
 private struct EventLevelGlyph: View {
     let level: EventLevel?
@@ -76,32 +76,32 @@ private struct EventLevelGlyph: View {
         case .trace:
             context.stroke(
                 ring,
-                with: .color(Color(.systemGray)),
-                style: StrokeStyle(lineWidth: 1.4, lineCap: .round, dash: [3.76, 2.2, 0.01, 2.2])
+                with: .color(Color.fillLevel),
+                style: StrokeStyle(lineWidth: 1.6, lineCap: .round, dash: [3.76, 2.2, 0.01, 2.2])
             )
         case .debug:
-            context.stroke(ring, with: .color(Color(.systemGray)), style: StrokeStyle(lineWidth: 1.4, lineCap: .round))
+            context.stroke(ring, with: .color(Color.fillLevel), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
         case .info:
-            context.fill(ring, with: .color(Color(.systemGray).opacity(0.35)))
-            context.stroke(ring, with: .color(Color(.systemGray)), style: StrokeStyle(lineWidth: 1.4, lineCap: .round))
+            context.fill(ring, with: .color(Color.fillLevel.opacity(0.35)))
+            context.stroke(ring, with: .color(Color.fillLevel), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
         case .notice:
             context.fill(
                 Path(ellipseIn: CGRect(x: 2.8, y: 2.8, width: 14.4, height: 14.4)),
-                with: .color(Color(.systemGray))
+                with: .color(Color.fillLevel)
             )
         case .warning:
-            context.stroke(ring, with: .color(Color(.systemYellow)), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
+            context.stroke(ring, with: .color(Color.textCaution), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
             context.fill(
                 Path { path in
                     path.addArc(center: CGPoint(x: 10, y: 10), radius: 6.5, startAngle: .degrees(-90), endAngle: .degrees(90), clockwise: false)
                     path.closeSubpath()
                 },
-                with: .color(Color(.systemYellow))
+                with: .color(Color.textCaution)
             )
         case .error:
-            context.fill(ring, with: .color(Color(.systemOrange)))
+            context.fill(ring, with: .color(Color.textWarning))
         case .critical:
-            context.fill(ring, with: .color(Color(.systemRed)))
+            context.fill(ring, with: .color(Color.textDanger))
             context.fill(
                 Path(ellipseIn: CGRect(x: 7.4, y: 7.4, width: 5.2, height: 5.2)),
                 with: .color(.white)
@@ -118,7 +118,7 @@ private struct EventLevelGlyph: View {
                     EventRow(event: event)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Events")

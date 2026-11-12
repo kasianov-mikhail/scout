@@ -12,19 +12,19 @@ struct NetworkEndpointHeader: View {
     let descriptor: String
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: endpoint.path)
-                .font(.book(size: 15, design: .monospaced))
+                .font(.scoutRowMono)
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             methodText
                 + Text(verbatim: " · " + phrase)
-                .font(.book(size: 13))
-                .foregroundColor(Color(.systemGray))
+                .font(.scoutCaption)
+                .foregroundColor(Color.textMuted)
         }
-        .padding(.top, 4)
-        .padding(.bottom, 16)
+        .padding(.top, .space4)
+        .padding(.bottom, .space16)
         .overlay(alignment: .bottom) {
             Separator()
         }
@@ -35,7 +35,7 @@ struct NetworkEndpointHeader: View {
             return Text(verbatim: "")
         }
         return Text(verbatim: method + " · ")
-            .font(.system(size: 11, weight: .bold, design: .monospaced))
+            .font(.scoutMonoLabel)
             .foregroundColor(endpoint.methodColor)
     }
 
@@ -56,16 +56,16 @@ struct NetworkEndpointHeader: View {
 
 struct NetworkEndpointHeaderPlaceholder: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
+        VStack(alignment: .leading, spacing: .space6) {
             SkeletonBar(width: 210, height: 9, delay: 0.08)
 
-            HStack(spacing: 6) {
+            HStack(spacing: .space6) {
                 SkeletonBar(width: 28, height: 9, delay: 0.08)
                 SkeletonBar(width: 194, height: 9, delay: 0.08)
             }
         }
-        .padding(.top, 4)
-        .padding(.bottom, 16)
+        .padding(.top, .space4)
+        .padding(.bottom, .space16)
         .overlay(alignment: .bottom) {
             Separator()
         }

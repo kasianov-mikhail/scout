@@ -19,7 +19,7 @@ struct ReleaseHealthViewPlaceholder: View {
                     row(index: index)
                 }
             }
-            .padding(.horizontal, 16)
+            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .accessibilityElement(children: .ignore)
@@ -28,22 +28,22 @@ struct ReleaseHealthViewPlaceholder: View {
 
     private var header: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 18, delay: 0.08)
 
                 Text(verbatim: "of sessions")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
             .frame(height: 33)
 
-            SkeletonBar(height: 32, delay: 0.08, fill: Color(.systemGray6))
-                .padding(.top, 12)
+            SkeletonBar(height: 32, delay: 0.08, fill: Color.surfaceGrey)
+                .padding(.top, .space12)
 
-            AdoptionLegend(squareSize: 8, squareColor: Color(.systemGray5))
-                .padding(.top, 8)
+            AdoptionLegend(squareSize: 8, squareColor: Color.surfaceSkeleton)
+                .padding(.top, .space8)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
@@ -54,13 +54,13 @@ struct ReleaseHealthViewPlaceholder: View {
     private func row(index: Int) -> some View {
         let delay = 0.16 + Double(index) * 0.08
 
-        return HStack(spacing: 12) {
+        return HStack(spacing: .space12) {
             Circle()
                 .inset(by: 1.5)
-                .stroke(Color(.systemGray5), lineWidth: 3)
+                .stroke(Color.surfaceSkeleton, lineWidth: 3)
                 .frame(width: 30, height: 30)
 
-            VStack(alignment: .leading, spacing: 3) {
+            VStack(alignment: .leading, spacing: .space2) {
                 SkeletonBar(width: 46, height: 12, delay: delay)
                     .frame(height: 20, alignment: .leading)
 
@@ -70,7 +70,7 @@ struct ReleaseHealthViewPlaceholder: View {
 
             Spacer(minLength: 0)
 
-            VStack(alignment: .trailing, spacing: 3) {
+            VStack(alignment: .trailing, spacing: .space2) {
                 SkeletonBar(width: 46, height: 11, delay: delay)
                     .frame(height: 18, alignment: .trailing)
 

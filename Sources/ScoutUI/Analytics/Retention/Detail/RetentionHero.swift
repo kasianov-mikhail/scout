@@ -25,10 +25,10 @@ struct RetentionHero: View {
     }
 
     var body: some View {
-        HStack(alignment: .firstTextBaseline, spacing: 8) {
+        HStack(alignment: .firstTextBaseline, spacing: .space8) {
             if let value {
                 Text(verbatim: value)
-                    .font(.system(size: 40, weight: .bold))
+                    .font(.scoutNumberXL)
                     .monospacedDigit()
                     .frame(height: 40, alignment: .leading)
             } else {
@@ -38,11 +38,11 @@ struct RetentionHero: View {
             }
 
             Text(verbatim: subtitle)
-                .font(.book(size: 17))
-                .foregroundStyle(Color(.systemGray))
+                .font(.scoutBody)
+                .foregroundStyle(Color.textMuted)
         }
-        .padding(.top, 16)
-        .padding(.bottom, 14)
+        .padding(.top, .space16)
+        .padding(.bottom, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             Rectangle()

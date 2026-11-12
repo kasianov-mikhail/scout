@@ -19,7 +19,7 @@ struct HomeSectionExpandButton: View {
                 .padding(.trailing, -12)
         }
         .buttonStyle(.plain)
-        .foregroundStyle(.blue)
+        .foregroundStyle(Color.textLink)
         .accessibilityLabel(Text(verbatim: label))
     }
 }

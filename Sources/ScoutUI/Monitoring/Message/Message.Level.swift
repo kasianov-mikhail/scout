@@ -17,13 +17,13 @@ extension Message {
         var color: Color {
             switch self {
             case .info:
-                .blue
+                .fillAccent
             case .warning:
-                .orange
+                .fillWarning
             case .success:
-                .green
+                .fillSuccess
             case .error:
-                .red
+                .fillDanger
             }
         }
     }

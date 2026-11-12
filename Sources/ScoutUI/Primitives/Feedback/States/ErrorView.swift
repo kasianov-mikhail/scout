@@ -19,23 +19,22 @@ struct ErrorView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: .space16) {
             Spacer()
 
             Image(systemName: "exclamationmark.triangle")
                 .font(.book(size: 48))
-                .foregroundStyle(.yellow)
+                .foregroundStyle(Color.textCaution)
 
             Text(verbatim: "An error occurred")
-                .font(.book(size: 22))
-                .bold()
+                .font(.scoutHeadline)
 
             description
-                .font(.book(size: 17))
+                .font(.scoutBody)
                 .multilineTextAlignment(.center)
 
             if let retry {
-                retryControl(retry).padding(8)
+                retryControl(retry).padding(.space8)
             }
 
             Spacer()
@@ -56,7 +55,7 @@ struct ErrorView: View {
             } label: {
                 Text(verbatim: "Retry")
             }
-            .buttonStyle(.pill)
+            .buttonStyle(.prominent)
             .opacity(isRetrying ? 0 : 1)
             .disabled(isRetrying)
 

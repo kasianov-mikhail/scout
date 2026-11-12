@@ -11,28 +11,28 @@ struct ReleaseHero: View {
     let detail: ReleaseDetail
 
     var body: some View {
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 6) {
+        HStack(spacing: .space16) {
+            VStack(alignment: .leading, spacing: .space6) {
                 Text(verbatim: detail.release.id)
-                    .font(.system(size: 34, weight: .bold, design: .monospaced))
+                    .font(.scoutNumberXL)
                     .tracking(-0.5)
 
                 Text(verbatim: detail.statusLabel)
-                    .font(.book(size: 15))
+                    .font(.scoutRow)
                     .foregroundStyle(level.labelColor)
 
                 Text(verbatim: detail.subtitle)
-                    .font(.book(size: 15))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
             }
 
             Spacer(minLength: 0)
 
             badge
         }
-        .padding(.top, 14)
-        .padding(.horizontal, 16)
-        .padding(.bottom, 16)
+        .padding(.top, .space12)
+        .padding(.horizontal, .gutter)
+        .padding(.bottom, .space16)
         .background(level.background)
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -46,13 +46,13 @@ struct ReleaseHero: View {
     }
 
     private var badge: some View {
-        VStack(spacing: 1) {
+        VStack(spacing: .space2) {
             Text(verbatim: "SHIPPED")
                 .font(.system(size: 10, weight: .bold))
                 .tracking(1)
 
             Text(verbatim: detail.release.shipped.map { DateFormatter.monthDay.string(from: $0).uppercased() } ?? "—")
-                .font(.system(size: 13, weight: .bold, design: .monospaced))
+                .font(.scoutValueStrong)
         }
         .foregroundStyle(level.labelColor)
         .frame(width: 76, height: 76)

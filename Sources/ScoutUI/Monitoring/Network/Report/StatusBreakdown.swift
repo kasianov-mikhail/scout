@@ -26,7 +26,7 @@ struct StatusBreakdown: Equatable {
         counts.suffix(2).reduce(0, +)
     }
 
-    private static let colors: [Color] = [.green, .blue, .orange, .red]
+    private static let colors: [Color] = [.fillSuccess, .fillAccent, .fillWarning, .fillDanger]
 
     var segments: [Segment] {
         zip(StatusBuckets.classes, zip(counts, Self.colors)).map { label, pair in

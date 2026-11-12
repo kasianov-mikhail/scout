@@ -52,7 +52,7 @@ struct ReleaseHealthView: View {
                         ReleaseRow(release: release, isLast: index == releases.count - 1)
                     }
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, .gutter)
             }
             .scrollIndicators(.hidden)
         }
@@ -64,28 +64,28 @@ private struct ReleaseSummary: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 Text(verbatim: adoption.headline)
-                    .font(.system(size: 28, weight: .bold))
+                    .font(.scoutNumberL)
 
                 Text(verbatim: "of sessions")
-                    .font(.book(size: 13))
-                    .foregroundStyle(Color(.systemGray))
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
 
             AdoptionBar(
                 versions: adoption.versions,
                 height: 32,
-                labelSize: 11,
-                labelWeight: .bold,
+                labelSize: 10,
+                labelWeight: .semibold,
                 labelInset: 6
             )
-            .padding(.top, 12)
+            .padding(.top, .space12)
 
             AdoptionLegend(squareSize: 8, squareColor: nil)
-                .padding(.top, 8)
+                .padding(.top, .space8)
         }
-        .padding(.vertical, 14)
+        .padding(.vertical, .space12)
         .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color.separator)
