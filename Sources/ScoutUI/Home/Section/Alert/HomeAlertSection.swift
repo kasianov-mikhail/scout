@@ -52,7 +52,7 @@ struct HomeAlertSection: View {
                 Text(verbatim: history.rulesLabel)
             }
             .font(.scoutCaption)
-            .foregroundStyle(Color.textMuted)
+            .foregroundStyle(Color.homeCaption)
             .padding(.top, .space2)
         }
         .padding(.top, .space12)

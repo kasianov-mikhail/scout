@@ -104,7 +104,7 @@ struct HomeActiveUsersSection: View {
             }
         }
         .font(.scoutCaption)
-        .foregroundStyle(Color.textMuted)
+        .foregroundStyle(Color.homeCaption)
     }
 }
 
@@ -116,7 +116,7 @@ private struct ActiveUserMetricView: View {
         VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: metric.kind.title.uppercased())
                 .font(.scoutCaptionStrong)
-                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
+                .foregroundStyle(isSelected ? Color.textPrimary : Color.homeCaption)
 
             Text(verbatim: metric.valueLabel)
                 .font(.scoutNumberL)

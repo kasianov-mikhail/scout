@@ -28,8 +28,13 @@ struct HomeReleaseSectionEmpty: View {
             EmptyBar(height: 22, cornerRadius: .radiusBar)
                 .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: Color.surfaceBarIdle, dashed: true)
-                .padding(.top, .space8)
+            AdoptionLegend(
+                squareSize: 7,
+                squareColor: Color.surfaceBarIdle,
+                dashed: true,
+                captionColor: Color.homeCaption
+            )
+            .padding(.top, .space8)
 
             Text(verbatim: "No releases yet")
                 .font(.scoutCaption)
