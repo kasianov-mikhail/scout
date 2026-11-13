@@ -109,7 +109,7 @@ struct HomeList: View {
                 HomeTelemetrySection(items: snapshot.telemetry) { kind in
                     switch kind {
                     case .events:
-                        path.append(.log)
+                        path.append(.telemetry(.events))
                     case .crashes:
                         path.append(.telemetry(.crashes))
                     case .metrics:
@@ -143,8 +143,6 @@ struct HomeList: View {
                 RetentionView(provider: retention)
             case .sessions:
                 statView
-            case .log:
-                LogView(period: .today)
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
             case .alerts:

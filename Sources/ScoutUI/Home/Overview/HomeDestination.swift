@@ -11,7 +11,6 @@ enum HomeDestination: Hashable {
     case activity
     case retention
     case sessions
-    case log
     case releaseHealth
     case alerts
     case telemetry(LogCategory)
