@@ -48,8 +48,12 @@ struct HomeReleaseSection: View {
             )
             .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: nil)
-                .padding(.top, .space8)
+            AdoptionLegend(
+                squareSize: 7,
+                squareColor: nil,
+                captionColor: Color.homeCaption
+            )
+            .padding(.top, .space8)
 
             caption(adoption: adoption)
                 .padding(.top, .space10)
@@ -61,12 +65,12 @@ struct HomeReleaseSection: View {
     private func caption(adoption: ReleaseAdoption) -> some View {
         if let top = adoption.top {
             (Text(verbatim: "\(top.id) is ")
-                .foregroundColor(Color.textMuted)
+                .foregroundColor(Color.homeCaption)
                 + Text(verbatim: top.stability.level.title)
                 .font(.scoutCaptionStrong)
                 .foregroundColor(top.stability.level == .healthy ? Color.positive : top.stability.level.labelColor)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
-                .foregroundColor(Color.textMuted))
+                .foregroundColor(Color.homeCaption))
                 .font(.scoutCaption)
         }
     }

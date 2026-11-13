@@ -50,7 +50,7 @@ struct HomeRetentionSection: View {
     private var footer: some View {
         Text(verbatim: "Gray: installs that week · green: kept")
             .font(.scoutCaption)
-            .foregroundStyle(Color.textMuted)
+            .foregroundStyle(Color.homeCaption)
     }
 }
 
@@ -59,7 +59,7 @@ struct HomeRetentionHeader: View {
         Header(title: "Retention") {
             Text(verbatim: "kept on day 7")
                 .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
+                .foregroundStyle(Color.homeCaption)
         }
         .overlay(alignment: .bottom) {
             Rectangle()
@@ -106,7 +106,7 @@ private struct RetentionRowContent: View {
                     .foregroundStyle(Color.positive)
 
                 Text(verbatim: " · \(Int((rate * 100).rounded()))%")
-                    .foregroundStyle(Color.textMuted)
+                    .foregroundStyle(Color.homeCaption)
             }
             .font(.scoutValue)
         } else {
