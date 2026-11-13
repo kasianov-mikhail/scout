@@ -42,7 +42,7 @@ struct TelemetryRow: View {
 
                         Text(verbatim: item.caption)
                             .font(.telemetryCaption)
-                            .foregroundStyle(Color.homeCaption)
+                            .foregroundStyle(Color.textMuted)
                     } else {
                         HStack(spacing: .space8) {
                             title
