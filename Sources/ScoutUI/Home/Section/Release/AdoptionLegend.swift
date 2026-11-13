@@ -11,7 +11,6 @@ struct AdoptionLegend: View {
     let squareSize: CGFloat
     let squareColor: Color?
     var dashed = false
-    var captionColor: Color = .textMuted
 
     var body: some View {
         HStack(spacing: .space12) {
@@ -24,7 +23,7 @@ struct AdoptionLegend: View {
             }
         }
         .font(.scoutFootnote)
-        .foregroundStyle(captionColor)
+        .foregroundStyle(Color.textMuted)
     }
 
     @ViewBuilder private func square(level: Stability.Level) -> some View {

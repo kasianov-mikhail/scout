@@ -44,7 +44,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
         VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: kind.title.uppercased())
                 .font(.scoutCaptionStrong)
-                .foregroundStyle(Color.homeCaption)
+                .foregroundStyle(Color.textMuted)
 
             SkeletonBar(width: 74, height: 17, delay: 0.4)
                 .frame(height: 34, alignment: .leading)

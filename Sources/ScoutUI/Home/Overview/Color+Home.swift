@@ -8,7 +8,6 @@
 import SwiftUI
 
 extension Color {
-    static let homeCaption = textSecondary
     static let positive = textSuccess
     static let inactiveValue = textSecondary
     static let pending = textDisabled
