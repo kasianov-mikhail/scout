@@ -15,7 +15,7 @@ struct HomeActiveUsersSectionEmpty: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users") {
+            Header(title: "Active Users", showsSeparator: true) {
                 HomeSectionExpandButton(label: "Show all active users", action: onShowAll)
             }
 
