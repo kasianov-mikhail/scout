@@ -21,57 +21,69 @@ struct TelemetryRow: View {
 
     var body: some View {
         Button(action: action) {
-            HStack(alignment: .top, spacing: .space8) {
-                Image(systemName: item.kind.systemImage)
-                    .font(.book(size: 16))
-                    .foregroundStyle(item.kind.color)
-                    .frame(width: 24)
-                    .accessibilityHidden(true)
-
-                VStack(alignment: .leading, spacing: .space2) {
-                    if showsValues {
-                        HStack(alignment: .firstTextBaseline, spacing: .space8) {
-                            title
-
-                            Spacer(minLength: 0)
-
-                            Text(verbatim: item.valueLabel)
-                                .font(.scoutTitle)
-                                .monospacedDigit()
-                        }
-
-                        Text(verbatim: item.caption)
-                            .font(.telemetryCaption)
-                            .foregroundStyle(Color.textMuted)
-                    } else {
-                        HStack(spacing: .space8) {
-                            title
-
-                            Spacer(minLength: 0)
-
-                            EmptyBar(width: 28, height: 14)
-                        }
-                        .frame(height: 20)
-
-                        EmptyBar(width: 74, height: 8)
-                            .frame(height: 15, alignment: .leading)
+            content
+                .padding(.leading, side == .trailing ? 12 : 0)
+                .padding(.trailing, side == .leading ? 12 : 0)
+                .frame(height: 66)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .contentShape(Rectangle())
+                .overlay(alignment: .bottom) {
+                    if showsDivider {
+                        Rectangle()
+                            .fill(Color.separator)
+                            .frame(height: 0.5)
                     }
                 }
-            }
-            .padding(.leading, side == .trailing ? 12 : 0)
-            .padding(.trailing, side == .leading ? 12 : 0)
-            .frame(height: 66)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .contentShape(Rectangle())
-            .overlay(alignment: .bottom) {
-                if showsDivider {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(height: 0.5)
-                }
-            }
         }
         .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        if showsValues {
+            HStack(alignment: .top, spacing: .space8) {
+                icon(width: 24)
+
+                VStack(alignment: .leading, spacing: .space2) {
+                    HStack(alignment: .firstTextBaseline, spacing: .space8) {
+                        title
+
+                        Spacer(minLength: 0)
+
+                        Text(verbatim: item.valueLabel)
+                            .font(.scoutTitle)
+                            .monospacedDigit()
+                    }
+
+                    Text(verbatim: item.caption)
+                        .font(.telemetryCaption)
+                        .foregroundStyle(Color.textMuted)
+                }
+            }
+        } else {
+            HStack(alignment: .center, spacing: .space8) {
+                icon(width: 22)
+
+                VStack(alignment: .leading, spacing: .space6) {
+                    title
+
+                    GeometryReader { proxy in
+                        EmptyBar(width: proxy.size.width * 0.6, height: 8)
+                    }
+                    .frame(height: 8)
+                }
+
+                EmptyBar(width: 28, height: 14)
+            }
+        }
+    }
+
+    private func icon(width: CGFloat) -> some View {
+        Image(systemName: item.kind.systemImage)
+            .font(.book(size: 16))
+            .foregroundStyle(item.kind.color)
+            .frame(width: width)
+            .accessibilityHidden(true)
     }
 
     private var title: some View {

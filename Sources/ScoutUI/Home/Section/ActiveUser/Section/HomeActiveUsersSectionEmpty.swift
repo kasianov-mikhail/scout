@@ -35,22 +35,21 @@ struct HomeActiveUsersSectionEmpty: View {
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
                 .padding(.top, .space10)
-                .padding(.bottom, .space6)
+                .padding(.bottom, .space8)
         }
     }
 
     private func metric(kind: ActiveUsers.Kind) -> some View {
-        VStack(alignment: .leading, spacing: .space2) {
+        VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: kind.title.uppercased())
                 .font(.scoutCaptionStrong)
 
             EmptyBar(width: 83, height: 28, cornerRadius: .radiusBadge)
-                .frame(height: 34, alignment: .leading)
 
             EmptyBar(width: 48, height: 10)
-                .frame(height: 15, alignment: .leading)
         }
-        .padding(.vertical, .space10)
+        .padding(.top, .space8)
+        .padding(.bottom, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 

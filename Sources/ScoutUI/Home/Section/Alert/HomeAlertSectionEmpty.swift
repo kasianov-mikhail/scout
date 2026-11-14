@@ -29,7 +29,7 @@ struct HomeAlertSectionEmpty: View {
                         .frame(maxWidth: .infinity)
                 }
             }
-            .padding(.top, .space4)
+            .padding(.top, .space6)
 
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: "No rules yet")
@@ -50,6 +50,7 @@ struct HomeAlertSectionEmpty: View {
                 .fill(Color.separator)
                 .frame(height: 0.5)
         }
+        .padding(.bottom, .space4)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
     }

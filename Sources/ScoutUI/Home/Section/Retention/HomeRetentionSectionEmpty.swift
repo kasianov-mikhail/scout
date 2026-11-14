@@ -31,7 +31,7 @@ struct HomeRetentionSectionEmpty: View {
         HStack(spacing: .space10) {
             Text(verbatim: DateFormatter.monthDay.string(from: start))
                 .font(.scoutRow)
-                .frame(width: 56, alignment: .leading)
+                .frame(width: 60, alignment: .leading)
 
             GeometryReader { proxy in
                 EmptyBar(width: proxy.size.width * fraction, height: 18, cornerRadius: .radiusBar)
@@ -40,7 +40,7 @@ struct HomeRetentionSectionEmpty: View {
             .frame(maxWidth: .infinity)
 
             EmptyBar(width: 48, height: 10)
-                .frame(width: 84, alignment: .trailing)
+                .frame(width: 70, alignment: .trailing)
         }
         .frame(height: 40)
         .overlay(alignment: .bottom) {
