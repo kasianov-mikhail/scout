@@ -10,7 +10,7 @@ import SwiftUI
 struct HomeReleaseSectionPlaceholder: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases")
+            Header(title: "Releases", showsSeparator: true)
 
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 15, delay: 0.96)
@@ -20,6 +20,7 @@ struct HomeReleaseSectionPlaceholder: View {
                     .foregroundStyle(Color.textMuted)
             }
             .frame(height: 28)
+            .padding(.top, 14)
 
             SkeletonBar(height: 24, delay: 1.04, fill: Color.surfaceGrey)
                 .padding(.top, .space10)

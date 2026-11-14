@@ -56,15 +56,10 @@ struct HomeRetentionSection: View {
 
 struct HomeRetentionHeader: View {
     var body: some View {
-        Header(title: "Retention") {
+        Header(title: "Retention", showsSeparator: true) {
             Text(verbatim: "kept on day 7")
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
-        }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
         }
     }
 }

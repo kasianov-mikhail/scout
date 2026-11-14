@@ -64,6 +64,10 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
             summary(tiles)
                 .padding(.top, .space4)
                 .padding(.bottom, .space6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
 
             IncidentGrid(count: tiles.count) { index in
                 let tile = tiles[index]
@@ -78,7 +82,6 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.top, .space8)
         }
         .padding(.horizontal, .gutter)
     }

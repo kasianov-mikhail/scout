@@ -20,9 +20,6 @@ struct IncidentGrid<Cell: View>: View {
                 }
             }
         }
-        .overlay(alignment: .top) {
-            separator(width: nil, height: 0.5)
-        }
     }
 
     private var rows: Int {

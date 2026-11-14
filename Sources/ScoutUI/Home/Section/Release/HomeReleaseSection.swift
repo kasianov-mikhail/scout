@@ -25,7 +25,7 @@ struct HomeReleaseSection: View {
 
     private func content(adoption: ReleaseAdoption) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases") {
+            Header(title: "Releases", showsSeparator: true) {
                 HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
             }
 
@@ -38,6 +38,7 @@ struct HomeReleaseSection: View {
                     .foregroundStyle(Color.textMuted)
             }
             .frame(height: 28)
+            .padding(.top, 14)
 
             AdoptionBar(
                 versions: adoption.versions,

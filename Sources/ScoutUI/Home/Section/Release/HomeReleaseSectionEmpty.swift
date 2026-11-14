@@ -12,7 +12,7 @@ struct HomeReleaseSectionEmpty: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases") {
+            Header(title: "Releases", showsSeparator: true) {
                 HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
             }
 
@@ -24,6 +24,7 @@ struct HomeReleaseSectionEmpty: View {
                     .foregroundStyle(Color.textMuted)
             }
             .frame(height: 28)
+            .padding(.top, 14)
 
             EmptyBar(height: 22, cornerRadius: .radiusBar)
                 .padding(.top, .space10)

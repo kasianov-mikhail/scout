@@ -11,7 +11,7 @@ import SwiftUI
 struct HomeActiveUsersSectionPlaceholder: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users")
+            Header(title: "Active Users", showsSeparator: true)
 
             HStack(alignment: .top, spacing: 0) {
                 ForEach(ActiveUsers.Kind.allCases) { kind in
