@@ -59,10 +59,10 @@ struct ReleaseHealthViewPlaceholder: View {
 
             VStack(alignment: .leading, spacing: .space2) {
                 SkeletonBar(width: 46, height: 12, delay: delay)
-                    .frame(height: 20, alignment: .leading)
+                    .frame(height: 20)
 
                 SkeletonBar(width: 120, height: 9, delay: delay)
-                    .frame(height: 15, alignment: .leading)
+                    .frame(height: 15)
             }
 
             Spacer(minLength: 0)

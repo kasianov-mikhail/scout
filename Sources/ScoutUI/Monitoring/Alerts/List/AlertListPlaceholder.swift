@@ -69,7 +69,7 @@ struct AlertListPlaceholder: View {
     private func row(titleWidth: CGFloat, delay: Double, isLast: Bool) -> some View {
         VStack(alignment: .leading, spacing: .space6) {
             SkeletonBar(width: titleWidth, height: 11, delay: delay)
-                .frame(height: 19, alignment: .leading)
+                .frame(height: 19)
 
             HStack {
                 SkeletonBar(width: 120, height: 9, delay: delay)

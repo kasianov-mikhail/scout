@@ -19,7 +19,7 @@ struct NetworkViewPlaceholder: View {
                 .padding(.trailing, -16)
 
             SkeletonBar(width: 160, height: 9, delay: 0)
-                .frame(height: 17.5, alignment: .leading)
+                .frame(height: 17.5)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)

@@ -29,7 +29,7 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.top, .space8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
-                .frame(height: 18, alignment: .leading)
+                .frame(height: 18)
                 .padding(.top, .space10)
                 .padding(.bottom, .space6)
         }

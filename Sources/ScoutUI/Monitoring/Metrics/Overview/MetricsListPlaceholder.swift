@@ -54,7 +54,7 @@ struct MetricsListPlaceholder: View {
                 SkeletonBar(width: 74, height: 20, delay: delay)
                 SkeletonBar(width: 28, height: 6, delay: delay)
             }
-            .frame(height: 29, alignment: .leading)
+            .frame(height: 29)
 
             SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
         }

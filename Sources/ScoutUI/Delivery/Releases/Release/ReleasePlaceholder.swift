@@ -33,9 +33,9 @@ struct ReleasePlaceholder: View {
                     .tracking(-0.5)
 
                 SkeletonBar(width: 200, height: 9, delay: 0.08)
-                    .frame(height: 18, alignment: .leading)
+                    .frame(height: 18)
                 SkeletonBar(width: 120, height: 9, delay: 0.08)
-                    .frame(height: 18, alignment: .leading)
+                    .frame(height: 18)
             }
 
             Spacer(minLength: 0)
@@ -89,10 +89,10 @@ struct ReleasePlaceholder: View {
                 .foregroundStyle(Color.textMuted)
 
             SkeletonBar(width: 74, height: 14, delay: delay)
-                .frame(height: 29, alignment: .leading)
+                .frame(height: 29)
             SkeletonBar(height: 24, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
             SkeletonBar(width: 120, height: 6, delay: delay)
-                .frame(height: 14, alignment: .leading)
+                .frame(height: 14)
         }
         .releaseGridCell(isLeading: isLeading)
     }
