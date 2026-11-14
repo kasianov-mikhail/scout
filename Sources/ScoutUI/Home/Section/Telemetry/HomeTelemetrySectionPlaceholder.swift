@@ -47,7 +47,7 @@ struct HomeTelemetrySectionPlaceholder: View {
 
         return HStack(alignment: .top, spacing: .space8) {
             Image(systemName: kind.systemImage)
-                .font(.book(size: 18))
+                .font(.book(size: 16))
                 .foregroundStyle(kind.color)
                 .frame(width: 24)
                 .accessibilityHidden(true)

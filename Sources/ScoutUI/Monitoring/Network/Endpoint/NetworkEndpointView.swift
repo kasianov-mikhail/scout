@@ -40,41 +40,50 @@ struct NetworkEndpointView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch provider.result {
-        case nil:
-            NetworkEndpointViewPlaceholder(range: $range, ranges: ranges)
-                .transition(.opacity)
-        case .success(let report):
-            let rows = report.rows(name: name, range: provider.query.range, component: range.pointComponent)
-
-            if rows.contains(where: { $0.requests > 0 }) {
-                list(report, rows: rows)
-                    .transition(.opacity)
-            } else {
-                VStack(spacing: 0) {
-                    RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                        .padding(.top, .space8)
-                        .padding(.horizontal, .gutter)
-
-                    Placeholder(
-                        text: "No requests",
-                        systemImage: "network",
-                        description: "No requests have been recorded for this endpoint in this period"
-                    )
-                }
-            }
-        case .failure(let error):
+        if let error = provider.error {
             ErrorView(description: Text(error.localizedDescription)) {
                 await provider.fetchAgain(in: database)
             }
+        } else if isEmpty {
+            VStack(spacing: 0) {
+                RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+                    .padding(.top, .space8)
+                    .padding(.horizontal, .gutter)
+
+                Placeholder(
+                    text: "No requests",
+                    systemImage: "network",
+                    description: "No requests have been recorded for this endpoint in this period"
+                )
+            }
+        } else {
+            ScrollView {
+                if case .success(let report) = provider.result {
+                    list(report)
+                        .transition(.opacity)
+                } else {
+                    NetworkEndpointViewPlaceholder(range: $range, ranges: ranges)
+                        .transition(.opacity)
+                }
+            }
+            .scrollIndicators(.hidden)
         }
+    }
+
+    private var isEmpty: Bool {
+        guard case .success(let report) = provider.result else {
+            return false
+        }
+        let rows = report.rows(name: name, range: provider.query.range, component: range.pointComponent)
+        return !rows.contains { $0.requests > 0 }
     }
 
     private var ranges: [NetworkRange] {
         NetworkRange.allCases.filter { $0 >= initialRange }
     }
 
-    private func list(_ report: NetworkReport, rows: [NetworkLedgerRow]) -> some View {
+    private func list(_ report: NetworkReport) -> some View {
+        let rows = report.rows(name: name, range: provider.query.range, component: range.pointComponent)
         let endpoint = report.endpoint(name: name, range: provider.query.range) ?? NetworkEndpoint(name: name, requests: 0, successRate: nil, p99: nil)
         let maxRequests = rows.map(\.requests).max() ?? 0
         let component = range.pointComponent
@@ -90,34 +99,31 @@ struct NetworkEndpointView: View {
                 .month
             }
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                    .padding(.top, .space8)
-                    .padding(.trailing, -16)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
+            NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
 
-                NetworkLedgerHeader(primary: component.networkTitle)
+            NetworkLedgerHeader(primary: component.networkTitle)
 
-                ForEach(rows) { row in
-                    NavigationLink {
-                        destination(row, component: component)
-                    } label: {
-                        NetworkLedgerRowView(
-                            row: row,
-                            maxRequests: maxRequests,
-                            label: label,
-                            component: component,
-                            showsDivider: row.id != rows.last?.id
-                        )
-                    }
-                    .buttonStyle(.plain)
+            ForEach(rows) { row in
+                NavigationLink {
+                    destination(row, component: component)
+                } label: {
+                    NetworkLedgerRowView(
+                        row: row,
+                        maxRequests: maxRequests,
+                        label: label,
+                        component: component,
+                        showsDivider: row.id != rows.last?.id
+                    )
                 }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     @ViewBuilder

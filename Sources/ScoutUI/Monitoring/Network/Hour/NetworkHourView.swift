@@ -34,28 +34,36 @@ struct NetworkHourView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch provider.result {
-        case nil:
-            NetworkHourViewPlaceholder(date: date)
-                .transition(.opacity)
-        case .success(let report):
-            let requests = report.endpoint(name: name, range: provider.query.range)?.requests ?? 0
-
-            if requests > 0 || report.percentiles(name: name, range: provider.query.range) != nil {
-                list(report)
-                    .transition(.opacity)
-            } else {
-                Placeholder(
-                    text: "No requests",
-                    systemImage: "network",
-                    description: "No requests have been recorded for this endpoint at this hour"
-                )
-            }
-        case .failure(let error):
+        if let error = provider.error {
             ErrorView(description: Text(error.localizedDescription)) {
                 await provider.fetchAgain(in: database)
             }
+        } else if isEmpty {
+            Placeholder(
+                text: "No requests",
+                systemImage: "network",
+                description: "No requests have been recorded for this endpoint at this hour"
+            )
+        } else {
+            ScrollView {
+                if case .success(let report) = provider.result {
+                    list(report)
+                        .transition(.opacity)
+                } else {
+                    NetworkHourViewPlaceholder(date: date)
+                        .transition(.opacity)
+                }
+            }
+            .scrollIndicators(.hidden)
         }
+    }
+
+    private var isEmpty: Bool {
+        guard case .success(let report) = provider.result else {
+            return false
+        }
+        let requests = report.endpoint(name: name, range: provider.query.range)?.requests ?? 0
+        return requests == 0 && report.percentiles(name: name, range: provider.query.range) == nil
     }
 
     private func list(_ report: NetworkReport) -> some View {
@@ -63,39 +71,36 @@ struct NetworkHourView: View {
         let endpoint = report.endpoint(name: name, range: range) ?? NetworkEndpoint(name: name, requests: 0, successRate: nil, p99: nil)
         let breakdown = report.statusBreakdown(name: name, range: range)
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
 
-                NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
+            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
 
-                if breakdown.total > 0 {
-                    SectionHeader(title: "STATUS")
+            if breakdown.total > 0 {
+                SectionHeader(title: "STATUS")
 
-                    ProportionBar(
-                        items: breakdown.networkClasses,
-                        color: { _, item in item.color },
-                        share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
-                    )
-                    .padding(.top, .space12)
-                    .padding(.bottom, .space6)
+                ProportionBar(
+                    items: breakdown.networkClasses,
+                    color: { _, item in item.color },
+                    share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
+                )
+                .padding(.top, .space12)
+                .padding(.bottom, .space6)
 
-                    ForEach(breakdown.networkClasses) { item in
-                        NetworkStatusRow(item: item, total: breakdown.total)
-                    }
-                }
-
-                if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
-                    SectionHeader(title: "LATENCY")
-
-                    NetworkLatencyChart(histogram: histogram)
-
-                    NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
+                ForEach(breakdown.networkClasses) { item in
+                    NetworkStatusRow(item: item, total: breakdown.total)
                 }
             }
-            .padding(.horizontal, .gutter)
+
+            if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
+                SectionHeader(title: "LATENCY")
+
+                NetworkLatencyChart(histogram: histogram)
+
+                NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
+            }
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 }
 

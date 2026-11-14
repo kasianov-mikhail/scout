@@ -13,32 +13,29 @@ struct NetworkViewPlaceholder: View {
     @Binding var range: NetworkRange
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.trailing, -16)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                SkeletonBar(width: 160, height: 9, delay: 0)
-                    .frame(height: 17.5, alignment: .leading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space12)
-                    .padding(.horizontal, .gutter)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                    .padding(.horizontal, -16)
-
-                NetworkEndpointListHeader()
-
-                ForEach(0..<10, id: \.self) { index in
-                    NetworkEndpointRowPlaceholder(index: index)
+            SkeletonBar(width: 160, height: 9, delay: 0)
+                .frame(height: 17.5, alignment: .leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .padding(.horizontal, .gutter)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
+                .padding(.horizontal, -16)
+
+            NetworkEndpointListHeader()
+
+            ForEach(0..<10, id: \.self) { index in
+                NetworkEndpointRowPlaceholder(index: index)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

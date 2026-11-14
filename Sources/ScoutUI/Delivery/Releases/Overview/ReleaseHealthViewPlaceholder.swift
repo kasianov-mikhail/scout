@@ -11,17 +11,14 @@ private let rowCount = 8
 
 struct ReleaseHealthViewPlaceholder: View {
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                header
+        LazyVStack(alignment: .leading, spacing: 0) {
+            header
 
-                ForEach(0..<rowCount, id: \.self) { index in
-                    row(index: index)
-                }
+            ForEach(0..<rowCount, id: \.self) { index in
+                row(index: index)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -89,8 +86,11 @@ struct ReleaseHealthViewPlaceholder: View {
 
 #Preview("Releases loading") {
     NavigationStack {
-        ReleaseHealthViewPlaceholder()
-            .navigationTitle(en: "Releases")
-            .inlineNavigationTitle()
+        ScrollView {
+            ReleaseHealthViewPlaceholder()
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Releases")
+        .inlineNavigationTitle()
     }
 }

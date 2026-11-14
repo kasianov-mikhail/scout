@@ -35,9 +35,12 @@ struct IncidentGroupLoader<Element: RecordDecodable & Incident, Content: View>: 
                 }
                 .monospacedNavigationTitle(en: provider.name)
             } else {
-                IncidentGroupPlaceholder(kind: Element.kind)
-                    .monospacedNavigationTitle(en: provider.name)
-                    .transition(.opacity)
+                ScrollView {
+                    IncidentGroupPlaceholder(kind: Element.kind)
+                }
+                .scrollIndicators(.hidden)
+                .monospacedNavigationTitle(en: provider.name)
+                .transition(.opacity)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.records == nil)

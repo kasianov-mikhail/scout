@@ -16,73 +16,70 @@ struct DeviceDetailPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-                Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
-                    .font(.scoutRow)
-                    .foregroundStyle(Color.textMuted)
-                    .lineLimit(2)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space12)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-
-                stats
-
-                SectionHeader(title: "SESSIONS", topPadding: 12) {
-                    Text(verbatim: "TIMELINE")
-                        .font(.scoutSectionAction)
-                        .foregroundStyle(Color.textLink)
+            Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
+                .font(.scoutRow)
+                .foregroundStyle(Color.textMuted)
+                .lineLimit(2)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
 
-                ForEach(0..<5, id: \.self) { index in
-                    sessionRow(index: index)
-                }
+            stats
 
-                Color.clear
-                    .frame(height: 8)
-
-                SectionHeader(title: "HISTORY", topPadding: 12)
-
-                ForEach(0..<4, id: \.self) { index in
-                    historyRow(index: index, isLast: index == 3)
-                }
-
-                Color.clear
-                    .frame(height: 12)
-
-                SectionHeader(title: "ACTIVITY", topPadding: 12) {
-                    SkeletonBar(width: 74, height: 9, delay: 1.2)
-                }
-
-                activity
-
-                VStack(alignment: .leading, spacing: .space8) {
-                    SkeletonBar(width: 300, height: 9, delay: 1.36)
-                    SkeletonBar(width: 120, height: 9, delay: 1.36)
-                }
-                .padding(.top, .space12)
-                .padding(.bottom, .space16)
-
-                SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
-
-                usage
-                    .padding(.top, .space12)
-
-                VStack(alignment: .leading, spacing: .space8) {
-                    SkeletonBar(width: 300, height: 9, delay: 1.52)
-                    SkeletonBar(width: 120, height: 9, delay: 1.52)
-                }
-                .padding(.top, .space12)
-                .padding(.bottom, .space16)
+            SectionHeader(title: "SESSIONS", topPadding: 12) {
+                Text(verbatim: "TIMELINE")
+                    .font(.scoutSectionAction)
+                    .foregroundStyle(Color.textLink)
             }
-            .padding(.horizontal, .gutter)
+
+            ForEach(0..<5, id: \.self) { index in
+                sessionRow(index: index)
+            }
+
+            Color.clear
+                .frame(height: 8)
+
+            SectionHeader(title: "HISTORY", topPadding: 12)
+
+            ForEach(0..<4, id: \.self) { index in
+                historyRow(index: index, isLast: index == 3)
+            }
+
+            Color.clear
+                .frame(height: 12)
+
+            SectionHeader(title: "ACTIVITY", topPadding: 12) {
+                SkeletonBar(width: 74, height: 9, delay: 1.2)
+            }
+
+            activity
+
+            VStack(alignment: .leading, spacing: .space8) {
+                SkeletonBar(width: 300, height: 9, delay: 1.36)
+                SkeletonBar(width: 120, height: 9, delay: 1.36)
+            }
+            .padding(.top, .space12)
+            .padding(.bottom, .space16)
+
+            SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
+
+            usage
+                .padding(.top, .space12)
+
+            VStack(alignment: .leading, spacing: .space8) {
+                SkeletonBar(width: 300, height: 9, delay: 1.52)
+                SkeletonBar(width: 120, height: 9, delay: 1.52)
+            }
+            .padding(.top, .space12)
+            .padding(.bottom, .space16)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -228,8 +225,11 @@ private struct PlaceholderWeekday {
 
 #Preview("Device loading") {
     NavigationStack {
-        DeviceDetailPlaceholder(summary: DeviceSummary.samples[0], range: .constant(.week))
-            .navigationTitle(en: "Device")
-            .inlineNavigationTitle()
+        ScrollView {
+            DeviceDetailPlaceholder(summary: DeviceSummary.samples[0], range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Device")
+        .inlineNavigationTitle()
     }
 }

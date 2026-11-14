@@ -13,25 +13,22 @@ struct DeviceListPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-                SkeletonBar(width: 200, height: 9, delay: 0)
-                    .frame(height: 17.5, alignment: .leading)
-                    .padding(.top, .space4)
+            SkeletonBar(width: 200, height: 9, delay: 0)
+                .frame(height: 17.5, alignment: .leading)
+                .padding(.top, .space4)
 
-                columns
-                    .columnHeaderStyle()
+            columns
+                .columnHeaderStyle()
 
-                ForEach(0..<9, id: \.self) { index in
-                    row(index: index, isLast: index == 8)
-                }
+            ForEach(0..<9, id: \.self) { index in
+                row(index: index, isLast: index == 8)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -86,8 +83,11 @@ struct DeviceListPlaceholder: View {
 
 #Preview("Devices loading") {
     NavigationStack {
-        DeviceListPlaceholder(range: .constant(.week))
-            .navigationTitle(en: "Devices")
-            .inlineNavigationTitle()
+        ScrollView {
+            DeviceListPlaceholder(range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Devices")
+        .inlineNavigationTitle()
     }
 }

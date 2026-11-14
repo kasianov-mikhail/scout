@@ -11,21 +11,18 @@ struct RetentionViewPlaceholder: View {
     @Binding var day: RetentionDay
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RetentionHero(subtitle: "people kept", placeholderWidth: 120)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RetentionHero(subtitle: "people kept", placeholderWidth: 120)
 
-                RetentionDayTabs(overview: nil, day: $day)
+            RetentionDayTabs(overview: nil, day: $day)
 
-                RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
+            RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
 
-                ForEach(0..<12, id: \.self) { index in
-                    row(index: index)
-                }
+            ForEach(0..<12, id: \.self) { index in
+                row(index: index)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -53,8 +50,11 @@ struct RetentionViewPlaceholder: View {
 
 #Preview("Retention loading") {
     NavigationStack {
-        RetentionViewPlaceholder(day: .constant(.day7))
-            .navigationTitle(en: "Retention")
-            .inlineNavigationTitle()
+        ScrollView {
+            RetentionViewPlaceholder(day: .constant(.day7))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Retention")
+        .inlineNavigationTitle()
     }
 }

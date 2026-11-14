@@ -18,17 +18,21 @@ struct ActivityView: View {
 
     var body: some View {
         Group {
-            switch activity.result {
-            case nil:
-                ActivityViewPlaceholder(range: $range, metric: metric)
-                    .transition(.opacity)
-            case .success(let points):
-                content(points: points)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = activity.error {
                 ErrorView(description: Text(error.localizedDescription)) {
                     await activity.fetchAgain(in: database)
                 }
+            } else {
+                ScrollView {
+                    if case .success(let points) = activity.result {
+                        content(points: points)
+                            .transition(.opacity)
+                    } else {
+                        ActivityViewPlaceholder(range: $range, metric: metric)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: activity.isLoading)
@@ -41,30 +45,27 @@ struct ActivityView: View {
     private func content(points: [ActivityPoint]) -> some View {
         let series = ActivitySeries(points: points, range: range, metric: metric, now: Date())
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.trailing, -16)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                ActivityMetricTabs(series: series, selection: $metric)
-                    .padding(.top, .space4)
+            ActivityMetricTabs(series: series, selection: $metric)
+                .padding(.top, .space4)
 
-                ActivityChart(series: series)
-                    .padding(.top, .space16)
+            ActivityChart(series: series)
+                .padding(.top, .space16)
 
-                ActivityStickiness(series: series)
-                    .padding(.top, .space12)
+            ActivityStickiness(series: series)
+                .padding(.top, .space12)
 
-                ActivityRowsHeader()
+            ActivityRowsHeader()
 
-                ForEach(series.rows) { row in
-                    ActivityDayRow(row: row)
-                }
+            ForEach(series.rows) { row in
+                ActivityDayRow(row: row)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 }
 

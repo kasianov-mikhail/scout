@@ -36,32 +36,41 @@ struct NetworkView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch provider.result {
-        case nil:
-            NetworkViewPlaceholder(range: $range)
-                .transition(.opacity)
-        case .success(let report):
-            if report.summary(in: provider.query.range).requests > 0 {
-                list(report)
-                    .transition(.opacity)
-            } else {
-                VStack(spacing: 0) {
-                    RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                        .padding(.top, .space8)
-                        .padding(.horizontal, .gutter)
-
-                    Placeholder(
-                        text: "No requests",
-                        systemImage: "network",
-                        description: "No network requests have been recorded in this period"
-                    )
-                }
-            }
-        case .failure(let error):
+        if let error = provider.error {
             ErrorView(description: Text(error.localizedDescription)) {
                 await provider.fetchAgain(in: database)
             }
+        } else if isEmpty {
+            VStack(spacing: 0) {
+                RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                    .padding(.top, .space8)
+                    .padding(.horizontal, .gutter)
+
+                Placeholder(
+                    text: "No requests",
+                    systemImage: "network",
+                    description: "No network requests have been recorded in this period"
+                )
+            }
+        } else {
+            ScrollView {
+                if case .success(let report) = provider.result {
+                    list(report)
+                        .transition(.opacity)
+                } else {
+                    NetworkViewPlaceholder(range: $range)
+                        .transition(.opacity)
+                }
+            }
+            .scrollIndicators(.hidden)
         }
+    }
+
+    private var isEmpty: Bool {
+        guard case .success(let report) = provider.result else {
+            return false
+        }
+        return report.summary(in: provider.query.range).requests == 0
     }
 
     private func list(_ report: NetworkReport) -> some View {
@@ -69,38 +78,35 @@ struct NetworkView: View {
         let summary = report.summary(in: provider.query.range)
         let maxRequests = endpoints.map(\.requests).max() ?? 0
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.trailing, -16)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                Text(verbatim: summary.text)
-                    .font(.scoutRow)
-                    .foregroundStyle(Color.textMuted)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space12)
-                    .padding(.horizontal, .gutter)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                    .padding(.horizontal, -16)
-
-                NetworkEndpointListHeader()
-
-                ForEach(endpoints) { endpoint in
-                    NavigationLink {
-                        NetworkEndpointView(name: endpoint.name, initialRange: range)
-                    } label: {
-                        NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
-                    }
-                    .buttonStyle(.plain)
+            Text(verbatim: summary.text)
+                .font(.scoutRow)
+                .foregroundStyle(Color.textMuted)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .padding(.horizontal, .gutter)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
+                .padding(.horizontal, -16)
+
+            NetworkEndpointListHeader()
+
+            ForEach(endpoints) { endpoint in
+                NavigationLink {
+                    NetworkEndpointView(name: endpoint.name, initialRange: range)
+                } label: {
+                    NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
+                }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .exportToolbar(text: NetworkReportExport(report: report, range: provider.query.range).text)
     }
 }

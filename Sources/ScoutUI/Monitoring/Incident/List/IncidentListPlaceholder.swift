@@ -19,27 +19,24 @@ struct IncidentListPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-                SkeletonBar(width: 160, height: 9, delay: 0)
-                    .frame(height: 17.5)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space6)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-
-                IncidentGrid(count: rowCount) { index in
-                    tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
+            SkeletonBar(width: 160, height: 9, delay: 0)
+                .frame(height: 17.5)
+                .padding(.top, .space4)
+                .padding(.bottom, .space6)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
+
+            IncidentGrid(count: rowCount) { index in
+                tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -77,8 +74,11 @@ struct IncidentListPlaceholder: View {
 
 #Preview("Crashes loading") {
     NavigationStack {
-        IncidentListPlaceholder(range: .constant(.week))
-            .navigationTitle(en: "Crashes")
-            .inlineNavigationTitle()
+        ScrollView {
+            IncidentListPlaceholder(range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Crashes")
+        .inlineNavigationTitle()
     }
 }

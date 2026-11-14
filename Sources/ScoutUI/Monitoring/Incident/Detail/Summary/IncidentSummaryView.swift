@@ -15,71 +15,68 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
     @ViewBuilder let destination: () -> Destination
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                message
-                    .padding(.horizontal, -16)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            message
+                .padding(.horizontal, -16)
 
-                cards
+            cards
 
-                if !summary.affected.isEmpty {
-                    Header(title: "Affected")
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
-
-                    ForEach(summary.affected) { affected in
-                        IncidentAffectedRow(affected: affected)
-                            .overlay(alignment: .bottom) {
-                                Separator()
-                            }
-                    }
-                }
-
-                if !summary.frames.isEmpty {
-                    Header(title: "Stack Trace") {
-                        Text(verbatim: summary.stackCaption)
-                            .font(.scoutCaption)
-                            .foregroundStyle(Color.textMuted)
-                    }
+            if !summary.affected.isEmpty {
+                Header(title: "Affected")
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
 
-                    frames
-                }
-
-                Header(title: "Occurrences") {
-                    NavigationLink {
-                        destination()
-                    } label: {
-                        Image(systemName: "arrow.up.right.and.arrow.down.left")
-                            .font(.book(size: 20))
-                            .frame(width: 44, height: 44)
-                            .padding(.trailing, -12)
-                    }
-                    .buttonStyle(.plain)
-                    .foregroundStyle(Color.textLink)
-                    .accessibilityLabel(Text(verbatim: "Show all occurrences"))
-                }
-                .overlay(alignment: .bottom) {
-                    if !records.isEmpty {
-                        Separator()
-                    }
-                }
-
-                ForEach(Array(records.prefix(4).enumerated()), id: \.element.id) { index, record in
-                    row(record)
+                ForEach(summary.affected) { affected in
+                    IncidentAffectedRow(affected: affected)
                         .overlay(alignment: .bottom) {
-                            if index < min(records.count, 4) - 1 {
-                                Separator()
-                            }
+                            Separator()
                         }
                 }
             }
-            .padding(.horizontal, .gutter)
+
+            if !summary.frames.isEmpty {
+                Header(title: "Stack Trace") {
+                    Text(verbatim: summary.stackCaption)
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
+                }
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
+
+                frames
+            }
+
+            Header(title: "Occurrences") {
+                NavigationLink {
+                    destination()
+                } label: {
+                    Image(systemName: "arrow.down.left.and.arrow.up.right")
+                        .font(.book(size: 16))
+                        .frame(width: 44, height: 44)
+                        .padding(.trailing, -12)
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(Color.textLink)
+                .accessibilityLabel(Text(verbatim: "Show all occurrences"))
+            }
+            .overlay(alignment: .bottom) {
+                if !records.isEmpty {
+                    Separator()
+                }
+            }
+
+            ForEach(Array(records.prefix(4).enumerated()), id: \.element.id) { index, record in
+                row(record)
+                    .overlay(alignment: .bottom) {
+                        if index < min(records.count, 4) - 1 {
+                            Separator()
+                        }
+                    }
+            }
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     private var message: some View {
@@ -303,27 +300,30 @@ private struct IncidentSummaryFrameRow: View {
 
 #Preview {
     NavigationStack {
-        IncidentSummaryView(
-            summary: IncidentSummary(
-                kind: .crash,
-                label: "Crash",
-                message: Crash.sample.reason,
-                group: IncidentGroup(records: [Crash].samples),
-                breakdown: .sample,
-                cards: [
-                    .occurrences(records: [Crash].samples, value: "12"),
-                    .devices(records: [Crash].samples, value: "8"),
-                ],
-                stack: Crash.sample.stackTrace
-            ),
-            records: [Crash].samples,
-            row: { crash in
-                Text(verbatim: crash.name)
-            },
-            destination: {
-                Text(verbatim: "All occurrences")
-            }
-        )
+        ScrollView {
+            IncidentSummaryView(
+                summary: IncidentSummary(
+                    kind: .crash,
+                    label: "Crash",
+                    message: Crash.sample.reason,
+                    group: IncidentGroup(records: [Crash].samples),
+                    breakdown: .sample,
+                    cards: [
+                        .occurrences(records: [Crash].samples, value: "12"),
+                        .devices(records: [Crash].samples, value: "8"),
+                    ],
+                    stack: Crash.sample.stackTrace
+                ),
+                records: [Crash].samples,
+                row: { crash in
+                    Text(verbatim: crash.name)
+                },
+                destination: {
+                    Text(verbatim: "All occurrences")
+                }
+            )
+        }
+        .scrollIndicators(.hidden)
         .monospacedNavigationTitle(en: "NSRangeException")
         .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)

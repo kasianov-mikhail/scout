@@ -14,46 +14,43 @@ struct NetworkHourViewPlaceholder: View {
     let date: Date
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
 
-                NetworkEndpointHeaderPlaceholder()
+            NetworkEndpointHeaderPlaceholder()
 
-                SectionHeader(title: "STATUS")
+            SectionHeader(title: "STATUS")
 
-                SkeletonBar(height: 10, delay: 0.16, cornerRadius: .radiusBadge)
-                    .padding(.top, .space12)
-                    .padding(.bottom, .space6)
-
-                ForEach(0..<3, id: \.self) { index in
-                    NetworkStatusRowPlaceholder(index: index)
-                }
-
-                SectionHeader(title: "LATENCY")
-
-                HStack(alignment: .bottom, spacing: .space4) {
-                    ForEach(latencySkeletonHeights.indices, id: \.self) { index in
-                        VStack(spacing: .space4) {
-                            SkeletonBar(width: 34, height: latencySkeletonHeights[index], delay: 0.72, cornerRadius: 0)
-                            SkeletonBar(width: 24, height: 8, delay: 0.72)
-                        }
-                        .frame(maxWidth: .infinity)
-                    }
-                }
+            SkeletonBar(height: 10, delay: 0.16, cornerRadius: .radiusBadge)
                 .padding(.top, .space12)
+                .padding(.bottom, .space6)
 
-                HStack(spacing: .space16) {
-                    SkeletonBar(width: 76, height: 9, delay: 0.8)
-                    SkeletonBar(width: 76, height: 9, delay: 0.8)
-                    SkeletonBar(width: 76, height: 9, delay: 0.8)
-                }
-                .padding(.top, .space10)
-                .padding(.bottom, .space12)
+            ForEach(0..<3, id: \.self) { index in
+                NetworkStatusRowPlaceholder(index: index)
             }
-            .padding(.horizontal, .gutter)
+
+            SectionHeader(title: "LATENCY")
+
+            HStack(alignment: .bottom, spacing: .space4) {
+                ForEach(latencySkeletonHeights.indices, id: \.self) { index in
+                    VStack(spacing: .space4) {
+                        SkeletonBar(width: 34, height: latencySkeletonHeights[index], delay: 0.72, cornerRadius: 0)
+                        SkeletonBar(width: 24, height: 8, delay: 0.72)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+            .padding(.top, .space12)
+
+            HStack(spacing: .space16) {
+                SkeletonBar(width: 76, height: 9, delay: 0.8)
+                SkeletonBar(width: 76, height: 9, delay: 0.8)
+                SkeletonBar(width: 76, height: 9, delay: 0.8)
+            }
+            .padding(.top, .space10)
+            .padding(.bottom, .space12)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

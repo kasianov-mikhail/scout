@@ -36,20 +36,23 @@ struct ResourceGroupDetailView: View {
 
     var body: some View {
         Group {
-            if let records = occurrences.records {
-                if records.isEmpty {
-                    Placeholder(text: "No occurrences")
-                } else {
-                    content(records: records)
-                        .transition(.opacity)
-                }
-            } else if let error = occurrences.error {
+            if let error = occurrences.error {
                 ErrorView(description: error.localizedDescription) {
                     await occurrences.fetchIfNeeded(in: database)
                 }
+            } else if let records = occurrences.records, records.isEmpty {
+                Placeholder(text: "No occurrences")
             } else {
-                IncidentGroupPlaceholder(kind: .resource, resourceKind: occurrences.group.records.first?.resourceKind)
-                    .transition(.opacity)
+                ScrollView {
+                    if let records = occurrences.records {
+                        content(records: records)
+                            .transition(.opacity)
+                    } else {
+                        IncidentGroupPlaceholder(kind: .resource, resourceKind: occurrences.group.records.first?.resourceKind)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: occurrences.records == nil)

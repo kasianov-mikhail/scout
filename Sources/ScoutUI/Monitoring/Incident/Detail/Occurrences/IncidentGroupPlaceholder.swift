@@ -13,53 +13,50 @@ struct IncidentGroupPlaceholder: View {
     var resourceKind: ResourceKind? = nil
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                message
-                    .padding(.horizontal, -16)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            message
+                .padding(.horizontal, -16)
 
-                cards
+            cards
 
-                Header(title: "Affected")
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-
-                ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
-                    affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
-                }
-
-                Header(title: "Stack Trace") {
-                    Text(verbatim: kind.stackCaption)
-                        .font(.scoutCaption)
-                        .foregroundStyle(Color.textMuted)
-                }
+            Header(title: "Affected")
                 .overlay(alignment: .bottom) {
                     Separator()
                 }
 
-                frames
-
-                Header(title: "Occurrences")
+            ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
+                affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
-
-                ForEach(0..<4, id: \.self) { index in
-                    occurrenceRow(index: index)
-                        .overlay(alignment: .bottom) {
-                            if index < 3 {
-                                Separator()
-                            }
-                        }
-                }
             }
-            .padding(.horizontal, .gutter)
+
+            Header(title: "Stack Trace") {
+                Text(verbatim: kind.stackCaption)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            }
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
+
+            frames
+
+            Header(title: "Occurrences")
+                .overlay(alignment: .bottom) {
+                    Separator()
+                }
+
+            ForEach(0..<4, id: \.self) { index in
+                occurrenceRow(index: index)
+                    .overlay(alignment: .bottom) {
+                        if index < 3 {
+                            Separator()
+                        }
+                    }
+            }
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -204,27 +201,36 @@ struct IncidentGroupPlaceholder: View {
 
 #Preview("Crash group loading") {
     NavigationStack {
-        IncidentGroupPlaceholder(kind: .crash)
-            .monospacedNavigationTitle(en: "NSRangeException")
-            .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+        ScrollView {
+            IncidentGroupPlaceholder(kind: .crash)
+        }
+        .scrollIndicators(.hidden)
+        .monospacedNavigationTitle(en: "NSRangeException")
+        .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 }
 
 #Preview("Hang group loading") {
     NavigationStack {
-        IncidentGroupPlaceholder(kind: .hang)
-            .monospacedNavigationTitle(en: "Main Thread Blocked")
-            .toolbarBackground(IncidentKind.hang.background, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+        ScrollView {
+            IncidentGroupPlaceholder(kind: .hang)
+        }
+        .scrollIndicators(.hidden)
+        .monospacedNavigationTitle(en: "Main Thread Blocked")
+        .toolbarBackground(IncidentKind.hang.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 }
 
 #Preview("Resource group loading") {
     NavigationStack {
-        IncidentGroupPlaceholder(kind: .resource, resourceKind: .cpu)
-            .monospacedNavigationTitle(en: "CPU Exception")
-            .toolbarBackground(IncidentKind.resource.background, for: .navigationBar)
-            .toolbarBackground(.visible, for: .navigationBar)
+        ScrollView {
+            IncidentGroupPlaceholder(kind: .resource, resourceKind: .cpu)
+        }
+        .scrollIndicators(.hidden)
+        .monospacedNavigationTitle(en: "CPU Exception")
+        .toolbarBackground(IncidentKind.resource.background, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
     }
 }
