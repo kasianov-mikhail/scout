@@ -20,17 +20,21 @@ struct DeviceDetailView: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                DeviceDetailPlaceholder(summary: provider.device, range: $provider.range)
-                    .transition(.opacity)
-            case .success(let detail):
-                content(detail)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
                 }
+            } else {
+                ScrollView {
+                    if case .success(let detail) = provider.result {
+                        content(detail)
+                            .transition(.opacity)
+                    } else {
+                        DeviceDetailPlaceholder(summary: provider.device, range: $provider.range)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
@@ -45,84 +49,81 @@ struct DeviceDetailView: View {
     }
 
     private func content(_ detail: DeviceDetail) -> some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-                subtitle(detail.summary)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space12)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-
-                stats(detail)
-
-                SectionHeader(title: "SESSIONS", topPadding: 12) {
-                    Button {
-                        showTimeline = true
-                    } label: {
-                        Text(verbatim: "TIMELINE")
-                            .font(.scoutSectionAction)
-                            .foregroundStyle(Color.textLink)
-                    }
-                    .buttonStyle(.plain)
+            subtitle(detail.summary)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
 
-                if detail.recentSessions.isEmpty {
-                    Text(verbatim: "No sessions in this period")
-                        .font(.scoutRow)
-                        .foregroundStyle(Color.textMuted)
-                        .lineLimit(1)
-                        .frame(height: .rowRegular)
-                } else {
-                    ForEach(detail.recentSessions) { session in
-                        sessionRow(session, deviceID: detail.summary.id, maxDuration: detail.maxSessionDuration)
-                    }
+            stats(detail)
+
+            SectionHeader(title: "SESSIONS", topPadding: 12) {
+                Button {
+                    showTimeline = true
+                } label: {
+                    Text(verbatim: "TIMELINE")
+                        .font(.scoutSectionAction)
+                        .foregroundStyle(Color.textLink)
                 }
-
-                if !detail.history.isEmpty {
-                    spacer(8)
-
-                    SectionHeader(title: "HISTORY", topPadding: 12)
-
-                    ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
-                        HistoryRow(event: event, isLast: index == detail.history.count - 1)
-                    }
-                }
-
-                spacer(12)
-
-                SectionHeader(title: "ACTIVITY", topPadding: 12) {
-                    Text(verbatim: detail.activeDaysLabel)
-                        .font(.scoutCaption)
-                        .foregroundStyle(Color.textMuted)
-                }
-
-                DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
-                    .padding(.top, .space12)
-
-                Text(verbatim: detail.activityCaption)
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
-                    .padding(.top, .space12)
-                    .padding(.bottom, .space16)
-
-                SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
-
-                UsageGrid(usage: detail.usage)
-                    .padding(.top, .space12)
-
-                Text(verbatim: detail.usageCaption)
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
-                    .padding(.top, .space12)
-                    .padding(.bottom, .space16)
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, .gutter)
+
+            if detail.recentSessions.isEmpty {
+                Text(verbatim: "No sessions in this period")
+                    .font(.scoutRow)
+                    .foregroundStyle(Color.textMuted)
+                    .lineLimit(1)
+                    .frame(height: .rowRegular)
+            } else {
+                ForEach(detail.recentSessions) { session in
+                    sessionRow(session, deviceID: detail.summary.id, maxDuration: detail.maxSessionDuration)
+                }
+            }
+
+            if !detail.history.isEmpty {
+                spacer(8)
+
+                SectionHeader(title: "HISTORY", topPadding: 12)
+
+                ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
+                    HistoryRow(event: event, isLast: index == detail.history.count - 1)
+                }
+            }
+
+            spacer(12)
+
+            SectionHeader(title: "ACTIVITY", topPadding: 12) {
+                Text(verbatim: detail.activeDaysLabel)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            }
+
+            DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
+                .padding(.top, .space12)
+
+            Text(verbatim: detail.activityCaption)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space12)
+                .padding(.bottom, .space16)
+
+            SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
+
+            UsageGrid(usage: detail.usage)
+                .padding(.top, .space12)
+
+            Text(verbatim: detail.usageCaption)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space12)
+                .padding(.bottom, .space16)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     private func subtitle(_ summary: DeviceSummary) -> some View {
@@ -417,6 +418,9 @@ private struct UsageGrid: View {
 
 #Preview("Device loading") {
     NavigationStack {
-        DeviceDetailPlaceholder(summary: DeviceSummary.samples[0], range: .constant(.week))
+        ScrollView {
+            DeviceDetailPlaceholder(summary: DeviceSummary.samples[0], range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
     }
 }

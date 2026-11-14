@@ -15,17 +15,27 @@ struct ReleaseHealthView: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                ReleaseHealthViewPlaceholder()
-                    .transition(.opacity)
-            case .success(let releases):
-                content(releases: releases)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
                 }
+            } else if case .success(let releases) = provider.result, releases.isEmpty {
+                Placeholder(
+                    text: "No releases",
+                    systemImage: "shippingbox",
+                    description: "Release health appears once your app reports versions"
+                )
+            } else {
+                ScrollView {
+                    if case .success(let releases) = provider.result {
+                        content(releases: releases)
+                            .transition(.opacity)
+                    } else {
+                        ReleaseHealthViewPlaceholder()
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
@@ -35,27 +45,15 @@ struct ReleaseHealthView: View {
         .inlineNavigationTitle()
     }
 
-    @ViewBuilder
     private func content(releases: [ReleaseHealth]) -> some View {
-        if releases.isEmpty {
-            Placeholder(
-                text: "No releases",
-                systemImage: "shippingbox",
-                description: "Release health appears once your app reports versions"
-            )
-        } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ReleaseSummary(adoption: ReleaseAdoption(releases: releases))
 
-                    ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
-                        ReleaseRow(release: release, isLast: index == releases.count - 1)
-                    }
-                }
-                .padding(.horizontal, .gutter)
+            ForEach(Array(releases.enumerated()), id: \.element.id) { index, release in
+                ReleaseRow(release: release, isLast: index == releases.count - 1)
             }
-            .scrollIndicators(.hidden)
         }
+        .padding(.horizontal, .gutter)
     }
 }
 

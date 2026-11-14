@@ -40,28 +40,9 @@ struct HomeList: View {
                     await provider.fetchIfFailed(in: database)
                 }
             }
-        } else if isLoading {
-            skeleton.transition(.opacity)
-        } else if let live {
-            list(live).transition(.opacity)
+        } else {
+            list(live)
         }
-    }
-
-    fileprivate var skeleton: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: nil) {}
-                    .padding(.top, .space6)
-                HomeActiveUsersSection(users: nil) { _ in }
-                HomeTelemetrySection(items: nil) { _ in }
-                HomeReleaseSection(adoption: nil) {}
-                HomeRetentionSection(weeks: nil) {}
-            }
-            .padding(.horizontal, .gutter)
-        }
-        .scrollIndicators(.hidden)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(Text(verbatim: "Loading"))
     }
 
     private var isLoading: Bool {
@@ -89,8 +70,35 @@ struct HomeList: View {
         )
     }
 
-    private func list(_ snapshot: HomeSnapshot) -> some View {
+    private func list(_ snapshot: HomeSnapshot?) -> some View {
         ScrollView {
+            sections(snapshot)
+                .padding(.horizontal, .gutter)
+        }
+        .scrollIndicators(.hidden)
+        .navigationDestination(for: HomeDestination.self) { destination in
+            switch destination {
+            case .activity:
+                ActivityView(activity: activities)
+            case .retention:
+                RetentionView(provider: retention)
+            case .sessions:
+                statView
+            case .releaseHealth:
+                ReleaseHealthView(provider: releases)
+            case .alerts:
+                AlertListView(provider: alerts)
+            case .telemetry(let category):
+                LogDestination(category: category)
+            case .resources:
+                ResourceListView()
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func sections(_ snapshot: HomeSnapshot?) -> some View {
+        if let snapshot {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeAlertSection(history: snapshot.alerts) {
                     path.append(.alerts)
@@ -132,26 +140,19 @@ struct HomeList: View {
                 }
                 .loadingInk(isLoading: isLoading, delay: 0.40)
             }
-            .padding(.horizontal, .gutter)
-        }
-        .scrollIndicators(.hidden)
-        .navigationDestination(for: HomeDestination.self) { destination in
-            switch destination {
-            case .activity:
-                ActivityView(activity: activities)
-            case .retention:
-                RetentionView(provider: retention)
-            case .sessions:
-                statView
-            case .releaseHealth:
-                ReleaseHealthView(provider: releases)
-            case .alerts:
-                AlertListView(provider: alerts)
-            case .telemetry(let category):
-                LogDestination(category: category)
-            case .resources:
-                ResourceListView()
+            .transition(.opacity)
+        } else {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: nil) {}
+                    .padding(.top, .space6)
+                HomeActiveUsersSection(users: nil) { _ in }
+                HomeTelemetrySection(items: nil) { _ in }
+                HomeReleaseSection(adoption: nil) {}
+                HomeRetentionSection(weeks: nil) {}
             }
+            .transition(.opacity)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(verbatim: "Loading"))
         }
     }
 
@@ -182,7 +183,7 @@ struct HomeList: View {
 
 #Preview("Loading") {
     NavigationStack {
-        HomeList(path: .constant([])).skeleton
+        HomeList(path: .constant([]))
             .navigationTitle(en: "Home")
             .inlineNavigationTitle()
     }

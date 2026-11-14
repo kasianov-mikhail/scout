@@ -16,17 +16,37 @@ struct MetricsListView: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                MetricsListPlaceholder(range: $provider.range)
-                    .transition(.opacity)
-            case .success(let tiles):
-                content(tiles)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await provider.load(in: database)
                 }
+            } else if case .success(let tiles) = provider.result, tiles.isEmpty {
+                VStack(spacing: 0) {
+                    MetricRangeStrip(selection: $provider.range)
+                        .padding(.top, .space8)
+                        .padding(.leading, .gutter)
+
+                    Placeholder(
+                        text: "No metrics",
+                        systemImage: "chart.bar",
+                        description: "Metrics appear here once your app records data",
+                        code: """
+                            Counter(label: "api_calls")
+                                .increment()
+                            """
+                    )
+                }
+            } else {
+                ScrollView {
+                    if case .success(let tiles) = provider.result {
+                        content(tiles)
+                            .transition(.opacity)
+                    } else {
+                        MetricsListPlaceholder(range: $provider.range)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
@@ -37,42 +57,20 @@ struct MetricsListView: View {
         }
     }
 
-    @ViewBuilder
     private func content(_ tiles: [MetricTile]) -> some View {
-        if tiles.isEmpty {
-            VStack(spacing: 0) {
-                MetricRangeStrip(selection: $provider.range)
-                    .padding(.top, .space8)
-                    .padding(.leading, .gutter)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            MetricRangeStrip(selection: $provider.range)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                Placeholder(
-                    text: "No metrics",
-                    systemImage: "chart.bar",
-                    description: "Metrics appear here once your app records data",
-                    code: """
-                        Counter(label: "api_calls")
-                            .increment()
-                        """
-                )
-            }
-        } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    MetricRangeStrip(selection: $provider.range)
-                        .padding(.top, .space8)
-                        .padding(.trailing, -16)
-
-                    grid(tiles)
-                        .overlay(alignment: .top) {
-                            Rectangle()
-                                .fill(Color.separator)
-                                .frame(height: 0.5)
-                        }
+            grid(tiles)
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(Color.separator)
+                        .frame(height: 0.5)
                 }
-                .padding(.horizontal, .gutter)
-            }
-            .scrollIndicators(.hidden)
         }
+        .padding(.horizontal, .gutter)
     }
 
     private func grid(_ tiles: [MetricTile]) -> some View {

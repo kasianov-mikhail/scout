@@ -12,30 +12,27 @@ struct ActivityViewPlaceholder: View {
     let metric: ActivityPeriod
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.trailing, -16)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                metrics
-                    .padding(.top, .space4)
+            metrics
+                .padding(.top, .space4)
 
-                chart
-                    .padding(.top, .space16)
+            chart
+                .padding(.top, .space16)
 
-                stickiness
-                    .padding(.top, .space12)
+            stickiness
+                .padding(.top, .space12)
 
-                ActivityRowsHeader()
+            ActivityRowsHeader()
 
-                ForEach(0..<8, id: \.self) { index in
-                    row(index: index)
-                }
+            ForEach(0..<8, id: \.self) { index in
+                row(index: index)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -130,8 +127,11 @@ struct ActivityViewPlaceholder: View {
 
 #Preview("Activity loading") {
     NavigationStack {
-        ActivityViewPlaceholder(range: .constant(.month), metric: .daily)
-            .navigationTitle(en: "Active users")
-            .inlineNavigationTitle()
+        ScrollView {
+            ActivityViewPlaceholder(range: .constant(.month), metric: .daily)
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Active users")
+        .inlineNavigationTitle()
     }
 }

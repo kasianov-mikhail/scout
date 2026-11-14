@@ -13,22 +13,19 @@ struct MetricsListPlaceholder: View {
     private static let nameWidths: [CGFloat] = [77, 56, 98, 42, 77, 56]
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                MetricRangeStrip(selection: $range)
-                    .padding(.top, .space8)
-                    .padding(.trailing, -16)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            MetricRangeStrip(selection: $range)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                grid
-                    .overlay(alignment: .top) {
-                        Rectangle()
-                            .fill(Color.separator)
-                            .frame(height: 0.5)
-                    }
-            }
-            .padding(.horizontal, .gutter)
+            grid
+                .overlay(alignment: .top) {
+                    Rectangle()
+                        .fill(Color.separator)
+                        .frame(height: 0.5)
+                }
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -82,8 +79,11 @@ struct MetricsListPlaceholder: View {
 
 #Preview("Metrics loading") {
     NavigationStack {
-        MetricsListPlaceholder(range: .constant(.today))
-            .navigationTitle(en: "Metrics")
-            .inlineNavigationTitle()
+        ScrollView {
+            MetricsListPlaceholder(range: .constant(.today))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Metrics")
+        .inlineNavigationTitle()
     }
 }

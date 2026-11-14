@@ -9,28 +9,25 @@ import SwiftUI
 
 struct AlertListPlaceholder: View {
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                banner
+        LazyVStack(alignment: .leading, spacing: 0) {
+            banner
 
-                AlertListLegend(showsAxis: false)
-                    .padding(.top, .space10)
+            AlertListLegend(showsAxis: false)
+                .padding(.top, .space10)
 
-                header(delay: 0)
-                row(titleWidth: 95, delay: 0, isLast: true)
+            header(delay: 0)
+            row(titleWidth: 95, delay: 0, isLast: true)
 
-                header(delay: 0.08)
-                row(titleWidth: 69, delay: 0.08, isLast: false)
-                row(titleWidth: 120, delay: 0.16, isLast: false)
-                row(titleWidth: 52, delay: 0.24, isLast: false)
-                row(titleWidth: 95, delay: 0.32, isLast: true)
+            header(delay: 0.08)
+            row(titleWidth: 69, delay: 0.08, isLast: false)
+            row(titleWidth: 120, delay: 0.16, isLast: false)
+            row(titleWidth: 52, delay: 0.24, isLast: false)
+            row(titleWidth: 95, delay: 0.32, isLast: true)
 
-                header(delay: 0.40)
-                row(titleWidth: 69, delay: 0.40, isLast: true)
-            }
-            .padding(.horizontal, .gutter)
+            header(delay: 0.40)
+            row(titleWidth: 69, delay: 0.40, isLast: true)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -125,8 +122,11 @@ private struct AlertHealthStripPlaceholder: View {
 
 #Preview("Alerts loading") {
     NavigationStack {
-        AlertListPlaceholder()
-            .navigationTitle(en: "Alerts")
-            .inlineNavigationTitle()
+        ScrollView {
+            AlertListPlaceholder()
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Alerts")
+        .inlineNavigationTitle()
     }
 }

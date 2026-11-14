@@ -21,17 +21,33 @@ struct ModelDetailView: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                ModelDetailPlaceholder(model: provider.modelName, range: $provider.range)
-                    .transition(.opacity)
-            case .success(let detail):
-                content(detail)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
                 }
+            } else if case .success(let detail) = provider.result, detail.devices.isEmpty {
+                VStack(spacing: 0) {
+                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                        .padding(.top, .space8)
+                        .padding(.horizontal, .gutter)
+
+                    Placeholder(
+                        text: "No devices",
+                        systemImage: "iphone.gen3",
+                        description: "Devices appear here once this model reports a session"
+                    )
+                }
+            } else {
+                ScrollView {
+                    if case .success(let detail) = provider.result {
+                        content(detail)
+                            .transition(.opacity)
+                    } else {
+                        ModelDetailPlaceholder(model: provider.modelName, range: $provider.range)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
@@ -42,67 +58,49 @@ struct ModelDetailView: View {
         }
     }
 
-    @ViewBuilder
     private func content(_ detail: ModelDetail) -> some View {
-        if detail.devices.isEmpty {
-            VStack(spacing: 0) {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.horizontal, .gutter)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-                Placeholder(
-                    text: "No devices",
-                    systemImage: "iphone.gen3",
-                    description: "Devices appear here once this model reports a session"
-                )
-            }
-        } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, .space8)
-
-                    subtitle(detail)
-                        .padding(.top, .space4)
-                        .padding(.bottom, .space12)
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
-
-                    if !detail.osVersions.isEmpty {
-                        SectionHeader(title: "OS VERSIONS", topPadding: 12)
-
-                        ProportionBar(
-                            items: detail.osVersions,
-                            color: { index, _ in deviceOSColor(index) },
-                            share: { Double($0.percentage) / 100 }
-                        )
-                        .padding(.top, .space12)
-                        .padding(.bottom, .space6)
-
-                        ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
-                            OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
-                        }
-                    }
-
-                    SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
-
-                    deviceColumns
-                        .columnHeaderStyle(topPadding: 12)
-
-                    ForEach(detail.devices) { device in
-                        NavigationLink {
-                            DeviceDetailView(device: device, range: provider.range)
-                        } label: {
-                            ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
-                        }
-                        .buttonStyle(.plain)
-                    }
+            subtitle(detail)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
-                .padding(.horizontal, .gutter)
+
+            if !detail.osVersions.isEmpty {
+                SectionHeader(title: "OS VERSIONS", topPadding: 12)
+
+                ProportionBar(
+                    items: detail.osVersions,
+                    color: { index, _ in deviceOSColor(index) },
+                    share: { Double($0.percentage) / 100 }
+                )
+                .padding(.top, .space12)
+                .padding(.bottom, .space6)
+
+                ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
+                    OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
+                }
             }
-            .scrollIndicators(.hidden)
+
+            SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
+
+            deviceColumns
+                .columnHeaderStyle(topPadding: 12)
+
+            ForEach(detail.devices) { device in
+                NavigationLink {
+                    DeviceDetailView(device: device, range: provider.range)
+                } label: {
+                    ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
+                }
+                .buttonStyle(.plain)
+            }
         }
+        .padding(.horizontal, .gutter)
     }
 
     private func subtitle(_ detail: ModelDetail) -> some View {
@@ -225,6 +223,9 @@ private struct ModelDeviceRow: View {
 
 #Preview("Model loading") {
     NavigationStack {
-        ModelDetailPlaceholder(model: "iPhone 15 Pro", range: .constant(.week))
+        ScrollView {
+            ModelDetailPlaceholder(model: "iPhone 15 Pro", range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
     }
 }

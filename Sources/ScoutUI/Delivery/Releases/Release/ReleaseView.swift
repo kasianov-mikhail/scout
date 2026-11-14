@@ -25,17 +25,21 @@ struct ReleaseView: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                ReleasePlaceholder(version: release.id)
-                    .transition(.opacity)
-            case .success(let trend):
-                content(detail: ReleaseDetail(release: release, trend: trend, now: Date()))
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
                 }
+            } else {
+                ScrollView {
+                    if case .success(let trend) = provider.result {
+                        content(detail: ReleaseDetail(release: release, trend: trend, now: Date()))
+                            .transition(.opacity)
+                    } else {
+                        ReleasePlaceholder(version: release.id)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
@@ -84,30 +88,27 @@ struct ReleaseView: View {
     }
 
     private func content(detail: ReleaseDetail) -> some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ReleaseHero(detail: detail)
-                    .padding(.horizontal, -16)
-
-                ReleaseGrid(detail: detail) { kind in
-                    switch kind {
-                    case .crashes:
-                        showAllCrashes = true
-                    case .hangs:
-                        showAllHangs = true
-                    case .resources:
-                        showAllResources = true
-                    default:
-                        break
-                    }
-                }
+        LazyVStack(alignment: .leading, spacing: 0) {
+            ReleaseHero(detail: detail)
                 .padding(.horizontal, -16)
 
-                hangRate(detail.hangRate)
+            ReleaseGrid(detail: detail) { kind in
+                switch kind {
+                case .crashes:
+                    showAllCrashes = true
+                case .hangs:
+                    showAllHangs = true
+                case .resources:
+                    showAllResources = true
+                default:
+                    break
+                }
             }
-            .padding(.horizontal, .gutter)
+            .padding(.horizontal, -16)
+
+            hangRate(detail.hangRate)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     private func hangRate(_ value: ReleaseHangRate) -> some View {

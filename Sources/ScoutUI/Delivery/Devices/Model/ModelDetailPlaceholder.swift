@@ -14,40 +14,37 @@ struct ModelDetailPlaceholder: View {
     @Binding var range: IncidentRange
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-                SkeletonBar(width: 194, height: 9, delay: 0.08)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space12)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-
-                SectionHeader(title: "OS VERSIONS", topPadding: 12)
-
-                SkeletonBar(height: 10, delay: 0.24, cornerRadius: .radiusBadge, fill: Color.deviceShade)
-                    .padding(.top, .space12)
-                    .padding(.bottom, .space6)
-
-                ForEach(0..<2, id: \.self) { index in
-                    osRow(index: index)
+            SkeletonBar(width: 194, height: 9, delay: 0.08)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
 
-                SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
+            SectionHeader(title: "OS VERSIONS", topPadding: 12)
 
-                columns
-                    .columnHeaderStyle(topPadding: 12)
+            SkeletonBar(height: 10, delay: 0.24, cornerRadius: .radiusBadge, fill: Color.deviceShade)
+                .padding(.top, .space12)
+                .padding(.bottom, .space6)
 
-                ForEach(0..<11, id: \.self) { index in
-                    deviceRow(index: index, isLast: index == 10)
-                }
+            ForEach(0..<2, id: \.self) { index in
+                osRow(index: index)
             }
-            .padding(.horizontal, .gutter)
+
+            SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
+
+            columns
+                .columnHeaderStyle(topPadding: 12)
+
+            ForEach(0..<11, id: \.self) { index in
+                deviceRow(index: index, isLast: index == 10)
+            }
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .navigationTitle(en: model)
         .inlineNavigationTitle()
         .accessibilityElement(children: .ignore)

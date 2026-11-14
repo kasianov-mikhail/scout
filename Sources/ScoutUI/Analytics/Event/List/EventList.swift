@@ -16,31 +16,31 @@ struct EventList<Header: View>: View {
 
     var body: some View {
         Group {
-            if let events = provider.records {
-                if events.isEmpty {
-                    Placeholder(
-                        text: "No results",
-                        systemImage: "list.bullet",
-                        description: "Events will appear here once your app starts logging",
-                        code: "logger.info(\"button_tapped\")"
-                    )
-                } else {
-                    ScrollView {
+            if let error = provider.error {
+                ErrorView(description: error.localizedDescription, retry: retryLoad)
+            } else if let events = provider.records, events.isEmpty {
+                Placeholder(
+                    text: "No results",
+                    systemImage: "list.bullet",
+                    description: "Events will appear here once your app starts logging",
+                    code: "logger.info(\"button_tapped\")"
+                )
+            } else {
+                ScrollView {
+                    if let events = provider.records {
                         LazyVStack(alignment: .leading, spacing: 0) {
                             header()
                             rows(for: events)
                         }
                         .padding(.horizontal, .gutter)
+                        .animation(nil, value: UUID())
+                        .transition(.opacity)
+                    } else {
+                        EventListPlaceholder()
+                            .transition(.opacity)
                     }
-                    .scrollIndicators(.hidden)
-                    .animation(nil, value: UUID())
-                    .transition(.opacity)
                 }
-            } else if let error = provider.error {
-                ErrorView(description: error.localizedDescription, retry: retryLoad)
-            } else {
-                EventListPlaceholder()
-                    .transition(.opacity)
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.records == nil)
