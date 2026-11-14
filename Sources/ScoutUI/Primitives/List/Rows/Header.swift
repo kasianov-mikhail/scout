@@ -9,11 +9,13 @@ import SwiftUI
 
 struct Header<Trailing: View>: View {
     let title: String
+    let showsSeparator: Bool
 
     @ViewBuilder let trailing: () -> Trailing
 
-    init(title: String, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
+    init(title: String, showsSeparator: Bool = false, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
         self.title = title
+        self.showsSeparator = showsSeparator
         self.trailing = trailing
     }
 
@@ -27,6 +29,11 @@ struct Header<Trailing: View>: View {
         }
         .padding(.top, .space12)
         .frame(height: 70)
+        .overlay(alignment: .bottom) {
+            if showsSeparator {
+                Separator()
+            }
+        }
     }
 }
 

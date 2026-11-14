@@ -28,11 +28,13 @@ struct IncidentListPlaceholder: View {
                     .frame(height: 17.5)
                     .padding(.top, .space4)
                     .padding(.bottom, .space6)
+                    .overlay(alignment: .bottom) {
+                        Separator()
+                    }
 
                 IncidentGrid(count: rowCount) { index in
                     tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)
                 }
-                .padding(.top, .space8)
             }
             .padding(.horizontal, .gutter)
         }
