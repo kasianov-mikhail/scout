@@ -18,7 +18,7 @@ struct DeviceListPlaceholder: View {
                 .padding(.top, .space8)
 
             SkeletonBar(width: 200, height: 9, delay: 0)
-                .frame(height: 17.5, alignment: .leading)
+                .frame(height: 17.5)
                 .padding(.top, .space4)
 
             columns
