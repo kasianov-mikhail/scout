@@ -28,6 +28,7 @@ struct IncidentListPlaceholder: View {
                     .frame(height: 17.5)
                     .padding(.top, .space4)
                     .padding(.bottom, .space6)
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .overlay(alignment: .bottom) {
                         Separator()
                     }
