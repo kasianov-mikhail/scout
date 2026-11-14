@@ -78,7 +78,6 @@ struct HomeTelemetrySectionPlaceholder: View {
 }
 
 extension TelemetryItem.Kind {
-    /// The width of the title bar in a loading row, taken from the design.
     fileprivate var skeletonWidth: CGFloat {
         switch self {
         case .events: 46
