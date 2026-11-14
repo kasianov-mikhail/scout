@@ -12,7 +12,7 @@ struct HomeAlertSectionPlaceholder: View {
         VStack(alignment: .leading, spacing: .space6) {
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: "ALERTS")
-                    .font(.scoutCaptionStrong)
+                    .homeText(.labelInk)
 
                 Spacer()
 

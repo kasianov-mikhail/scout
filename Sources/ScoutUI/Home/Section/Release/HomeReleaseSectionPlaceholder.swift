@@ -8,16 +8,17 @@
 import SwiftUI
 
 struct HomeReleaseSectionPlaceholder: View {
+    @Environment(\.homeTypography) private var typography
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases", showsSeparator: true)
+            Header(title: "Releases", showsSeparator: true, font: typography.font(.section))
 
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 15, delay: 0.96)
 
                 Text(verbatim: "of sessions")
-                    .font(.scoutRow)
-                    .foregroundStyle(Color.textMuted)
+                    .homeText(.suffix)
             }
             .frame(height: 28)
             .padding(.top, 14)
@@ -25,11 +26,16 @@ struct HomeReleaseSectionPlaceholder: View {
             SkeletonBar(height: 24, delay: 1.04, fill: Color.surfaceGrey)
                 .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: Color.surfaceSkeleton)
-                .padding(.top, .space8)
+            AdoptionLegend(
+                squareSize: 7,
+                squareColor: Color.surfaceSkeleton,
+                font: typography.font(.legend),
+                color: typography.color(.legend)
+            )
+            .padding(.top, .space8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
-                .frame(height: 18, alignment: .leading)
+                .frame(height: 18)
                 .padding(.top, .space10)
                 .padding(.bottom, .space6)
         }

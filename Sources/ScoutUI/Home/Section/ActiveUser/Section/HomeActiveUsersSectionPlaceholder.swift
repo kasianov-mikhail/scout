@@ -9,9 +9,11 @@ import Scout
 import SwiftUI
 
 struct HomeActiveUsersSectionPlaceholder: View {
+    @Environment(\.homeTypography) private var typography
+
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users", showsSeparator: true)
+            Header(title: "Active Users", showsSeparator: true, font: typography.font(.section))
 
             ReadoutTabStrip(
                 values: ActiveUsers.Kind.allCases,
@@ -31,7 +33,10 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 middle: DateFormatter.monthDay.string(from: middle),
                 end: "today",
                 topInset: 6,
-                design: .monospaced
+                design: .monospaced,
+                font: typography.font(.axis),
+                color: typography.color(.axis),
+                tracking: typography.tracking(.axis)
             )
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
@@ -44,8 +49,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
     private func metric(kind: ActiveUsers.Kind) -> some View {
         VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: kind.title.uppercased())
-                .font(.scoutCaptionStrong)
-                .foregroundStyle(Color.textMuted)
+                .homeText(.label)
 
             SkeletonBar(width: 74, height: 17, delay: 0.4)
                 .frame(height: 34)

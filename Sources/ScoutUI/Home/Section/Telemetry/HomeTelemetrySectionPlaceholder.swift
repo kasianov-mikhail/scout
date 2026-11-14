@@ -18,7 +18,7 @@ struct HomeTelemetrySectionPlaceholder: View {
                     .padding(.leading, .space12)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .font(.scoutSection)
+            .homeText(.section)
             .padding(.top, .space12)
             .frame(height: 70)
             .overlay(alignment: .bottom) {
@@ -55,7 +55,7 @@ struct HomeTelemetrySectionPlaceholder: View {
             VStack(alignment: .leading, spacing: .space2) {
                 HStack(alignment: .firstTextBaseline, spacing: .space8) {
                     Text(verbatim: kind.title)
-                        .font(.scoutRow)
+                        .homeText(.row)
 
                     Spacer(minLength: 0)
 
@@ -64,7 +64,7 @@ struct HomeTelemetrySectionPlaceholder: View {
                 .frame(height: 20)
 
                 SkeletonBar(width: 74, height: 8, delay: delay)
-                    .frame(height: 15, alignment: .leading)
+                    .frame(height: 15)
             }
         }
         .padding(.leading, index.isMultiple(of: 2) ? 0 : 12)

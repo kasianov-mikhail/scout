@@ -23,11 +23,21 @@ struct HomeList: View {
     @StateObject var alerts = AlertProvider(permission: NotificationPermission(center: UNUserNotificationCenter.current()))
 
     @Environment(\.database) private var database
+    @Environment(\.homeTypography) private var typography
 
     var body: some View {
         content
             .animation(.easeOut(duration: 0.2), value: isLoading)
             .fetchTask(snapshot == nil ? providers : [])
+            .toolbar {
+                if path.isEmpty {
+                    ToolbarItem(placement: .principal) {
+                        Text(verbatim: "Home")
+                            .font(typography.font(.nav))
+                            .foregroundStyle(Color.textPrimary)
+                    }
+                }
+            }
     }
 
     @ViewBuilder

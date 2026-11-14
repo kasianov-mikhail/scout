@@ -69,11 +69,11 @@ struct IncidentGroupPlaceholder: View {
                     .frame(height: 21)
 
                 SkeletonBar(width: 194, height: 11, delay: 0)
-                    .frame(height: 21, alignment: .leading)
+                    .frame(height: 21)
             }
 
             SkeletonBar(width: 194, height: 9, delay: 0)
-                .frame(height: 15, alignment: .leading)
+                .frame(height: 15)
         }
         .padding(.top, .space20)
         .padding(.horizontal, .gutter)
