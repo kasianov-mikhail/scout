@@ -12,69 +12,52 @@ struct RetentionDayTabs: View {
     @Binding var day: RetentionDay
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(RetentionDay.tabs.enumerated()), id: \.element) { index, item in
-                Button {
-                    day = item
-                } label: {
-                    cell(item, isFirst: index == 0, isLast: index == RetentionDay.tabs.count - 1)
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(item == day ? .isSelected : [])
+        ReadoutTabStrip(
+            values: RetentionDay.tabs,
+            isSelected: { $0 == day },
+            isLoading: overview == nil,
+            spacing: 0,
+            showsDividers: true,
+            onSelect: { day = $0 },
+            indicator: { _ in
+                Rectangle()
+                    .fill(Color.fillSuccess)
+                    .frame(height: 2)
+                    .padding(.horizontal, .space10)
             }
-        }
-        .background(alignment: .bottom) {
-            Separator()
+        ) { item, isActive in
+            cell(item, isActive: isActive)
         }
         .hapticFeedback(.selection, trigger: day)
     }
 
-    private func cell(_ item: RetentionDay, isFirst: Bool, isLast: Bool) -> some View {
+    private func cell(_ item: RetentionDay, isActive: Bool) -> some View {
         let metric = overview?.metric(day: item)
-        let isSelected = item == day && overview != nil
 
         return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: item.title)
-                .font(isSelected ? .scoutCaptionStrong : .scoutCaption)
-                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
+                .font(isActive ? .scoutCaptionStrong : .scoutCaption)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.textMuted)
 
             if let metric {
                 Text(verbatim: metric.rateLabel)
                     .font(.scoutNumberM)
                     .monospacedDigit()
-                    .frame(height: 26, alignment: .leading)
+                    .frame(height: 26)
 
                 Text(verbatim: metric.pointsLabel)
                     .font(.scoutFootnoteStrong)
                     .foregroundStyle(metric.isRising ? Color.trendPositive : Color.textMuted)
             } else {
                 SkeletonBar(width: 46, height: 14, delay: 0.16)
-                    .frame(height: 26, alignment: .leading)
+                    .frame(height: 26)
 
                 SkeletonBar(width: 28, height: 6, delay: 0.16)
-                    .frame(height: 14, alignment: .leading)
+                    .frame(height: 14)
             }
         }
         .padding(.top, .space12)
         .padding(.bottom, .space12)
-        .padding(.leading, isFirst ? 0 : 10)
-        .padding(.trailing, isLast ? 0 : 10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .trailing) {
-            if !isLast {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
-            }
-        }
-        .overlay(alignment: .bottom) {
-            if isSelected {
-                Rectangle()
-                    .fill(Color.fillSuccess)
-                    .frame(height: 2)
-                    .padding(.horizontal, .space10)
-            }
-        }
     }
 }
 

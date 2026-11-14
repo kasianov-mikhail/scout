@@ -13,36 +13,35 @@ struct ActivityMetricTabs: View {
     @Binding var selection: ActivityPeriod
 
     var body: some View {
-        HStack(alignment: .top, spacing: .space12) {
-            ForEach(ActivityPeriod.allCases) { period in
-                Button {
-                    selection = period
-                } label: {
-                    cell(period: period)
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(period == selection ? .isSelected : [])
+        ReadoutTabStrip(
+            values: ActivityPeriod.allCases,
+            isSelected: { $0 == selection },
+            isLoading: false,
+            spacing: .space12,
+            onSelect: { selection = $0 },
+            indicator: { _ in
+                Rectangle()
+                    .fill(Color.fillSuccess)
+                    .frame(height: 2)
             }
-        }
-        .background(alignment: .bottom) {
-            Separator()
+        ) { period, isActive in
+            cell(period: period, isActive: isActive)
         }
     }
 
-    private func cell(period: ActivityPeriod) -> some View {
+    private func cell(period: ActivityPeriod, isActive: Bool) -> some View {
         let metric = series.summary(period: period)
-        let isSelected = period == selection
 
         return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: period.rawValue)
                 .font(.scoutCaptionStrong)
-                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.textMuted)
 
             Text(verbatim: metric.valueLabel)
                 .font(.scoutNumberL)
                 .monospacedDigit()
-                .foregroundStyle(isSelected ? Color.textPrimary : Color.inactiveValue)
-                .frame(height: 33, alignment: .leading)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.inactiveValue)
+                .frame(height: 33)
 
             Text(verbatim: metric.deltaLabel(precision: 1))
                 .font(.scoutCaption)
@@ -50,14 +49,6 @@ struct ActivityMetricTabs: View {
         }
         .padding(.top, .space10)
         .padding(.bottom, .space12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .bottom) {
-            if isSelected {
-                Rectangle()
-                    .fill(Color.fillSuccess)
-                    .frame(height: 2)
-            }
-        }
     }
 }
 

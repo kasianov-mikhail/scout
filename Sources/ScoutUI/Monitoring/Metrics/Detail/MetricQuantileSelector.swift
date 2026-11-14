@@ -17,36 +17,35 @@ struct MetricQuantileSelector: View {
     @Binding var selection: MetricQuantile
 
     var body: some View {
-        HStack(spacing: .space12) {
-            ForEach(MetricQuantile.allCases) { quantile in
-                Button {
-                    selection = quantile
-                } label: {
-                    cell(quantile)
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(quantile == selection ? .isSelected : [])
+        ReadoutTabStrip(
+            values: MetricQuantile.allCases,
+            isSelected: { $0 == selection },
+            isLoading: false,
+            spacing: .space12,
+            onSelect: { selection = $0 },
+            indicator: { _ in
+                Rectangle()
+                    .fill(Color.fillAccent)
+                    .frame(height: .ruleThick)
             }
-        }
-        .background(alignment: .bottom) {
-            Separator()
+        ) { quantile, isActive in
+            cell(quantile, isActive: isActive)
         }
     }
 
-    private func cell(_ quantile: MetricQuantile) -> some View {
-        let isSelected = quantile == selection
+    private func cell(_ quantile: MetricQuantile, isActive: Bool) -> some View {
         let current = summary?.value(quantile)
         let delta = delta(current: current, previous: previous?.value(quantile))
 
         return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: quantile.title)
                 .font(.scoutCaptionStrong)
-                .foregroundStyle(isSelected ? Color.textPrimary : Color.textMuted)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.textMuted)
 
             Text(verbatim: current.map { format.label($0) } ?? "—")
                 .font(.scoutNumberL)
                 .monospacedDigit()
-                .foregroundStyle(isSelected ? Color.textPrimary : Color.inactiveValue)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.inactiveValue)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
 
@@ -56,14 +55,6 @@ struct MetricQuantileSelector: View {
         }
         .padding(.top, .space10)
         .padding(.bottom, .space12)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .bottom) {
-            if isSelected {
-                Rectangle()
-                    .fill(Color.fillAccent)
-                    .frame(height: .ruleThick)
-            }
-        }
         .contentShape(.rect)
     }
 

@@ -44,19 +44,20 @@ struct HomeActiveUsersSection: View {
                 }
             }
 
-            HStack(alignment: .top, spacing: 0) {
-                ForEach(users.metrics) { metric in
-                    Button {
-                        selected = metric.kind
-                    } label: {
-                        ActiveUserMetricView(metric: metric, isSelected: metric.kind == selected)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(metric.kind == selected ? .isSelected : [])
+            ReadoutTabStrip(
+                values: users.metrics,
+                isSelected: { $0.kind == selected },
+                isLoading: false,
+                spacing: 0,
+                onSelect: { selected = $0.kind },
+                indicator: { metric in
+                    Rectangle()
+                        .fill(metric.kind.accent)
+                        .frame(height: 2)
+                        .padding(.trailing, .space12)
                 }
-            }
-            .background(alignment: .bottom) {
-                Separator()
+            ) { metric, isActive in
+                ActiveUserMetricView(metric: metric, isActive: isActive)
             }
 
             if let metric = users.metric(selected) {
@@ -108,15 +109,15 @@ struct HomeActiveUsersSection: View {
 
 private struct ActiveUserMetricView: View {
     let metric: ActiveUsersMetric
-    let isSelected: Bool
+    let isActive: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: metric.kind.title.uppercased())
-                .homeText(isSelected ? .labelInk : .label)
+                .homeText(isActive ? .labelInk : .label)
 
             Text(verbatim: metric.valueLabel)
-                .homeText(isSelected ? .number : .numberDim)
+                .homeText(isActive ? .number : .numberDim)
                 .frame(height: 34, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel)
@@ -124,15 +125,6 @@ private struct ActiveUserMetricView: View {
                 .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.fillDanger)
         }
         .padding(.vertical, .space10)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .bottom) {
-            if isSelected {
-                Rectangle()
-                    .fill(metric.kind.accent)
-                    .frame(height: 2)
-                    .padding(.trailing, .space12)
-            }
-        }
     }
 }
 
