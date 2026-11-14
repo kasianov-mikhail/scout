@@ -28,7 +28,7 @@ struct ActivityView: View {
                         content(points: points)
                             .transition(.opacity)
                     } else {
-                        ActivityViewPlaceholder(range: $range, metric: metric)
+                        ActivityViewPlaceholder(range: $range)
                             .transition(.opacity)
                     }
                 }
