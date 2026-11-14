@@ -103,7 +103,7 @@ struct HomeList: View {
                 HomeAlertSection(history: snapshot.alerts) {
                     path.append(.alerts)
                 }
-                .padding(.top, .space6)
+                .padding(.top, snapshot.alerts.isEmpty ? 0 : .space6)
                 .loadingInk(isLoading: isLoading, delay: 0.05)
                 HomeActiveUsersSection(users: snapshot.users) { kind in
                     switch kind {

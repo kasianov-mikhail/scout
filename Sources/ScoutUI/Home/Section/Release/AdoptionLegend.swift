@@ -28,7 +28,7 @@ struct AdoptionLegend: View {
 
     @ViewBuilder private func square(level: Stability.Level) -> some View {
         if dashed {
-            RoundedRectangle(cornerRadius: .radiusBar)
+            Circle()
                 .strokeBorder(squareColor ?? Color.surfaceBarIdle, style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
                 .frame(width: squareSize, height: squareSize)
         } else {
