@@ -72,6 +72,7 @@ struct HomeView: View {
         }
         .imageScale(.medium)
         .dynamicTypeSize(.large)
+        .preferredColorScheme(.light)
         .font(.scoutBody)
         .environment(\.locale, Locale(identifier: "en_US"))
         .tint(tint.value)
