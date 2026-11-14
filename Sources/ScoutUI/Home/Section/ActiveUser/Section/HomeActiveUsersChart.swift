@@ -13,6 +13,8 @@ struct HomeActiveUsersChart: View {
     let start: Date
     let end: Date
 
+    @Environment(\.homeTypography) private var typography
+
     var body: some View {
         BarChart(
             values: metric.series,
@@ -25,7 +27,10 @@ struct HomeActiveUsersChart: View {
             labelGap: 6,
             labelDesign: .monospaced,
             accent: metric.series.indices.last.map { BarChart.Accent(index: $0, color: metric.kind.accent) },
-            roundBottomCorners: false
+            roundBottomCorners: false,
+            axisFont: typography.font(.axis),
+            axisColor: typography.color(.axis),
+            axisTracking: typography.tracking(.axis)
         )
     }
 

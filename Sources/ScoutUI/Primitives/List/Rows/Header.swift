@@ -10,18 +10,20 @@ import SwiftUI
 struct Header<Trailing: View>: View {
     let title: String
     let showsSeparator: Bool
+    let font: Font
 
     @ViewBuilder let trailing: () -> Trailing
 
-    init(title: String, showsSeparator: Bool = false, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
+    init(title: String, showsSeparator: Bool = false, font: Font = .scoutSection, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
         self.title = title
         self.showsSeparator = showsSeparator
+        self.font = font
         self.trailing = trailing
     }
 
     var body: some View {
         HStack {
-            Text(verbatim: title.uppercased()).font(.scoutSection)
+            Text(verbatim: title.uppercased()).font(font)
 
             Spacer()
 

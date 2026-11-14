@@ -49,17 +49,17 @@ struct HomeRetentionSection: View {
 
     private var footer: some View {
         Text(verbatim: "Gray: installs that week · green: kept")
-            .font(.scoutCaption)
-            .foregroundStyle(Color.textMuted)
+            .homeText(.caption)
     }
 }
 
 struct HomeRetentionHeader: View {
+    @Environment(\.homeTypography) private var typography
+
     var body: some View {
-        Header(title: "Retention", showsSeparator: true) {
+        Header(title: "Retention", showsSeparator: true, font: typography.font(.section)) {
             Text(verbatim: "kept on day 7")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
+                .homeText(.caption)
         }
     }
 }
@@ -72,7 +72,7 @@ private struct RetentionRowContent: View {
     var body: some View {
         HStack(spacing: .space10) {
             Text(verbatim: DateFormatter.monthDay.string(from: week.start))
-                .font(.scoutRow)
+                .homeText(.row)
                 .frame(width: 56, alignment: .leading)
 
             RetentionBar(week: week, maxInstalls: maxInstalls)
@@ -97,17 +97,14 @@ private struct RetentionRowContent: View {
         if let kept = week.kept, let rate = week.rate {
             HStack(spacing: 0) {
                 Text(verbatim: "\(kept)")
-                    .font(.scoutValueStrong)
-                    .foregroundStyle(Color.positive)
+                    .homeText(.monoValue)
 
                 Text(verbatim: " · \(Int((rate * 100).rounded()))%")
-                    .foregroundStyle(Color.textMuted)
+                    .homeText(.monoDim)
             }
-            .font(.scoutValue)
         } else {
             Text(verbatim: week.pendingLabel ?? "—")
-                .font(.scoutValue)
-                .foregroundStyle(Color.pending)
+                .homeText(.monoOff)
         }
     }
 }

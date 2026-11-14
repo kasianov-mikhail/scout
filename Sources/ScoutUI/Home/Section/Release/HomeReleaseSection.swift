@@ -11,6 +11,8 @@ struct HomeReleaseSection: View {
     let adoption: ReleaseAdoption?
     let onShowAll: () -> Void
 
+    @Environment(\.homeTypography) private var typography
+
     var body: some View {
         if let adoption {
             if adoption.isEmpty {
@@ -25,17 +27,16 @@ struct HomeReleaseSection: View {
 
     private func content(adoption: ReleaseAdoption) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases", showsSeparator: true) {
+            Header(title: "Releases", showsSeparator: true, font: typography.font(.section)) {
                 HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
             }
 
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 Text(verbatim: adoption.headline)
-                    .font(.scoutNumberM)
+                    .homeText(.headline)
 
                 Text(verbatim: "of sessions")
-                    .font(.scoutRow)
-                    .foregroundStyle(Color.textMuted)
+                    .homeText(.suffix)
             }
             .frame(height: 28)
             .padding(.top, 14)
@@ -45,12 +46,19 @@ struct HomeReleaseSection: View {
                 height: 24,
                 labelSize: 10,
                 labelWeight: .semibold,
-                labelInset: 6
+                labelInset: 6,
+                labelFont: typography.font(.stripLabel),
+                labelTracking: typography.tracking(.stripLabel)
             )
             .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: nil)
-                .padding(.top, .space8)
+            AdoptionLegend(
+                squareSize: 7,
+                squareColor: nil,
+                font: typography.font(.legend),
+                color: typography.color(.legend)
+            )
+            .padding(.top, .space8)
 
             caption(adoption: adoption)
                 .padding(.top, .space10)
@@ -62,13 +70,13 @@ struct HomeReleaseSection: View {
     private func caption(adoption: ReleaseAdoption) -> some View {
         if let top = adoption.top {
             (Text(verbatim: "\(top.id) is ")
-                .foregroundColor(Color.textMuted)
+                .foregroundColor(typography.color(.caption))
                 + Text(verbatim: top.stability.level.title)
-                .font(.scoutCaptionStrong)
+                .font(typography.font(.status))
                 .foregroundColor(top.stability.level == .healthy ? Color.positive : top.stability.level.labelColor)
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
-                .foregroundColor(Color.textMuted))
-                .font(.scoutCaption)
+                .foregroundColor(typography.color(.caption)))
+                .homeText(.caption)
         }
     }
 }

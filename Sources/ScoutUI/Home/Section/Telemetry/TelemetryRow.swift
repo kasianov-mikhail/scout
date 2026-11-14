@@ -51,13 +51,12 @@ struct TelemetryRow: View {
                         Spacer(minLength: 0)
 
                         Text(verbatim: item.valueLabel)
-                            .font(.scoutTitle)
+                            .homeText(.tileValue)
                             .monospacedDigit()
                     }
 
                     Text(verbatim: item.caption)
-                        .font(.telemetryCaption)
-                        .foregroundStyle(Color.textMuted)
+                        .homeText(.caption)
                 }
             }
         } else {
@@ -88,7 +87,7 @@ struct TelemetryRow: View {
 
     private var title: some View {
         Text(verbatim: item.kind.title)
-            .font(.telemetryTitle)
+            .homeText(.row)
     }
 }
 

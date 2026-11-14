@@ -22,8 +22,21 @@ extension Font {
     static let telemetryCaption = scoutCaption
 
     static func book(size: CGFloat, design: Font.Design = .default) -> Font {
+        platformFont(size: size, axisWeight: 0.12, design: design)
+    }
+
+    /// A system font at a numerical weight on the variable axis, such as 450 or 650.
+    ///
+    /// The numerical weights map to the system font's axis through the raw values that
+    /// `UIFont.Weight` and `NSFont.Weight` use: 400 is 0, 600 is 0.3, 700 is 0.4. The
+    /// values between them are interpolated, and 450 keeps the app's existing 0.12.
+    static func variable(size: CGFloat, weight: CGFloat, design: Font.Design = .default) -> Font {
+        platformFont(size: size, axisWeight: axisWeight(weight), design: design)
+    }
+
+    private static func platformFont(size: CGFloat, axisWeight: CGFloat, design: Font.Design) -> Font {
         #if os(iOS)
-            let weight = UIFont.Weight(rawValue: 0.12)
+            let weight = UIFont.Weight(rawValue: axisWeight)
             switch design {
             case .monospaced:
                 return Font(UIFont.monospacedSystemFont(ofSize: size, weight: weight))
@@ -36,7 +49,7 @@ extension Font {
                 return Font(UIFont.systemFont(ofSize: size, weight: weight))
             }
         #else
-            let weight = NSFont.Weight(rawValue: 0.12)
+            let weight = NSFont.Weight(rawValue: axisWeight)
             switch design {
             case .monospaced:
                 return Font(NSFont.monospacedSystemFont(ofSize: size, weight: weight))
@@ -49,6 +62,29 @@ extension Font {
                 return Font(NSFont.systemFont(ofSize: size, weight: weight))
             }
         #endif
+    }
+
+    private static func axisWeight(_ weight: CGFloat) -> CGFloat {
+        switch weight {
+        case 100: return -0.8
+        case 200: return -0.6
+        case 300: return -0.4
+        case 400: return 0
+        case 450: return 0.12
+        case 500: return 0.23
+        case 600: return 0.3
+        case 650: return 0.35
+        case 700: return 0.4
+        case 750: return 0.48
+        case 800: return 0.56
+        case 900: return 0.62
+        default:
+            let clamped = min(max(weight, 100), 900)
+            let lower = (clamped / 100).rounded(.down) * 100
+            let upper = min(lower + 100, 900)
+            let progress = (clamped - lower) / 100
+            return axisWeight(lower) + (axisWeight(upper) - axisWeight(lower)) * progress
+        }
     }
 
     static func weighted(size: CGFloat, weight: Font.Weight, design: Font.Design) -> Font {
