@@ -23,7 +23,7 @@ struct TelemetryRow: View {
         Button(action: action) {
             HStack(alignment: .top, spacing: .space8) {
                 Image(systemName: item.kind.systemImage)
-                    .font(.book(size: 18))
+                    .font(.book(size: 16))
                     .foregroundStyle(item.kind.color)
                     .frame(width: 24)
                     .accessibilityHidden(true)
