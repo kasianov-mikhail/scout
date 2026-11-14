@@ -13,13 +13,14 @@ struct HomeActiveUsersSectionPlaceholder: View {
         VStack(alignment: .leading, spacing: 0) {
             Header(title: "Active Users", showsSeparator: true)
 
-            HStack(alignment: .top, spacing: 0) {
-                ForEach(ActiveUsers.Kind.allCases) { kind in
-                    metric(kind: kind)
-                }
-            }
-            .background(alignment: .bottom) {
-                Separator()
+            ReadoutTabStrip(
+                values: ActiveUsers.Kind.allCases,
+                isSelected: { _ in false },
+                isLoading: true,
+                spacing: 0,
+                onSelect: nil
+            ) { kind, _ in
+                metric(kind: kind)
             }
 
             SkeletonBar(height: 72, delay: 0.56, fill: Color.surfaceGrey)
@@ -47,13 +48,12 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 .foregroundStyle(Color.textMuted)
 
             SkeletonBar(width: 74, height: 17, delay: 0.4)
-                .frame(height: 34, alignment: .leading)
+                .frame(height: 34)
 
             SkeletonBar(width: 46, height: 8, delay: 0.48)
-                .frame(height: 15, alignment: .leading)
+                .frame(height: 15)
         }
         .padding(.vertical, .space10)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var end: Date {

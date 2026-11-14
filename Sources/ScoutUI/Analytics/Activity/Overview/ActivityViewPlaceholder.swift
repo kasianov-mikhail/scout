@@ -37,27 +37,31 @@ struct ActivityViewPlaceholder: View {
     }
 
     private var metrics: some View {
-        HStack(alignment: .top, spacing: .space12) {
-            ForEach(ActivityPeriod.allCases) { period in
-                VStack(alignment: .leading, spacing: .space2) {
-                    Text(verbatim: period.rawValue)
-                        .font(.scoutCaptionStrong)
-                        .foregroundStyle(Color.textMuted)
-
-                    SkeletonBar(width: 74, height: 20, delay: 0.08)
-                        .frame(height: 33, alignment: .leading)
-
-                    SkeletonBar(width: 28, height: 6, delay: 0.08)
-                        .frame(height: 15, alignment: .leading)
-                }
-                .padding(.top, .space10)
-                .padding(.bottom, .space12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+        ReadoutTabStrip(
+            values: ActivityPeriod.allCases,
+            isSelected: { _ in false },
+            isLoading: true,
+            spacing: .space12,
+            onSelect: nil
+        ) { period, _ in
+            skeletonMetric(period)
         }
-        .background(alignment: .bottom) {
-            Separator()
+    }
+
+    private func skeletonMetric(_ period: ActivityPeriod) -> some View {
+        VStack(alignment: .leading, spacing: .space2) {
+            Text(verbatim: period.rawValue)
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(Color.textMuted)
+
+            SkeletonBar(width: 74, height: 20, delay: 0.08)
+                .frame(height: 33)
+
+            SkeletonBar(width: 28, height: 6, delay: 0.08)
+                .frame(height: 15)
         }
+        .padding(.top, .space10)
+        .padding(.bottom, .space12)
     }
 
     private var chart: some View {

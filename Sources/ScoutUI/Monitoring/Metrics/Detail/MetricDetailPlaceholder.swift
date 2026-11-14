@@ -93,27 +93,29 @@ struct MetricDetailPlaceholder: View {
     }
 
     private var percentileSelector: some View {
-        HStack(spacing: .space12) {
-            ForEach(MetricQuantile.allCases) { quantile in
-                VStack(alignment: .leading, spacing: .space2) {
-                    Text(verbatim: quantile.title)
-                        .font(.scoutCaptionStrong)
-                        .foregroundStyle(Color.textMuted)
-
-                    SkeletonBar(width: 74, height: 20, delay: 0.08)
-
-                    SkeletonBar(width: 28, height: 9, delay: 0.08)
-                }
-                .padding(.top, .space10)
-                .padding(.bottom, .space12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            }
+        ReadoutTabStrip(
+            values: MetricQuantile.allCases,
+            isSelected: { _ in false },
+            isLoading: true,
+            spacing: .space12,
+            onSelect: nil
+        ) { quantile, _ in
+            skeletonQuantile(quantile)
         }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+    }
+
+    private func skeletonQuantile(_ quantile: MetricQuantile) -> some View {
+        VStack(alignment: .leading, spacing: .space2) {
+            Text(verbatim: quantile.title)
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(Color.textMuted)
+
+            SkeletonBar(width: 74, height: 20, delay: 0.08)
+
+            SkeletonBar(width: 28, height: 9, delay: 0.08)
         }
+        .padding(.top, .space10)
+        .padding(.bottom, .space12)
     }
 
     private func chartSkeleton(height: CGFloat, delay: Double) -> some View {
