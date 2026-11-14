@@ -52,8 +52,8 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 NavigationLink {
                     destination()
                 } label: {
-                    Image(systemName: "arrow.up.right.and.arrow.down.left")
-                        .font(.book(size: 20))
+                    Image(systemName: "arrow.down.left.and.arrow.up.right")
+                        .font(.book(size: 16))
                         .frame(width: 44, height: 44)
                         .padding(.trailing, -12)
                 }
