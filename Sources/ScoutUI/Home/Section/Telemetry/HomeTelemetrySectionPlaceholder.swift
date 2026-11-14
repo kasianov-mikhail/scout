@@ -46,16 +46,12 @@ struct HomeTelemetrySectionPlaceholder: View {
         let delay = 0.72 + Double(index / 2) * 0.08
 
         return HStack(alignment: .top, spacing: .space8) {
-            Image(systemName: kind.systemImage)
-                .font(.book(size: 16))
-                .foregroundStyle(kind.color)
+            SkeletonBar(width: 18, height: 18, delay: delay, cornerRadius: .radiusBadge)
                 .frame(width: 24)
-                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: .space2) {
-                HStack(alignment: .firstTextBaseline, spacing: .space8) {
-                    Text(verbatim: kind.title)
-                        .homeText(.row)
+                HStack(spacing: .space8) {
+                    SkeletonBar(width: kind.skeletonWidth, height: 9, delay: delay)
 
                     Spacer(minLength: 0)
 
@@ -77,6 +73,20 @@ struct HomeTelemetrySectionPlaceholder: View {
                     .fill(Color.separator)
                     .frame(height: 0.5)
             }
+        }
+    }
+}
+
+extension TelemetryItem.Kind {
+    /// The width of the title bar in a loading row, taken from the design.
+    fileprivate var skeletonWidth: CGFloat {
+        switch self {
+        case .events: 46
+        case .crashes: 56
+        case .metrics: 50
+        case .hangs: 44
+        case .network: 58
+        case .resources: 74
         }
     }
 }

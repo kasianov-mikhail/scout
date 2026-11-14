@@ -40,9 +40,7 @@ struct HomeRetentionSectionPlaceholder: View {
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if index < 3 {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
+                DashedLine()
             }
         }
     }
