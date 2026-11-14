@@ -29,24 +29,46 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                MetricDetailPlaceholder(kind: .distribution(telemetry), range: $range)
-                    .transition(.opacity)
-            case .success(let distribution):
-                content(distribution)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
                 }
+            } else if isEmpty {
+                VStack(spacing: 0) {
+                    MetricRangeStrip(selection: $range)
+                        .padding(.top, .space8)
+                        .padding(.leading, .gutter)
+
+                    Placeholder(
+                        text: "No data",
+                        systemImage: "chart.bar",
+                        description: "No values have been recorded for this metric in this period"
+                    )
+                }
+            } else {
+                ScrollView {
+                    if case .success(let distribution) = provider.result {
+                        content(distribution)
+                            .transition(.opacity)
+                    } else {
+                        MetricDetailPlaceholder(kind: .distribution(telemetry), range: $range)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
         .fetchTask([provider])
     }
 
-    @ViewBuilder
+    private var isEmpty: Bool {
+        guard case .success(let distribution) = provider.result else {
+            return false
+        }
+        return distribution.histogram(range: range, now: Date()).total == 0
+    }
+
     private func content(_ distribution: MetricDistribution<H>) -> some View {
         let now = Date()
         let format = MetricValueFormat(telemetry: telemetry)
@@ -56,76 +78,59 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
         let buckets = distribution.buckets(range: range, quantile: quantile, now: now)
         let histogram = distribution.histogram(range: range, now: now)
 
-        if histogram.total == 0 {
-            VStack(spacing: 0) {
-                MetricRangeStrip(selection: $range)
-                    .padding(.top, .space8)
-                    .padding(.leading, .gutter)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            MetricRangeStrip(selection: $range)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                Placeholder(
-                    text: "No data",
-                    systemImage: "chart.bar",
-                    description: "No values have been recorded for this metric in this period"
+            MetricQuantileSelector(
+                summary: summary,
+                previous: previous,
+                telemetry: telemetry,
+                format: format,
+                selection: $quantile
+            )
+            .padding(.top, .space4)
+
+            Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
+                .padding(.top, .space8)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            MetricChart(buckets: buckets, style: .line(filled: true), format: format)
+                .padding(.top, .space16)
+
+            MetricAxisLabels(labels: range.axisLabels(now: now))
+
+            MetricLegend(title: range.previousTitle, note: nil)
+
+            MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption)
+
+            MetricHistogramChart(
+                counts: histogram.counts,
+                bounds: H.bounds,
+                percentiles: summary,
+                format: histogramFormat
+            )
+            .padding(.top, .space8)
+
+            MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
+
+            ForEach(buckets.rows) { row in
+                MetricBucketRow(
+                    row: row,
+                    label: range.rowLabel(date: row.date),
+                    format: format,
+                    tone: .neutral
                 )
             }
-        } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    MetricRangeStrip(selection: $range)
-                        .padding(.top, .space8)
-                        .padding(.trailing, -16)
-
-                    MetricQuantileSelector(
-                        summary: summary,
-                        previous: previous,
-                        telemetry: telemetry,
-                        format: format,
-                        selection: $quantile
-                    )
-                    .padding(.top, .space4)
-
-                    Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
-                        .font(.scoutCaption)
-                        .foregroundStyle(Color.textMuted)
-                        .padding(.top, .space8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
+        }
+        .padding(.horizontal, .gutter)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ChartExportButton(title: name, rangeLabel: range.title) {
                     MetricChart(buckets: buckets, style: .line(filled: true), format: format)
-                        .padding(.top, .space16)
-
-                    MetricAxisLabels(labels: range.axisLabels(now: now))
-
-                    MetricLegend(title: range.previousTitle, note: nil)
-
-                    MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption)
-
-                    MetricHistogramChart(
-                        counts: histogram.counts,
-                        bounds: H.bounds,
-                        percentiles: summary,
-                        format: histogramFormat
-                    )
-                    .padding(.top, .space8)
-
-                    MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
-
-                    ForEach(buckets.rows) { row in
-                        MetricBucketRow(
-                            row: row,
-                            label: range.rowLabel(date: row.date),
-                            format: format,
-                            tone: .neutral
-                        )
-                    }
-                }
-                .padding(.horizontal, .gutter)
-            }
-            .scrollIndicators(.hidden)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    ChartExportButton(title: name, rangeLabel: range.title) {
-                        MetricChart(buckets: buckets, style: .line(filled: true), format: format)
-                    }
                 }
             }
         }

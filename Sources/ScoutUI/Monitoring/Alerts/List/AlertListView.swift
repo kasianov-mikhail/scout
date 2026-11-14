@@ -72,51 +72,49 @@ struct AlertListView: View {
     }
 
     @ViewBuilder private var content: some View {
-        switch provider.result {
-        case .success(let statuses) where !statuses.isEmpty:
-            list(statuses)
-                .transition(.opacity)
-
-        case .success:
+        if let error = provider.error {
+            ErrorView(description: error.localizedDescription) {
+                await provider.fetchAgain(in: database)
+            }
+        } else if case .success(let statuses) = provider.result, statuses.isEmpty {
             Placeholder(
                 text: "No alert rules",
                 systemImage: "bell.badge",
                 description: "Add a rule to get notified when a metric misbehaves."
             )
-
-        case .failure(let error):
-            ErrorView(description: error.localizedDescription) {
-                await provider.fetchAgain(in: database)
+        } else {
+            ScrollView {
+                if case .success(let statuses) = provider.result {
+                    list(statuses)
+                        .transition(.opacity)
+                } else {
+                    AlertListPlaceholder()
+                        .transition(.opacity)
+                }
             }
-
-        case nil:
-            AlertListPlaceholder()
-                .transition(.opacity)
+            .scrollIndicators(.hidden)
         }
     }
 
     private func list(_ statuses: [AlertStatus]) -> some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
-                    NotificationsDeniedRow()
-                        .overlay(alignment: .bottom) {
-                            Rectangle()
-                                .fill(Color.separator)
-                                .frame(height: 0.5)
-                        }
-                }
-
-                AlertListLegend()
-                    .padding(.top, .space10)
-
-                section(statuses.firing, title: "FIRING")
-                section(statuses.armed, title: "ARMED")
-                section(statuses.muted, title: "MUTED")
+        LazyVStack(alignment: .leading, spacing: 0) {
+            if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
+                NotificationsDeniedRow()
+                    .overlay(alignment: .bottom) {
+                        Rectangle()
+                            .fill(Color.separator)
+                            .frame(height: 0.5)
+                    }
             }
-            .padding(.horizontal, .gutter)
+
+            AlertListLegend()
+                .padding(.top, .space10)
+
+            section(statuses.firing, title: "FIRING")
+            section(statuses.armed, title: "ARMED")
+            section(statuses.muted, title: "MUTED")
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     @ViewBuilder private func section(_ statuses: [AlertStatus], title: String) -> some View {

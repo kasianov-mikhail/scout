@@ -30,58 +30,57 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
 
     @ViewBuilder
     private var content: some View {
-        switch provider.result {
-        case nil:
-            IncidentListPlaceholder(range: $provider.range)
-                .transition(.opacity)
-        case .success(let tiles):
-            if tiles.isEmpty {
-                VStack(spacing: 0) {
-                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, .space8)
-                        .padding(.horizontal, .gutter)
-
-                    placeholder
-                }
-            } else {
-                list(tiles)
-                    .transition(.opacity)
-            }
-        case .failure(let error):
+        if let error = provider.error {
             ErrorView(description: Text(error.localizedDescription)) {
                 await provider.fetchAgain(in: database)
             }
+        } else if case .success(let tiles) = provider.result, tiles.isEmpty {
+            VStack(spacing: 0) {
+                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                    .padding(.top, .space8)
+                    .padding(.horizontal, .gutter)
+
+                placeholder
+            }
+        } else {
+            ScrollView {
+                if case .success(let tiles) = provider.result {
+                    list(tiles)
+                        .transition(.opacity)
+                } else {
+                    IncidentListPlaceholder(range: $provider.range)
+                        .transition(.opacity)
+                }
+            }
+            .scrollIndicators(.hidden)
         }
     }
 
     private func list(_ tiles: [IncidentTile<Element>]) -> some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-
-                summary(tiles)
-                    .padding(.top, .space4)
-                    .padding(.bottom, .space6)
-
-                IncidentGrid(count: tiles.count) { index in
-                    let tile = tiles[index]
-
-                    NavigationLink {
-                        destination(tile.tally)
-                    } label: {
-                        IncidentTileView(
-                            tile: tile,
-                            side: index.isMultiple(of: 2) ? .leading : .trailing
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
+        LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, .space8)
+
+            summary(tiles)
+                .padding(.top, .space4)
+                .padding(.bottom, .space6)
+
+            IncidentGrid(count: tiles.count) { index in
+                let tile = tiles[index]
+
+                NavigationLink {
+                    destination(tile.tally)
+                } label: {
+                    IncidentTileView(
+                        tile: tile,
+                        side: index.isMultiple(of: 2) ? .leading : .trailing
+                    )
+                }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, .gutter)
+            .padding(.top, .space8)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     private func summary(_ tiles: [IncidentTile<Element>]) -> some View {

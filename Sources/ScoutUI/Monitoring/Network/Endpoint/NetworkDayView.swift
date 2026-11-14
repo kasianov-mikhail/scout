@@ -34,64 +34,70 @@ struct NetworkDayView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch provider.result {
-        case nil:
-            NetworkLedgerPlaceholder(title: title, primary: "HOUR")
-                .transition(.opacity)
-        case .success(let report):
-            let rows = report.rows(name: name, range: provider.query.range, component: .hour)
-
-            if rows.contains(where: { $0.requests > 0 }) {
-                list(report, rows: rows)
-                    .transition(.opacity)
-            } else {
-                Placeholder(
-                    text: "No requests",
-                    systemImage: "network",
-                    description: "No requests have been recorded for this endpoint on this day"
-                )
-            }
-        case .failure(let error):
+        if let error = provider.error {
             ErrorView(description: Text(error.localizedDescription)) {
                 await provider.fetchAgain(in: database)
             }
+        } else if isEmpty {
+            Placeholder(
+                text: "No requests",
+                systemImage: "network",
+                description: "No requests have been recorded for this endpoint on this day"
+            )
+        } else {
+            ScrollView {
+                if case .success(let report) = provider.result {
+                    list(report)
+                        .transition(.opacity)
+                } else {
+                    NetworkLedgerPlaceholder(title: title, primary: "HOUR")
+                        .transition(.opacity)
+                }
+            }
+            .scrollIndicators(.hidden)
         }
+    }
+
+    private var isEmpty: Bool {
+        guard case .success(let report) = provider.result else {
+            return false
+        }
+        let rows = report.rows(name: name, range: provider.query.range, component: .hour)
+        return !rows.contains { $0.requests > 0 }
     }
 
     private var title: String {
         DateFormatter.networkDayLabel.string(from: date)
     }
 
-    private func list(_ report: NetworkReport, rows: [NetworkLedgerRow]) -> some View {
+    private func list(_ report: NetworkReport) -> some View {
+        let rows = report.rows(name: name, range: provider.query.range, component: .hour)
         let endpoint = report.endpoint(name: name, range: provider.query.range) ?? NetworkEndpoint(name: name, requests: 0, successRate: nil, p99: nil)
         let maxRequests = rows.map(\.requests).max() ?? 0
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ListTitle(title: title)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            ListTitle(title: title)
 
-                NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
+            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
 
-                NetworkLedgerHeader(primary: "HOUR")
+            NetworkLedgerHeader(primary: "HOUR")
 
-                ForEach(rows) { row in
-                    NavigationLink {
-                        NetworkHourView(name: name, date: row.date)
-                    } label: {
-                        NetworkLedgerRowView(
-                            row: row,
-                            maxRequests: maxRequests,
-                            label: .hour,
-                            component: .hour,
-                            showsDivider: row.id != rows.last?.id
-                        )
-                    }
-                    .buttonStyle(.plain)
+            ForEach(rows) { row in
+                NavigationLink {
+                    NetworkHourView(name: name, date: row.date)
+                } label: {
+                    NetworkLedgerRowView(
+                        row: row,
+                        maxRequests: maxRequests,
+                        label: .hour,
+                        component: .hour,
+                        showsDivider: row.id != rows.last?.id
+                    )
                 }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 }
 

@@ -16,19 +16,16 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
     let group: IncidentGroup<Element>?
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                summary
-                IncidentDetailHeader(title: "Context")
-                IncidentContextRows(element: element, group: group, context: nil, isLoading: true, fullyLoading: true)
-                IncidentDetailHeader(title: "Stack Trace") {
-                    SkeletonBar(width: 120, height: 9, delay: 0.72)
-                }
-                stack
+        VStack(spacing: 0) {
+            summary
+            IncidentDetailHeader(title: "Context")
+            IncidentContextRows(element: element, group: group, context: nil, isLoading: true, fullyLoading: true)
+            IncidentDetailHeader(title: "Stack Trace") {
+                SkeletonBar(width: 120, height: 9, delay: 0.72)
             }
-            .padding(.horizontal, .gutter)
+            stack
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

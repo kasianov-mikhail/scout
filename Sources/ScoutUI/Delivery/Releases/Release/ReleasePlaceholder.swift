@@ -11,19 +11,16 @@ struct ReleasePlaceholder: View {
     let version: String
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                hero
-                    .padding(.horizontal, -16)
+        LazyVStack(alignment: .leading, spacing: 0) {
+            hero
+                .padding(.horizontal, -16)
 
-                grid
-                    .padding(.horizontal, -16)
+            grid
+                .padding(.horizontal, -16)
 
-                footer
-            }
-            .padding(.horizontal, .gutter)
+            footer
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -115,8 +112,11 @@ struct ReleasePlaceholder: View {
 
 #Preview("Release loading") {
     NavigationStack {
-        ReleasePlaceholder(version: "3.2.0")
-            .navigationTitle(en: "Release")
-            .inlineNavigationTitle()
+        ScrollView {
+            ReleasePlaceholder(version: "3.2.0")
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Release")
+        .inlineNavigationTitle()
     }
 }

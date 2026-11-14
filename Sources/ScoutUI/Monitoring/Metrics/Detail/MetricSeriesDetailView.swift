@@ -29,24 +29,46 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
 
     var body: some View {
         Group {
-            switch series.result {
-            case nil:
-                MetricDetailPlaceholder(kind: .series(telemetry), range: $range)
-                    .transition(.opacity)
-            case .success(let data):
-                content(data)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = series.error {
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await series.fetchAgain(in: database)
                 }
+            } else if isEmpty {
+                VStack(spacing: 0) {
+                    MetricRangeStrip(selection: $range)
+                        .padding(.top, .space8)
+                        .padding(.leading, .gutter)
+
+                    Placeholder(
+                        text: "No data",
+                        systemImage: "chart.bar",
+                        description: "No values have been recorded for this metric in this period"
+                    )
+                }
+            } else {
+                ScrollView {
+                    if case .success(let data) = series.result {
+                        content(data)
+                            .transition(.opacity)
+                    } else {
+                        MetricDetailPlaceholder(kind: .series(telemetry), range: $range)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: series.isLoading)
         .fetchTask([series, resets])
     }
 
-    @ViewBuilder
+    private var isEmpty: Bool {
+        guard case .success(let data) = series.result else {
+            return false
+        }
+        return !timeline(from: data).containsData(range: range, now: Date())
+    }
+
     private func content(_ data: [MetricSeries]) -> some View {
         let now = Date()
         let seriesTimeline = timeline(from: data)
@@ -54,53 +76,36 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
         let buckets = seriesTimeline.buckets(range: range, now: now, fold: telemetry == .meter ? .peak : .total)
         let resetDates = resets.dates(in: range.range(now: now))
 
-        if !seriesTimeline.containsData(range: range, now: now) {
-            VStack(spacing: 0) {
-                MetricRangeStrip(selection: $range)
-                    .padding(.top, .space8)
-                    .padding(.leading, .gutter)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            MetricRangeStrip(selection: $range)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
 
-                Placeholder(
-                    text: "No data",
-                    systemImage: "chart.bar",
-                    description: "No values have been recorded for this metric in this period"
+            MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
+
+            MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
+                .padding(.top, .space16)
+
+            MetricAxisLabels(labels: range.axisLabels(now: now))
+
+            MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
+
+            MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
+
+            ForEach(buckets.rows) { row in
+                MetricBucketRow(
+                    row: row,
+                    label: range.rowLabel(date: row.date),
+                    format: format,
+                    tone: tone(row)
                 )
             }
-        } else {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    MetricRangeStrip(selection: $range)
-                        .padding(.top, .space8)
-                        .padding(.trailing, -16)
-
-                    MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
-
+        }
+        .padding(.horizontal, .gutter)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                ChartExportButton(title: name, rangeLabel: range.title) {
                     MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
-                        .padding(.top, .space16)
-
-                    MetricAxisLabels(labels: range.axisLabels(now: now))
-
-                    MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
-
-                    MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
-
-                    ForEach(buckets.rows) { row in
-                        MetricBucketRow(
-                            row: row,
-                            label: range.rowLabel(date: row.date),
-                            format: format,
-                            tone: tone(row)
-                        )
-                    }
-                }
-                .padding(.horizontal, .gutter)
-            }
-            .scrollIndicators(.hidden)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    ChartExportButton(title: name, rangeLabel: range.title) {
-                        MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
-                    }
                 }
             }
         }

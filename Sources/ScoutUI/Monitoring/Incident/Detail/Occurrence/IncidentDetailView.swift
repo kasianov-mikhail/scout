@@ -25,7 +25,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
     }
 
     var body: some View {
-        Group {
+        ScrollView {
             if backtrace.result == nil {
                 IncidentDetailPlaceholder(element: element, group: group)
                     .transition(.opacity)
@@ -34,6 +34,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
                     .transition(.opacity)
             }
         }
+        .scrollIndicators(.hidden)
         .animation(.easeOut(duration: 0.2), value: backtrace.result == nil)
         .navigationTint(Element.kind.color)
         .toolbarBackground(Element.kind.detailBackground, for: .navigationBar)
@@ -50,17 +51,14 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
 
     private var detail: some View {
         let stack = IncidentStack(detail: backtrace.detail, fallback: element.stackTrace)
-        return ScrollView {
-            VStack(spacing: 0) {
-                summary(stack: stack)
-                IncidentDetailHeader(title: "Context")
-                IncidentContextRows(element: element, group: group, context: contextValue, isLoading: context.result == nil)
-                IncidentDetailHeader(title: "Stack Trace", caption: "\(element.detailThread) · \(stack.isSymbolicated ? "symbolicated" : "unsymbolicated")")
-                IncidentStackView(stack: stack, color: Element.kind.detailColor)
-            }
-            .padding(.horizontal, .gutter)
+        return VStack(spacing: 0) {
+            summary(stack: stack)
+            IncidentDetailHeader(title: "Context")
+            IncidentContextRows(element: element, group: group, context: contextValue, isLoading: context.result == nil)
+            IncidentDetailHeader(title: "Stack Trace", caption: "\(element.detailThread) · \(stack.isSymbolicated ? "symbolicated" : "unsymbolicated")")
+            IncidentStackView(stack: stack, color: Element.kind.detailColor)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 
     private var contextValue: IncidentContext? {

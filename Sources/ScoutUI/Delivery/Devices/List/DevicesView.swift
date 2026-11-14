@@ -15,17 +15,33 @@ struct DevicesView: View {
 
     var body: some View {
         Group {
-            switch provider.result {
-            case nil:
-                DeviceListPlaceholder(range: $provider.range)
-                    .transition(.opacity)
-            case .success(let models):
-                content(models)
-                    .transition(.opacity)
-            case .failure(let error):
+            if let error = provider.error {
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await provider.fetchAgain(in: database)
                 }
+            } else if case .success(let models) = provider.result, models.isEmpty {
+                VStack(spacing: 0) {
+                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                        .padding(.top, .space8)
+                        .padding(.horizontal, .gutter)
+
+                    Placeholder(
+                        text: "No devices",
+                        systemImage: "iphone.gen3",
+                        description: "Devices appear here once your app reports sessions"
+                    )
+                }
+            } else {
+                ScrollView {
+                    if case .success(let models) = provider.result {
+                        content(models)
+                            .transition(.opacity)
+                    } else {
+                        DeviceListPlaceholder(range: $provider.range)
+                            .transition(.opacity)
+                    }
+                }
+                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
@@ -36,59 +52,41 @@ struct DevicesView: View {
         }
     }
 
-    @ViewBuilder
     private func content(_ models: [DeviceModelSummary]) -> some View {
-        if models.isEmpty {
-            VStack(spacing: 0) {
-                RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.horizontal, .gutter)
+        let maxSessions = models.map(\.sessions).max() ?? 0
 
-                Placeholder(
-                    text: "No devices",
-                    systemImage: "iphone.gen3",
-                    description: "Devices appear here once your app reports sessions"
-                )
-            }
-        } else {
-            let maxSessions = models.map(\.sessions).max() ?? 0
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
+                .padding(.top, .space8)
 
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 0) {
-                    RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, .space8)
-
-                    summary(models)
-                        .padding(.top, .space4)
-                        .padding(.bottom, .space12)
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
-
-                    columns
-                        .columnHeaderStyle()
-
-                    ForEach(models) { model in
-                        NavigationLink {
-                            ModelDetailView(
-                                model: model.model,
-                                range: provider.range,
-                                activities: provider.activitiesRange == provider.range
-                                    ? provider.activities.filter { $0.model == model.model }
-                                    : nil
-                            )
-                        } label: {
-                            DeviceModelRow(model: model, maxSessions: maxSessions)
-                                .contentShape(.rect)
-                        }
-                        .buttonStyle(.plain)
-                    }
+            summary(models)
+                .padding(.top, .space4)
+                .padding(.bottom, .space12)
+                .overlay(alignment: .bottom) {
+                    Separator()
                 }
-                .padding(.horizontal, .gutter)
+
+            columns
+                .columnHeaderStyle()
+
+            ForEach(models) { model in
+                NavigationLink {
+                    ModelDetailView(
+                        model: model.model,
+                        range: provider.range,
+                        activities: provider.activitiesRange == provider.range
+                            ? provider.activities.filter { $0.model == model.model }
+                            : nil
+                    )
+                } label: {
+                    DeviceModelRow(model: model, maxSessions: maxSessions)
+                        .contentShape(.rect)
+                }
+                .buttonStyle(.plain)
             }
-            .scrollIndicators(.hidden)
-            .exportToolbar(text: DevicesExport(models: models).text)
         }
+        .padding(.horizontal, .gutter)
+        .exportToolbar(text: DevicesExport(models: models).text)
     }
 
     private func summary(_ models: [DeviceModelSummary]) -> some View {
@@ -183,8 +181,11 @@ private struct DeviceModelRow: View {
 
 #Preview("Devices — Loading") {
     NavigationStack {
-        DeviceListPlaceholder(range: .constant(.week))
-            .navigationTitle(en: "Devices")
-            .inlineNavigationTitle()
+        ScrollView {
+            DeviceListPlaceholder(range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Devices")
+        .inlineNavigationTitle()
     }
 }

@@ -34,64 +34,70 @@ struct NetworkMonthView: View {
 
     @ViewBuilder
     private var content: some View {
-        switch provider.result {
-        case nil:
-            NetworkLedgerPlaceholder(title: title, primary: "DAY")
-                .transition(.opacity)
-        case .success(let report):
-            let rows = report.rows(name: name, range: provider.query.range, component: .day)
-
-            if rows.contains(where: { $0.requests > 0 }) {
-                list(report, rows: rows)
-                    .transition(.opacity)
-            } else {
-                Placeholder(
-                    text: "No requests",
-                    systemImage: "network",
-                    description: "No requests have been recorded for this endpoint in this month"
-                )
-            }
-        case .failure(let error):
+        if let error = provider.error {
             ErrorView(description: Text(error.localizedDescription)) {
                 await provider.fetchAgain(in: database)
             }
+        } else if isEmpty {
+            Placeholder(
+                text: "No requests",
+                systemImage: "network",
+                description: "No requests have been recorded for this endpoint in this month"
+            )
+        } else {
+            ScrollView {
+                if case .success(let report) = provider.result {
+                    list(report)
+                        .transition(.opacity)
+                } else {
+                    NetworkLedgerPlaceholder(title: title, primary: "DAY")
+                        .transition(.opacity)
+                }
+            }
+            .scrollIndicators(.hidden)
         }
+    }
+
+    private var isEmpty: Bool {
+        guard case .success(let report) = provider.result else {
+            return false
+        }
+        let rows = report.rows(name: name, range: provider.query.range, component: .day)
+        return !rows.contains { $0.requests > 0 }
     }
 
     private var title: String {
         DateFormatter.networkMonthFull.string(from: month)
     }
 
-    private func list(_ report: NetworkReport, rows: [NetworkLedgerRow]) -> some View {
+    private func list(_ report: NetworkReport) -> some View {
+        let rows = report.rows(name: name, range: provider.query.range, component: .day)
         let endpoint = report.endpoint(name: name, range: provider.query.range) ?? NetworkEndpoint(name: name, requests: 0, successRate: nil, p99: nil)
         let maxRequests = rows.map(\.requests).max() ?? 0
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                ListTitle(title: title)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            ListTitle(title: title)
 
-                NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
+            NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
 
-                NetworkLedgerHeader(primary: "DAY")
+            NetworkLedgerHeader(primary: "DAY")
 
-                ForEach(rows) { row in
-                    NavigationLink {
-                        NetworkDayView(name: name, date: row.date)
-                    } label: {
-                        NetworkLedgerRowView(
-                            row: row,
-                            maxRequests: maxRequests,
-                            label: .monthDay,
-                            component: .day,
-                            showsDivider: row.id != rows.last?.id
-                        )
-                    }
-                    .buttonStyle(.plain)
+            ForEach(rows) { row in
+                NavigationLink {
+                    NetworkDayView(name: name, date: row.date)
+                } label: {
+                    NetworkLedgerRowView(
+                        row: row,
+                        maxRequests: maxRequests,
+                        label: .monthDay,
+                        component: .day,
+                        showsDivider: row.id != rows.last?.id
+                    )
                 }
+                .buttonStyle(.plain)
             }
-            .padding(.horizontal, .gutter)
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
     }
 }
 

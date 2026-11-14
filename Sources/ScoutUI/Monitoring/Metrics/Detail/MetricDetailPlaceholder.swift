@@ -23,55 +23,52 @@ struct MetricDetailPlaceholder: View {
         let now = Date()
         let dates = placeholderRows(now: now)
 
-        return ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                MetricRangeStrip(selection: $range)
+        return LazyVStack(alignment: .leading, spacing: 0) {
+            MetricRangeStrip(selection: $range)
+                .padding(.top, .space8)
+                .padding(.trailing, -16)
+
+            switch kind {
+            case .series(let telemetry):
+                headline(telemetry)
+                    .padding(.top, .space12)
+
+                chartSkeleton(height: 150, delay: 0.16)
+                    .padding(.top, .space16)
+
+                MetricAxisLabels(labels: range.axisLabels(now: now))
+
+                MetricLegend(title: range.previousTitle, note: nil)
+
+                MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
+            case .distribution(let telemetry):
+                percentileSelector
+                    .padding(.top, .space4)
+
+                SkeletonBar(width: 120, height: 9, delay: 0.08)
                     .padding(.top, .space8)
-                    .padding(.trailing, -16)
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
-                switch kind {
-                case .series(let telemetry):
-                    headline(telemetry)
-                        .padding(.top, .space12)
+                chartSkeleton(height: 150, delay: 0.16)
+                    .padding(.top, .space16)
 
-                    chartSkeleton(height: 150, delay: 0.16)
-                        .padding(.top, .space16)
+                MetricAxisLabels(labels: range.axisLabels(now: now))
 
-                    MetricAxisLabels(labels: range.axisLabels(now: now))
+                MetricLegend(title: range.previousTitle, note: nil)
 
-                    MetricLegend(title: range.previousTitle, note: nil)
+                MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
 
-                    MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-                case .distribution(let telemetry):
-                    percentileSelector
-                        .padding(.top, .space4)
+                chartSkeleton(height: 126, delay: 0.24)
+                    .padding(.top, .space8)
 
-                    SkeletonBar(width: 120, height: 9, delay: 0.08)
-                        .padding(.top, .space8)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-
-                    chartSkeleton(height: 150, delay: 0.16)
-                        .padding(.top, .space16)
-
-                    MetricAxisLabels(labels: range.axisLabels(now: now))
-
-                    MetricLegend(title: range.previousTitle, note: nil)
-
-                    MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
-
-                    chartSkeleton(height: 126, delay: 0.24)
-                        .padding(.top, .space8)
-
-                    MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-                }
-
-                ForEach(dates.indices, id: \.self) { index in
-                    row(index: index, dates: dates, now: now)
-                }
+                MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
             }
-            .padding(.horizontal, .gutter)
+
+            ForEach(dates.indices, id: \.self) { index in
+                row(index: index, dates: dates, now: now)
+            }
         }
-        .scrollIndicators(.hidden)
+        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -186,14 +183,20 @@ struct MetricDetailPlaceholder: View {
 
 #Preview("Counter loading") {
     NavigationStack {
-        MetricDetailPlaceholder(kind: .series(.counter), range: .constant(.today))
-            .monospacedNavigationTitle(en: "checkout.completed")
+        ScrollView {
+            MetricDetailPlaceholder(kind: .series(.counter), range: .constant(.today))
+        }
+        .scrollIndicators(.hidden)
+        .monospacedNavigationTitle(en: "checkout.completed")
     }
 }
 
 #Preview("Timer loading") {
     NavigationStack {
-        MetricDetailPlaceholder(kind: .distribution(.timer), range: .constant(.today))
-            .monospacedNavigationTitle(en: "http.request.duration")
+        ScrollView {
+            MetricDetailPlaceholder(kind: .distribution(.timer), range: .constant(.today))
+        }
+        .scrollIndicators(.hidden)
+        .monospacedNavigationTitle(en: "http.request.duration")
     }
 }
