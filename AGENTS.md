@@ -22,6 +22,11 @@
 - For a visual fix, include the screenshot in the final report, or name the visual points that remain unverified.
 - Do not report a visual change as done from reading the code alone.
 
+## Loading ink
+
+- A screen that crossfades from a skeleton to loaded content and shows colored content (badges, method labels, status reasons, timeline markers) applies `.loadingInk(isLoading:)` at its root, next to the crossfade animation: the content is gray while loading and inks in 200 ms after, matching the designs' `.tl` → `.ink` transition.
+- Check every screen the change touches, not only the new one, and add the missing call where such a screen has none.
+
 ## Initializer assignments
 
 - In an initializer, if at least one property assignment needs `self.` (a parameter or local shadows the property), prefix every property assignment with `self.` for consistency; if none needs it, omit `self.` from all of them.
