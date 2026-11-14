@@ -30,13 +30,13 @@ struct HomeAlertSection: View {
         VStack(alignment: .leading, spacing: .space6) {
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: "ALERTS")
-                    .font(.scoutCaptionStrong)
+                    .homeText(.labelInk)
 
                 Spacer()
 
                 if history.firing > 0 {
                     Text(verbatim: "\(history.firing) firing")
-                        .font(.scoutCaptionStrong)
+                        .homeText(.status)
                         .foregroundStyle(Color.textDanger)
                 }
             }
@@ -51,8 +51,7 @@ struct HomeAlertSection: View {
 
                 Text(verbatim: history.rulesLabel)
             }
-            .font(.scoutCaption)
-            .foregroundStyle(Color.textMuted)
+            .homeText(.caption)
             .padding(.top, .space2)
         }
         .padding(.top, .space12)

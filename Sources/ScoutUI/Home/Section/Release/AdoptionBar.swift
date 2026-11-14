@@ -13,6 +13,8 @@ struct AdoptionBar: View {
     let labelSize: CGFloat
     let labelWeight: Font.Weight
     let labelInset: CGFloat
+    var labelFont: Font? = nil
+    var labelTracking: CGFloat = 0
 
     var body: some View {
         GeometryReader { proxy in
@@ -27,7 +29,8 @@ struct AdoptionBar: View {
                         .overlay(alignment: .leading) {
                             if version.showsLabel {
                                 Text(verbatim: version.id)
-                                    .font(.weighted(size: labelSize, weight: labelWeight, design: .monospaced))
+                                    .font(labelFont ?? .weighted(size: labelSize, weight: labelWeight, design: .monospaced))
+                                    .tracking(labelTracking)
                                     .foregroundStyle(Color.textOnFill)
                                     .lineLimit(1)
                                     .minimumScaleFactor(0.8)
