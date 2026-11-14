@@ -31,7 +31,7 @@ struct RetentionDayTabs: View {
 
     private func cell(_ item: RetentionDay, isFirst: Bool, isLast: Bool) -> some View {
         let metric = overview?.metric(day: item)
-        let isSelected = item == day
+        let isSelected = item == day && overview != nil
 
         return VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: item.title)
@@ -70,7 +70,7 @@ struct RetentionDayTabs: View {
         .overlay(alignment: .bottom) {
             if isSelected {
                 Rectangle()
-                    .fill(metric == nil ? Color.surfaceSkeleton : Color.fillSuccess)
+                    .fill(Color.fillSuccess)
                     .frame(height: 2)
                     .padding(.horizontal, .space10)
             }

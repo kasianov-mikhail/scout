@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ActivityViewPlaceholder: View {
     @Binding var range: ActivityRange
-    let metric: ActivityPeriod
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
@@ -43,7 +42,7 @@ struct ActivityViewPlaceholder: View {
                 VStack(alignment: .leading, spacing: .space2) {
                     Text(verbatim: period.rawValue)
                         .font(.scoutCaptionStrong)
-                        .foregroundStyle(period == metric ? Color.textPrimary : Color.fillLevel)
+                        .foregroundStyle(Color.textMuted)
 
                     SkeletonBar(width: 74, height: 20, delay: 0.08)
                         .frame(height: 33, alignment: .leading)
@@ -54,13 +53,6 @@ struct ActivityViewPlaceholder: View {
                 .padding(.top, .space10)
                 .padding(.bottom, .space12)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(alignment: .bottom) {
-                    if period == metric {
-                        Rectangle()
-                            .fill(Color.surfaceSkeleton)
-                            .frame(height: 2)
-                    }
-                }
             }
         }
         .background(alignment: .bottom) {
@@ -128,7 +120,7 @@ struct ActivityViewPlaceholder: View {
 #Preview("Activity loading") {
     NavigationStack {
         ScrollView {
-            ActivityViewPlaceholder(range: .constant(.month), metric: .daily)
+            ActivityViewPlaceholder(range: .constant(.month))
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Active users")

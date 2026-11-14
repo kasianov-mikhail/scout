@@ -54,14 +54,6 @@ struct HomeActiveUsersSectionPlaceholder: View {
         }
         .padding(.vertical, .space10)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .bottom) {
-            if kind == .dau {
-                Rectangle()
-                    .fill(Color.surfaceSkeleton)
-                    .frame(height: 2)
-                    .padding(.trailing, .space12)
-            }
-        }
     }
 
     private var end: Date {
