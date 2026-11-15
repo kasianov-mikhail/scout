@@ -14,7 +14,7 @@ struct HomeRetentionSectionEmpty: View {
     var body: some View {
         Section(title: "Retention", note: "kept on day 7", bottomGap: .space10) {
             ForEach(Array(starts.enumerated()), id: \.element) { index, start in
-                row(start: start, fraction: fractions[index])
+                row(start: start, fraction: fractions[index], showsDivider: index < fractions.count - 1)
             }
 
             Text(verbatim: "Needs one full week of installs")
@@ -25,7 +25,7 @@ struct HomeRetentionSectionEmpty: View {
         }
     }
 
-    private func row(start: Date, fraction: CGFloat) -> some View {
+    private func row(start: Date, fraction: CGFloat, showsDivider: Bool) -> some View {
         HStack(spacing: .space10) {
             Text(verbatim: DateFormatter.monthDay.string(from: start))
                 .font(.scoutRow)
@@ -42,9 +42,9 @@ struct HomeRetentionSectionEmpty: View {
         }
         .frame(height: 40)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            if showsDivider {
+                DashedLine()
+            }
         }
     }
 
