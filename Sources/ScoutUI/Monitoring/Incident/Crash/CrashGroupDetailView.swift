@@ -59,7 +59,7 @@ struct CrashGroupDetailView: View {
         .message($occurrences.message)
         .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .monospacedNavigationTitle(en: occurrences.name)
+        .monospacedNavigationTitle(en: occurrences.name, divider: IncidentKind.crash.border)
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }

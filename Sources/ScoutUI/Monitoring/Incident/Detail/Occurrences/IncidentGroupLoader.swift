@@ -24,7 +24,7 @@ struct IncidentGroupLoader<Element: RecordDecodable & Incident, Content: View>: 
             if let records = provider.records {
                 if records.isEmpty {
                     Placeholder(text: "No occurrences")
-                        .monospacedNavigationTitle(en: provider.name)
+                        .monospacedNavigationTitle(en: provider.name, divider: Element.kind.border)
                 } else {
                     content(provider)
                         .transition(.opacity)
@@ -33,13 +33,13 @@ struct IncidentGroupLoader<Element: RecordDecodable & Incident, Content: View>: 
                 ErrorView(description: error.localizedDescription) {
                     await provider.fetchIfNeeded(in: database)
                 }
-                .monospacedNavigationTitle(en: provider.name)
+                .monospacedNavigationTitle(en: provider.name, divider: Element.kind.border)
             } else {
                 ScrollView {
                     IncidentGroupPlaceholder(kind: Element.kind)
                 }
                 .scrollIndicators(.hidden)
-                .monospacedNavigationTitle(en: provider.name)
+                .monospacedNavigationTitle(en: provider.name, divider: Element.kind.border)
                 .transition(.opacity)
             }
         }

@@ -51,7 +51,7 @@ struct IncidentOccurrencesView<Element: RecordDecodable & Incident, Row: View>: 
             }
         }
         .message($occurrences.message)
-        .monospacedNavigationTitle(en: occurrences.name)
+        .monospacedNavigationTitle(en: occurrences.name, divider: Element.kind.border)
         .toolbarBackground(Element.kind.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }

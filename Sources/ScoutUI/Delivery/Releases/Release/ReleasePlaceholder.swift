@@ -117,6 +117,6 @@ struct ReleasePlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Release")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

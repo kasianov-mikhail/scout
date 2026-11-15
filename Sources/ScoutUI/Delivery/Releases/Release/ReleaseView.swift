@@ -46,7 +46,7 @@ struct ReleaseView: View {
         .loadingInk(isLoading: provider.isLoading)
         .fetchTask([provider])
         .navigationTitle(en: "Release")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
         .toolbarBackground(provider.isLoading ? Color.surfaceGrey : release.freeSessions.level.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .navigationDestination(isPresented: $showAllCrashes) {

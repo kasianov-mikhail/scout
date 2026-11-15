@@ -169,7 +169,7 @@ private struct IncidentSummaryFrameRow: View {
             )
         }
         .scrollIndicators(.hidden)
-        .monospacedNavigationTitle(en: "NSRangeException")
+        .monospacedNavigationTitle(en: "NSRangeException", divider: IncidentKind.crash.border)
         .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }

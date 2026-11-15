@@ -9,9 +9,9 @@
 import SwiftUI
 
 extension View {
-    func monospacedNavigationTitle(en title: String) -> some View {
+    func monospacedNavigationTitle(en title: String, divider: Color? = .lineSubtle) -> some View {
         navigationTitle(en: title)
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: divider)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text(verbatim: title)

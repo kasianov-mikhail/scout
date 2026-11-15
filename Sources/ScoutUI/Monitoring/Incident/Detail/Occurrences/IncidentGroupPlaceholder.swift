@@ -179,7 +179,7 @@ struct IncidentGroupPlaceholder: View {
             IncidentGroupPlaceholder(kind: .crash)
         }
         .scrollIndicators(.hidden)
-        .monospacedNavigationTitle(en: "NSRangeException")
+        .monospacedNavigationTitle(en: "NSRangeException", divider: IncidentKind.crash.border)
         .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }
@@ -191,7 +191,7 @@ struct IncidentGroupPlaceholder: View {
             IncidentGroupPlaceholder(kind: .hang)
         }
         .scrollIndicators(.hidden)
-        .monospacedNavigationTitle(en: "Main Thread Blocked")
+        .monospacedNavigationTitle(en: "Main Thread Blocked", divider: IncidentKind.hang.border)
         .toolbarBackground(IncidentKind.hang.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }
@@ -203,7 +203,7 @@ struct IncidentGroupPlaceholder: View {
             IncidentGroupPlaceholder(kind: .resource, resourceKind: .cpu)
         }
         .scrollIndicators(.hidden)
-        .monospacedNavigationTitle(en: "CPU Exception")
+        .monospacedNavigationTitle(en: "CPU Exception", divider: IncidentKind.resource.border)
         .toolbarBackground(IncidentKind.resource.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
     }
