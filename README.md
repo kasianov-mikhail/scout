@@ -82,11 +82,11 @@ The built-in SwiftUI dashboard lets you inspect logs, metrics, crashes, network 
 It ships as a separate `ScoutUI` product, so you decide which builds carry it. See the [Dashboard Guide](docs/DASHBOARD.md) for linking it, presenting it, and keeping it out of the App Store build.
 
 <p>
-<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/bc3cd6c0-ce4a-4297-838a-dae4837bed19"><img width="240" alt="Home" src="https://github.com/user-attachments/assets/0cf853ba-40f8-4f07-8ce4-61c5ea777da3"></picture>&emsp;&emsp;<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/ac9ac83c-0a56-43a6-9142-fb683edbbfb5"><img width="240" alt="Release" src="https://github.com/user-attachments/assets/4783894b-43ef-4ba9-912e-564f1ba652fb"></picture>&emsp;&emsp;<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/4869b5ad-ea37-4a12-9f89-bf75a0b05da6"><img width="240" alt="Crash" src="https://github.com/user-attachments/assets/8f9f9b1a-59e0-4217-930d-a60b6c5fa289"></picture>
+<img width="240" alt="Home" src="https://github.com/user-attachments/assets/ff3ec2c9-dc11-4c7e-978e-99c023c268b7">&emsp;&emsp;<img width="240" alt="Release" src="https://github.com/user-attachments/assets/aa599327-d7e7-403a-9d4d-cbf979dd0b52">&emsp;&emsp;<img width="240" alt="Crash" src="https://github.com/user-attachments/assets/aed2a205-d576-49f0-94a1-88035dd022b8">
 </p>
 
 <p>
-<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/c2176177-12b8-4db6-8366-059ef58133e3"><img width="240" alt="Metrics" src="https://github.com/user-attachments/assets/0c7c3c1c-7584-4d49-89ca-3f54247ecaf0"></picture>&emsp;&emsp;<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/27cb3b86-74fe-4fa5-8d8e-aececa184139"><img width="240" alt="Network" src="https://github.com/user-attachments/assets/49bf6fb4-fe3f-402a-be71-e36f0a4a361d"></picture>&emsp;&emsp;<picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/104a63b6-871b-4596-991e-0e84fa5aaa28"><img width="240" alt="Timeline" src="https://github.com/user-attachments/assets/6e8bd2a5-ab45-48b0-9b7a-4620c60a0dbf"></picture>
+<img width="240" alt="Metrics" src="https://github.com/user-attachments/assets/dc8bfd7a-d043-4412-986b-5a6ceab9ac56">&emsp;&emsp;<img width="240" alt="Event" src="https://github.com/user-attachments/assets/7e307105-ce4e-4b41-9524-28ca1474b8e1">&emsp;&emsp;<img width="240" alt="Timeline" src="https://github.com/user-attachments/assets/0385924b-0e20-483d-be10-474fd895f860">
 </p>
 
 ## Roadmap
