@@ -73,34 +73,37 @@ struct NetworkHourView: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
+                .padding(.horizontal, .gutter)
 
-            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
+            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date), showsSeparator: false)
+                .padding(.horizontal, .gutter)
 
             if breakdown.total > 0 {
-                SectionHeader(title: "STATUS")
+                let classes = breakdown.networkClasses
 
-                ProportionBar(
-                    items: breakdown.networkClasses,
-                    color: { _, item in item.color },
-                    share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
-                )
-                .padding(.top, .space12)
-                .padding(.bottom, .space6)
+                Section(title: "Status") {
+                    ProportionBar(
+                        items: classes,
+                        color: { _, item in item.color },
+                        share: { breakdown.total > 0 ? Double($0.count) / Double(breakdown.total) : 0 }
+                    )
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space6)
 
-                ForEach(breakdown.networkClasses) { item in
-                    NetworkStatusRow(item: item, total: breakdown.total)
+                    ForEach(Array(classes.enumerated()), id: \.element.id) { index, item in
+                        NetworkStatusRow(item: item, total: breakdown.total, showsDivider: index < classes.count - 1)
+                    }
                 }
             }
 
             if let histogram = report.histogram(name: name, range: range), histogram.total > 0 {
-                SectionHeader(title: "LATENCY")
+                Section(title: "Latency", bottomGap: 0) {
+                    NetworkLatencyChart(histogram: histogram)
 
-                NetworkLatencyChart(histogram: histogram)
-
-                NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
+                    NetworkPercentileRow(percentiles: report.percentiles(name: name, range: range))
+                }
             }
         }
-        .padding(.horizontal, .gutter)
     }
 }
 

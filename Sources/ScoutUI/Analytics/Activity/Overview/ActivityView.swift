@@ -48,24 +48,30 @@ struct ActivityView: View {
         return LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
                 .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.leading, .gutter)
 
             ActivityMetricTabs(series: series, selection: $metric)
                 .padding(.top, .space4)
+                .padding(.horizontal, .gutter)
 
             ActivityChart(series: series)
                 .padding(.top, .space16)
+                .padding(.horizontal, .gutter)
 
             ActivityStickiness(series: series)
                 .padding(.top, .space12)
+                .padding(.horizontal, .gutter)
 
-            ActivityRowsHeader()
-
-            ForEach(series.rows) { row in
-                ActivityDayRow(row: row)
+            Section(title: "Per day", bottomGap: 0) {
+                Text(verbatim: "vs day before")
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            } content: {
+                ForEach(series.rows) { row in
+                    ActivityDayRow(row: row)
+                }
             }
         }
-        .padding(.horizontal, .gutter)
     }
 }
 
@@ -87,34 +93,7 @@ private struct ActivityStickiness: View {
         .lineLimit(1)
         .minimumScaleFactor(0.8)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.bottom, .space12)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
-    }
-}
-
-struct ActivityRowsHeader: View {
-    var body: some View {
-        HStack(spacing: 0) {
-            Text(verbatim: "PER DAY")
-                .font(.scoutSection)
-
-            Spacer()
-
-            Text(verbatim: "vs day before")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-        }
-        .padding(.top, .space12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .padding(.bottom, .space16)
     }
 }
 

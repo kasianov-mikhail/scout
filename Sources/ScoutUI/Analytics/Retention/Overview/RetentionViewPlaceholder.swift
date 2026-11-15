@@ -13,16 +13,18 @@ struct RetentionViewPlaceholder: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RetentionHero(subtitle: "people kept", placeholderWidth: 120)
+                .padding(.horizontal, .gutter)
 
             RetentionDayTabs(overview: nil, day: $day)
+                .padding(.bottom, .space6)
+                .padding(.horizontal, .gutter)
 
-            RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
-
-            ForEach(0..<12, id: \.self) { index in
-                row(index: index)
+            Section(title: "Kept per install week", note: "day \(day.rawValue)") {
+                ForEach(0..<12, id: \.self) { index in
+                    row(index: index)
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }

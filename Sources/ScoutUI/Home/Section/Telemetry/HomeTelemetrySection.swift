@@ -25,9 +25,9 @@ struct HomeTelemetrySection: View {
     }
 
     private func content(items: [TelemetryItem]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            header
-
+        Section(bottomGap: .space2) {
+            SectionHeader(titles: ["TELEMETRY", "INCIDENTS"])
+        } content: {
             LazyVGrid(columns: telemetryColumns, spacing: 0) {
                 ForEach(items.indices, id: \.self) { index in
                     let item = items[index]
@@ -49,26 +49,6 @@ struct HomeTelemetrySection: View {
                     .allowsHitTesting(false)
             }
         }
-        .padding(.bottom, .space6)
-    }
-
-    private var header: some View {
-        HStack(spacing: 0) {
-            Text(verbatim: "TELEMETRY")
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            Text(verbatim: "INCIDENTS")
-                .padding(.leading, .space12)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .font(.scoutSection)
-        .padding(.top, .space12)
-        .frame(height: 70)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
     }
 }
 
@@ -79,7 +59,6 @@ struct HomeTelemetrySection: View {
                 HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
                 HomeTelemetrySection(items: nil) { _ in }
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

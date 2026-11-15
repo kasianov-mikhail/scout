@@ -9,9 +9,7 @@ import SwiftUI
 
 struct HomeReleaseSectionPlaceholder: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases", showsSeparator: true)
-
+        Section(title: "Releases", bottomGap: .space10) {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 15, delay: 0.96)
 

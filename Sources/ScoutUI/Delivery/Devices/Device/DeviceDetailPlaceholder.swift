@@ -19,6 +19,7 @@ struct DeviceDetailPlaceholder: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, .space8)
+                .padding(.horizontal, .gutter)
 
             Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
                 .font(.scoutRow)
@@ -26,60 +27,56 @@ struct DeviceDetailPlaceholder: View {
                 .lineLimit(2)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)
+                .padding(.horizontal, .gutter)
                 .overlay(alignment: .bottom) {
                     Separator()
+                        .padding(.horizontal, .gutter)
                 }
 
             stats
+                .padding(.horizontal, .gutter)
 
-            SectionHeader(title: "SESSIONS", topPadding: 12) {
+            Section(title: "Sessions") {
                 Text(verbatim: "TIMELINE")
                     .font(.scoutSectionAction)
                     .foregroundStyle(Color.textLink)
+            } content: {
+                ForEach(0..<5, id: \.self) { index in
+                    sessionRow(index: index, showsDivider: index < 4)
+                }
             }
 
-            ForEach(0..<5, id: \.self) { index in
-                sessionRow(index: index)
+            Section(title: "History") {
+                ForEach(0..<4, id: \.self) { index in
+                    historyRow(index: index, isLast: index == 3)
+                }
             }
 
-            Color.clear
-                .frame(height: 8)
-
-            SectionHeader(title: "HISTORY", topPadding: 12)
-
-            ForEach(0..<4, id: \.self) { index in
-                historyRow(index: index, isLast: index == 3)
-            }
-
-            Color.clear
-                .frame(height: 12)
-
-            SectionHeader(title: "ACTIVITY", topPadding: 12) {
+            Section(title: "Activity", bottomGap: 0) {
                 SkeletonBar(width: 74, height: 9, delay: 1.2)
-            }
+            } content: {
+                activity
 
-            activity
-
-            VStack(alignment: .leading, spacing: .space8) {
-                SkeletonBar(width: 300, height: 9, delay: 1.36)
-                SkeletonBar(width: 120, height: 9, delay: 1.36)
-            }
-            .padding(.top, .space12)
-            .padding(.bottom, .space16)
-
-            SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
-
-            usage
+                VStack(alignment: .leading, spacing: .space8) {
+                    SkeletonBar(width: 300, height: 9, delay: 1.36)
+                    SkeletonBar(width: 120, height: 9, delay: 1.36)
+                }
                 .padding(.top, .space12)
-
-            VStack(alignment: .leading, spacing: .space8) {
-                SkeletonBar(width: 300, height: 9, delay: 1.52)
-                SkeletonBar(width: 120, height: 9, delay: 1.52)
+                .padding(.bottom, .space16)
             }
-            .padding(.top, .space12)
-            .padding(.bottom, .space16)
+
+            Section(title: "When it is used", bottomGap: 0) {
+                usage
+                    .padding(.top, .space12)
+
+                VStack(alignment: .leading, spacing: .space8) {
+                    SkeletonBar(width: 300, height: 9, delay: 1.52)
+                    SkeletonBar(width: 120, height: 9, delay: 1.52)
+                }
+                .padding(.top, .space12)
+                .padding(.bottom, .space16)
+            }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -90,9 +87,7 @@ struct DeviceDetailPlaceholder: View {
             stat("hangs", divider: true, leading: 10, trailing: 10)
             stat("resources", divider: false, leading: 10, trailing: 0)
         }
-        .overlay(alignment: .bottom) {
-            Separator()
-        }
+        .padding(.bottom, .space6)
     }
 
     private func stat(_ title: String, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
@@ -101,7 +96,7 @@ struct DeviceDetailPlaceholder: View {
         }
     }
 
-    private func sessionRow(index: Int) -> some View {
+    private func sessionRow(index: Int, showsDivider: Bool) -> some View {
         let delay = 0.24 + Double(index) * 0.08
 
         return HStack(spacing: .space8) {
@@ -121,7 +116,9 @@ struct DeviceDetailPlaceholder: View {
         }
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            if showsDivider {
+                DashedLine()
+            }
         }
     }
 

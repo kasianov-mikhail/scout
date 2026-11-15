@@ -81,7 +81,7 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
         return LazyVStack(alignment: .leading, spacing: 0) {
             MetricRangeStrip(selection: $range)
                 .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.leading, .gutter)
 
             MetricQuantileSelector(
                 summary: summary,
@@ -91,42 +91,46 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
                 selection: $quantile
             )
             .padding(.top, .space4)
+            .padding(.horizontal, .gutter)
 
             Text(verbatim: "\(samples.formatted(.number.locale(Locale(identifier: "en_US")))) samples · change \(range.headlineComparison)")
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
                 .padding(.top, .space8)
+                .padding(.horizontal, .gutter)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             MetricChart(buckets: buckets, style: .line(filled: true), format: format)
                 .padding(.top, .space16)
+                .padding(.horizontal, .gutter)
 
             MetricAxisLabels(labels: range.axisLabels(now: now))
+                .padding(.horizontal, .gutter)
 
             MetricLegend(title: range.previousTitle, note: nil)
+                .padding(.horizontal, .gutter)
 
-            MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption)
-
-            MetricHistogramChart(
-                counts: histogram.counts,
-                bounds: H.bounds,
-                percentiles: summary,
-                format: histogramFormat
-            )
-            .padding(.top, .space8)
-
-            MetricSectionHeader(title: range.sectionTitle, trailing: "\(quantile.title.lowercased()) \(range.comparisonTitle)")
-
-            ForEach(buckets.rows) { row in
-                MetricBucketRow(
-                    row: row,
-                    label: range.rowLabel(date: row.date),
-                    format: format,
-                    tone: .neutral
+            Section(title: "Distribution", note: distributionCaption, bottomGap: .space8) {
+                MetricHistogramChart(
+                    counts: histogram.counts,
+                    bounds: H.bounds,
+                    percentiles: summary,
+                    format: histogramFormat
                 )
+                .padding(.top, .space8)
+            }
+
+            Section(title: range.sectionTitle, note: "\(quantile.title.lowercased()) \(range.comparisonTitle)") {
+                ForEach(buckets.rows) { row in
+                    MetricBucketRow(
+                        row: row,
+                        label: range.rowLabel(date: row.date),
+                        format: format,
+                        tone: .neutral
+                    )
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ChartExportButton(title: name, rangeLabel: range.title) {

@@ -7,31 +7,6 @@
 
 import SwiftUI
 
-struct MetricSectionHeader: View {
-    let title: String
-    let trailing: String
-
-    var body: some View {
-        HStack {
-            Text(verbatim: title.uppercased())
-                .font(.scoutSection)
-
-            Spacer()
-
-            Text(verbatim: trailing)
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-        }
-        .padding(.top, .space12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
-    }
-}
-
 struct MetricBucketRow: View {
     let row: MetricRow
     let label: String

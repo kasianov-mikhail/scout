@@ -11,11 +11,9 @@ struct HomeReleaseSectionEmpty: View {
     let onShowAll: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases", showsSeparator: true) {
-                HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
-            }
-
+        Section(title: "Releases", bottomGap: .space10) {
+            HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
+        } content: {
             HStack(alignment: .center, spacing: .space8) {
                 EmptyBar(width: 150, height: 26, cornerRadius: .radiusBadge)
 
@@ -47,7 +45,6 @@ struct HomeReleaseSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeReleaseSectionEmpty {}
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

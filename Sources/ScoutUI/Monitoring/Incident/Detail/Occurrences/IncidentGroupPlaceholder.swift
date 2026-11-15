@@ -15,48 +15,35 @@ struct IncidentGroupPlaceholder: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             message
-                .padding(.horizontal, -16)
 
             cards
 
-            Header(title: "Affected")
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-
-            ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
-                affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-            }
-
-            Header(title: "Stack Trace") {
-                Text(verbatim: kind.stackCaption)
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
-            }
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
-
-            frames
-
-            Header(title: "Occurrences")
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-
-            ForEach(0..<4, id: \.self) { index in
-                occurrenceRow(index: index)
-                    .overlay(alignment: .bottom) {
-                        if index < 3 {
-                            Separator()
+            Section(title: "Affected", bottomGap: .space16) {
+                ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
+                    affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
+                        .overlay(alignment: .bottom) {
+                            if item.offset < IncidentAffected.titles.count - 1 {
+                                Separator()
+                            }
                         }
-                    }
+                }
+            }
+
+            Section(title: "Stack Trace", note: kind.stackCaption, bottomGap: 0) {
+                frames
+            }
+
+            Section(title: "Occurrences") {
+                ForEach(0..<4, id: \.self) { index in
+                    occurrenceRow(index: index)
+                        .overlay(alignment: .bottom) {
+                            if index < 3 {
+                                Separator()
+                            }
+                        }
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -98,12 +85,8 @@ struct IncidentGroupPlaceholder: View {
             }
         }
         .padding(.top, .space20)
-        .padding(.bottom, .space12)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .padding(.bottom, .space18)
+        .padding(.horizontal, .gutter)
     }
 
     private func card(title: String) -> some View {
@@ -167,11 +150,6 @@ struct IncidentGroupPlaceholder: View {
             }
         }
         .padding(.vertical, .space16)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
     }
 
     private func occurrenceRow(index: Int) -> some View {

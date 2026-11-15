@@ -56,13 +56,8 @@ struct HomeAlertSection: View {
             .padding(.top, .space2)
         }
         .padding(.top, .space12)
-        .padding(.bottom, .space12)
+        .padding(.bottom, .space16)
         .contentShape(Rectangle())
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
         .accessibilityElement(children: .combine)
     }
 }

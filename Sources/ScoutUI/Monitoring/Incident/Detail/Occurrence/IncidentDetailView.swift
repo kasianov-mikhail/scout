@@ -51,14 +51,18 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
 
     private var detail: some View {
         let stack = IncidentStack(detail: backtrace.detail, fallback: element.stackTrace)
-        return VStack(spacing: 0) {
+        return LazyVStack(alignment: .leading, spacing: 0) {
             summary(stack: stack)
-            IncidentDetailHeader(title: "Context")
-            IncidentContextRows(element: element, group: group, context: contextValue, isLoading: context.result == nil)
-            IncidentDetailHeader(title: "Stack Trace", caption: "\(element.detailThread) · \(stack.isSymbolicated ? "symbolicated" : "unsymbolicated")")
-            IncidentStackView(stack: stack, color: Element.kind.detailColor)
+                .padding(.horizontal, .gutter)
+
+            Section(title: "Context") {
+                IncidentContextRows(element: element, group: group, context: contextValue, isLoading: context.result == nil)
+            }
+
+            Section(title: "Stack Trace", note: "\(element.detailThread) · \(stack.isSymbolicated ? "symbolicated" : "unsymbolicated")", bottomGap: 0) {
+                IncidentStackView(stack: stack, color: Element.kind.detailColor)
+            }
         }
-        .padding(.horizontal, .gutter)
     }
 
     private var contextValue: IncidentContext? {
@@ -91,11 +95,6 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
         }
         .padding(.top, .space18)
         .padding(.bottom, .space16)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
     }
 
     private func metaText(version: String?) -> Text? {
@@ -123,46 +122,6 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
             text = text + Text(verbatim: " · ") + part
         }
         return text
-    }
-}
-
-struct IncidentDetailHeader<Trailing: View>: View {
-    let title: String
-
-    @ViewBuilder let trailing: () -> Trailing
-
-    init(title: String, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
-        self.title = title
-        self.trailing = trailing
-    }
-
-    var body: some View {
-        HStack(spacing: .space8) {
-            Text(verbatim: title.uppercased())
-                .font(.scoutSection)
-
-            Spacer()
-
-            trailing()
-        }
-        .padding(.top, .space12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
-        .accessibilityAddTraits(.isHeader)
-    }
-}
-
-extension IncidentDetailHeader where Trailing == Text {
-    init(title: String, caption: String) {
-        self.init(title: title) {
-            Text(verbatim: caption)
-                .font(.scoutCaption)
-                .foregroundColor(Color.textMuted)
-        }
     }
 }
 

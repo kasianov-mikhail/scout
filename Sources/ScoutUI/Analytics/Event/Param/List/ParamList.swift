@@ -31,11 +31,14 @@ struct ParamList: View {
                                 Separator()
                             }
                         }
+                        .padding(.horizontal, .gutter)
                 }
+
+                Color.clear
+                    .frame(height: .space6)
 
                 ParamRawView(raw: model.raw)
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Params")

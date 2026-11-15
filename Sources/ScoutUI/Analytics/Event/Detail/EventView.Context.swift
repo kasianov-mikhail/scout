@@ -36,9 +36,6 @@ extension EventView {
                 ErrorRow(description: error.localizedDescription) {
                     await context.fetchAgain(in: database)
                 }
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
             case nil:
                 chipRow {
                     ForEach([120, 74, 74], id: \.self) { width in
@@ -88,9 +85,6 @@ extension EventView {
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
         }
     }
 }

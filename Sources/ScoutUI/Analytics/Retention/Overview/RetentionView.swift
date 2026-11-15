@@ -45,27 +45,29 @@ struct RetentionView: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             RetentionHero(value: overview.keptLabel(day: day), subtitle: "people kept")
+                .padding(.horizontal, .gutter)
 
             RetentionDayTabs(overview: overview, day: $day)
+                .padding(.bottom, .space6)
+                .padding(.horizontal, .gutter)
 
-            RetentionSection(title: "Kept per install week", note: "day \(day.rawValue)")
-
-            ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in
-                NavigationLink {
-                    RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
-                } label: {
-                    RetentionWeekRow(
-                        week: RetentionWeek(cohort: cohort, day: day),
-                        maxInstalls: overview.maxInstalls,
-                        showsDivider: index < overview.weeks.count - 1
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .contentShape(.rect)
+            Section(title: "Kept per install week", note: "day \(day.rawValue)") {
+                ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in
+                    NavigationLink {
+                        RetentionCohortDetailView(cohort: cohort, cohorts: cohorts)
+                    } label: {
+                        RetentionWeekRow(
+                            week: RetentionWeek(cohort: cohort, day: day),
+                            maxInstalls: overview.maxInstalls,
+                            showsDivider: index < overview.weeks.count - 1
+                        )
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(.rect)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, .gutter)
     }
 }
 

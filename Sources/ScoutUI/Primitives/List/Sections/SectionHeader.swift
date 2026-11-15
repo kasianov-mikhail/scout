@@ -8,30 +8,38 @@
 import SwiftUI
 
 struct SectionHeader<Trailing: View>: View {
-    let title: String
-    var topPadding: CGFloat = 0
-    var showsSeparator = true
+    let titles: [String]
+    let showsSeparator: Bool
 
     @ViewBuilder let trailing: () -> Trailing
 
-    init(title: String, topPadding: CGFloat = 0, showsSeparator: Bool = true, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
-        self.title = title
-        self.topPadding = topPadding
+    init(title: String, showsSeparator: Bool = true, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
+        self.init(titles: [title], showsSeparator: showsSeparator, trailing: trailing)
+    }
+
+    init(titles: [String], showsSeparator: Bool = true, @ViewBuilder trailing: @escaping () -> Trailing = { EmptyView() }) {
+        self.titles = titles
         self.showsSeparator = showsSeparator
         self.trailing = trailing
     }
 
     var body: some View {
-        HStack {
-            Text(verbatim: title.uppercased())
-                .font(.scoutSection)
+        HStack(spacing: 0) {
+            ForEach(titles.indices, id: \.self) { index in
+                Text(verbatim: titles[index].uppercased())
+                    .font(.scoutSection)
+                    .padding(.leading, index == 0 ? 0 : .space12)
+                    .frame(maxWidth: titles.count > 1 ? .infinity : nil, alignment: .leading)
+                    .accessibilityAddTraits(.isHeader)
+            }
 
-            Spacer()
+            if titles.count == 1 {
+                Spacer()
+            }
 
             trailing()
         }
-        .padding(.top, topPadding)
-        .frame(height: 56)
+        .frame(height: .sectionHeaderHeight)
         .overlay(alignment: .bottom) {
             if showsSeparator {
                 Separator()
@@ -43,15 +51,17 @@ struct SectionHeader<Trailing: View>: View {
 #Preview {
     ScrollView {
         LazyVStack(alignment: .leading, spacing: 0) {
-            SectionHeader(title: "HISTORY", topPadding: 12)
-            SectionHeader(title: "SESSIONS", topPadding: 12) {
+            SectionGap()
+            SectionHeader(title: "HISTORY")
+            SectionHeader(title: "SESSIONS") {
                 Text(verbatim: "TIMELINE")
-                    .font(.scoutCaption)
+                    .font(.scoutSectionAction)
                     .foregroundStyle(Color.textLink)
             }
+            SectionGap()
+            SectionHeader(titles: ["TELEMETRY", "INCIDENTS"])
             SectionHeader(title: "DEVICES", showsSeparator: false)
         }
-        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }

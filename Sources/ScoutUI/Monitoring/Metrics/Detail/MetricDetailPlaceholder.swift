@@ -26,49 +26,57 @@ struct MetricDetailPlaceholder: View {
         return LazyVStack(alignment: .leading, spacing: 0) {
             MetricRangeStrip(selection: $range)
                 .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.leading, .gutter)
 
             switch kind {
             case .series(let telemetry):
                 headline(telemetry)
                     .padding(.top, .space12)
+                    .padding(.horizontal, .gutter)
 
                 chartSkeleton(height: 150, delay: 0.16)
                     .padding(.top, .space16)
+                    .padding(.horizontal, .gutter)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
+                    .padding(.horizontal, .gutter)
 
                 MetricLegend(title: range.previousTitle, note: nil)
+                    .padding(.horizontal, .gutter)
 
-                MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
+                Section(title: range.sectionTitle, note: trailingTitle(telemetry)) {
+                    rows(dates: dates, now: now)
+                }
             case .distribution(let telemetry):
                 percentileSelector
                     .padding(.top, .space4)
+                    .padding(.horizontal, .gutter)
 
                 SkeletonBar(width: 120, height: 9, delay: 0.08)
                     .padding(.top, .space8)
+                    .padding(.horizontal, .gutter)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 chartSkeleton(height: 150, delay: 0.16)
                     .padding(.top, .space16)
+                    .padding(.horizontal, .gutter)
 
                 MetricAxisLabels(labels: range.axisLabels(now: now))
+                    .padding(.horizontal, .gutter)
 
                 MetricLegend(title: range.previousTitle, note: nil)
+                    .padding(.horizontal, .gutter)
 
-                MetricSectionHeader(title: "DISTRIBUTION", trailing: distributionCaption(telemetry))
+                Section(title: "Distribution", note: distributionCaption(telemetry), bottomGap: .space8) {
+                    chartSkeleton(height: 126, delay: 0.24)
+                        .padding(.top, .space8)
+                }
 
-                chartSkeleton(height: 126, delay: 0.24)
-                    .padding(.top, .space8)
-
-                MetricSectionHeader(title: range.sectionTitle, trailing: trailingTitle(telemetry))
-            }
-
-            ForEach(dates.indices, id: \.self) { index in
-                row(index: index, dates: dates, now: now)
+                Section(title: range.sectionTitle, note: trailingTitle(telemetry)) {
+                    rows(dates: dates, now: now)
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -157,6 +165,12 @@ struct MetricDetailPlaceholder: View {
             if index < dates.count - 1 {
                 DashedLine()
             }
+        }
+    }
+
+    private func rows(dates: [Date], now: Date) -> some View {
+        ForEach(dates.indices, id: \.self) { index in
+            row(index: index, dates: dates, now: now)
         }
     }
 

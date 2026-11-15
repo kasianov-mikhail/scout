@@ -24,11 +24,9 @@ struct HomeReleaseSection: View {
     }
 
     private func content(adoption: ReleaseAdoption) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Releases", showsSeparator: true) {
-                HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
-            }
-
+        Section(title: "Releases", bottomGap: .space10) {
+            HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
+        } content: {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 Text(verbatim: adoption.headline)
                     .font(.scoutNumberM)
@@ -80,7 +78,6 @@ struct HomeReleaseSection: View {
                 HomeReleaseSection(adoption: .sample) {}
                 HomeReleaseSection(adoption: nil) {}
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

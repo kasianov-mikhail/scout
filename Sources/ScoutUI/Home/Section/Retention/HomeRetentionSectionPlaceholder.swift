@@ -9,9 +9,7 @@ import SwiftUI
 
 struct HomeRetentionSectionPlaceholder: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HomeRetentionHeader()
-
+        Section(title: "Retention", note: "kept on day 7", bottomGap: .space10) {
             ForEach(0..<4) { index in
                 row(index: index)
             }

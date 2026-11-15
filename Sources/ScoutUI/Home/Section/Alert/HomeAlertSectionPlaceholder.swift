@@ -38,11 +38,6 @@ struct HomeAlertSectionPlaceholder: View {
             .padding(.top, .space2)
         }
         .padding(.top, .space12)
-        .padding(.bottom, .space12)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .padding(.bottom, .space16)
     }
 }

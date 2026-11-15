@@ -11,23 +11,33 @@ struct AlertListPlaceholder: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             banner
+                .padding(.horizontal, .gutter)
 
             AlertListLegend(showsAxis: false)
                 .padding(.top, .space10)
+                .padding(.horizontal, .gutter)
 
-            header(delay: 0)
-            row(titleWidth: 95, delay: 0, isLast: true)
+            Section(title: "Firing", bottomGap: .space6) {
+                SkeletonBar(width: 28, height: 10, delay: 0)
+            } content: {
+                row(titleWidth: 95, delay: 0, isLast: true)
+            }
 
-            header(delay: 0.08)
-            row(titleWidth: 69, delay: 0.08, isLast: false)
-            row(titleWidth: 120, delay: 0.16, isLast: false)
-            row(titleWidth: 52, delay: 0.24, isLast: false)
-            row(titleWidth: 95, delay: 0.32, isLast: true)
+            Section(title: "Armed", bottomGap: .space6) {
+                SkeletonBar(width: 28, height: 10, delay: 0.08)
+            } content: {
+                row(titleWidth: 69, delay: 0.08, isLast: false)
+                row(titleWidth: 120, delay: 0.16, isLast: false)
+                row(titleWidth: 52, delay: 0.24, isLast: false)
+                row(titleWidth: 95, delay: 0.32, isLast: true)
+            }
 
-            header(delay: 0.40)
-            row(titleWidth: 69, delay: 0.40, isLast: true)
+            Section(title: "Muted", bottomGap: .space6) {
+                SkeletonBar(width: 28, height: 10, delay: 0.40)
+            } content: {
+                row(titleWidth: 69, delay: 0.40, isLast: true)
+            }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -46,21 +56,6 @@ struct AlertListPlaceholder: View {
             SkeletonBar(width: 46, height: 11, delay: 0)
         }
         .frame(height: 60)
-        .overlay(alignment: .bottom) {
-            separator
-        }
-    }
-
-    private func header(delay: Double) -> some View {
-        HStack {
-            SkeletonBar(width: 46, height: 12, delay: delay)
-
-            Spacer()
-
-            SkeletonBar(width: 28, height: 10, delay: delay)
-        }
-        .padding(.top, .space12)
-        .frame(height: 56)
         .overlay(alignment: .bottom) {
             separator
         }

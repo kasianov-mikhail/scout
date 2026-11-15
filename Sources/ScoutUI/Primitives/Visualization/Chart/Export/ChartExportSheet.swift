@@ -33,10 +33,7 @@ struct ChartExportSheet<ChartContent: View>: View {
                     chart: chart
                 )
 
-                Header(title: "Format")
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
+                SectionHeader(title: "Format")
 
                 HStack {
                     Text(verbatim: "File Type")
@@ -75,10 +72,7 @@ struct ChartExportSheet<ChartContent: View>: View {
                     Separator()
                 }
 
-                Header(title: "Content")
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
+                SectionHeader(title: "Content")
 
                 Toggle(isOn: $options.includesTitle) {
                     Text(verbatim: "Chart Title")

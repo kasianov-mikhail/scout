@@ -40,6 +40,7 @@ extension CGFloat {
 
     // MARK: - Size
 
+    static let sectionGap: CGFloat = 10
     static let sectionHeaderHeight: CGFloat = 56
     static let navbarHeight: CGFloat = 106
     static let touchTarget: CGFloat = 44

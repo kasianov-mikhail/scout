@@ -79,29 +79,32 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
         return LazyVStack(alignment: .leading, spacing: 0) {
             MetricRangeStrip(selection: $range)
                 .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.leading, .gutter)
 
             MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
+                .padding(.horizontal, .gutter)
 
             MetricChart(buckets: buckets, style: chartStyle, format: format, resets: resetDates)
                 .padding(.top, .space16)
+                .padding(.horizontal, .gutter)
 
             MetricAxisLabels(labels: range.axisLabels(now: now))
+                .padding(.horizontal, .gutter)
 
             MetricLegend(title: range.previousTitle, note: legendNote(resetDates: resetDates))
+                .padding(.horizontal, .gutter)
 
-            MetricSectionHeader(title: range.sectionTitle, trailing: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle)
-
-            ForEach(buckets.rows) { row in
-                MetricBucketRow(
-                    row: row,
-                    label: range.rowLabel(date: row.date),
-                    format: format,
-                    tone: tone(row)
-                )
+            Section(title: range.sectionTitle, note: telemetry == .meter ? "peak \(range.comparisonTitle)" : range.comparisonTitle) {
+                ForEach(buckets.rows) { row in
+                    MetricBucketRow(
+                        row: row,
+                        label: range.rowLabel(date: row.date),
+                        format: format,
+                        tone: tone(row)
+                    )
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 ChartExportButton(title: name, rangeLabel: range.title) {

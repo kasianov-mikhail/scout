@@ -60,6 +60,7 @@ extension Color {
 
     // MARK: - Line
 
+    static let lineGap = designColor(light: 0xE5E5EA, dark: 0x2C2C2E)
     static let lineSeparator = designColor(light: 0xC6C6C8, dark: 0x38383A)
     static let lineSubtle = designColor(light: 0xD1D1D6, dark: 0x2C2C2E)
     static let lineTintDanger = designColor(light: 0xEED5D5, dark: 0xFF453A, darkAlpha: 0.24)

@@ -15,15 +15,20 @@ struct SessionTimelinePlaceholder: View {
             LazyVStack(spacing: 0) {
                 summary
                 chips
-                SessionEventsHeader()
 
-                Color.clear.frame(height: 8)
+                Section(title: "Events", insetsContent: false) {
+                    Text(verbatim: "from session start")
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.timelineUnknown)
+                } content: {
+                    Color.clear.frame(height: 8)
 
-                ForEach(rows.indices, id: \.self) { index in
-                    SessionSkeletonRowView(row: rows[index], delay: Double(index) * 0.08 + 0.24)
+                    ForEach(rows.indices, id: \.self) { index in
+                        SessionSkeletonRowView(row: rows[index], delay: Double(index) * 0.08 + 0.24)
+                    }
+
+                    Color.clear.frame(height: 8)
                 }
-
-                Color.clear.frame(height: 8)
             }
         }
         .scrollIndicators(.hidden)
@@ -59,12 +64,9 @@ struct SessionTimelinePlaceholder: View {
             }
         }
         .padding(.top, .space12)
-        .padding(.bottom, .space12)
+        .padding(.bottom, .space18)
         .padding(.horizontal, .gutter)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .overlay(alignment: .bottom) {
-            divider
-        }
     }
 
     private var divider: some View {

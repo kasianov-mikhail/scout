@@ -73,7 +73,6 @@ struct HomeList: View {
     private func list(_ snapshot: HomeSnapshot?) -> some View {
         ScrollView {
             sections(snapshot)
-                .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationDestination(for: HomeDestination.self) { destination in
@@ -103,7 +102,7 @@ struct HomeList: View {
                 HomeAlertSection(history: snapshot.alerts) {
                     path.append(.alerts)
                 }
-                .padding(.top, snapshot.alerts.isEmpty ? 0 : .space6)
+                .padding(.horizontal, .gutter)
                 .loadingInk(isLoading: isLoading, delay: 0.05)
                 HomeActiveUsersSection(users: snapshot.users) { kind in
                     switch kind {
@@ -144,7 +143,7 @@ struct HomeList: View {
         } else {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeAlertSection(history: nil) {}
-                    .padding(.top, .space6)
+                    .padding(.horizontal, .gutter)
                 HomeActiveUsersSection(users: nil) { _ in }
                 HomeTelemetrySection(items: nil) { _ in }
                 HomeReleaseSection(adoption: nil) {}

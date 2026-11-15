@@ -18,28 +18,29 @@ struct RetentionCohortDetailView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
+                    .padding(.bottom, .space6)
+                    .padding(.horizontal, .gutter)
 
-                RetentionSection(title: "Come back on", note: detail.averageNote, divider: true)
-
-                ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
-                    RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
+                Section(title: "Come back on", note: "│ \(detail.averageNote)") {
+                    ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
+                        RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
+                    }
                 }
 
                 if !detail.segments.isEmpty {
-                    RetentionSection(title: "By OS version", note: "day 7")
-
-                    ForEach(Array(detail.segments.enumerated()), id: \.element.id) { index, segment in
-                        NavigationLink {
-                            RetentionSegmentDetailView(segment: segment.segment, cohort: cohort, cohorts: cohorts)
-                        } label: {
-                            RetentionSegmentRow(value: segment, showsDivider: index < detail.segments.count - 1)
-                                .contentShape(.rect)
+                    Section(title: "By OS version", note: "day 7") {
+                        ForEach(Array(detail.segments.enumerated()), id: \.element.id) { index, segment in
+                            NavigationLink {
+                                RetentionSegmentDetailView(segment: segment.segment, cohort: cohort, cohorts: cohorts)
+                            } label: {
+                                RetentionSegmentRow(value: segment, showsDivider: index < detail.segments.count - 1)
+                                    .contentShape(.rect)
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Week of \(cohort.label)")
