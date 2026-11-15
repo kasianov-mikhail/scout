@@ -72,7 +72,11 @@ struct HomeList: View {
 
     private func list(_ snapshot: HomeSnapshot?) -> some View {
         ScrollView {
-            sections(snapshot)
+            if let snapshot {
+                loadedSections(snapshot)
+            } else {
+                placeholderSections
+            }
         }
         .scrollIndicators(.hidden)
         .navigationDestination(for: HomeDestination.self) { destination in
@@ -95,64 +99,67 @@ struct HomeList: View {
         }
     }
 
-    @ViewBuilder
-    private func sections(_ snapshot: HomeSnapshot?) -> some View {
-        if let snapshot {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: snapshot.alerts) {
-                    path.append(.alerts)
-                }
-                .padding(.horizontal, .gutter)
-                .loadingInk(isLoading: isLoading, delay: 0.05)
-                HomeActiveUsersSection(users: snapshot.users) { kind in
-                    switch kind {
-                    case .sessions:
-                        path.append(.sessions)
-                    case .dau, .devices:
-                        path.append(.activity)
-                    }
-                }
-                .loadingInk(isLoading: isLoading, delay: 0.10)
-                HomeTelemetrySection(items: snapshot.telemetry) { kind in
-                    switch kind {
-                    case .events:
-                        path.append(.telemetry(.events))
-                    case .crashes:
-                        path.append(.telemetry(.crashes))
-                    case .metrics:
-                        path.append(.telemetry(.metrics))
-                    case .hangs:
-                        path.append(.telemetry(.hangs))
-                    case .network:
-                        path.append(.telemetry(.network))
-                    case .resources:
-                        path.append(.resources)
-                    }
-                }
-                .loadingInk(isLoading: isLoading, delay: 0.20)
-                HomeReleaseSection(adoption: snapshot.releases) {
-                    path.append(.releaseHealth)
-                }
-                .loadingInk(isLoading: isLoading, delay: 0.30)
-                HomeRetentionSection(weeks: snapshot.retention) {
-                    path.append(.retention)
-                }
-                .loadingInk(isLoading: isLoading, delay: 0.40)
+    private func loadedSections(_ snapshot: HomeSnapshot) -> some View {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            HomeAlertSection(history: snapshot.alerts) {
+                path.append(.alerts)
             }
-            .transition(.opacity)
-        } else {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: nil) {}
-                    .padding(.horizontal, .gutter)
-                HomeActiveUsersSection(users: nil) { _ in }
-                HomeTelemetrySection(items: nil) { _ in }
-                HomeReleaseSection(adoption: nil) {}
-                HomeRetentionSection(weeks: nil) {}
+            .padding(.horizontal, .gutter)
+            .loadingInk(isLoading: isLoading, delay: 0.05)
+
+            HomeActiveUsersSection(users: snapshot.users) { kind in
+                switch kind {
+                case .sessions:
+                    path.append(.sessions)
+                case .dau, .devices:
+                    path.append(.activity)
+                }
             }
-            .transition(.opacity)
-            .accessibilityElement(children: .ignore)
-            .accessibilityLabel(Text(verbatim: "Loading"))
+            .loadingInk(isLoading: isLoading, delay: 0.10)
+
+            HomeTelemetrySection(items: snapshot.telemetry) { kind in
+                switch kind {
+                case .events:
+                    path.append(.telemetry(.events))
+                case .crashes:
+                    path.append(.telemetry(.crashes))
+                case .metrics:
+                    path.append(.telemetry(.metrics))
+                case .hangs:
+                    path.append(.telemetry(.hangs))
+                case .network:
+                    path.append(.telemetry(.network))
+                case .resources:
+                    path.append(.resources)
+                }
+            }
+            .loadingInk(isLoading: isLoading, delay: 0.20)
+
+            HomeReleaseSection(adoption: snapshot.releases) {
+                path.append(.releaseHealth)
+            }
+            .loadingInk(isLoading: isLoading, delay: 0.30)
+
+            HomeRetentionSection(weeks: snapshot.retention) {
+                path.append(.retention)
+            }
+            .loadingInk(isLoading: isLoading, delay: 0.40)
         }
+        .transition(.opacity)
+    }
+
+    private var placeholderSections: some View {
+        LazyVStack(alignment: .leading, spacing: 0) {
+            HomeAlertSection(history: nil) {}
+                .padding(.horizontal, .gutter)
+            HomeActiveUsersSection(users: nil) { _ in }
+            HomeTelemetrySection(items: nil) { _ in }
+            HomeReleaseSection(adoption: nil) {}
+            HomeRetentionSection(weeks: nil) {}
+        }
+        .transition(.opacity)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(Text(verbatim: "Loading"))
     }
 
     private var statView: some View {
