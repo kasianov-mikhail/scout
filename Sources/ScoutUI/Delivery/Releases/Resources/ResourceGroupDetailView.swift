@@ -126,11 +126,13 @@ struct ResourceGroupDetailView: View {
 
 extension IncidentGroup where Element == ResourceException {
     fileprivate var heaviest: ResourceException {
-        records.max { amount(resource: $0) < amount(resource: $1) } ?? representative
+        records.max { $0.amount < $1.amount } ?? representative
     }
+}
 
-    fileprivate func amount(resource: ResourceException) -> Double {
-        ResourceAmount(reason: resource.reason)?.value ?? 0
+extension ResourceException {
+    fileprivate var amount: Double {
+        ResourceAmount(reason: reason)?.value ?? 0
     }
 }
 

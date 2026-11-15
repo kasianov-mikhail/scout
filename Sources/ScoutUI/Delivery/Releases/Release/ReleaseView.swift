@@ -151,11 +151,13 @@ private struct ReleaseGrid: View {
     }
 
     private func tile(_ value: ReleaseTileValue, isLeading: Bool) -> some View {
-        ReleaseTile(value: value, isLeading: isLeading, action: canOpen(value.kind) ? { open(value.kind) } : nil)
+        ReleaseTile(value: value, isLeading: isLeading, action: value.kind.canOpen ? { open(value.kind) } : nil)
     }
+}
 
-    private func canOpen(_ kind: ReleaseTileValue.Kind) -> Bool {
-        switch kind {
+extension ReleaseTileValue.Kind {
+    fileprivate var canOpen: Bool {
+        switch self {
         case .crashes, .hangs, .resources: true
         case .crashFree, .adoption, .exits, .launchTime, .peakMemory: false
         }
