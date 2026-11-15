@@ -54,7 +54,7 @@ struct EventView: View {
         .scrollIndicators(.hidden)
         .animation(.easeOut(duration: 0.2), value: [param.isLoading, stat.isLoading, context.isLoading])
         .navigationTint(event.level?.color)
-        .monospacedNavigationTitle(en: event.name)
+        .monospacedNavigationTitle(en: event.name, divider: event.level?.divider ?? .lineSubtle)
         .navigationDestination(isPresented: $isParamPresented) {
             switch param.result {
             case .success(let items):

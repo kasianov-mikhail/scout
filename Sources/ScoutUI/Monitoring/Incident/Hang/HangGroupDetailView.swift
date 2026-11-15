@@ -59,7 +59,7 @@ struct HangGroupDetailView: View {
         .message($occurrences.message)
         .toolbarBackground(IncidentKind.hang.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .monospacedNavigationTitle(en: occurrences.name)
+        .monospacedNavigationTitle(en: occurrences.name, divider: IncidentKind.hang.border)
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }

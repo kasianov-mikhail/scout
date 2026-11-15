@@ -40,4 +40,17 @@ extension EventLevel {
             .red
         }
     }
+
+    var divider: Color {
+        switch self {
+        case .notice, .debug, .trace, .info:
+            .lineSubtle
+        case .warning:
+            .lineTintCaution
+        case .error:
+            .lineTintWarning
+        case .critical:
+            .lineTintDanger
+        }
+    }
 }

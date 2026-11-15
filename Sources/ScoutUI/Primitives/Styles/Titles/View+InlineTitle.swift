@@ -8,9 +8,10 @@
 import SwiftUI
 
 extension View {
-    func inlineNavigationTitle() -> some View {
+    func inlineNavigationTitle(divider: Color? = .lineSubtle) -> some View {
         #if os(iOS)
             navigationBarTitleDisplayMode(.inline)
+                .navigationBarDivider(divider)
         #else
             self
         #endif

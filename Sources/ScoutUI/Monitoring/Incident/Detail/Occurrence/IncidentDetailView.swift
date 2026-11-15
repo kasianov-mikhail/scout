@@ -39,7 +39,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
         .navigationTint(Element.kind.color)
         .toolbarBackground(Element.kind.detailBackground, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .monospacedNavigationTitle(en: element.name)
+        .monospacedNavigationTitle(en: element.name, divider: Element.kind.border)
         .tint(Color.textPrimary)
         .task {
             await backtrace.fetchIfNeeded(in: database)

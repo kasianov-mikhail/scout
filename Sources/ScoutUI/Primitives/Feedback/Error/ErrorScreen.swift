@@ -22,7 +22,7 @@ struct ErrorScreen<Content: View, Actions: View>: View {
                     .background(Color.surface)
             }
             .background(Color.surface.ignoresSafeArea())
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
     }
 }
 

@@ -59,7 +59,7 @@ struct ResourceGroupDetailView: View {
         .message($occurrences.message)
         .toolbarBackground(IncidentKind.resource.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .monospacedNavigationTitle(en: occurrences.name)
+        .monospacedNavigationTitle(en: occurrences.name, divider: IncidentKind.resource.border)
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }

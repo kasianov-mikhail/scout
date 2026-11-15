@@ -8,9 +8,10 @@
 import SwiftUI
 
 extension View {
-    func largeNavigationTitle() -> some View {
+    func largeNavigationTitle(divider: Color? = .lineSubtle) -> some View {
         #if os(iOS)
             navigationBarTitleDisplayMode(.large)
+                .navigationBarDivider(divider)
         #else
             self
         #endif
