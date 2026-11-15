@@ -57,11 +57,11 @@ extension MetricTileBuilder {
         tiles += sumTiles(series: floatingSeries, telemetry: .floatingCounter)
         tiles += distributionTiles(type: LatencyHistogram.self, telemetry: .timer)
         tiles += distributionTiles(type: RecorderHistogram.self, telemetry: .recorder)
-        tiles += meterTiles()
+        tiles += meterTiles
 
         return tiles.sorted { lhs, rhs in
-            let left = Self.rank(lhs.telemetry)
-            let right = Self.rank(rhs.telemetry)
+            let left = lhs.telemetry.rank
+            let right = rhs.telemetry.rank
 
             if left != right {
                 return left < right
@@ -118,7 +118,7 @@ extension MetricTileBuilder {
         }
     }
 
-    private func meterTiles() -> [MetricTile] {
+    private var meterTiles: [MetricTile] {
         let groups = Dictionary(grouping: meterSeries.filter { $0.category == Telemetry.Export.meter.rawValue }, by: \.name)
 
         return groups.compactMap { name, group in
@@ -136,9 +136,11 @@ extension MetricTileBuilder {
             )
         }
     }
+}
 
-    private static func rank(_ telemetry: Telemetry.Export) -> Int {
-        switch telemetry {
+extension Telemetry.Export {
+    fileprivate var rank: Int {
+        switch self {
         case .counter:
             0
         case .floatingCounter:
