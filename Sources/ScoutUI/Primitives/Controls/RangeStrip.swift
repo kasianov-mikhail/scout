@@ -29,14 +29,7 @@ struct RangeStrip<Value: Hashable>: View {
                 }
             }
         }
-        .mask(alignment: .trailing) {
-            HStack(spacing: 0) {
-                Rectangle()
-                    .fill(.black)
-                LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-                    .frame(width: 56)
-            }
-        }
+        .fadingEdge(width: 56)
         .hapticFeedback(.selection, trigger: selection)
     }
 }

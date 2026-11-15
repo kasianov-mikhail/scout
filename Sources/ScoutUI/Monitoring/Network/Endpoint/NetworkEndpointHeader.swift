@@ -23,14 +23,7 @@ struct NetworkEndpointHeader: View {
                 .foregroundColor(Color.textMuted)
                 .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .mask(alignment: .trailing) {
-                    HStack(spacing: 0) {
-                        Rectangle()
-                            .fill(.black)
-                        LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-                            .frame(width: 28)
-                    }
-                }
+                .fadingEdge(width: 28)
         }
         .padding(.top, .space4)
         .padding(.bottom, .space16)
