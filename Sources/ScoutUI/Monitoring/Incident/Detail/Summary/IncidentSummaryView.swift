@@ -18,10 +18,12 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
         LazyVStack(alignment: .leading, spacing: 0) {
             message
 
+            SectionGap()
+
             cards
 
             if !summary.affected.isEmpty {
-                Section(title: "Affected", bottomGap: .space16) {
+                Section(title: "Affected") {
                     ForEach(Array(summary.affected.enumerated()), id: \.element.id) { index, affected in
                         IncidentAffectedRow(affected: affected)
                             .overlay(alignment: .bottom) {
@@ -83,12 +85,6 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 .fill(summary.kind.border)
                 .frame(height: 0.5)
         }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-                .padding(.horizontal, .gutter)
-        }
     }
 
     private var cards: some View {
@@ -109,147 +105,6 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
             }
         }
         .padding(.vertical, .space16)
-    }
-}
-
-private struct IncidentSummaryCardView: View {
-    let card: IncidentSummaryCard
-    let kind: IncidentKind
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: .space4) {
-            Text(verbatim: card.title)
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-
-            HStack(alignment: .top) {
-                Text(verbatim: card.value)
-                    .font(.scoutNumberM)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-
-                Spacer(minLength: 8)
-
-                if let change = card.change {
-                    Text(verbatim: change)
-                        .font(.scoutCaptionStrong)
-                        .foregroundStyle(kind.textColor)
-                        .lineLimit(1)
-                        .padding(.top, .space2)
-                }
-            }
-            .frame(height: 28)
-
-            bars
-                .padding(.top, .space4)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private var bars: some View {
-        let maximum = card.bars.max() ?? 0
-
-        return HStack(alignment: .bottom, spacing: .space4) {
-            ForEach(card.bars.indices, id: \.self) { index in
-                RoundedRectangle(cornerRadius: .radiusBar)
-                    .fill(kind.color)
-                    .opacity(index == card.bars.count - 1 ? 1 : 0.3)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: barHeight(card.bars[index], maximum: maximum))
-            }
-        }
-        .frame(height: 52, alignment: .bottom)
-    }
-
-    private func barHeight(_ value: Double, maximum: Double) -> CGFloat {
-        guard maximum > 0 else {
-            return 3
-        }
-        return 3 + CGFloat(value / maximum) * 49
-    }
-}
-
-private struct IncidentAffectedRow: View {
-    let affected: IncidentAffected
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: .space6) {
-            HStack {
-                Text(verbatim: affected.title)
-                    .font(.scoutRow)
-
-                Spacer()
-
-                Text(verbatim: "\(affected.total)")
-                    .font(.scoutRow)
-                    .monospacedDigit()
-                    .foregroundStyle(Color.textMuted)
-            }
-
-            bar
-
-            ViewThatFits(in: .horizontal) {
-                legend(visible: affected.segments.count)
-                legend(visible: affected.segments.count - 1)
-                legend(visible: affected.segments.count - 2)
-                legend(visible: affected.segments.count - 3)
-                legend(visible: affected.segments.count - 4)
-            }
-        }
-        .frame(height: .rowSubtitle)
-    }
-
-    private func legend(visible count: Int) -> some View {
-        let visible = min(max(count, 1), affected.segments.count)
-
-        return HStack(spacing: .space12) {
-            ForEach(affected.segments.prefix(visible)) { segment in
-                HStack(spacing: .space4) {
-                    Circle()
-                        .fill(segment.color)
-                        .frame(width: 7, height: 7)
-
-                    Text(verbatim: label(segment: segment))
-                        .lineLimit(1)
-                }
-            }
-
-            if affected.segments.count > visible {
-                Text(verbatim: "+\(affected.segments.count - visible)")
-            }
-        }
-        .font(.scoutFootnote)
-        .foregroundStyle(Color.textMuted)
-        .fixedSize(horizontal: true, vertical: false)
-    }
-
-    private var bar: some View {
-        GeometryReader { proxy in
-            let gaps = CGFloat(max(affected.segments.count - 1, 0)) * 2
-            let width = max(proxy.size.width - gaps, 0)
-
-            HStack(spacing: .space2) {
-                ForEach(affected.segments) { segment in
-                    Rectangle()
-                        .fill(segment.color)
-                        .frame(width: width * share(segment: segment))
-                }
-            }
-        }
-        .frame(height: 8)
-        .clipShape(RoundedRectangle(cornerRadius: .radiusBadge))
-    }
-
-    private func label(segment: Segment) -> String {
-        affected.usesDeviceNames ? DeviceModel(identifier: segment.label).name : segment.label
-    }
-
-    private func share(segment: Segment) -> CGFloat {
-        guard affected.total > 0 else {
-            return 0
-        }
-        return CGFloat(segment.count) / CGFloat(affected.total)
     }
 }
 
@@ -292,7 +147,21 @@ private struct IncidentSummaryFrameRow: View {
                 ),
                 records: [Crash].samples,
                 row: { crash in
-                    Text(verbatim: crash.name)
+                    HStack(spacing: .space8) {
+                        Text(verbatim: crash.date?.relativeString ?? "")
+                            .font(.scoutRow)
+
+                        Spacer()
+
+                        if let label = IncidentBreakdown.sample.occurrenceLabel(record: crash) {
+                            Text(verbatim: label)
+                                .font(.scoutCaption)
+                                .foregroundStyle(Color.textMuted)
+                                .lineLimit(1)
+                        }
+                    }
+                    .lineLimit(1)
+                    .frame(height: .rowRegular)
                 },
                 destination: {
                     Text(verbatim: "All occurrences")

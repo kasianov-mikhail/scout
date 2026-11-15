@@ -19,6 +19,9 @@ struct NetworkEndpointViewPlaceholder: View {
 
             NetworkEndpointHeaderPlaceholder()
 
+            SectionGap()
+                .padding(.horizontal, -.gutter)
+
             NetworkLedgerHeader(primary: range.pointComponent.networkTitle)
 
             ForEach(0..<14, id: \.self) { index in

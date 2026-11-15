@@ -23,11 +23,9 @@ struct NetworkViewPlaceholder: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)
-                .padding(.horizontal, .gutter)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-                .padding(.horizontal, -16)
+
+            SectionGap()
+                .padding(.horizontal, -.gutter)
 
             NetworkEndpointListHeader()
 

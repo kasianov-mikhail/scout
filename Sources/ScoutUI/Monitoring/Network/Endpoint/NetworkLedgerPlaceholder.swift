@@ -17,6 +17,9 @@ struct NetworkLedgerPlaceholder: View {
 
             NetworkEndpointHeaderPlaceholder()
 
+            SectionGap()
+                .padding(.horizontal, -.gutter)
+
             NetworkLedgerHeader(primary: primary)
 
             ForEach(0..<14, id: \.self) { index in

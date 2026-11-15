@@ -18,7 +18,7 @@ struct NetworkHourViewPlaceholder: View {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
                 .padding(.horizontal, .gutter)
 
-            NetworkEndpointHeaderPlaceholder(showsSeparator: false)
+            NetworkEndpointHeaderPlaceholder()
                 .padding(.horizontal, .gutter)
 
             Section(title: "Status") {

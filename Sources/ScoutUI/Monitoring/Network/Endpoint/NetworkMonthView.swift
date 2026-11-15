@@ -80,6 +80,9 @@ struct NetworkMonthView: View {
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "in " + title)
 
+            SectionGap()
+                .padding(.horizontal, -.gutter)
+
             NetworkLedgerHeader(primary: "DAY")
 
             ForEach(rows) { row in

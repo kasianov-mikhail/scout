@@ -16,6 +16,8 @@ struct IncidentGroupPlaceholder: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             message
 
+            SectionGap()
+
             cards
 
             Section(title: "Affected", bottomGap: .space16) {
@@ -70,12 +72,6 @@ struct IncidentGroupPlaceholder: View {
                 .fill(kind.border)
                 .frame(height: 0.5)
         }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-                .padding(.horizontal, .gutter)
-        }
     }
 
     private var cards: some View {
@@ -111,7 +107,7 @@ struct IncidentGroupPlaceholder: View {
     }
 
     private func affectedRow(title: String, delay: Double) -> some View {
-        VStack(alignment: .leading, spacing: .space6) {
+        VStack(alignment: .leading, spacing: .space8) {
             HStack {
                 Text(verbatim: title)
                     .font(.scoutRow)
@@ -129,7 +125,7 @@ struct IncidentGroupPlaceholder: View {
                 SkeletonBar(width: 46, height: 9, delay: delay)
             }
         }
-        .frame(height: .rowSubtitle)
+        .padding(.vertical, .space16)
     }
 
     private var frames: some View {

@@ -26,11 +26,11 @@ struct IncidentListPlaceholder: View {
             SkeletonBar(width: 160, height: 9, delay: 0)
                 .frame(height: 17.5)
                 .padding(.top, .space4)
-                .padding(.bottom, .space6)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
+
+            SectionGap()
+                .padding(.top, .space8)
+                .padding(.horizontal, -.gutter)
 
             IncidentGrid(count: rowCount) { index in
                 tile(index: index, side: index.isMultiple(of: 2) ? .leading : .trailing)

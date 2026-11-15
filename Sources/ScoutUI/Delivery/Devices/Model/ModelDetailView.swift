@@ -185,7 +185,8 @@ private struct ModelDeviceRow: View {
                 .lineLimit(1)
                 .frame(width: 84, alignment: .leading)
 
-            BarValue(text: device.sessions.compact, fraction: share, color: .deviceTrack)
+            BarValue(text: device.sessions.compact, fraction: share, color: .deviceTrack, barHeight: 25.5)
+                .frame(height: 18)
 
             Text(verbatim: osVersion)
                 .font(.scoutCode)

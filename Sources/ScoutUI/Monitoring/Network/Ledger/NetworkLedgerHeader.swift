@@ -17,7 +17,7 @@ struct NetworkEndpointListHeader: View {
             ColumnHeader(title: "P99")
                 .frame(width: 64, alignment: .trailing)
         }
-        .columnHeaderStyle()
+        .columnHeaderStyle(topPadding: 12)
     }
 }
 

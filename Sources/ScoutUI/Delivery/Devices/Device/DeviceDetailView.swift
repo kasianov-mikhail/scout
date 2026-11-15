@@ -212,7 +212,8 @@ private struct SessionLine: View {
                 .lineLimit(1)
                 .frame(width: 76, alignment: .leading)
 
-            BarValue(text: session.durationText ?? "—", fraction: share, color: .deviceTrack)
+            BarValue(text: session.durationText ?? "—", fraction: share, color: .deviceTrack, barHeight: 25.5)
+                .frame(height: 18)
 
             Text(verbatim: session.appVersion ?? "—")
                 .font(.scoutCode)

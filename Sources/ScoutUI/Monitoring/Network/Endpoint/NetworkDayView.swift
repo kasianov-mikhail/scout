@@ -47,11 +47,9 @@ struct NetworkDayView: View {
         } else {
             ScrollView {
                 if case .success(let report) = provider.result {
-                    list(report)
-                        .transition(.opacity)
+                    list(report).transition(.opacity)
                 } else {
-                    NetworkLedgerPlaceholder(title: title, primary: "HOUR")
-                        .transition(.opacity)
+                    NetworkLedgerPlaceholder(title: title, primary: "HOUR").transition(.opacity)
                 }
             }
             .scrollIndicators(.hidden)
@@ -79,6 +77,9 @@ struct NetworkDayView: View {
             ListTitle(title: title)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
+
+            SectionGap()
+                .padding(.horizontal, -.gutter)
 
             NetworkLedgerHeader(primary: "HOUR")
 

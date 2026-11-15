@@ -23,14 +23,15 @@ struct NetworkEndpointRow: View {
                 Text(verbatim: endpoint.path)
                     .font(.scoutValue)
                     .lineLimit(1)
-                    .mask(alignment: .trailing) {
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .fill(.black)
-                            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-                                .frame(width: 28)
-                        }
-                    }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .mask(alignment: .trailing) {
+                HStack(spacing: 0) {
+                    Rectangle()
+                        .fill(.black)
+                    LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
+                        .frame(width: 28)
+                }
             }
 
             HStack(spacing: .space8) {
