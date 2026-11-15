@@ -133,14 +133,7 @@ extension EventView {
 
                 label
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    .clipped()
-                    .mask {
-                        HStack(spacing: 0) {
-                            Rectangle()
-                            LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-                                .frame(width: 48)
-                        }
-                    }
+                    .fadingEdge(width: 48)
             }
         }
 

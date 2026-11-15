@@ -25,14 +25,7 @@ struct NetworkEndpointRow: View {
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .mask(alignment: .trailing) {
-                HStack(spacing: 0) {
-                    Rectangle()
-                        .fill(.black)
-                    LinearGradient(colors: [.black, .clear], startPoint: .leading, endPoint: .trailing)
-                        .frame(width: 28)
-                }
-            }
+            .fadingEdge(width: 28)
 
             HStack(spacing: .space8) {
                 BarValue(text: endpoint.requests.compact, fraction: fraction, color: .networkTrack, barHeight: 25.5, minimumWidth: 4)
