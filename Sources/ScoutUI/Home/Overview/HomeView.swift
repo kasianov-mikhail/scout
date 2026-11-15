@@ -12,8 +12,6 @@ struct HomeView: View {
     @State private var backends: [Backend]
 
     @AppStorage("scout_active_backend") private var activeID = ""
-    @AppStorage(HomeTypographyExperiment.storageKey) private var storedTypography = HomeTypography.v01.id
-    @AppStorage("scout_home_typography_switcher") private var isSwitcherVisible = true
     @State private var path: [HomeDestination] = []
 
     @StateObject private var tint = Tint()
@@ -44,10 +42,6 @@ struct HomeView: View {
         backends.active(id: activeID)
     }
 
-    private var typography: HomeTypography {
-        HomeTypographyExperiment.selection(stored: storedTypography, available: HomeTypographyExperiment.isAvailable)
-    }
-
     private var active: Binding<String> {
         Binding {
             backend?.id ?? ""
@@ -63,27 +57,8 @@ struct HomeView: View {
                     ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
                 } else {
                     HomeList(path: $path)
-                        .safeAreaInset(edge: .top, spacing: 0) {
-                            if HomeTypographyExperiment.isAvailable && isSwitcherVisible {
-                                HomeTypographySwitcher(
-                                    stored: $storedTypography,
-                                    isVisible: $isSwitcherVisible,
-                                    typography: typography
-                                )
-                            }
-                        }
-                        .overlay(alignment: .top) {
-                            if HomeTypographyExperiment.isAvailable && !isSwitcherVisible {
-                                HomeTypographySwitcher(
-                                    stored: $storedTypography,
-                                    isVisible: $isSwitcherVisible,
-                                    typography: typography
-                                )
-                            }
-                        }
                 }
             }
-            .environment(\.homeTypography, typography)
             .iCloudWarning(backend)
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")

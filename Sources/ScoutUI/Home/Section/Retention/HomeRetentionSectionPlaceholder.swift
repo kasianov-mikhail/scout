@@ -17,7 +17,8 @@ struct HomeRetentionSectionPlaceholder: View {
             }
 
             Text(verbatim: "Gray: installs that week · green: kept")
-                .homeText(.caption)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
                 .padding(.top, .space4)
                 .padding(.bottom, .space6)
         }
