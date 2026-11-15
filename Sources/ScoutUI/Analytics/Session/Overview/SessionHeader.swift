@@ -23,12 +23,9 @@ struct SessionHeader: View {
 
             chips
                 .padding(.top, .space12)
-                .padding(.bottom, .space12)
+                .padding(.bottom, .space18)
                 .padding(.horizontal, .gutter)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(alignment: .bottom) {
-                    divider
-                }
         }
     }
 

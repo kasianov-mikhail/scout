@@ -247,6 +247,7 @@ struct MetricLegend: View {
         .foregroundStyle(Color.textMuted)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .space10)
+        .padding(.bottom, .space16)
     }
 }
 

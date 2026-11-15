@@ -14,38 +14,35 @@ extension EventView {
         @ObservedObject var stat: StatProvider
 
         var body: some View {
-            SectionHeader(title: "Stats") {
+            Section(title: "Stats", bottomGap: .space10) {
                 Text(verbatim: "average per day")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
-            }
+            } content: {
+                switch stat.result {
+                case .success(let points):
+                    let stats = EventStats(points: points)
 
-            switch stat.result {
-            case .success(let points):
-                let stats = EventStats(points: points)
-
-                statRow(.today) {
-                    TodayRow(stats: stats)
-                }
-                ForEach(stats.rows) { row in
-                    statRow(row.period) {
-                        PeriodRow(row: row, usualFraction: stats.usualFraction)
+                    statRow(.today) {
+                        TodayRow(stats: stats)
                     }
+                    ForEach(stats.rows) { row in
+                        statRow(row.period) {
+                            PeriodRow(row: row, usualFraction: stats.usualFraction)
+                        }
+                    }
+                    StatLegend(usual: EventStats.rateLabel(stats.usual))
+                case .failure(let error):
+                    ErrorRow(description: error.localizedDescription) {
+                        await stat.fetchAgain(in: database)
+                    }
+                case nil:
+                    TodayRow(stats: nil)
+                    ForEach(Array([Period.yesterday, .week, .month, .year].enumerated()), id: \.element) { index, period in
+                        PeriodPlaceholder(period: period, delay: 0.8 + Double(index) * 0.08)
+                    }
+                    StatLegendPlaceholder()
                 }
-                StatLegend(usual: EventStats.rateLabel(stats.usual))
-            case .failure(let error):
-                ErrorRow(description: error.localizedDescription) {
-                    await stat.fetchAgain(in: database)
-                }
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-            case nil:
-                TodayRow(stats: nil)
-                ForEach(Array([Period.yesterday, .week, .month, .year].enumerated()), id: \.element) { index, period in
-                    PeriodPlaceholder(period: period, delay: 0.8 + Double(index) * 0.08)
-                }
-                StatLegendPlaceholder()
             }
         }
 
@@ -75,7 +72,6 @@ extension EventView {
                 EventView.StatSection(stat: StatProvider(.success(.samples), subject: .event("event_name")))
                 EventView.StatSection(stat: StatProvider(subject: .event("event_name")))
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

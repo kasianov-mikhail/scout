@@ -35,13 +35,11 @@ struct HomeActiveUsersSection: View {
     }
 
     private func content(users: ActiveUsers) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users", showsSeparator: true) {
-                HomeSectionExpandButton(label: "Show all active users") {
-                    onShowAll(selected)
-                }
+        Section(title: "Active Users", bottomGap: .space10) {
+            HomeSectionExpandButton(label: "Show all active users") {
+                onShowAll(selected)
             }
-
+        } content: {
             ReadoutTabStrip(
                 values: users.metrics,
                 isSelected: { $0.kind == selected },
@@ -139,7 +137,6 @@ private struct ActiveUserMetricView: View {
                 HomeActiveUsersSection(users: .sample) { _ in }
                 HomeActiveUsersSection(users: nil) { _ in }
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -151,7 +148,6 @@ private struct ActiveUserMetricView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
@@ -163,7 +159,6 @@ private struct ActiveUserMetricView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

@@ -52,17 +52,21 @@ struct DeviceDetailView: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, .space8)
+                .padding(.horizontal, .gutter)
 
             subtitle(detail.summary)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)
+                .padding(.horizontal, .gutter)
                 .overlay(alignment: .bottom) {
                     Separator()
+                        .padding(.horizontal, .gutter)
                 }
 
             stats(detail)
+                .padding(.horizontal, .gutter)
 
-            SectionHeader(title: "SESSIONS", topPadding: 12) {
+            Section(title: "Sessions") {
                 Button {
                     showTimeline = true
                 } label: {
@@ -71,59 +75,55 @@ struct DeviceDetailView: View {
                         .foregroundStyle(Color.textLink)
                 }
                 .buttonStyle(.plain)
-            }
-
-            if detail.recentSessions.isEmpty {
-                Text(verbatim: "No sessions in this period")
-                    .font(.scoutRow)
-                    .foregroundStyle(Color.textMuted)
-                    .lineLimit(1)
-                    .frame(height: .rowRegular)
-            } else {
-                ForEach(detail.recentSessions) { session in
-                    sessionRow(session, deviceID: detail.summary.id, maxDuration: detail.maxSessionDuration)
+            } content: {
+                if detail.recentSessions.isEmpty {
+                    Text(verbatim: "No sessions in this period")
+                        .font(.scoutRow)
+                        .foregroundStyle(Color.textMuted)
+                        .lineLimit(1)
+                        .frame(height: .rowRegular)
+                } else {
+                    ForEach(Array(detail.recentSessions.enumerated()), id: \.element.id) { index, session in
+                        sessionRow(
+                            session,
+                            deviceID: detail.summary.id,
+                            maxDuration: detail.maxSessionDuration,
+                            showsDivider: index < detail.recentSessions.count - 1
+                        )
+                    }
                 }
             }
 
             if !detail.history.isEmpty {
-                spacer(8)
-
-                SectionHeader(title: "HISTORY", topPadding: 12)
-
-                ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
-                    HistoryRow(event: event, isLast: index == detail.history.count - 1)
+                Section(title: "History") {
+                    ForEach(Array(detail.history.enumerated()), id: \.element.id) { index, event in
+                        HistoryRow(event: event, isLast: index == detail.history.count - 1)
+                    }
                 }
             }
 
-            spacer(12)
+            Section(title: "Activity", note: detail.activeDaysLabel, bottomGap: 0) {
+                DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
+                    .padding(.top, .space12)
 
-            SectionHeader(title: "ACTIVITY", topPadding: 12) {
-                Text(verbatim: detail.activeDaysLabel)
+                Text(verbatim: detail.activityCaption)
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space16)
             }
 
-            DeviceActivityChart(points: detail.activity, showsCounts: detail.range != .month)
-                .padding(.top, .space12)
+            Section(title: "When it is used", bottomGap: 0) {
+                UsageGrid(usage: detail.usage)
+                    .padding(.top, .space12)
 
-            Text(verbatim: detail.activityCaption)
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-                .padding(.top, .space12)
-                .padding(.bottom, .space16)
-
-            SectionHeader(title: "WHEN IT IS USED", topPadding: 12)
-
-            UsageGrid(usage: detail.usage)
-                .padding(.top, .space12)
-
-            Text(verbatim: detail.usageCaption)
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-                .padding(.top, .space12)
-                .padding(.bottom, .space16)
+                Text(verbatim: detail.usageCaption)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space16)
+            }
         }
-        .padding(.horizontal, .gutter)
     }
 
     private func subtitle(_ summary: DeviceSummary) -> some View {
@@ -140,9 +140,7 @@ struct DeviceDetailView: View {
             stat("hangs", value: detail.hangs, color: .hangText, divider: true, leading: 10, trailing: 10)
             stat("resources", value: detail.resources, color: .resourceText, divider: false, leading: 10, trailing: 0)
         }
-        .overlay(alignment: .bottom) {
-            Separator()
-        }
+        .padding(.bottom, .space6)
     }
 
     private func stat(_ title: String, value: Int, color: Color, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
@@ -155,22 +153,17 @@ struct DeviceDetailView: View {
     }
 
     @ViewBuilder
-    private func sessionRow(_ session: DeviceSession, deviceID: UUID, maxDuration: TimeInterval) -> some View {
+    private func sessionRow(_ session: DeviceSession, deviceID: UUID, maxDuration: TimeInterval, showsDivider: Bool) -> some View {
         if let sessionID = session.sessionID {
             NavigationLink {
                 SessionInspector(sessionID: sessionID, deviceID: deviceID)
             } label: {
-                SessionLine(session: session, maxDuration: maxDuration)
+                SessionLine(session: session, maxDuration: maxDuration, showsDivider: showsDivider)
             }
             .buttonStyle(.plain)
         } else {
-            SessionLine(session: session, maxDuration: maxDuration)
+            SessionLine(session: session, maxDuration: maxDuration, showsDivider: showsDivider)
         }
-    }
-
-    private func spacer(_ height: CGFloat) -> some View {
-        Color.clear
-            .frame(height: height)
     }
 }
 
@@ -205,6 +198,7 @@ struct StatColumn<Value: View>: View {
 private struct SessionLine: View {
     let session: DeviceSession
     let maxDuration: TimeInterval
+    let showsDivider: Bool
 
     var body: some View {
         HStack(spacing: .space8) {
@@ -230,7 +224,9 @@ private struct SessionLine: View {
         .lineLimit(1)
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            if showsDivider {
+                DashedLine()
+            }
         }
         .frame(maxWidth: .infinity)
         .contentShape(.rect)

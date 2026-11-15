@@ -14,11 +14,9 @@ struct HomeActiveUsersSectionEmpty: View {
     let onShowAll: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users", showsSeparator: true) {
-                HomeSectionExpandButton(label: "Show all active users", action: onShowAll)
-            }
-
+        Section(title: "Active Users", bottomGap: .space10) {
+            HomeSectionExpandButton(label: "Show all active users", action: onShowAll)
+        } content: {
             HStack(alignment: .top, spacing: 0) {
                 ForEach(ActiveUsers.Kind.allCases) { kind in
                     metric(kind: kind)
@@ -95,7 +93,6 @@ struct HomeActiveUsersSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeActiveUsersSectionEmpty(start: HomeSnapshot.date.addingDay(-29), end: HomeSnapshot.date) {}
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

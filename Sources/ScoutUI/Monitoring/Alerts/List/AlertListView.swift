@@ -105,67 +105,47 @@ struct AlertListView: View {
                             .fill(Color.separator)
                             .frame(height: 0.5)
                     }
+                    .padding(.horizontal, .gutter)
             }
 
             AlertListLegend()
                 .padding(.top, .space10)
+                .padding(.horizontal, .gutter)
 
-            section(statuses.firing, title: "FIRING")
-            section(statuses.armed, title: "ARMED")
-            section(statuses.muted, title: "MUTED")
+            section(statuses.firing, title: "Firing")
+            section(statuses.armed, title: "Armed")
+            section(statuses.muted, title: "Muted")
         }
-        .padding(.horizontal, .gutter)
     }
 
     @ViewBuilder private func section(_ statuses: [AlertStatus], title: String) -> some View {
         if !statuses.isEmpty {
-            AlertListSectionHeader(title: title, count: statuses.count)
-
-            ForEach(Array(statuses.enumerated()), id: \.element.rule) { index, status in
-                AlertRuleRow(
-                    status: status,
-                    isLast: index == statuses.count - 1,
-                    onDelete: {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            provider.remove(status.rule)
+            Section(title: title) {
+                Text(verbatim: "\(statuses.count)")
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            } content: {
+                ForEach(Array(statuses.enumerated()), id: \.element.rule) { index, status in
+                    AlertRuleRow(
+                        status: status,
+                        isLast: index == statuses.count - 1,
+                        onDelete: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                provider.remove(status.rule)
+                            }
+                        },
+                        onMute: {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                provider.mute(status.rule, until: Date().addingTimeInterval(3600))
+                            }
+                        },
+                        onOpen: {
+                            selected = status
                         }
-                    },
-                    onMute: {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            provider.mute(status.rule, until: Date().addingTimeInterval(3600))
-                        }
-                    },
-                    onOpen: {
-                        selected = status
-                    }
-                )
-                .padding(.horizontal, -16)
+                    )
+                    .padding(.horizontal, -.gutter)
+                }
             }
-        }
-    }
-}
-
-private struct AlertListSectionHeader: View {
-    let title: String
-    let count: Int
-
-    var body: some View {
-        HStack {
-            Text(verbatim: title)
-                .font(.scoutSection)
-
-            Spacer()
-
-            Text(verbatim: "\(count)")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-        }
-        .padding(.top, .space12)
-        .frame(height: 56)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
         }
     }
 }
@@ -193,6 +173,7 @@ struct AlertListLegend: View {
             .font(.scoutFootnote)
             .foregroundStyle(Color.textMuted)
         }
+        .padding(.bottom, .space16)
     }
 
     private func legendItem(color: Color, title: String) -> some View {

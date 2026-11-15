@@ -13,7 +13,7 @@
 
 ## Lists
 
-- Use only `.listStyle(.plain)` for `List`s; section titles are `Header(title:)` rows (not `Section` headers/footers), with `.listRowSeparator(.hidden)` on non-row content.
+- Use only `.listStyle(.plain)` for `List`s; section titles are `SectionHeader(title:)` rows inside a `Section`, not `List` section headers or footers, with `.listRowSeparator(.hidden)` on non-row content.
 
 ## UI verification
 

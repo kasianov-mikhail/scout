@@ -19,29 +19,30 @@ struct RetentionSegmentDetailView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
+                    .padding(.bottom, .space6)
+                    .padding(.horizontal, .gutter)
 
-                RetentionSection(title: "Come back on", note: "whole week", divider: true)
-
-                ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
-                    RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
+                Section(title: "Come back on", note: "│ whole week") {
+                    ForEach(Array(detail.days.enumerated()), id: \.element.id) { index, day in
+                        RetentionDayRow(value: day, showsDivider: index < detail.days.count - 1)
+                    }
                 }
 
-                RetentionSection(title: "Stability")
-
-                RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
+                Section(title: "Stability", bottomGap: .space4) {
+                    RetentionStabilitySection(crash: detail.crash, hang: detail.hang)
+                }
 
                 if !detail.weeks.isEmpty {
-                    RetentionSection(title: "\(segment.name) by week", note: "day 7")
+                    Section(title: "\(segment.name) by week", note: "day 7", bottomGap: 0) {
+                        ForEach(Array(detail.weeks.enumerated()), id: \.element.id) { index, week in
+                            RetentionSegmentWeekRow(week: week, showsDivider: index < detail.weeks.count - 1)
+                        }
 
-                    ForEach(Array(detail.weeks.enumerated()), id: \.element.id) { index, week in
-                        RetentionSegmentWeekRow(week: week, showsDivider: index < detail.weeks.count - 1)
+                        Color.clear
+                            .frame(height: 24)
                     }
-
-                    Color.clear
-                        .frame(height: 24)
                 }
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: segment.name)

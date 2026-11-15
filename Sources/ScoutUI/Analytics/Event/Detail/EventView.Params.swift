@@ -19,7 +19,7 @@ extension EventView {
         @Binding var isParamPresented: Bool
 
         var body: some View {
-            SectionHeader(title: "Params") {
+            Section(title: "Params", bottomGap: .space6) {
                 switch param.result {
                 case .success where count > Self.previewLimit:
                     Button {
@@ -37,23 +37,24 @@ extension EventView {
                 case .success, .failure, nil:
                     EmptyView()
                 }
-            }
+            } content: {
+                switch param.result {
+                case .success(let items):
+                    let preview = Array(items.prefix(Self.previewLimit))
 
-            switch param.result {
-            case .success(let items):
-                ForEach(items.prefix(Self.previewLimit)) { item in
-                    ParamPreviewRow(item: item)
-                }
-            case .failure(let error):
-                ErrorRow(description: error.localizedDescription) {
-                    await param.fetchAgain(in: database)
-                }
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-            case nil:
-                ForEach(0..<min(Self.previewLimit, count), id: \.self) { index in
-                    ParamPreviewPlaceholder(index: index)
+                    ForEach(Array(preview.enumerated()), id: \.element.id) { index, item in
+                        ParamPreviewRow(item: item, showsDivider: index < preview.count - 1)
+                    }
+                case .failure(let error):
+                    ErrorRow(description: error.localizedDescription) {
+                        await param.fetchAgain(in: database)
+                    }
+                case nil:
+                    let previewCount = min(Self.previewLimit, count)
+
+                    ForEach(0..<previewCount, id: \.self) { index in
+                        ParamPreviewPlaceholder(index: index, showsDivider: index < previewCount - 1)
+                    }
                 }
             }
         }
@@ -61,6 +62,7 @@ extension EventView {
 
     struct ParamPreviewRow: View {
         let item: ParamProvider.Item
+        let showsDivider: Bool
 
         var body: some View {
             let value = ParamValue(parsing: item.value)
@@ -89,13 +91,16 @@ extension EventView {
             }
             .buttonStyle(.plain)
             .overlay(alignment: .bottom) {
-                Separator()
+                if showsDivider {
+                    Separator()
+                }
             }
         }
     }
 
     struct ParamPreviewPlaceholder: View {
         let index: Int
+        let showsDivider: Bool
 
         var body: some View {
             let delay = 0.48 + Double(index) * 0.08
@@ -112,7 +117,9 @@ extension EventView {
             }
             .frame(height: .rowRegular)
             .overlay(alignment: .bottom) {
-                Separator()
+                if showsDivider {
+                    Separator()
+                }
             }
         }
     }

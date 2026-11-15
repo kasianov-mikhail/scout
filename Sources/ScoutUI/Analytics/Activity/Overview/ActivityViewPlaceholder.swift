@@ -14,24 +14,30 @@ struct ActivityViewPlaceholder: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
                 .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.leading, .gutter)
 
             metrics
                 .padding(.top, .space4)
+                .padding(.horizontal, .gutter)
 
             chart
                 .padding(.top, .space16)
+                .padding(.horizontal, .gutter)
 
             stickiness
                 .padding(.top, .space12)
+                .padding(.horizontal, .gutter)
 
-            ActivityRowsHeader()
-
-            ForEach(0..<8, id: \.self) { index in
-                row(index: index)
+            Section(title: "Per day", bottomGap: 0) {
+                Text(verbatim: "vs day before")
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            } content: {
+                ForEach(0..<8, id: \.self) { index in
+                    row(index: index)
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -89,12 +95,7 @@ struct ActivityViewPlaceholder: View {
         }
         .font(.scoutCaption)
         .foregroundStyle(Color.textMuted)
-        .padding(.bottom, .space12)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .padding(.bottom, .space16)
     }
 
     private func row(index: Int) -> some View {

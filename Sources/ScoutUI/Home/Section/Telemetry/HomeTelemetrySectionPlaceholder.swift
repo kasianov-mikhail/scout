@@ -9,24 +9,9 @@ import SwiftUI
 
 struct HomeTelemetrySectionPlaceholder: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HStack(spacing: 0) {
-                Text(verbatim: "TELEMETRY")
-                    .frame(maxWidth: .infinity, alignment: .leading)
-
-                Text(verbatim: "INCIDENTS")
-                    .padding(.leading, .space12)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .font(.scoutSection)
-            .padding(.top, .space12)
-            .frame(height: 70)
-            .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
-            }
-
+        Section(bottomGap: .space2) {
+            SectionHeader(titles: ["TELEMETRY", "INCIDENTS"])
+        } content: {
             LazyVGrid(columns: telemetryColumns, spacing: 0) {
                 ForEach(Array([TelemetryItem.Kind.events, .crashes, .metrics, .hangs, .network, .resources].enumerated()), id: \.element) { index, kind in
                     row(kind: kind, index: index)
@@ -39,7 +24,6 @@ struct HomeTelemetrySectionPlaceholder: View {
                     .allowsHitTesting(false)
             }
         }
-        .padding(.bottom, .space6)
     }
 
     private func row(kind: TelemetryItem.Kind, index: Int) -> some View {

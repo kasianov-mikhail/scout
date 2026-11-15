@@ -12,9 +12,7 @@ struct HomeRetentionSectionEmpty: View {
     let now: Date
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            HomeRetentionHeader()
-
+        Section(title: "Retention", note: "kept on day 7", bottomGap: .space10) {
             ForEach(Array(starts.enumerated()), id: \.element) { index, start in
                 row(start: start, fraction: fractions[index])
             }
@@ -63,7 +61,6 @@ struct HomeRetentionSectionEmpty: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 HomeRetentionSectionEmpty(now: HomeSnapshot.date)
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

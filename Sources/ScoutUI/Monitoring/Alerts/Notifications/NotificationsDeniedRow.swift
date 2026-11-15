@@ -52,7 +52,7 @@ struct NotificationsDeniedRow: View {
 #Preview {
     ScrollView {
         LazyVStack(alignment: .leading, spacing: 0) {
-            Header(title: "Rules")
+            SectionHeader(title: "Rules", showsSeparator: false)
             NotificationsDeniedRow()
         }
         .padding(.horizontal, .gutter)

@@ -27,9 +27,7 @@ struct HomeRetentionSection: View {
     private func content(weeks: [RetentionWeek]) -> some View {
         let maxInstalls = weeks.maxInstalls
 
-        return VStack(alignment: .leading, spacing: 0) {
-            HomeRetentionHeader()
-
+        return Section(title: "Retention", note: "kept on day 7", bottomGap: .space10) {
             ForEach(Array(weeks.enumerated()), id: \.element.id) { index, week in
                 Button(action: onSelect) {
                     RetentionRowContent(
@@ -51,16 +49,6 @@ struct HomeRetentionSection: View {
         Text(verbatim: "Gray: installs that week · green: kept")
             .font(.scoutCaption)
             .foregroundStyle(Color.textMuted)
-    }
-}
-
-struct HomeRetentionHeader: View {
-    var body: some View {
-        Header(title: "Retention", showsSeparator: true) {
-            Text(verbatim: "kept on day 7")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-        }
     }
 }
 
@@ -119,7 +107,6 @@ private struct RetentionRowContent: View {
                 HomeRetentionSection(weeks: .samples) {}
                 HomeRetentionSection(weeks: nil) {}
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }

@@ -16,16 +16,20 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
     let group: IncidentGroup<Element>?
 
     var body: some View {
-        VStack(spacing: 0) {
+        LazyVStack(alignment: .leading, spacing: 0) {
             summary
-            IncidentDetailHeader(title: "Context")
-            IncidentContextRows(element: element, group: group, context: nil, isLoading: true, fullyLoading: true)
-            IncidentDetailHeader(title: "Stack Trace") {
-                SkeletonBar(width: 120, height: 9, delay: 0.72)
+                .padding(.horizontal, .gutter)
+
+            Section(title: "Context") {
+                IncidentContextRows(element: element, group: group, context: nil, isLoading: true, fullyLoading: true)
             }
-            stack
+
+            Section(title: "Stack Trace", bottomGap: 0) {
+                SkeletonBar(width: 120, height: 9, delay: 0.72)
+            } content: {
+                stack
+            }
         }
-        .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -45,11 +49,6 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
         }
         .padding(.top, .space18)
         .padding(.bottom, .space16)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
     }
 
     private var stack: some View {

@@ -10,6 +10,7 @@ import SwiftUI
 struct NetworkEndpointHeader: View {
     let endpoint: NetworkEndpoint
     let descriptor: String
+    var showsSeparator = true
 
     var body: some View {
         VStack(alignment: .leading, spacing: .space6) {
@@ -26,7 +27,9 @@ struct NetworkEndpointHeader: View {
         .padding(.top, .space4)
         .padding(.bottom, .space16)
         .overlay(alignment: .bottom) {
-            Separator()
+            if showsSeparator {
+                Separator()
+            }
         }
     }
 
@@ -55,6 +58,8 @@ struct NetworkEndpointHeader: View {
 }
 
 struct NetworkEndpointHeaderPlaceholder: View {
+    var showsSeparator = true
+
     var body: some View {
         VStack(alignment: .leading, spacing: .space6) {
             SkeletonBar(width: 210, height: 9, delay: 0.08)
@@ -67,7 +72,9 @@ struct NetworkEndpointHeaderPlaceholder: View {
         .padding(.top, .space4)
         .padding(.bottom, .space16)
         .overlay(alignment: .bottom) {
-            Separator()
+            if showsSeparator {
+                Separator()
+            }
         }
     }
 }

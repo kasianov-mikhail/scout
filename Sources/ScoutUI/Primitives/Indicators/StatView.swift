@@ -64,7 +64,7 @@ struct StatView: View {
                         }
                     }
 
-                    Header(title: "Weekly Pattern") {
+                    SectionHeader(title: "Weekly Pattern", showsSeparator: false) {
                         Text(verbatim: "Last 4 weeks")
                             .font(.scoutCaption)
                             .foregroundStyle(Color.textSecondary)

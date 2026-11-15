@@ -17,41 +17,39 @@ struct ModelDetailPlaceholder: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, .space8)
+                .padding(.horizontal, .gutter)
 
             SkeletonBar(width: 194, height: 9, delay: 0.08)
                 .padding(.top, .space4)
-                .padding(.bottom, .space12)
-                .overlay(alignment: .bottom) {
-                    Separator()
+                .padding(.bottom, .space16)
+                .padding(.horizontal, .gutter)
+
+            Section(title: "OS Versions") {
+                SkeletonBar(height: 10, delay: 0.24, cornerRadius: .radiusBadge, fill: Color.deviceShade)
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space6)
+
+                ForEach(0..<2, id: \.self) { index in
+                    osRow(index: index, showsDivider: index < 1)
                 }
-
-            SectionHeader(title: "OS VERSIONS", topPadding: 12)
-
-            SkeletonBar(height: 10, delay: 0.24, cornerRadius: .radiusBadge, fill: Color.deviceShade)
-                .padding(.top, .space12)
-                .padding(.bottom, .space6)
-
-            ForEach(0..<2, id: \.self) { index in
-                osRow(index: index)
             }
 
-            SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
+            Section(title: "Devices", showsSeparator: false) {
+                columns
+                    .columnHeaderStyle(topPadding: 12)
 
-            columns
-                .columnHeaderStyle(topPadding: 12)
-
-            ForEach(0..<11, id: \.self) { index in
-                deviceRow(index: index, isLast: index == 10)
+                ForEach(0..<11, id: \.self) { index in
+                    deviceRow(index: index, isLast: index == 10)
+                }
             }
         }
-        .padding(.horizontal, .gutter)
         .navigationTitle(en: model)
         .inlineNavigationTitle()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
 
-    private func osRow(index: Int) -> some View {
+    private func osRow(index: Int, showsDivider: Bool) -> some View {
         let delay = 0.32 + Double(index) * 0.08
         let width: CGFloat = index == 0 ? 77 : 56
 
@@ -72,7 +70,9 @@ struct ModelDetailPlaceholder: View {
         }
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            if showsDivider {
+                DashedLine()
+            }
         }
     }
 

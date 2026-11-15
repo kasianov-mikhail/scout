@@ -63,10 +63,7 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
     @ViewBuilder
     var body: some View {
         if !groups.isEmpty {
-            Header(title: title)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
+            SectionHeader(title: title)
 
             ForEach(groups) { group in
                 NavigationLink {

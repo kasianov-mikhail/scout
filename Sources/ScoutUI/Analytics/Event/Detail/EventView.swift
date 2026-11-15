@@ -30,9 +30,12 @@ struct EventView: View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
                 EventHeader(event: event)
+                    .padding(.horizontal, .gutter)
 
                 if let sessionID = event.sessionID {
                     ContextSection(sessionID: sessionID, deviceID: event.deviceID, context: context)
+                        .padding(.bottom, .space6)
+                        .padding(.horizontal, .gutter)
                 }
 
                 if let paramCount = event.paramCount, paramCount > 0 {
@@ -45,8 +48,8 @@ struct EventView: View {
 
                 StatSection(stat: stat)
                 TimelineSection(event: event)
+                    .padding(.horizontal, .gutter)
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
         .animation(.easeOut(duration: 0.2), value: [param.isLoading, stat.isLoading, context.isLoading])
@@ -96,9 +99,6 @@ extension EventView {
             .padding(.top, .space18)
             .padding(.bottom, .space16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
         }
     }
 }

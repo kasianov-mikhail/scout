@@ -9,11 +9,12 @@ import SwiftUI
 
 struct Separator: View {
     var axis = Axis.horizontal
+    var color = Color.separator
 
     var body: some View {
         Rectangle()
-            .fill(Color.separator)
-            .frame(width: axis == .vertical ? 0.5 : nil, height: axis == .horizontal ? 0.5 : nil)
+            .fill(color)
+            .frame(width: axis == .vertical ? .hairline : nil, height: axis == .horizontal ? .hairline : nil)
             .allowsHitTesting(false)
     }
 }
@@ -21,6 +22,7 @@ struct Separator: View {
 #Preview {
     VStack(spacing: .space16) {
         Separator()
+        Separator(color: .lineGap)
         HStack(spacing: .space16) {
             Text(verbatim: "Left")
             Separator(axis: .vertical)

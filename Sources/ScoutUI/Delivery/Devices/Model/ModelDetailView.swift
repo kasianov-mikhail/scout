@@ -62,45 +62,47 @@ struct ModelDetailView: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
                 .padding(.top, .space8)
+                .padding(.horizontal, .gutter)
 
             subtitle(detail)
                 .padding(.top, .space4)
-                .padding(.bottom, .space12)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
+                .padding(.bottom, .space16)
+                .padding(.horizontal, .gutter)
 
             if !detail.osVersions.isEmpty {
-                SectionHeader(title: "OS VERSIONS", topPadding: 12)
+                Section(title: "OS Versions") {
+                    ProportionBar(
+                        items: detail.osVersions,
+                        color: { index, _ in deviceOSColor(index) },
+                        share: { Double($0.percentage) / 100 }
+                    )
+                    .padding(.top, .space12)
+                    .padding(.bottom, .space6)
 
-                ProportionBar(
-                    items: detail.osVersions,
-                    color: { index, _ in deviceOSColor(index) },
-                    share: { Double($0.percentage) / 100 }
-                )
-                .padding(.top, .space12)
-                .padding(.bottom, .space6)
-
-                ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
-                    OSVersionRow(osVersion: osVersion, color: deviceOSColor(index))
+                    ForEach(Array(detail.osVersions.enumerated()), id: \.element.id) { index, osVersion in
+                        OSVersionRow(
+                            osVersion: osVersion,
+                            color: deviceOSColor(index),
+                            showsDivider: index < detail.osVersions.count - 1
+                        )
+                    }
                 }
             }
 
-            SectionHeader(title: "DEVICES", topPadding: 12, showsSeparator: false)
+            Section(title: "Devices", showsSeparator: false) {
+                deviceColumns
+                    .columnHeaderStyle(topPadding: 12)
 
-            deviceColumns
-                .columnHeaderStyle(topPadding: 12)
-
-            ForEach(detail.devices) { device in
-                NavigationLink {
-                    DeviceDetailView(device: device, range: provider.range)
-                } label: {
-                    ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
+                ForEach(detail.devices) { device in
+                    NavigationLink {
+                        DeviceDetailView(device: device, range: provider.range)
+                    } label: {
+                        ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
         }
-        .padding(.horizontal, .gutter)
     }
 
     private func subtitle(_ detail: ModelDetail) -> some View {
@@ -129,6 +131,7 @@ struct ModelDetailView: View {
 private struct OSVersionRow: View {
     let osVersion: DeviceOSUsage
     let color: Color
+    let showsDivider: Bool
 
     var body: some View {
         HStack(spacing: .space8) {
@@ -159,7 +162,9 @@ private struct OSVersionRow: View {
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            if showsDivider {
+                DashedLine()
+            }
         }
     }
 }

@@ -12,6 +12,7 @@ import SwiftUI
 struct NetworkStatusRow: View {
     let item: NetworkStatusClass
     let total: Int
+    let showsDivider: Bool
 
     var body: some View {
         HStack(spacing: .space8) {
@@ -36,7 +37,9 @@ struct NetworkStatusRow: View {
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            if showsDivider {
+                DashedLine()
+            }
         }
     }
 }

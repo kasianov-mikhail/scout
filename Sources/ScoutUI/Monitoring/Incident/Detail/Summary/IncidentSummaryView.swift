@@ -17,38 +17,29 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             message
-                .padding(.horizontal, -16)
 
             cards
 
             if !summary.affected.isEmpty {
-                Header(title: "Affected")
-                    .overlay(alignment: .bottom) {
-                        Separator()
+                Section(title: "Affected", bottomGap: .space16) {
+                    ForEach(Array(summary.affected.enumerated()), id: \.element.id) { index, affected in
+                        IncidentAffectedRow(affected: affected)
+                            .overlay(alignment: .bottom) {
+                                if index < summary.affected.count - 1 {
+                                    Separator()
+                                }
+                            }
                     }
-
-                ForEach(summary.affected) { affected in
-                    IncidentAffectedRow(affected: affected)
-                        .overlay(alignment: .bottom) {
-                            Separator()
-                        }
                 }
             }
 
             if !summary.frames.isEmpty {
-                Header(title: "Stack Trace") {
-                    Text(verbatim: summary.stackCaption)
-                        .font(.scoutCaption)
-                        .foregroundStyle(Color.textMuted)
+                Section(title: "Stack Trace", note: summary.stackCaption, bottomGap: 0) {
+                    frames
                 }
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-
-                frames
             }
 
-            Header(title: "Occurrences") {
+            Section(title: "Occurrences", showsSeparator: !records.isEmpty) {
                 NavigationLink {
                     destination()
                 } label: {
@@ -60,23 +51,17 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
                 .buttonStyle(.plain)
                 .foregroundStyle(Color.textLink)
                 .accessibilityLabel(Text(verbatim: "Show all occurrences"))
-            }
-            .overlay(alignment: .bottom) {
-                if !records.isEmpty {
-                    Separator()
+            } content: {
+                ForEach(Array(records.prefix(4).enumerated()), id: \.element.id) { index, record in
+                    row(record)
+                        .overlay(alignment: .bottom) {
+                            if index < min(records.count, 4) - 1 {
+                                Separator()
+                            }
+                        }
                 }
             }
-
-            ForEach(Array(records.prefix(4).enumerated()), id: \.element.id) { index, record in
-                row(record)
-                    .overlay(alignment: .bottom) {
-                        if index < min(records.count, 4) - 1 {
-                            Separator()
-                        }
-                    }
-            }
         }
-        .padding(.horizontal, .gutter)
     }
 
     private var message: some View {
@@ -113,12 +98,8 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
             }
         }
         .padding(.top, .space20)
-        .padding(.bottom, .space12)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
+        .padding(.bottom, .space18)
+        .padding(.horizontal, .gutter)
     }
 
     private var frames: some View {
@@ -128,11 +109,6 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
             }
         }
         .padding(.vertical, .space16)
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
     }
 }
 

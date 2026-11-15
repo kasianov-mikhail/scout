@@ -9,29 +9,6 @@ import Scout
 import SwiftUI
 
 extension EventView {
-    struct SectionHeader<Trailing: View>: View {
-        let title: String
-        @ViewBuilder var trailing: () -> Trailing
-
-        var body: some View {
-            HStack {
-                Text(verbatim: title.uppercased())
-                    .font(.scoutSection)
-
-                Spacer()
-
-                trailing()
-            }
-            .padding(.top, .space12)
-            .frame(height: 56)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
-        }
-    }
-}
-
-extension EventView {
     struct TimelineSection: View {
         let event: Event
 

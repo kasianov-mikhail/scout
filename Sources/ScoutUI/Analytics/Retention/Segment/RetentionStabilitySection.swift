@@ -22,11 +22,6 @@ struct RetentionStabilitySection: View {
             stat(value: hang)
                 .padding(.leading, .space12)
         }
-        .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
-        }
     }
 
     private func stat(value: RetentionIncidentValue) -> some View {

@@ -38,9 +38,6 @@ extension EventView {
             .lineLimit(1)
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: 30)
-            .overlay(alignment: .bottom) {
-                Separator()
-            }
         }
     }
 
@@ -49,9 +46,6 @@ extension EventView {
             SkeletonBar(width: 150, height: 9, delay: 1.12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .frame(height: 30)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
         }
     }
 

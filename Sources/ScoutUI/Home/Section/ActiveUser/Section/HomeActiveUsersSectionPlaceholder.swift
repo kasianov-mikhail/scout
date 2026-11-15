@@ -10,9 +10,7 @@ import SwiftUI
 
 struct HomeActiveUsersSectionPlaceholder: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users", showsSeparator: true)
-
+        Section(title: "Active Users", bottomGap: .space10) {
             ReadoutTabStrip(
                 values: ActiveUsers.Kind.allCases,
                 isSelected: { _ in false },

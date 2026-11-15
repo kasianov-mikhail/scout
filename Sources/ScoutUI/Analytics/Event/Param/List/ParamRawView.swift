@@ -12,12 +12,7 @@ struct ParamRawView: View {
     let raw: ParamRaw
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            SectionHeader(title: "RAW", topPadding: 12, showsSeparator: false)
-                .overlay(alignment: .top) {
-                    Separator()
-                }
-
+        Section(title: "RAW", showsSeparator: false, bottomGap: 0) {
             Text(raw.attributed)
                 .font(.scoutValue)
                 .foregroundStyle(Color.jsonPunctuation)
@@ -27,7 +22,7 @@ struct ParamRawView: View {
                 .padding(.horizontal, .space12)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(Color.jsonBackground, in: RoundedRectangle(cornerRadius: .radiusBlock))
-                .padding(.bottom, .space16)
+                .padding(.bottom, .space18)
         }
     }
 }
@@ -49,6 +44,5 @@ struct ParamRawView: View {
                 ParamProvider.Item(key: "transaction_id", value: "1B2F4A89-0C3D-4E5F-A6B7-C8D9E0F1A2B3"),
             ])
         )
-        .padding(.horizontal, .gutter)
     }
 }
