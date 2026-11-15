@@ -17,8 +17,8 @@
 
 ## UI verification
 
-- After a UI change, compare the rendered screen with the reference at the same size before reporting it done. Use a simulator screenshot, an Xcode preview, or a screenshot from the user.
-- A linked worktree does not build. Ask the user to render the branch when a screenshot is needed, or verify after the merge and say so.
+- After a UI change, compare the rendered screen with the reference at the same size before reporting it done. Use a simulator screenshot, an Xcode preview, or a screenshot from the user; measure the values instead of eyeballing them.
+- A linked worktree does not build its own scheme. To render one, run `~/.config/opencode/skills/mockup-to-swiftui/scripts/render-harness.sh` from the worktree: it copies the sources into a temp copy of `scout-demo` and builds there, which is a render, not a build of the branch. When that fails, ask the user to render the branch or verify after the merge and say so.
 - For a visual fix, include the screenshot in the final report, or name the visual points that remain unverified.
 - Do not report a visual change as done from reading the code alone.
 
