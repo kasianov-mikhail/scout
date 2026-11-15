@@ -15,10 +15,11 @@ struct NetworkEndpointHeader: View {
         VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: endpoint.path)
                 .font(.scoutRowMono)
+                .lineSpacing(3)
                 .lineLimit(2)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            (methodText + Text(verbatim: " · " + phrase))
+            summaryText
                 .font(.scoutCaption)
                 .foregroundColor(Color.textMuted)
                 .lineLimit(1)
@@ -29,13 +30,14 @@ struct NetworkEndpointHeader: View {
         .padding(.bottom, .space16)
     }
 
-    private var methodText: Text {
+    private var summaryText: Text {
         guard let method = endpoint.method else {
-            return Text(verbatim: "")
+            return Text(verbatim: phrase)
         }
-        return Text(verbatim: method + " · ")
+        return Text(verbatim: method)
             .font(.scoutMonoLabel)
             .foregroundColor(endpoint.methodColor)
+            + Text(verbatim: " · " + phrase)
     }
 
     private var phrase: String {
@@ -56,12 +58,21 @@ struct NetworkEndpointHeader: View {
 struct NetworkEndpointHeaderPlaceholder: View {
     var body: some View {
         VStack(alignment: .leading, spacing: .space6) {
-            SkeletonBar(width: 210, height: 9, delay: 0.08)
+            Text(verbatim: " ")
+                .font(.scoutRowMono)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .overlay(alignment: .leading) {
+                    SkeletonBar(width: 210, height: 9, delay: 0.08)
+                }
 
-            HStack(spacing: .space6) {
-                SkeletonBar(width: 28, height: 9, delay: 0.08)
-                SkeletonBar(width: 194, height: 9, delay: 0.08)
-            }
+            Text(verbatim: " ")
+                .font(.scoutCaption)
+                .overlay(alignment: .leading) {
+                    HStack(spacing: .space6) {
+                        SkeletonBar(width: 28, height: 9, delay: 0.08)
+                        SkeletonBar(width: 194, height: 9, delay: 0.08)
+                    }
+                }
         }
         .padding(.top, .space4)
         .padding(.bottom, .space16)
