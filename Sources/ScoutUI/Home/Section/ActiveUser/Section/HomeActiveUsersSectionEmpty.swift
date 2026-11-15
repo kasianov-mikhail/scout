@@ -13,11 +13,9 @@ struct HomeActiveUsersSectionEmpty: View {
     let end: Date
     let onShowAll: () -> Void
 
-    @Environment(\.homeTypography) private var typography
-
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users", showsSeparator: true, font: typography.font(.section)) {
+            Header(title: "Active Users", showsSeparator: true) {
                 HomeSectionExpandButton(label: "Show all active users", action: onShowAll)
             }
 
@@ -34,7 +32,8 @@ struct HomeActiveUsersSectionEmpty: View {
                 .padding(.top, .space12)
 
             Text(verbatim: "No sessions in the last 30 days")
-                .homeText(.caption)
+                .font(.scoutCaption)
+                .foregroundStyle(Color.textMuted)
                 .padding(.top, .space10)
                 .padding(.bottom, .space8)
         }
@@ -43,7 +42,7 @@ struct HomeActiveUsersSectionEmpty: View {
     private func metric(kind: ActiveUsers.Kind) -> some View {
         VStack(alignment: .leading, spacing: .space6) {
             Text(verbatim: kind.title.uppercased())
-                .homeText(.labelInk)
+                .font(.scoutCaptionStrong)
 
             EmptyBar(width: 83, height: 28, cornerRadius: .radiusBadge)
 
@@ -74,10 +73,7 @@ struct HomeActiveUsersSectionEmpty: View {
                 middle: DateFormatter.monthDay.string(from: middle),
                 end: "today",
                 topInset: 6,
-                design: .monospaced,
-                font: typography.font(.axis),
-                color: typography.color(.axis),
-                tracking: typography.tracking(.axis)
+                design: .monospaced
             )
         }
     }

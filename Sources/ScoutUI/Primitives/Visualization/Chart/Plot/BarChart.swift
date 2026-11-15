@@ -24,9 +24,6 @@ struct BarChart: View {
     let labelDesign: Font.Design
     let accent: Accent?
     var roundBottomCorners = true
-    var axisFont: Font? = nil
-    var axisColor: Color? = nil
-    var axisTracking: CGFloat = 0
 
     var body: some View {
         let maximum = values.max() ?? 0
@@ -47,10 +44,7 @@ struct BarChart: View {
                 middle: middleLabel,
                 end: endLabel,
                 topInset: labelGap,
-                design: labelDesign,
-                font: axisFont,
-                color: axisColor,
-                tracking: axisTracking
+                design: labelDesign
             )
         }
     }
@@ -91,9 +85,6 @@ struct AxisLabelRow: View {
     let end: String
     let topInset: CGFloat
     let design: Font.Design
-    var font: Font? = nil
-    var color: Color? = nil
-    var tracking: CGFloat = 0
 
     var body: some View {
         HStack(spacing: 0) {
@@ -108,9 +99,8 @@ struct AxisLabelRow: View {
 
             Text(verbatim: end)
         }
-        .font(font ?? .book(size: 10, design: design))
-        .foregroundStyle(color ?? Color.textMuted)
-        .tracking(tracking)
+        .font(.book(size: 10, design: design))
+        .foregroundStyle(Color.textMuted)
         .padding(.top, topInset)
     }
 }

@@ -14,8 +14,6 @@ struct HomeActiveUsersSection: View {
 
     @State private var selected: ActiveUsers.Kind
 
-    @Environment(\.homeTypography) private var typography
-
     init(users: ActiveUsers?, selected: ActiveUsers.Kind = .dau, onShowAll: @escaping (ActiveUsers.Kind) -> Void) {
         self.users = users
         self.onShowAll = onShowAll
@@ -38,7 +36,7 @@ struct HomeActiveUsersSection: View {
 
     private func content(users: ActiveUsers) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Header(title: "Active Users", showsSeparator: true, font: typography.font(.section)) {
+            Header(title: "Active Users", showsSeparator: true) {
                 HomeSectionExpandButton(label: "Show all active users") {
                     onShowAll(selected)
                 }
@@ -78,7 +76,8 @@ struct HomeActiveUsersSection: View {
                 Text(verbatim: "Stickiness ")
 
                 Text(verbatim: users.stickinessLabel)
-                    .homeText(.labelInk)
+                    .font(.scoutCaptionStrong)
+                    .foregroundStyle(Color.textPrimary)
 
                 Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
             case .sessions:
@@ -86,7 +85,8 @@ struct HomeActiveUsersSection: View {
                     Text(verbatim: "Median ")
 
                     Text(verbatim: median)
-                        .homeText(.labelInk)
+                        .font(.scoutCaptionStrong)
+                        .foregroundStyle(Color.textPrimary)
 
                     Text(verbatim: " · \(users.sessionsPerUserLabel) sessions per user")
                 } else {
@@ -98,12 +98,14 @@ struct HomeActiveUsersSection: View {
                 }
 
                 Text(verbatim: users.devicesThisWeekLabel)
-                    .homeText(.labelInk)
+                    .font(.scoutCaptionStrong)
+                    .foregroundStyle(Color.textPrimary)
 
                 Text(verbatim: " this week")
             }
         }
-        .homeText(.caption)
+        .font(.scoutCaption)
+        .foregroundStyle(Color.textMuted)
     }
 }
 
@@ -114,14 +116,16 @@ private struct ActiveUserMetricView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: .space2) {
             Text(verbatim: metric.kind.title.uppercased())
-                .homeText(isActive ? .labelInk : .label)
+                .font(.scoutCaptionStrong)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.textMuted)
 
             Text(verbatim: metric.valueLabel)
-                .homeText(isActive ? .number : .numberDim)
+                .font(.scoutNumberL)
+                .foregroundStyle(isActive ? Color.textPrimary : Color.inactiveValue)
                 .frame(height: 34, alignment: .leading)
 
             Text(verbatim: metric.deltaLabel)
-                .homeText(.delta)
+                .font(.scoutCaption)
                 .foregroundStyle(metric.delta >= 0 ? Color.positive : Color.fillDanger)
         }
         .padding(.vertical, .space10)

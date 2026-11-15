@@ -18,7 +18,7 @@ struct HomeTelemetrySectionPlaceholder: View {
                     .padding(.leading, .space12)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .homeText(.section)
+            .font(.scoutSection)
             .padding(.top, .space12)
             .frame(height: 70)
             .overlay(alignment: .bottom) {

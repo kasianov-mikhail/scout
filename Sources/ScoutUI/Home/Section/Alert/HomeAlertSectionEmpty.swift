@@ -14,12 +14,13 @@ struct HomeAlertSectionEmpty: View {
         VStack(alignment: .leading, spacing: .space6) {
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: "ALERTS")
-                    .homeText(.labelInk)
+                    .font(.scoutCaptionStrong)
 
                 Spacer()
 
                 Text(verbatim: rulesLabel)
-                    .homeText(.caption)
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
             }
 
             HStack(spacing: .space2) {
@@ -38,7 +39,8 @@ struct HomeAlertSectionEmpty: View {
                 Text(verbatim: "Add rule")
                     .foregroundStyle(Color.textLink)
             }
-            .homeText(.caption)
+            .font(.scoutCaption)
+            .foregroundStyle(Color.textMuted)
             .padding(.top, .space2)
         }
         .padding(.top, .space12)
