@@ -55,13 +55,11 @@ extension Section where Header == SectionHeader<EmptyView> {
     }
 }
 
-extension Section where Header == SectionHeader<Text> {
+extension Section where Header == SectionHeader<SectionNote> {
     init(title: String, note: String, insetsContent: Bool = true, bottomGap: CGFloat = .space6, @ViewBuilder content: @escaping () -> Content) {
         self.init(insetsContent: insetsContent, bottomGap: bottomGap) {
             SectionHeader(title: title) {
-                Text(verbatim: note)
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
+                SectionNote(text: note)
             }
         } content: {
             content()
