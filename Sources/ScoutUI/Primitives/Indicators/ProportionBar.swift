@@ -30,29 +30,6 @@ struct ProportionBar<Item: Identifiable>: View {
     }
 }
 
-struct BarValue: View {
-    let text: String
-    let fraction: Double
-    let color: Color
-    var barHeight: CGFloat?
-    var minimumWidth: CGFloat = 0
-
-    var body: some View {
-        Text(verbatim: text)
-            .font(.scoutValue)
-            .monospacedDigit()
-            .padding(.horizontal, .space4)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(alignment: .leading) {
-                GeometryReader { proxy in
-                    RoundedRectangle(cornerRadius: .radiusBlock)
-                        .fill(color)
-                        .frame(width: max(proxy.size.width * CGFloat(fraction), fraction > 0 ? minimumWidth : 0), height: barHeight)
-                }
-            }
-    }
-}
-
 #Preview {
     VStack(spacing: .space24) {
         ProportionBar(
@@ -60,8 +37,6 @@ struct BarValue: View {
             color: { _, item in item.color },
             share: \.share
         )
-
-        BarValue(text: "4,100", fraction: 0.7, color: .cyan)
     }
     .padding()
 }

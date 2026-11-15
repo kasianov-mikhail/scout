@@ -20,9 +20,13 @@ struct DeviceListPlaceholder: View {
             SkeletonBar(width: 200, height: 9, delay: 0)
                 .frame(height: 17.5)
                 .padding(.top, .space4)
+                .padding(.bottom, .space12)
+
+            SectionGap()
+                .padding(.horizontal, -.gutter)
 
             columns
-                .columnHeaderStyle()
+                .columnHeaderStyle(topPadding: 12)
 
             ForEach(0..<9, id: \.self) { index in
                 row(index: index, isLast: index == 8)

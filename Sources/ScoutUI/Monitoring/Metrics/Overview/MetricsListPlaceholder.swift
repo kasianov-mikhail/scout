@@ -18,12 +18,11 @@ struct MetricsListPlaceholder: View {
                 .padding(.top, .space8)
                 .padding(.trailing, -16)
 
+            SectionGap()
+                .padding(.top, .space8)
+                .padding(.horizontal, -.gutter)
+
             grid
-                .overlay(alignment: .top) {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(height: 0.5)
-                }
         }
         .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)

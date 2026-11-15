@@ -46,6 +46,9 @@ struct NetworkView: View {
                     .padding(.top, .space8)
                     .padding(.horizontal, .gutter)
 
+                SectionGap()
+                    .padding(.top, .space8)
+
                 Placeholder(
                     text: "No requests",
                     systemImage: "network",
@@ -89,11 +92,9 @@ struct NetworkView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)
-                .padding(.horizontal, .gutter)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
-                .padding(.horizontal, -16)
+
+            SectionGap()
+                .padding(.horizontal, -.gutter)
 
             NetworkEndpointListHeader()
 

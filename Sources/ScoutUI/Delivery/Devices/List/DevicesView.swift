@@ -25,6 +25,9 @@ struct DevicesView: View {
                         .padding(.top, .space8)
                         .padding(.horizontal, .gutter)
 
+                    SectionGap()
+                        .padding(.top, .space8)
+
                     Placeholder(
                         text: "No devices",
                         systemImage: "iphone.gen3",
@@ -62,12 +65,12 @@ struct DevicesView: View {
             summary(models)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)
-                .overlay(alignment: .bottom) {
-                    Separator()
-                }
+
+            SectionGap()
+                .padding(.horizontal, -.gutter)
 
             columns
-                .columnHeaderStyle()
+                .columnHeaderStyle(topPadding: 12)
 
             ForEach(models) { model in
                 NavigationLink {
@@ -138,7 +141,8 @@ private struct DeviceModelRow: View {
             }
 
             HStack(spacing: .space8) {
-                BarValue(text: model.sessions.compact, fraction: share, color: .deviceTrack)
+                BarValue(text: model.sessions.compact, fraction: share, color: .deviceTrack, barHeight: 25.5)
+                    .frame(height: 18)
 
                 Text(verbatim: model.osLabel ?? "—")
                     .font(.scoutCode)

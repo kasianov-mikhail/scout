@@ -106,6 +106,9 @@ struct NetworkEndpointView: View {
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
 
+            SectionGap()
+                .padding(.horizontal, -.gutter)
+
             NetworkLedgerHeader(primary: component.networkTitle)
 
             ForEach(rows) { row in

@@ -75,7 +75,7 @@ struct NetworkHourView: View {
             ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
                 .padding(.horizontal, .gutter)
 
-            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date), showsSeparator: false)
+            NetworkEndpointHeader(endpoint: endpoint, descriptor: "on " + DateFormatter.networkDayFull.string(from: date))
                 .padding(.horizontal, .gutter)
 
             if breakdown.total > 0 {

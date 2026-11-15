@@ -26,6 +26,9 @@ struct MetricsListView: View {
                         .padding(.top, .space8)
                         .padding(.leading, .gutter)
 
+                    SectionGap()
+                        .padding(.top, .space8)
+
                     Placeholder(
                         text: "No metrics",
                         systemImage: "chart.bar",
@@ -63,12 +66,11 @@ struct MetricsListView: View {
                 .padding(.top, .space8)
                 .padding(.trailing, -16)
 
+            SectionGap()
+                .padding(.top, .space8)
+                .padding(.horizontal, -.gutter)
+
             grid(tiles)
-                .overlay(alignment: .top) {
-                    Rectangle()
-                        .fill(Color.separator)
-                        .frame(height: 0.5)
-                }
         }
         .padding(.horizontal, .gutter)
     }
