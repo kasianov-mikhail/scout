@@ -16,9 +16,9 @@ struct MetricTileView: View {
             Text(verbatim: tile.displayName)
                 .font(.scoutCode)
                 .foregroundStyle(Color.textMuted)
-                .lineLimit(2)
-                .multilineTextAlignment(.leading)
+                .lineLimit(1)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .fadingEdge(width: 28)
 
             HStack(alignment: .firstTextBaseline, spacing: .space6) {
                 Text(verbatim: tile.valueLabel)

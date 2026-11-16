@@ -72,7 +72,7 @@ struct IncidentTileView<Element: Incident>: View {
                     .frame(height: barHeight(value: value, maxValue: maxValue))
             }
         }
-        .frame(height: 28)
+        .frame(height: 28, alignment: .bottom)
         .accessibilityHidden(true)
     }
 
