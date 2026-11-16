@@ -8,11 +8,10 @@
 import Scout
 import SwiftUI
 
-struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: View {
+struct IncidentSummaryView<Element: Incident, Row: View>: View {
     let summary: IncidentSummary
     let records: [Element]
     @ViewBuilder let row: (Element) -> Row
-    @ViewBuilder let destination: () -> Destination
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
@@ -42,18 +41,6 @@ struct IncidentSummaryView<Element: Incident, Row: View, Destination: View>: Vie
             }
 
             Section(title: "Occurrences", showsSeparator: !records.isEmpty) {
-                NavigationLink {
-                    destination()
-                } label: {
-                    Image(systemName: "arrow.down.left.and.arrow.up.right")
-                        .font(.book(size: 16))
-                        .frame(width: 44, height: 44)
-                        .padding(.trailing, -12)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(Color.textLink)
-                .accessibilityLabel(Text(verbatim: "Show all occurrences"))
-            } content: {
                 ForEach(Array(records.prefix(4).enumerated()), id: \.element.id) { index, record in
                     row(record)
                         .overlay(alignment: .bottom) {
@@ -162,9 +149,6 @@ private struct IncidentSummaryFrameRow: View {
                     }
                     .lineLimit(1)
                     .frame(height: .rowRegular)
-                },
-                destination: {
-                    Text(verbatim: "All occurrences")
                 }
             )
         }

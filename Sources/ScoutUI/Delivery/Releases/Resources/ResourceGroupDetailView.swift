@@ -75,9 +75,7 @@ struct ResourceGroupDetailView: View {
             summary: summary(records: records),
             records: records,
             row: occurrenceRow
-        ) {
-            IncidentOccurrencesView(occurrences: occurrences, row: occurrenceRow)
-        }
+        )
     }
 
     private func summary(records: [ResourceException]) -> IncidentSummary {
