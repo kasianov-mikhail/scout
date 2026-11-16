@@ -83,7 +83,7 @@ struct FailureReportingTests {
         _ = await backends.available(log: log)
         _ = await backends.available(log: log)
 
-        #expect(lines.current == ["Scout can't deliver to backend server: Sign in to iCloud to sync data."])
+        #expect(lines.current == ["Scout can't deliver to backend server: You're not signed in to iCloud. Sign in from Settings, then try again. Events stay on the devices and upload later."])
     }
 
     @Test("An unexpected access failure is printed once")

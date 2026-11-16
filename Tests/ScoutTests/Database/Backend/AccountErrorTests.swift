@@ -15,7 +15,7 @@ struct AccountErrorTests {
         let error = Backend.AccountError.noAccount
 
         #expect(error.title == "Not Signed In to iCloud")
-        #expect(error.localizedDescription == "Sign in to iCloud to sync data.")
+        #expect(error.localizedDescription == "You're not signed in to iCloud. Sign in from Settings, then try again. Events stay on the devices and upload later.")
     }
 
     @Test("Other failures fall back to a generic title and keep the underlying description") func failure() {
@@ -36,5 +36,13 @@ struct AccountErrorTests {
         #expect(Backend.AccountError.temporarilyUnavailable.status == .readOnly)
         #expect(Backend.AccountError.couldNotDetermine.status == .unreachable)
         #expect(Backend.AccountError.failure(URLError(.notConnectedToInternet)).status == .unreachable)
+    }
+
+    @Test("Only account issues hold the dashboard back") func blocksAccess() {
+        #expect(Backend.AccountError.noAccount.blocksAccess)
+        #expect(Backend.AccountError.restricted.blocksAccess)
+        #expect(Backend.AccountError.temporarilyUnavailable.blocksAccess)
+        #expect(Backend.AccountError.couldNotDetermine.blocksAccess)
+        #expect(Backend.AccountError.failure(URLError(.notConnectedToInternet)).blocksAccess == false)
     }
 }

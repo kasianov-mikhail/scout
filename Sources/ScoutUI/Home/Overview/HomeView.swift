@@ -53,13 +53,15 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $path) {
             Group {
-                if backend == nil {
-                    ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
+                if let backend {
+                    AccountGate(backend: backend) {
+                        HomeList(path: $path)
+                            .iCloudWarning(backend)
+                    }
                 } else {
-                    HomeList(path: $path)
+                    ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
                 }
             }
-            .iCloudWarning(backend)
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")
             .inlineNavigationTitle()

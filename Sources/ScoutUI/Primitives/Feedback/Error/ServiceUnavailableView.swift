@@ -17,9 +17,13 @@ struct ServiceUnavailableView: View {
             code: "503",
             title: "Service Unavailable",
             message: "The Scout server is up but can't take requests right now. Events stay on the devices and upload later.",
-            endpoint: endpoint,
-            retry: retry
-        )
+            endpoint: endpoint
+        ) {
+            Button(action: retry) {
+                Text(verbatim: "Retry")
+            }
+            .buttonStyle(ErrorActionButtonStyle(role: .primary))
+        }
     }
 }
 

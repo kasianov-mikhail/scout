@@ -26,11 +26,20 @@ extension Backend {
             case .restricted:
                 "iCloud Restricted"
             case .temporarilyUnavailable:
-                "iCloud Temporarily Unavailable"
+                "iCloud Account Unavailable"
             case .couldNotDetermine:
                 "iCloud Status Unknown"
             case .failure:
                 "iCloud Error"
+            }
+        }
+
+        package var blocksAccess: Bool {
+            switch self {
+            case .noAccount, .restricted, .temporarilyUnavailable, .couldNotDetermine:
+                true
+            case .failure:
+                false
             }
         }
 
@@ -46,13 +55,13 @@ extension Backend {
         package var errorDescription: String? {
             switch self {
             case .noAccount:
-                "Sign in to iCloud to sync data."
+                "You're not signed in to iCloud. Sign in from Settings, then try again. Events stay on the devices and upload later."
             case .restricted:
-                "iCloud access is restricted by parental controls or a device policy."
+                "iCloud is restricted on this device by parental controls or a device policy. Check it in Settings, then try again. Events stay on the devices and upload later."
             case .temporarilyUnavailable:
-                "Your iCloud account is temporarily unavailable. Try again later."
+                "Your Apple Account is signed in, but iCloud can't use it right now. Check it in Settings, then try again. Events stay on the devices and upload later."
             case .couldNotDetermine:
-                "Couldn't determine your iCloud account status. Check your connection and try again."
+                "Scout couldn't determine your iCloud account status. Check your connection, then try again. Events stay on the devices and upload later."
             case .failure(let error):
                 error.localizedDescription
             }
