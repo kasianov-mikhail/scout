@@ -59,6 +59,7 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+        .loadingInk(isLoading: provider.isLoading)
         .fetchTask([provider])
     }
 

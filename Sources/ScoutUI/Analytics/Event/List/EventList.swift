@@ -44,6 +44,7 @@ struct EventList<Header: View>: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.records == nil)
+        .loadingInk(isLoading: provider.records == nil)
         .message($provider.message)
     }
 

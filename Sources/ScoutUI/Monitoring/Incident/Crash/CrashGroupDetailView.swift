@@ -56,6 +56,7 @@ struct CrashGroupDetailView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: occurrences.records == nil)
+        .loadingInk(isLoading: occurrences.records == nil)
         .message($occurrences.message)
         .toolbarBackground(IncidentKind.crash.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
