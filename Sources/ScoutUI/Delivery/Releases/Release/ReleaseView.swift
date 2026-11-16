@@ -14,9 +14,7 @@ struct ReleaseView: View {
     @Environment(\.database) private var database
     @StateObject var provider: VersionTrendProvider
 
-    @State private var showAllCrashes = false
-    @State private var showAllHangs = false
-    @State private var showAllResources = false
+    @State private var destination: ReleaseDestination?
 
     init(release: ReleaseHealth, provider: VersionTrendProvider? = nil) {
         self.release = release
@@ -49,31 +47,34 @@ struct ReleaseView: View {
         .inlineNavigationTitle(divider: nil)
         .toolbarBackground(provider.isLoading ? Color.surfaceGrey : release.freeSessions.level.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .navigationDestination(isPresented: $showAllCrashes) {
-            VersionIncidentsView(
-                issuesTitle: "Top crash issues",
-                days: trend.crashes,
-                provider: VersionIncidentProvider<Crash>(version: release.id)
-            ) { group in
-                CrashGroupDetailView(group: group)
-            }
-        }
-        .navigationDestination(isPresented: $showAllHangs) {
-            VersionIncidentsView(
-                issuesTitle: "Top hang issues",
-                days: trend.hangs,
-                provider: VersionIncidentProvider<Hang>(version: release.id)
-            ) { group in
-                HangGroupDetailView(group: group)
-            }
-        }
-        .navigationDestination(isPresented: $showAllResources) {
-            VersionIncidentsView(
-                issuesTitle: "Top resource issues",
-                days: trend.resources,
-                provider: VersionIncidentProvider<ResourceException>(version: release.id)
-            ) { group in
-                ResourceGroupDetailView(group: group)
+        .navigationDestination(isPresented: Binding(get: { destination != nil }, set: { if !$0 { destination = nil } })) {
+            if let destination {
+                switch destination {
+                case .crashes:
+                    VersionIncidentsView(
+                        issuesTitle: "Top crash issues",
+                        days: trend.crashes,
+                        provider: VersionIncidentProvider<Crash>(version: release.id)
+                    ) { group in
+                        CrashGroupDetailView(group: group)
+                    }
+                case .hangs:
+                    VersionIncidentsView(
+                        issuesTitle: "Top hang issues",
+                        days: trend.hangs,
+                        provider: VersionIncidentProvider<Hang>(version: release.id)
+                    ) { group in
+                        HangGroupDetailView(group: group)
+                    }
+                case .resources:
+                    VersionIncidentsView(
+                        issuesTitle: "Top resource issues",
+                        days: trend.resources,
+                        provider: VersionIncidentProvider<ResourceException>(version: release.id)
+                    ) { group in
+                        ResourceGroupDetailView(group: group)
+                    }
+                }
             }
         }
     }
@@ -92,19 +93,8 @@ struct ReleaseView: View {
             ReleaseHero(detail: detail)
                 .padding(.horizontal, -16)
 
-            ReleaseGrid(detail: detail) { kind in
-                switch kind {
-                case .crashes:
-                    showAllCrashes = true
-                case .hangs:
-                    showAllHangs = true
-                case .resources:
-                    showAllResources = true
-                default:
-                    break
-                }
-            }
-            .padding(.horizontal, -16)
+            ReleaseGrid(detail: detail) { destination = $0 }
+                .padding(.horizontal, -16)
 
             hangRate(detail.hangRate)
         }
@@ -134,7 +124,7 @@ struct ReleaseView: View {
 
 private struct ReleaseGrid: View {
     let detail: ReleaseDetail
-    let open: (ReleaseTileValue.Kind) -> Void
+    let open: (ReleaseDestination) -> Void
 
     var body: some View {
         let tiles = detail.tiles
@@ -151,15 +141,23 @@ private struct ReleaseGrid: View {
     }
 
     private func tile(_ value: ReleaseTileValue, isLeading: Bool) -> some View {
-        ReleaseTile(value: value, isLeading: isLeading, action: value.kind.canOpen ? { open(value.kind) } : nil)
+        ReleaseTile(value: value, isLeading: isLeading, action: value.kind.destination.map { destination in { open(destination) } })
     }
 }
 
+private enum ReleaseDestination {
+    case crashes
+    case hangs
+    case resources
+}
+
 extension ReleaseTileValue.Kind {
-    fileprivate var canOpen: Bool {
+    fileprivate var destination: ReleaseDestination? {
         switch self {
-        case .crashes, .hangs, .resources: true
-        case .crashFree, .adoption, .exits, .launchTime, .peakMemory: false
+        case .crashes: .crashes
+        case .hangs: .hangs
+        case .resources: .resources
+        case .crashFree, .adoption, .exits, .launchTime, .peakMemory: nil
         }
     }
 }
