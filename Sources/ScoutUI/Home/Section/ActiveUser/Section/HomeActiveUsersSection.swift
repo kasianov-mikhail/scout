@@ -104,6 +104,8 @@ struct HomeActiveUsersSection: View {
         }
         .font(.scoutCaption)
         .foregroundStyle(Color.textMuted)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
     }
 }
 

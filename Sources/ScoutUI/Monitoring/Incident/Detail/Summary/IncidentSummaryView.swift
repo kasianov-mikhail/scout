@@ -108,6 +108,7 @@ private struct IncidentSummaryFrameRow: View {
 
             Text(verbatim: frame.symbol)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .fadingEdge(width: 28)
         }
         .font(frame.isApp ? .scoutCodeStrong : .scoutCode)
         .foregroundStyle(frame.isApp ? Color.textPrimary : Color.fillLevel)

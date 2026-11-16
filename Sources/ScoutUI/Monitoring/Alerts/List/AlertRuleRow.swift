@@ -29,6 +29,7 @@ struct AlertRuleRow: View {
                 Text(verbatim: status.rule.metric.title)
                     .font(titleFont)
                     .foregroundStyle(Color.textPrimary)
+                    .lineLimit(1)
 
                 Spacer(minLength: 0)
 
@@ -49,6 +50,7 @@ struct AlertRuleRow: View {
                 Text(verbatim: status.summary)
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
+                    .lineLimit(1)
 
                 Spacer(minLength: 0)
 

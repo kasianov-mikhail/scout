@@ -73,8 +73,8 @@ private struct IncidentIssuesSection<Element: Incident, Destination: View>: View
                         Text(verbatim: group.name)
                             .font(.scoutEventName)
                             .lineLimit(1)
-
-                        Spacer()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fadingEdge(width: 28)
 
                         CountBadge(
                             count: group.count,

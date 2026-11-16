@@ -67,6 +67,7 @@ struct HomeReleaseSection: View {
                 + Text(verbatim: " at \(top.stability.formatted) crash-free\(top.shippedLabel)")
                 .foregroundColor(Color.textMuted))
                 .font(.scoutCaption)
+                .lineLimit(1)
         }
     }
 }

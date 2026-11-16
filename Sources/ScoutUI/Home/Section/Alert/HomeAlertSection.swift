@@ -46,6 +46,7 @@ struct HomeAlertSection: View {
 
             HStack(alignment: .firstTextBaseline) {
                 Text(verbatim: history.summary)
+                    .lineLimit(1)
 
                 Spacer()
 

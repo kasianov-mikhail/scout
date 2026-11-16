@@ -24,6 +24,7 @@ struct EventRow: View {
                     .foregroundStyle(event.level == .critical ? criticalNameColor : Color.textPrimary)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .fadingEdge(width: 28)
 
                 if let date = event.date {
                     Text(verbatim: eventTimeFormatter.string(from: date))
