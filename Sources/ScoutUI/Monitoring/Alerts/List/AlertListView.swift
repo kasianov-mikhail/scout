@@ -175,6 +175,7 @@ struct AlertListLegend: View {
             .foregroundStyle(Color.textMuted)
         }
         .padding(.bottom, .space16)
+        .placeholderHidden()
     }
 
     private func legendItem(color: Color, title: String) -> some View {

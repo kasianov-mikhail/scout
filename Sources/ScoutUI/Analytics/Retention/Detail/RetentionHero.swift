@@ -40,6 +40,7 @@ struct RetentionHero: View {
             Text(verbatim: subtitle)
                 .font(.scoutBody)
                 .foregroundStyle(Color.textMuted)
+                .placeholderHidden()
         }
         .padding(.top, .space16)
         .padding(.bottom, .space12)
@@ -49,6 +50,7 @@ struct RetentionHero: View {
                 .fill(Color.separator)
                 .frame(height: 0.5)
         }
+        .placeholder(value == nil)
     }
 }
 

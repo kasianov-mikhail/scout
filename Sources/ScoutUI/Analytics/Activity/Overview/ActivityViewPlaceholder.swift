@@ -40,6 +40,7 @@ struct ActivityViewPlaceholder: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
+        .placeholder()
     }
 
     private var metrics: some View {
@@ -89,6 +90,7 @@ struct ActivityViewPlaceholder: View {
     private var stickiness: some View {
         HStack(spacing: .space6) {
             Text(verbatim: "Stickiness")
+                .placeholderHidden()
 
             SkeletonBar(width: 28, height: 9, delay: 0.24)
             SkeletonBar(width: 194, height: 9, delay: 0.24)

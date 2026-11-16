@@ -183,6 +183,7 @@ struct StatColumn<Value: View>: View {
             Text(verbatim: title)
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
+                .placeholderHidden()
         }
         .padding(.vertical, .space12)
         .padding(.leading, leading)

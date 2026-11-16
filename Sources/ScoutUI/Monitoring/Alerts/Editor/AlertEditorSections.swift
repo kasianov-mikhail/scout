@@ -296,6 +296,7 @@ struct AlertWeekCard: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: week)
+        .placeholder(week == nil && !isFailed)
     }
 
     private var dates: [Date] {
@@ -321,6 +322,7 @@ struct AlertWeekCard: View {
             Text(verbatim: " alerts with \(draft.sensitivity.title)")
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
+                .placeholderHidden()
         }
         .padding(.vertical, .space10)
         .padding(.horizontal, .space8)
@@ -368,6 +370,7 @@ struct AlertWeekCard: View {
                         .font(.scoutAxis)
                         .foregroundStyle(Color.textMuted)
                         .frame(width: 34, alignment: .leading)
+                        .placeholderHidden()
 
                     HStack(spacing: .space2) {
                         ForEach(0..<24, id: \.self) { hour in
@@ -397,6 +400,7 @@ struct AlertWeekCard: View {
                 }
                 .font(.scoutAxis)
                 .foregroundStyle(Color.textMuted)
+                .placeholderHidden()
             }
             .padding(.top, .space4)
         }

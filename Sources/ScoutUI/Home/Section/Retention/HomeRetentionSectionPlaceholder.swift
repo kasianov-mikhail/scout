@@ -19,7 +19,9 @@ struct HomeRetentionSectionPlaceholder: View {
                 .foregroundStyle(Color.textMuted)
                 .padding(.top, .space4)
                 .padding(.bottom, .space6)
+                .placeholderHidden()
         }
+        .placeholder()
     }
 
     private func row(index: Int) -> some View {

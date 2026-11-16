@@ -102,6 +102,7 @@ struct AxisLabelRow: View {
         .font(.book(size: 10, design: design))
         .foregroundStyle(Color.textMuted)
         .padding(.top, topInset)
+        .placeholderHidden()
     }
 }
 

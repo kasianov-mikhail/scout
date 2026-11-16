@@ -24,6 +24,7 @@ struct AdoptionLegend: View {
         }
         .font(.scoutFootnote)
         .foregroundStyle(Color.textMuted)
+        .placeholderHidden()
     }
 
     @ViewBuilder private func square(level: Stability.Level) -> some View {

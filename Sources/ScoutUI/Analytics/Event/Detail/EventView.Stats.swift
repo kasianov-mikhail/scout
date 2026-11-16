@@ -18,6 +18,7 @@ extension EventView {
                 Text(verbatim: "average per day")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
+                    .placeholderHidden()
             } content: {
                 switch stat.result {
                 case .success(let points):
@@ -44,6 +45,7 @@ extension EventView {
                     StatLegendPlaceholder()
                 }
             }
+            .placeholder(stat.result == nil)
         }
 
         private func statRow(height: CGFloat = .rowTable, @ViewBuilder content: () -> some View) -> some View {

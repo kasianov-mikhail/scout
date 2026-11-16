@@ -219,6 +219,7 @@ struct MetricAxisLabels: View {
         .padding(.top, .space4)
         .font(.scoutAxis)
         .foregroundStyle(Color.textMuted)
+        .placeholderHidden()
     }
 
     private func x(_ label: MetricAxisLabel, width: CGFloat) -> CGFloat {
@@ -248,6 +249,7 @@ struct MetricLegend: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, .space10)
         .padding(.bottom, .space16)
+        .placeholderHidden()
     }
 }
 

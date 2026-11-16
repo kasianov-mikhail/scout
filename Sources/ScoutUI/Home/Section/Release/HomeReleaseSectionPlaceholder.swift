@@ -16,6 +16,7 @@ struct HomeReleaseSectionPlaceholder: View {
                 Text(verbatim: "of sessions")
                     .font(.scoutRow)
                     .foregroundStyle(Color.textMuted)
+                    .placeholderHidden()
             }
             .frame(height: 28)
             .padding(.top, 14)
@@ -31,5 +32,6 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.top, .space10)
                 .padding(.bottom, .space6)
         }
+        .placeholder()
     }
 }

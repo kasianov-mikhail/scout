@@ -37,6 +37,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 .padding(.top, .space10)
                 .padding(.bottom, .space6)
         }
+        .placeholder()
     }
 
     private func metric(kind: ActiveUsers.Kind) -> some View {

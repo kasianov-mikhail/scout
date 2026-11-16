@@ -32,6 +32,7 @@ struct DeviceDetailPlaceholder: View {
                     Separator()
                         .padding(.horizontal, .gutter)
                 }
+                .placeholderHidden()
 
             stats
                 .padding(.horizontal, .gutter)
@@ -79,6 +80,7 @@ struct DeviceDetailPlaceholder: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
+        .placeholder()
     }
 
     private var stats: some View {
@@ -161,6 +163,7 @@ struct DeviceDetailPlaceholder: View {
                     Text(verbatim: weekday.label)
                         .font(weekday.isCurrent ? .system(size: 10, weight: .semibold) : .book(size: 10))
                         .foregroundStyle(weekday.isCurrent ? Color.textPrimary : Color.fillLevel)
+                        .placeholderHidden()
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -176,6 +179,7 @@ struct DeviceDetailPlaceholder: View {
                         .font(.book(size: 10))
                         .foregroundStyle(Color.textMuted)
                         .frame(width: 10, alignment: .leading)
+                        .placeholderHidden()
 
                     HStack(spacing: .space2) {
                         ForEach(0..<24, id: \.self) { _ in
@@ -202,6 +206,7 @@ struct DeviceDetailPlaceholder: View {
             .foregroundStyle(Color.textMuted)
             .padding(.leading, .gutter)
             .padding(.top, .space2)
+            .placeholderHidden()
         }
     }
 

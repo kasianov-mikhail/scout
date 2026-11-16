@@ -77,6 +77,7 @@ struct MetricDetailPlaceholder: View {
                 }
             }
         }
+        .placeholder()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -92,6 +93,7 @@ struct MetricDetailPlaceholder: View {
                     Text(verbatim: range.totalTitle)
                         .font(.scoutRow)
                         .foregroundStyle(Color.textMuted)
+                        .placeholderHidden()
                 }
             }
 
@@ -140,6 +142,7 @@ struct MetricDetailPlaceholder: View {
                 .monospacedDigit()
                 .foregroundStyle(Color.textMuted)
                 .frame(width: 56, alignment: .leading)
+                .placeholderHidden()
 
             HStack(spacing: .space6) {
                 SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar)
@@ -150,6 +153,7 @@ struct MetricDetailPlaceholder: View {
                         .font(.scoutFootnote)
                         .foregroundStyle(Color.textMuted)
                         .frame(width: 34, alignment: .leading)
+                        .placeholderHidden()
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

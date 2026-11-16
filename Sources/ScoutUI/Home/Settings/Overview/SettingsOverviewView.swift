@@ -205,6 +205,7 @@ private struct SendReadout: View {
             Text(verbatim: "records waiting")
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
+                .placeholderHidden()
 
             if let lastSent = summary.lastSent {
                 Text(verbatim: "· sent \(lastSent)")
@@ -214,6 +215,7 @@ private struct SendReadout: View {
                 Text(verbatim: "·")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
+                    .placeholderHidden()
                 SkeletonBar(width: 74, height: 9, delay: 0)
             }
 
@@ -221,6 +223,7 @@ private struct SendReadout: View {
         }
         .padding(.horizontal, .space8)
         .padding(.vertical, .space10)
+        .placeholder(summary.pending == nil)
     }
 }
 

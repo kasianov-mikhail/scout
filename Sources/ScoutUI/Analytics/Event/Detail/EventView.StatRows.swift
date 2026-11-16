@@ -21,6 +21,7 @@ extension EventView {
                         Text(verbatim: "so far")
                             .font(.scoutMicro)
                             .foregroundStyle(Color.textMuted)
+                            .placeholderHidden()
                     }
 
                     Spacer()
@@ -54,6 +55,7 @@ extension EventView {
                 .font(.scoutAxis)
                 .foregroundStyle(Color.textMuted)
                 .padding(.top, .space6)
+                .placeholderHidden()
             }
             .padding(.top, .space10)
             .frame(height: 72, alignment: .top)

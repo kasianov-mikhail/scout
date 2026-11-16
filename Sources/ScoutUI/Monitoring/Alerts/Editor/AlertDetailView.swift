@@ -201,10 +201,12 @@ private struct AlertNowCard: View {
             Text(verbatim: " \(unit)")
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
+                .placeholderHidden()
         }
         .padding(.vertical, .space10)
         .padding(.horizontal, .space8)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .placeholder(status == nil)
     }
 
     private var stats: some View {

@@ -98,6 +98,7 @@ struct SessionSkeletonRowView: View {
                     Text(verbatim: "Session started")
                         .font(.scoutCaptionStrong)
                         .foregroundStyle(Color.timelineUnknown)
+                        .placeholderHidden()
                 }
 
                 SkeletonBar(width: row.width, height: row.titleHeight, delay: delay)
@@ -116,6 +117,7 @@ struct SessionSkeletonRowView: View {
         }
         .frame(height: row.height)
         .accessibilityHidden(true)
+        .placeholder()
     }
 
     @ViewBuilder

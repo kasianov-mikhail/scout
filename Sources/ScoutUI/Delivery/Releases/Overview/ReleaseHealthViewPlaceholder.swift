@@ -21,6 +21,7 @@ struct ReleaseHealthViewPlaceholder: View {
         .padding(.horizontal, .gutter)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
+        .placeholder()
     }
 
     private var header: some View {
@@ -31,6 +32,7 @@ struct ReleaseHealthViewPlaceholder: View {
                 Text(verbatim: "of sessions")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
+                    .placeholderHidden()
             }
             .frame(height: 33)
 

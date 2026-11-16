@@ -48,6 +48,7 @@ struct SettingsReadoutRow: View {
                 Text(verbatim: caption)
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
+                    .placeholderHidden()
             } else if let captionSkeletonWidth {
                 SkeletonBar(width: captionSkeletonWidth, height: 9, delay: 0)
             }
@@ -56,6 +57,7 @@ struct SettingsReadoutRow: View {
         }
         .padding(.horizontal, .space8)
         .padding(.vertical, .space10)
+        .placeholder(value == nil)
     }
 }
 
