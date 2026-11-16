@@ -8,13 +8,13 @@
 
 import SwiftUI
 
-struct ErrorCodeScreen: View {
-    let code: String
+struct ErrorCodeScreen<Actions: View>: View {
+    var code: String? = nil
     var cloud = false
     let title: String
     let message: String
     let endpoint: String
-    let retry: () -> Void
+    @ViewBuilder let actions: () -> Actions
 
     var body: some View {
         ErrorScreen {
@@ -42,16 +42,13 @@ struct ErrorCodeScreen: View {
             }
             .padding(.horizontal, .space24)
         } actions: {
-            Button(action: retry) {
-                Text(verbatim: "Retry")
-            }
-            .buttonStyle(ErrorActionButtonStyle(role: .primary))
+            actions()
         }
     }
 }
 
 private struct ErrorCodeArtwork: View {
-    let code: String
+    var code: String?
     var cloud = false
 
     private static let height: CGFloat = 120
@@ -96,6 +93,10 @@ private struct ErrorCodeArtwork: View {
             baseline.move(to: CGPoint(x: 0, y: Self.baseline))
             baseline.addLine(to: CGPoint(x: size.width, y: Self.baseline))
             context.stroke(baseline, with: .color(Color.surfaceBarIdle), lineWidth: 1)
+
+            guard let code else {
+                return
+            }
 
             let text = Text(verbatim: code)
                 .font(.system(size: 120, weight: .heavy))

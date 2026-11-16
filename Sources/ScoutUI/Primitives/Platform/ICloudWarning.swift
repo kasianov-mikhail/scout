@@ -9,13 +9,13 @@ import Scout
 import SwiftUI
 
 extension View {
-    func iCloudWarning(_ backend: Backend?) -> some View {
+    func iCloudWarning(_ backend: Backend) -> some View {
         modifier(ICloudWarningModifier(backend: backend))
     }
 }
 
 private struct ICloudWarningModifier: ViewModifier {
-    let backend: Backend?
+    let backend: Backend
 
     @State private var issue: Backend.AccountError?
     @State private var isAlertPresented = false
@@ -51,10 +51,10 @@ private struct ICloudWarningModifier: ViewModifier {
     }
 
     private func check() async {
-        guard case .cloudKit = backend?.engine else {
+        guard case .cloudKit = backend.engine else {
             return
         }
-        guard let check = backend?.checkAccess else {
+        guard let check = backend.checkAccess else {
             return
         }
         do {

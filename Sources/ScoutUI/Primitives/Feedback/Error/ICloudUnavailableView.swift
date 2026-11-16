@@ -18,9 +18,13 @@ struct ICloudUnavailableView: View {
             cloud: true,
             title: "iCloud Is Unavailable",
             message: "CloudKit can't take requests right now. Events stay on the devices and upload later.",
-            endpoint: container,
-            retry: retry
-        )
+            endpoint: container
+        ) {
+            Button(action: retry) {
+                Text(verbatim: "Retry")
+            }
+            .buttonStyle(ErrorActionButtonStyle(role: .primary))
+        }
     }
 }
 
