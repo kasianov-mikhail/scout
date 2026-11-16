@@ -57,6 +57,7 @@ private struct RetentionSegmentRow: View {
             VStack(alignment: .leading, spacing: .space2) {
                 Text(verbatim: value.name)
                     .font(.scoutRow)
+                    .lineLimit(1)
 
                 HStack(spacing: 0) {
                     Text(verbatim: "\(value.installsLabel) · ")

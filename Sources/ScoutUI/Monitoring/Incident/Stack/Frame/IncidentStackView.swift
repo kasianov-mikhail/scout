@@ -41,8 +41,8 @@ private struct IncidentStackRowView: View {
                 .frame(width: 128, alignment: .leading)
 
             Text(verbatim: row.symbol ?? "")
-
-            Spacer(minLength: 0)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .fadingEdge(width: 28)
         }
         .font(.weighted(size: 12, weight: weight, design: .monospaced))
         .foregroundStyle(foreground)
