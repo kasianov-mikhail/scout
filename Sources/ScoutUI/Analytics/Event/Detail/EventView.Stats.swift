@@ -14,7 +14,7 @@ extension EventView {
         @ObservedObject var stat: StatProvider
 
         var body: some View {
-            Section(title: "Stats", bottomGap: .space10) {
+            Section(title: "Stats", bottomGap: .space4) {
                 Text(verbatim: "average per day")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
@@ -23,7 +23,7 @@ extension EventView {
                 case .success(let points):
                     let stats = EventStats(points: points)
 
-                    statRow(.today) {
+                    statRow(.today, height: 72) {
                         TodayRow(stats: stats)
                     }
                     ForEach(stats.rows) { row in
@@ -46,7 +46,7 @@ extension EventView {
             }
         }
 
-        private func statRow(_ period: Period, @ViewBuilder content makeContent: () -> some View) -> some View {
+        private func statRow(_ period: Period, height: CGFloat = .rowTable, @ViewBuilder content makeContent: () -> some View) -> some View {
             let content = makeContent()
 
             return NavigationLink {
@@ -57,7 +57,7 @@ extension EventView {
                 content
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: .rowTable)
+                    .frame(height: height)
                     .contentShape(.rect)
             }
             .buttonStyle(.plain)

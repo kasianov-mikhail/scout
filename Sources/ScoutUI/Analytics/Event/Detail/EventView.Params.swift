@@ -19,7 +19,7 @@ extension EventView {
         @Binding var isParamPresented: Bool
 
         var body: some View {
-            Section(title: "Params", bottomGap: .space6) {
+            Section(title: "Params", bottomGap: 0) {
                 switch param.result {
                 case .success where count > Self.previewLimit:
                     Button {
@@ -42,8 +42,8 @@ extension EventView {
                 case .success(let items):
                     let preview = Array(items.prefix(Self.previewLimit))
 
-                    ForEach(Array(preview.enumerated()), id: \.element.id) { index, item in
-                        ParamPreviewRow(item: item, showsDivider: index < preview.count - 1)
+                    ForEach(preview, id: \.id) { item in
+                        ParamPreviewRow(item: item)
                     }
                 case .failure(let error):
                     ErrorRow(description: error.localizedDescription) {
@@ -53,7 +53,7 @@ extension EventView {
                     let previewCount = min(Self.previewLimit, count)
 
                     ForEach(0..<previewCount, id: \.self) { index in
-                        ParamPreviewPlaceholder(index: index, showsDivider: index < previewCount - 1)
+                        ParamPreviewPlaceholder(index: index)
                     }
                 }
             }
@@ -62,7 +62,6 @@ extension EventView {
 
     struct ParamPreviewRow: View {
         let item: ParamProvider.Item
-        let showsDivider: Bool
 
         var body: some View {
             let value = ParamValue(parsing: item.value)
@@ -91,16 +90,13 @@ extension EventView {
             }
             .buttonStyle(.plain)
             .overlay(alignment: .bottom) {
-                if showsDivider {
-                    Separator()
-                }
+                Separator()
             }
         }
     }
 
     struct ParamPreviewPlaceholder: View {
         let index: Int
-        let showsDivider: Bool
 
         var body: some View {
             let delay = 0.48 + Double(index) * 0.08
@@ -117,9 +113,7 @@ extension EventView {
             }
             .frame(height: .rowRegular)
             .overlay(alignment: .bottom) {
-                if showsDivider {
-                    Separator()
-                }
+                Separator()
             }
         }
     }
