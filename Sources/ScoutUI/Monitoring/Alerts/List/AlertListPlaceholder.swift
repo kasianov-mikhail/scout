@@ -13,7 +13,7 @@ struct AlertListPlaceholder: View {
             banner
                 .padding(.horizontal, .gutter)
 
-            AlertListLegend(showsAxis: false)
+            legend
                 .padding(.top, .space10)
                 .padding(.horizontal, .gutter)
 
@@ -40,6 +40,35 @@ struct AlertListPlaceholder: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
+    }
+
+    private var legend: some View {
+        VStack(alignment: .leading, spacing: .space4) {
+            HStack(spacing: 0) {
+                SkeletonBar(width: 34, height: 8, delay: 0)
+
+                Spacer()
+
+                SkeletonBar(width: 34, height: 8, delay: 0)
+
+                Spacer()
+
+                SkeletonBar(width: 34, height: 8, delay: 0)
+            }
+            .frame(height: 12)
+
+            HStack(spacing: .space12) {
+                ForEach(0..<2, id: \.self) { _ in
+                    HStack(spacing: .space4) {
+                        SkeletonBar(width: 10, height: 10, delay: 0, cornerRadius: .radiusBar)
+
+                        SkeletonBar(width: 40, height: 8, delay: 0)
+                    }
+                }
+            }
+            .frame(height: 14, alignment: .leading)
+        }
+        .padding(.bottom, .space16)
     }
 
     private var banner: some View {

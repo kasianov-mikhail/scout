@@ -28,16 +28,15 @@ struct ReleaseHealthViewPlaceholder: View {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 18, delay: 0.08)
 
-                Text(verbatim: "of sessions")
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
+                SkeletonBar(width: 74, height: 9, delay: 0.08)
+                    .frame(height: 16, alignment: .leading)
             }
             .frame(height: 33)
 
             SkeletonBar(height: 32, delay: 0.08, fill: Color.surfaceGrey)
                 .padding(.top, .space12)
 
-            AdoptionLegend(squareSize: 8, squareColor: Color.surfaceSkeleton)
+            legend
                 .padding(.top, .space8)
         }
         .padding(.vertical, .space12)
@@ -46,6 +45,19 @@ struct ReleaseHealthViewPlaceholder: View {
                 .fill(Color.separator)
                 .frame(height: 0.5)
         }
+    }
+
+    private var legend: some View {
+        HStack(spacing: .space12) {
+            ForEach(0..<4, id: \.self) { _ in
+                HStack(spacing: .space4) {
+                    SkeletonBar(width: 8, height: 8, delay: 0.08, cornerRadius: .radiusBar)
+
+                    SkeletonBar(width: 34, height: 7, delay: 0.08)
+                }
+            }
+        }
+        .frame(height: 14, alignment: .leading)
     }
 
     private func row(index: Int) -> some View {

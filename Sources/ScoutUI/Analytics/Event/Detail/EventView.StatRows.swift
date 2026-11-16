@@ -18,9 +18,14 @@ extension EventView {
                         Text(verbatim: "Today")
                             .font(.scoutRowStrong)
 
-                        Text(verbatim: "so far")
-                            .font(.scoutMicro)
-                            .foregroundStyle(Color.textMuted)
+                        if stats == nil {
+                            SkeletonBar(width: 24, height: 7, delay: 0.72)
+                                .frame(height: 13, alignment: .leading)
+                        } else {
+                            Text(verbatim: "so far")
+                                .font(.scoutMicro)
+                                .foregroundStyle(Color.textMuted)
+                        }
                     }
 
                     Spacer()
@@ -48,7 +53,12 @@ extension EventView {
                         if index > 0 {
                             Spacer(minLength: 0)
                         }
-                        Text(verbatim: label)
+
+                        if stats == nil {
+                            SkeletonBar(width: 24, height: 7, delay: 0.72)
+                        } else {
+                            Text(verbatim: label)
+                        }
                     }
                 }
                 .font(.scoutAxis)

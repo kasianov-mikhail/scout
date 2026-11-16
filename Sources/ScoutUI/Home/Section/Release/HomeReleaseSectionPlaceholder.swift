@@ -13,9 +13,8 @@ struct HomeReleaseSectionPlaceholder: View {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 120, height: 15, delay: 0.96)
 
-                Text(verbatim: "of sessions")
-                    .font(.scoutRow)
-                    .foregroundStyle(Color.textMuted)
+                SkeletonBar(width: 74, height: 9, delay: 0.96)
+                    .frame(height: 18, alignment: .leading)
             }
             .frame(height: 28)
             .padding(.top, 14)
@@ -23,7 +22,7 @@ struct HomeReleaseSectionPlaceholder: View {
             SkeletonBar(height: 24, delay: 1.04, fill: Color.surfaceGrey)
                 .padding(.top, .space10)
 
-            AdoptionLegend(squareSize: 7, squareColor: Color.surfaceSkeleton)
+            legend
                 .padding(.top, .space8)
 
             SkeletonBar(width: 194, height: 8, delay: 1.12)
@@ -31,5 +30,18 @@ struct HomeReleaseSectionPlaceholder: View {
                 .padding(.top, .space10)
                 .padding(.bottom, .space6)
         }
+    }
+
+    private var legend: some View {
+        HStack(spacing: .space12) {
+            ForEach(0..<4, id: \.self) { _ in
+                HStack(spacing: .space4) {
+                    SkeletonBar(width: 7, height: 7, delay: 1.08, cornerRadius: .radiusBar)
+
+                    SkeletonBar(width: 34, height: 7, delay: 1.08)
+                }
+            }
+        }
+        .frame(height: 14, alignment: .leading)
     }
 }

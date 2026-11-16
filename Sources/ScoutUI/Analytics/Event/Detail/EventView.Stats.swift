@@ -15,9 +15,14 @@ extension EventView {
 
         var body: some View {
             Section(title: "Stats", bottomGap: .space4) {
-                Text(verbatim: "average per day")
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
+                if stat.result == nil {
+                    SkeletonBar(width: 74, height: 8, delay: 0.72)
+                        .frame(height: 16, alignment: .leading)
+                } else {
+                    Text(verbatim: "average per day")
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
+                }
             } content: {
                 switch stat.result {
                 case .success(let points):

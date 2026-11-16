@@ -14,9 +14,8 @@ struct HomeRetentionSectionPlaceholder: View {
                 row(index: index)
             }
 
-            Text(verbatim: "Gray: installs that week · green: kept")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
+            SkeletonBar(width: 194, height: 8, delay: 1.52)
+                .frame(height: 16, alignment: .leading)
                 .padding(.top, .space4)
                 .padding(.bottom, .space6)
         }

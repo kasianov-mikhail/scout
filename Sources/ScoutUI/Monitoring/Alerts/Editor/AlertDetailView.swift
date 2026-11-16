@@ -198,9 +198,15 @@ private struct AlertNowCard: View {
                 SkeletonBar(width: 74, height: 16, delay: 0)
             }
 
-            Text(verbatim: " \(unit)")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
+            if status == nil {
+                SkeletonBar(width: 74, height: 8, delay: 0)
+                    .frame(height: 16, alignment: .leading)
+                    .padding(.leading, .space4)
+            } else {
+                Text(verbatim: " \(unit)")
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            }
         }
         .padding(.vertical, .space10)
         .padding(.horizontal, .space8)

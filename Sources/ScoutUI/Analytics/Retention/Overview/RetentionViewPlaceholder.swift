@@ -12,7 +12,7 @@ struct RetentionViewPlaceholder: View {
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
-            RetentionHero(subtitle: "people kept", placeholderWidth: 120)
+            hero
                 .padding(.horizontal, .gutter)
 
             RetentionDayTabs(overview: nil, day: $day)
@@ -27,6 +27,25 @@ struct RetentionViewPlaceholder: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
+    }
+
+    private var hero: some View {
+        HStack(alignment: .firstTextBaseline, spacing: .space8) {
+            SkeletonBar(width: 120, height: 24, delay: 0.08)
+                .frame(height: 40, alignment: .leading)
+                .alignmentGuide(.firstTextBaseline) { _ in 32 }
+
+            SkeletonBar(width: 74, height: 9, delay: 0.08)
+                .frame(height: 21, alignment: .leading)
+        }
+        .padding(.top, .space16)
+        .padding(.bottom, .space12)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .bottom) {
+            Rectangle()
+                .fill(Color.separator)
+                .frame(height: 0.5)
+        }
     }
 
     private func row(index: Int) -> some View {

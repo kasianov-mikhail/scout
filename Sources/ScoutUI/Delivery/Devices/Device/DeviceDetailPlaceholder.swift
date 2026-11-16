@@ -8,11 +8,7 @@
 import Scout
 import SwiftUI
 
-private let placeholderWeekdayFormatter = DateFormatter(format: "EEE")
-private let placeholderDayLabels = ["S", "M", "T", "W", "T", "F", "S"]
-
 struct DeviceDetailPlaceholder: View {
-    let summary: DeviceSummary
     @Binding var range: IncidentRange
 
     var body: some View {
@@ -21,10 +17,9 @@ struct DeviceDetailPlaceholder: View {
                 .padding(.top, .space8)
                 .padding(.horizontal, .gutter)
 
-            Text(verbatim: "\(summary.modelName) · \(summary.osVersion) · seen \(summary.lastSeen.relativeString)")
-                .font(.scoutRow)
-                .foregroundStyle(Color.textMuted)
-                .lineLimit(2)
+            SkeletonBar(width: 194, height: 9, delay: 0)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: 18, alignment: .leading)
                 .padding(.top, .space4)
                 .padding(.bottom, .space12)
                 .padding(.horizontal, .gutter)
@@ -83,16 +78,28 @@ struct DeviceDetailPlaceholder: View {
 
     private var stats: some View {
         HStack(spacing: 0) {
-            stat("crashes", divider: true, leading: 0, trailing: 10)
-            stat("hangs", divider: true, leading: 10, trailing: 10)
-            stat("resources", divider: false, leading: 10, trailing: 0)
+            stat(divider: true, leading: 0, trailing: 10)
+            stat(divider: true, leading: 10, trailing: 10)
+            stat(divider: false, leading: 10, trailing: 0)
         }
         .padding(.bottom, .space6)
     }
 
-    private func stat(_ title: String, divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
-        StatColumn(title: title, leading: leading, trailing: trailing, divider: divider) {
+    private func stat(divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: .space2) {
             SkeletonBar(width: 28, height: 18, delay: 0.08)
+
+            SkeletonBar(width: 40, height: 7, delay: 0.08)
+                .frame(height: 16, alignment: .leading)
+        }
+        .padding(.vertical, .space12)
+        .padding(.leading, leading)
+        .padding(.trailing, trailing)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .overlay(alignment: .trailing) {
+            if divider {
+                Separator(axis: .vertical)
+            }
         }
     }
 
@@ -153,14 +160,13 @@ struct DeviceDetailPlaceholder: View {
 
     private var activity: some View {
         HStack(alignment: .bottom, spacing: .space6) {
-            ForEach(Array(weekdays.enumerated()), id: \.offset) { index, weekday in
+            ForEach(0..<7, id: \.self) { _ in
                 VStack(spacing: .space4) {
                     SkeletonBar(width: 28, height: 6, delay: 1.28)
                     SkeletonBar(height: 56, delay: 1.28, cornerRadius: .radiusBlock, fill: Color.deviceShade)
                         .frame(maxWidth: .infinity)
-                    Text(verbatim: weekday.label)
-                        .font(weekday.isCurrent ? .system(size: 10, weight: .semibold) : .book(size: 10))
-                        .foregroundStyle(weekday.isCurrent ? Color.textPrimary : Color.fillLevel)
+                    SkeletonBar(width: 24, height: 6, delay: 1.28)
+                        .frame(height: 12, alignment: .center)
                 }
                 .frame(maxWidth: .infinity)
             }
@@ -170,11 +176,9 @@ struct DeviceDetailPlaceholder: View {
 
     private var usage: some View {
         VStack(spacing: .space2) {
-            ForEach(0..<7, id: \.self) { day in
+            ForEach(0..<7, id: \.self) { _ in
                 HStack(spacing: .space6) {
-                    Text(verbatim: placeholderDayLabels[day])
-                        .font(.book(size: 10))
-                        .foregroundStyle(Color.textMuted)
+                    SkeletonBar(width: 8, height: 6, delay: 1.52)
                         .frame(width: 10, alignment: .leading)
 
                     HStack(spacing: .space2) {
@@ -188,42 +192,27 @@ struct DeviceDetailPlaceholder: View {
             }
 
             HStack(spacing: 0) {
-                Text(verbatim: "00")
+                SkeletonBar(width: 20, height: 6, delay: 1.52)
                 Spacer()
-                Text(verbatim: "06")
+                SkeletonBar(width: 20, height: 6, delay: 1.52)
                 Spacer()
-                Text(verbatim: "12")
+                SkeletonBar(width: 20, height: 6, delay: 1.52)
                 Spacer()
-                Text(verbatim: "18")
+                SkeletonBar(width: 20, height: 6, delay: 1.52)
                 Spacer()
-                Text(verbatim: "23")
+                SkeletonBar(width: 20, height: 6, delay: 1.52)
             }
-            .font(.scoutAxis)
-            .foregroundStyle(Color.textMuted)
+            .frame(height: 12)
             .padding(.leading, .gutter)
             .padding(.top, .space2)
         }
     }
-
-    private var weekdays: [PlaceholderWeekday] {
-        let today = Date().startOfDay
-
-        return (0..<7).map { index in
-            let date = today.addingDay(index - 6)
-            return PlaceholderWeekday(label: placeholderWeekdayFormatter.string(from: date), isCurrent: index == 6)
-        }
-    }
-}
-
-private struct PlaceholderWeekday {
-    let label: String
-    let isCurrent: Bool
 }
 
 #Preview("Device loading") {
     NavigationStack {
         ScrollView {
-            DeviceDetailPlaceholder(summary: DeviceSummary.samples[0], range: .constant(.week))
+            DeviceDetailPlaceholder(range: .constant(.week))
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Device")
