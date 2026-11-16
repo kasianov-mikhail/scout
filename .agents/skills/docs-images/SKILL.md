@@ -39,6 +39,7 @@ The border colors are the GitHub Primer muted divider (`borderColor-muted`), dra
 - Copy every source into `$ORIGINALS` as soon as the user provides it. Files in Downloads or Desktop move and disappear.
 - Confirm that every screen exists in `origin/HEAD`. A screen from an unmerged branch makes the README show UI that the release does not have.
 - Crop every screen to one height, top-aligned, so every frame has the same aspect ratio. Use the device screen, for example 780 × 1688 for a 2× capture. Scroll captures are taller and need the same crop.
+- Stop the crop 20 to 30 px above the device screen bottom, so every frame ends in white. At the full screen height a divider or a cut row hugs the bottom border, which reads as a second border under the picture.
 - When a capture is taller than the screen by only a few pixels and a bottom crop would cut a row, trim that overflow from the blank area under the status bar instead.
 
 ## Steps

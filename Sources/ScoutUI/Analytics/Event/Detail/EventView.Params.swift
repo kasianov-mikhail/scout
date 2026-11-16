@@ -66,29 +66,23 @@ extension EventView {
         var body: some View {
             let value = ParamValue(parsing: item.value)
 
-            NavigationLink {
-                ParamView(item: item)
-            } label: {
-                HStack(spacing: .space12) {
-                    ParamIcon(value: value)
+            HStack(spacing: .space12) {
+                ParamIcon(value: value)
 
-                    Text(verbatim: item.key)
-                        .font(.scoutBody)
-                        .foregroundStyle(Color.textSecondary)
-                        .lineLimit(1)
-                        .fixedSize()
-                        .layoutPriority(1)
+                Text(verbatim: item.key)
+                    .font(.scoutBody)
+                    .foregroundStyle(Color.textSecondary)
+                    .lineLimit(1)
+                    .fixedSize()
+                    .layoutPriority(1)
 
-                    Spacer(minLength: 0)
+                Spacer(minLength: 0)
 
-                    FadingText(text: value.summary)
-                        .foregroundStyle(value.isContainer ? .secondary : .primary)
-                }
-                .lineLimit(1)
-                .frame(height: .rowRegular)
-                .contentShape(.rect)
+                FadingText(text: value.summary)
+                    .foregroundStyle(value.isContainer ? .secondary : .primary)
             }
-            .buttonStyle(.plain)
+            .lineLimit(1)
+            .frame(height: .rowRegular)
             .overlay(alignment: .bottom) {
                 Separator()
             }

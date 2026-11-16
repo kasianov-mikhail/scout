@@ -27,6 +27,7 @@ struct NetworkEndpointView: View {
     var body: some View {
         content
             .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+            .loadingInk(isLoading: provider.isLoading)
             .navigationTitle(en: "Endpoint")
             .inlineNavigationTitle()
             .task(id: provider.query) {

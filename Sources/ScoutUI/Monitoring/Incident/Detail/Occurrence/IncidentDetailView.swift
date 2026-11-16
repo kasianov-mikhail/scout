@@ -36,6 +36,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
         }
         .scrollIndicators(.hidden)
         .animation(.easeOut(duration: 0.2), value: backtrace.result == nil)
+        .loadingInk(isLoading: backtrace.result == nil)
         .navigationTint(Element.kind.color)
         .toolbarBackground(Element.kind.detailBackground, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)

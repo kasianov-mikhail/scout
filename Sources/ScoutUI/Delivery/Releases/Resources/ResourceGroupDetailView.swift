@@ -56,6 +56,7 @@ struct ResourceGroupDetailView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: occurrences.records == nil)
+        .loadingInk(isLoading: occurrences.records == nil)
         .message($occurrences.message)
         .toolbarBackground(IncidentKind.resource.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
@@ -75,9 +76,7 @@ struct ResourceGroupDetailView: View {
             summary: summary(records: records),
             records: records,
             row: occurrenceRow
-        ) {
-            IncidentOccurrencesView(occurrences: occurrences, row: occurrenceRow)
-        }
+        )
     }
 
     private func summary(records: [ResourceException]) -> IncidentSummary {

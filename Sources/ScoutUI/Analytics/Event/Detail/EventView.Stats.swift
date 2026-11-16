@@ -23,11 +23,11 @@ extension EventView {
                 case .success(let points):
                     let stats = EventStats(points: points)
 
-                    statRow(.today, height: 72) {
+                    statRow(height: 72) {
                         TodayRow(stats: stats)
                     }
                     ForEach(stats.rows) { row in
-                        statRow(row.period) {
+                        statRow {
                             PeriodRow(row: row, usualFraction: stats.usualFraction)
                         }
                     }
@@ -46,21 +46,11 @@ extension EventView {
             }
         }
 
-        private func statRow(_ period: Period, height: CGFloat = .rowTable, @ViewBuilder content makeContent: () -> some View) -> some View {
-            let content = makeContent()
-
-            return NavigationLink {
-                StatView(showList: true, extent: ChartExtent(period: period), stat: stat)
-                    .navigationTitle(en: "Stats")
-                    .largeNavigationTitle()
-            } label: {
-                content
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: height)
-                    .contentShape(.rect)
-            }
-            .buttonStyle(.plain)
+        private func statRow(height: CGFloat = .rowTable, @ViewBuilder content: () -> some View) -> some View {
+            content()
+                .lineLimit(1)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .frame(height: height)
         }
     }
 }

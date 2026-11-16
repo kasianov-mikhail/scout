@@ -9,13 +9,13 @@
 import SwiftUI
 
 extension CGFloat {
-    /// A timeline step: session start and end, app crashed, transitions between sessions.
+    /// A compact timeline step, one line on the rail: session start and end, app crashed, gaps and transitions between sessions.
     static let rowStep: CGFloat = 36
 
-    /// A dense table row that is not tappable: day and hour tables, retention, Settings choices.
+    /// A dense table row, one line under a column header: day, hour, bucket and retention tables, device columns and Settings segments.
     static let rowTable: CGFloat = 40
 
-    /// A standard row that is tappable: events, params, context and detail rows.
+    /// A standard row at the 44 pt touch target: event, param, context and detail rows, occurrences and install milestones.
     static let rowRegular: CGFloat = 44
 
     /// A row with a title and a subtitle on two lines.
