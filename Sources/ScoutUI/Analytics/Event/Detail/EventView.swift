@@ -34,10 +34,13 @@ struct EventView: View {
 
                 if let sessionID = event.sessionID {
                     ContextSection(sessionID: sessionID, deviceID: event.deviceID, context: context)
-                        .padding(.bottom, .space6)
+                        .padding(.bottom, .space2)
                         .padding(.horizontal, .gutter)
                         .loadingInk(isLoading: context.isLoading, delay: 0.05)
                 }
+
+                StatSection(stat: stat)
+                    .loadingInk(isLoading: stat.isLoading, delay: 0.15)
 
                 if let paramCount = event.paramCount, paramCount > 0 {
                     ParamSection(
@@ -48,8 +51,6 @@ struct EventView: View {
                     .loadingInk(isLoading: param.isLoading, delay: 0.10)
                 }
 
-                StatSection(stat: stat)
-                    .loadingInk(isLoading: stat.isLoading, delay: 0.15)
                 TimelineSection(event: event)
                     .padding(.horizontal, .gutter)
             }
@@ -102,6 +103,9 @@ extension EventView {
             .padding(.top, .space18)
             .padding(.bottom, .space16)
             .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
         }
     }
 }

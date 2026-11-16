@@ -71,6 +71,7 @@ extension EventView {
         var body: some View {
             GeometryReader { proxy in
                 let width = proxy.size.width
+                let nowX = width * stats.dayFraction
 
                 ZStack(alignment: .leading) {
                     RoundedRectangle(cornerRadius: .radiusBar)
@@ -83,12 +84,14 @@ extension EventView {
                     UnevenRoundedRectangle(bottomTrailingRadius: 2, topTrailingRadius: 2)
                         .fill(Color.eventAboveUsual)
                         .frame(width: width * stats.todayAbove)
-                        .offset(x: width * stats.dayFraction)
-
+                        .offset(x: nowX)
+                }
+                .frame(height: 8)
+                .overlay(alignment: .leading) {
                     Rectangle()
                         .fill(Color.textPrimary)
                         .frame(width: 1.5, height: 16)
-                        .offset(x: width * stats.dayFraction - 0.75)
+                        .offset(x: nowX - 0.75)
                 }
             }
         }

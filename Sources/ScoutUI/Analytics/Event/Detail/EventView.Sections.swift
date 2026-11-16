@@ -30,7 +30,7 @@ extension EventView {
                         Spacer(minLength: 0)
                     }
                     .lineLimit(1)
-                    .frame(height: .rowRegular)
+                    .frame(height: 52)
                     .contentShape(.rect)
                 }
                 .buttonStyle(.plain)

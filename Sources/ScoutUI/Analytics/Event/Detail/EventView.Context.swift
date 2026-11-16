@@ -17,46 +17,36 @@ extension EventView {
         @ObservedObject var context: EventContextProvider
 
         var body: some View {
-            switch context.result {
-            case .success(let value):
-                let chips = value.chips
-                if !chips.isEmpty {
-                    chipRow {
-                        ForEach(chips, id: \.self) { chip in
-                            OutlineChip(text: chip.text, monospaced: chip.monospaced)
+            VStack(spacing: 0) {
+                switch context.result {
+                case .success(let value):
+                    let chips = value.chips
+                    if !chips.isEmpty {
+                        ChipRow {
+                            ForEach(chips, id: \.self) { chip in
+                                OutlineChip(text: chip.text, monospaced: chip.monospaced)
+                            }
                         }
                     }
-                }
-                sessionRow {
-                    Text(verbatim: value.sessionSummary)
-                        .font(.scoutBody)
-                        .lineLimit(1)
-                }
-            case .failure(let error):
-                ErrorRow(description: error.localizedDescription) {
-                    await context.fetchAgain(in: database)
-                }
-            case nil:
-                chipRow {
-                    ForEach([120, 74, 74], id: \.self) { width in
-                        SkeletonBar(width: CGFloat(width), height: 27, delay: 0.08, cornerRadius: .radiusBlock)
+                    sessionRow {
+                        Text(verbatim: value.sessionSummary)
+                            .font(.scoutBody)
+                            .lineLimit(1)
+                    }
+                case .failure(let error):
+                    ErrorRow(description: error.localizedDescription) {
+                        await context.fetchAgain(in: database)
+                    }
+                case nil:
+                    ChipRow {
+                        ForEach([120, 74, 74], id: \.self) { width in
+                            SkeletonBar(width: CGFloat(width), height: 27, delay: 0.08, cornerRadius: .radiusBlock)
+                        }
+                    }
+                    sessionRow {
+                        SkeletonBar(width: 120, height: 11, delay: 0.24)
                     }
                 }
-                sessionRow {
-                    SkeletonBar(width: 120, height: 11, delay: 0.24)
-                }
-            }
-        }
-
-        private func chipRow(@ViewBuilder content: () -> some View) -> some View {
-            FlowLayout(spacing: .space6) {
-                content()
-            }
-            .padding(.top, .space12)
-            .padding(.bottom, .space12)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .overlay(alignment: .bottom) {
-                Separator()
             }
         }
 
@@ -81,10 +71,45 @@ extension EventView {
                     value
                 }
                 .lineLimit(1)
-                .frame(height: .rowRegular)
+                .frame(height: 52)
                 .contentShape(.rect)
             }
             .buttonStyle(.plain)
         }
     }
+
+    struct ChipRow<Content: View>: View {
+        @ViewBuilder let content: () -> Content
+
+        var body: some View {
+            FlowLayout(spacing: .space6) {
+                content()
+            }
+            .padding(.top, .space12)
+            .padding(.bottom, .space12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .overlay(alignment: .bottom) {
+                Separator()
+            }
+        }
+    }
+}
+
+#Preview("Chips") {
+    let chips = [
+        EventContext.Chip(text: "iPhone 15 Pro", monospaced: false),
+        EventContext.Chip(text: "iOS 17.4", monospaced: false),
+        EventContext.Chip(text: "en-US", monospaced: true),
+        EventContext.Chip(text: "2.3.1 (412)", monospaced: true),
+        EventContext.Chip(text: "TestFlight", monospaced: false),
+    ]
+
+    return VStack(spacing: 0) {
+        EventView.ChipRow {
+            ForEach(chips, id: \.self) { chip in
+                OutlineChip(text: chip.text, monospaced: chip.monospaced)
+            }
+        }
+    }
+    .padding(.horizontal, .gutter)
 }
