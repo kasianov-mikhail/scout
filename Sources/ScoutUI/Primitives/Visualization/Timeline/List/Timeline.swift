@@ -43,6 +43,7 @@ struct Timeline: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: isLoading)
+        .loadingInk(isLoading: isLoading)
         .navigationTitle(en: "Timeline")
         .inlineNavigationTitle()
         .exportToolbar(text: provider.exportText)

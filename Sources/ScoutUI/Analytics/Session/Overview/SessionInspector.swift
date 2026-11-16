@@ -30,6 +30,7 @@ struct SessionInspector: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+        .loadingInk(isLoading: provider.isLoading)
         .navigationTitle(en: "Session")
         .inlineNavigationTitle()
         .fetchTask([provider])

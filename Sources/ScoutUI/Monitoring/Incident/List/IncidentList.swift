@@ -19,6 +19,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
     var body: some View {
         content
             .animation(.easeOut(duration: 0.2), value: provider.result == nil)
+            .loadingInk(isLoading: provider.result == nil)
             .navigationTitle(en: Element.kind.title)
             .inlineNavigationTitle()
             .tint(Color.textPrimary)

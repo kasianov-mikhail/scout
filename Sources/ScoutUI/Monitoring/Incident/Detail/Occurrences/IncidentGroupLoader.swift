@@ -44,6 +44,7 @@ struct IncidentGroupLoader<Element: RecordDecodable & Incident, Content: View>: 
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.records == nil)
+        .loadingInk(isLoading: provider.records == nil)
         .toolbarBackground(Element.kind.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .task {

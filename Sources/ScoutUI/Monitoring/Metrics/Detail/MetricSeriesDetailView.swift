@@ -59,6 +59,7 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: series.isLoading)
+        .loadingInk(isLoading: series.isLoading)
         .fetchTask([series, resets])
     }
 

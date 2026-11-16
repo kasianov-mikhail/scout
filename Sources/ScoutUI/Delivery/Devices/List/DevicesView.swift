@@ -48,6 +48,7 @@ struct DevicesView: View {
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
+        .loadingInk(isLoading: provider.isLoading)
         .navigationTitle(en: "Devices")
         .inlineNavigationTitle()
         .task(id: provider.range) {
