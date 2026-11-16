@@ -24,20 +24,29 @@ struct HomeActiveUsersSectionPlaceholder: View {
             SkeletonBar(height: 72, delay: 0.56, fill: Color.surfaceGrey)
                 .padding(.top, .space12)
 
-            AxisLabelRow(
-                start: DateFormatter.monthDay.string(from: start),
-                middle: DateFormatter.monthDay.string(from: middle),
-                end: "today",
-                topInset: 6,
-                design: .monospaced
-            )
+            axis
 
             SkeletonBar(width: 194, height: 8, delay: 0.64)
                 .frame(height: 18, alignment: .leading)
                 .padding(.top, .space10)
                 .padding(.bottom, .space6)
         }
-        .placeholder()
+    }
+
+    private var axis: some View {
+        HStack(spacing: 0) {
+            SkeletonBar(width: 34, height: 8, delay: 0.64)
+
+            Spacer()
+
+            SkeletonBar(width: 34, height: 8, delay: 0.64)
+
+            Spacer()
+
+            SkeletonBar(width: 34, height: 8, delay: 0.64)
+        }
+        .frame(height: 12)
+        .padding(.top, 6)
     }
 
     private func metric(kind: ActiveUsers.Kind) -> some View {
@@ -53,17 +62,5 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 .frame(height: 15)
         }
         .padding(.vertical, .space10)
-    }
-
-    private var end: Date {
-        Date().startOfDay
-    }
-
-    private var start: Date {
-        end.addingDay(-29)
-    }
-
-    private var middle: Date {
-        start.addingTimeInterval(end.timeIntervalSince(start) / 2)
     }
 }

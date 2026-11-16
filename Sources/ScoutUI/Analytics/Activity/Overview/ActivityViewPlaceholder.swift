@@ -40,7 +40,6 @@ struct ActivityViewPlaceholder: View {
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
-        .placeholder()
     }
 
     private var metrics: some View {
@@ -72,31 +71,37 @@ struct ActivityViewPlaceholder: View {
     }
 
     private var chart: some View {
-        let axis = range.axis(now: Date())
-
-        return VStack(spacing: 0) {
+        VStack(spacing: 0) {
             SkeletonBar(height: 96, delay: 0.16, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
 
-            AxisLabelRow(
-                start: axis.start,
-                middle: axis.middle,
-                end: axis.end,
-                topInset: 6,
-                design: .monospaced
-            )
+            axis
         }
+    }
+
+    private var axis: some View {
+        HStack(spacing: 0) {
+            SkeletonBar(width: 34, height: 8, delay: 0.2)
+
+            Spacer()
+
+            SkeletonBar(width: 34, height: 8, delay: 0.2)
+
+            Spacer()
+
+            SkeletonBar(width: 34, height: 8, delay: 0.2)
+        }
+        .frame(height: 12)
+        .padding(.top, 6)
     }
 
     private var stickiness: some View {
         HStack(spacing: .space6) {
-            Text(verbatim: "Stickiness")
-                .placeholderHidden()
+            SkeletonBar(width: 74, height: 9, delay: 0.24)
+                .frame(height: 16, alignment: .leading)
 
             SkeletonBar(width: 28, height: 9, delay: 0.24)
             SkeletonBar(width: 194, height: 9, delay: 0.24)
         }
-        .font(.scoutCaption)
-        .foregroundStyle(Color.textMuted)
         .padding(.bottom, .space16)
     }
 

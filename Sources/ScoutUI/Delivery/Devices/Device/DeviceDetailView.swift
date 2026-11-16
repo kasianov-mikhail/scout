@@ -30,7 +30,7 @@ struct DeviceDetailView: View {
                         content(detail)
                             .transition(.opacity)
                     } else {
-                        DeviceDetailPlaceholder(summary: provider.device, range: $provider.range)
+                        DeviceDetailPlaceholder(range: $provider.range)
                             .transition(.opacity)
                     }
                 }
@@ -183,7 +183,6 @@ struct StatColumn<Value: View>: View {
             Text(verbatim: title)
                 .font(.scoutCaption)
                 .foregroundStyle(Color.textMuted)
-                .placeholderHidden()
         }
         .padding(.vertical, .space12)
         .padding(.leading, leading)
@@ -418,7 +417,7 @@ private struct UsageGrid: View {
 #Preview("Device loading") {
     NavigationStack {
         ScrollView {
-            DeviceDetailPlaceholder(summary: DeviceSummary.samples[0], range: .constant(.week))
+            DeviceDetailPlaceholder(range: .constant(.week))
         }
         .scrollIndicators(.hidden)
     }

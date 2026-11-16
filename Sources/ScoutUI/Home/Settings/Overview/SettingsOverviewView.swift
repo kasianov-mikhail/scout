@@ -111,7 +111,8 @@ struct SettingsOverviewView: View {
                         HStack(spacing: 0) {
                             SettingsReadoutRow(
                                 value: cacheStatus.bytes == nil ? nil : cacheStatus.sizeLabel,
-                                caption: "on this iPhone"
+                                caption: cacheStatus.bytes == nil ? nil : "on this iPhone",
+                                captionSkeletonWidth: cacheStatus.bytes == nil ? 74 : nil
                             )
 
                             SettingsCardAction(title: "Clear", color: .textDanger) {
@@ -202,20 +203,28 @@ private struct SendReadout: View {
                 SkeletonBar(width: 28, height: 16, delay: 0)
             }
 
-            Text(verbatim: "records waiting")
-                .font(.scoutCaption)
-                .foregroundStyle(Color.textMuted)
-                .placeholderHidden()
+            if summary.pending == nil {
+                SkeletonBar(width: 74, height: 7, delay: 0)
+                    .frame(height: 16, alignment: .leading)
+            } else {
+                Text(verbatim: "records waiting")
+                    .font(.scoutCaption)
+                    .foregroundStyle(Color.textMuted)
+            }
 
             if let lastSent = summary.lastSent {
                 Text(verbatim: "· sent \(lastSent)")
                     .font(.scoutCaption)
                     .foregroundStyle(Color.textMuted)
             } else {
-                Text(verbatim: "·")
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
-                    .placeholderHidden()
+                if summary.pending == nil {
+                    SkeletonBar(width: 4, height: 7, delay: 0)
+                        .frame(height: 16, alignment: .leading)
+                } else {
+                    Text(verbatim: "·")
+                        .font(.scoutCaption)
+                        .foregroundStyle(Color.textMuted)
+                }
                 SkeletonBar(width: 74, height: 9, delay: 0)
             }
 
@@ -223,7 +232,6 @@ private struct SendReadout: View {
         }
         .padding(.horizontal, .space8)
         .padding(.vertical, .space10)
-        .placeholder(summary.pending == nil)
     }
 }
 

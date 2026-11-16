@@ -38,10 +38,10 @@ struct MetricDetailPlaceholder: View {
                     .padding(.top, .space16)
                     .padding(.horizontal, .gutter)
 
-                MetricAxisLabels(labels: range.axisLabels(now: now))
+                axis(now: now)
                     .padding(.horizontal, .gutter)
 
-                MetricLegend(title: range.previousTitle, note: nil)
+                legend
                     .padding(.horizontal, .gutter)
 
                 Section(title: range.sectionTitle, note: trailingTitle(telemetry)) {
@@ -61,10 +61,10 @@ struct MetricDetailPlaceholder: View {
                     .padding(.top, .space16)
                     .padding(.horizontal, .gutter)
 
-                MetricAxisLabels(labels: range.axisLabels(now: now))
+                axis(now: now)
                     .padding(.horizontal, .gutter)
 
-                MetricLegend(title: range.previousTitle, note: nil)
+                legend
                     .padding(.horizontal, .gutter)
 
                 Section(title: "Distribution", note: distributionCaption(telemetry), bottomGap: .space8) {
@@ -77,7 +77,6 @@ struct MetricDetailPlaceholder: View {
                 }
             }
         }
-        .placeholder()
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
@@ -90,16 +89,35 @@ struct MetricDetailPlaceholder: View {
                 if telemetry == .meter {
                     SkeletonBar(width: 74, height: 11, delay: 0.08)
                 } else {
-                    Text(verbatim: range.totalTitle)
-                        .font(.scoutRow)
-                        .foregroundStyle(Color.textMuted)
-                        .placeholderHidden()
+                    SkeletonBar(width: 74, height: 9, delay: 0.08)
+                        .frame(height: 18, alignment: .leading)
                 }
             }
 
             SkeletonBar(width: 120, height: 9, delay: 0.08)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func axis(now: Date) -> some View {
+        HStack(spacing: 0) {
+            ForEach(Array(range.axisLabels(now: now).enumerated()), id: \.offset) { index, _ in
+                if index > 0 {
+                    Spacer(minLength: 0)
+                }
+
+                SkeletonBar(width: 30, height: 8, delay: 0.16)
+            }
+        }
+        .frame(height: 12)
+        .padding(.top, .space4)
+    }
+
+    private var legend: some View {
+        SkeletonBar(width: 74, height: 8, delay: 0.2)
+            .frame(height: 14, alignment: .leading)
+            .padding(.top, .space10)
+            .padding(.bottom, .space16)
     }
 
     private var percentileSelector: some View {
@@ -137,23 +155,16 @@ struct MetricDetailPlaceholder: View {
         let delay = 0.24 + Double(index) * 0.08
 
         return HStack(spacing: .space8) {
-            Text(verbatim: range.rowLabel(date: date))
-                .font(.scoutValue)
-                .monospacedDigit()
-                .foregroundStyle(Color.textMuted)
+            SkeletonBar(width: 40, height: 9, delay: delay)
                 .frame(width: 56, alignment: .leading)
-                .placeholderHidden()
 
             HStack(spacing: .space6) {
                 SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar)
                     .frame(maxWidth: .infinity)
 
                 if range.isCurrent(date: date, now: now) {
-                    Text(verbatim: "so far")
-                        .font(.scoutFootnote)
-                        .foregroundStyle(Color.textMuted)
+                    SkeletonBar(width: 24, height: 7, delay: delay)
                         .frame(width: 34, alignment: .leading)
-                        .placeholderHidden()
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)

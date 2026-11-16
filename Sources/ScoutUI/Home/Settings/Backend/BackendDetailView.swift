@@ -65,7 +65,8 @@ struct BackendDetailView: View {
                     SettingsCard {
                         SettingsReadoutRow(
                             value: report.latestEvent,
-                            caption: backend.isCloud ? "newest event in CloudKit" : "newest event on the server"
+                            caption: report.latestEvent == nil ? nil : (backend.isCloud ? "newest event in CloudKit" : "newest event on the server"),
+                            captionSkeletonWidth: report.latestEvent == nil ? 74 : nil
                         )
                     }
 
@@ -74,7 +75,8 @@ struct BackendDetailView: View {
                     SettingsCard {
                         SettingsReadoutRow(
                             value: report.pendingRecords,
-                            caption: "records waiting",
+                            caption: report.pendingRecords == nil ? nil : "records waiting",
+                            captionSkeletonWidth: report.pendingRecords == nil ? 74 : nil,
                             skeletonWidth: 28
                         )
 
@@ -141,8 +143,8 @@ struct BackendDetailView: View {
                 HStack(spacing: 0) {
                     SettingsReadoutRow(
                         value: report.storage,
-                        caption: report.storageCaption,
-                        captionSkeletonWidth: report.storageCaption == nil ? 74 : nil
+                        caption: report.storage == nil ? nil : report.storageCaption,
+                        captionSkeletonWidth: report.storage == nil ? 74 : nil
                     )
 
                     SettingsCardAction(title: "Console") {
@@ -152,8 +154,8 @@ struct BackendDetailView: View {
             } else {
                 SettingsReadoutRow(
                     value: report.storage,
-                    caption: report.storageCaption,
-                    captionSkeletonWidth: report.storageCaption == nil ? 74 : nil
+                    caption: report.storage == nil ? nil : report.storageCaption,
+                    captionSkeletonWidth: report.storage == nil ? 74 : nil
                 )
 
                 SettingsColumnRow {
@@ -173,7 +175,8 @@ struct BackendDetailView: View {
             SettingsCard {
                 SettingsReadoutRow(
                     value: report.sendErrors,
-                    caption: "devices could not send",
+                    caption: report.sendErrors == nil ? nil : "devices could not send",
+                    captionSkeletonWidth: report.sendErrors == nil ? 74 : nil,
                     skeletonWidth: 28
                 )
             }
@@ -185,7 +188,7 @@ struct BackendDetailView: View {
             SettingsCard {
                 SettingsReadoutRow(
                     value: report.errorRate,
-                    caption: report.requestCount,
+                    caption: report.errorRate == nil ? nil : report.requestCount,
                     captionSkeletonWidth: report.requestCount == nil ? 120 : nil,
                     skeletonWidth: 46
                 )
