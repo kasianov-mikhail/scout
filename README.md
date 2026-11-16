@@ -82,11 +82,11 @@ The built-in SwiftUI dashboard lets you inspect logs, metrics, crashes, network 
 It ships as a separate `ScoutUI` product, so you decide which builds carry it. See the [Dashboard Guide](docs/DASHBOARD.md) for linking it, presenting it, and keeping it out of the App Store build.
 
 <p>
-<img width="240" alt="Home" src="https://github.com/user-attachments/assets/ff3ec2c9-dc11-4c7e-978e-99c023c268b7">&emsp;&emsp;<img width="240" alt="Release" src="https://github.com/user-attachments/assets/aa599327-d7e7-403a-9d4d-cbf979dd0b52">&emsp;&emsp;<img width="240" alt="Crash" src="https://github.com/user-attachments/assets/aed2a205-d576-49f0-94a1-88035dd022b8">
+<img width="240" alt="Home" src="https://github.com/user-attachments/assets/6d81fc75-2976-41e3-b482-97d75cc0e8c6">&emsp;&emsp;<img width="240" alt="Release" src="https://github.com/user-attachments/assets/afa5eb70-e2ba-4faf-9889-361ff58e377a">&emsp;&emsp;<img width="240" alt="Crash" src="https://github.com/user-attachments/assets/f360ff6e-1339-4494-a312-8bca7fef89b8">
 </p>
 
 <p>
-<img width="240" alt="Metrics" src="https://github.com/user-attachments/assets/dc8bfd7a-d043-4412-986b-5a6ceab9ac56">&emsp;&emsp;<img width="240" alt="Event" src="https://github.com/user-attachments/assets/7e307105-ce4e-4b41-9524-28ca1474b8e1">&emsp;&emsp;<img width="240" alt="Timeline" src="https://github.com/user-attachments/assets/0385924b-0e20-483d-be10-474fd895f860">
+<img width="240" alt="Metrics" src="https://github.com/user-attachments/assets/23aa5d46-9c08-406a-8b54-7eadd3f2382d">&emsp;&emsp;<img width="240" alt="Event" src="https://github.com/user-attachments/assets/4d07ea18-1e81-430b-b3b3-84073e1047c3">&emsp;&emsp;<img width="240" alt="Timeline" src="https://github.com/user-attachments/assets/28773038-edf4-4d5f-8209-dc508d31784b">
 </p>
 
 ## Roadmap
