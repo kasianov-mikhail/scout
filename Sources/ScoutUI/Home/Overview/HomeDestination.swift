@@ -10,7 +10,6 @@ import Foundation
 enum HomeDestination: Hashable {
     case activity
     case retention
-    case sessions
     case releaseHealth
     case alerts
     case telemetry(LogCategory)

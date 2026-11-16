@@ -76,9 +76,7 @@ struct CrashGroupDetailView: View {
             summary: summary(records: records),
             records: records,
             row: occurrenceRow
-        ) {
-            IncidentOccurrencesView(occurrences: occurrences, row: occurrenceRow)
-        }
+        )
         .exportToolbar(text: CrashGroupExport(group: occurrences.group).text, tint: .primary)
     }
 

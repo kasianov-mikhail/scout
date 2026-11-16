@@ -52,7 +52,6 @@ struct HomeList: View {
     private var providers: [any Provider] {
         [alerts, activities, sessions, releases, retention, logs, devices]
     }
-
     private var live: HomeSnapshot? {
         guard case .success(let statuses)? = alerts.result, case .success(let points)? = activities.result, case .success(let sessionPoints)? = sessions.result, case .success(let releaseList)? = releases.result, case .success(let cohorts)? = retention.result, case .success(let deviceList)? = devices.result else {
             return nil
@@ -85,8 +84,6 @@ struct HomeList: View {
                 ActivityView(activity: activities)
             case .retention:
                 RetentionView(provider: retention)
-            case .sessions:
-                statView
             case .releaseHealth:
                 ReleaseHealthView(provider: releases)
             case .alerts:
@@ -107,13 +104,8 @@ struct HomeList: View {
             .padding(.horizontal, .gutter)
             .loadingInk(isLoading: isLoading, delay: 0.05)
 
-            HomeActiveUsersSection(users: snapshot.users) { kind in
-                switch kind {
-                case .sessions:
-                    path.append(.sessions)
-                case .dau, .devices:
-                    path.append(.activity)
-                }
+            HomeActiveUsersSection(users: snapshot.users) { _ in
+                path.append(.activity)
             }
             .loadingInk(isLoading: isLoading, delay: 0.10)
 
@@ -160,12 +152,6 @@ struct HomeList: View {
         .transition(.opacity)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
-    }
-
-    private var statView: some View {
-        StatView(showList: false, extent: ChartExtent(period: .today), stat: sessions)
-            .environment(\.chartColor, .purple)
-            .navigationTitle(en: "Sessions")
     }
 }
 

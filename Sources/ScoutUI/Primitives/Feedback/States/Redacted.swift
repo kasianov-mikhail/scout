@@ -7,18 +7,6 @@
 
 import SwiftUI
 
-struct RedactedText: View {
-    let count: Int?
-
-    var body: some View {
-        if let count {
-            Text(count == 0 ? "—" : count.compact)
-        } else {
-            Redacted(length: 5)
-        }
-    }
-}
-
 struct Redacted: View {
     let length: Int
 

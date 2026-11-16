@@ -38,7 +38,7 @@ struct ChartExportButton<ChartContent: View>: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     ChartExportButton(title: "app_launch", rangeLabel: "Jun 2 – Jul 2, 2026") {
-                        ChartView(segment: .sample, timing: ChartExtent(period: Period.month))
+                        Sparkline(series: MiniChartSeries(values: [3, 5, 4, 7, 6, 9, 12]), color: .fillAccent)
                     }
                 }
             }

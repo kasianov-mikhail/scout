@@ -33,14 +33,3 @@ struct ParamValueRow: View {
         .lineLimit(1)
     }
 }
-
-extension ParamValueRow {
-    init(node: ParamValue.Node) {
-        self.init(
-            value: node.value,
-            label: node.label,
-            labelStyle: node.value.isContainer ? .primary : .secondary,
-            summaryStyle: node.value.isContainer ? .tertiary : .primary
-        )
-    }
-}
