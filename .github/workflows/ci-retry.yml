@@ -1,0 +1,34 @@
+name: CI retry
+
+# GitHub refuses to re-run a run that is still in progress, so the retry lives outside CI:
+# it fires once the failed run has completed and re-runs only the jobs that failed.
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  actions: write
+
+jobs:
+  retry:
+    name: retry
+    # Three attempts in total absorb a leg whose runner never arrived and a flaky test,
+    # while a fork stays out of this repository's permissions
+    if: >-
+      ${{ github.event.workflow_run.conclusion == 'failure'
+      && github.event.workflow_run.run_attempt < 3
+      && github.event.workflow_run.head_repository.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Re-run the failed jobs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+        run: |
+          set -eo pipefail
+          echo "Attempt $RUN_ATTEMPT of run $RUN_ID failed; re-running the failed jobs."
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/rerun-failed-jobs"
