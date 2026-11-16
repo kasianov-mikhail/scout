@@ -71,7 +71,10 @@ runs:
           -skipMacroValidation \
           build-for-testing
 
+    # A failing test and a dead runner both leave xcodebuild with exit 65, so the bundle below tells them apart
     - name: Test
+      id: test
+      continue-on-error: true
       shell: bash
       run: |
         xcodebuild \
@@ -83,4 +86,39 @@ runs:
           -clonedSourcePackagesDirPath /tmp/spm \
           -skipMacroValidation \
           -parallel-testing-enabled NO \
+          -resultBundlePath /tmp/test.xcresult \
           test-without-building
+
+    - name: Classify the test failure
+      id: classify
+      if: steps.test.outcome == 'failure'
+      shell: bash
+      env:
+        RESULT: /tmp/test.xcresult
+      run: |
+        set -eo pipefail
+        summary="$(xcrun xcresulttool get test-results summary --path "$RESULT" 2>/dev/null || true)"
+        [ -n "$summary" ] || summary='{}'
+        failed="$(jq -r '.failedTests // 0' <<< "$summary" 2>/dev/null || echo 0)"
+        [[ "$failed" =~ ^[0-9]+$ ]] || failed=0
+        echo "Failed tests: $failed"
+        if (( failed > 0 )); then
+          echo "kind=test" >> "$GITHUB_OUTPUT"
+        else
+          echo "kind=infrastructure" >> "$GITHUB_OUTPUT"
+        fi
+
+    # CI retry reads these two names to tell a red test from a red runner
+    - name: Report test failures
+      if: steps.classify.outputs.kind == 'test'
+      shell: bash
+      run: |
+        echo "::error::A test failed, so a retry would only repeat it. Fix the test or the code behind it."
+        exit 1
+
+    - name: Report an infrastructure failure
+      if: steps.classify.outputs.kind == 'infrastructure'
+      shell: bash
+      run: |
+        echo "::error::The test runner stopped without reporting a failed test, so this leg failed on the runner rather than on the code."
+        exit 1

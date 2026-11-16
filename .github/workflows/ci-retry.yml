@@ -23,7 +23,32 @@ jobs:
     timeout-minutes: 5
 
     steps:
+      # A red test names itself; a job that never saw a runner cannot. Only the second kind earns a retry.
+      - name: Decide whether a retry can help
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+        run: |
+          set -eo pipefail
+          jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/jobs?per_page=100")"
+          retry="$(jq -r '
+            [.jobs[] | select(.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral")]
+            | if length == 0 then false
+              elif any(.[]; (.runner_name // "") == "" or (.steps | length) == 0) then true
+              elif any(.[] | .steps[]?; .conclusion == "failure" and .name == "Report an infrastructure failure") then true
+              elif any(.[] | .steps[]?; .conclusion == "failure" and (.name == "Build" or .name == "Lint" or .name == "Report test failures")) then false
+              else true end
+          ' <<< "$jobs")"
+          if [ "$retry" = true ]; then
+            echo "No runner arrived for a job, or a runner broke mid-test, so the failed jobs are re-run."
+          else
+            echo "The failure names a test, the build or the lint, so a retry would only repeat it."
+          fi
+          echo "retry=$retry" >> "$GITHUB_OUTPUT"
+
       - name: Re-run the failed jobs
+        if: steps.decide.outputs.retry == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id }}
