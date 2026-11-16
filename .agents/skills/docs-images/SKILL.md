@@ -53,6 +53,8 @@ The border colors are the GitHub Primer muted divider (`borderColor-muted`), dra
    - Each file is about 80–120 KB, down from about 150–310 KB.
 3. Look at the result on a white page and on a `#0d1117` page before the upload.
 4. Create a new draft PR for this refresh before the uploads. Reuse an open draft PR only; never reuse a merged PR.
+   - This draft PR is the refresh PR: it ships the README commit and is marked ready for review at step 7. Never open a second PR for the same refresh.
+   - Draft keeps CI cheap, not free: `scope`, `model-versions` and `tests-gate` still run on every push to it, while lint and the iOS matrix wait for `ready_for_review`. A README-only change skips the latter two anyway, because `README.md` is outside the code pattern of `scope`.
    - When the working tree has no change yet, start the branch with an empty commit so the draft PR exists. The README commit follows after the uploads.
    - Upload the files from `$WORK/out` with `gh pr comment <PR> --attach '<file>#<Alt>'`, one `--attach` per file. Run `gh` inside the repository; from any other directory it exits with `fatal: not a git repository`.
    - GitHub stores each file as a `user-attachments` URL and writes the markdown image into the comment. Read the comment back with `gh api repos/<owner>/<repo>/issues/comments/<id> --jq .body` and take the URLs from there, not from the rendered page.
