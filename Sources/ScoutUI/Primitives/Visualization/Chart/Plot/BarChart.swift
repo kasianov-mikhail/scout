@@ -31,10 +31,12 @@ struct BarChart: View {
         return VStack(spacing: 0) {
             HStack(alignment: .bottom, spacing: spacing) {
                 ForEach(values.indices, id: \.self) { index in
-                    barShape(radius: values[index] > 0 ? cornerRadius : 0)
-                        .fill(color(index: index))
+                    let value = values[index]
+
+                    barShape(value: value)
+                        .fill(color(index: index, value: value))
                         .frame(maxWidth: .infinity)
-                        .frame(height: barHeight(value: values[index], maximum: maximum))
+                        .frame(height: barHeight(value: value, maximum: maximum))
                 }
             }
             .frame(height: height, alignment: .bottom)
@@ -50,26 +52,35 @@ struct BarChart: View {
         }
     }
 
-    private func color(index: Int) -> Color {
+    private func color(index: Int, value: Int) -> Color {
+        guard value > 0 else {
+            return Color.surfaceSkeleton
+        }
+
         guard let accent, accent.index == index else {
             return Color.surfaceBarIdle
         }
+
         return accent.color
     }
 
-    private func barShape(radius: CGFloat) -> AnyShape {
+    private func barShape(value: Int) -> AnyShape {
+        guard value > 0 else {
+            return AnyShape(Rectangle())
+        }
+
         if #available(iOS 17.0, macOS 14.0, *) {
-            AnyShape(
+            return AnyShape(
                 UnevenRoundedRectangle(
-                    topLeadingRadius: radius,
-                    bottomLeadingRadius: roundBottomCorners ? radius : 0,
-                    bottomTrailingRadius: roundBottomCorners ? radius : 0,
-                    topTrailingRadius: radius
+                    topLeadingRadius: cornerRadius,
+                    bottomLeadingRadius: roundBottomCorners ? cornerRadius : 0,
+                    bottomTrailingRadius: roundBottomCorners ? cornerRadius : 0,
+                    topTrailingRadius: cornerRadius
                 )
             )
-        } else {
-            AnyShape(RoundedRectangle(cornerRadius: radius))
         }
+
+        return AnyShape(RoundedRectangle(cornerRadius: cornerRadius))
     }
 
     private func barHeight(value: Int, maximum: Int) -> CGFloat {
@@ -108,7 +119,7 @@ struct AxisLabelRow: View {
 
 #Preview {
     BarChart(
-        values: [10, 14, 9, 12, 18, 15, 20],
+        values: [10, 14, 0, 12, 0, 15, 20],
         startLabel: "Sep 26",
         middleLabel: "Oct 10",
         endLabel: "today",

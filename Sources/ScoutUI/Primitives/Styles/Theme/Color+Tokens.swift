@@ -10,15 +10,23 @@ import SwiftUI
 
 /// The Scout design-system colors.
 ///
-/// The light values are the design's own. The dark values are not in the design:
-/// they keep the closest system color so dark mode stays readable.
+/// The light values are the design's own, with one exception: the three grey text
+/// tokens carry a rendering compensation and sit darker than the mockup. Hairline
+/// strokes of glyphs fade at antialiasing, so the same grey reads lighter on device
+/// than in the mockup, while solid fills do not shift at all. The compensation is
+/// `#8E8E93` → `#7C7C80` (measured on device), `#6C6C70` → `#5E5E62` and
+/// `#C7C7CC` → `#AEAEB2` (recomputed with the same 0.87 per channel). Body text
+/// carries the matching weight of 450 instead of 400 (`Font.book`).
+///
+/// The dark values are not in the design: they keep the closest system color so
+/// dark mode stays readable, and the compensation does not apply to them.
 extension Color {
     // MARK: - Text
 
     static let textPrimary = designColor(light: 0x000000, dark: 0xFFFFFF)
-    static let textSecondary = designColor(light: 0x6C6C70, dark: 0x98989F)
-    static let textMuted = designColor(light: 0x8E8E93, dark: 0x8E8E93)
-    static let textDisabled = designColor(light: 0xC7C7CC, dark: 0x48484A)
+    static let textSecondary = designColor(light: 0x5E5E62, dark: 0x98989F)
+    static let textMuted = designColor(light: 0x7C7C80, dark: 0x8E8E93)
+    static let textDisabled = designColor(light: 0xAEAEB2, dark: 0x48484A)
     static let textLink = designColor(light: 0x007AFF, dark: 0x0A84FF)
     static let textDanger = designColor(light: 0xC4001A, dark: 0xFF453A)
     static let textWarning = designColor(light: 0xB35C00, dark: 0xFF9F0A)
@@ -67,6 +75,11 @@ extension Color {
     static let lineTintWarning = designColor(light: 0xF2DFC4, dark: 0xFF9F0A, darkAlpha: 0.24)
     static let lineTintCaution = designColor(light: 0xE6E1CC, dark: 0xFFD60A, darkAlpha: 0.24)
     static let lineTintResource = designColor(light: 0xDADAF2, dark: 0x5E5CE6, darkAlpha: 0.24)
+
+    /// The row and section hairline.
+    ///
+    /// Draw it with `Separator`, never as a raw rectangle.
+    static let separator = lineSeparator
 
     // MARK: - Code
 

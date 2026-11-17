@@ -97,9 +97,7 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
         }
         .overlay(alignment: .trailing) {
             if showsDividers, !isLast {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
+                Separator(axis: .vertical)
             }
         }
     }

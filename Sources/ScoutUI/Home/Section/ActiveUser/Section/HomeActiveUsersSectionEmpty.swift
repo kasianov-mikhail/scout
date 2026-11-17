@@ -61,9 +61,7 @@ struct HomeActiveUsersSectionEmpty: View {
             }
             .frame(height: 72, alignment: .bottom)
             .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.surfaceBarIdle)
-                    .frame(height: 0.5)
+                Separator(color: .surfaceBarIdle)
             }
 
             AxisLabelRow(

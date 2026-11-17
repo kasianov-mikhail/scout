@@ -68,9 +68,7 @@ struct IncidentGroupPlaceholder: View {
         .padding(.horizontal, .gutter)
         .padding(.bottom, .space16)
         .overlay(alignment: .top) {
-            Rectangle()
-                .fill(kind.border)
-                .frame(height: 0.5)
+            Separator(color: kind.border)
         }
     }
 

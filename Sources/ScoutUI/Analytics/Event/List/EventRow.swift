@@ -46,9 +46,7 @@ struct EventRow: View {
     private var cell: some View {
         (event.level?.color?.opacity(0.12) ?? Color.clear)
             .overlay(alignment: .bottom) {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
+                Separator()
                     .padding(.leading, 42)
             }
     }

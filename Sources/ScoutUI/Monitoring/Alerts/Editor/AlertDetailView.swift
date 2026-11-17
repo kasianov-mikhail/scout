@@ -179,7 +179,7 @@ private struct AlertNowCard: View {
             VStack(spacing: 0) {
                 value
                     .overlay(alignment: .bottom) {
-                        AlertDivider()
+                        Separator()
                     }
                 stats
             }
@@ -244,7 +244,7 @@ private struct AlertNowCard: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .trailing) {
             if showsDivider {
-                Rectangle().fill(Color.separator).frame(width: 0.5)
+                Separator(axis: .vertical)
             }
         }
     }

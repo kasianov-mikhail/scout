@@ -47,9 +47,7 @@ struct ReleasePlaceholder: View {
         .padding(.bottom, .space16)
         .background(Color.surfaceGrey)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.surfaceSkeleton)
-                .frame(height: 0.5)
+            Separator(color: .surfaceSkeleton)
         }
     }
 

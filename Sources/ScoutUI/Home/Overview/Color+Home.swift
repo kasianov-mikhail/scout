@@ -11,5 +11,4 @@ extension Color {
     static let positive = textSuccess
     static let inactiveValue = textSecondary
     static let pending = textDisabled
-    static let separator = lineSeparator
 }

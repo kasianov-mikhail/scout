@@ -28,7 +28,7 @@ struct AlertTemplateListView: View {
                         .padding(.bottom, .space8)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .overlay(alignment: .bottom) {
-                            AlertDivider()
+                            Separator()
                         }
 
                     ForEach(AlertDraft.Watch.allCases.indices, id: \.self) { index in
@@ -40,7 +40,7 @@ struct AlertTemplateListView: View {
                         .buttonStyle(.plain)
                         .overlay(alignment: .bottom) {
                             if index < AlertDraft.Watch.allCases.count - 1 {
-                                AlertDivider()
+                                Separator()
                             }
                         }
                     }

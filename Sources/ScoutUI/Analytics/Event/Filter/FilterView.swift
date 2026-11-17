@@ -106,9 +106,7 @@ private struct FilterHeader: View {
         }
         .frame(height: 52)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.surfaceBarIdle)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 }
@@ -163,9 +161,7 @@ struct FilterSegment: View {
                 .background(isSelected ? fill : Color.clear)
                 .overlay(alignment: .trailing) {
                     if showsDivider {
-                        Rectangle()
-                            .fill(Color.lineSeparator)
-                            .frame(width: 0.5)
+                        Separator(axis: .vertical)
                     }
                 }
         }
