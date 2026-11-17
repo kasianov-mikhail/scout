@@ -55,9 +55,7 @@ private struct FilterIDField: View {
                             .padding(.horizontal, .gutter)
                             .frame(maxHeight: .infinity)
                             .overlay(alignment: .leading) {
-                                Rectangle()
-                                    .fill(Color.lineSeparator)
-                                    .frame(width: 0.5)
+                                Separator(axis: .vertical)
                             }
                     }
                     .buttonStyle(.plain)

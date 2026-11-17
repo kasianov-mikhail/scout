@@ -20,9 +20,7 @@ struct IncidentStackView: View {
         }
         .padding(.vertical, .space16)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 }

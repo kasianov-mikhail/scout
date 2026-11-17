@@ -76,6 +76,11 @@ extension Color {
     static let lineTintCaution = designColor(light: 0xE6E1CC, dark: 0xFFD60A, darkAlpha: 0.24)
     static let lineTintResource = designColor(light: 0xDADAF2, dark: 0x5E5CE6, darkAlpha: 0.24)
 
+    /// The row and section hairline.
+    ///
+    /// Draw it with `Separator`, never as a raw rectangle.
+    static let separator = lineSeparator
+
     // MARK: - Code
 
     static let codeSurface = designColor(light: 0xF6F8FA, dark: 0x161B22)

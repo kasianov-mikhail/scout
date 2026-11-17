@@ -35,9 +35,7 @@ struct ReleaseHero: View {
         .padding(.bottom, .space16)
         .background(level.background)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(level.border)
-                .frame(height: 0.5)
+            Separator(color: level.border)
         }
     }
 

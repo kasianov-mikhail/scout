@@ -117,9 +117,7 @@ struct AlertListPlaceholder: View {
     }
 
     private var separator: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
+        Separator()
     }
 }
 

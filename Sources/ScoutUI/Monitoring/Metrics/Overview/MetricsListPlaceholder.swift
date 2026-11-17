@@ -63,15 +63,11 @@ struct MetricsListPlaceholder: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .overlay(alignment: .trailing) {
             if isLeading {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
+                Separator(axis: .vertical)
             }
         }
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 }

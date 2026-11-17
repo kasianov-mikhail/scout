@@ -18,10 +18,7 @@ struct HomeTelemetrySectionPlaceholder: View {
                 }
             }
             .overlay {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(width: 0.5)
-                    .allowsHitTesting(false)
+                Separator(axis: .vertical)
             }
         }
     }
@@ -53,9 +50,7 @@ struct HomeTelemetrySectionPlaceholder: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if index / 2 < 2 {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
+                Separator()
             }
         }
     }

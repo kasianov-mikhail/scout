@@ -45,9 +45,7 @@ struct RetentionHero: View {
         .padding(.bottom, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 }

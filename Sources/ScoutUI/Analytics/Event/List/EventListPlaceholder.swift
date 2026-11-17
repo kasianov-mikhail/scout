@@ -38,9 +38,7 @@ struct EventListPlaceholder: View {
         .padding(.horizontal, .gutter)
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
                 .padding(.leading, 42)
         }
     }

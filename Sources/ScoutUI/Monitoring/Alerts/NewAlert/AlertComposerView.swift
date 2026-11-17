@@ -156,7 +156,7 @@ private struct AlertWatchPicker: View {
                     .buttonStyle(.plain)
                     .overlay(alignment: .bottom) {
                         if index < AlertDraft.Watch.allCases.count - 1 {
-                            AlertDivider()
+                            Separator()
                         }
                     }
                 }

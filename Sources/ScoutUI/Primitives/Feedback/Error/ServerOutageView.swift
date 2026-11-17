@@ -85,9 +85,7 @@ struct ServerOutageView: View {
             detailRow(title: "Next check", value: nextCheck)
         }
         .overlay(alignment: .top) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 
@@ -104,9 +102,7 @@ struct ServerOutageView: View {
         .font(.scoutBody)
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 }

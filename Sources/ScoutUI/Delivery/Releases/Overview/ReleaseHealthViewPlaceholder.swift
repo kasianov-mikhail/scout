@@ -41,9 +41,7 @@ struct ReleaseHealthViewPlaceholder: View {
         }
         .padding(.vertical, .space12)
         .overlay(alignment: .bottom) {
-            Rectangle()
-                .fill(Color.separator)
-                .frame(height: 0.5)
+            Separator()
         }
     }
 
