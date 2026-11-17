@@ -29,9 +29,7 @@ struct TelemetryRow: View {
                 .contentShape(Rectangle())
                 .overlay(alignment: .bottom) {
                     if showsDivider {
-                        Rectangle()
-                            .fill(Color.separator)
-                            .frame(height: 0.5)
+                        Separator()
                     }
                 }
         }

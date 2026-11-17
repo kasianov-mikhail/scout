@@ -41,15 +41,6 @@ struct AlertCard<Content: View>: View {
     }
 }
 
-struct AlertDivider: View {
-    var body: some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(height: 0.5)
-            .allowsHitTesting(false)
-    }
-}
-
 struct AlertEventCard: View {
     let name: String
     let range: ClosedRange<Int>?
@@ -195,7 +186,7 @@ struct AlertSensitivityCard: View {
                     .buttonStyle(.plain)
                     .overlay(alignment: .trailing) {
                         if index < AlertDraft.Sensitivity.allCases.count - 1 {
-                            Rectangle().fill(Color.separator).frame(width: 0.5)
+                            Separator(axis: .vertical)
                         }
                     }
                 }
@@ -267,7 +258,7 @@ struct AlertThresholdCard: View {
         }
         .buttonStyle(.plain)
         .overlay(alignment: .leading) {
-            Rectangle().fill(Color.separator).frame(width: 0.5)
+            Separator(axis: .vertical)
         }
         .accessibilityLabel(Text(verbatim: label))
     }
@@ -286,11 +277,11 @@ struct AlertWeekCard: View {
             VStack(spacing: 0) {
                 summary(counts)
                     .overlay(alignment: .bottom) {
-                        AlertDivider()
+                        Separator()
                     }
                 countsRow(counts)
                     .overlay(alignment: .bottom) {
-                        AlertDivider()
+                        Separator()
                     }
                 grid(breaches)
             }
@@ -363,7 +354,7 @@ struct AlertWeekCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .overlay(alignment: .trailing) {
                     if index < AlertDraft.Sensitivity.allCases.count - 1 {
-                        Rectangle().fill(Color.separator).frame(width: 0.5)
+                        Separator(axis: .vertical)
                     }
                 }
             }

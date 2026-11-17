@@ -40,9 +40,7 @@ struct FilterLevelsView: View {
                             }
                             .overlay(alignment: .bottom) {
                                 if index < Self.rows.count - 1 {
-                                    Rectangle()
-                                        .fill(Color.lineSeparator)
-                                        .frame(height: 0.5)
+                                    Separator()
                                 }
                             }
                         }

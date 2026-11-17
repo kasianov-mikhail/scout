@@ -68,9 +68,7 @@ struct IncidentSummaryView<Element: Incident, Row: View>: View {
         .padding(.horizontal, .gutter)
         .padding(.bottom, .space16)
         .overlay(alignment: .top) {
-            Rectangle()
-                .fill(summary.kind.border)
-                .frame(height: 0.5)
+            Separator(color: summary.kind.border)
         }
     }
 

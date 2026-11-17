@@ -72,9 +72,7 @@ struct AlertRuleRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
             if !isLast {
-                Rectangle()
-                    .fill(Color.separator)
-                    .frame(height: 0.5)
+                Separator()
                     .padding(.horizontal, .gutter)
             }
         }

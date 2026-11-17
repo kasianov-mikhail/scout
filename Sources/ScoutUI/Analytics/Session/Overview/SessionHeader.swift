@@ -61,9 +61,7 @@ struct SessionHeader: View {
     }
 
     private var divider: some View {
-        Rectangle()
-            .fill(Color.lineSeparator)
-            .frame(height: 0.5)
+        Separator()
             .padding(.horizontal, .gutter)
     }
 }
