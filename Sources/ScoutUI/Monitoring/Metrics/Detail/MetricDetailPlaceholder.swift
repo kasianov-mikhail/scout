@@ -147,7 +147,7 @@ struct MetricDetailPlaceholder: View {
     }
 
     private func chartSkeleton(height: CGFloat, delay: Double) -> some View {
-        SkeletonBar(height: height, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+        SkeletonBar(height: height, delay: delay, cornerRadius: .radiusBadge)
     }
 
     private func row(index: Int, dates: [Date], now: Date) -> some View {

@@ -44,7 +44,7 @@ struct IncidentDetailPlaceholder<Element: Incident & IncidentDetailInfo>: View {
 
             SkeletonBar(width: 120, height: 9, delay: 0.24)
 
-            SkeletonBar(height: 82, delay: 0.32, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+            SkeletonBar(height: 82, delay: 0.32, cornerRadius: .radiusBadge)
                 .padding(.top, .space4)
         }
         .padding(.top, .space18)

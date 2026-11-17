@@ -21,7 +21,7 @@ struct HomeActiveUsersSectionPlaceholder: View {
                 metric(kind: kind)
             }
 
-            SkeletonBar(height: 72, delay: 0.56, fill: Color.surfaceGrey)
+            SkeletonBar(height: 72, delay: 0.56)
                 .padding(.top, .space12)
 
             axis

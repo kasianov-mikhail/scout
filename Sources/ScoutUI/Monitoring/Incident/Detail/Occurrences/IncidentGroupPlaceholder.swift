@@ -98,7 +98,7 @@ struct IncidentGroupPlaceholder: View {
             }
             .frame(height: 28)
 
-            SkeletonBar(height: 52, delay: 0.08, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+            SkeletonBar(height: 52, delay: 0.08, cornerRadius: .radiusBadge)
                 .padding(.top, .space4)
         }
         .frame(maxWidth: .infinity, alignment: .leading)

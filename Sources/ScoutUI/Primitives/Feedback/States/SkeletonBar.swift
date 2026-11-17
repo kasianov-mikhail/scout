@@ -36,7 +36,7 @@ struct SkeletonBar: View {
     VStack(spacing: .space8) {
         SkeletonBar(width: 194, height: 9, delay: 0)
         SkeletonBar(height: 18, delay: 0.1)
-        SkeletonBar(width: 46, height: 8, delay: 0.2, fill: Color.surfaceGrey)
+        SkeletonBar(width: 46, height: 8, delay: 0.2)
     }
     .padding()
 }

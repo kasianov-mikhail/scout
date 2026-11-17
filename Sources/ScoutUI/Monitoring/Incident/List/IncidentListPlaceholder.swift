@@ -54,7 +54,7 @@ struct IncidentListPlaceholder: View {
 
             line(size: 13, width: nameWidth, height: 9, delay: delay)
             line(size: 11, width: 120, height: 8, delay: delay)
-            SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
+            SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBar)
                 .padding(.top, .space4)
         }
         .padding(.top, .space16)

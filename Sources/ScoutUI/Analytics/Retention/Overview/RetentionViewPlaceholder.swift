@@ -53,7 +53,7 @@ struct RetentionViewPlaceholder: View {
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 52, alignment: .leading)
 
-            SkeletonBar(height: 18, delay: delay, fill: Color.surfaceGrey)
+            SkeletonBar(height: 18, delay: delay)
 
             SkeletonBar(width: 74, height: 9, delay: delay)
                 .frame(width: 76, alignment: .trailing)
