@@ -31,13 +31,14 @@ struct BarChart: View {
         return VStack(spacing: 0) {
             HStack(alignment: .bottom, spacing: spacing) {
                 ForEach(values.indices, id: \.self) { index in
-                    barShape
+                    barShape(radius: values[index] > 0 ? cornerRadius : 0)
                         .fill(color(index: index))
                         .frame(maxWidth: .infinity)
                         .frame(height: barHeight(value: values[index], maximum: maximum))
                 }
             }
             .frame(height: height, alignment: .bottom)
+            .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.32), value: values)
 
             AxisLabelRow(
                 start: startLabel,
@@ -56,26 +57,26 @@ struct BarChart: View {
         return accent.color
     }
 
-    private var barShape: AnyShape {
+    private func barShape(radius: CGFloat) -> AnyShape {
         if #available(iOS 17.0, macOS 14.0, *) {
             AnyShape(
                 UnevenRoundedRectangle(
-                    topLeadingRadius: cornerRadius,
-                    bottomLeadingRadius: roundBottomCorners ? cornerRadius : 0,
-                    bottomTrailingRadius: roundBottomCorners ? cornerRadius : 0,
-                    topTrailingRadius: cornerRadius
+                    topLeadingRadius: radius,
+                    bottomLeadingRadius: roundBottomCorners ? radius : 0,
+                    bottomTrailingRadius: roundBottomCorners ? radius : 0,
+                    topTrailingRadius: radius
                 )
             )
         } else {
-            AnyShape(RoundedRectangle(cornerRadius: cornerRadius))
+            AnyShape(RoundedRectangle(cornerRadius: radius))
         }
     }
 
     private func barHeight(value: Int, maximum: Int) -> CGFloat {
-        guard maximum > 0 else {
-            return 0
+        guard value > 0, maximum > 0 else {
+            return 2
         }
-        return CGFloat(value) / CGFloat(maximum) * height
+        return max(4, 4 + CGFloat(value) / CGFloat(maximum) * (height - 4))
     }
 }
 
