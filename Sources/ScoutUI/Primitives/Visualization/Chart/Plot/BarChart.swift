@@ -40,6 +40,7 @@ struct BarChart: View {
                 }
             }
             .frame(height: height, alignment: .bottom)
+            .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.32), value: values)
 
             AxisLabelRow(
                 start: startLabel,
@@ -83,15 +84,10 @@ struct BarChart: View {
     }
 
     private func barHeight(value: Int, maximum: Int) -> CGFloat {
-        guard maximum > 0 else {
-            return 0
-        }
-
-        guard value > 0 else {
+        guard value > 0, maximum > 0 else {
             return 2
         }
-
-        return CGFloat(value) / CGFloat(maximum) * height
+        return max(4, 4 + CGFloat(value) / CGFloat(maximum) * (height - 4))
     }
 }
 
