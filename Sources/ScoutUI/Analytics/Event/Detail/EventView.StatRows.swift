@@ -42,7 +42,7 @@ extension EventView {
                     if let stats {
                         TodayBar(stats: stats)
                     } else {
-                        SkeletonBar(height: 8, delay: 0.72, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
+                        SkeletonBar(height: 8, delay: 0.72, cornerRadius: .radiusBar)
                     }
                 }
                 .frame(height: 8)
@@ -153,7 +153,7 @@ extension EventView {
 
         var body: some View {
             PeriodLayout(title: period.title) {
-                SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
+                SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar)
             } value: {
                 SkeletonBar(width: 28, height: 11, delay: delay)
             }

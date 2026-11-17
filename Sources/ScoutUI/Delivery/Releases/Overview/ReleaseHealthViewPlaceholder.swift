@@ -33,7 +33,7 @@ struct ReleaseHealthViewPlaceholder: View {
             }
             .frame(height: 33)
 
-            SkeletonBar(height: 32, delay: 0.08, fill: Color.surfaceGrey)
+            SkeletonBar(height: 32, delay: 0.08)
                 .padding(.top, .space12)
 
             legend

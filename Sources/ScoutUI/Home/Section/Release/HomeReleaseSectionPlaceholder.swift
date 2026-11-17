@@ -19,7 +19,7 @@ struct HomeReleaseSectionPlaceholder: View {
             .frame(height: 28)
             .padding(.top, 14)
 
-            SkeletonBar(height: 24, delay: 1.04, fill: Color.surfaceGrey)
+            SkeletonBar(height: 24, delay: 1.04)
                 .padding(.top, .space10)
 
             legend

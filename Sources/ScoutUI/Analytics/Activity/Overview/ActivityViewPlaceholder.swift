@@ -72,7 +72,7 @@ struct ActivityViewPlaceholder: View {
 
     private var chart: some View {
         VStack(spacing: 0) {
-            SkeletonBar(height: 96, delay: 0.16, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+            SkeletonBar(height: 96, delay: 0.16, cornerRadius: .radiusBadge)
 
             axis
         }
@@ -112,7 +112,7 @@ struct ActivityViewPlaceholder: View {
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 64, alignment: .leading)
 
-            SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar, fill: Color.surfaceGrey)
+            SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar)
 
             SkeletonBar(width: 46, height: 9, delay: delay)
                 .frame(width: 52, alignment: .trailing)

@@ -55,7 +55,7 @@ struct MetricsListPlaceholder: View {
             }
             .frame(height: 29)
 
-            SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+            SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBadge)
         }
         .padding(.vertical, .space12)
         .padding(.leading, isLeading ? 0 : 12)

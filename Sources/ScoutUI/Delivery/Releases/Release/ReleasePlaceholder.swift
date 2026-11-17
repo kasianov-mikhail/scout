@@ -88,7 +88,7 @@ struct ReleasePlaceholder: View {
 
             SkeletonBar(width: 74, height: 14, delay: delay)
                 .frame(height: 29)
-            SkeletonBar(height: 24, delay: delay, cornerRadius: .radiusBadge, fill: Color.surfaceGrey)
+            SkeletonBar(height: 24, delay: delay, cornerRadius: .radiusBadge)
             SkeletonBar(width: 120, height: 6, delay: delay)
                 .frame(height: 14)
         }
