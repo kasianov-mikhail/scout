@@ -15,6 +15,15 @@
 
 - Use only `.listStyle(.plain)` for `List`s; section titles are `SectionHeader(title:)` rows inside a `Section`, not `List` section headers or footers, with `.listRowSeparator(.hidden)` on non-row content.
 
+## Text colour and weight
+
+- Mockups are drawn for print, and glyph strokes thin enough to fade at antialiasing render lighter on device than in the design file, while solid fills do not shift at all. The code compensates for that; the mockups keep their original values on purpose.
+- The three grey text tokens sit darker than the mockup: `text-muted` `#7C7C80` against `#8E8E93` (measured on device), `text-secondary` `#5E5E62` against `#6C6C70`, and `text-disabled` `#AEAEB2` against `#C7C7CC` — the last two recomputed with the same factor of 0.87 per channel. The compensation is light-mode only; the dark values are not in the design and keep the closest system colour.
+- Every other token takes the design's own value: colored text (`text-danger`, `text-warning`, `text-success`, `text-link`, …), fills, lines, and chart columns do not shift.
+- Regular text is 450, not 400, and monospaced and rounded styles carry the same weight. Every body style goes through `Font.book`; a new text style uses `Font.book` and never `Font.system(size:weight:.regular)`.
+- Weights 600 and 700 keep `.semibold` and `.bold`. Do not move them to 650 or 750.
+- A mockup, spec, or review that hands over `#8E8E93`, `#6C6C70`, `#C7C7CC`, or weight 400 for body text gets these code values, not the mockup ones.
+
 ## UI verification
 
 - After a UI change, compare the rendered screen with the reference at the same size before reporting it done. Use a simulator screenshot, an Xcode preview, or a screenshot from the user.
