@@ -21,6 +21,14 @@ extension Font {
     static let telemetryTitle = scoutRow
     static let telemetryCaption = scoutCaption
 
+    /// A system font at weight 450, the app's weight for body text, in any design.
+    ///
+    /// Regular text at 400 renders lighter on device than in the mockup, because the
+    /// hairline strokes of glyphs fade at antialiasing while solid fills do not, so
+    /// the design's body weight lands at 450. The system font's axis takes it as
+    /// `UIFont.Weight(rawValue: 0.12)`, a little above regular (0) and below medium
+    /// (0.23). The monospaced and rounded variants take the same weight. Weights 600
+    /// and 700 keep the named `.semibold` and `.bold`.
     static func book(size: CGFloat, design: Font.Design = .default) -> Font {
         #if os(iOS)
             let weight = UIFont.Weight(rawValue: 0.12)
