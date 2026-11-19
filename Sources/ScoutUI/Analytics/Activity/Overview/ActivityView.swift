@@ -47,7 +47,6 @@ struct ActivityView: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .padding(.top, .space8)
                 .padding(.leading, .gutter)
 
             ActivityMetricTabs(series: series, selection: $metric)

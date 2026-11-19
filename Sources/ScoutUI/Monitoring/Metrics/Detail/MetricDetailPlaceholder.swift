@@ -25,8 +25,6 @@ struct MetricDetailPlaceholder: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             MetricRangeStrip(selection: $range)
-                .padding(.top, .space8)
-                .padding(.leading, .gutter)
 
             switch kind {
             case .series(let telemetry):

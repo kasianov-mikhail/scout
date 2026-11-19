@@ -11,22 +11,19 @@ struct MetricRangeStrip: View {
     @Binding var selection: MetricRange
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: .space20) {
-                ForEach(MetricRange.allCases) { range in
-                    Button {
-                        selection = range
-                    } label: {
-                        Text(verbatim: range.title)
-                            .font(.scoutNumberL)
-                            .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(range == selection ? .isSelected : [])
+        ScrollStrip {
+            ForEach(MetricRange.allCases) { range in
+                Button {
+                    selection = range
+                } label: {
+                    Text(verbatim: range.title)
+                        .font(.scoutNumberL)
+                        .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
                 }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(range == selection ? .isSelected : [])
             }
         }
-        .fadingEdge(width: 56)
         .hapticFeedback(.selection, trigger: selection)
     }
 }

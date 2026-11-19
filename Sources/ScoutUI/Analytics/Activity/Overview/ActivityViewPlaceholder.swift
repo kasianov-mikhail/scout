@@ -13,7 +13,6 @@ struct ActivityViewPlaceholder: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .padding(.top, .space8)
                 .padding(.leading, .gutter)
 
             metrics

@@ -48,8 +48,6 @@ struct NetworkEndpointView: View {
         } else if isEmpty {
             VStack(spacing: 0) {
                 RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                    .padding(.top, .space8)
-                    .padding(.horizontal, .gutter)
 
                 Placeholder(
                     text: "No requests",
@@ -102,8 +100,7 @@ struct NetworkEndpointView: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.horizontal, -.gutter)
 
             NetworkEndpointHeader(endpoint: endpoint, descriptor: range.descriptor)
 

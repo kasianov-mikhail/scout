@@ -36,8 +36,6 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
             } else if isEmpty {
                 VStack(spacing: 0) {
                     MetricRangeStrip(selection: $range)
-                        .padding(.top, .space8)
-                        .padding(.leading, .gutter)
 
                     Placeholder(
                         text: "No data",
@@ -81,8 +79,6 @@ struct MetricDistributionDetailView<H: QuantileHistogram>: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             MetricRangeStrip(selection: $range)
-                .padding(.top, .space8)
-                .padding(.leading, .gutter)
 
             MetricQuantileSelector(
                 summary: summary,

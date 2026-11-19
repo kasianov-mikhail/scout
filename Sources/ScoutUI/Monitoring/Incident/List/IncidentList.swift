@@ -38,8 +38,6 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
         } else if case .success(let tiles) = provider.result, tiles.isEmpty {
             VStack(spacing: 0) {
                 RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.horizontal, .gutter)
 
                 SectionGap()
                     .padding(.top, .space8)
@@ -63,7 +61,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
     private func list(_ tiles: [IncidentTile<Element>]) -> some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, .space8)
+                .padding(.horizontal, -.gutter)
 
             summary(tiles)
                 .padding(.top, .space4)
