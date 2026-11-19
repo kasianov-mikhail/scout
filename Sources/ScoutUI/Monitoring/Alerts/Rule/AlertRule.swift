@@ -29,3 +29,9 @@ extension AlertRule {
             && window.allSatisfy { condition.isBreached(by: $0, in: reading) }
     }
 }
+
+enum AlertState: Equatable, Codable {
+    case armed
+    case firing(since: Date)
+    case muted(until: Date)
+}

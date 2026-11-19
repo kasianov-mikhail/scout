@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+extension View {
+    func badgeStyle(fill: Color) -> some View {
+        padding(.horizontal, .badgeHorizontalPadding)
+            .padding(.vertical, .badgeVerticalPadding)
+            .background(fill, in: RoundedRectangle(cornerRadius: .radiusBadge))
+    }
+}
+
 extension CGFloat {
     static let badgeHorizontalPadding: CGFloat = 6
     static let badgeVerticalPadding: CGFloat = 2

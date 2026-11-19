@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Foundation
 import SwiftUI
 
 struct TimelineList<Pagination: View>: View {
@@ -35,6 +36,12 @@ struct TimelineList<Pagination: View>: View {
             return false
         }
         return entries.contains { $0.id == focusID }
+    }
+}
+
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
     }
 }
 

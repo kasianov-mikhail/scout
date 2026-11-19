@@ -42,3 +42,8 @@ final class CacheStatus: ObservableObject {
         await refresh()
     }
 }
+
+protocol CacheClearing: Actor {
+    var size: Int64 { get }
+    func removeAll()
+}

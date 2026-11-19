@@ -203,3 +203,8 @@ private struct CheckGlyph: Shape {
         )
     )
 }
+
+extension Color {
+    static let filterAccent = fillAccent
+    static let filterDestructive = fillDanger
+}

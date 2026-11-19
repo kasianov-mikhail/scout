@@ -8,6 +8,8 @@
 import Foundation
 import Scout
 
+typealias InstallDates = [String: Set<Date>]
+
 extension RetentionCohort {
     package static func cohorts(installs: [DatedID], sessions: [InstallSession], crashes: [DatedID], hangs: [DatedID], range: Range<Date>, now: Date) -> [RetentionCohort] {
         let sessions = Dictionary(grouping: sessions, by: \.install)
@@ -67,8 +69,6 @@ extension RetentionSegment {
         )
     }
 }
-
-typealias InstallDates = [String: Set<Date>]
 
 extension InstallDates {
     init(dated: [DatedID]) {

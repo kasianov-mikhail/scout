@@ -7,6 +7,8 @@
 
 import CoreData
 
+typealias DeliverableEntry = SyncableEntry & RecordEncodable
+
 @objc(SyncableEntry)
 package class SyncableEntry: DateEntry {
     @NSManaged var deliveries: Set<DeliveryEntry>
@@ -22,8 +24,6 @@ package class SyncableEntry: DateEntry {
         }
     }
 }
-
-typealias DeliverableEntry = SyncableEntry & RecordEncodable
 
 extension SyncableEntry {
     static let deliverableTypes: [any DeliverableEntry.Type] = [

@@ -41,3 +41,11 @@ extension Backend {
         }
     }
 }
+
+extension Backend {
+    package enum Status: Sendable, Equatable {
+        case reachable
+        case readOnly
+        case unreachable
+    }
+}

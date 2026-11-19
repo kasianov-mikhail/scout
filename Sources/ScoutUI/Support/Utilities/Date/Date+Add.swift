@@ -27,3 +27,9 @@ extension Date {
         return today.addingDay(-13)..<today.addingDay()
     }
 }
+
+extension Calendar {
+    func mondayBasedWeekday(from date: Date) -> Int {
+        (component(.weekday, from: date) + 5) % 7
+    }
+}
