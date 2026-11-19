@@ -16,14 +16,19 @@ struct ReleaseTile: View {
         Group {
             if let action {
                 Button(action: action) {
-                    content
+                    cell
                 }
                 .buttonStyle(.plain)
             } else {
-                content
+                cell
             }
         }
-        .releaseGridCell(isLeading: isLeading)
+    }
+
+    private var cell: some View {
+        content
+            .releaseGridCell(isLeading: isLeading)
+            .contentShape(Rectangle())
     }
 
     private var content: some View {

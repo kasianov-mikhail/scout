@@ -55,7 +55,6 @@ struct MetricQuantileSelector: View {
         }
         .padding(.top, .space10)
         .padding(.bottom, .space12)
-        .contentShape(.rect)
     }
 
     private func delta(current: Double?, previous: Double?) -> Delta? {
