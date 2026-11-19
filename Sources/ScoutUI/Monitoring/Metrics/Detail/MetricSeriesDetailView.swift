@@ -36,8 +36,6 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
             } else if isEmpty {
                 VStack(spacing: 0) {
                     MetricRangeStrip(selection: $range)
-                        .padding(.top, .space8)
-                        .padding(.leading, .gutter)
 
                     Placeholder(
                         text: "No data",
@@ -72,8 +70,6 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             MetricRangeStrip(selection: $range)
-                .padding(.top, .space8)
-                .padding(.leading, .gutter)
 
             MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
                 .padding(.horizontal, .gutter)

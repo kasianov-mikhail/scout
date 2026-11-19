@@ -14,8 +14,7 @@ struct NetworkEndpointViewPlaceholder: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
-                .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.horizontal, -.gutter)
 
             NetworkEndpointHeaderPlaceholder()
 

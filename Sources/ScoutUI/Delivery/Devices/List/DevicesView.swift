@@ -22,8 +22,6 @@ struct DevicesView: View {
             } else if case .success(let models) = provider.result, models.isEmpty {
                 VStack(spacing: 0) {
                     RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, .space8)
-                        .padding(.horizontal, .gutter)
 
                     SectionGap()
                         .padding(.top, .space8)
@@ -61,7 +59,7 @@ struct DevicesView: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, .space8)
+                .padding(.horizontal, -.gutter)
 
             summary(models)
                 .padding(.top, .space4)

@@ -21,7 +21,7 @@ struct IncidentListPlaceholder: View {
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, .space8)
+                .padding(.horizontal, -.gutter)
 
             SkeletonBar(width: 160, height: 9, delay: 0)
                 .frame(height: 17.5)

@@ -14,22 +14,19 @@ struct RangeStrip<Value: Hashable>: View {
     let title: (Value) -> String
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: .space20) {
-                ForEach(ranges, id: \.self) { range in
-                    Button {
-                        selection = range
-                    } label: {
-                        Text(verbatim: title(range))
-                            .font(.scoutNumberL)
-                            .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityAddTraits(range == selection ? .isSelected : [])
+        ScrollStrip {
+            ForEach(ranges, id: \.self) { range in
+                Button {
+                    selection = range
+                } label: {
+                    Text(verbatim: title(range))
+                        .font(.scoutNumberL)
+                        .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
                 }
+                .buttonStyle(.plain)
+                .accessibilityAddTraits(range == selection ? .isSelected : [])
             }
         }
-        .fadingEdge(width: 56)
         .hapticFeedback(.selection, trigger: selection)
     }
 }

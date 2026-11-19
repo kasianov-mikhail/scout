@@ -28,8 +28,6 @@ struct ModelDetailView: View {
             } else if case .success(let detail) = provider.result, detail.devices.isEmpty {
                 VStack(spacing: 0) {
                     RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                        .padding(.top, .space8)
-                        .padding(.horizontal, .gutter)
 
                     Placeholder(
                         text: "No devices",
@@ -62,8 +60,6 @@ struct ModelDetailView: View {
     private func content(_ detail: ModelDetail) -> some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, .space8)
-                .padding(.horizontal, .gutter)
 
             subtitle(detail)
                 .padding(.top, .space4)

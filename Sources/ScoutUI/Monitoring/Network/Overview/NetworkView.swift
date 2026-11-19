@@ -43,8 +43,6 @@ struct NetworkView: View {
         } else if isEmpty {
             VStack(spacing: 0) {
                 RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                    .padding(.top, .space8)
-                    .padding(.horizontal, .gutter)
 
                 SectionGap()
                     .padding(.top, .space8)
@@ -83,8 +81,7 @@ struct NetworkView: View {
 
         return LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $range, ranges: NetworkRange.allCases, title: \.title)
-                .padding(.top, .space8)
-                .padding(.trailing, -16)
+                .padding(.horizontal, -.gutter)
 
             Text(verbatim: summary.text)
                 .font(.scoutRow)

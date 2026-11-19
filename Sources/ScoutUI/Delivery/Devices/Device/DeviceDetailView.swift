@@ -52,8 +52,6 @@ struct DeviceDetailView: View {
     private func content(_ detail: DeviceDetail) -> some View {
         LazyVStack(alignment: .leading, spacing: 0) {
             RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
-                .padding(.top, .space8)
-                .padding(.horizontal, .gutter)
 
             subtitle(detail.summary)
                 .padding(.top, .space4)
