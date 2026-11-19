@@ -109,7 +109,7 @@ struct HomeList: View {
             HomeActiveUsersSection(users: snapshot.users) { _ in
                 path.append(.activity)
             }
-            .zoomSource(.activity, in: zoom)
+            .zoomSource(HomeDestination.activity, in: zoom)
             .contentShape(Rectangle())
             .onTapGesture { path.append(.activity) }
             .loadingInk(isLoading: isLoading, delay: 0.10)
@@ -135,7 +135,7 @@ struct HomeList: View {
             HomeReleaseSection(adoption: snapshot.releases) {
                 path.append(.releaseHealth)
             }
-            .zoomSource(.releaseHealth, in: zoom)
+            .zoomSource(HomeDestination.releaseHealth, in: zoom)
             .contentShape(Rectangle())
             .onTapGesture { path.append(.releaseHealth) }
             .loadingInk(isLoading: isLoading, delay: 0.30)
