@@ -62,3 +62,10 @@ extension NSPersistentContainer {
         viewContext.automaticallyMergesChangesFromParent = true
     }
 }
+
+extension NSManagedObjectContext {
+    func insert<T: NSManagedObject>(_ type: T.Type) -> T {
+        let entity = NSEntityDescription.entity(forEntityName: String(describing: type), in: self)!
+        return T(entity: entity, insertInto: self)
+    }
+}

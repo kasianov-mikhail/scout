@@ -276,3 +276,10 @@ private struct MetricDashedSample: View {
     )
     .padding(.horizontal, .gutter)
 }
+
+extension Color {
+    static let metricTrack = surfaceTrack
+    static let metricSoft = Color(red: 0xB9 / 255, green: 0xD7 / 255, blue: 0xFD / 255)
+    static let metricBar = Color(red: 0xCF / 255, green: 0xE3 / 255, blue: 0xFB / 255)
+    static let metricTeal = Color(red: 0x0E / 255, green: 0x7C / 255, blue: 0x8C / 255)
+}

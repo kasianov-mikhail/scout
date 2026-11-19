@@ -82,3 +82,9 @@ extension Range<Date> {
         lowerBound.addingTimeInterval(-30 * .day).startOfDay
     }
 }
+
+extension SeriesPoint {
+    var hasGroup: Bool {
+        !group.isEmpty
+    }
+}

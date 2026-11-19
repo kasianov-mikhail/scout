@@ -60,3 +60,10 @@ extension ButtonStyle where Self == SecondaryButtonStyle {
 extension ButtonStyle where Self == OutlineButtonStyle {
     static var outline: OutlineButtonStyle { OutlineButtonStyle() }
 }
+
+extension View {
+    /// The only shadow in the design system: the round back button.
+    func buttonShadow() -> some View {
+        shadow(color: .black.opacity(0.08), radius: 4, x: 0, y: 1)
+    }
+}

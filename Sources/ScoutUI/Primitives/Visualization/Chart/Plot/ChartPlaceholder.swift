@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Charts
 import SwiftUI
 
 struct ChartPlaceholder: View {
@@ -12,5 +13,20 @@ struct ChartPlaceholder: View {
         Text(verbatim: "No results")
             .font(.placeholderTitle)
             .foregroundStyle(Color.textMuted.opacity(0.7))
+    }
+}
+
+extension View {
+    @ViewBuilder
+    func placeholderAxis(active: Bool) -> some View {
+        if active {
+            chartYScale(domain: 0...1).chartYAxis {
+                AxisMarks(values: [0, 1]) { _ in
+                    AxisGridLine()
+                }
+            }
+        } else {
+            self
+        }
     }
 }

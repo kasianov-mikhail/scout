@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import CryptoKit
 import Foundation
 
 struct MetricKitCrash: MetricKitIncident, Sendable {
@@ -73,5 +74,12 @@ extension MetricKitCrash {
                 String(window.end.timeIntervalSince1970),
             ] + stackTrace
         )
+    }
+}
+
+extension UUID {
+    init(digesting parts: [String]) {
+        let digest = Array(SHA256.hash(data: Data(parts.joined(separator: "\n").utf8)))
+        self = digest.withUnsafeBufferPointer { NSUUID(uuidBytes: $0.baseAddress) as UUID }
     }
 }

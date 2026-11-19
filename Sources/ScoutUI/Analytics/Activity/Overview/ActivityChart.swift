@@ -41,3 +41,8 @@ struct ActivityChart: View {
     )
     .padding()
 }
+
+extension Color {
+    static let trendPositive = textSuccess
+    static let trendTrack = tintSuccess
+}

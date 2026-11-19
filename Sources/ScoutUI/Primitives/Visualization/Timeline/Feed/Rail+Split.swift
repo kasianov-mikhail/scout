@@ -44,3 +44,7 @@ extension Rail {
         return split(anchor: TimelineAnchor(date: anchor.date, installID: anchor.installID))
     }
 }
+
+struct Epoch: Equatable {
+    private let id = UUID()
+}

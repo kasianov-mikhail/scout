@@ -8,6 +8,8 @@
 import CoreData
 import Logging
 
+package typealias EventLevel = Logger.Level
+
 extension LogEvent {
     func log(date: Date, identity: Identity.Snapshot, context: NSManagedObjectContext) throws {
         let object = context.insert(EventEntry.self)

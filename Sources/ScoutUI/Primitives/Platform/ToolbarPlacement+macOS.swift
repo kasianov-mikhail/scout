@@ -11,4 +11,10 @@
     extension ToolbarPlacement {
         static var navigationBar: ToolbarPlacement { .windowToolbar }
     }
+
+    extension ToolbarItemPlacement {
+        static var topBarLeading: ToolbarItemPlacement { .navigation }
+        static var topBarTrailing: ToolbarItemPlacement { .primaryAction }
+        static var bottomBar: ToolbarItemPlacement { .secondaryAction }
+    }
 #endif

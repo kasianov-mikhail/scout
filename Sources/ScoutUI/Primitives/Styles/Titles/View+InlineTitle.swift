@@ -17,3 +17,9 @@ extension View {
         #endif
     }
 }
+
+extension View {
+    func navigationTitle(en title: String) -> some View {
+        navigationTitle(Text(verbatim: title))
+    }
+}

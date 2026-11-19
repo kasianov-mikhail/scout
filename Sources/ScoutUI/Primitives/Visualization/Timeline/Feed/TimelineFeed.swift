@@ -90,3 +90,18 @@ struct TimelineFeed {
         return try await database.readAll(matching: query, fields: Element.desiredKeys)
     }
 }
+
+struct TimelineIncidents {
+    var crashes: [Crash] = []
+    var hangs: [Hang] = []
+    var resources: [ResourceException] = []
+    var versions: [Version] = []
+}
+
+extension Array {
+    func sorted(byDate keyPath: KeyPath<Element, Date?>) -> [Element] {
+        sorted {
+            ($0[keyPath: keyPath] ?? .distantPast) < ($1[keyPath: keyPath] ?? .distantPast)
+        }
+    }
+}

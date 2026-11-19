@@ -20,3 +20,9 @@ extension Telemetry {
         }
     }
 }
+
+package enum Telemetry {}
+
+package enum ResetMarker {
+    package static let category = "counter_reset"
+}
