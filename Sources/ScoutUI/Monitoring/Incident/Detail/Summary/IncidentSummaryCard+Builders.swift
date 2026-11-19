@@ -9,97 +9,70 @@ import Foundation
 import Scout
 
 extension IncidentSummaryCard {
-    static func occurrences<Element: Incident>(records: [Element], value: String, now: Date = Date()) -> Self {
-        let week = IncidentWeek(now: now)
-        var bars = [Double](repeating: 0, count: week.count)
-        var previous = 0.0
+    static func occurrences<Element: Incident>(records: [Element], previous: [Element], range: IncidentRange, value: String, now: Date = Date()) -> Self {
+        let slices = range.slices(now: now)
+        var bars = [Double](repeating: 0, count: slices.count)
 
         for record in records {
-            guard let date = record.date else {
+            guard let date = record.date, let index = slices.firstIndex(where: { $0.contains(date) }) else {
                 continue
             }
-            if let index = week.index(date: date) {
-                bars[index] += 1
-            } else if week.previous.contains(date) {
-                previous += 1
-            }
+            bars[index] += 1
         }
 
-        return Self(title: Element.kind.occurrencesTitle, value: value, change: percentChange(current: bars.reduce(0, +), previous: previous), bars: bars)
+        return Self(title: Element.kind.occurrencesTitle, value: value, change: percentChange(current: Double(records.count), previous: Double(previous.count)), bars: bars)
     }
 
-    static func devices<Element: Incident>(records: [Element], value: String, now: Date = Date()) -> Self {
-        let week = IncidentWeek(now: now)
-        var devices = [Set<UUID>](repeating: [], count: week.count)
-        var current = Set<UUID>()
-        var previous = Set<UUID>()
+    static func devices<Element: Incident>(records: [Element], previous: [Element], range: IncidentRange, value: String, now: Date = Date()) -> Self {
+        let slices = range.slices(now: now)
+        var devices = [Set<UUID>](repeating: [], count: slices.count)
 
         for record in records {
-            guard let date = record.date, let deviceID = record.deviceID else {
+            guard let date = record.date, let deviceID = record.deviceID, let index = slices.firstIndex(where: { $0.contains(date) }) else {
                 continue
             }
-            if let index = week.index(date: date) {
-                devices[index].insert(deviceID)
-                current.insert(deviceID)
-            } else if week.previous.contains(date) {
-                previous.insert(deviceID)
-            }
+            devices[index].insert(deviceID)
         }
+
+        let current = Set(records.compactMap(\.deviceID))
+        let before = Set(previous.compactMap(\.deviceID))
 
         let bars = devices.map { Double($0.count) }
-        return Self(title: "DEVICES", value: value, change: percentChange(current: Double(current.count), previous: Double(previous.count)), bars: bars)
+        return Self(title: "DEVICES", value: value, change: percentChange(current: Double(current.count), previous: Double(before.count)), bars: bars)
     }
 
-    static func longest(records: [Hang], now: Date = Date()) -> Self {
-        let week = IncidentWeek(now: now)
-        var bars = [Double](repeating: 0, count: week.count)
-        var previous = 0.0
+    static func longest(records: [Hang], previous: [Hang], range: IncidentRange, now: Date = Date()) -> Self {
+        let slices = range.slices(now: now)
+        var bars = [Double](repeating: 0, count: slices.count)
 
         for record in records {
-            guard let date = record.date else {
+            guard let date = record.date, let index = slices.firstIndex(where: { $0.contains(date) }) else {
                 continue
             }
-            if let index = week.index(date: date) {
-                bars[index] = max(bars[index], record.duration)
-            } else if week.previous.contains(date) {
-                previous = max(previous, record.duration)
-            }
+            bars[index] = max(bars[index], record.duration)
         }
 
         let peak = records.map(\.duration).max() ?? 0
-        return Self(title: "LONGEST", value: peak.duration, change: durationChange(current: bars.max() ?? 0, previous: previous), bars: bars)
+        let before = previous.map(\.duration).max() ?? 0
+        return Self(title: "LONGEST", value: peak.duration, change: durationChange(current: peak, previous: before), bars: bars)
     }
 
-    static func peak(records: [ResourceException], now: Date = Date()) -> Self {
-        let week = IncidentWeek(now: now)
-        var bars = [Double](repeating: 0, count: week.count)
-        var previous = 0.0
-        var maximum: ResourceAmount?
+    static func peak(records: [ResourceException], previous: [ResourceException], range: IncidentRange, now: Date = Date()) -> Self {
+        let slices = range.slices(now: now)
+        var bars = [Double](repeating: 0, count: slices.count)
 
         for record in records {
-            guard let amount = ResourceAmount(reason: record.reason) else {
+            guard let amount = ResourceAmount(reason: record.reason), let date = record.date, let index = slices.firstIndex(where: { $0.contains(date) }) else {
                 continue
             }
-            if let current = maximum {
-                if amount.value > current.value {
-                    maximum = amount
-                }
-            } else {
-                maximum = amount
-            }
-            guard let date = record.date else {
-                continue
-            }
-            if let index = week.index(date: date) {
-                bars[index] = max(bars[index], amount.value)
-            } else if week.previous.contains(date) {
-                previous = max(previous, amount.value)
-            }
+            bars[index] = max(bars[index], amount.value)
         }
 
+        let maximum = records.compactMap { ResourceAmount(reason: $0.reason) }.max { $0.value < $1.value }
+        let before = previous.compactMap { ResourceAmount(reason: $0.reason) }.map(\.value).max() ?? 0
         let peak = maximum ?? ResourceAmount(value: 0, unit: "")
         let kind = records.compactMap(\.resourceKind).first
-        return Self(title: kind?.peakTitle ?? "PEAK", value: peak.text, change: amountChange(peak: peak, previous: previous), bars: bars)
+        return Self(title: kind?.peakTitle ?? "PEAK", value: peak.text, change: amountChange(peak: peak, previous: before), bars: bars)
     }
 }
 

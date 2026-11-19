@@ -39,4 +39,30 @@ struct IncidentRangeTests {
     func titles() {
         #expect(IncidentRange.allCases.map(\.title) == ["7 days", "30 days", "Year"])
     }
+
+    @Test("A range splits into seven contiguous slices")
+    func slices() {
+        for range in IncidentRange.allCases {
+            let window = range.range(now: now)
+            let slices = range.slices(now: now)
+
+            #expect(slices.count == 7)
+            #expect(slices.first?.lowerBound == window.lowerBound)
+            #expect(slices.last?.upperBound == window.upperBound)
+
+            for (slice, next) in zip(slices, slices.dropFirst()) {
+                #expect(slice.upperBound == next.lowerBound)
+            }
+        }
+    }
+
+    @Test("A year slice spans about fifty-two days")
+    func yearSlice() {
+        let window = IncidentRange.year.range(now: now)
+        let slices = IncidentRange.year.slices(now: now)
+
+        #expect(slices.count == 7)
+        #expect(abs(slices[0].upperBound.timeIntervalSince(slices[0].lowerBound) - 52 * .day) < .day)
+        #expect(slices.last?.upperBound == window.upperBound)
+    }
 }

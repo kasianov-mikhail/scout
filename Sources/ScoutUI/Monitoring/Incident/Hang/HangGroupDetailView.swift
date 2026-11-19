@@ -13,8 +13,8 @@ struct HangGroupDetailView: View {
     @StateObject private var breakdown: IncidentBreakdownProvider
     @Environment(\.database) var database
 
-    init(group: IncidentGroup<Hang>, breakdown: IncidentBreakdownProvider? = nil) {
-        _occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group))
+    init(group: IncidentGroup<Hang>, breakdown: IncidentBreakdownProvider? = nil, range: IncidentRange = .year) {
+        _occurrences = StateObject(wrappedValue: IncidentOccurrencesProvider(group: group, range: range))
         _breakdown = StateObject(
             wrappedValue: breakdown
                 ?? IncidentBreakdownProvider(
@@ -40,12 +40,12 @@ struct HangGroupDetailView: View {
                 ErrorView(description: error.localizedDescription) {
                     await occurrences.fetchIfNeeded(in: database)
                 }
-            } else if let records = occurrences.records, records.isEmpty {
+            } else if occurrences.records != nil, occurrences.currentRecords.isEmpty {
                 Placeholder(text: "No occurrences")
             } else {
                 ScrollView {
-                    if let records = occurrences.records {
-                        content(records: records)
+                    if occurrences.records != nil {
+                        content()
                             .transition(.opacity)
                     } else {
                         IncidentGroupPlaceholder(kind: .hang)
@@ -64,23 +64,23 @@ struct HangGroupDetailView: View {
         .task {
             await occurrences.fetchIfNeeded(in: database)
         }
-        .task(id: occurrences.records?.map(\.id)) {
+        .task(id: occurrences.currentRecords.map(\.id)) {
             if occurrences.records != nil {
                 await breakdown.fetch(deviceIDs: occurrences.group.deviceIDs, sessionIDs: occurrences.group.sessionIDs, in: database)
             }
         }
     }
 
-    private func content(records: [Hang]) -> some View {
+    private func content() -> some View {
         IncidentSummaryView(
-            summary: summary(records: records),
-            records: records,
+            summary: summary(),
+            records: occurrences.currentRecords,
             row: occurrenceRow
         )
         .exportToolbar(text: HangGroupExport(group: occurrences.group).text, tint: .primary)
     }
 
-    private func summary(records: [Hang]) -> IncidentSummary {
+    private func summary() -> IncidentSummary {
         let group = occurrences.group
         return IncidentSummary(
             kind: .hang,
@@ -89,8 +89,8 @@ struct HangGroupDetailView: View {
             group: group,
             breakdown: breakdown.value,
             cards: [
-                .occurrences(records: records, value: group.occurrencesText),
-                .longest(records: records),
+                .occurrences(records: occurrences.currentRecords, previous: occurrences.previousRecords, range: occurrences.range, value: group.occurrencesText, now: occurrences.now),
+                .longest(records: occurrences.currentRecords, previous: occurrences.previousRecords, range: occurrences.range, now: occurrences.now),
             ],
             stack: group.peak.stackTrace
         )

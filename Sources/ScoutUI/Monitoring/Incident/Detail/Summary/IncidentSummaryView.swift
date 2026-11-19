@@ -101,8 +101,8 @@ struct IncidentSummaryView<Element: Incident, Row: View>: View {
                     group: IncidentGroup(records: [Crash].samples),
                     breakdown: .sample,
                     cards: [
-                        .occurrences(records: [Crash].samples, value: "12"),
-                        .devices(records: [Crash].samples, value: "8"),
+                        .occurrences(records: [Crash].samples, previous: [], range: .week, value: "12"),
+                        .devices(records: [Crash].samples, previous: [], range: .week, value: "8"),
                     ],
                     stack: Crash.sample.stackTrace
                 ),

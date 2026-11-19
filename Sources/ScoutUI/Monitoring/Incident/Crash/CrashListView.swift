@@ -19,8 +19,8 @@ struct CrashListView: View {
                 systemImage: "checkmark.shield",
                 description: "No crash reports in this period"
             )
-        ) { tally in
-            IncidentGroupLoader(tally: tally) { occurrences in
+        ) { tally, range in
+            IncidentGroupLoader(tally: tally, range: range) { occurrences in
                 CrashGroupDetailView(occurrences: occurrences)
             }
         }

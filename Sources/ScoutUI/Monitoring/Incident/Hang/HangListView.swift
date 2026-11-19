@@ -19,8 +19,8 @@ struct HangListView: View {
                 systemImage: "checkmark.shield",
                 description: "No unresponsive main threads in this period"
             )
-        ) { tally in
-            IncidentGroupLoader(tally: tally) { occurrences in
+        ) { tally, range in
+            IncidentGroupLoader(tally: tally, range: range) { occurrences in
                 HangGroupDetailView(occurrences: occurrences)
             }
         }
