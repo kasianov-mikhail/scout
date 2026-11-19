@@ -27,21 +27,27 @@ struct RetentionOverview {
         weeks.compactMap { $0.kept(onDay: day) }.reduce(0, +)
     }
 
+    func maturedCount(day: RetentionDay) -> Int {
+        weeks.matured(onDay: day).count
+    }
+
     func keptLabel(day: RetentionDay) -> String {
         kept(day: day).formatted(.count)
     }
 
     func average(day: RetentionDay) -> Double? {
-        weeks.average(onDay: day.rawValue)
+        weeks.matured(onDay: day).average(onDay: day.rawValue)
     }
 
     func metric(day: RetentionDay) -> RetentionMetric {
-        let rate = average(day: day)
-        let previous = previousWeeks.average(onDay: day.rawValue)
+        let current = weeks.matured(onDay: day)
+        let previous = Array(previousWeeks.matured(onDay: day).prefix(current.count))
+        let rate = current.average(onDay: day.rawValue)
+        let previousRate = previous.count == current.count ? previous.average(onDay: day.rawValue) : nil
         var points: Int?
 
-        if let rate, let previous {
-            points = Int(((rate - previous) * 100).rounded())
+        if let rate, let previousRate {
+            points = Int(((rate - previousRate) * 100).rounded())
         }
 
         return RetentionMetric(rate: rate, points: points)

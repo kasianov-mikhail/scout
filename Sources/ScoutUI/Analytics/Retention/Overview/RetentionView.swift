@@ -41,11 +41,19 @@ struct RetentionView: View {
         .inlineNavigationTitle()
     }
 
+    private func subtitle(overview: RetentionOverview) -> String {
+        let count = overview.maturedCount(day: day)
+        guard count > 0 else {
+            return "people kept"
+        }
+        return count == 1 ? "people kept · 1 week" : "people kept · \(count) weeks"
+    }
+
     private func content(cohorts: [RetentionCohort]) -> some View {
         let overview = RetentionOverview(cohorts: cohorts)
 
         return LazyVStack(alignment: .leading, spacing: 0) {
-            RetentionHero(value: overview.keptLabel(day: day), subtitle: "people kept")
+            RetentionHero(value: overview.keptLabel(day: day), subtitle: subtitle(overview: overview))
                 .padding(.horizontal, .gutter)
 
             RetentionDayTabs(overview: overview, day: $day)
