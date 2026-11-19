@@ -67,9 +67,6 @@ struct IncidentGroupPlaceholder: View {
         .padding(.top, .space20)
         .padding(.horizontal, .gutter)
         .padding(.bottom, .space16)
-        .overlay(alignment: .top) {
-            Separator(color: kind.border)
-        }
     }
 
     private var cards: some View {

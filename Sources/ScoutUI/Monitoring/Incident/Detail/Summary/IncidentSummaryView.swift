@@ -67,9 +67,6 @@ struct IncidentSummaryView<Element: Incident, Row: View>: View {
         .padding(.top, .space20)
         .padding(.horizontal, .gutter)
         .padding(.bottom, .space16)
-        .overlay(alignment: .top) {
-            Separator(color: summary.kind.border)
-        }
     }
 
     private var cards: some View {
