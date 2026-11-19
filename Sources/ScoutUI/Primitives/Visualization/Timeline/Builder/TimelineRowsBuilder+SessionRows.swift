@@ -78,6 +78,25 @@ extension TimelineRowsBuilder {
         )
     }
 
+    mutating func appendSessionEnd(id: String, date: Date) {
+        entries.append(
+            TimelineEntry(
+                id: "end-\(id)",
+                kind: .merge,
+                height: Self.compactHeight,
+                launch: TimelineEntry.Lane(color: .timelineLaunch, dashed: false, top: 0, bottom: 0),
+                session: nil,
+                connector: .merge(color: .timelineSession, dashed: false),
+                marker: nil,
+                title: label("Session ended", size: 13, weight: .regular, color: .timelineMuted),
+                subtitle: nil,
+                time: date.timelineTime,
+                chip: nil,
+                tint: nil
+            )
+        )
+    }
+
     mutating func appendMissingMerge(sessionID: UUID?) {
         entries.append(
             TimelineEntry(

@@ -50,7 +50,35 @@ struct TimelineRowsTests {
             startDate: TimelineFixture.at(20), endDate: TimelineFixture.at(120))
         let rows = entries(rail(launches: [launch], sessions: [session], events: [.stub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))]))
 
-        #expect(rows.map(\.kind) == [.install, .launch, .fork, .event])
+        #expect(rows.map(\.kind) == [.install, .launch, .fork, .event, .merge])
+    }
+
+    @Test("A completed session closes its rail with a green merge row")
+    func testSessionEnd() {
+        let launch = Launch.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.at(10))
+        let session = Session.stub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20), endDate: TimelineFixture.at(120))
+        let rows = entries(rail(launches: [launch], sessions: [session], events: [.stub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))]))
+
+        let merge = rows.last { $0.kind == .merge }
+
+        #expect(merge?.title.text == "Session ended")
+        #expect(merge?.time == TimelineFixture.at(120).timelineTime)
+        guard case let .merge(color, dashed)? = merge?.connector else {
+            Issue.record("The session end row has no merge connector")
+            return
+        }
+        #expect(color == .timelineSession)
+        #expect(!dashed)
+    }
+
+    @Test("A session with no recorded end closes with a dashed merge row")
+    func testMissingSessionEnd() {
+        let first = Launch.stub(launchID: launchID, installID: installID, startDate: TimelineFixture.at(10))
+        let second = Launch.stub(launchID: UUID(), installID: installID, startDate: TimelineFixture.at(3_600))
+        let session = Session.stub(sessionID: sessionID, launchID: launchID, installID: installID, startDate: TimelineFixture.at(20))
+        let rows = entries(rail(launches: [first, second], sessions: [session], events: [.stub(name: "e", sessionID: sessionID, date: TimelineFixture.at(30))]))
+
+        #expect(rows.contains { $0.kind == .merge && $0.title.text == "Session end not recorded" })
     }
 
     @Test("A crash closes its session with a red merge row")
