@@ -36,6 +36,7 @@ struct ReleaseView: View {
                     }
                 }
                 .scrollIndicators(.hidden)
+                .disabledBounce()
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
