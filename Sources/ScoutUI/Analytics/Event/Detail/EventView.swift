@@ -29,7 +29,7 @@ struct EventView: View {
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
-                EventHeader(event: event)
+                EventHeader(event: event, showsSeparator: event.sessionID != nil)
                     .padding(.horizontal, .gutter)
 
                 if let sessionID = event.sessionID {
@@ -82,6 +82,7 @@ struct EventView: View {
 extension EventView {
     struct EventHeader: View {
         let event: Event
+        let showsSeparator: Bool
 
         var body: some View {
             HStack(spacing: .space10) {
@@ -104,7 +105,9 @@ extension EventView {
             .padding(.bottom, .space16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .overlay(alignment: .bottom) {
-                Separator()
+                if showsSeparator {
+                    Separator()
+                }
             }
         }
     }
