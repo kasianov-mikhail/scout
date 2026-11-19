@@ -35,7 +35,9 @@ extension TimelineRowsBuilder {
 
         if case .crash(let crash)? = occurrences.last, let date = crash.date {
             appendCrashMerge(crash, date: date)
-        } else if root.session.endDate == nil && !sessionLive {
+        } else if let end = root.session.endDate {
+            appendSessionEnd(id: root.session.id, date: end)
+        } else if !sessionLive {
             appendMissingMerge(sessionID: sessionID)
         }
     }
