@@ -30,7 +30,6 @@ struct ErrorActionButtonStyle: ButtonStyle {
     enum Role {
         case primary
         case secondary
-        case secondaryAccent
     }
 
     let role: Role
@@ -52,8 +51,6 @@ struct ErrorActionButtonStyle: ButtonStyle {
             .white
         case .secondary:
             .primary
-        case .secondaryAccent:
-            .textLink
         }
     }
 
@@ -61,7 +58,7 @@ struct ErrorActionButtonStyle: ButtonStyle {
         switch role {
         case .primary:
             .fillAccent
-        case .secondary, .secondaryAccent:
+        case .secondary:
             .surfaceGrey
         }
     }

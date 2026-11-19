@@ -18,9 +18,7 @@ struct AccountGate<Content: View>: View {
     var body: some View {
         Group {
             if let issue = provider.issue {
-                AccountUnavailableView(issue: issue, endpoint: backend.id) {
-                    await provider.probe(backend)
-                }
+                AccountUnavailableView(issue: issue, endpoint: backend.id)
             } else if provider.isResolved {
                 content()
             } else {
