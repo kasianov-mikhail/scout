@@ -14,6 +14,8 @@ struct HomeList: View {
 
     @Binding var path: [HomeDestination]
 
+    @Namespace private var zoom
+
     @StateObject var activities = ActivityProvider()
     @StateObject var retention = RetentionProvider()
     @StateObject var sessions = StatProvider(subject: .sessions)
@@ -81,11 +83,11 @@ struct HomeList: View {
         .navigationDestination(for: HomeDestination.self) { destination in
             switch destination {
             case .activity:
-                ActivityView(activity: activities)
+                ActivityView(activity: activities).zoomTransition(destination, in: zoom)
             case .retention:
                 RetentionView(provider: retention)
             case .releaseHealth:
-                ReleaseHealthView(provider: releases)
+                ReleaseHealthView(provider: releases).zoomTransition(destination, in: zoom)
             case .alerts:
                 AlertListView(provider: alerts)
             case .telemetry(let category):
@@ -107,6 +109,9 @@ struct HomeList: View {
             HomeActiveUsersSection(users: snapshot.users) { _ in
                 path.append(.activity)
             }
+            .zoomSource(.activity, in: zoom)
+            .contentShape(Rectangle())
+            .onTapGesture { path.append(.activity) }
             .loadingInk(isLoading: isLoading, delay: 0.10)
 
             HomeTelemetrySection(items: snapshot.telemetry) { kind in
@@ -130,11 +135,16 @@ struct HomeList: View {
             HomeReleaseSection(adoption: snapshot.releases) {
                 path.append(.releaseHealth)
             }
+            .zoomSource(.releaseHealth, in: zoom)
+            .contentShape(Rectangle())
+            .onTapGesture { path.append(.releaseHealth) }
             .loadingInk(isLoading: isLoading, delay: 0.30)
 
             HomeRetentionSection(weeks: snapshot.retention) {
                 path.append(.retention)
             }
+            .contentShape(Rectangle())
+            .onTapGesture { path.append(.retention) }
             .loadingInk(isLoading: isLoading, delay: 0.40)
         }
         .transition(.opacity)

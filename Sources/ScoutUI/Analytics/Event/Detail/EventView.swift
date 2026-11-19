@@ -17,6 +17,8 @@ struct EventView: View {
     @StateObject var context: EventContextProvider
     @State private var isParamPresented = false
 
+    @Namespace private var zoom
+
     init(event: Event, param: ParamProvider? = nil, stat: StatProvider? = nil, context: EventContextProvider? = nil) {
         self.event = event
         self._param = StateObject(wrappedValue: param ?? ParamProvider(recordID: event.id))
@@ -48,6 +50,9 @@ struct EventView: View {
                         param: param,
                         isParamPresented: $isParamPresented
                     )
+                    .zoomSource(paramsTransitionID, in: zoom)
+                    .contentShape(Rectangle())
+                    .onTapGesture { isParamPresented = true }
                     .loadingInk(isLoading: param.isLoading, delay: 0.10)
                 }
 
@@ -60,16 +65,19 @@ struct EventView: View {
         .navigationTint(event.level?.color)
         .monospacedNavigationTitle(en: event.name, divider: event.level?.divider ?? .lineSubtle)
         .navigationDestination(isPresented: $isParamPresented) {
-            switch param.result {
-            case .success(let items):
-                ParamList(items: items)
-            case .failure(let error):
-                ErrorView(description: error.localizedDescription) {
-                    await param.fetchAgain(in: database)
+            Group {
+                switch param.result {
+                case .success(let items):
+                    ParamList(items: items)
+                case .failure(let error):
+                    ErrorView(description: error.localizedDescription) {
+                        await param.fetchAgain(in: database)
+                    }
+                case nil:
+                    RingIndicator().frame(maxHeight: .infinity)
                 }
-            case nil:
-                RingIndicator().frame(maxHeight: .infinity)
             }
+            .zoomTransition(paramsTransitionID, in: zoom)
         }
         .fetchTask(providers)
     }
@@ -109,6 +117,8 @@ extension EventView {
         }
     }
 }
+
+private let paramsTransitionID = "params"
 
 private let eventDateFormatter = DateFormatter(format: "d MMM y, HH:mm")
 
