@@ -39,7 +39,8 @@ struct HomeView: View {
     }
 
     private var backend: Backend? {
-        backends.active(id: activeID)
+        // Server switching is off for now: Scout works only with CloudKit.
+        backends.first(where: \.isCloudKit) ?? backends.active(id: activeID)
     }
 
     private var active: Binding<String> {
