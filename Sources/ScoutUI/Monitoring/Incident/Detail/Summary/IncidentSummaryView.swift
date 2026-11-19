@@ -93,28 +93,6 @@ struct IncidentSummaryView<Element: Incident, Row: View>: View {
     }
 }
 
-private struct IncidentSummaryFrameRow: View {
-    let frame: IncidentStackFrame
-
-    var body: some View {
-        HStack(spacing: .space6) {
-            Text(verbatim: frame.index)
-                .frame(width: 18, alignment: .leading)
-
-            Text(verbatim: frame.image ?? "")
-                .frame(width: 128, alignment: .leading)
-
-            Text(verbatim: frame.symbol)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .fadingEdge(width: 28)
-        }
-        .font(frame.isApp ? .scoutCodeStrong : .scoutCode)
-        .foregroundStyle(frame.isApp ? Color.textPrimary : Color.fillLevel)
-        .lineLimit(1)
-        .frame(height: .codeStep)
-    }
-}
-
 #Preview {
     NavigationStack {
         ScrollView {

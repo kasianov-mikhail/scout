@@ -63,13 +63,6 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
         .fetchTask([series, resets])
     }
 
-    private var isEmpty: Bool {
-        guard case .success(let data) = series.result else {
-            return false
-        }
-        return !timeline(from: data).containsData(range: range, now: Date())
-    }
-
     private func content(_ data: [MetricSeries]) -> some View {
         let now = Date()
         let seriesTimeline = timeline(from: data)
@@ -113,94 +106,5 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                 }
             }
         }
-    }
-
-    private var chartStyle: MetricChart.Style {
-        telemetry == .meter ? .line(filled: false) : .bars
-    }
-
-    private func summary(timeline: MetricTimeline, now: Date, format: MetricValueFormat) -> MetricSummary {
-        telemetry == .meter
-            ? timeline.gaugeSummary(range: range, now: now, format: format)
-            : timeline.summary(range: range, now: now, format: format)
-    }
-
-    private func legendNote(resetDates: [Date]) -> String? {
-        switch telemetry {
-        case .meter:
-            range.peakNote
-        case .counter, .floatingCounter:
-            resetDates.isEmpty ? nil : "reset = the app restarted the counter"
-        case .timer, .recorder:
-            nil
-        }
-    }
-
-    private func tone(_ row: MetricRow) -> MetricTone {
-        guard telemetry == .counter || telemetry == .floatingCounter else {
-            return .neutral
-        }
-        guard let delta = row.delta, delta.value > 0 else {
-            return .neutral
-        }
-        return .positive
-    }
-
-    private func timeline(from data: [MetricSeries]) -> MetricTimeline {
-        let points =
-            data
-            .filter { $0.name == name }
-            .flatMap(\.points)
-            .map { ChartPoint<Double>(date: $0.date, value: $0.value) }
-            .sorted()
-
-        return MetricTimeline(points: points)
-    }
-}
-
-#Preview("Counter") {
-    NavigationStack {
-        MetricSeriesDetailView<Int>(
-            name: "checkout.completed",
-            telemetry: .counter,
-            range: .constant(.today),
-            result: .success([
-                MetricSeries(
-                    name: "checkout.completed",
-                    category: Telemetry.Export.counter.rawValue,
-                    points: (0..<24).map { hour in
-                        MetricSeriesPoint(
-                            date: Date().startOfDay.addingTimeInterval(TimeInterval(hour) * .hour),
-                            value: Double(40 + hour * 6)
-                        )
-                    }
-                )
-            ]),
-            resetDates: .success([Date().startOfDay.addingTimeInterval(13 * .hour)])
-        )
-        .monospacedNavigationTitle(en: "checkout.completed")
-    }
-}
-
-#Preview("Gauge") {
-    NavigationStack {
-        MetricSeriesDetailView<Double>(
-            name: "queue_depth",
-            telemetry: .meter,
-            range: .constant(.today),
-            result: .success([
-                MetricSeries(
-                    name: "queue_depth",
-                    category: Telemetry.Export.meter.rawValue,
-                    points: (0..<24).map { hour in
-                        MetricSeriesPoint(
-                            date: Date().startOfDay.addingTimeInterval(TimeInterval(hour) * .hour),
-                            value: Double(10 + (hour * 7) % 40)
-                        )
-                    }
-                )
-            ])
-        )
-        .monospacedNavigationTitle(en: "queue_depth")
     }
 }

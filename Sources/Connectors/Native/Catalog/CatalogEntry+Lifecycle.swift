@@ -27,6 +27,18 @@ extension CatalogEntry {
 
         return [lifecycleKey: .string(key)]
     }
+
+    static let firstSeen = CatalogEntry(
+        entity: FirstSeenEntry.recordType,
+        fields: [
+            .init(name: "name", type: .string),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.count(by: lifecycleKey, at: "date")],
+        derive: metricLifecycleKey
+    )
 }
 
 struct LifecycleKey {

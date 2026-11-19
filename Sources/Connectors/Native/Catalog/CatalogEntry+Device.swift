@@ -22,4 +22,22 @@ extension CatalogEntry {
         }
         return [deviceSystem: .string(SystemScopedKey(value: device, system: system).key)]
     }
+
+    static let device = CatalogEntry(
+        entity: DeviceEntry.recordType,
+        fields: [
+            .init(name: "date", type: .timestamp),
+            .init(name: "model", type: .string),
+        ]
+    )
+
+    static let version = CatalogEntry(
+        entity: VersionEntry.recordType,
+        fields: [
+            .init(name: "date", type: .timestamp),
+            .init(name: "app_version", type: .string),
+            .init(name: "build_number", type: .string),
+            .init(name: lifecycleKey, type: .string),
+        ]
+    )
 }

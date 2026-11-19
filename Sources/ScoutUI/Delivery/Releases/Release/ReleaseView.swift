@@ -118,53 +118,6 @@ struct ReleaseView: View {
     }
 }
 
-private struct ReleaseGrid: View {
-    let detail: ReleaseDetail
-
-    var body: some View {
-        let tiles = detail.tiles
-
-        VStack(spacing: 0) {
-            ForEach(0..<(tiles.count / 2), id: \.self) { index in
-                HStack(spacing: 0) {
-                    tile(tiles[index * 2], isLeading: true)
-                    tile(tiles[index * 2 + 1], isLeading: false)
-                }
-            }
-        }
-        .padding(.horizontal, .gutter)
-    }
-
-    @ViewBuilder
-    private func tile(_ value: ReleaseTileValue, isLeading: Bool) -> some View {
-        if let destination = value.kind.destination {
-            NavigationLink(value: destination) {
-                ReleaseTile(value: value, isLeading: isLeading, action: nil)
-            }
-            .buttonStyle(.plain)
-        } else {
-            ReleaseTile(value: value, isLeading: isLeading, action: nil)
-        }
-    }
-}
-
-private enum ReleaseDestination: Hashable {
-    case crashes
-    case hangs
-    case resources
-}
-
-extension ReleaseTileValue.Kind {
-    fileprivate var destination: ReleaseDestination? {
-        switch self {
-        case .crashes: .crashes
-        case .hangs: .hangs
-        case .resources: .resources
-        case .crashFree, .adoption, .exits, .launchTime, .peakMemory: nil
-        }
-    }
-}
-
 #Preview {
     NavigationStack {
         ReleaseView(
