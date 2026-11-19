@@ -35,7 +35,7 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
                 }
             } else if isEmpty {
                 VStack(spacing: 0) {
-                    MetricRangeStrip(selection: $range)
+                    RangeStrip(selection: $range, ranges: MetricRange.allCases, title: \.title)
 
                     Placeholder(
                         text: "No data",
@@ -69,7 +69,7 @@ struct MetricSeriesDetailView<T: ChartNumeric>: View {
         let resetDates = resets.dates(in: range.range(now: now))
 
         return LazyVStack(alignment: .leading, spacing: 0) {
-            MetricRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: MetricRange.allCases, title: \.title)
 
             MetricSummaryView(summary: summary(timeline: seriesTimeline, now: now, format: format))
                 .padding(.horizontal, .gutter)

@@ -24,7 +24,7 @@ struct MetricDetailPlaceholder: View {
         let dates = placeholderRows(now: now)
 
         return LazyVStack(alignment: .leading, spacing: 0) {
-            MetricRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: MetricRange.allCases, title: \.title)
 
             switch kind {
             case .series(let telemetry):

@@ -22,7 +22,7 @@ struct MetricsListView: View {
                 }
             } else if case .success(let tiles) = provider.result, tiles.isEmpty {
                 VStack(spacing: 0) {
-                    MetricRangeStrip(selection: $provider.range)
+                    RangeStrip(selection: $provider.range, ranges: MetricRange.allCases, title: \.title)
 
                     SectionGap()
                         .padding(.top, .space8)
@@ -61,7 +61,7 @@ struct MetricsListView: View {
 
     private func content(_ tiles: [MetricTile]) -> some View {
         LazyVStack(alignment: .leading, spacing: 0) {
-            MetricRangeStrip(selection: $provider.range)
+            RangeStrip(selection: $provider.range, ranges: MetricRange.allCases, title: \.title)
                 .padding(.horizontal, -.gutter)
 
             SectionGap()

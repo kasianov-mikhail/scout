@@ -14,7 +14,7 @@ struct MetricsListPlaceholder: View {
 
     var body: some View {
         LazyVStack(alignment: .leading, spacing: 0) {
-            MetricRangeStrip(selection: $range)
+            RangeStrip(selection: $range, ranges: MetricRange.allCases, title: \.title)
                 .padding(.horizontal, -.gutter)
 
             SectionGap()
