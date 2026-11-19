@@ -75,6 +75,7 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
             .padding(.leading, index == 0 ? 0 : (showsDividers ? .space10 : 0))
             .padding(.trailing, isLast ? 0 : (showsDividers ? .space10 : 0))
             .frame(maxWidth: .infinity, alignment: .leading)
+            .contentShape(Rectangle())
             .overlay(alignment: .bottom) {
                 if isActive, index == indicatorIndex {
                     indicator(value)

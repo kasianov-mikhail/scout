@@ -84,6 +84,7 @@ struct DemoStartView: View {
                         .foregroundStyle(Color.textLink)
                         .frame(maxWidth: .infinity)
                         .frame(height: .touchTarget)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }

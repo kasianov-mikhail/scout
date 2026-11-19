@@ -16,6 +16,7 @@ struct HomeSectionExpandButton: View {
             Image(systemName: "arrow.down.left.and.arrow.up.right")
                 .font(.book(size: 16))
                 .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
                 .padding(.trailing, -12)
         }
         .buttonStyle(.plain)
