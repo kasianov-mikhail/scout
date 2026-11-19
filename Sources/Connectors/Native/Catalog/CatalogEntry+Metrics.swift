@@ -62,6 +62,21 @@ extension CatalogEntry {
 
         return [metricSeriesKey: .string(key)]
     }
+
+    static let dailyMetric = CatalogEntry(
+        entity: DailyMetricEntry.recordType,
+        fields: [
+            .init(name: "name", type: .string),
+            .init(name: "category", type: .string),
+            .init(name: "value", type: .int),
+            .init(name: "app_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "date_start", type: .timestamp),
+            .init(name: lifecycleKey, type: .string),
+        ],
+        aggregates: [.sum("value", by: lifecycleKey, at: "date")],
+        derive: metricLifecycleKey
+    )
 }
 
 extension String {

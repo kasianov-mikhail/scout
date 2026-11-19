@@ -99,116 +99,11 @@ struct MetricDetailPlaceholder: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
-    private func axis(now: Date) -> some View {
-        HStack(spacing: 0) {
-            ForEach(Array(range.axisLabels(now: now).enumerated()), id: \.offset) { index, _ in
-                if index > 0 {
-                    Spacer(minLength: 0)
-                }
-
-                SkeletonBar(width: 30, height: 8, delay: 0.16)
-            }
-        }
-        .frame(height: 12)
-        .padding(.top, .space4)
-    }
-
     private var legend: some View {
         SkeletonBar(width: 74, height: 8, delay: 0.2)
             .frame(height: 14, alignment: .leading)
             .padding(.top, .space10)
             .padding(.bottom, .space16)
-    }
-
-    private var percentileSelector: some View {
-        ReadoutTabStrip(
-            values: MetricQuantile.allCases,
-            isSelected: { _ in false },
-            isLoading: true,
-            spacing: .space12,
-            onSelect: nil
-        ) { quantile, _ in
-            skeletonQuantile(quantile)
-        }
-    }
-
-    private func skeletonQuantile(_ quantile: MetricQuantile) -> some View {
-        VStack(alignment: .leading, spacing: .space2) {
-            Text(verbatim: quantile.title)
-                .font(.scoutCaptionStrong)
-                .foregroundStyle(Color.textMuted)
-
-            SkeletonBar(width: 74, height: 20, delay: 0.08)
-
-            SkeletonBar(width: 28, height: 9, delay: 0.08)
-        }
-        .padding(.top, .space10)
-        .padding(.bottom, .space12)
-    }
-
-    private func chartSkeleton(height: CGFloat, delay: Double) -> some View {
-        SkeletonBar(height: height, delay: delay, cornerRadius: .radiusBadge)
-    }
-
-    private func row(index: Int, dates: [Date], now: Date) -> some View {
-        let date = dates[index]
-        let delay = 0.24 + Double(index) * 0.08
-
-        return HStack(spacing: .space8) {
-            SkeletonBar(width: 40, height: 9, delay: delay)
-                .frame(width: 56, alignment: .leading)
-
-            HStack(spacing: .space6) {
-                SkeletonBar(height: 8, delay: delay, cornerRadius: .radiusBar)
-                    .frame(maxWidth: .infinity)
-
-                if range.isCurrent(date: date, now: now) {
-                    SkeletonBar(width: 24, height: 7, delay: delay)
-                        .frame(width: 34, alignment: .leading)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-
-            SkeletonBar(width: 28, height: 10, delay: delay)
-                .frame(width: 56, alignment: .trailing)
-
-            SkeletonBar(width: 28, height: 9, delay: delay)
-                .frame(width: 48, alignment: .trailing)
-        }
-        .frame(height: .rowTable)
-        .overlay(alignment: .bottom) {
-            if index < dates.count - 1 {
-                DashedLine()
-            }
-        }
-    }
-
-    private func rows(dates: [Date], now: Date) -> some View {
-        ForEach(dates.indices, id: \.self) { index in
-            row(index: index, dates: dates, now: now)
-        }
-    }
-
-    private func placeholderRows(now: Date) -> [Date] {
-        let buckets = range.buckets(now: now).filter { !range.isFuture(date: $0.lowerBound, now: now) }
-        return buckets.suffix(6).reversed().map(\.lowerBound)
-    }
-
-    private func trailingTitle(_ telemetry: Telemetry.Export) -> String {
-        switch telemetry {
-        case .meter:
-            "peak \(range.comparisonTitle)"
-        case .timer:
-            "p90 \(range.comparisonTitle)"
-        case .recorder:
-            "p50 \(range.comparisonTitle)"
-        case .counter, .floatingCounter:
-            range.comparisonTitle
-        }
-    }
-
-    private func distributionCaption(_ telemetry: Telemetry.Export) -> String {
-        range.caption(unit: telemetry == .timer ? "ms" : nil)
     }
 }
 

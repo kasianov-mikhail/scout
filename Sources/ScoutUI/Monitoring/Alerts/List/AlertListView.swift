@@ -13,7 +13,7 @@ struct AlertListView: View {
 
     @Environment(\.database) private var database
     @State private var creation: Creation?
-    @State private var selected: AlertStatus?
+    @State var selected: AlertStatus?
 
     private enum Creation: String, Identifiable {
         case composer
@@ -94,94 +94,6 @@ struct AlertListView: View {
                 }
             }
             .scrollIndicators(.hidden)
-        }
-    }
-
-    private func list(_ statuses: [AlertStatus]) -> some View {
-        LazyVStack(alignment: .leading, spacing: 0) {
-            if provider.notificationsDenied, statuses.contains(where: \.rule.notifies) {
-                NotificationsDeniedRow()
-                    .overlay(alignment: .bottom) {
-                        Separator()
-                    }
-                    .padding(.horizontal, .gutter)
-            }
-
-            AlertListLegend()
-                .padding(.top, .space10)
-                .padding(.horizontal, .gutter)
-
-            section(statuses.firing, title: "Firing")
-            section(statuses.armed, title: "Armed")
-            section(statuses.muted, title: "Muted")
-        }
-    }
-
-    @ViewBuilder private func section(_ statuses: [AlertStatus], title: String) -> some View {
-        if !statuses.isEmpty {
-            Section(title: title) {
-                Text(verbatim: "\(statuses.count)")
-                    .font(.scoutCaption)
-                    .foregroundStyle(Color.textMuted)
-            } content: {
-                ForEach(Array(statuses.enumerated()), id: \.element.rule) { index, status in
-                    AlertRuleRow(
-                        status: status,
-                        isLast: index == statuses.count - 1,
-                        onDelete: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                provider.remove(status.rule)
-                            }
-                        },
-                        onMute: {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                provider.mute(status.rule, until: Date().addingTimeInterval(3600))
-                            }
-                        },
-                        onOpen: {
-                            selected = status
-                        }
-                    )
-                    .padding(.horizontal, -.gutter)
-                }
-            }
-        }
-    }
-}
-
-struct AlertListLegend: View {
-    var showsAxis = true
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: .space4) {
-            HStack {
-                Text(verbatim: "24 h ago")
-                Spacer()
-                Text(verbatim: "12 h")
-                Spacer()
-                Text(verbatim: "now")
-            }
-            .font(.scoutAxis)
-            .foregroundStyle(Color.textMuted)
-            .opacity(showsAxis ? 1 : 0)
-
-            HStack(spacing: .space12) {
-                legendItem(color: Color.fillLevel, title: "breached")
-                legendItem(color: Color.textDanger, title: "firing now")
-            }
-            .font(.scoutFootnote)
-            .foregroundStyle(Color.textMuted)
-        }
-        .padding(.bottom, .space16)
-    }
-
-    private func legendItem(color: Color, title: String) -> some View {
-        HStack(spacing: .space4) {
-            RoundedRectangle(cornerRadius: .radiusBar)
-                .fill(color)
-                .frame(width: 10, height: 10)
-
-            Text(verbatim: title)
         }
     }
 }

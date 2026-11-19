@@ -21,4 +21,17 @@ extension CatalogEntry {
         }
         return [retentionKey: .string(SystemScopedKey(value: name, system: system.map { os in String(os.prefix { $0 != "." }) }).key)]
     }
+
+    static let retentionMark = CatalogEntry(
+        entity: RetentionMarkEntry.recordType,
+        fields: [
+            .init(name: "name", type: .string),
+            .init(name: "os_version", type: .string),
+            .init(name: "date", type: .timestamp),
+            .init(name: "install_date", type: .timestamp),
+            .init(name: retentionKey, type: .string),
+        ],
+        aggregates: [.count(by: retentionKey, at: "install_date")],
+        derive: retentionKey(for:)
+    )
 }
