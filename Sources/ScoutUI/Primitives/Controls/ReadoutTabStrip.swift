@@ -76,7 +76,7 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
             .padding(.trailing, isLast ? 0 : (showsDividers ? .space10 : 0))
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
-            .overlay(alignment: .bottom) {
+            .overlay(alignment: .bottomLeading) {
                 if isActive, index == indicatorIndex {
                     indicator(value)
                         .matchedGeometryEffect(id: "indicator", in: indicatorNamespace)
