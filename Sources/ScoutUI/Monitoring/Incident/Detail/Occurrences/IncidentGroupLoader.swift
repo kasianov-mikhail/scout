@@ -14,15 +14,15 @@ struct IncidentGroupLoader<Element: RecordDecodable & Incident, Content: View>: 
 
     let content: (IncidentOccurrencesProvider<Element>) -> Content
 
-    init(tally: IncidentTally, @ViewBuilder content: @escaping (IncidentOccurrencesProvider<Element>) -> Content) {
-        _provider = StateObject(wrappedValue: IncidentOccurrencesProvider(tally: tally))
+    init(tally: IncidentTally, range: IncidentRange, @ViewBuilder content: @escaping (IncidentOccurrencesProvider<Element>) -> Content) {
+        _provider = StateObject(wrappedValue: IncidentOccurrencesProvider(tally: tally, range: range))
         self.content = content
     }
 
     var body: some View {
         Group {
-            if let records = provider.records {
-                if records.isEmpty {
+            if provider.records != nil {
+                if provider.currentRecords.isEmpty {
                     Placeholder(text: "No occurrences")
                         .monospacedNavigationTitle(en: provider.name, divider: Element.kind.border)
                 } else {

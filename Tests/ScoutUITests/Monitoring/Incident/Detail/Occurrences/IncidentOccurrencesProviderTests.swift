@@ -77,4 +77,30 @@ struct IncidentOccurrencesProviderTests {
         #expect(provider.records?.isEmpty == true)
         #expect(provider.error == nil)
     }
+
+    @Test("The provider opens on the year window by default")
+    func defaultRange() {
+        let provider = IncidentOccurrencesProvider<Crash>(tally: IncidentTally(fingerprint: "A", name: "NSRangeException", count: 1, firstHour: Date()))
+
+        #expect(provider.range == .year)
+    }
+
+    @Test("A weekly provider splits its read into the current and previous week")
+    func weeklyWindows() async {
+        let database = DatabaseStub()
+        let current = Crash.stub(name: "NSRangeException", fingerprint: "A", date: Date())
+        let previous = Crash.stub(name: "NSRangeException", fingerprint: "A", date: Date().addingTimeInterval(-8 * .day))
+        database.add(current.record, previous.record)
+
+        let provider = IncidentOccurrencesProvider<Crash>(
+            tally: IncidentTally(fingerprint: "A", name: "NSRangeException", count: 2, firstHour: previous.date ?? Date()),
+            range: .week
+        )
+
+        await provider.fetchIfNeeded(in: database)
+
+        #expect(provider.currentRecords.map(\.id) == [current.id])
+        #expect(provider.previousRecords.map(\.id) == [previous.id])
+        #expect(database.readCount(of: Crash.recordType) == 1)
+    }
 }

@@ -21,10 +21,10 @@ struct IncidentSummaryCardTests {
             Crash.stub(date: today),
             Crash.stub(date: today),
             Crash.stub(date: today.addingDay(-6)),
-            Crash.stub(date: today.addingDay(-7)),
         ]
+        let previous = [Crash.stub(date: today.addingDay(-7))]
 
-        let card = IncidentSummaryCard.occurrences(records: records, value: "4", now: today)
+        let card = IncidentSummaryCard.occurrences(records: records, previous: previous, range: .week, value: "4", now: today)
 
         #expect(card.title == "OCCURRENCES")
         #expect(card.value == "4")
@@ -38,12 +38,26 @@ struct IncidentSummaryCardTests {
     func missingPrevious() {
         let records = [Crash.stub(date: today)]
 
-        let card = IncidentSummaryCard.occurrences(records: records, value: "1", now: today)
+        let card = IncidentSummaryCard.occurrences(records: records, previous: [], range: .week, value: "1", now: today)
 
         #expect(card.change == nil)
     }
 
-    @Test("Device bars count distinct devices per day")
+    @Test("A monthly card keeps seven bars and counts today in the last one")
+    func monthlyBars() {
+        let records = [
+            Crash.stub(date: today),
+            Crash.stub(date: today.addingDay(-29)),
+        ]
+
+        let card = IncidentSummaryCard.occurrences(records: records, previous: [], range: .month, value: "2", now: today)
+
+        #expect(card.bars.count == 7)
+        #expect(card.bars.first == 1)
+        #expect(card.bars.last == 1)
+    }
+
+    @Test("Device bars count distinct devices per slice")
     func deviceBars() {
         let first = UUID()
         let second = UUID()
@@ -51,25 +65,25 @@ struct IncidentSummaryCardTests {
             Crash.stub(deviceID: first, date: today),
             Crash.stub(deviceID: first, date: today),
             Crash.stub(deviceID: second, date: today),
-            Crash.stub(deviceID: second, date: today.addingDay(-7)),
         ]
+        let previous = [Crash.stub(deviceID: second, date: today.addingDay(-7))]
 
-        let card = IncidentSummaryCard.devices(records: records, value: "2", now: today)
+        let card = IncidentSummaryCard.devices(records: records, previous: previous, range: .week, value: "2", now: today)
 
         #expect(card.title == "DEVICES")
         #expect(card.bars.last == 2)
         #expect(card.change == "+100%")
     }
 
-    @Test("The longest hang card shows the peak duration and its weekly change")
+    @Test("The longest hang card shows the peak duration and its window change")
     func longestHang() {
         let records = [
             Hang.stub(duration: 9.8, date: today),
             Hang.stub(duration: 4.6, date: today.addingDay(-6)),
-            Hang.stub(duration: 3, date: today.addingDay(-7)),
         ]
+        let previous = [Hang.stub(duration: 3, date: today.addingDay(-7))]
 
-        let card = IncidentSummaryCard.longest(records: records, now: today)
+        let card = IncidentSummaryCard.longest(records: records, previous: previous, range: .week, now: today)
 
         #expect(card.title == "LONGEST")
         #expect(card.value == "9.8 s")
@@ -79,12 +93,10 @@ struct IncidentSummaryCardTests {
 
     @Test("The peak resource card reads the amount from the reason")
     func peakResource() {
-        let records = [
-            makeResource(reason: "84 s of CPU time in 180 s", at: today),
-            makeResource(reason: "61 s of CPU time in 180 s", at: today.addingDay(-7)),
-        ]
+        let records = [makeResource(reason: "84 s of CPU time in 180 s", at: today)]
+        let previous = [makeResource(reason: "61 s of CPU time in 180 s", at: today.addingDay(-7))]
 
-        let card = IncidentSummaryCard.peak(records: records, now: today)
+        let card = IncidentSummaryCard.peak(records: records, previous: previous, range: .week, now: today)
 
         #expect(card.title == "PEAK CPU")
         #expect(card.value == "84 s")
@@ -96,7 +108,7 @@ struct IncidentSummaryCardTests {
     func peakWithoutAmount() {
         let records = [makeResource(reason: "CPU time exceeded", at: today)]
 
-        let card = IncidentSummaryCard.peak(records: records, now: today)
+        let card = IncidentSummaryCard.peak(records: records, previous: [], range: .week, now: today)
 
         #expect(card.value == "0")
         #expect(card.change == nil)

@@ -12,7 +12,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
     @ObservedObject var provider: IncidentTilesProvider<Element>
     let placeholder: Placeholder
 
-    @ViewBuilder let destination: (IncidentTally) -> Destination
+    @ViewBuilder let destination: (IncidentTally, IncidentRange) -> Destination
 
     @Environment(\.database) private var database
 
@@ -75,7 +75,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                 let tile = tiles[index]
 
                 NavigationLink {
-                    destination(tile.tally)
+                    destination(tile.tally, provider.range)
                 } label: {
                     IncidentTileView(
                         tile: tile,

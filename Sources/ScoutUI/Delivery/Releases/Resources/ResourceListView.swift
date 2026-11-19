@@ -19,8 +19,8 @@ struct ResourceListView: View {
                 systemImage: "checkmark.shield",
                 description: "No resource exceptions in this period"
             )
-        ) { tally in
-            IncidentGroupLoader(tally: tally) { occurrences in
+        ) { tally, range in
+            IncidentGroupLoader(tally: tally, range: range) { occurrences in
                 ResourceGroupDetailView(occurrences: occurrences)
             }
         }
