@@ -9,6 +9,7 @@
 import Foundation
 import Scout
 import SwiftUI
+import UserNotifications
 
 struct SettingsOverviewView: View {
     @Binding var activeID: String
@@ -17,8 +18,7 @@ struct SettingsOverviewView: View {
 
     let send: SendSummary
 
-    @State var start = StartPeriod.today
-    @State var pushes = true
+    @State var notificationsDenied = false
     @State var isClearing = false
 
     init(backends: [Backend], activeID: Binding<String>, cache: any CacheClearing, health: BackendHealthProvider? = nil, send: SendSummary) {
@@ -33,8 +33,7 @@ struct SettingsOverviewView: View {
             LazyVStack(alignment: .leading, spacing: 0) {
                 VStack(alignment: .leading, spacing: 0) {
                     readFromSection
-                    startOnSection
-                    alertPushesSection
+                    alertsSection
                     sendingSection
                     cacheSection
                     versionLabel
@@ -49,6 +48,9 @@ struct SettingsOverviewView: View {
         .fetchTask([health])
         .task {
             await cacheStatus.refresh()
+        }
+        .task {
+            notificationsDenied = await NotificationPermission(center: UNUserNotificationCenter.current()).isDenied
         }
         .confirmationDialog(
             Text(verbatim: "Clear the cached data?"),

@@ -47,42 +47,12 @@ extension SettingsOverviewView {
     }
 
     @ViewBuilder
-    var startOnSection: some View {
-        SettingsLabel(title: "START ON")
+    var alertsSection: some View {
+        if notificationsDenied {
+            SettingsLabel(title: "ALERT PUSHES")
 
-        SettingsStrip {
-            ForEach(StartPeriod.allCases) { period in
-                Button {
-                    start = period
-                } label: {
-                    SettingsSegmentCell(
-                        title: period.title,
-                        isSelected: start == period,
-                        showsDivider: period != StartPeriod.allCases.last
-                    )
-                }
-                .buttonStyle(.plain)
-            }
+            NotificationsDeniedRow()
         }
-        .hapticFeedback(.selection, trigger: start)
-    }
-
-    @ViewBuilder
-    var alertPushesSection: some View {
-        SettingsLabel(title: "ALERT PUSHES")
-
-        SettingsStrip {
-            segment(title: "On", isSelected: pushes, showsDivider: true) {
-                pushes = true
-            }
-
-            segment(title: "Off", isSelected: !pushes, showsDivider: false) {
-                pushes = false
-            }
-        }
-        .hapticFeedback(.selection, trigger: pushes)
-
-        SettingsNote(text: "Firing rules notify this iPhone.")
     }
 
     @ViewBuilder
