@@ -50,7 +50,7 @@ struct HomeActiveUsersSection: View {
                     Rectangle()
                         .fill(metric.kind.accent)
                         .frame(height: 2)
-                        .padding(.trailing, .space12)
+                        .padding(.trailing, metric.kind == users.metrics.last?.kind ? 0 : .space12)
                 }
             ) { metric, isActive in
                 ActiveUserMetricView(metric: metric, isActive: isActive)
