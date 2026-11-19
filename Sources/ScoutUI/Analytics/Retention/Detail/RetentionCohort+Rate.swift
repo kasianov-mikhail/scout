@@ -30,7 +30,11 @@ extension [RetentionCohort] {
     }
 
     var matured: [RetentionCohort] {
-        filter { RetentionCohort.rate(retention: $0.retention, onDay: RetentionDay.day7.rawValue) != nil }
+        matured(onDay: .day7)
+    }
+
+    func matured(onDay day: RetentionDay) -> [RetentionCohort] {
+        filter { RetentionCohort.rate(retention: $0.retention, onDay: day.rawValue) != nil }
     }
 
     func average(onDay day: Int) -> Double? {

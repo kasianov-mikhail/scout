@@ -26,6 +26,17 @@ struct RetentionOverviewTests {
         }
     }
 
+    private func cohorts(day30: [Double?]) -> [RetentionCohort] {
+        day30.enumerated().map { index, rate in
+            RetentionCohort(
+                id: now.addingDay(-7 * index),
+                size: 100 + index * 10,
+                retention: [1, 0.4, 0.3, 0.2, nil, rate],
+                segments: []
+            )
+        }
+    }
+
     @Test("Keeps the eight newest weeks and the eight before them")
     func windows() {
         let overview = RetentionOverview(cohorts: cohorts(day7: [Double?](repeating: 0.2, count: 20)))
@@ -90,6 +101,30 @@ struct RetentionOverviewTests {
 
         #expect(metric.rate == nil)
         #expect(metric.rateLabel == "—")
+    }
+
+    @Test("A day with no matured week leaves the delta empty")
+    func emptyDayDelta() {
+        let overview = RetentionOverview(cohorts: cohorts(day7: [Double?](repeating: 0.2, count: 16)))
+        let metric = overview.metric(day: .day30)
+
+        #expect(overview.maturedCount(day: .day30) == 0)
+        #expect(metric.points == nil)
+        #expect(metric.pointsLabel == "—")
+    }
+
+    @Test("The hero and the delta use only the matured weeks of the window")
+    func maturedWindow() {
+        let pending: [Double?] = [nil, nil, nil, nil]
+        let matured: [Double?] = [Double?](repeating: 0.2, count: 4)
+        let previous: [Double?] = [Double?](repeating: 0.1, count: 4) + [Double?](repeating: 0.4, count: 4)
+        let overview = RetentionOverview(cohorts: cohorts(day30: pending + matured + previous))
+        let metric = overview.metric(day: .day30)
+
+        #expect(overview.maturedCount(day: .day30) == 4)
+        #expect(overview.kept(day: .day30) == 124)
+        #expect(metric.points == 10)
+        #expect(metric.pointsLabel == "+10 pt")
     }
 
     @Test("The widest bar is the largest install count in the window")
