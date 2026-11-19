@@ -8,6 +8,8 @@
 import Scout
 import SwiftUI
 
+private let isSearchHidden = true
+
 extension View {
     func eventFilter(_ filter: Binding<EventQuery>, provider: EventProvider, search: EventProvider) -> some View {
         modifier(EventFilter(filter: filter, provider: provider, search: search))
@@ -26,18 +28,39 @@ private struct EventFilter: ViewModifier {
     }
 
     func body(content: Content) -> some View {
-        VStack(spacing: 0) {
-            FilterChips(query: $filter)
-            content
-        }
-        .searchable(text: $filter.text, placement: .pinned, prompt: Text(verbatim: "Search"))
-        .autocorrectionDisabled(true)
-        .alphabetKeyboard()
-        .searchSuggestions {
-            if let events = provider.records, filter.text.isEmpty {
-                ForEach(events.unique(by: \.name, max: 7), id: \.self) {
-                    AnalyticsView.Suggestion(text: $0)
-                }
+        Group {
+            if isSearchHidden {
+                withFilterChips(content)
+            } else {
+                withFilterChips(content)
+                    .searchable(text: $filter.text, placement: .pinned, prompt: Text(verbatim: "Search"))
+                    .autocorrectionDisabled(true)
+                    .alphabetKeyboard()
+                    .searchSuggestions {
+                        if let events = provider.records, filter.text.isEmpty {
+                            ForEach(events.unique(by: \.name, max: 7), id: \.self) {
+                                AnalyticsView.Suggestion(text: $0)
+                            }
+                        }
+                    }
+                    .onSubmit(of: .search) {
+                        #if os(iOS)
+                            UIApplication.shared.sendAction(
+                                #selector(UIResponder.resignFirstResponder),
+                                to: nil,
+                                from: nil,
+                                for: nil
+                            )
+                        #endif
+                    }
+                    .task(id: filter) {
+                        guard !filter.text.isEmpty, (try? await Task.sleep(for: .milliseconds(300))) != nil else {
+                            return
+                        }
+
+                        search.clear()
+                        await search.fetch(for: filter, in: database)
+                    }
             }
         }
         .toolbar {
@@ -48,29 +71,18 @@ private struct EventFilter: ViewModifier {
         .exportToolbar(
             text: EventListExport(events: activeProvider.records ?? [], isTruncated: activeProvider.cursor != nil).text
         )
-        .onSubmit(of: .search) {
-            #if os(iOS)
-                UIApplication.shared.sendAction(
-                    #selector(UIResponder.resignFirstResponder),
-                    to: nil,
-                    from: nil,
-                    for: nil
-                )
-            #endif
-        }
-        .task(id: filter) {
-            guard !filter.text.isEmpty, (try? await Task.sleep(for: .milliseconds(300))) != nil else {
-                return
-            }
-
-            search.clear()
-            await search.fetch(for: filter, in: database)
-        }
         .task(id: filter.criteria) {
             await provider.fetchLatest(for: filter, in: database)
         }
         .onChange(of: filter.criteria) { _ in
             provider.clear()
+        }
+    }
+
+    private func withFilterChips(_ content: Content) -> some View {
+        VStack(spacing: 0) {
+            FilterChips(query: $filter)
+            content
         }
     }
 }
