@@ -8,6 +8,16 @@
 import Foundation
 import Scout
 
+extension Backend {
+    var isCloudKit: Bool {
+        if case .cloudKit = engine {
+            true
+        } else {
+            false
+        }
+    }
+}
+
 extension [Backend] {
     func active(id: String) -> Backend? {
         first { $0.id == id } ?? first
