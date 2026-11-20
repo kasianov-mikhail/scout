@@ -37,9 +37,7 @@ private struct Outcome {
 }
 
 extension RecordSender {
-    @discardableResult
-    func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws -> Int {
-        var delivered = 0
+    func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws {
         var count = DeliveryEntry.pageSize
 
         while count == DeliveryEntry.pageSize {
@@ -50,13 +48,12 @@ extension RecordSender {
                 }
             }
 
-            guard !objects.isEmpty else { return delivered }
+            guard !objects.isEmpty else { return }
 
             let records = await context.perform {
                 objects.map(\.record)
             }
             let outcome = await send(records)
-            delivered += outcome.delivered.count
 
             try await context.perform {
                 for index in outcome.delivered where objects[index].record == records[index] {
@@ -82,8 +79,6 @@ extension RecordSender {
 
             count = objects.count
         }
-
-        return delivered
     }
 
     private func send(_ records: [Record]) async -> Outcome {
@@ -98,6 +93,7 @@ extension RecordSender {
             do {
                 try await database.write(records: Array(batch))
                 outcome.delivered += batch.indices
+                await DatabaseChangeHub.shared.publish(DatabaseChange(backendID: id, origin: .local))
             } catch {
                 if error is CancellationError || (error as? any TransientFailure)?.isTransient == true {
                     outcome.error = error

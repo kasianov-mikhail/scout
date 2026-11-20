@@ -8,19 +8,15 @@
 import CoreData
 
 extension Backend {
-    @discardableResult
-    func deliver<T: DeliverableEntry>(_ type: T.Type, in context: NSManagedObjectContext, log: FailureLog) async -> Int {
+    func deliver<T: DeliverableEntry>(_ type: T.Type, in context: NSManagedObjectContext, log: FailureLog) async {
         do {
-            return try await RecordSender<T>(backend: self).deliver(in: context)
+            try await RecordSender<T>(backend: self).deliver(in: context)
         } catch is CancellationError {
             // A cancelled pass leaves the records pending for the next one.
-            return 0
         } catch let error as any TransientFailure where error.isTransient {
             report(failure: error, log: log)
-            return 0
         } catch {
             print("Failed to deliver \(type) to backend \(id): \(error)")
-            return 0
         }
     }
 

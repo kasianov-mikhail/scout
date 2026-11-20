@@ -96,8 +96,7 @@ extension Runtime {
         let table = table
 
         table.startListening {
-            let counts = try await backends.synchronize(using: dispatcher)
-            await publish(counts)
+            try await backends.synchronize(using: dispatcher)
         }
 
         if AppLifecycle.isInForeground {
@@ -109,17 +108,10 @@ extension Runtime {
 
         Task {
             do {
-                let counts = try await backends.synchronize(using: dispatcher)
-                await publish(counts)
+                try await backends.synchronize(using: dispatcher)
             } catch {
                 print("Failed to run the first sync: \(error)")
             }
-        }
-    }
-
-    private func publish(_ counts: [String: Int]) async {
-        for (id, delivered) in counts where delivered > 0 {
-            await DatabaseChangeHub.shared.publish(DatabaseChange(backendID: id, origin: .local))
         }
     }
 
