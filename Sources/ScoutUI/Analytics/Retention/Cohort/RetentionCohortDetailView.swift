@@ -17,8 +17,7 @@ struct RetentionCohortDetailView: View {
 
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 0) {
-                RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle)
-                    .padding(.bottom, .space6)
+                RetentionHero(value: detail.installsLabel, subtitle: detail.subtitle, showsSeparator: false)
                     .padding(.horizontal, .gutter)
 
                 Section(title: "Come back on", note: "│ \(detail.averageNote)") {
