@@ -14,14 +14,16 @@ public struct Backend: Sendable {
     package let displayName: String
     package let engine: Engine
     package let checkAccess: AccessCheck?
+    package var changeSource: (any ChangeSource)?
     private let probeAccess: AccessCheck?
 
-    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, probeAccess: AccessCheck? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, changeSource: (any ChangeSource)? = nil, probeAccess: AccessCheck? = nil) {
         self.id = id
         self.database = database
         self.displayName = displayName
         self.engine = engine
         self.checkAccess = checkAccess
+        self.changeSource = changeSource
         self.probeAccess = probeAccess ?? checkAccess
     }
 }
@@ -48,4 +50,8 @@ extension Backend {
         case readOnly
         case unreachable
     }
+}
+
+package protocol ChangeSource: Sendable {
+    func start() async
 }

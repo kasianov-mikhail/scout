@@ -115,12 +115,19 @@ extension Runtime {
         }
     }
 
+    private func publishAll() async {
+        for backend in backends {
+            await DatabaseChangeHub.shared.publish(DatabaseChange(backendID: backend.id, origin: .local))
+        }
+    }
+
     private var table: ActionTable {
         ActionTable(actions: [
             AppLifecycle.willEnterForeground: {
                 try await identity.enter()
                 record { $0.resume() }
                 recordCurrentConditions()
+                await publishAll()
             },
             AppLifecycle.didEnterBackground: {
                 try await persistentContainer.save(writes: drainPendingWrites())
