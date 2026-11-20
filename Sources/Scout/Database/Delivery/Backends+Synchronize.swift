@@ -9,7 +9,10 @@
 
 extension [Backend] {
     @MainActor
-    func synchronize(using dispatcher: Dispatcher) async throws {
+    @discardableResult
+    func synchronize(using dispatcher: Dispatcher) async throws -> [String: Int] {
+        let counts = Protected<[String: Int]>([:])
+
         try await dispatcher.performEnsuringBackground {
             try await persistentContainer.performBackgroundTask { context in
                 context.mergePolicy = NSMergePolicy.scout
@@ -21,18 +24,23 @@ extension [Backend] {
             context.mergePolicy = NSMergePolicy.scout
             context.automaticallyMergesChangesFromParent = true
 
-            await withTaskGroup(of: Void.self) { group in
+            await withTaskGroup(of: (String, Int).self) { group in
                 for backend in await available(log: .console) {
                     for type in SyncableEntry.deliverableTypes {
                         group.addTask {
-                            await backend.deliver(type, in: context, log: .console)
+                            (backend.id, await backend.deliver(type, in: context, log: .console))
                         }
                     }
                     if let symbols = BundledSymbols.main {
                         group.addTask {
                             await backend.upload(symbols: symbols, defaults: .standard)
+                            return (backend.id, 0)
                         }
                     }
+                }
+
+                for await (id, delivered) in group where delivered > 0 {
+                    counts.mutate { $0[id, default: 0] += delivered }
                 }
             }
             try Task.checkCancellation()
@@ -43,5 +51,7 @@ extension [Backend] {
                 try context.save()
             }
         }
+
+        return counts.current
     }
 }

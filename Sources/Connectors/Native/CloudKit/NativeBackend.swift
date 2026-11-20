@@ -32,6 +32,12 @@ extension Backend {
             }
         }
 
+        #if os(iOS)
+            let changeSource: (any ChangeSource)? = CloudSubscriptionSource(container: container)
+        #else
+            let changeSource: (any ChangeSource)? = nil
+        #endif
+
         return Backend(
             id: id,
             database: database,
@@ -39,13 +45,14 @@ extension Backend {
             engine: .cloudKit,
             checkAccess: {
                 try await container.accountStatus().verify()
-            }
+            },
+            changeSource: changeSource
         )
     }
 }
 
 extension CKContainer {
-    fileprivate func store() async throws -> EntityStore {
+    func store() async throws -> EntityStore {
         let registry = SchemaRegistry(database: publicCloudDatabase)
         let store = EntityStore(database: publicCloudDatabase, registry: registry)
 

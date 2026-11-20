@@ -59,6 +59,7 @@ private struct EventFilter: ViewModifier {
                         }
 
                         search.clear()
+                        search.filter = filter
                         await search.fetch(for: filter, in: database)
                     }
             }
@@ -72,6 +73,7 @@ private struct EventFilter: ViewModifier {
             text: EventListExport(events: activeProvider.records ?? [], isTruncated: activeProvider.cursor != nil).text
         )
         .task(id: filter.criteria) {
+            provider.filter = filter
             await provider.fetchLatest(for: filter, in: database)
         }
         .onChange(of: filter.criteria) { _ in

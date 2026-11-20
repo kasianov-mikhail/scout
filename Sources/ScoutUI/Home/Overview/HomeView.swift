@@ -15,6 +15,7 @@ struct HomeView: View {
     @State private var path: [HomeDestination] = []
 
     @StateObject private var tint = Tint()
+    @StateObject private var signal = ChangeSignal()
 
     @State private var cache: RecordCache
 
@@ -80,7 +81,27 @@ struct HomeView: View {
         .environment(\.locale, Locale(identifier: "en_US"))
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
+        .environment(\.changes, signal)
         .environmentObject(tint)
+        .task(id: backend?.id) {
+            await observeChanges()
+        }
+    }
+
+    private func observeChanges() async {
+        guard let backend else {
+            return
+        }
+
+        let stream = await DatabaseChangeHub.shared.stream()
+
+        for await change in stream where change.backendID.isEmpty || change.backendID == backend.id {
+            if change.origin == .remote {
+                await cache.removeAll(scope: backend.id)
+            }
+
+            signal.bump()
+        }
     }
 }
 

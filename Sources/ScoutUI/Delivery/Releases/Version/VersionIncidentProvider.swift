@@ -34,4 +34,8 @@ final class VersionIncidentProvider<Element: RecordDecodable & Incident>: FeedPr
     func fetchAgain(in database: DatabaseReader) async {
         await fetchAgain(matching: query, in: database)
     }
+
+    func refresh(in database: DatabaseReader) async {
+        await fetchAgain(in: database)
+    }
 }

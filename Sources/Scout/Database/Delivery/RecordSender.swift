@@ -37,7 +37,9 @@ private struct Outcome {
 }
 
 extension RecordSender {
-    func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws {
+    @discardableResult
+    func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws -> Int {
+        var delivered = 0
         var count = DeliveryEntry.pageSize
 
         while count == DeliveryEntry.pageSize {
@@ -48,12 +50,13 @@ extension RecordSender {
                 }
             }
 
-            guard !objects.isEmpty else { return }
+            guard !objects.isEmpty else { return delivered }
 
             let records = await context.perform {
                 objects.map(\.record)
             }
             let outcome = await send(records)
+            delivered += outcome.delivered.count
 
             try await context.perform {
                 for index in outcome.delivered where objects[index].record == records[index] {
@@ -79,6 +82,8 @@ extension RecordSender {
 
             count = objects.count
         }
+
+        return delivered
     }
 
     private func send(_ records: [Record]) async -> Outcome {

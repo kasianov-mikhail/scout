@@ -17,11 +17,23 @@ struct AnalyticsView: View {
     @Environment(\.database) private var database
 
     var body: some View {
-        EventList(provider: activeProvider, retry: retry) { EmptyView() }
-            .eventFilter($filter, provider: provider, search: search)
-            .navigationTitle(en: "Events")
-            .inlineNavigationTitle()
-            .resetsTint()
+        EventList(
+            provider: activeProvider,
+            retry: retry,
+            newEvents: EventPendingSummary(counts: activeProvider.newCounts, limit: 4),
+            showPending: {
+                Task {
+                    await activeProvider.refresh(in: database)
+                }
+            }
+        ) {
+            EmptyView()
+        }
+        .eventFilter($filter, provider: provider, search: search)
+        .fetchTask([activeProvider])
+        .navigationTitle(en: "Events")
+        .inlineNavigationTitle()
+        .resetsTint()
     }
 
     private var activeProvider: EventProvider {
