@@ -16,18 +16,17 @@ struct EventRow: View {
             EventView(event: event)
         } label: {
             HStack(spacing: .space10) {
-                EventLevelGlyph(level: event.level)
-                    .frame(width: 16, height: 16)
+                EventLevelGlyph(level: event.level ?? .info)
 
                 Text(verbatim: event.name)
                     .font(.scoutEventName)
-                    .foregroundStyle(event.level == .critical ? criticalNameColor : Color.textPrimary)
+                    .foregroundStyle((event.level ?? .info).nameColor)
                     .lineLimit(1)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fadingEdge(width: 28)
 
                 if let date = event.date {
-                    Text(verbatim: eventTimeFormatter.string(from: date))
+                    Text(verbatim: DateFormatter(format: "HH:mm:ss").string(from: date))
                         .font(.scoutValue)
                         .foregroundStyle(Color.textMuted)
                         .lineLimit(1)
@@ -49,63 +48,6 @@ struct EventRow: View {
                 Separator()
                     .padding(.leading, 42)
             }
-    }
-}
-
-private let eventTimeFormatter = DateFormatter(format: "HH:mm:ss")
-
-private let criticalNameColor = Color.textDanger
-
-private struct EventLevelGlyph: View {
-    let level: EventLevel?
-
-    var body: some View {
-        Canvas { context, size in
-            context.scaleBy(x: size.width / 20, y: size.width / 20)
-            draw(in: &context)
-        }
-        .accessibilityElement()
-        .accessibilityLabel(Text(verbatim: (level ?? .info).description))
-    }
-
-    private func draw(in context: inout GraphicsContext) {
-        let ring = Path(ellipseIn: CGRect(x: 3.5, y: 3.5, width: 13, height: 13))
-
-        switch level ?? .info {
-        case .trace:
-            context.stroke(
-                ring,
-                with: .color(Color.fillLevel),
-                style: StrokeStyle(lineWidth: 1.6, lineCap: .round, dash: [3.76, 2.2, 0.01, 2.2])
-            )
-        case .debug:
-            context.stroke(ring, with: .color(Color.fillLevel), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
-        case .info:
-            context.fill(ring, with: .color(Color.fillLevel.opacity(0.35)))
-            context.stroke(ring, with: .color(Color.fillLevel), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
-        case .notice:
-            context.fill(
-                Path(ellipseIn: CGRect(x: 2.8, y: 2.8, width: 14.4, height: 14.4)),
-                with: .color(Color.fillLevel)
-            )
-        case .warning:
-            context.stroke(ring, with: .color(Color.textCaution), style: StrokeStyle(lineWidth: 1.6, lineCap: .round))
-            context.fill(
-                Path { path in
-                    path.addArc(center: CGPoint(x: 10, y: 10), radius: 6.5, startAngle: .degrees(-90), endAngle: .degrees(90), clockwise: false)
-                    path.closeSubpath()
-                },
-                with: .color(Color.textCaution)
-            )
-        case .error:
-            context.fill(ring, with: .color(Color.textWarning))
-        case .critical:
-            context.fill(ring, with: .color(Color.textDanger))
-            context.fill(
-                Path(ellipseIn: CGRect(x: 7.4, y: 7.4, width: 5.2, height: 5.2)),
-                with: .color(.white)
-            )
-        }
     }
 }
 

@@ -12,6 +12,8 @@ struct EventList<Header: View>: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
     var retry: (() async -> Void)? = nil
+    var newEvents = EventPendingSummary.empty
+    var showPending: () -> Void = {}
     @ViewBuilder let header: () -> Header
 
     var body: some View {
@@ -26,21 +28,24 @@ struct EventList<Header: View>: View {
                     code: "logger.info(\"button_tapped\")"
                 )
             } else {
-                ScrollView {
-                    if let events = provider.records {
-                        LazyVStack(alignment: .leading, spacing: 0) {
-                            header()
-                            rows(for: events)
-                        }
-                        .padding(.horizontal, .gutter)
-                        .animation(nil, value: UUID())
-                        .transition(.opacity)
-                    } else {
-                        EventListPlaceholder()
+                VStack(spacing: 0) {
+                    EventPendingRow(summary: newEvents, show: showPending)
+
+                    ScrollView {
+                        if let events = provider.records {
+                            LazyVStack(alignment: .leading, spacing: 0) {
+                                header()
+                                rows(for: events)
+                            }
+                            .padding(.horizontal, .gutter)
+                            .animation(nil, value: UUID())
                             .transition(.opacity)
+                        } else {
+                            EventListPlaceholder().transition(.opacity)
+                        }
                     }
+                    .scrollIndicators(.hidden)
                 }
-                .scrollIndicators(.hidden)
             }
         }
         .animation(.easeOut(duration: 0.2), value: provider.records == nil)
@@ -68,23 +73,30 @@ struct EventList<Header: View>: View {
     }
 }
 
-extension EventList where Header == EmptyView {
-    init(provider: EventProvider, retry: (() async -> Void)? = nil) {
-        self.init(provider: provider, retry: retry) { EmptyView() }
-    }
-}
-
 #Preview("Rows") {
     NavigationStack {
-        EventList(provider: .init(.samples))
+        EventList(provider: .init(.samples)) { EmptyView() }
             .navigationTitle(en: "Events")
+    }
+    .environmentObject(Tint())
+}
+
+#Preview("New Events") {
+    NavigationStack {
+        EventList(
+            provider: .init(.samples),
+            newEvents: EventPendingSummary(counts: [.critical: 1, .error: 2, .warning: 1, .info: 8], limit: 4)
+        ) {
+            EmptyView()
+        }
+        .navigationTitle(en: "Events")
     }
     .environmentObject(Tint())
 }
 
 #Preview("Loading") {
     NavigationStack {
-        EventList(provider: .init())
+        EventList(provider: .init()) { EmptyView() }
             .navigationTitle(en: "Events")
     }
     .environmentObject(Tint())
@@ -92,6 +104,6 @@ extension EventList where Header == EmptyView {
 
 #Preview("Empty State") {
     NavigationStack {
-        EventList(provider: .init([]))
+        EventList(provider: .init([])) { EmptyView() }
     }
 }

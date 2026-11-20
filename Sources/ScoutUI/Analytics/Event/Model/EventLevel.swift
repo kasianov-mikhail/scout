@@ -28,6 +28,15 @@ extension EventLevel {
         }
     }
 
+    var nameColor: Color {
+        switch self {
+        case .critical:
+            .textDanger
+        case .notice, .debug, .trace, .info, .warning, .error:
+            .textPrimary
+        }
+    }
+
     var color: Color? {
         switch self {
         case .notice, .debug, .trace, .info:
