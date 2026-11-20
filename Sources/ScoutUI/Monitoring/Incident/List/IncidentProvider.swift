@@ -34,6 +34,15 @@ final class IncidentProvider<Element: RecordDecodable & Incident>: FeedProvider<
         await loadKeys(in: database)
     }
 
+    func refresh(in database: DatabaseReader) async {
+        await fetchAgain(in: database)
+    }
+
+    func fetchNewer(in database: DatabaseReader) async {
+        await fetchNewer(matching: Element.query(in: Date().trailingYear), in: database)
+        await loadKeys(in: database)
+    }
+
     @discardableResult
     override func fetchMore(cursor: RecordCursor, in database: RecordReader) async -> Bool {
         let succeeded = await super.fetchMore(cursor: cursor, in: database)

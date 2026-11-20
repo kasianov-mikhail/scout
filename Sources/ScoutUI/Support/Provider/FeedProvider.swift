@@ -15,6 +15,8 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     @Published var cursor: RecordCursor?
     @Published var message: Message?
 
+    @Published private(set) var pending: [Element] = []
+
     // Set when a load fails while the feed is still empty, so the owning view can
     // render a full error state instead of an indefinite loading indicator.
     @Published private(set) var error: Error?
@@ -78,6 +80,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
                 return
             }
             try replace(records: results.records.map(Element.init), cursor: results.cursor)
+            pending = []
             error = nil
         } catch is CancellationError {
             // A cancelled task (e.g. the view was recreated) leaves the feed untouched so it retries.
@@ -87,6 +90,40 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
             }
             message = Message(error.localizedDescription, level: .error)
         }
+    }
+
+    func fetchNewer(matching query: RecordQuery, in database: RecordReader) async {
+        if ProcessInfo.processInfo.isPreview {
+            return
+        }
+
+        let generation = generation
+
+        do {
+            let results = try await database.read(matching: query, fields: Element.desiredKeys)
+            guard generation == self.generation else {
+                return
+            }
+
+            let latest = try results.records.map(Element.init)
+            let known = Set((records ?? []).map(\.id)).union(pending.map(\.id))
+            pending = dedup(new: latest.filter { !known.contains($0.id) }, old: pending)
+            error = nil
+        } catch is CancellationError {
+        } catch {
+            if records == nil {
+                self.error = error
+            }
+        }
+    }
+
+    func showPending() {
+        guard !pending.isEmpty else {
+            return
+        }
+
+        records = dedup(new: pending, old: records ?? [])
+        pending = []
     }
 
     @discardableResult
@@ -115,6 +152,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
 
     func clear() {
         replace(records: nil, cursor: nil)
+        pending = []
         error = nil
     }
 

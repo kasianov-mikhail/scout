@@ -11,7 +11,7 @@ import SwiftUI
 
 @MainActor
 final class EventProvider: FeedProvider<Event>, Refreshable {
-    let filter: EventQuery
+    var filter: EventQuery
 
     init(_ records: [Event]? = nil, filter: EventQuery = EventQuery()) {
         self.filter = filter
@@ -33,6 +33,14 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
 
     func fetchAgain(in database: DatabaseReader) async {
         await fetch(for: filter, in: database)
+    }
+
+    func refresh(in database: DatabaseReader) async {
+        await fetch(for: filter, in: database)
+    }
+
+    func fetchNewer(in database: DatabaseReader) async {
+        await fetchNewer(matching: query(for: filter.criteria), in: database)
     }
 
     private func query(for filter: EventQuery) -> RecordQuery {

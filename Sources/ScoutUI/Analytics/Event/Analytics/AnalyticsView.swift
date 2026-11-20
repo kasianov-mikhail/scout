@@ -17,11 +17,19 @@ struct AnalyticsView: View {
     @Environment(\.database) private var database
 
     var body: some View {
-        EventList(provider: activeProvider, retry: retry) { EmptyView() }
-            .eventFilter($filter, provider: provider, search: search)
-            .navigationTitle(en: "Events")
-            .inlineNavigationTitle()
-            .resetsTint()
+        EventList(
+            provider: activeProvider,
+            retry: retry,
+            pending: activeProvider.pending,
+            showPending: { activeProvider.showPending() }
+        ) {
+            EmptyView()
+        }
+        .eventFilter($filter, provider: provider, search: search)
+        .fetchTask([activeProvider])
+        .navigationTitle(en: "Events")
+        .inlineNavigationTitle()
+        .resetsTint()
     }
 
     private var activeProvider: EventProvider {

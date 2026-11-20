@@ -27,6 +27,7 @@ struct AccountGate<Content: View>: View {
         }
         .task(id: backend.id) {
             await provider.probe(backend)
+            await backend.changeSource?.start()
         }
         .onReceive(NotificationCenter.default.publisher(for: AppLifecycle.willEnterForeground)) { _ in
             Task {
