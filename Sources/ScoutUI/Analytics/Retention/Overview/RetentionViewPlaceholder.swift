@@ -16,8 +16,8 @@ struct RetentionViewPlaceholder: View {
                 .padding(.horizontal, .gutter)
 
             RetentionDayTabs(overview: nil, day: $day)
-                .padding(.bottom, .space6)
                 .padding(.horizontal, .gutter)
+                .zIndex(1)
 
             Section(title: "Kept per install week", note: "day \(day.rawValue)") {
                 ForEach(0..<12, id: \.self) { index in

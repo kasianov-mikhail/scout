@@ -11,34 +11,38 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
     let values: [Value]
     let isSelected: (Value) -> Bool
     let isLoading: Bool
-    var spacing: CGFloat = .space12
-    var showsDividers = false
+    let spacing: CGFloat
+    let showsDividers: Bool
+    let sitsOnSectionGap: Bool
     let onSelect: ((Value) -> Void)?
     let indicator: (Value) -> Indicator
     let content: (Value, Bool) -> Content
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var indicatorNamespace
     @State private var indicatorIndex: Int
 
-    init(values: [Value], isSelected: @escaping (Value) -> Bool, isLoading: Bool, spacing: CGFloat = .space12, showsDividers: Bool = false, onSelect: ((Value) -> Void)?, @ViewBuilder indicator: @escaping (Value) -> Indicator, @ViewBuilder content: @escaping (Value, Bool) -> Content) {
+    init(values: [Value], isSelected: @escaping (Value) -> Bool, isLoading: Bool, spacing: CGFloat = .space12, showsDividers: Bool = false, sitsOnSectionGap: Bool = false, onSelect: ((Value) -> Void)?, @ViewBuilder indicator: @escaping (Value) -> Indicator, @ViewBuilder content: @escaping (Value, Bool) -> Content) {
         self.values = values
         self.isSelected = isSelected
         self.isLoading = isLoading
         self.spacing = spacing
         self.showsDividers = showsDividers
+        self.sitsOnSectionGap = sitsOnSectionGap
         self.onSelect = onSelect
         self.indicator = indicator
         self.content = content
         self._indicatorIndex = State(initialValue: values.firstIndex(where: isSelected) ?? 0)
     }
 
-    init(values: [Value], isSelected: @escaping (Value) -> Bool, isLoading: Bool, spacing: CGFloat = .space12, showsDividers: Bool = false, onSelect: ((Value) -> Void)?, @ViewBuilder content: @escaping (Value, Bool) -> Content) where Indicator == EmptyView {
+    init(values: [Value], isSelected: @escaping (Value) -> Bool, isLoading: Bool, spacing: CGFloat = .space12, showsDividers: Bool = false, sitsOnSectionGap: Bool = false, onSelect: ((Value) -> Void)?, @ViewBuilder content: @escaping (Value, Bool) -> Content) where Indicator == EmptyView {
         self.init(
             values: values,
             isSelected: isSelected,
             isLoading: isLoading,
             spacing: spacing,
             showsDividers: showsDividers,
+            sitsOnSectionGap: sitsOnSectionGap,
             onSelect: onSelect,
             indicator: { _ in EmptyView() },
             content: content
@@ -52,10 +56,12 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
             }
         }
         .background(alignment: .bottom) {
-            Separator()
+            if !sitsOnSectionGap {
+                Separator()
+            }
         }
         .onChange(of: selectedIndex) { newIndex in
-            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.28)) {
+            withAnimation(reduceMotion ? nil : .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.28)) {
                 indicatorIndex = newIndex
             }
         }
@@ -76,12 +82,6 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
             .padding(.trailing, isLast ? 0 : (showsDividers ? .space10 : 0))
             .frame(maxWidth: .infinity, alignment: .leading)
             .contentShape(Rectangle())
-            .overlay(alignment: .bottomLeading) {
-                if isActive, index == indicatorIndex {
-                    indicator(value)
-                        .matchedGeometryEffect(id: "indicator", in: indicatorNamespace)
-                }
-            }
 
         Group {
             if let onSelect {
@@ -94,6 +94,14 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
                 .accessibilityAddTraits(selected ? .isSelected : [])
             } else {
                 padded
+            }
+        }
+        .overlay(alignment: .bottomLeading) {
+            if isActive, index == indicatorIndex {
+                indicator(value)
+                    .matchedGeometryEffect(id: "indicator", in: indicatorNamespace)
+                    .offset(y: sitsOnSectionGap ? 1 : 0)
+                    .allowsHitTesting(false)
             }
         }
         .overlay(alignment: .trailing) {

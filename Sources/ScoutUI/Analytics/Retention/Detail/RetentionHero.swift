@@ -11,17 +11,20 @@ struct RetentionHero: View {
     let value: String?
     let subtitle: String
     let placeholderWidth: CGFloat
+    let showsSeparator: Bool
 
-    init(value: String, subtitle: String) {
+    init(value: String, subtitle: String, showsSeparator: Bool = true) {
         self.value = value
         self.subtitle = subtitle
         self.placeholderWidth = 0
+        self.showsSeparator = showsSeparator
     }
 
-    init(subtitle: String, placeholderWidth: CGFloat) {
+    init(subtitle: String, placeholderWidth: CGFloat, showsSeparator: Bool = true) {
         self.value = nil
         self.subtitle = subtitle
         self.placeholderWidth = placeholderWidth
+        self.showsSeparator = showsSeparator
     }
 
     var body: some View {
@@ -45,7 +48,9 @@ struct RetentionHero: View {
         .padding(.bottom, .space12)
         .frame(maxWidth: .infinity, alignment: .leading)
         .overlay(alignment: .bottom) {
-            Separator()
+            if showsSeparator {
+                Separator()
+            }
         }
     }
 }

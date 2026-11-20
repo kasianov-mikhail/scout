@@ -57,8 +57,8 @@ struct RetentionView: View {
                 .padding(.horizontal, .gutter)
 
             RetentionDayTabs(overview: overview, day: $day)
-                .padding(.bottom, .space6)
                 .padding(.horizontal, .gutter)
+                .zIndex(1)
 
             Section(title: "Kept per install week", note: "day \(day.rawValue)") {
                 ForEach(Array(overview.weeks.enumerated()), id: \.element.id) { index, cohort in

@@ -18,11 +18,20 @@ struct RetentionDayTabs: View {
             isLoading: overview == nil,
             spacing: 0,
             showsDividers: true,
+            sitsOnSectionGap: true,
             onSelect: { day = $0 },
             indicator: { _ in
+                let shape: AnyShape =
+                    if #available(iOS 17.0, macOS 14.0, *) {
+                        AnyShape(UnevenRoundedRectangle(topLeadingRadius: 1, topTrailingRadius: 1))
+                    } else {
+                        AnyShape(Rectangle())
+                    }
+
                 Rectangle()
                     .fill(Color.fillSuccess)
-                    .frame(height: 2)
+                    .frame(height: .ruleThick)
+                    .clipShape(shape)
                     .padding(.horizontal, .space10)
             }
         ) { item, isActive in
@@ -48,6 +57,7 @@ struct RetentionDayTabs: View {
                 Text(verbatim: metric.pointsLabel)
                     .font(.scoutFootnoteStrong)
                     .foregroundStyle(metric.isRising ? Color.trendPositive : Color.textMuted)
+                    .frame(height: 14)
             } else {
                 SkeletonBar(width: 46, height: 14, delay: 0.16)
                     .frame(height: 26)
@@ -57,7 +67,7 @@ struct RetentionDayTabs: View {
             }
         }
         .padding(.top, .space12)
-        .padding(.bottom, .space12)
+        .padding(.bottom, 17)
     }
 }
 
@@ -65,9 +75,14 @@ struct RetentionDayTabs: View {
     ScrollView {
         LazyVStack(alignment: .leading, spacing: 0) {
             RetentionDayTabs(overview: RetentionOverview(cohorts: .samples), day: .constant(.day7))
+                .padding(.horizontal, .gutter)
+                .zIndex(1)
+
+            SectionGap()
+
             RetentionDayTabs(overview: nil, day: .constant(.day7))
+                .padding(.horizontal, .gutter)
         }
-        .padding(.horizontal, .gutter)
     }
     .scrollIndicators(.hidden)
 }
