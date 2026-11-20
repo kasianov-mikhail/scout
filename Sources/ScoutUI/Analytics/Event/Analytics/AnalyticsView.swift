@@ -17,7 +17,7 @@ struct AnalyticsView: View {
     @Environment(\.database) private var database
 
     var body: some View {
-        EventList(provider: activeProvider, retry: retry)
+        EventList(provider: activeProvider, retry: retry) { EmptyView() }
             .eventFilter($filter, provider: provider, search: search)
             .navigationTitle(en: "Events")
             .inlineNavigationTitle()
