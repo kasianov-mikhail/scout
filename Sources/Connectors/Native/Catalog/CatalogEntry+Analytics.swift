@@ -20,7 +20,7 @@ extension CatalogEntry {
             .init(name: "param_count", type: .int),
             .init(name: "date", type: .timestamp),
         ],
-        aggregates: [.count(by: "name", at: "date")]
+        aggregates: [.count(by: "name", at: "date"), .count(by: "level", at: "date")]
     )
 
     static let screen = CatalogEntry(

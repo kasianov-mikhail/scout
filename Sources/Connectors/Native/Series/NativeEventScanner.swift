@@ -17,11 +17,11 @@ struct NativeEventScanner {
     var series: [MetricSeries] {
         get async throws {
             let events = store.query(EventEntry.recordType)
-            let named = query.name.map { events.filter("name", .equals, .string($0)) } ?? events
+            let named = query.group == .name ? (query.name.map { events.filter("name", .equals, .string($0)) } ?? events) : events
 
             let points = try await named.series(
                 metric: .sum,
-                group: "name",
+                group: query.group.rawValue,
                 range: query.bucket.start(of: query.range.lowerBound)..<query.range.upperBound
             )
 

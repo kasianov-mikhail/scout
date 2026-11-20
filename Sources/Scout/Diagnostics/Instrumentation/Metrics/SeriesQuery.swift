@@ -28,12 +28,18 @@ package enum SeriesBucket: String, Sendable {
 }
 
 package struct EventSeriesQuery: SeriesQuery {
+    package enum Group: String, Sendable {
+        case name, level
+    }
+
     package var name: String?
+    package var group: Group
     package var bucket: SeriesBucket
     package var range: Range<Date>
 
-    package init(name: String? = nil, bucket: SeriesBucket = .day, range: Range<Date>) {
+    package init(name: String? = nil, group: Group = .name, bucket: SeriesBucket = .day, range: Range<Date>) {
         self.name = name
+        self.group = group
         self.bucket = bucket
         self.range = range
     }
