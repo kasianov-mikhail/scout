@@ -35,7 +35,8 @@ extension HTTPDatabase: SeriesReader {
             source: "event",
             query: query,
             filters: [
-                query.name.map { "name=\(Self.encode($0))" }
+                query.name.map { "name=\(Self.encode($0))" },
+                query.group == .name ? nil : "group=\(query.group.rawValue)",
             ]
         )
     }
