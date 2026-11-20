@@ -93,6 +93,7 @@ extension RecordSender {
             do {
                 try await database.write(records: Array(batch))
                 outcome.delivered += batch.indices
+                await DatabaseChangeHub.shared.publish(DatabaseChange(backendID: id, origin: .local))
             } catch {
                 if error is CancellationError || (error as? any TransientFailure)?.isTransient == true {
                     outcome.error = error
