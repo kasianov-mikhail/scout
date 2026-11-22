@@ -11,10 +11,38 @@ import SwiftUI
 struct EventList<Header: View>: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
+    var newEvents: NewEvents? = nil
     var retry: (() async -> Void)? = nil
     @ViewBuilder let header: () -> Header
 
     var body: some View {
+        ScrollViewReader { scroll in
+            VStack(spacing: 0) {
+                ZStack(alignment: .top) {
+                    if let newEvents {
+                        NewEventsRow(counts: newEvents.counts, hasMore: newEvents.hasMore) {
+                            Task {
+                                if await newEvents.show() {
+                                    scroll.scrollTo(ScrollTarget.top, anchor: .top)
+                                }
+                            }
+                        }
+                        .transition(.identity)
+                    }
+                }
+                .frame(height: newEvents == nil ? 0 : .rowRegular, alignment: .top)
+                .clipped()
+
+                content
+            }
+            .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.36), value: newEvents != nil)
+        }
+        .animation(.easeOut(duration: 0.2), value: provider.records == nil)
+        .loadingInk(isLoading: provider.records == nil)
+        .message($provider.message)
+    }
+
+    private var content: some View {
         Group {
             if let error = provider.error {
                 ErrorView(description: error.localizedDescription, retry: retryLoad)
@@ -29,6 +57,7 @@ struct EventList<Header: View>: View {
                 ScrollView {
                     if let events = provider.records {
                         LazyVStack(alignment: .leading, spacing: 0) {
+                            Color.clear.frame(height: 0).id(ScrollTarget.top)
                             header()
                             rows(for: events)
                         }
@@ -43,9 +72,16 @@ struct EventList<Header: View>: View {
                 .scrollIndicators(.hidden)
             }
         }
-        .animation(.easeOut(duration: 0.2), value: provider.records == nil)
-        .loadingInk(isLoading: provider.records == nil)
-        .message($provider.message)
+    }
+
+    struct NewEvents {
+        let counts: [EventLevel: Int]
+        let hasMore: Bool
+        let show: () async -> Bool
+    }
+
+    private enum ScrollTarget: Hashable {
+        case top
     }
 
     private func retryLoad() async {
@@ -69,8 +105,8 @@ struct EventList<Header: View>: View {
 }
 
 extension EventList where Header == EmptyView {
-    init(provider: EventProvider, retry: (() async -> Void)? = nil) {
-        self.init(provider: provider, retry: retry) { EmptyView() }
+    init(provider: EventProvider, newEvents: NewEvents? = nil, retry: (() async -> Void)? = nil) {
+        self.init(provider: provider, newEvents: newEvents, retry: retry) { EmptyView() }
     }
 }
 
@@ -94,4 +130,12 @@ extension EventList where Header == EmptyView {
     NavigationStack {
         EventList(provider: .init([]))
     }
+}
+
+#Preview("New Events") {
+    NavigationStack {
+        EventList(provider: .init(.samples), newEvents: .init(counts: [.critical: 1, .error: 2, .warning: 1, .info: 8], hasMore: false) { true })
+            .navigationTitle(en: "Events")
+    }
+    .environmentObject(Tint())
 }
