@@ -65,7 +65,7 @@ struct HomeView: View {
             }
             .toolbarBackground(.visible, for: .navigationBar)
             .navigationTitle(en: "Home")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
             .dismissable()
             .id(backend?.id)
             .connectionToolbar(backends: backends, activeID: active, cache: cache)

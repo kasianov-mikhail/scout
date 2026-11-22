@@ -101,6 +101,6 @@ struct ReleaseHealthViewPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Releases")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

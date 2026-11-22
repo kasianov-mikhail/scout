@@ -169,7 +169,7 @@ struct HomeList: View {
     NavigationStack {
         HomeList(snapshot: .sample, path: .constant([]))
             .navigationTitle(en: "Home")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
     }
     .environmentObject(Tint())
 }
@@ -178,7 +178,7 @@ struct HomeList: View {
     NavigationStack {
         HomeList(snapshot: .empty, path: .constant([]))
             .navigationTitle(en: "Home")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
     }
     .environmentObject(Tint())
 }
@@ -187,6 +187,6 @@ struct HomeList: View {
     NavigationStack {
         HomeList(path: .constant([]))
             .navigationTitle(en: "Home")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
     }
 }

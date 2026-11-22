@@ -42,7 +42,7 @@ struct ReleaseHealthView: View {
         .loadingInk(isLoading: provider.isLoading)
         .fetchTask([provider])
         .navigationTitle(en: "Releases")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 
     private func content(releases: [ReleaseHealth]) -> some View {

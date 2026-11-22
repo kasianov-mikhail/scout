@@ -48,7 +48,7 @@ struct DevicesView: View {
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
         .loadingInk(isLoading: provider.isLoading)
         .navigationTitle(en: "Devices")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
         .task(id: provider.range) {
             await provider.load(in: database)
         }
@@ -135,6 +135,6 @@ struct DevicesView: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Devices")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

@@ -78,6 +78,6 @@ struct MetricsListPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Metrics")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

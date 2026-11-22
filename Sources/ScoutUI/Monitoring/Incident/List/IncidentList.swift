@@ -21,7 +21,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
             .animation(.easeOut(duration: 0.2), value: provider.result == nil)
             .loadingInk(isLoading: provider.result == nil)
             .navigationTitle(en: Element.kind.title)
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
             .tint(Color.textPrimary)
             .message($provider.message)
             .task(id: provider.range) {

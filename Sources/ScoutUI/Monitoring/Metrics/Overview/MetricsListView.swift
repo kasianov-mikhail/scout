@@ -53,7 +53,7 @@ struct MetricsListView: View {
         .animation(.easeOut(duration: 0.2), value: provider.isLoading)
         .loadingInk(isLoading: provider.isLoading)
         .navigationTitle(en: "Metrics")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
         .task(id: provider.range) {
             await provider.load(in: database)
         }

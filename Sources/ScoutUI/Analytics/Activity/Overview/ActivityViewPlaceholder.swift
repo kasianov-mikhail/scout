@@ -135,6 +135,6 @@ struct ActivityViewPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Active users")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

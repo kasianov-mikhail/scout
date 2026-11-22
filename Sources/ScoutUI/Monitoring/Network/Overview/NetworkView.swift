@@ -24,7 +24,7 @@ struct NetworkView: View {
             .animation(.easeOut(duration: 0.2), value: provider.isLoading)
             .loadingInk(isLoading: provider.isLoading)
             .navigationTitle(en: "Network")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
             .task(id: provider.query) {
                 await provider.fetchIfNeeded(in: database)
             }
