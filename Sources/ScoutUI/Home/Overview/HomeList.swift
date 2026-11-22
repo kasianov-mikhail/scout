@@ -13,6 +13,7 @@ struct HomeList: View {
     var snapshot: HomeSnapshot? = nil
 
     @Binding var path: [HomeDestination]
+    var eventChanges: EventChanges? = nil
 
     @Namespace private var zoom
 
@@ -91,7 +92,7 @@ struct HomeList: View {
             case .alerts:
                 AlertListView(provider: alerts)
             case .telemetry(let category):
-                LogDestination(category: category)
+                LogDestination(category: category, eventChanges: eventChanges)
             case .resources:
                 ResourceListView()
             }

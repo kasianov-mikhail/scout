@@ -56,7 +56,7 @@ struct HomeView: View {
             Group {
                 if let backend {
                     AccountGate(backend: backend) {
-                        HomeList(path: $path)
+                        HomeList(path: $path, eventChanges: backend.eventChanges)
                             .iCloudWarning(backend)
                     }
                 } else {
@@ -80,7 +80,6 @@ struct HomeView: View {
         .environment(\.locale, Locale(identifier: "en_US"))
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
-        .environment(\.eventChanges, backend?.eventChanges)
         .environmentObject(tint)
     }
 }

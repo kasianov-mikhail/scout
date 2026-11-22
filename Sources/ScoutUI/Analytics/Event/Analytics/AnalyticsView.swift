@@ -13,9 +13,9 @@ struct AnalyticsView: View {
 
     @StateObject var provider = EventProvider()
     @StateObject var search = EventProvider()
+    var eventChanges: EventChanges? = nil
 
     @Environment(\.database) private var database
-    @Environment(\.eventChanges) private var eventChanges
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {

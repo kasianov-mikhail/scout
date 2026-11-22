@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Scout
 import SwiftUI
 
 enum LogCategory: String, CaseIterable, Identifiable {
@@ -61,11 +62,12 @@ enum LogCategory: String, CaseIterable, Identifiable {
 
 struct LogDestination: View {
     let category: LogCategory
+    let eventChanges: EventChanges?
 
     var body: some View {
         switch category {
         case .events:
-            AnalyticsView()
+            AnalyticsView(eventChanges: eventChanges)
         case .metrics:
             MetricsListView()
         case .network:
