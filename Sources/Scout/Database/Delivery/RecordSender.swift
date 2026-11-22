@@ -8,15 +8,7 @@
 import CoreData
 
 struct RecordSender<T: DeliverableEntry>: Sendable {
-    let id: String
-    let database: any DatabaseWriter
-}
-
-extension RecordSender {
-    init(backend: Backend) {
-        id = backend.id
-        database = backend.database
-    }
+    let backend: Backend
 }
 
 package protocol TransientFailure: Error {
@@ -38,6 +30,7 @@ private struct Outcome {
 
 extension RecordSender {
     func deliver(in context: NSManagedObjectContext, now: Date = Date()) async throws {
+        let id = backend.id
         var count = DeliveryEntry.pageSize
 
         while count == DeliveryEntry.pageSize {
@@ -91,8 +84,11 @@ extension RecordSender {
             probes -= 1
 
             do {
-                try await database.write(records: Array(batch))
+                try await backend.database.write(records: Array(batch))
                 outcome.delivered += batch.indices
+                if batch.first?.recordType == Event.recordType {
+                    await backend.eventChangeSource?.invalidate()
+                }
             } catch {
                 if error is CancellationError || (error as? any TransientFailure)?.isTransient == true {
                     outcome.error = error

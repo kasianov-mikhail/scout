@@ -7,6 +7,12 @@
 
 package typealias StatusProbe = @Sendable () async -> Backend.Status
 package typealias AccessCheck = @Sendable () async throws -> Void
+package typealias EventChanges = @Sendable () async -> AsyncStream<Void>
+
+package protocol EventChangeSource: Sendable {
+    func observe() async -> AsyncStream<Void>
+    func invalidate() async
+}
 
 public struct Backend: Sendable {
     package let id: String
@@ -14,19 +20,28 @@ public struct Backend: Sendable {
     package let displayName: String
     package let engine: Engine
     package let checkAccess: AccessCheck?
+    package let eventChangeSource: (any EventChangeSource)?
     private let probeAccess: AccessCheck?
 
-    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, probeAccess: AccessCheck? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, probeAccess: AccessCheck? = nil, eventChangeSource: (any EventChangeSource)? = nil) {
         self.id = id
         self.database = database
         self.displayName = displayName
         self.engine = engine
         self.checkAccess = checkAccess
         self.probeAccess = probeAccess ?? checkAccess
+        self.eventChangeSource = eventChangeSource
     }
 }
 
 extension Backend {
+    package var eventChanges: EventChanges? {
+        guard let eventChangeSource else {
+            return nil
+        }
+        return { await eventChangeSource.observe() }
+    }
+
     package var probeStatus: StatusProbe? {
         guard let probeAccess else {
             return nil
