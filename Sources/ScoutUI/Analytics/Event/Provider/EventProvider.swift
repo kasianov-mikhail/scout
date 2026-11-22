@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Combine
 import Foundation
 import Scout
 import SwiftUI
@@ -12,6 +13,9 @@ import SwiftUI
 @MainActor
 final class EventProvider: FeedProvider<Event>, Refreshable {
     let filter: EventQuery
+    @Published var newEventCounts: [EventLevel: Int] = [:]
+    @Published var hasMoreNewEvents = false
+    @Published var showsNewEventsRow = false
 
     init(_ records: [Event]? = nil, filter: EventQuery = EventQuery()) {
         self.filter = filter

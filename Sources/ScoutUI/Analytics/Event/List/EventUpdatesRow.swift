@@ -8,7 +8,7 @@
 import Scout
 import SwiftUI
 
-struct NewEventsRow: View {
+struct EventUpdatesRow: View {
     let counts: [EventLevel: Int]
     var hasMore = false
     let show: () -> Void
@@ -84,11 +84,11 @@ private let severityOrder: [EventLevel] = [.critical, .error, .warning, .notice,
 private let flashColor = designColor(light: 0xD3E4FF, dark: 0x154171)
 
 #Preview("By severity") {
-    NewEventsRow(counts: [.critical: 1, .error: 2, .warning: 1, .info: 8]) {}
+    EventUpdatesRow(counts: [.critical: 1, .error: 2, .warning: 1, .info: 8]) {}
         .dynamicTypeSize(.large)
 }
 
 #Preview("Overflow") {
-    NewEventsRow(counts: [.critical: 1, .error: 3, .warning: 12, .notice: 24, .info: 186, .debug: 412, .trace: 1_038]) {}
+    EventUpdatesRow(counts: [.critical: 1, .error: 3, .warning: 12, .notice: 24, .info: 186, .debug: 412, .trace: 1_038]) {}
         .dynamicTypeSize(.large)
 }
