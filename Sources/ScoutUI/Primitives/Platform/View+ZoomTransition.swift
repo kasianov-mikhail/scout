@@ -20,10 +20,14 @@ extension View {
 
     @ViewBuilder
     func zoomTransition(_ id: some Hashable, in namespace: Namespace.ID) -> some View {
-        if #available(iOS 18.0, macOS 15.0, *) {
-            navigationTransition(.zoom(sourceID: id, in: namespace))
-        } else {
+        #if os(iOS)
+            if #available(iOS 18.0, *) {
+                navigationTransition(.zoom(sourceID: id, in: namespace))
+            } else {
+                self
+            }
+        #else
             self
-        }
+        #endif
     }
 }
