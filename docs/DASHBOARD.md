@@ -3,6 +3,7 @@
 ## Table of Contents
 - [Link the Product](#link-the-product)
 - [Present the Dashboard](#present-the-dashboard)
+- [Enable Live Events for CloudKit](#enable-live-events-for-cloudkit)
 - [Option 1: One Binary, Hidden Entry Point](#option-1-one-binary-hidden-entry-point)
 - [Option 2: A TestFlight-Only Target or Branch](#option-2-a-testflight-only-target-or-branch)
 - [Choosing](#choosing)
@@ -55,6 +56,31 @@ struct ContentView: View {
 ```
 
 That leaves one decision: who gets to see the button. App Store users normally shouldn't, so the two setups below both aim the dashboard at TestFlight. They differ in whether `ScoutUI` ends up in the released binary at all.
+
+## Enable Live Events for CloudKit
+
+When Events opens with a CloudKit backend, Scout registers a query subscription for event records in the public database. The **Show … new** row counts recent events with the active filters using their IDs, timestamps, and levels. Tap it to load the latest page and scroll to the top. A `+` indicates that more events may be available through pagination. Reopening Events or returning to the app refreshes the first page so that updates, deletions, and late arrivals can be reconciled.
+
+Keep the backends in a stored property and pass the same instances to `Runtime`, `scoutHome`, and the remote notification handler. For remote changes on iOS, enable **Push Notifications** and **Background Modes** with **Background fetch** and **Remote notifications** on the app target. Call `application.registerForRemoteNotifications()` from the app delegate at launch and forward silent notifications from the existing delegate method:
+
+```swift
+import NativeConnector
+import Scout
+import UIKit
+
+extension AppDelegate {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completion: @escaping (UIBackgroundFetchResult) -> Void) {
+        if Backend.handleCloudKitNotification(userInfo, backends: backends) {
+            completion(.noData)
+            return
+        }
+        // Handle any other notifications here.
+        completion(.noData)
+    }
+}
+```
+
+Create the query subscription by opening Events in a signed development build, then deploy the changes from CloudKit Console to production. [Apple's CloudKit subscription setup](https://developer.apple.com/documentation/cloudkit/cksubscription?changes=_1&language=objc).
 
 ## Option 1: One Binary, Hidden Entry Point
 

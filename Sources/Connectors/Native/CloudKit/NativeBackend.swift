@@ -17,14 +17,9 @@ struct NativeDatabase: Sendable {
 }
 
 extension Backend {
-    struct UnidentifiedContainerError: LocalizedError {
-        let errorDescription: String? = "The CloudKit container carries no identifier"
-    }
-
     public static func cloudKit(container: CKContainer) throws -> Backend {
-        guard let id = container.containerIdentifier else {
-            throw UnidentifiedContainerError()
-        }
+        let eventUpdates = try CloudKitEventUpdates(container: container)
+        let id = eventUpdates.containerID
 
         let database = NativeDatabase {
             try await stores.value(id: id) {
@@ -39,7 +34,8 @@ extension Backend {
             engine: .cloudKit,
             checkAccess: {
                 try await container.accountStatus().verify()
-            }
+            },
+            eventChangeSource: eventUpdates
         )
     }
 }

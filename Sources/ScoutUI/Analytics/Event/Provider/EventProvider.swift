@@ -5,9 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
 import Scout
-import SwiftUI
 
 @MainActor
 final class EventProvider: FeedProvider<Event>, Refreshable {
@@ -19,12 +17,12 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
     }
 
     func fetch(for filter: EventQuery, in database: RecordReader) async {
-        await fetchAgain(matching: query(for: filter), in: database)
+        await fetchAgain(matching: filter.recordQuery, in: database)
     }
 
     @discardableResult
     func fetchLatest(for filter: EventQuery, in database: RecordReader) async -> Bool {
-        await fetchLatest(matching: query(for: filter.criteria), in: database)
+        await fetchLatest(matching: filter.criteria.recordQuery, in: database)
     }
 
     func fetchLatest(in database: DatabaseReader) async {
@@ -33,13 +31,5 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
 
     func fetchAgain(in database: DatabaseReader) async {
         await fetch(for: filter, in: database)
-    }
-
-    private func query(for filter: EventQuery) -> RecordQuery {
-        RecordQuery(
-            recordType: Event.self,
-            filters: filter.filters,
-            sort: [RecordQuery.Sort(field: "date", ascending: false)]
-        )
     }
 }
