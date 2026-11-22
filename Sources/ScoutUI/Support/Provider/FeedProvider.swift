@@ -27,7 +27,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
 
     @discardableResult
     func fetchLatest(matching query: RecordQuery, in database: RecordReader) async -> Bool {
-        if ProcessInfo.processInfo.isPreview {
+        if Task.isCancelled || ProcessInfo.processInfo.isPreview {
             return true
         }
 
@@ -35,7 +35,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         do {
             let results = try await database.read(matching: query, fields: Element.desiredKeys)
 
-            guard generation == self.generation else {
+            guard !Task.isCancelled, generation == self.generation else {
                 return true
             }
 
@@ -56,6 +56,9 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         } catch is CancellationError {
             return true
         } catch {
+            guard !Task.isCancelled, generation == self.generation else {
+                return true
+            }
             if records == nil {
                 self.error = error
                 message = Message(error.localizedDescription, level: .error)
@@ -65,27 +68,42 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
     }
 
     func fetchAgain(matching query: RecordQuery, in database: RecordReader) async {
-        if ProcessInfo.processInfo.isPreview {
+        guard !Task.isCancelled, !ProcessInfo.processInfo.isPreview else {
             return
         }
 
         generation += 1
+        await readFirstPage(matching: query, in: database) { page, cursor in
+            replace(records: page, cursor: cursor)
+        }
+    }
+
+    func readFirstPage(matching query: RecordQuery, in database: RecordReader, fields: [String] = Element.desiredKeys, reportsRefreshFailure: Bool = true, apply: ([Element], RecordCursor?) -> Void) async {
+        if Task.isCancelled || ProcessInfo.processInfo.isPreview {
+            return
+        }
+
         let generation = generation
 
         do {
-            let results = try await database.read(matching: query, fields: Element.desiredKeys)
-            guard generation == self.generation else {
+            let results = try await database.read(matching: query, fields: fields)
+            guard !Task.isCancelled, generation == self.generation else {
                 return
             }
-            try replace(records: results.records.map(Element.init), cursor: results.cursor)
+            try apply(results.records.map(Element.init), results.cursor)
             error = nil
         } catch is CancellationError {
             // A cancelled task (e.g. the view was recreated) leaves the feed untouched so it retries.
         } catch {
+            guard !Task.isCancelled, generation == self.generation else {
+                return
+            }
             if records == nil {
                 self.error = error
             }
-            message = Message(error.localizedDescription, level: .error)
+            if records == nil || reportsRefreshFailure {
+                message = Message(error.localizedDescription, level: .error)
+            }
         }
     }
 
@@ -108,6 +126,9 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         } catch is CancellationError {
             return true
         } catch {
+            guard !Task.isCancelled, generation == self.generation else {
+                return true
+            }
             message = Message(error.localizedDescription, level: .error)
             return false
         }
@@ -118,7 +139,7 @@ class FeedProvider<Element: RecordDecodable & Identifiable>: ObservableObject {
         error = nil
     }
 
-    private func replace(records: [Element]?, cursor: RecordCursor?) {
+    func replace(records: [Element]?, cursor: RecordCursor?) {
         generation += 1
         self.records = records
         self.cursor = cursor

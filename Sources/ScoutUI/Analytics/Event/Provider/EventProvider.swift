@@ -6,9 +6,7 @@
 // https://opensource.org/licenses/MIT.
 
 import Combine
-import Foundation
 import Scout
-import SwiftUI
 
 @MainActor
 final class EventProvider: FeedProvider<Event>, Refreshable {
@@ -16,6 +14,7 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
     @Published var newEventCounts: [EventLevel: Int] = [:]
     @Published var hasMoreNewEvents = false
     @Published var showsNewEventsRow = false
+    private let updates = EventUpdates()
 
     init(_ records: [Event]? = nil, filter: EventQuery = EventQuery()) {
         self.filter = filter
@@ -23,12 +22,12 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
     }
 
     func fetch(for filter: EventQuery, in database: RecordReader) async {
-        await fetchAgain(matching: query(for: filter), in: database)
+        await fetchAgain(matching: filter.recordQuery, in: database)
     }
 
     @discardableResult
     func fetchLatest(for filter: EventQuery, in database: RecordReader) async -> Bool {
-        await fetchLatest(matching: query(for: filter.criteria), in: database)
+        await fetchLatest(matching: filter.criteria.recordQuery, in: database)
     }
 
     func fetchLatest(in database: DatabaseReader) async {
@@ -39,11 +38,16 @@ final class EventProvider: FeedProvider<Event>, Refreshable {
         await fetch(for: filter, in: database)
     }
 
-    private func query(for filter: EventQuery) -> RecordQuery {
-        RecordQuery(
-            recordType: Event.self,
-            filters: filter.filters,
-            sort: [RecordQuery.Sort(field: "date", ascending: false)]
-        )
+    func observe(for filter: EventQuery, in database: RecordReader, changes: EventChanges) async {
+        await updates.observe(for: filter, updating: self, in: database, changes: changes)
+    }
+
+    func showNewEvents(in database: RecordReader) async -> Bool {
+        await updates.showNewEvents(updating: self, in: database)
+    }
+
+    override func clear() {
+        super.clear()
+        updates.clear(updating: self)
     }
 }

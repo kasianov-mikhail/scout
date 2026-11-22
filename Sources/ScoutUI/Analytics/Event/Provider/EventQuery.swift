@@ -25,6 +25,14 @@ struct EventQuery: Hashable {
         return criteria
     }
 
+    var recordQuery: RecordQuery {
+        RecordQuery(
+            recordType: Event.self,
+            filters: filters,
+            sort: [.init(field: "date", ascending: false)]
+        )
+    }
+
     var filters: [RecordQuery.Filter] {
         var result: [RecordQuery.Filter] = []
 

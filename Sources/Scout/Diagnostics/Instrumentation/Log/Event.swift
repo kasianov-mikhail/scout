@@ -7,7 +7,7 @@
 
 import Foundation
 
-package struct Event: Identifiable {
+package struct Event: Equatable, Identifiable {
     package let name: String
     package let level: EventLevel?
     package let date: Date?
