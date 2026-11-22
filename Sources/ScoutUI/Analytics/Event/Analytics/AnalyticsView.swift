@@ -20,7 +20,7 @@ struct AnalyticsView: View {
         EventList(provider: activeProvider, retry: retry)
             .eventFilter($filter, provider: provider, search: search)
             .navigationTitle(en: "Events")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
             .resetsTint()
     }
 

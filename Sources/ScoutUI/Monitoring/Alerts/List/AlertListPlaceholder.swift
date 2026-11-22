@@ -128,6 +128,6 @@ struct AlertListPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Alerts")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

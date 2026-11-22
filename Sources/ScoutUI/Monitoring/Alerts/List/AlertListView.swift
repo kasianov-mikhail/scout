@@ -27,7 +27,7 @@ struct AlertListView: View {
             .animation(.easeOut(duration: 0.2), value: provider.isLoading)
             .loadingInk(isLoading: provider.isLoading)
             .navigationTitle(en: "Alerts")
-            .inlineNavigationTitle()
+            .inlineNavigationTitle(divider: nil)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {

@@ -92,6 +92,6 @@ struct DeviceListPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Devices")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

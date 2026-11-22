@@ -74,6 +74,6 @@ struct RetentionViewPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Retention")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

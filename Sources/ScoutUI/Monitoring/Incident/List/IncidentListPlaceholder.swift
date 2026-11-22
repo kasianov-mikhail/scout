@@ -79,6 +79,6 @@ struct IncidentListPlaceholder: View {
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Crashes")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 }

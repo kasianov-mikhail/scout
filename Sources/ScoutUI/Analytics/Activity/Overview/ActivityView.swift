@@ -39,7 +39,7 @@ struct ActivityView: View {
         .loadingInk(isLoading: activity.isLoading)
         .fetchTask([activity])
         .navigationTitle(en: "Active users")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 
     private func content(points: [ActivityPoint]) -> some View {

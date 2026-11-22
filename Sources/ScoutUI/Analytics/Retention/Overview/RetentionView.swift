@@ -38,7 +38,7 @@ struct RetentionView: View {
         .loadingInk(isLoading: provider.isLoading)
         .fetchTask([provider])
         .navigationTitle(en: "Retention")
-        .inlineNavigationTitle()
+        .inlineNavigationTitle(divider: nil)
     }
 
     private func subtitle(overview: RetentionOverview) -> String {
