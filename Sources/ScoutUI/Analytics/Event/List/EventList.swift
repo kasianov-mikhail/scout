@@ -20,8 +20,11 @@ struct EventList<Header: View>: View {
                 ZStack(alignment: .top) {
                     if provider.showsNewEventsRow {
                         EventUpdatesRow(counts: provider.newEventCounts, hasMore: provider.hasMoreNewEvents) {
-                            provider.showsNewEventsRow = false
-                            scroll.scrollTo(ScrollTarget.top, anchor: .top)
+                            Task {
+                                if await provider.showNewEvents(in: database) {
+                                    scroll.scrollTo(ScrollTarget.top, anchor: .top)
+                                }
+                            }
                         }
                         .transition(.identity)
                     }
