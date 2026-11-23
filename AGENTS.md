@@ -87,10 +87,6 @@
 ✓ 0.4.0 — MetricKit
 ```
 
-## Before a feature
-
-Search open and merged pull requests and branches for the same work before starting: `gh pr list --state all --search '<topic>'` and `git branch -a --list '*<topic>*'`. Continue the existing attempt instead of rewriting it.
-
 ## Worktrees
 
 - Create every worktree at `.agents/worktrees/<name>` in the main worktree.
