@@ -37,9 +37,8 @@ extension Backend {
             database: database,
             displayName: "iCloud",
             engine: .cloudKit,
-            checkAccess: {
-                try await container.accountStatus().verify()
-            }
+            checkAccess: { try await container.accountStatus().verify() },
+            eventUpdates: try CloudKitEventUpdates(container: container)
         )
     }
 }

@@ -37,8 +37,6 @@ struct AlertSwipeRow<Content: View>: View {
     let onMute: (() -> Void)?
     let onOpen: () -> Void
 
-    @Environment(\.accessibilityReduceMotion) var reduceMotion
-
     @State var offset: CGFloat = 0
     @State var drag: CGFloat = 0
     @State var width: CGFloat = 0

@@ -21,8 +21,6 @@ private struct EventFilter: ViewModifier {
     @ObservedObject var provider: EventProvider
     @ObservedObject var search: EventProvider
 
-    @Environment(\.database) var database
-
     private var activeProvider: EventProvider {
         filter.text.isEmpty ? provider : search
     }
@@ -53,14 +51,6 @@ private struct EventFilter: ViewModifier {
                             )
                         #endif
                     }
-                    .task(id: filter) {
-                        guard !filter.text.isEmpty, (try? await Task.sleep(for: .milliseconds(300))) != nil else {
-                            return
-                        }
-
-                        search.clear()
-                        await search.fetch(for: filter, in: database)
-                    }
             }
         }
         .toolbar {
@@ -71,12 +61,6 @@ private struct EventFilter: ViewModifier {
         .exportToolbar(
             text: EventListExport(events: activeProvider.records ?? [], isTruncated: activeProvider.cursor != nil).text
         )
-        .task(id: filter.criteria) {
-            await provider.fetchLatest(for: filter, in: database)
-        }
-        .onChange(of: filter.criteria) { _ in
-            provider.clear()
-        }
     }
 
     private func withFilterChips(_ content: Content) -> some View {

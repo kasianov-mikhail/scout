@@ -14,7 +14,6 @@ struct SkeletonBar: View {
     var cornerRadius: CGFloat = 3
     var fill = Color.surfaceSkeleton
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var dimmed = false
 
     var body: some View {
@@ -22,11 +21,9 @@ struct SkeletonBar: View {
             .fill(fill)
             .frame(width: width, height: height)
             .opacity(dimmed ? 0.6 : 1)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 0.809).repeatForever(autoreverses: true).delay(delay), value: dimmed)
+            .animation(.easeInOut(duration: 0.809).repeatForever(autoreverses: true).delay(delay), value: dimmed)
             .onAppear {
-                if !reduceMotion {
-                    dimmed = true
-                }
+                dimmed = true
             }
             .accessibilityHidden(true)
     }

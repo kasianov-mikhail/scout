@@ -18,7 +18,6 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
     let indicator: (Value) -> Indicator
     let content: (Value, Bool) -> Content
 
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Namespace private var indicatorNamespace
     @State private var indicatorIndex: Int
 
@@ -61,7 +60,7 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
             }
         }
         .onChange(of: selectedIndex) { newIndex in
-            withAnimation(reduceMotion ? nil : .timingCurve(0.2, 0.8, 0.2, 1, duration: 0.28)) {
+            withAnimation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.28)) {
                 indicatorIndex = newIndex
             }
         }
