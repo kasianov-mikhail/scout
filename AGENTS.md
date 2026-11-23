@@ -27,7 +27,6 @@
 ## UI verification
 
 - After a UI change, compare the rendered screen with the reference at the same size before reporting it done. Use a simulator screenshot, an Xcode preview, or a screenshot from the user.
-- A linked worktree does not build. Ask the user to render the branch when a screenshot is needed, or verify after the merge and say so.
 - For a visual fix, include the screenshot in the final report, or name the visual points that remain unverified.
 - Do not report a visual change as done from reading the code alone.
 
@@ -87,6 +86,10 @@
 ✗ 0.4.0 — MetricKit diagnostics and on-device symbolication
 ✓ 0.4.0 — MetricKit
 ```
+
+## Before a feature
+
+Search open and merged pull requests and branches for the same work before starting: `gh pr list --state all --search '<topic>'` and `git branch -a --list '*<topic>*'`. Continue the existing attempt instead of rewriting it.
 
 ## Worktrees
 
