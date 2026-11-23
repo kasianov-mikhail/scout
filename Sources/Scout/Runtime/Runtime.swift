@@ -28,7 +28,7 @@ import Foundation
 /// second session against the same store.
 ///
 public struct Runtime: Sendable {
-    let backends: [Backend]
+    package let backends: [Backend]
     let identity: Identity
     let dispatcher: any Dispatcher
     let screens = Protected(ScreenTracker())

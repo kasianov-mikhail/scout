@@ -53,11 +53,6 @@ extension AlertSwipeRow {
     func perform(direction: CGFloat, action: @escaping () -> Void) {
         guard !isActing else { return }
 
-        guard !reduceMotion else {
-            action()
-            return
-        }
-
         isActing = true
         let rowWidth = width > 0 ? width : 390
 

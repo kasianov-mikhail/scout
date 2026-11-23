@@ -10,7 +10,11 @@ import Foundation
 @testable import Scout
 
 extension Runtime {
-    static let stub = Runtime(backends: [makeBackend(id: "stub")], identity: .stub, dispatcher: IdleDispatcher())
+    static let stub = makeRuntime(backends: [makeBackend(id: "stub")])
+}
+
+func makeRuntime(backends: [Backend]) -> Runtime {
+    Runtime(backends: backends, identity: .stub, dispatcher: IdleDispatcher())
 }
 
 private struct IdleDispatcher: Dispatcher {
