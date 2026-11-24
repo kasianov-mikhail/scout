@@ -234,6 +234,25 @@ struct FeedProviderTests {
 
         #expect(provider.records?.map(\.name) == ["a", "b"])
     }
+
+    @Test("A refresh after a page load keeps the loaded pages")
+    func refreshAfterPageLoadKeepsPages() async throws {
+        let database = GrowingDatabase(names: ["c", "d", "e"])
+
+        let provider = EventProvider()
+        await provider.fetchLatest(for: EventQuery(), in: database)
+        let cursor = try #require(provider.cursor)
+        await provider.fetchMore(cursor: cursor, in: database)
+        #expect(provider.records?.map(\.name) == ["c", "d", "e"])
+
+        database.prepend(names: ["b"])
+        await provider.fetchLatest(for: EventQuery(), in: database)
+
+        let ids = try #require(provider.records).map(\.id)
+        #expect(ids.count == 4)
+        #expect(Set(ids).count == ids.count)
+        #expect(provider.records?.map(\.name) == ["b", "c", "d", "e"])
+    }
 }
 
 private final class GrowingDatabase: RecordReader, @unchecked Sendable {
