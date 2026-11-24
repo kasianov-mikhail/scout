@@ -22,7 +22,7 @@ public struct Backend: Sendable {
     package let eventUpdates: (any EventUpdatesSource)?
     private let probeAccess: AccessCheck?
 
-    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, probeAccess: AccessCheck? = nil, eventUpdates: (any EventUpdatesSource)? = nil) {
+    package init(id: String, database: any Database, displayName: String, engine: Engine, checkAccess: AccessCheck? = nil, probeAccess: AccessCheck? = nil, eventUpdates: (any EventUpdatesSource)? = LocalEventUpdates.shared) {
         self.id = id
         self.database = database
         self.displayName = displayName
