@@ -80,7 +80,6 @@ struct HomeView: View {
         .environment(\.locale, Locale(identifier: "en_US"))
         .tint(tint.value)
         .environment(\.database, backend?.database ?? DefaultDatabase())
-        .environment(\.eventUpdates, backend?.eventUpdates)
         .environmentObject(tint)
     }
 }

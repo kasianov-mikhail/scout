@@ -10,14 +10,12 @@ import CoreData
 struct RecordSender<T: DeliverableEntry>: Sendable {
     let id: String
     let database: any DatabaseWriter
-    let eventUpdates: (any EventUpdatesSource)?
 }
 
 extension RecordSender {
     init(backend: Backend) {
         id = backend.id
         database = backend.database
-        eventUpdates = backend.eventUpdates
     }
 }
 
@@ -95,9 +93,6 @@ extension RecordSender {
             do {
                 try await database.write(records: Array(batch))
                 outcome.delivered += batch.indices
-                if batch.contains(where: { $0.recordType == Event.recordType }) {
-                    await eventUpdates?.invalidate()
-                }
             } catch {
                 if error is CancellationError || (error as? any TransientFailure)?.isTransient == true {
                     outcome.error = error

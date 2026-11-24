@@ -83,33 +83,6 @@ struct DeliverTests {
         #expect(server.records.count(of: "Event") == 1)
     }
 
-    @Test("Only a successful event upload signals a change")
-    func eventUploadsSignalChanges() async throws {
-        let updates = DeliveryEventUpdates()
-        let backend = Backend(
-            id: "cloud",
-            database: cloud,
-            displayName: "cloud",
-            engine: .cloudKit,
-            eventUpdates: updates
-        )
-        let now = Date()
-        EventEntry.stub(name: "login", in: context)
-        SessionEntry.stub(date: now, in: context)
-        try context.save()
-        try SyncableEntry.plan(backends: [backend], in: context)
-
-        try await deliver(SessionEntry.self, to: backend, now: now)
-        #expect(await updates.count == 0)
-
-        cloud.writeErrors.append(Self.testError)
-        try await deliver(EventEntry.self, to: backend, now: now)
-        #expect(await updates.count == 0)
-
-        try await deliver(EventEntry.self, to: backend, now: now.addingTimeInterval(DeliveryEntry.retryDelay))
-        #expect(await updates.count == 1)
-    }
-
     @Test("A backlog larger than a page goes out in one pass")
     func backlogDrainsInPages() async throws {
         for _ in 0...DeliveryEntry.pageSize {
@@ -545,17 +518,5 @@ struct DeliverTests {
         // ...but once it is dropped from the config, cleanup reclaims it.
         try DateEntry.cleanup(backends: [cloudBackend], in: context)
         #expect(try context.fetchAll(EventEntry.self).isEmpty)
-    }
-}
-
-private actor DeliveryEventUpdates: EventUpdatesSource {
-    private(set) var count = 0
-
-    func changes() async -> AsyncStream<Void> {
-        AsyncStream { $0.finish() }
-    }
-
-    func invalidate() async {
-        count += 1
     }
 }

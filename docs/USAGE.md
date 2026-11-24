@@ -2,7 +2,6 @@
 
 ## Table of Contents
 - [Bootstrap](#bootstrap)
-- [Live Events](#live-events)
 - [Multiplexing Handlers](#multiplexing-handlers)
 - [Multiple Backends](#multiple-backends)
 - [Writing Logs](#writing-logs)
@@ -32,29 +31,6 @@ MetricsSystem.bootstrap(
 The runtime lives in the `Scout` product, while each backend comes from its own connector — `Backend.cloudKit(container:)` from `NativeConnector`. It throws when the container carries no identifier, which is what a default container resolves to in an app without an iCloud container entitlement.
 
 Keep it to one runtime per app and pass the same one to both — a second runtime would install the crash handlers twice and open a second session against the same store. Creating it is synchronous, so the handlers work immediately; the lifecycle records and the first sync land shortly after. Passing an empty backend list turns Scout off — nothing is recorded or synced.
-
-## Live Events
-
-The Events screen shows a strip of the events that arrived while the list was open. To receive them, the CloudKit backend registers a silent query subscription for Event records, and the app has to hand the remote notifications back to Scout.
-
-In the app target, turn on **Push Notifications** under Signing & Capabilities and **Remote notifications** under Background Modes, then register at launch:
-
-```swift
-UIApplication.shared.registerForRemoteNotifications()
-```
-
-Forward the notifications from the app delegate to the runtime you created at launch:
-
-```swift
-import NativeConnector
-
-func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) async -> UIBackgroundFetchResult {
-    scout.handleCloudKitNotification(userInfo)
-    return .newData
-}
-```
-
-The subscription is registered the first time the Events screen opens and stays in place afterwards. The dashboard has to receive the same `backends` array the runtime holds. A `HostedConnector` backend has no live updates: its database does not expose them, and the strip stays hidden.
 
 ## Multiplexing Handlers
 

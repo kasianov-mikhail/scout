@@ -11,30 +11,10 @@ import SwiftUI
 struct EventList<Header: View>: View {
     @Environment(\.database) var database
     @ObservedObject var provider: EventProvider
-    @ObservedObject var updates: EventUpdates
     var retry: (() async -> Void)? = nil
     @ViewBuilder let header: () -> Header
 
     var body: some View {
-        ScrollViewReader { scroll in
-            VStack(spacing: 0) {
-                EventUpdatesBar(counts: updates.counts, hasMore: updates.hasMore) {
-                    Task {
-                        if await updates.reload(provider: provider, filter: provider.filter, in: database) {
-                            scroll.scrollTo(ScrollTarget.top, anchor: .top)
-                        }
-                    }
-                }
-
-                content
-            }
-        }
-        .animation(.easeOut(duration: 0.2), value: provider.records == nil)
-        .loadingInk(isLoading: provider.records == nil)
-        .message($provider.message)
-    }
-
-    private var content: some View {
         Group {
             if let error = provider.error {
                 ErrorView(description: error.localizedDescription, retry: retryLoad)
@@ -49,7 +29,6 @@ struct EventList<Header: View>: View {
                 ScrollView {
                     if let events = provider.records {
                         LazyVStack(alignment: .leading, spacing: 0) {
-                            Color.clear.frame(height: 0).id(ScrollTarget.top)
                             header()
                             rows(for: events)
                         }
@@ -64,6 +43,9 @@ struct EventList<Header: View>: View {
                 .scrollIndicators(.hidden)
             }
         }
+        .animation(.easeOut(duration: 0.2), value: provider.records == nil)
+        .loadingInk(isLoading: provider.records == nil)
+        .message($provider.message)
     }
 
     private func retryLoad() async {
@@ -84,21 +66,17 @@ struct EventList<Header: View>: View {
             }
         }
     }
-
-    private enum ScrollTarget: Hashable {
-        case top
-    }
 }
 
 extension EventList where Header == EmptyView {
-    init(provider: EventProvider, updates: EventUpdates, retry: (() async -> Void)? = nil) {
-        self.init(provider: provider, updates: updates, retry: retry) { EmptyView() }
+    init(provider: EventProvider, retry: (() async -> Void)? = nil) {
+        self.init(provider: provider, retry: retry) { EmptyView() }
     }
 }
 
 #Preview("Rows") {
     NavigationStack {
-        EventList(provider: .init(.samples), updates: EventUpdates())
+        EventList(provider: .init(.samples))
             .navigationTitle(en: "Events")
     }
     .environmentObject(Tint())
@@ -106,7 +84,7 @@ extension EventList where Header == EmptyView {
 
 #Preview("Loading") {
     NavigationStack {
-        EventList(provider: .init(), updates: EventUpdates())
+        EventList(provider: .init())
             .navigationTitle(en: "Events")
     }
     .environmentObject(Tint())
@@ -114,6 +92,6 @@ extension EventList where Header == EmptyView {
 
 #Preview("Empty State") {
     NavigationStack {
-        EventList(provider: .init([]), updates: EventUpdates())
+        EventList(provider: .init([]))
     }
 }
