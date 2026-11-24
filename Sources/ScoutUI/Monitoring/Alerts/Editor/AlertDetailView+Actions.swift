@@ -26,6 +26,6 @@ struct AlertActionButton: View {
                 }
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 }

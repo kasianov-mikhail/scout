@@ -35,7 +35,7 @@ extension DeviceDetailView {
             } label: {
                 SessionLine(session: session, maxDuration: maxDuration, showsDivider: showsDivider)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
         } else {
             SessionLine(session: session, maxDuration: maxDuration, showsDivider: showsDivider)
         }

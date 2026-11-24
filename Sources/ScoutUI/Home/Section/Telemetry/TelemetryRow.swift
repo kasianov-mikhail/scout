@@ -33,7 +33,7 @@ struct TelemetryRow: View {
                     }
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 
     @ViewBuilder

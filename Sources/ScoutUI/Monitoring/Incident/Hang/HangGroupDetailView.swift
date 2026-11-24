@@ -119,7 +119,7 @@ struct HangGroupDetailView: View {
             .frame(height: .rowRegular)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 }
 

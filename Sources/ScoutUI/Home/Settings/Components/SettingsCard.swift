@@ -76,6 +76,6 @@ struct SettingsCardAction: View {
                 }
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 }

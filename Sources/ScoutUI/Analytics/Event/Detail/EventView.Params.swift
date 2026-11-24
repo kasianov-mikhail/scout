@@ -31,7 +31,7 @@ extension EventView {
                             .frame(width: 44, height: 44)
                             .contentShape(.rect)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                     .padding(.trailing, -12)
                     .accessibilityLabel(Text(verbatim: "Show all"))
                 case .success, .failure, nil:

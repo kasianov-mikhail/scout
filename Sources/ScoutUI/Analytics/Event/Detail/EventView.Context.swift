@@ -74,7 +74,7 @@ extension EventView {
                 .frame(height: 52)
                 .contentShape(.rect)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
         }
     }
 

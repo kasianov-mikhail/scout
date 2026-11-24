@@ -35,7 +35,7 @@ struct RetentionCohortDetailView: View {
                                 RetentionSegmentRow(value: segment, showsDivider: index < detail.segments.count - 1)
                                     .contentShape(.rect)
                             }
-                            .buttonStyle(.plain)
+                            .buttonStyle(.solid)
                         }
                     }
                 }

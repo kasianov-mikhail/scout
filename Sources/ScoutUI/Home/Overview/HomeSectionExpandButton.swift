@@ -19,7 +19,7 @@ struct HomeSectionExpandButton: View {
                 .contentShape(Rectangle())
                 .padding(.trailing, -12)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .foregroundStyle(Color.textLink)
         .accessibilityLabel(Text(verbatim: label))
     }

@@ -73,7 +73,7 @@ struct DeviceDetailView: View {
                         .font(.scoutSectionAction)
                         .foregroundStyle(Color.textLink)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             } content: {
                 if detail.recentSessions.isEmpty {
                     Text(verbatim: "No sessions in this period")

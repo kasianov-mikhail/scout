@@ -34,7 +34,7 @@ struct FilterChips: View {
                             .padding(.vertical, .space6)
                             .background(Color.fillAccent.opacity(0.12), in: RoundedRectangle(cornerRadius: .radiusBlock))
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(.solid)
                     }
                 }
                 .padding(.horizontal)

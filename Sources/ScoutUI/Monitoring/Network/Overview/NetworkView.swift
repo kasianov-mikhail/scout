@@ -101,7 +101,7 @@ struct NetworkView: View {
                 } label: {
                     NetworkEndpointRow(endpoint: endpoint, maxRequests: maxRequests)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
         }
         .padding(.horizontal, .gutter)

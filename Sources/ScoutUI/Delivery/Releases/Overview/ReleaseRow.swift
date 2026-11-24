@@ -44,7 +44,7 @@ struct ReleaseRow: View {
             .frame(height: .rowChart)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .overlay(alignment: .bottom) {
             if !isLast {
                 DashedLine()

@@ -84,7 +84,7 @@ struct DevicesView: View {
                     DeviceModelRow(model: model, maxSessions: maxSessions)
                         .contentShape(.rect)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
         }
         .padding(.horizontal, .gutter)

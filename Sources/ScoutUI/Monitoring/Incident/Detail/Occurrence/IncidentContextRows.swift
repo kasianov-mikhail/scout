@@ -77,7 +77,7 @@ struct IncidentContextRows<Element: Incident & IncidentDetailInfo>: View {
                 delay: 0.48
             )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 
     private func sessionValue(_ sessionID: UUID) -> String {
@@ -98,7 +98,7 @@ struct IncidentContextRows<Element: Incident & IncidentDetailInfo>: View {
                 delay: 0.56
             )
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 
     private func groupRow(_ group: IncidentGroup<Element>) -> some View {

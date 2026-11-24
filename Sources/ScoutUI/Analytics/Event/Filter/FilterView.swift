@@ -54,7 +54,7 @@ struct FilterView: View {
                         .strokeBorder(Color.lineSeparator, lineWidth: 0.5)
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .padding(.horizontal, .gutter)
         .background(Color.surface)
         .accessibilityLabel(Text(verbatim: "Reset Filter"))

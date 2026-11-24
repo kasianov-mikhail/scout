@@ -30,7 +30,7 @@ struct ReleaseGrid: View {
             NavigationLink(value: destination) {
                 ReleaseTile(value: value, isLeading: isLeading, action: nil)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
         } else {
             ReleaseTile(value: value, isLeading: isLeading, action: nil)
         }

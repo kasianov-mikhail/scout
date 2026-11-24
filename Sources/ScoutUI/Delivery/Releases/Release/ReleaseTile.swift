@@ -18,7 +18,7 @@ struct ReleaseTile: View {
                 Button(action: action) {
                     cell
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             } else {
                 cell
             }
