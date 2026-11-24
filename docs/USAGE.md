@@ -2,7 +2,6 @@
 
 ## Table of Contents
 - [Bootstrap](#bootstrap)
-- [Live Events](#live-events)
 - [Multiplexing Handlers](#multiplexing-handlers)
 - [Multiple Backends](#multiple-backends)
 - [Writing Logs](#writing-logs)
@@ -32,10 +31,6 @@ MetricsSystem.bootstrap(
 The runtime lives in the `Scout` product, while each backend comes from its own connector — `Backend.cloudKit(container:)` from `NativeConnector`. It throws when the container carries no identifier, which is what a default container resolves to in an app without an iCloud container entitlement.
 
 Keep it to one runtime per app and pass the same one to both — a second runtime would install the crash handlers twice and open a second session against the same store. Creating it is synchronous, so the handlers work immediately; the lifecycle records and the first sync land shortly after. Passing an empty backend list turns Scout off — nothing is recorded or synced.
-
-## Live Events
-
-The Events screen shows a strip of the events found since the list last loaded. A backend wakes it when the app delivers an event through `RecordSender`; the update source stays in-process, so no push notifications, background modes, or CloudKit subscriptions are involved. Events written by other devices appear on the next wake-up or after reopening the screen.
 
 ## Multiplexing Handlers
 
