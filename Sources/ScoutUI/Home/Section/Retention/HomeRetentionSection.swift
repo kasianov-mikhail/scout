@@ -36,7 +36,7 @@ struct HomeRetentionSection: View {
                         showsDivider: index < weeks.count - 1
                     )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
 
             footer

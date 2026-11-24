@@ -119,7 +119,7 @@ struct ResourceGroupDetailView: View {
             .frame(height: .rowRegular)
             .contentShape(.rect)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 }
 

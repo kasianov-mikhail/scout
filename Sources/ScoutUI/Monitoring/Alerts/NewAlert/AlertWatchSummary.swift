@@ -31,7 +31,7 @@ struct AlertWatchSummary: View {
                         .font(.scoutRowStrong)
                         .foregroundStyle(Color.textLink)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
             .frame(height: .rowSubtitle)
             .padding(.horizontal, .space8)

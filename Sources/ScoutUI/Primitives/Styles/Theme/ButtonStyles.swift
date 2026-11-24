@@ -49,6 +49,17 @@ struct OutlineButtonStyle: ButtonStyle {
     }
 }
 
+/// A button that looks the same pressed and released: no highlight, no dimming.
+struct SolidButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+    }
+}
+
+extension ButtonStyle where Self == SolidButtonStyle {
+    static var solid: SolidButtonStyle { SolidButtonStyle() }
+}
+
 extension ButtonStyle where Self == PrimaryButtonStyle {
     static var prominent: PrimaryButtonStyle { PrimaryButtonStyle() }
 }

@@ -20,7 +20,7 @@ struct AlertEventCard: View {
                 Button(action: change) {
                     row(showsChange: true)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             } else {
                 row(showsChange: false)
             }

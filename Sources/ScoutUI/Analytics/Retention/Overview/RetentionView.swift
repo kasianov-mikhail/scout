@@ -73,7 +73,7 @@ struct RetentionView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .contentShape(.rect)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                 }
             }
         }

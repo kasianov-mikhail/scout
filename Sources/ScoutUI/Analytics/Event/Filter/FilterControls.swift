@@ -23,7 +23,7 @@ struct FilterHeader: View {
                     .overlay(Circle().strokeBorder(Color.textPrimary.opacity(0.08), lineWidth: 0.5))
                     .shadow(color: .black.opacity(0.08), radius: 4, y: 1)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
             .frame(width: 60)
             .accessibilityLabel(Text(verbatim: "Close"))
 
@@ -40,7 +40,7 @@ struct FilterHeader: View {
                     .background(Circle().fill(Color.filterAccent.opacity(isApplyEnabled ? 1 : 0.35)))
                     .shadow(color: Color.filterAccent.opacity(isApplyEnabled ? 0.3 : 0), radius: 4, y: 1)
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
             .frame(width: 60)
             .disabled(!isApplyEnabled)
             .accessibilityLabel(Text(verbatim: "Show Events"))

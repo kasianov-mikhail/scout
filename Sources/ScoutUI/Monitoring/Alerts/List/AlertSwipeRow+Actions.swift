@@ -38,7 +38,7 @@ extension AlertSwipeRow {
                         .padding(side.iconPadding, 14)
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .frame(maxHeight: .infinity)
         .contentShape(Rectangle())
         .padding(side.buttonPadding, 12)

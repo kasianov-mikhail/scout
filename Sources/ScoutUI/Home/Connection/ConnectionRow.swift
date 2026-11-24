@@ -42,7 +42,7 @@ struct ConnectionRow: View {
             }
             .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .accessibilityAddTraits(isActive ? [.isSelected] : [])
     }
 }

@@ -28,7 +28,7 @@ struct AlertSensitivityCard: View {
                             isSelected: option == sensitivity
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                     .overlay(alignment: .trailing) {
                         if index < AlertDraft.Sensitivity.allCases.count - 1 {
                             Separator(axis: .vertical)
@@ -101,7 +101,7 @@ struct AlertThresholdCard: View {
                 .frame(width: 48, height: 44)
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .overlay(alignment: .leading) {
             Separator(axis: .vertical)
         }

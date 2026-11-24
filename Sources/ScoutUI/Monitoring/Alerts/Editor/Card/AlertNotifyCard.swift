@@ -41,7 +41,7 @@ struct AlertNotifyCard: View {
                 .background(notifies ? Color.surfaceSelected : Color.clear)
                 .contentShape(Rectangle())
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
         }
     }
 }

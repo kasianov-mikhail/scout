@@ -89,7 +89,7 @@ struct ReadoutTabStrip<Value, Content: View, Indicator: View>: View {
                 } label: {
                     padded
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
                 .accessibilityAddTraits(selected ? .isSelected : [])
             } else {
                 padded

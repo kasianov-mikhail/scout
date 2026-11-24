@@ -23,7 +23,7 @@ struct AlertWatchPicker: View {
                     } label: {
                         AlertWatchPickerRow(watch: option, isSelected: option == watch)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                     .overlay(alignment: .bottom) {
                         if index < AlertDraft.Watch.allCases.count - 1 {
                             Separator()

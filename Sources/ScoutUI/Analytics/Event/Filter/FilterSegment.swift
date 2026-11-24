@@ -32,7 +32,7 @@ struct FilterSegment: View {
                     }
                 }
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }

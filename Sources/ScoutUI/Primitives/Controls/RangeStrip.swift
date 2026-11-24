@@ -23,7 +23,7 @@ struct RangeStrip<Value: Hashable>: View {
                         .font(.scoutNumberL)
                         .foregroundStyle(range == selection ? Color.textPrimary : Color.pending)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
                 .accessibilityAddTraits(range == selection ? .isSelected : [])
             }
         }

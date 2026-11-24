@@ -59,7 +59,7 @@ private struct FilterIDField: View {
                             }
                             .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                 }
                 .frame(height: 45)
             }

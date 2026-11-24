@@ -96,7 +96,7 @@ struct ModelDetailView: View {
                     } label: {
                         ModelDeviceRow(device: device, maxSessions: detail.maxSessions)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                 }
             }
         }

@@ -121,7 +121,7 @@ struct NetworkEndpointView: View {
                         showsDivider: row.id != rows.last?.id
                     )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
         }
         .padding(.horizontal, .gutter)

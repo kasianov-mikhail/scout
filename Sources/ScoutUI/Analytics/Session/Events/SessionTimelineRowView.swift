@@ -19,7 +19,7 @@ struct SessionTimelineRowView: View {
                 } label: {
                     content
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             } else {
                 content
             }

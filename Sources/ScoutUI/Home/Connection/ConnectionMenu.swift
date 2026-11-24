@@ -61,7 +61,7 @@ struct ConnectionMenu: View {
                         .padding(.vertical, .space12)
                         .contentShape(Rectangle())
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                     .overlay(alignment: .top) {
                         Separator()
                     }

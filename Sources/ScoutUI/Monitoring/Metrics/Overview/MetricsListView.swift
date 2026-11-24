@@ -93,7 +93,7 @@ struct MetricsListView: View {
         } label: {
             MetricTileView(tile: tile, isLeading: isLeading)
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
     }
 }
 

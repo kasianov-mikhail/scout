@@ -37,7 +37,7 @@ struct AlertTemplateListView: View {
                         NavigationLink(value: watch) {
                             AlertTemplateRow(watch: watch)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(.solid)
                         .overlay(alignment: .bottom) {
                             if index < AlertDraft.Watch.allCases.count - 1 {
                                 Separator()

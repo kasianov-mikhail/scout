@@ -31,7 +31,7 @@ struct BackendRetentionSection: View {
                             showsDivider: option != BackendRetention.allCases.last
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                 }
             }
             .hapticFeedback(.selection, trigger: retention)

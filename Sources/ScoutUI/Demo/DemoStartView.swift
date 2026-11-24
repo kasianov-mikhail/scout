@@ -55,7 +55,7 @@ struct DemoStartView: View {
                         } label: {
                             DemoDayCard(day: days[index], isSelected: selection == index)
                         }
-                        .buttonStyle(.plain)
+                        .buttonStyle(.solid)
                         .accessibilityAddTraits(selection == index ? [.isSelected] : [])
                     }
                 }
@@ -86,7 +86,7 @@ struct DemoStartView: View {
                         .frame(height: .touchTarget)
                         .contentShape(Rectangle())
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
             .padding(.horizontal, .gutter)
             .padding(.bottom, 30)

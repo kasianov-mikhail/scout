@@ -24,7 +24,7 @@ struct SettingsButton: View {
                 .settingsCardStyle()
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .buttonStyle(.solid)
         .disabled(!isEnabled)
     }
 }

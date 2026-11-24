@@ -38,7 +38,7 @@ extension SettingsOverviewView {
                             showsDivider: backend.id != health.backends.last?.id
                         )
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(.solid)
                 }
             }
         }

@@ -20,7 +20,7 @@ struct HomeAlertSection: View {
                     content(history: history)
                 }
             }
-            .buttonStyle(.plain)
+            .buttonStyle(.solid)
         } else {
             HomeAlertSectionPlaceholder()
         }

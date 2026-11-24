@@ -82,7 +82,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                         side: index.isMultiple(of: 2) ? .leading : .trailing
                     )
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(.solid)
             }
         }
         .padding(.horizontal, .gutter)
