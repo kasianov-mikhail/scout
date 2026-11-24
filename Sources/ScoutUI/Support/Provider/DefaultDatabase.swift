@@ -56,4 +56,5 @@ struct DefaultDatabase: Database {
 
 extension EnvironmentValues {
     @Entry var database: DatabaseReader = DefaultDatabase()
+    @Entry var eventUpdates: (any EventUpdatesSource)?
 }
