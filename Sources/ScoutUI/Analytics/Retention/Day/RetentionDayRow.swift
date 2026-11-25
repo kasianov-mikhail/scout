@@ -25,6 +25,7 @@ struct RetentionDayRow: View {
                     LeftRoundedRectangle(cornerRadius: .radiusBlock)
                         .fill(Color.fillSuccess)
                         .frame(width: proxy.size.width * value.fraction)
+                        .animation(.barResize, value: value.fraction)
                 }
                 .overlay(alignment: .leading) {
                     if let average = value.averageFraction {
@@ -32,6 +33,7 @@ struct RetentionDayRow: View {
                             .fill(value.rate == nil ? Color.fillLevel : Color.textPrimary)
                             .frame(width: 2, height: 24)
                             .offset(x: min(proxy.size.width * average, proxy.size.width - 2))
+                            .animation(.barResize, value: average)
                     }
                 }
             }

@@ -13,19 +13,20 @@ struct RetentionBar: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let width = maxInstalls > 0 ? proxy.size.width * CGFloat(week.installs) / CGFloat(maxInstalls) : 0
+            let fraction = maxInstalls > 0 ? CGFloat(week.installs) / CGFloat(maxInstalls) : 0
+            let width = proxy.size.width * fraction
 
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: .radiusBlock)
                     .fill(Color.surfaceSkeleton)
                     .frame(width: width)
 
-                if let rate = week.rate {
-                    LeftRoundedRectangle(cornerRadius: .radiusBlock)
-                        .fill(Color.fillSuccess)
-                        .frame(width: width * CGFloat(rate))
-                }
+                LeftRoundedRectangle(cornerRadius: .radiusBlock)
+                    .fill(Color.fillSuccess)
+                    .frame(width: width * CGFloat(week.rate ?? 0))
             }
+            .animation(.barResize, value: fraction)
+            .animation(.barResize, value: week.rate)
         }
         .frame(height: 18)
         .accessibilityHidden(true)

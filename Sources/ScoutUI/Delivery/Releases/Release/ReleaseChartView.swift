@@ -47,6 +47,7 @@ struct ReleaseChartView: View {
                     .fill(Color.textPrimary)
                     .frame(width: 2)
                     .offset(x: min(max(width * fraction, width * 0.005), width - 2))
+                    .animation(.barResize, value: fraction)
             }
             .frame(height: 6)
             .clipShape(RoundedRectangle(cornerRadius: .radiusBlock))
@@ -63,6 +64,7 @@ struct ReleaseChartView: View {
                 RoundedRectangle(cornerRadius: .radiusBlock)
                     .fill(Color.textMuted)
                     .frame(width: proxy.size.width * min(max(value, 0), 1))
+                    .animation(.barResize, value: value)
             }
             .frame(height: 6)
             .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
@@ -109,6 +111,7 @@ struct ReleaseChartView: View {
                 }
             }
             .frame(height: 6)
+            .animation(.barResize, value: values)
             .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
         }
     }

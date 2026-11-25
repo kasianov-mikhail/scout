@@ -73,6 +73,7 @@ struct IncidentAffectedRow: View {
                         .frame(width: width * share(segment: segment))
                 }
             }
+            .animation(.barResize, value: affected.segments.map { share(segment: $0) })
         }
         .frame(height: 8)
         .clipShape(RoundedRectangle(cornerRadius: .radiusBadge))

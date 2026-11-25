@@ -40,7 +40,7 @@ struct BarChart: View {
                 }
             }
             .frame(height: height, alignment: .bottom)
-            .animation(.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.32), value: values)
+            .animation(.barResize, value: values)
 
             AxisLabelRow(
                 start: startLabel,
@@ -89,6 +89,10 @@ struct BarChart: View {
         }
         return max(4, 4 + CGFloat(value) / CGFloat(maximum) * (height - 4))
     }
+}
+
+extension Animation {
+    static let barResize = Animation.timingCurve(0.2, 0.8, 0.2, 1, duration: 0.32)
 }
 
 struct AxisLabelRow: View {
