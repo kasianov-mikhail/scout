@@ -59,7 +59,6 @@ struct ActivityMetricTabs: View {
                 ActivityMetricTabs(
                     series: ActivitySeries(
                         points: ActivityPoint.samples,
-                        range: .month,
                         metric: .daily,
                         now: Date()
                     ),

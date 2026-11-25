@@ -9,15 +9,9 @@ import SwiftUI
 
 extension ActivityView {
     struct Placeholder: View {
-        @Binding var range: ActivityRange
-
         var body: some View {
             LazyVStack(alignment: .leading, spacing: 0) {
-                RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                    .padding(.leading, .gutter)
-
                 metrics
-                    .padding(.top, .space4)
                     .padding(.horizontal, .gutter)
 
                 chart
@@ -74,24 +68,16 @@ extension ActivityView {
             VStack(spacing: 0) {
                 SkeletonBar(height: 96, delay: 0.16, cornerRadius: .radiusBadge)
 
-                axis
+                HStack(spacing: 0) {
+                    SkeletonBar(width: 34, height: 8, delay: 0.2)
+                    Spacer()
+                    SkeletonBar(width: 34, height: 8, delay: 0.2)
+                    Spacer()
+                    SkeletonBar(width: 34, height: 8, delay: 0.2)
+                }
+                .frame(height: 12)
+                .padding(.top, 6)
             }
-        }
-
-        private var axis: some View {
-            HStack(spacing: 0) {
-                SkeletonBar(width: 34, height: 8, delay: 0.2)
-
-                Spacer()
-
-                SkeletonBar(width: 34, height: 8, delay: 0.2)
-
-                Spacer()
-
-                SkeletonBar(width: 34, height: 8, delay: 0.2)
-            }
-            .frame(height: 12)
-            .padding(.top, 6)
         }
 
         private var stickiness: some View {
@@ -133,7 +119,7 @@ extension ActivityView {
 #Preview("Activity loading") {
     NavigationStack {
         ScrollView {
-            ActivityView.Placeholder(range: .constant(.month))
+            ActivityView.Placeholder()
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Active users")

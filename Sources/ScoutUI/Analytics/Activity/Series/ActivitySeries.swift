@@ -9,29 +9,25 @@ import Foundation
 import Scout
 
 struct ActivitySeries {
-    let range: ActivityRange
     let metric: ActivityPeriod
-    let now: Date
 
     private let series: [ActivityPeriod: [ActivityValue]]
     private let leading: [ActivityPeriod: Int]
     private let source: [Date: ActivityPoint]
 
-    init(points: [ActivityPoint], range: ActivityRange, metric: ActivityPeriod, now: Date) {
+    init(points: [ActivityPoint], metric: ActivityPeriod, now: Date) {
         let source = Dictionary(points.map { (Date(millisecondsSince1970: $0.date).startOfDay, $0) }, uniquingKeysWith: { first, _ in first })
-        let bounds = range.range(now: now)
-        let start = bounds.lowerBound.addingDay(-1)
-        let days = Array(stride(from: start, to: bounds.upperBound, by: .day))
+        let today = now.startOfDay
+        let previous = today.addingDay(-30)
+        let days = stride(from: previous.addingDay(), to: today.addingDay(), by: .day)
 
-        self.range = range
         self.metric = metric
-        self.now = now
         self.source = source
         self.leading = ActivityPeriod.allCases.reduce(into: [:]) { result, period in
-            result[period] = period.value(point: source[start])
+            result[period] = period.value(point: source[previous])
         }
         self.series = ActivityPeriod.allCases.reduce(into: [:]) { result, period in
-            result[period] = days.dropFirst().map { day in
+            result[period] = days.map { day in
                 ActivityValue(date: day, value: period.value(point: source[day]))
             }
         }

@@ -11,7 +11,6 @@ import SwiftUI
 struct ActivityView: View {
     @ObservedObject var activity: ActivityProvider
 
-    @State private var range = ActivityRange.month
     @State private var metric = ActivityPeriod.daily
 
     @Environment(\.database) private var database
@@ -25,11 +24,9 @@ struct ActivityView: View {
             } else {
                 ScrollView {
                     if case .success(let points) = activity.result {
-                        content(points: points)
-                            .transition(.opacity)
+                        content(points: points).transition(.opacity)
                     } else {
-                        Placeholder(range: $range)
-                            .transition(.opacity)
+                        Placeholder().transition(.opacity)
                     }
                 }
                 .scrollIndicators(.hidden)
@@ -43,14 +40,10 @@ struct ActivityView: View {
     }
 
     private func content(points: [ActivityPoint]) -> some View {
-        let series = ActivitySeries(points: points, range: range, metric: metric, now: Date())
+        let series = ActivitySeries(points: points, metric: metric, now: Date())
 
         return LazyVStack(alignment: .leading, spacing: 0) {
-            RangeStrip(selection: $range, ranges: ActivityRange.allCases, title: \.title)
-                .padding(.leading, .gutter)
-
             ActivityMetricTabs(series: series, selection: $metric)
-                .padding(.top, .space4)
                 .padding(.horizontal, .gutter)
 
             ActivityChart(series: series)

@@ -15,38 +15,28 @@ import Testing
 struct ActivitySeriesTests {
     private let now = Date(year: 2026, month: 10, day: 25)
 
-    @Test("Every range ends on today or yesterday")
+    @Test("The 30-day window includes today")
     func bounds() {
-        #expect(ActivityRange.month.range(now: now) == date(month: 9, day: 26)..<date(month: 10, day: 26))
-        #expect(ActivityRange.week.range(now: now) == date(month: 10, day: 19)..<date(month: 10, day: 26))
-        #expect(ActivityRange.today.range(now: now) == date(month: 10, day: 25)..<date(month: 10, day: 26))
-        #expect(ActivityRange.yesterday.range(now: now) == date(month: 10, day: 24)..<date(month: 10, day: 25))
-        #expect(ActivityRange.year.range(now: now).lowerBound == Date(year: 2025, month: 10, day: 26))
-    }
+        let series = ActivitySeries(points: [], metric: .daily, now: now)
 
-    @Test("The axis labels the first, middle and last day")
-    func axis() {
-        let axis = ActivityRange.month.axis(now: now)
-
-        #expect(axis.start == "Sep 26")
-        #expect(axis.middle == "Oct 10")
-        #expect(axis.end == "today")
+        #expect(series.values.first?.date == date(month: 9, day: 26))
+        #expect(series.values.last?.date == now)
     }
 
     @Test("The series fills missing days and orders rows newest first")
     func series() {
-        let series = ActivitySeries(points: points, range: .week, metric: .daily, now: now)
+        let series = ActivitySeries(points: points, metric: .daily, now: now)
 
-        #expect(series.values.count == 7)
-        #expect(series.values.map(\.value) == [0, 0, 0, 0, 100, 120, 110])
-        #expect(series.rows.map(\.valueLabel) == ["110", "120", "100", "0", "0", "0", "0"])
+        #expect(series.values.count == 30)
+        #expect(series.values.map(\.value) == Array(repeating: 0, count: 27) + [100, 120, 110])
+        #expect(series.rows.map(\.valueLabel) == ["110", "120", "100"] + Array(repeating: "0", count: 27))
         #expect(series.rows.first?.dayLabel == "Sun 25")
         #expect(series.rows.last?.isOldest == true)
     }
 
     @Test("The summary compares the latest day with the day before")
     func summary() {
-        let series = ActivitySeries(points: points, range: .week, metric: .daily, now: now)
+        let series = ActivitySeries(points: points, metric: .daily, now: now)
 
         #expect(series.summary(period: .daily).valueLabel == "110")
         #expect(series.summary(period: .daily).deltaLabel(precision: 1) == "−8.3%")
@@ -57,7 +47,7 @@ struct ActivitySeriesTests {
     @Test("Stickiness divides the latest daily users by monthly users")
     func stickiness() {
         let points = [point(day: 25, dau: 100, wau: 1000, mau: 10_000)]
-        let series = ActivitySeries(points: points, range: .week, metric: .daily, now: now)
+        let series = ActivitySeries(points: points, metric: .daily, now: now)
 
         #expect(series.stickinessLabel == "1.0%")
         #expect(series.daysPerMonthLabel == "0.3")
@@ -65,7 +55,7 @@ struct ActivitySeriesTests {
 
     @Test("The chart scales every bar to the tallest value")
     func chartScale() {
-        let series = ActivitySeries(points: points, range: .week, metric: .daily, now: now)
+        let series = ActivitySeries(points: points, metric: .daily, now: now)
 
         #expect(series.maximum == 120)
         #expect(series.rows.first?.fraction == Double(110) / 120)
