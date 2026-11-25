@@ -46,14 +46,15 @@ extension MetricsListView {
 
             return VStack(alignment: .leading, spacing: .space4) {
                 SkeletonBar(width: nameWidth, height: 9, delay: delay)
-                    .frame(height: 15)
+                    .matchingLineHeight(.scoutCode)
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 HStack(alignment: .firstTextBaseline, spacing: .space6) {
                     SkeletonBar(width: 74, height: 20, delay: delay)
+                        .matchingLineHeight(.scoutNumberM)
                     SkeletonBar(width: 28, height: 6, delay: delay)
+                        .matchingLineHeight(.scoutFootnote)
                 }
-                .frame(height: 29)
 
                 SkeletonBar(height: 28, delay: delay, cornerRadius: .radiusBadge)
             }

@@ -17,7 +17,7 @@ struct OutlineChip: View {
             .monospaced(monospaced)
             .lineLimit(1)
             .padding(.horizontal, .space8)
-            .frame(height: 26)
+            .frame(height: .outlineChipHeight)
             .overlay {
                 Capsule().stroke(Color.lineSubtle, lineWidth: .hairline)
             }

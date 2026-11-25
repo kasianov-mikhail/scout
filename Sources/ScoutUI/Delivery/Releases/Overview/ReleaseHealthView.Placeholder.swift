@@ -28,11 +28,11 @@ extension ReleaseHealthView {
             VStack(alignment: .leading, spacing: 0) {
                 HStack(alignment: .firstTextBaseline, spacing: .space8) {
                     SkeletonBar(width: 120, height: 18, delay: 0.08)
+                        .matchingLineHeight(.scoutNumberL)
 
                     SkeletonBar(width: 74, height: 9, delay: 0.08)
-                        .frame(height: 16, alignment: .leading)
+                        .matchingLineHeight(.scoutCaption)
                 }
-                .frame(height: 33)
 
                 SkeletonBar(height: 32, delay: 0.08)
                     .padding(.top, .space12)
@@ -53,10 +53,10 @@ extension ReleaseHealthView {
                         SkeletonBar(width: 8, height: 8, delay: 0.08, cornerRadius: .radiusBar)
 
                         SkeletonBar(width: 34, height: 7, delay: 0.08)
+                            .matchingLineHeight(.scoutFootnote)
                     }
                 }
             }
-            .frame(height: 14, alignment: .leading)
         }
 
         private func row(index: Int) -> some View {

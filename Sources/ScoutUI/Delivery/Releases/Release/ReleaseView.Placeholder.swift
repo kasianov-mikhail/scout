@@ -34,9 +34,9 @@ extension ReleaseView {
                         .tracking(-0.5)
 
                     SkeletonBar(width: 200, height: 9, delay: 0.08)
-                        .frame(height: 18)
+                        .matchingLineHeight(.scoutRow)
                     SkeletonBar(width: 120, height: 9, delay: 0.08)
-                        .frame(height: 18)
+                        .matchingLineHeight(.scoutRow)
                 }
 
                 Spacer(minLength: 0)
@@ -88,10 +88,10 @@ extension ReleaseView {
                     .foregroundStyle(Color.textMuted)
 
                 SkeletonBar(width: 74, height: 14, delay: delay)
-                    .frame(height: 29)
+                    .matchingLineHeight(.scoutNumberM)
                 SkeletonBar(height: 24, delay: delay, cornerRadius: .radiusBadge)
                 SkeletonBar(width: 120, height: 6, delay: delay)
-                    .frame(height: 14)
+                    .matchingLineHeight(.scoutFootnote)
             }
             .releaseGridCell(isLeading: isLeading)
         }

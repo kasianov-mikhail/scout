@@ -20,7 +20,7 @@ struct IncidentGroupPlaceholder: View {
 
             cards
 
-            Section(title: "Affected", bottomGap: .space16) {
+            Section(title: "Affected") {
                 ForEach(Array(IncidentAffected.titles.enumerated()), id: \.offset) { item in
                     affectedRow(title: item.element, delay: 0.16 + Double(item.offset) * 0.08)
                         .overlay(alignment: .bottom) {

@@ -26,7 +26,7 @@ extension IncidentList {
                     .padding(.horizontal, -.gutter)
 
                 SkeletonBar(width: 160, height: 9, delay: 0)
-                    .frame(height: 17.5)
+                    .matchingLineHeight(.scoutRow)
                     .padding(.top, .space4)
                     .frame(maxWidth: .infinity, alignment: .leading)
 

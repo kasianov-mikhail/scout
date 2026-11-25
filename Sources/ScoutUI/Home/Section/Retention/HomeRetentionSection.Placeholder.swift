@@ -16,7 +16,7 @@ extension HomeRetentionSection {
                 }
 
                 SkeletonBar(width: 194, height: 8, delay: 1.52)
-                    .frame(height: 16, alignment: .leading)
+                    .matchingLineHeight(.scoutCaption)
                     .padding(.top, .space4)
                     .padding(.bottom, .space6)
             }

@@ -16,6 +16,17 @@ struct SkeletonBar: View {
 
     @State private var dimmed = false
 
+    func matchingLineHeight(_ font: Font, alignment: Alignment = .leading) -> some View {
+        Text(verbatim: "0")
+            .font(font)
+            .hidden()
+            .frame(width: width)
+            .overlay(alignment: alignment) {
+                self
+            }
+            .accessibilityHidden(true)
+    }
+
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
             .fill(fill)

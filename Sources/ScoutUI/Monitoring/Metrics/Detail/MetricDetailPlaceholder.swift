@@ -51,6 +51,7 @@ struct MetricDetailPlaceholder: View {
                     .padding(.horizontal, .gutter)
 
                 SkeletonBar(width: 120, height: 9, delay: 0.08)
+                    .matchingLineHeight(.scoutCaption)
                     .padding(.top, .space8)
                     .padding(.horizontal, .gutter)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -83,23 +84,21 @@ struct MetricDetailPlaceholder: View {
         VStack(alignment: .leading, spacing: .space2) {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 SkeletonBar(width: 74, height: 24, delay: 0.08)
+                    .matchingLineHeight(.scoutNumberXL)
 
-                if telemetry == .meter {
-                    SkeletonBar(width: 74, height: 11, delay: 0.08)
-                } else {
-                    SkeletonBar(width: 74, height: 9, delay: 0.08)
-                        .frame(height: 18, alignment: .leading)
-                }
+                SkeletonBar(width: 74, height: telemetry == .meter ? 11 : 9, delay: 0.08)
+                    .matchingLineHeight(.scoutRow)
             }
 
             SkeletonBar(width: 120, height: 9, delay: 0.08)
+                .matchingLineHeight(.scoutCaption)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var legend: some View {
         SkeletonBar(width: 74, height: 8, delay: 0.2)
-            .frame(height: 14, alignment: .leading)
+            .matchingLineHeight(.scoutFootnote)
             .padding(.top, .space10)
             .padding(.bottom, .space16)
     }

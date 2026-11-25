@@ -38,6 +38,7 @@ extension NetworkHourView {
                             VStack(spacing: .space4) {
                                 SkeletonBar(width: 34, height: latencySkeletonHeights[index], delay: 0.72, cornerRadius: 0)
                                 SkeletonBar(width: 24, height: 8, delay: 0.72)
+                                    .matchingLineHeight(.scoutAxis)
                             }
                             .frame(maxWidth: .infinity)
                         }
@@ -46,8 +47,11 @@ extension NetworkHourView {
 
                     HStack(spacing: .space16) {
                         SkeletonBar(width: 76, height: 9, delay: 0.8)
+                            .matchingLineHeight(.scoutCode)
                         SkeletonBar(width: 76, height: 9, delay: 0.8)
+                            .matchingLineHeight(.scoutCode)
                         SkeletonBar(width: 76, height: 9, delay: 0.8)
+                            .matchingLineHeight(.scoutCode)
                     }
                     .padding(.top, .space10)
                     .padding(.bottom, .space12)

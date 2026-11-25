@@ -35,6 +35,7 @@ extension IncidentGroupPlaceholder {
 
             HStack(spacing: .space12) {
                 SkeletonBar(width: 74, height: 9, delay: delay)
+                    .matchingLineHeight(.scoutFootnote)
                 SkeletonBar(width: 46, height: 9, delay: delay)
                 SkeletonBar(width: 46, height: 9, delay: delay)
             }

@@ -19,7 +19,7 @@ extension DevicesView {
                     .padding(.horizontal, -.gutter)
 
                 SkeletonBar(width: 200, height: 9, delay: 0)
-                    .frame(height: 17.5)
+                    .matchingLineHeight(.scoutRow)
                     .padding(.top, .space4)
                     .padding(.bottom, .space12)
 

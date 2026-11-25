@@ -30,12 +30,12 @@ extension HomeAlertSection {
 
                 HStack {
                     SkeletonBar(width: 194, height: 9, delay: 0.16)
+                        .matchingLineHeight(.scoutCaption)
 
                     Spacer()
 
                     SkeletonBar(width: 46, height: 9, delay: 0.16)
                 }
-                .frame(height: 16)
                 .padding(.top, .space2)
             }
             .padding(.top, .space12)

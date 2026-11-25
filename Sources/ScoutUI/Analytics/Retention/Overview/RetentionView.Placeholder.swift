@@ -37,7 +37,7 @@ extension RetentionView {
                     .alignmentGuide(.firstTextBaseline) { _ in 32 }
 
                 SkeletonBar(width: 74, height: 9, delay: 0.08)
-                    .frame(height: 21, alignment: .leading)
+                    .matchingLineHeight(.scoutBody)
             }
             .padding(.top, .space16)
             .padding(.bottom, .space12)

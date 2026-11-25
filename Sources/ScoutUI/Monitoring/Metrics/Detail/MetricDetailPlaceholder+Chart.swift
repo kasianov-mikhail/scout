@@ -43,8 +43,10 @@ extension MetricDetailPlaceholder {
                 .foregroundStyle(Color.textMuted)
 
             SkeletonBar(width: 74, height: 20, delay: 0.08)
+                .matchingLineHeight(.scoutNumberL)
 
             SkeletonBar(width: 28, height: 9, delay: 0.08)
+                .matchingLineHeight(.scoutCaption)
         }
         .padding(.top, .space10)
         .padding(.bottom, .space12)

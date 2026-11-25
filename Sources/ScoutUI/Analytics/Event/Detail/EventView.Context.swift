@@ -40,7 +40,7 @@ extension EventView {
                 case nil:
                     ChipRow {
                         ForEach([120, 74, 74], id: \.self) { width in
-                            SkeletonBar(width: CGFloat(width), height: 27, delay: 0.08, cornerRadius: .radiusBlock)
+                            SkeletonBar(width: CGFloat(width), height: .outlineChipHeight, delay: 0.08, cornerRadius: .radiusBlock)
                         }
                     }
                     sessionRow {

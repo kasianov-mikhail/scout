@@ -41,13 +41,14 @@ extension SessionTimelineView {
         private var summary: some View {
             HStack(spacing: .space4) {
                 SkeletonBar(width: 74, height: 9, delay: 0.08)
+                    .matchingLineHeight(.scoutRow)
                 SkeletonBar(width: 120, height: 9, delay: 0.08)
+                    .matchingLineHeight(.scoutRow)
                 Spacer()
             }
             .padding(.top, .space16)
             .padding(.bottom, .space12)
             .padding(.horizontal, .gutter)
-            .frame(height: 39)
             .overlay(alignment: .bottom) {
                 divider
             }
@@ -58,7 +59,7 @@ extension SessionTimelineView {
                 ForEach(SessionSkeletonChip.samples) { chip in
                     SkeletonBar(width: chip.width, height: 9, delay: 0.16)
                         .padding(.horizontal, .space8)
-                        .frame(height: 26)
+                        .frame(height: .outlineChipHeight)
                         .overlay {
                             RoundedRectangle(cornerRadius: .radiusBadge).stroke(Color.timelineTrack, lineWidth: .hairline)
                         }
