@@ -36,9 +36,8 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $path) {
             Group {
-                if let backend {
+                if backend != nil {
                     HomeOverview(path: $path)
-                        .iCloudWarning(backend)
                 } else {
                     ErrorView(description: "Pass a CloudKit backend to inspect Scout data.", retry: nil)
                 }
