@@ -308,7 +308,10 @@ jobs:
 
   api-breakage:
     needs: [scope, model-versions]
-    if: github.event_name == 'pull_request' && github.event.pull_request.draft != true && needs.scope.outputs.api == 'true'
+    if: >-
+      github.event_name == 'pull_request'
+      && needs.scope.outputs.api == 'true'
+      && github.event.pull_request.draft != true
     runs-on: macos-26
     timeout-minutes: 30
 
