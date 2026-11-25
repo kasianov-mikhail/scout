@@ -25,7 +25,8 @@ struct HomeReleaseSection: View {
 
     private func content(adoption: ReleaseAdoption) -> some View {
         Section(title: "Releases", bottomGap: .space10) {
-            HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
+            HomeSectionExpandButton(action: onShowAll)
+                .accessibilityLabel(Text(verbatim: "Show all releases"))
         } content: {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
                 Text(verbatim: adoption.headline)

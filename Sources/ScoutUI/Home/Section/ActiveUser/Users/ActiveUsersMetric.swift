@@ -8,12 +8,12 @@
 import Foundation
 
 struct ActiveUsersMetric: Identifiable {
-    let kind: ActiveUsers.Kind
+    let kind: HomeActivitySelection
     let value: Int
     let delta: Double
     let series: [Int]
 
-    var id: ActiveUsers.Kind { kind }
+    var id: HomeActivitySelection { kind }
 
     var valueLabel: String {
         value.formatted(.number.locale(Locale(identifier: "en_US")))
@@ -28,7 +28,7 @@ struct ActiveUsersMetric: Identifiable {
 }
 
 extension ActiveUsersMetric {
-    init(kind: ActiveUsers.Kind, series: [Int]) {
+    init(kind: HomeActivitySelection, series: [Int]) {
         let current = series.last ?? 0
         let previous = series.dropLast().last ?? 0
         let delta = previous > 0 ? Double(current - previous) / Double(previous) : 0

@@ -5,13 +5,12 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
-import Foundation
+import SwiftUI
 
-enum HomeDestination: Hashable {
-    case activity
-    case retention
-    case releaseHealth
-    case alerts
-    case telemetry(LogCategory)
-    case resources
+struct SessionsView: View {
+    var body: some View {
+        Color.clear
+            .navigationTitle(en: "Sessions")
+            .inlineNavigationTitle(divider: nil)
+    }
 }

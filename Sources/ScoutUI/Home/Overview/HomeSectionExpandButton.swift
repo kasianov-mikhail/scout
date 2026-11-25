@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct HomeSectionExpandButton: View {
-    let label: String
     let action: () -> Void
 
     var body: some View {
@@ -21,11 +20,11 @@ struct HomeSectionExpandButton: View {
         }
         .buttonStyle(.solid)
         .foregroundStyle(Color.textLink)
-        .accessibilityLabel(Text(verbatim: label))
     }
 }
 
 #Preview {
-    HomeSectionExpandButton(label: "Show all active users") {}
+    HomeSectionExpandButton {}
+        .accessibilityLabel(Text(verbatim: "Show all active users"))
         .padding()
 }

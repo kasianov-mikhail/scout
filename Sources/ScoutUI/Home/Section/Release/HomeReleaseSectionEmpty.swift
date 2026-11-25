@@ -12,7 +12,8 @@ struct HomeReleaseSectionEmpty: View {
 
     var body: some View {
         Section(title: "Releases", bottomGap: .space10) {
-            HomeSectionExpandButton(label: "Show all releases", action: onShowAll)
+            HomeSectionExpandButton(action: onShowAll)
+                .accessibilityLabel(Text(verbatim: "Show all releases"))
         } content: {
             HStack(alignment: .center, spacing: .space8) {
                 EmptyBar(width: 150, height: 26, cornerRadius: .radiusBadge)
