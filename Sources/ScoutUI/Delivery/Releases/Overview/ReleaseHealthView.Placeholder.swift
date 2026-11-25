@@ -89,7 +89,7 @@ extension ReleaseHealthView {
             .frame(height: .rowChart)
             .overlay(alignment: .bottom) {
                 if index < rowCount - 1 {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }

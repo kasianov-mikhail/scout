@@ -39,7 +39,7 @@ extension HomeRetentionSection {
             .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
                 if index < 3 {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }

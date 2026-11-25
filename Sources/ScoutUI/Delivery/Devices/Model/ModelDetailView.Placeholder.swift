@@ -70,7 +70,7 @@ extension ModelDetailView {
             .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
                 if showsDivider {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }
@@ -108,7 +108,7 @@ extension ModelDetailView {
             .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
                 if !isLast {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }

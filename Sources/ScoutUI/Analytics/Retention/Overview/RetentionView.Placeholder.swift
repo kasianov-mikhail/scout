@@ -62,7 +62,7 @@ extension RetentionView {
             .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
                 if index < 11 {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }

@@ -43,7 +43,7 @@ struct OSVersionRow: View {
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if showsDivider {
-                DashedLine()
+                Separator.dashed
             }
         }
     }

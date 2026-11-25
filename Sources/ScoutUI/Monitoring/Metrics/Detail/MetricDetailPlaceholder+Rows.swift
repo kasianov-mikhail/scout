@@ -44,7 +44,7 @@ extension MetricDetailPlaceholder {
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if index < dates.count - 1 {
-                DashedLine()
+                Separator.dashed
             }
         }
     }

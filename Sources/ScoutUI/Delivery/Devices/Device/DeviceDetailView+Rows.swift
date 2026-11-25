@@ -87,7 +87,7 @@ struct SessionLine: View {
         .frame(height: .rowRegular)
         .overlay(alignment: .bottom) {
             if showsDivider {
-                DashedLine()
+                Separator.dashed
             }
         }
         .frame(maxWidth: .infinity)

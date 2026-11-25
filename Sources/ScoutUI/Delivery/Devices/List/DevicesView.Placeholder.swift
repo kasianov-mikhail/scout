@@ -80,7 +80,7 @@ extension DevicesView {
             .frame(height: .rowChart)
             .overlay(alignment: .bottom) {
                 if !isLast {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }

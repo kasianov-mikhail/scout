@@ -35,7 +35,7 @@ extension NetworkEndpointRow {
             .frame(height: .rowChart)
             .overlay(alignment: .bottom) {
                 if index < 9 {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }

@@ -44,7 +44,7 @@ extension HomeRetentionSection {
             .frame(height: 40)
             .overlay(alignment: .bottom) {
                 if showsDivider {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }
