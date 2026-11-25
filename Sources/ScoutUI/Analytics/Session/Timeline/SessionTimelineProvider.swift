@@ -55,13 +55,13 @@ final class SessionTimelineProvider: ObservableObject, RecordProvider {
             launchOpen: launchOpen
         )
 
-        return SessionTimeline(
+        return try await SessionTimeline(
             info: info,
-            events: try await events,
-            screens: try await screens,
-            crashes: try await crashes,
-            hangs: try await hangs,
-            resources: try await resources,
+            events: events,
+            screens: screens,
+            crashes: crashes,
+            hangs: hangs,
+            resources: resources,
             now: Date()
         )
     }

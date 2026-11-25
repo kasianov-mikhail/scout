@@ -47,8 +47,8 @@ final class TimelineProvider: ObservableObject {
             async let fetched = feed.incidents()
 
             let railValue = try await rail
-            let fetchedValue = try await fetched
-            let versions = try await feed.versions(installIDs: railValue.installs.compactMap(\.install.installID))
+            async let versions = feed.versions(installIDs: railValue.installs.compactMap(\.install.installID))
+            let (fetchedValue, versionValues) = try await (fetched, versions)
 
             guard token == startToken else {
                 return
@@ -58,7 +58,7 @@ final class TimelineProvider: ObservableObject {
                 crashes: fetchedValue.crashes,
                 hangs: fetchedValue.hangs,
                 resources: fetchedValue.resources,
-                versions: versions
+                versions: versionValues
             )
 
             let split: (older: [UUID], newer: [UUID])
