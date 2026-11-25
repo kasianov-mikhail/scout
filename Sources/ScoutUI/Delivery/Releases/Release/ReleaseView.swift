@@ -31,7 +31,7 @@ struct ReleaseView: View {
                         content(detail: ReleaseDetail(release: release, trend: trend, now: Date()))
                             .transition(.opacity)
                     } else {
-                        ReleasePlaceholder(version: release.id)
+                        Placeholder(version: release.id)
                             .transition(.opacity)
                     }
                 }
@@ -46,43 +46,6 @@ struct ReleaseView: View {
         .inlineNavigationTitle(divider: nil)
         .toolbarBackground(provider.isLoading ? Color.surfaceGrey : release.freeSessions.level.background, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
-        .navigationDestination(for: ReleaseDestination.self) { destination in
-            switch destination {
-            case .crashes:
-                VersionIncidentsView(
-                    issuesTitle: "Top crash issues",
-                    days: trend.crashes,
-                    provider: VersionIncidentProvider<Crash>(version: release.id)
-                ) { group in
-                    CrashGroupDetailView(group: group)
-                }
-            case .hangs:
-                VersionIncidentsView(
-                    issuesTitle: "Top hang issues",
-                    days: trend.hangs,
-                    provider: VersionIncidentProvider<Hang>(version: release.id)
-                ) { group in
-                    HangGroupDetailView(group: group)
-                }
-            case .resources:
-                VersionIncidentsView(
-                    issuesTitle: "Top resource issues",
-                    days: trend.resources,
-                    provider: VersionIncidentProvider<ResourceException>(version: release.id)
-                ) { group in
-                    ResourceGroupDetailView(group: group)
-                }
-            }
-        }
-    }
-
-    private var trend: VersionTrend {
-        switch provider.result {
-        case .success(let trend):
-            trend
-        case .failure, nil:
-            .empty
-        }
     }
 
     private func content(detail: ReleaseDetail) -> some View {

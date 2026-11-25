@@ -244,13 +244,14 @@ struct NativeDatabaseTests {
         var device = makeDeviceRecord(id: "a", model: "iPhone16,1")
         device["date"] = TestDate.reference.addingTimeInterval(-400 * .day)
         try await database.write(record: device)
-        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0))
+        try await database.write(record: makeSessionRecord(id: "s-1", device: "a", day: 0, os: "iOS 17.4"))
 
         let range = TestDate.reference..<TestDate.reference.addingTimeInterval(.day)
         let devices = try await database.devices(in: range)
 
         #expect(devices.map(\.deviceID) == ["a"])
         #expect(devices.first?.model == "iPhone16,1")
+        #expect(devices.first?.osVersion == "iOS 17.4")
     }
 
     @Test("Devices read the model only for devices active in the range")
@@ -336,7 +337,7 @@ struct SchemaBootstrapTests {
 
         return NativeDatabase {
             try await registration.value
-            return store
+            return .init(store: store, registry: registry)
         }
     }
 
@@ -364,6 +365,34 @@ struct SchemaBootstrapTests {
 
         let healed = try await registry.schema(for: DeviceEntry.recordType)
         #expect(healed.fields.contains { $0.name == "model" })
+    }
+
+    @Test("Devices still report activity when the published Session schema has no device OS aggregate")
+    func devicesWithoutOSAggregate() async throws {
+        try await store.schema(SessionEntry.recordType)
+            .field("start_date", .timestamp)
+            .field("device_id", .string)
+            .count(by: "device_id", at: "start_date", parts: CatalogEntry.devicePageParts)
+            .create()
+        try await CatalogEntry.crash.publish(into: store, registry: registry)
+        try await CatalogEntry.device.publish(into: store, registry: registry)
+
+        let date = TestDate.reference.addingTimeInterval(.hour)
+        try await store.write(
+            [.init(values: ["start_date": .date(date), "device_id": .string("a")], uuid: "s-1")],
+            entity: SessionEntry.recordType
+        )
+
+        let database = NativeDatabase { .init(store: store, registry: registry) }
+        try await database.write(record: makeDeviceRecord(id: "a", model: "iPhone16,1"))
+
+        let devices = try await database.devices(in: TestDate.reference..<TestDate.reference.addingTimeInterval(.day))
+        #expect(devices.count == 1)
+        let device = try #require(devices.first)
+        #expect(device.deviceID == "a")
+        #expect(device.model == "iPhone16,1")
+        #expect(device.sessions == 1)
+        #expect(device.osVersion == nil)
     }
 
     @Test("A schema nothing ever published is created on the first write")

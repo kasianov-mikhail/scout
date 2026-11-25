@@ -55,26 +55,28 @@ struct NetworkEndpointHeader: View {
     }
 }
 
-struct NetworkEndpointHeaderPlaceholder: View {
-    var body: some View {
-        VStack(alignment: .leading, spacing: .space6) {
-            Text(verbatim: " ")
-                .font(.scoutRowMono)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .overlay(alignment: .leading) {
-                    SkeletonBar(width: 210, height: 9, delay: 0.08)
-                }
-
-            Text(verbatim: " ")
-                .font(.scoutCaption)
-                .overlay(alignment: .leading) {
-                    HStack(spacing: .space6) {
-                        SkeletonBar(width: 28, height: 9, delay: 0.08)
-                        SkeletonBar(width: 194, height: 9, delay: 0.08)
+extension NetworkEndpointHeader {
+    struct Placeholder: View {
+        var body: some View {
+            VStack(alignment: .leading, spacing: .space6) {
+                Text(verbatim: " ")
+                    .font(.scoutRowMono)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .overlay(alignment: .leading) {
+                        SkeletonBar(width: 210, height: 9, delay: 0.08)
                     }
-                }
+
+                Text(verbatim: " ")
+                    .font(.scoutCaption)
+                    .overlay(alignment: .leading) {
+                        HStack(spacing: .space6) {
+                            SkeletonBar(width: 28, height: 9, delay: 0.08)
+                            SkeletonBar(width: 194, height: 9, delay: 0.08)
+                        }
+                    }
+            }
+            .padding(.top, .space4)
+            .padding(.bottom, .space16)
         }
-        .padding(.top, .space4)
-        .padding(.bottom, .space16)
     }
 }

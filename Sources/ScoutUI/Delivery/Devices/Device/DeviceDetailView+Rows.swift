@@ -26,20 +26,6 @@ extension DeviceDetailView {
                 .foregroundStyle(value > 0 ? color : Color.textPrimary)
         }
     }
-
-    @ViewBuilder
-    func sessionRow(_ session: DeviceSession, deviceID: UUID, maxDuration: TimeInterval, showsDivider: Bool) -> some View {
-        if let sessionID = session.sessionID {
-            NavigationLink {
-                SessionInspector(sessionID: sessionID, deviceID: deviceID)
-            } label: {
-                SessionLine(session: session, maxDuration: maxDuration, showsDivider: showsDivider)
-            }
-            .buttonStyle(.solid)
-        } else {
-            SessionLine(session: session, maxDuration: maxDuration, showsDivider: showsDivider)
-        }
-    }
 }
 
 struct StatColumn<Value: View>: View {

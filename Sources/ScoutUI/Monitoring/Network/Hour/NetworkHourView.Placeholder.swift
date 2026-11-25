@@ -1,0 +1,86 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import Foundation
+import SwiftUI
+
+private let latencySkeletonHeights: [CGFloat] = [22, 64, 52, 23, 12, 7, 3]
+
+extension NetworkHourView {
+    struct Placeholder: View {
+        let date: Date
+
+        var body: some View {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                ListTitle(title: DateFormatter.networkHourLabel.string(from: date))
+                    .padding(.horizontal, .gutter)
+
+                NetworkEndpointHeader.Placeholder()
+                    .padding(.horizontal, .gutter)
+
+                Section(title: "Status") {
+                    SkeletonBar(height: 10, delay: 0.16, cornerRadius: .radiusBadge)
+                        .padding(.top, .space12)
+                        .padding(.bottom, .space6)
+
+                    ForEach(0..<3, id: \.self) { index in
+                        NetworkStatusRowPlaceholder(index: index, showsDivider: index < 2)
+                    }
+                }
+
+                Section(title: "Latency", bottomGap: 0) {
+                    HStack(alignment: .bottom, spacing: .space4) {
+                        ForEach(latencySkeletonHeights.indices, id: \.self) { index in
+                            VStack(spacing: .space4) {
+                                SkeletonBar(width: 34, height: latencySkeletonHeights[index], delay: 0.72, cornerRadius: 0)
+                                SkeletonBar(width: 24, height: 8, delay: 0.72)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .padding(.top, .space12)
+
+                    HStack(spacing: .space16) {
+                        SkeletonBar(width: 76, height: 9, delay: 0.8)
+                        SkeletonBar(width: 76, height: 9, delay: 0.8)
+                        SkeletonBar(width: 76, height: 9, delay: 0.8)
+                    }
+                    .padding(.top, .space10)
+                    .padding(.bottom, .space12)
+                }
+            }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(verbatim: "Loading"))
+        }
+    }
+}
+
+private struct NetworkStatusRowPlaceholder: View {
+    let index: Int
+    let showsDivider: Bool
+
+    var body: some View {
+        let delay = 0.24 + Double(index) * 0.08
+
+        HStack(spacing: .space8) {
+            SkeletonBar(width: 8, height: 8, delay: delay, cornerRadius: .radiusBar)
+                .frame(width: 14, alignment: .leading)
+            SkeletonBar(width: 24, height: 9, delay: delay)
+                .frame(width: 44, alignment: .leading)
+            SkeletonBar(width: 28, height: 9, delay: delay)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            SkeletonBar(width: 28, height: 9, delay: delay)
+                .frame(width: 56, alignment: .trailing)
+        }
+        .frame(height: .rowTable)
+        .overlay(alignment: .bottom) {
+            if showsDivider {
+                DashedLine()
+            }
+        }
+    }
+}

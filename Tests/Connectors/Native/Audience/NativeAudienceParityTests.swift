@@ -43,11 +43,11 @@ private struct AudienceStore {
             try await (legacy ? entry.legacy : entry).publish(into: writer, registry: registry)
         }
 
-        try await NativeDatabase { writer }.write(records: makeAudienceRecords())
+        try await NativeDatabase { .init(store: writer, registry: registry) }.write(records: makeAudienceRecords())
 
         guard legacy else {
             store = writer
-            database = NativeDatabase { writer }
+            database = NativeDatabase { .init(store: writer, registry: registry) }
             return
         }
 
@@ -56,7 +56,7 @@ private struct AudienceStore {
         try await CatalogEntry.publishAll(into: reader, registry: published)
 
         store = reader
-        database = NativeDatabase { reader }
+        database = NativeDatabase { .init(store: reader, registry: published) }
     }
 
     func rawActivity(in range: Range<Date>) async throws -> [ActivityPoint] {

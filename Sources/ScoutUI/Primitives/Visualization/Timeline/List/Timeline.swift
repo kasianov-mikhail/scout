@@ -26,14 +26,14 @@ struct Timeline: View {
         Group {
             switch provider.result {
             case nil:
-                TimelinePlaceholder()
+                Placeholder()
                     .transition(.opacity)
             case .failure(let error):
                 ErrorView(description: Text(verbatim: error.localizedDescription)) {
                     await load()
                 }
             case .success where provider.entries.isEmpty:
-                Placeholder(
+                ScoutUI.Placeholder(
                     text: "No timeline",
                     systemImage: "calendar.day.timeline.left",
                     description: "Activity appears here once this device reports a launch"

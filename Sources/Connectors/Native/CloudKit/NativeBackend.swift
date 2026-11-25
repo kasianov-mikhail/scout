@@ -9,11 +9,20 @@ import CloudKit
 import Scout
 import ScoutDB
 
-private let stores = LazyTable<EntityStore>()
+private let stores = LazyTable<NativeDatabase.Storage>()
 
 struct NativeDatabase: Sendable {
-    let resolve: @Sendable () async throws -> EntityStore
+    struct Storage: Sendable {
+        let store: EntityStore
+        let registry: SchemaRegistry
+    }
+
+    let resolveStorage: @Sendable () async throws -> Storage
     let flights = SeriesFlights()
+
+    func resolve() async throws -> EntityStore {
+        try await resolveStorage().store
+    }
 }
 
 extension Backend {
@@ -28,16 +37,17 @@ extension Backend {
 
         let registry = SchemaRegistry(database: container.publicCloudDatabase)
         let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
+        let storage = NativeDatabase.Storage(store: store, registry: registry)
         let database = NativeDatabase {
             do {
                 return try await stores.value(id: id) {
                     try await container.accountStatus().verify()
                     try await CatalogEntry.publishAll(into: store, registry: registry)
-                    return store
+                    return storage
                 }
             } catch is Backend.AccountError {
                 // Keep public reads available and let the next resolve retry publication.
-                return store
+                return storage
             }
         }
 

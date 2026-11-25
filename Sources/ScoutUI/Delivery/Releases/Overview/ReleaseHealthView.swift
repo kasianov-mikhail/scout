@@ -20,7 +20,7 @@ struct ReleaseHealthView: View {
                     await provider.fetchAgain(in: database)
                 }
             } else if case .success(let releases) = provider.result, releases.isEmpty {
-                Placeholder(
+                ScoutUI.Placeholder(
                     text: "No releases",
                     systemImage: "shippingbox",
                     description: "Release health appears once your app reports versions"
@@ -31,7 +31,7 @@ struct ReleaseHealthView: View {
                         content(releases: releases)
                             .transition(.opacity)
                     } else {
-                        ReleaseHealthViewPlaceholder()
+                        Placeholder()
                             .transition(.opacity)
                     }
                 }

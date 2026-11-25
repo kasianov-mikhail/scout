@@ -10,7 +10,7 @@ import SwiftUI
 
 struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: View {
     @ObservedObject var provider: IncidentTilesProvider<Element>
-    let placeholder: Placeholder
+    let placeholder: ScoutUI.Placeholder
 
     @ViewBuilder let destination: (IncidentTally, IncidentRange) -> Destination
 
@@ -50,7 +50,7 @@ struct IncidentList<Element: RecordDecodable & Incident, Destination: View>: Vie
                     list(tiles)
                         .transition(.opacity)
                 } else {
-                    IncidentListPlaceholder(range: $provider.range)
+                    Placeholder(range: $provider.range)
                         .transition(.opacity)
                 }
             }

@@ -1,0 +1,99 @@
+//
+// Copyright 2026 Mikhail Kasianov
+//
+// Use of this source code is governed by an MIT-style
+// license that can be found in the LICENSE file or at
+// https://opensource.org/licenses/MIT.
+
+import SwiftUI
+
+private let deviceNameWidths: [CGFloat] = [88, 64, 112, 48]
+
+extension DevicesView {
+    struct Placeholder: View {
+        @Binding var range: IncidentRange
+
+        var body: some View {
+            LazyVStack(alignment: .leading, spacing: 0) {
+                RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
+                    .padding(.horizontal, -.gutter)
+
+                SkeletonBar(width: 200, height: 9, delay: 0)
+                    .frame(height: 17.5)
+                    .padding(.top, .space4)
+                    .padding(.bottom, .space12)
+
+                SectionGap()
+                    .padding(.horizontal, -.gutter)
+
+                columns
+                    .columnHeaderStyle(topPadding: 12)
+
+                ForEach(0..<9, id: \.self) { index in
+                    row(index: index, isLast: index == 8)
+                }
+            }
+            .padding(.horizontal, .gutter)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text(verbatim: "Loading"))
+        }
+
+        private var columns: some View {
+            HStack(spacing: .space8) {
+                ColumnHeader(title: "SESSIONS")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                ColumnHeader(title: "OS")
+                    .frame(width: 112, alignment: .leading)
+                ColumnHeader(title: "CRASHES")
+                    .frame(width: 56, alignment: .trailing)
+            }
+        }
+
+        private func row(index: Int, isLast: Bool) -> some View {
+            let delay = Double(index) * 0.08
+            let nameWidth = deviceNameWidths[index % deviceNameWidths.count]
+
+            return VStack(alignment: .leading, spacing: .space8) {
+                HStack(spacing: .space8) {
+                    SkeletonBar(width: 12, height: 16, delay: delay)
+                        .frame(width: 20)
+
+                    SkeletonBar(width: nameWidth, height: 9, delay: delay)
+
+                    Spacer(minLength: 8)
+
+                    SkeletonBar(width: 74, height: 9, delay: delay)
+                }
+
+                HStack(spacing: .space8) {
+                    SkeletonBar(width: 34, height: 9, delay: delay)
+                        .padding(.horizontal, .space4)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                    SkeletonBar(width: 80, height: 9, delay: delay)
+                        .frame(width: 112, alignment: .leading)
+
+                    SkeletonBar(width: 12, height: 9, delay: delay)
+                        .frame(width: 56, alignment: .trailing)
+                }
+            }
+            .frame(height: .rowChart)
+            .overlay(alignment: .bottom) {
+                if !isLast {
+                    DashedLine()
+                }
+            }
+        }
+    }
+}
+
+#Preview("Devices loading") {
+    NavigationStack {
+        ScrollView {
+            DevicesView.Placeholder(range: .constant(.week))
+        }
+        .scrollIndicators(.hidden)
+        .navigationTitle(en: "Devices")
+        .inlineNavigationTitle(divider: nil)
+    }
+}

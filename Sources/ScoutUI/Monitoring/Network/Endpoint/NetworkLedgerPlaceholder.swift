@@ -15,7 +15,7 @@ struct NetworkLedgerPlaceholder: View {
         LazyVStack(alignment: .leading, spacing: 0) {
             ListTitle(title: title)
 
-            NetworkEndpointHeaderPlaceholder()
+            NetworkEndpointHeader.Placeholder()
 
             SectionGap()
                 .padding(.horizontal, -.gutter)
@@ -23,7 +23,7 @@ struct NetworkLedgerPlaceholder: View {
             NetworkLedgerHeader(primary: primary)
 
             ForEach(0..<14, id: \.self) { index in
-                NetworkLedgerRowPlaceholder(index: index, showsDivider: index < 13)
+                NetworkLedgerRowView.Placeholder(index: index, showsDivider: index < 13)
             }
         }
         .padding(.horizontal, .gutter)
