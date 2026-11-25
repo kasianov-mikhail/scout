@@ -26,9 +26,18 @@ extension Backend {
             throw UnidentifiedContainerError()
         }
 
+        let registry = SchemaRegistry(database: container.publicCloudDatabase)
+        let store = EntityStore(database: container.publicCloudDatabase, registry: registry)
         let database = NativeDatabase {
-            try await stores.value(id: id) {
-                try await container.store()
+            do {
+                return try await stores.value(id: id) {
+                    try await container.accountStatus().verify()
+                    try await CatalogEntry.publishAll(into: store, registry: registry)
+                    return store
+                }
+            } catch is Backend.AccountError {
+                // Keep public reads available and let the next resolve retry publication.
+                return store
             }
         }
 
@@ -39,20 +48,5 @@ extension Backend {
             engine: .cloudKit,
             checkAccess: { try await container.accountStatus().verify() }
         )
-    }
-}
-
-extension CKContainer {
-    fileprivate func store() async throws -> EntityStore {
-        let registry = SchemaRegistry(database: publicCloudDatabase)
-        let store = EntityStore(database: publicCloudDatabase, registry: registry)
-
-        guard try await accountStatus() == .available else {
-            return store
-        }
-
-        try await CatalogEntry.publishAll(into: store, registry: registry)
-
-        return store
     }
 }

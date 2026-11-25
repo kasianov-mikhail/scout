@@ -55,10 +55,8 @@ struct HomeView: View {
         NavigationStack(path: $path) {
             Group {
                 if let backend {
-                    AccountGate(backend: backend) {
-                        HomeList(path: $path)
-                            .iCloudWarning(backend)
-                    }
+                    HomeList(path: $path)
+                        .iCloudWarning(backend)
                 } else {
                     ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
                 }

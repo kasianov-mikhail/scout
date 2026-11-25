@@ -34,15 +34,6 @@ extension Backend {
             }
         }
 
-        package var blocksAccess: Bool {
-            switch self {
-            case .noAccount, .restricted, .temporarilyUnavailable, .couldNotDetermine:
-                true
-            case .failure:
-                false
-            }
-        }
-
         var status: Status {
             switch self {
             case .noAccount, .restricted, .temporarilyUnavailable:
