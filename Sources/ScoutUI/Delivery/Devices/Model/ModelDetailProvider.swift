@@ -13,7 +13,14 @@ final class ModelDetailProvider: ObservableObject, Provider {
     typealias Output = ModelDetail
 
     @Published var result: ProviderResult<ModelDetail>?
-    @Published var range: IncidentRange
+    @Published var range: IncidentRange {
+        didSet {
+            if range != oldValue {
+                loadedRange = nil
+                result = nil
+            }
+        }
+    }
 
     let model: String?
 

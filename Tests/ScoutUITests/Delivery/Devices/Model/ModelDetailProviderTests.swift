@@ -34,13 +34,18 @@ struct ModelDetailProviderTests {
         )
 
         let provider = ModelDetailProvider(model: "iPhone16,1")
-        await provider.fetchIfNeeded(in: database)
+        await provider.load(in: database)
         let detail = try #require(provider.result).get()
 
         #expect(provider.modelName == "iPhone 15 Pro")
         #expect(detail.deviceCount == 1)
         #expect(detail.osVersions.map(\.version) == ["iOS 17.4"])
         #expect(detail.osVersions.first?.percentage == 100)
+
+        provider.range = .month
+        #expect(provider.isLoading)
+        await provider.load(in: database)
+        #expect(try #require(provider.result).get().deviceCount == 1)
     }
 
     @Test("The unknown model has no name")

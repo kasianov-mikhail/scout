@@ -62,6 +62,11 @@ struct DeviceDetailProviderTests {
         #expect(detail.activity.last?.count == 1)
         #expect(detail.history.contains { $0.title == "Updated to" } == false)
         #expect(detail.history.contains { $0.title == "First seen with" })
+
+        provider.range = .month
+        #expect(provider.isLoading)
+        await provider.fetchAgain(in: database)
+        #expect(try #require(provider.result).get().recentSessions.count == 2)
     }
 
     @Test("No records yields an empty detail")
