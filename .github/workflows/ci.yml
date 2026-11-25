@@ -176,12 +176,12 @@ jobs:
 
   tests:
     name: test-ios-${{ matrix.ios }} (${{ matrix.configuration }})
-    needs: [scope, lint, model-versions]
+    needs: [scope, model-versions]
     # !cancelled(), not always(): a cancelled run re-checks this condition and stops the legs only when it is false
     if: >-
       ${{ !cancelled()
       && needs.scope.outputs.code == 'true'
-      && needs.lint.result == 'success'
+      && github.event.pull_request.draft != true
       && (needs.model-versions.result == 'success' || needs.model-versions.result == 'skipped') }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
@@ -239,12 +239,13 @@ jobs:
           echo "Gate passes."
 
   notify:
-    needs: tests
+    needs: [lint, tests]
     # always() keeps the model-versions job, skipped on push, from skipping this one through tests
     if: >-
       ${{ always()
       && github.event_name == 'push'
       && github.repository == 'kasianov-mikhail/scout'
+      && needs.lint.result == 'success'
       && needs.tests.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -306,8 +307,8 @@ jobs:
           key: ${{ steps.key.outputs.key }}
 
   api-breakage:
-    needs: [scope, lint, model-versions]
-    if: github.event_name == 'pull_request' && needs.scope.outputs.api == 'true'
+    needs: [scope, model-versions]
+    if: github.event_name == 'pull_request' && github.event.pull_request.draft != true && needs.scope.outputs.api == 'true'
     runs-on: macos-26
     timeout-minutes: 30
 
