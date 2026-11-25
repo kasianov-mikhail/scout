@@ -77,9 +77,9 @@ runs:
           -skipMacroValidation \
           build-for-testing
 
+    # No continue-on-error here: the classifier runs anyway, and a red test has to fail the caller's step
     - name: Test
       id: test
-      continue-on-error: true
       shell: bash
       run: |
         xcodebuild \

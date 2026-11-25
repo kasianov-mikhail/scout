@@ -24,7 +24,7 @@ jobs:
 
     steps:
       # A red test or a build names itself; a job that never saw a runner, or a runner that broke mid-leg, cannot.
-      # Only the second kind earns a retry, so the branch below is a whitelist, not a default.
+      # A gate failing is a consequence, so it never counts as a verdict on the code.
       - name: Decide whether a retry can help
         id: decide
         env:
@@ -36,14 +36,18 @@ jobs:
           retry="$(jq -r '
             [.jobs[] | select(.conclusion != "success" and .conclusion != "skipped" and .conclusion != "neutral")]
             | if length == 0 then false
-              elif any(.[]; (.runner_name // "") == "" or (.steps | length) == 0) then true
-              elif any(.[] | .steps[]?; .conclusion == "failure" and .name == "Report an infrastructure failure") then true
+              elif any(.[]; .steps[]? | select(.conclusion == "failure")
+                              | .name | select(. != "Report an infrastructure failure" and (startswith("Require the") | not)))
+              then false
+              elif any(.[]; (.runner_name // "") == "" or (.steps | length) == 0
+                           or any(.steps[]?; .conclusion == "failure" and .name == "Report an infrastructure failure"))
+              then true
               else false end
           ' <<< "$jobs")"
           if [ "$retry" = true ]; then
-            echo "No runner arrived for a job, or a runner broke mid-test, so the failed jobs are re-run."
+            echo "No runner arrived for a job, or a runner broke mid-test, and nothing named a problem with the code, so the failed jobs are re-run."
           else
-            echo "The failure reached a verdict, so a retry would only repeat it."
+            echo "The failure reached a verdict, or nothing lost its runner, so a retry would only repeat it."
           fi
           echo "retry=$retry" >> "$GITHUB_OUTPUT"
 

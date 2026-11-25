@@ -208,15 +208,15 @@ jobs:
           runtime: ${{ matrix.runtime }}
 
       # The retry workflow reads these three names: a step inside a composite action never reaches the jobs API,
-      # and only a runner that broke mid-leg earns a re-run. A cancelled leg keeps its own conclusion.
+      # and only a runner that broke mid-leg earns a re-run. The verdict alone decides, so the leg cannot go green.
       - name: Report test failures
-        if: ${{ !cancelled() && steps.tests.outcome == 'failure' && steps.tests.outputs.kind == 'test' }}
+        if: ${{ !cancelled() && steps.tests.outputs.kind == 'test' }}
         run: |
           echo "::error::A test failed, so a retry would only repeat it. Fix the test or the code behind it."
           exit 1
 
       - name: Report a build failure
-        if: ${{ !cancelled() && steps.tests.outcome == 'failure' && steps.tests.outputs.kind == 'build' }}
+        if: ${{ !cancelled() && steps.tests.outputs.kind == 'build' }}
         run: |
           echo "::error::The build failed, so a retry would only repeat it."
           exit 1
