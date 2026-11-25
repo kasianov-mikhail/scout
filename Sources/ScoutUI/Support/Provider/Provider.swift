@@ -74,7 +74,7 @@ extension Sequence where Element == any Provider {
     }
 
     func fetchIfFailed(in database: DatabaseReader) async {
-        await concurrentForEach { provider in
+        for provider in self {
             await provider.fetchIfFailed(in: database)
         }
     }

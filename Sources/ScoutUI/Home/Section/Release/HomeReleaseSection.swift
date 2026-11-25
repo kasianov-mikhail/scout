@@ -8,24 +8,50 @@
 import SwiftUI
 
 struct HomeReleaseSection: View {
-    let adoption: ReleaseAdoption?
-    let onShowAll: () -> Void
+    private enum Destination: Hashable {
+        case releaseHealth
+    }
+
+    let adoption: ReleaseAdoption
+    let releases: ReleaseHealthProvider
+    let zoom: Namespace.ID
+
+    @Binding private var path: NavigationPath
+
+    init(adoption: ReleaseAdoption, releases: ReleaseHealthProvider, zoom: Namespace.ID, path: Binding<NavigationPath>) {
+        self.adoption = adoption
+        self.releases = releases
+        self.zoom = zoom
+        self._path = path
+    }
 
     var body: some View {
-        if let adoption {
+        section.navigationDestination(for: Destination.self) { destination in
+            ReleaseHealthView(provider: releases)
+                .zoomTransition(destination, in: zoom)
+        }
+    }
+
+    private var section: some View {
+        Group {
             if adoption.isEmpty {
-                HomeReleaseSectionEmpty(onShowAll: onShowAll)
+                Empty(onShowAll: showAll)
             } else {
                 content(adoption: adoption)
             }
-        } else {
-            HomeReleaseSectionPlaceholder()
         }
+        .zoomSource(Destination.releaseHealth, in: zoom)
+        .contentShape(Rectangle())
+        .onTapGesture(perform: showAll)
+    }
+
+    private func showAll() {
+        path.append(Destination.releaseHealth)
     }
 
     private func content(adoption: ReleaseAdoption) -> some View {
         Section(title: "Releases", bottomGap: .space10) {
-            HomeSectionExpandButton(action: onShowAll)
+            HomeSectionExpandButton(action: showAll)
                 .accessibilityLabel(Text(verbatim: "Show all releases"))
         } content: {
             HStack(alignment: .firstTextBaseline, spacing: .space8) {
@@ -73,14 +99,24 @@ struct HomeReleaseSection: View {
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    NavigationStack {
+    @Previewable @Namespace var zoom
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeReleaseSection(adoption: .sample) {}
-                HomeReleaseSection(adoption: nil) {}
+            VStack(alignment: .leading, spacing: 0) {
+                HomeReleaseSection(
+                    adoption: .sample,
+                    releases: ReleaseHealthProvider(.success(.samples)),
+                    zoom: zoom,
+                    path: $path
+                )
+                HomeReleaseSection.Placeholder()
             }
         }
         .scrollIndicators(.hidden)
     }
+    .environmentObject(Tint())
 }

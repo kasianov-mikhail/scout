@@ -32,9 +32,7 @@ struct HomeOverview: View {
                 list(snapshot)
             } else if let error = providers.compactMap(\.error).first {
                 ErrorView(description: error.localizedDescription) {
-                    for provider in providers {
-                        await provider.fetchIfFailed(in: database)
-                    }
+                    await providers.fetchIfFailed(in: database)
                 }
             } else {
                 list(live)
@@ -67,34 +65,21 @@ struct HomeOverview: View {
     private func list(_ snapshot: HomeSnapshot?) -> some View {
         ScrollView {
             if let snapshot {
-                loadedSections(snapshot)
+                sections(snapshot)
             } else {
                 placeholderSections
             }
         }
         .scrollIndicators(.hidden)
-        .navigationDestination(for: HomeDestination.self) { destination in
-            switch destination {
-            case .retention:
-                RetentionView(provider: retention)
-            case .releaseHealth:
-                ReleaseHealthView(provider: releases).zoomTransition(destination, in: zoom)
-            case .alerts:
-                AlertListView(provider: alerts)
-            case .telemetry(let category):
-                LogDestination(category: category)
-            case .resources:
-                ResourceListView()
-            }
-        }
     }
 
-    private func loadedSections(_ snapshot: HomeSnapshot) -> some View {
+    private func sections(_ snapshot: HomeSnapshot) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            HomeAlertSection(history: snapshot.alerts) {
-                path.append(HomeDestination.alerts)
-            }
-            .padding(.horizontal, .gutter)
+            HomeAlertSection(
+                history: snapshot.alerts,
+                alerts: alerts,
+                path: $path
+            )
             .loadingInk(isLoading: isLoading, delay: 0.05)
 
             HomeActivitySection(
@@ -105,41 +90,25 @@ struct HomeOverview: View {
             )
             .loadingInk(isLoading: isLoading, delay: 0.10)
 
-            HomeTelemetrySection(items: snapshot.telemetry) { kind in
-                switch kind {
-                case .events:
-                    path.append(HomeDestination.telemetry(.events))
-                case .crashes:
-                    path.append(HomeDestination.telemetry(.crashes))
-                case .metrics:
-                    path.append(HomeDestination.telemetry(.metrics))
-                case .hangs:
-                    path.append(HomeDestination.telemetry(.hangs))
-                case .network:
-                    path.append(HomeDestination.telemetry(.network))
-                case .resources:
-                    path.append(HomeDestination.resources)
-                }
-            }
+            HomeTelemetrySection(
+                items: snapshot.telemetry,
+                path: $path
+            )
             .loadingInk(isLoading: isLoading, delay: 0.20)
 
-            HomeReleaseSection(adoption: snapshot.releases) {
-                path.append(HomeDestination.releaseHealth)
-            }
-            .zoomSource(HomeDestination.releaseHealth, in: zoom)
-            .contentShape(Rectangle())
-            .onTapGesture {
-                path.append(HomeDestination.releaseHealth)
-            }
+            HomeReleaseSection(
+                adoption: snapshot.releases,
+                releases: releases,
+                zoom: zoom,
+                path: $path
+            )
             .loadingInk(isLoading: isLoading, delay: 0.30)
 
-            HomeRetentionSection(weeks: snapshot.retention) {
-                path.append(HomeDestination.retention)
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                path.append(HomeDestination.retention)
-            }
+            HomeRetentionSection(
+                weeks: snapshot.retention,
+                retention: retention,
+                path: $path
+            )
             .loadingInk(isLoading: isLoading, delay: 0.40)
         }
         .transition(.opacity)
@@ -147,24 +116,16 @@ struct HomeOverview: View {
 
     private var placeholderSections: some View {
         VStack(alignment: .leading, spacing: 0) {
-            HomeAlertSection(history: nil) {}.padding(.horizontal, .gutter)
-            HomeActivitySection(users: nil, activity: activities, zoom: zoom, path: $path)
-            HomeTelemetrySection(items: nil) { _ in }
-            HomeReleaseSection(adoption: nil) {}
-            HomeRetentionSection(weeks: nil) {}
+            HomeAlertSection.Placeholder()
+            HomeActivitySection.Placeholder()
+            HomeTelemetrySection.Placeholder()
+            HomeReleaseSection.Placeholder()
+            HomeRetentionSection.Placeholder()
         }
         .transition(.opacity)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Text(verbatim: "Loading"))
     }
-}
-
-private enum HomeDestination: Hashable {
-    case retention
-    case releaseHealth
-    case alerts
-    case telemetry(LogCategory)
-    case resources
 }
 
 #Preview("Home") {

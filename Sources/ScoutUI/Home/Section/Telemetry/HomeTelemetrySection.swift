@@ -13,18 +13,15 @@ let telemetryColumns = [
 ]
 
 struct HomeTelemetrySection: View {
-    let items: [TelemetryItem]?
-    let onSelect: (TelemetryItem.Kind) -> Void
+    let items: [TelemetryItem]
+    @Binding private var path: NavigationPath
 
-    var body: some View {
-        if let items {
-            content(items: items)
-        } else {
-            HomeTelemetrySectionPlaceholder()
-        }
+    init(items: [TelemetryItem], path: Binding<NavigationPath>) {
+        self.items = items
+        self._path = path
     }
 
-    private func content(items: [TelemetryItem]) -> some View {
+    var body: some View {
         Section(bottomGap: .space2) {
             SectionHeader(titles: ["TELEMETRY", "INCIDENTS"])
         } content: {
@@ -38,7 +35,7 @@ struct HomeTelemetrySection: View {
                         showsDivider: index / 2 < (items.count - 1) / 2,
                         showsValues: items.hasValues
                     ) {
-                        onSelect(item.kind)
+                        path.append(item.kind)
                     }
                 }
             }
@@ -46,15 +43,34 @@ struct HomeTelemetrySection: View {
                 Separator(axis: .vertical)
             }
         }
+        .navigationDestination(for: TelemetryItem.Kind.self) { kind in
+            switch kind {
+            case .events:
+                LogDestination(category: .events)
+            case .crashes:
+                LogDestination(category: .crashes)
+            case .metrics:
+                LogDestination(category: .metrics)
+            case .hangs:
+                LogDestination(category: .hangs)
+            case .network:
+                LogDestination(category: .network)
+            case .resources:
+                ResourceListView()
+            }
+        }
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeTelemetrySection(items: TelemetryItem.sample) { _ in }
-                HomeTelemetrySection(items: nil) { _ in }
+            VStack(alignment: .leading, spacing: 0) {
+                HomeTelemetrySection(items: TelemetryItem.sample, path: $path)
+                HomeTelemetrySection.Placeholder()
             }
         }
         .scrollIndicators(.hidden)

@@ -6,22 +6,45 @@
 // https://opensource.org/licenses/MIT.
 
 import Foundation
+import Scout
 import SwiftUI
 
 struct HomeRetentionSection: View {
-    let weeks: [RetentionWeek]?
-    let onSelect: () -> Void
+    private enum Destination: Hashable {
+        case retention
+    }
+
+    let weeks: [RetentionWeek]
+    let retention: RetentionProvider
+
+    @Binding private var path: NavigationPath
+
+    init(weeks: [RetentionWeek], retention: RetentionProvider, path: Binding<NavigationPath>) {
+        self.weeks = weeks
+        self.retention = retention
+        self._path = path
+    }
 
     var body: some View {
-        if let weeks {
+        section.navigationDestination(for: Destination.self) { _ in
+            RetentionView(provider: retention)
+        }
+    }
+
+    private var section: some View {
+        Group {
             if weeks.isEmpty {
-                HomeRetentionSectionEmpty(now: Date())
+                Empty(now: Date())
             } else {
                 content(weeks: weeks)
             }
-        } else {
-            HomeRetentionSectionPlaceholder()
         }
+        .contentShape(Rectangle())
+        .onTapGesture(perform: showRetention)
+    }
+
+    private func showRetention() {
+        path.append(Destination.retention)
     }
 
     private func content(weeks: [RetentionWeek]) -> some View {
@@ -29,7 +52,7 @@ struct HomeRetentionSection: View {
 
         return Section(title: "Retention", note: "kept on day 7", bottomGap: .space10) {
             ForEach(Array(weeks.enumerated()), id: \.element.id) { index, week in
-                Button(action: onSelect) {
+                Button(action: showRetention) {
                     RetentionRowContent(
                         week: week,
                         maxInstalls: maxInstalls,
@@ -98,12 +121,19 @@ private struct RetentionRowContent: View {
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeRetentionSection(weeks: .samples) {}
-                HomeRetentionSection(weeks: nil) {}
+            VStack(alignment: .leading, spacing: 0) {
+                HomeRetentionSection(
+                    weeks: .samples,
+                    retention: RetentionProvider(.success(.samples)),
+                    path: $path
+                )
+                HomeRetentionSection.Placeholder()
             }
         }
         .scrollIndicators(.hidden)
