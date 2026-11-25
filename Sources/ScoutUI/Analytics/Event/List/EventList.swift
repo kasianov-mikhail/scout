@@ -54,7 +54,7 @@ struct EventList<Header: View>: View {
             if let error = provider.error {
                 ErrorView(description: error.localizedDescription, retry: retryLoad)
             } else if let events = provider.records, events.isEmpty {
-                Placeholder(
+                ScoutUI.Placeholder(
                     text: "No results",
                     systemImage: "list.bullet",
                     description: "Events will appear here once your app starts logging",
@@ -71,7 +71,7 @@ struct EventList<Header: View>: View {
                         .animation(nil, value: UUID())
                         .transition(.opacity)
                     } else {
-                        EventListPlaceholder()
+                        Placeholder()
                             .transition(.opacity)
                     }
                 }

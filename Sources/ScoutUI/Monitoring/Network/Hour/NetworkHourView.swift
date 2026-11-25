@@ -40,7 +40,7 @@ struct NetworkHourView: View {
                 await provider.fetchAgain(in: database)
             }
         } else if isEmpty {
-            Placeholder(
+            ScoutUI.Placeholder(
                 text: "No requests",
                 systemImage: "network",
                 description: "No requests have been recorded for this endpoint at this hour"
@@ -51,7 +51,7 @@ struct NetworkHourView: View {
                     list(report)
                         .transition(.opacity)
                 } else {
-                    NetworkHourViewPlaceholder(date: date)
+                    Placeholder(date: date)
                         .transition(.opacity)
                 }
             }

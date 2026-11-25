@@ -14,12 +14,12 @@ struct HomeReleaseSection: View {
     var body: some View {
         if let adoption {
             if adoption.isEmpty {
-                HomeReleaseSectionEmpty(onShowAll: onShowAll)
+                Empty(onShowAll: onShowAll)
             } else {
                 content(adoption: adoption)
             }
         } else {
-            HomeReleaseSectionPlaceholder()
+            Placeholder()
         }
     }
 

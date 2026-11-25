@@ -26,7 +26,7 @@ struct DevicesView: View {
                     SectionGap()
                         .padding(.top, .space8)
 
-                    Placeholder(
+                    ScoutUI.Placeholder(
                         text: "No devices",
                         systemImage: "iphone.gen3",
                         description: "Devices appear here once your app reports sessions"
@@ -38,7 +38,7 @@ struct DevicesView: View {
                         content(models)
                             .transition(.opacity)
                     } else {
-                        DeviceListPlaceholder(range: $provider.range)
+                        Placeholder(range: $provider.range)
                             .transition(.opacity)
                     }
                 }
@@ -131,7 +131,7 @@ struct DevicesView: View {
 #Preview("Devices — Loading") {
     NavigationStack {
         ScrollView {
-            DeviceListPlaceholder(range: .constant(.week))
+            DevicesView.Placeholder(range: .constant(.week))
         }
         .scrollIndicators(.hidden)
         .navigationTitle(en: "Devices")

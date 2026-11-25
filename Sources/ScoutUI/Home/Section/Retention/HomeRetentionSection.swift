@@ -15,12 +15,12 @@ struct HomeRetentionSection: View {
     var body: some View {
         if let weeks {
             if weeks.isEmpty {
-                HomeRetentionSectionEmpty(now: Date())
+                Empty(now: Date())
             } else {
                 content(weeks: weeks)
             }
         } else {
-            HomeRetentionSectionPlaceholder()
+            Placeholder()
         }
     }
 

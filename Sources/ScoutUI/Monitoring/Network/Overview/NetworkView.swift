@@ -47,7 +47,7 @@ struct NetworkView: View {
                 SectionGap()
                     .padding(.top, .space8)
 
-                Placeholder(
+                ScoutUI.Placeholder(
                     text: "No requests",
                     systemImage: "network",
                     description: "No network requests have been recorded in this period"
@@ -59,7 +59,7 @@ struct NetworkView: View {
                     list(report)
                         .transition(.opacity)
                 } else {
-                    NetworkViewPlaceholder(range: $range)
+                    Placeholder(range: $range)
                         .transition(.opacity)
                 }
             }

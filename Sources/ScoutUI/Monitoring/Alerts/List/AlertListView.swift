@@ -13,7 +13,6 @@ struct AlertListView: View {
 
     @Environment(\.database) private var database
     @State private var creation: Creation?
-    @State var selected: AlertStatus?
 
     private enum Creation: String, Identifiable {
         case composer
@@ -23,7 +22,7 @@ struct AlertListView: View {
     }
 
     var body: some View {
-        content
+        Rules(provider: provider)
             .animation(.easeOut(duration: 0.2), value: provider.isLoading)
             .loadingInk(isLoading: provider.isLoading)
             .navigationTitle(en: "Alerts")
@@ -61,40 +60,10 @@ struct AlertListView: View {
                         .opaquePresentation()
                 }
             }
-            .navigationDestination(isPresented: Binding(get: { selected != nil }, set: { if !$0 { selected = nil } })) {
-                if let selected {
-                    AlertDetailView(provider: provider, rule: selected.rule, status: selected)
-                }
-            }
             .task {
                 await provider.fetchIfNeeded(in: database)
             }
             .notificationStatus(of: provider)
-    }
-
-    @ViewBuilder private var content: some View {
-        if let error = provider.error {
-            ErrorView(description: error.localizedDescription) {
-                await provider.fetchAgain(in: database)
-            }
-        } else if case .success(let statuses) = provider.result, statuses.isEmpty {
-            Placeholder(
-                text: "No alert rules",
-                systemImage: "bell.badge",
-                description: "Add a rule to get notified when a metric misbehaves."
-            )
-        } else {
-            ScrollView {
-                if case .success(let statuses) = provider.result {
-                    list(statuses)
-                        .transition(.opacity)
-                } else {
-                    AlertListPlaceholder()
-                        .transition(.opacity)
-                }
-            }
-            .scrollIndicators(.hidden)
-        }
     }
 }
 

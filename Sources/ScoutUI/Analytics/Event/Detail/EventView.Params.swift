@@ -10,13 +10,15 @@ import SwiftUI
 
 extension EventView {
     struct ParamSection: View {
-        static let previewLimit = 3
+        private static let previewLimit = 3
+        private static let transitionID = "params"
 
         let count: Int
 
         @Environment(\.database) private var database
         @ObservedObject var param: ParamProvider
-        @Binding var isParamPresented: Bool
+        @State private var isParamPresented = false
+        @Namespace private var zoom
 
         var body: some View {
             Section(title: "Params", bottomGap: 0) {
@@ -56,6 +58,24 @@ extension EventView {
                         ParamPreviewPlaceholder(index: index)
                     }
                 }
+            }
+            .zoomSource(Self.transitionID, in: zoom)
+            .contentShape(Rectangle())
+            .onTapGesture { isParamPresented = true }
+            .navigationDestination(isPresented: $isParamPresented) {
+                Group {
+                    switch param.result {
+                    case .success(let items):
+                        ParamList(items: items)
+                    case .failure(let error):
+                        ErrorView(description: error.localizedDescription) {
+                            await param.fetchAgain(in: database)
+                        }
+                    case nil:
+                        RingIndicator().frame(maxHeight: .infinity)
+                    }
+                }
+                .zoomTransition(Self.transitionID, in: zoom)
             }
         }
     }

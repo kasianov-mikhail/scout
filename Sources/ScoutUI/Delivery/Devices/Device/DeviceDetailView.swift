@@ -12,7 +12,6 @@ struct DeviceDetailView: View {
     @StateObject private var provider: DeviceDetailProvider
 
     @Environment(\.database) private var database
-    @State private var showTimeline = false
 
     init(device: DeviceSummary, range: IncidentRange = .week, provider: DeviceDetailProvider? = nil) {
         _provider = StateObject(wrappedValue: provider ?? DeviceDetailProvider(device: device, range: range))
@@ -30,7 +29,7 @@ struct DeviceDetailView: View {
                         content(detail)
                             .transition(.opacity)
                     } else {
-                        DeviceDetailPlaceholder(range: $provider.range)
+                        Placeholder(range: $provider.range)
                             .transition(.opacity)
                     }
                 }
@@ -41,9 +40,6 @@ struct DeviceDetailView: View {
         .loadingInk(isLoading: provider.isLoading)
         .navigationTitle(en: "Device")
         .inlineNavigationTitle()
-        .navigationDestination(isPresented: $showTimeline) {
-            Timeline(deviceID: provider.device.id)
-        }
         .task(id: provider.range) {
             await provider.fetchAgain(in: database)
         }
@@ -65,33 +61,7 @@ struct DeviceDetailView: View {
             stats(detail)
                 .padding(.horizontal, .gutter)
 
-            Section(title: "Sessions") {
-                Button {
-                    showTimeline = true
-                } label: {
-                    Text(verbatim: "TIMELINE")
-                        .font(.scoutSectionAction)
-                        .foregroundStyle(Color.textLink)
-                }
-                .buttonStyle(.solid)
-            } content: {
-                if detail.recentSessions.isEmpty {
-                    Text(verbatim: "No sessions in this period")
-                        .font(.scoutRow)
-                        .foregroundStyle(Color.textMuted)
-                        .lineLimit(1)
-                        .frame(height: .rowRegular)
-                } else {
-                    ForEach(Array(detail.recentSessions.enumerated()), id: \.element.id) { index, session in
-                        sessionRow(
-                            session,
-                            deviceID: detail.summary.id,
-                            maxDuration: detail.maxSessionDuration,
-                            showsDivider: index < detail.recentSessions.count - 1
-                        )
-                    }
-                }
-            }
+            SessionsSection(detail: detail, deviceID: provider.device.id)
 
             if !detail.history.isEmpty {
                 Section(title: "History") {
