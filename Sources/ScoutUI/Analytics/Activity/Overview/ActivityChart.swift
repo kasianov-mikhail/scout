@@ -13,19 +13,21 @@ struct ActivityChart: View {
     let series: ActivitySeries
 
     var body: some View {
-        let axis = series.range.axis(now: series.now)
+        let values = series.values
+        let formatter = DateFormatter.monthDay
+        let middle = values.dropFirst((values.count - 1) / 2).first
 
         return BarChart(
-            values: series.values.map(\.value),
-            startLabel: axis.start,
-            middleLabel: axis.middle,
-            endLabel: axis.end,
+            values: values.map(\.value),
+            startLabel: values.first.map { formatter.string(from: $0.date) } ?? "",
+            middleLabel: middle.map { formatter.string(from: $0.date) },
+            endLabel: "today",
             height: 96,
-            spacing: series.range.barSpacing,
+            spacing: 2,
             cornerRadius: 0,
             labelGap: 6,
             labelDesign: .monospaced,
-            accent: series.values.indices.last.map { BarChart.Accent(index: $0, color: .fillSuccess) }
+            accent: values.indices.last.map { BarChart.Accent(index: $0, color: .fillSuccess) }
         )
     }
 }
@@ -34,7 +36,6 @@ struct ActivityChart: View {
     ActivityChart(
         series: ActivitySeries(
             points: ActivityPoint.samples,
-            range: .month,
             metric: .daily,
             now: Date()
         )

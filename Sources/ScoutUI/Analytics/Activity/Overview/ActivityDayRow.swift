@@ -49,7 +49,6 @@ struct ActivityDayRow: View {
 #Preview {
     let series = ActivitySeries(
         points: ActivityPoint.samples,
-        range: .month,
         metric: .daily,
         now: Date()
     )
