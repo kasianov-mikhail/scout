@@ -40,6 +40,7 @@ extension HomeAlertSection {
             }
             .padding(.top, .space12)
             .padding(.bottom, .space16)
+            .padding(.horizontal, .gutter)
         }
     }
 }

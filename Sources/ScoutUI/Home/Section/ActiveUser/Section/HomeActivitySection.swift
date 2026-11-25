@@ -11,7 +11,7 @@ import SwiftUI
 struct HomeActivitySection: View {
     private static let zoomID = "activity"
 
-    let users: ActiveUsers?
+    let users: ActiveUsers
     let activity: ActivityProvider
     let zoom: Namespace.ID
 
@@ -19,7 +19,7 @@ struct HomeActivitySection: View {
 
     @State private var selected = HomeActivitySelection.dau
 
-    init(users: ActiveUsers?, activity: ActivityProvider, zoom: Namespace.ID, path: Binding<NavigationPath>) {
+    init(users: ActiveUsers, activity: ActivityProvider, zoom: Namespace.ID, path: Binding<NavigationPath>) {
         self.users = users
         self.activity = activity
         self.zoom = zoom
@@ -42,26 +42,21 @@ struct HomeActivitySection: View {
         }
     }
 
-    @ViewBuilder
     private var section: some View {
-        if let users {
-            Group {
-                if users.isEmpty {
-                    Empty(start: users.start, end: users.end) {
-                        path.append(HomeActivitySelection.dau)
-                    }
-                } else {
-                    content(users: users)
+        Group {
+            if users.isEmpty {
+                Empty(start: users.start, end: users.end) {
+                    path.append(HomeActivitySelection.dau)
                 }
+            } else {
+                content(users: users)
             }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                path.append(users.isEmpty ? HomeActivitySelection.dau : selected)
-            }
-            .zoomSource(Self.zoomID, in: zoom)
-        } else {
-            Placeholder()
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            path.append(users.isEmpty ? HomeActivitySelection.dau : selected)
+        }
+        .zoomSource(Self.zoomID, in: zoom)
     }
 
     private func content(users: ActiveUsers) -> some View {

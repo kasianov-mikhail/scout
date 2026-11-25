@@ -8,22 +8,36 @@
 import SwiftUI
 
 struct HomeAlertSection: View {
-    let history: AlertHistory?
-    let action: () -> Void
+    private enum Destination: Hashable {
+        case alerts
+    }
+
+    let history: AlertHistory
+    let alerts: AlertProvider
+
+    @Binding private var path: NavigationPath
+
+    init(history: AlertHistory, alerts: AlertProvider, path: Binding<NavigationPath>) {
+        self.history = history
+        self.alerts = alerts
+        self._path = path
+    }
 
     var body: some View {
-        if let history {
-            Button(action: action) {
-                if history.isEmpty {
-                    Empty(rulesLabel: history.rulesLabel)
-                } else {
-                    content(history: history)
-                }
+        Button {
+            path.append(Destination.alerts)
+        } label: {
+            if history.isEmpty {
+                Empty(rulesLabel: history.rulesLabel)
+            } else {
+                content(history: history)
             }
-            .buttonStyle(.solid)
-        } else {
-            Placeholder()
         }
+        .buttonStyle(.solid)
+        .navigationDestination(for: Destination.self) { _ in
+            AlertListView(provider: alerts)
+        }
+        .padding(.horizontal, .gutter)
     }
 
     private func content(history: AlertHistory) -> some View {
@@ -63,50 +77,58 @@ struct HomeAlertSection: View {
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: .sample) {}
-                HomeAlertSection(history: nil) {}
+            VStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: .sample, alerts: AlertProvider(.success(AlertStatus.samples)), path: $path)
+                HomeAlertSection.Placeholder()
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview("Summary · 40") {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 2, armed: 31, muted: 7, total: 40)) {}
+            VStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 2, armed: 31, muted: 7, total: 40), alerts: AlertProvider(.success(AlertStatus.samples)), path: $path)
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview("Summary · firing") {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: .sample) {}
+            VStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: .sample, alerts: AlertProvider(.success(AlertStatus.samples)), path: $path)
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview("Summary · many") {
-    NavigationStack {
+    @Previewable @State var path = NavigationPath()
+
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 3, armed: 2, muted: 1, total: 6)) {}
+            VStack(alignment: .leading, spacing: 0) {
+                HomeAlertSection(history: AlertHistory(buckets: AlertHistory.sample.buckets, rule: "Crash-free sessions", firing: 3, armed: 2, muted: 1, total: 6), alerts: AlertProvider(.success(AlertStatus.samples)), path: $path)
             }
-            .padding(.horizontal, .gutter)
         }
         .scrollIndicators(.hidden)
     }
