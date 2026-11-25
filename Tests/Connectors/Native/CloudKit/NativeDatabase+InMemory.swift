@@ -23,7 +23,7 @@ extension NativeDatabase {
 
         return NativeDatabase {
             try await registration.value
-            return store
+            return .init(store: store, registry: registry)
         }
     }
 }
