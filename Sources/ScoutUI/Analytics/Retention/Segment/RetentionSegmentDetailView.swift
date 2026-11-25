@@ -67,6 +67,7 @@ private struct RetentionSegmentWeekRow: View {
                     LeftRoundedRectangle(cornerRadius: .radiusBlock)
                         .fill(week.isCurrent ? Color.fillSuccess : Color.textMuted)
                         .frame(width: proxy.size.width * week.fraction)
+                        .animation(.barResize, value: week.fraction)
                 }
             }
             .frame(height: 10)

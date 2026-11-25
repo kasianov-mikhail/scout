@@ -37,6 +37,7 @@ struct AdoptionBar: View {
                         .opacity(index == 0 ? 1 : 0.55)
                 }
             }
+            .animation(.barResize, value: versions.map(\.share))
         }
         .frame(height: height)
         .clipShape(RoundedRectangle(cornerRadius: .radiusBlock))

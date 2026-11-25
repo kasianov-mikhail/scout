@@ -27,11 +27,10 @@ struct MetricBucketRow: View {
                         RoundedRectangle(cornerRadius: .radiusBar)
                             .fill(Color.metricTrack)
 
-                        if row.fraction > 0 {
-                            RoundedRectangle(cornerRadius: .radiusBar)
-                                .fill(Color.fillAccent)
-                                .frame(width: proxy.size.width * CGFloat(row.fraction))
-                        }
+                        RoundedRectangle(cornerRadius: .radiusBar)
+                            .fill(Color.fillAccent)
+                            .frame(width: proxy.size.width * max(CGFloat(row.fraction), 0))
+                            .animation(.barResize, value: row.fraction)
                     }
                 }
                 .frame(height: 8)

@@ -103,6 +103,7 @@ extension EventView {
                         .frame(width: 1.5, height: 16)
                         .offset(x: nowX - 0.75)
                 }
+                .animation(.barResize, value: [stats.dayFraction, stats.todayBlue, stats.todayAbove])
             }
         }
     }
@@ -140,6 +141,7 @@ extension EventView {
                             .offset(x: usualX)
                     }
                     .frame(maxHeight: .infinity)
+                    .animation(.barResize, value: [usualFraction, row.blue, row.above])
                 }
             } value: {
                 CountText(count: row.count)

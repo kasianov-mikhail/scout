@@ -24,6 +24,7 @@ struct ProportionBar<Item: Identifiable>: View {
                         .frame(width: width * CGFloat(share(item)))
                 }
             }
+            .animation(.barResize, value: items.map(share))
         }
         .frame(height: 10)
         .clipShape(RoundedRectangle(cornerRadius: .radiusBadge))

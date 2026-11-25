@@ -46,6 +46,7 @@ struct BarValue: View {
         RoundedRectangle(cornerRadius: .radiusBlock)
             .fill(color)
             .frame(width: max(width * CGFloat(fraction), fraction > 0 ? minimumWidth : 0), height: height)
+            .animation(.barResize, value: fraction)
     }
 }
 
