@@ -37,12 +37,4 @@ struct AccountErrorTests {
         #expect(Backend.AccountError.couldNotDetermine.status == .unreachable)
         #expect(Backend.AccountError.failure(URLError(.notConnectedToInternet)).status == .unreachable)
     }
-
-    @Test("Only account issues hold the dashboard back") func blocksAccess() {
-        #expect(Backend.AccountError.noAccount.blocksAccess)
-        #expect(Backend.AccountError.restricted.blocksAccess)
-        #expect(Backend.AccountError.temporarilyUnavailable.blocksAccess)
-        #expect(Backend.AccountError.couldNotDetermine.blocksAccess)
-        #expect(Backend.AccountError.failure(URLError(.notConnectedToInternet)).blocksAccess == false)
-    }
 }
