@@ -39,36 +39,32 @@ struct TelemetryRow: View {
     @ViewBuilder
     private var content: some View {
         if showsValues {
-            HStack(alignment: .top, spacing: .space8) {
-                icon(width: 24)
+            VStack(alignment: .leading, spacing: .space2) {
+                HStack(alignment: .firstTextBaseline, spacing: .space8) {
+                    titleWithIcon
 
-                VStack(alignment: .leading, spacing: .space2) {
-                    HStack(alignment: .firstTextBaseline, spacing: .space8) {
-                        title
+                    Spacer(minLength: 0)
 
-                        Spacer(minLength: 0)
-
-                        Text(verbatim: item.valueLabel)
-                            .font(.scoutTitle)
-                            .monospacedDigit()
-                    }
-
-                    Text(verbatim: item.caption)
-                        .font(.telemetryCaption)
-                        .foregroundStyle(Color.textMuted)
+                    Text(verbatim: item.valueLabel)
+                        .font(.scoutTitle)
+                        .monospacedDigit()
                 }
+
+                Text(verbatim: item.caption)
+                    .font(.telemetryCaption)
+                    .foregroundStyle(Color.textMuted)
+                    .padding(.leading, iconWidth + .space8)
             }
         } else {
             HStack(alignment: .center, spacing: .space8) {
-                icon(width: 22)
-
                 VStack(alignment: .leading, spacing: .space6) {
-                    title
+                    titleWithIcon
 
                     GeometryReader { proxy in
                         EmptyBar(width: proxy.size.width * 0.6, height: 8)
                     }
                     .frame(height: 8)
+                    .padding(.leading, iconWidth + .space8)
                 }
 
                 EmptyBar(width: 28, height: 14)
@@ -76,17 +72,21 @@ struct TelemetryRow: View {
         }
     }
 
-    private func icon(width: CGFloat) -> some View {
-        Image(systemName: item.kind.systemImage)
-            .font(.book(size: 16))
-            .foregroundStyle(item.kind.color)
-            .frame(width: width)
-            .accessibilityHidden(true)
+    private var iconWidth: CGFloat {
+        showsValues ? 24 : 22
     }
 
-    private var title: some View {
-        Text(verbatim: item.kind.title)
-            .font(.telemetryTitle)
+    private var titleWithIcon: some View {
+        HStack(spacing: .space8) {
+            Image(systemName: item.kind.systemImage)
+                .font(.book(size: 16))
+                .foregroundStyle(item.kind.color)
+                .frame(width: iconWidth)
+                .accessibilityHidden(true)
+
+            Text(verbatim: item.kind.title)
+                .font(.telemetryTitle)
+        }
     }
 }
 
