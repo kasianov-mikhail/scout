@@ -8,37 +8,68 @@
 import Scout
 import SwiftUI
 
-struct HomeActiveUsersSection: View {
+struct HomeActivitySection: View {
+    private static let zoomID = "activity"
+
     let users: ActiveUsers?
-    let onShowAll: (ActiveUsers.Kind) -> Void
+    let activity: ActivityProvider
+    let zoom: Namespace.ID
 
-    @State private var selected: ActiveUsers.Kind
+    @Binding private var path: NavigationPath
 
-    init(users: ActiveUsers?, selected: ActiveUsers.Kind = .dau, onShowAll: @escaping (ActiveUsers.Kind) -> Void) {
+    @State private var selected = HomeActivitySelection.dau
+
+    init(users: ActiveUsers?, activity: ActivityProvider, zoom: Namespace.ID, path: Binding<NavigationPath>) {
         self.users = users
-        self.onShowAll = onShowAll
-        self._selected = State(initialValue: selected)
+        self.activity = activity
+        self.zoom = zoom
+        self._path = path
     }
 
     var body: some View {
-        if let users {
-            if users.isEmpty {
-                HomeActiveUsersSectionEmpty(start: users.start, end: users.end) {
-                    onShowAll(selected)
+        section.navigationDestination(for: HomeActivitySelection.self) { destination in
+            Group {
+                switch destination {
+                case .dau:
+                    ActivityView(activity: activity)
+                case .sessions:
+                    SessionsView()
+                case .devices:
+                    DevicesView()
                 }
-            } else {
-                content(users: users)
             }
+            .zoomTransition(Self.zoomID, in: zoom)
+        }
+    }
+
+    @ViewBuilder
+    private var section: some View {
+        if let users {
+            Group {
+                if users.isEmpty {
+                    Empty(start: users.start, end: users.end) {
+                        path.append(HomeActivitySelection.dau)
+                    }
+                } else {
+                    content(users: users)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                path.append(users.isEmpty ? HomeActivitySelection.dau : selected)
+            }
+            .zoomSource(Self.zoomID, in: zoom)
         } else {
-            HomeActiveUsersSectionPlaceholder()
+            Placeholder()
         }
     }
 
     private func content(users: ActiveUsers) -> some View {
-        Section(title: "Active Users", bottomGap: .space10) {
-            HomeSectionExpandButton(label: "Show all active users") {
-                onShowAll(selected)
+        Section(title: "Activity", bottomGap: .space10) {
+            HomeSectionExpandButton {
+                path.append(selected)
             }
+            .accessibilityLabel(Text(verbatim: selected.showAllLabel))
         } content: {
             ReadoutTabStrip(
                 values: users.metrics,
@@ -109,35 +140,19 @@ struct HomeActiveUsersSection: View {
     }
 }
 
+@available(iOS 17.0, macOS 14.0, *)
 #Preview {
-    NavigationStack {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeActiveUsersSection(users: .sample) { _ in }
-                HomeActiveUsersSection(users: nil) { _ in }
-            }
-        }
-        .scrollIndicators(.hidden)
-    }
-}
+    @Previewable @Namespace var zoom
+    @Previewable @State var path = NavigationPath()
 
-#Preview("Active · devices") {
-    NavigationStack {
+    NavigationStack(path: $path) {
         ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeActiveUsersSection(users: .sample, selected: .devices) { _ in }
-            }
-        }
-        .scrollIndicators(.hidden)
-    }
-}
-
-#Preview("Active · sessions") {
-    NavigationStack {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 0) {
-                HomeActiveUsersSection(users: .sample, selected: .sessions) { _ in }
-            }
+            HomeActivitySection(
+                users: .sample,
+                activity: ActivityProvider(.success(ActivityPoint.samples)),
+                zoom: zoom,
+                path: $path
+            )
         }
         .scrollIndicators(.hidden)
     }
