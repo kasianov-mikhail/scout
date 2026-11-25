@@ -20,7 +20,7 @@ extension HomeSnapshot {
     static let empty = HomeSnapshot(
         alerts: AlertHistory(statuses: []),
         users: ActiveUsers(
-            metrics: ActiveUsers.Kind.allCases.map {
+            metrics: HomeActivitySelection.allCases.map {
                 ActiveUsersMetric(kind: $0, series: Array(repeating: 0, count: 30))
             },
             start: date.addingDay(-29),

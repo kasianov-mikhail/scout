@@ -18,7 +18,7 @@ struct ActiveUsers {
 }
 
 extension ActiveUsers {
-    func metric(_ kind: Kind) -> ActiveUsersMetric? {
+    func metric(_ kind: HomeActivitySelection) -> ActiveUsersMetric? {
         metrics.first { $0.kind == kind }
     }
 
