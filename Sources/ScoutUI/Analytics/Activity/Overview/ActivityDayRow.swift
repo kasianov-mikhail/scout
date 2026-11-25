@@ -24,6 +24,7 @@ struct ActivityDayRow: View {
                     RoundedRectangle(cornerRadius: .radiusBar)
                         .fill(Color.fillSuccess)
                         .frame(width: proxy.size.width * row.fraction)
+                        .animation(.barResize, value: row.fraction)
                 }
             }
             .frame(height: 8)
