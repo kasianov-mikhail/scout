@@ -63,10 +63,18 @@ struct DeviceModelsProviderTests {
         )
 
         let provider = DeviceModelsProvider()
-        await provider.fetchIfNeeded(in: database)
-        let models = try #require(provider.result).get()
+        await provider.load(in: database)
+        #expect(try #require(provider.result).get().first?.sessions == 1)
 
-        #expect(models.first?.sessions == 1)
+        provider.range = .month
+        #expect(provider.isLoading)
+        await provider.load(in: database)
+        #expect(try #require(provider.result).get().first?.sessions == 2)
+
+        provider.range = .week
+        #expect(provider.isLoading)
+        await provider.load(in: database)
+        #expect(try #require(provider.result).get().first?.sessions == 1)
     }
 
     @Test("No devices yields no models")

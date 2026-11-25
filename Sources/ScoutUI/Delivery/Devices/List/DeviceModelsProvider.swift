@@ -13,8 +13,16 @@ final class DeviceModelsProvider: ObservableObject, Provider {
     typealias Output = [DeviceModelSummary]
 
     @Published var result: ProviderResult<[DeviceModelSummary]>?
-    @Published var range: IncidentRange
     @Published private(set) var activities: [DeviceActivity] = []
+
+    @Published var range: IncidentRange {
+        didSet {
+            if range != oldValue {
+                loadedRange = nil
+                result = nil
+            }
+        }
+    }
     private(set) var activitiesRange: IncidentRange?
 
     private var loadedRange: IncidentRange?
@@ -31,9 +39,11 @@ final class DeviceModelsProvider: ObservableObject, Provider {
         }
         let requested = range
         await fetchAgain(in: database)
+
         guard !Task.isCancelled, range == requested else {
             return
         }
+
         if case .success = result {
             loadedRange = requested
         }
@@ -41,9 +51,26 @@ final class DeviceModelsProvider: ObservableObject, Provider {
 
     func fetch(in database: DatabaseReader) async throws -> [DeviceModelSummary] {
         let requested = range
-        let activities = try await database.devices(in: requested.range(now: Date()))
+        let activities: [DeviceActivity]
+
+        do {
+            activities = try await database.devices(in: requested.range(now: Date()))
+        } catch {
+            try Task.checkCancellation()
+            guard range == requested else {
+                throw CancellationError()
+            }
+            throw error
+        }
+
+        try Task.checkCancellation()
+        guard range == requested else {
+            throw CancellationError()
+        }
+
         self.activitiesRange = requested
         self.activities = activities
+
         return [DeviceModelSummary](activities: activities)
     }
 }

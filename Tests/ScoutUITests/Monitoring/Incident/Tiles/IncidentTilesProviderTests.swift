@@ -41,6 +41,7 @@ struct IncidentTilesProviderTests {
         await provider.fetchAgain(in: database)
 
         provider.range = .week
+        #expect(provider.isLoading)
         await provider.fetchAgain(in: database)
 
         let result = try #require(provider.result)

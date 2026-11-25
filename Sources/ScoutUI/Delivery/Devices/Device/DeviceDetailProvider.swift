@@ -13,7 +13,13 @@ final class DeviceDetailProvider: ObservableObject, Provider {
     typealias Output = DeviceDetail
 
     @Published var result: ProviderResult<DeviceDetail>?
-    @Published var range: IncidentRange
+    @Published var range: IncidentRange {
+        didSet {
+            if range != oldValue {
+                result = nil
+            }
+        }
+    }
 
     let device: DeviceSummary
 
@@ -24,6 +30,7 @@ final class DeviceDetailProvider: ObservableObject, Provider {
     }
 
     func fetch(in database: DatabaseReader) async throws -> DeviceDetail {
+        let range = self.range
         let now = Date()
         let bounds = range.range(now: now)
         let deviceID = device.id.uuidString

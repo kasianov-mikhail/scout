@@ -25,7 +25,7 @@ extension Provider {
     }
 
     func fetchAgain(in database: DatabaseReader) async {
-        if let error = await fetchKeepingResult(in: database) {
+        if let error = await fetchKeepingResult(in: database), !Task.isCancelled {
             result = .failure(error)
         }
     }
@@ -45,7 +45,7 @@ extension Provider {
     }
 
     func fetchLatest(in database: DatabaseReader) async {
-        if let error = await fetchKeepingResult(in: database), result == nil {
+        if let error = await fetchKeepingResult(in: database), !Task.isCancelled, result == nil {
             result = .failure(error)
         }
     }
@@ -55,7 +55,9 @@ extension Provider {
             return nil
         }
         do {
-            result = .success(try await fetch(in: database))
+            let output = try await fetch(in: database)
+            try Task.checkCancellation()
+            result = .success(output)
             return nil
         } catch is CancellationError {
             return nil

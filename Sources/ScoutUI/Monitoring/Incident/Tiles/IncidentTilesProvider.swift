@@ -14,7 +14,13 @@ final class IncidentTilesProvider<Element: RecordDecodable & Incident>: Observab
 
     @Published var result: ProviderResult<[IncidentTile<Element>]>?
     @Published var message: Message?
-    @Published var range: IncidentRange
+    @Published var range: IncidentRange {
+        didSet {
+            if range != oldValue {
+                result = nil
+            }
+        }
+    }
 
     private let feed = IncidentProvider<Element>()
     private var loadedRange: Range<Date>?
