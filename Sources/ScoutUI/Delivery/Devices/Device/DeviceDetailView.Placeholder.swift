@@ -17,8 +17,8 @@ extension DeviceDetailView {
                 RangeStrip(selection: $range, ranges: IncidentRange.allCases, title: \.title)
 
                 SkeletonBar(width: 194, height: 9, delay: 0)
+                    .matchingLineHeight(.scoutRow)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .frame(height: 18, alignment: .leading)
                     .padding(.top, .space4)
                     .padding(.bottom, .space12)
                     .padding(.horizontal, .gutter)
@@ -79,9 +79,10 @@ extension DeviceDetailView {
         private func stat(divider: Bool, leading: CGFloat, trailing: CGFloat) -> some View {
             VStack(alignment: .leading, spacing: .space2) {
                 SkeletonBar(width: 28, height: 18, delay: 0.08)
+                    .matchingLineHeight(.scoutNumberL)
 
                 SkeletonBar(width: 40, height: 7, delay: 0.08)
-                    .frame(height: 16, alignment: .leading)
+                    .matchingLineHeight(.scoutCaption)
             }
             .padding(.vertical, .space12)
             .padding(.leading, leading)
@@ -127,11 +128,14 @@ extension DeviceDetailView {
             HStack(alignment: .bottom, spacing: .space6) {
                 ForEach(0..<7, id: \.self) { _ in
                     VStack(spacing: .space4) {
-                        SkeletonBar(width: 28, height: 6, delay: 1.28)
+                        if range != .month {
+                            SkeletonBar(width: 28, height: 6, delay: 1.28)
+                                .matchingLineHeight(.scoutAxis)
+                        }
                         SkeletonBar(height: 56, delay: 1.28, cornerRadius: .radiusBlock, fill: Color.deviceShade)
                             .frame(maxWidth: .infinity)
                         SkeletonBar(width: 24, height: 6, delay: 1.28)
-                            .frame(height: 12, alignment: .center)
+                            .matchingLineHeight(.scoutAxis, alignment: .center)
                     }
                     .frame(maxWidth: .infinity)
                 }

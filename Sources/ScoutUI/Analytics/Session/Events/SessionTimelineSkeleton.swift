@@ -35,14 +35,7 @@ struct SessionSkeletonRow {
     var endsAtCenter = false
 
     var height: CGFloat {
-        switch kind {
-        case .start:
-            .rowStep
-        case .screen:
-            .rowRegular
-        case .event:
-            .rowRegular
-        }
+        .rowStep
     }
 
     var titleHeight: CGFloat {

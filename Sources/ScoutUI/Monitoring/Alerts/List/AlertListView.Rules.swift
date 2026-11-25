@@ -41,7 +41,7 @@ extension AlertListView {
                         list(statuses)
                             .transition(.opacity)
                     } else {
-                        Placeholder()
+                        Placeholder(showsNotificationsBanner: provider.notificationsDenied)
                             .transition(.opacity)
                     }
                 }

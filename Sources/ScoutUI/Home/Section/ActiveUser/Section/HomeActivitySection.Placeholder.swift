@@ -28,7 +28,7 @@ extension HomeActivitySection {
                 axis
 
                 SkeletonBar(width: 194, height: 8, delay: 0.64)
-                    .frame(height: 18, alignment: .leading)
+                    .matchingLineHeight(.scoutCaption)
                     .padding(.top, .space10)
                     .padding(.bottom, .space6)
             }
@@ -37,12 +37,14 @@ extension HomeActivitySection {
         private var axis: some View {
             HStack(spacing: 0) {
                 SkeletonBar(width: 34, height: 8, delay: 0.64)
+                    .matchingLineHeight(.scoutAxis)
                 Spacer()
                 SkeletonBar(width: 34, height: 8, delay: 0.64)
+                    .matchingLineHeight(.scoutAxis)
                 Spacer()
                 SkeletonBar(width: 34, height: 8, delay: 0.64)
+                    .matchingLineHeight(.scoutAxis)
             }
-            .frame(height: 12)
             .padding(.top, 6)
         }
 
@@ -56,7 +58,7 @@ extension HomeActivitySection {
                     .frame(height: 34)
 
                 SkeletonBar(width: 46, height: 8, delay: 0.48)
-                    .frame(height: 15)
+                    .matchingLineHeight(.scoutCaption)
             }
             .padding(.vertical, .space10)
         }

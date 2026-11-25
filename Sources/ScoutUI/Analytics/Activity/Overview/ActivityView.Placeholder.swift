@@ -58,7 +58,7 @@ extension ActivityView {
                     .frame(height: 33)
 
                 SkeletonBar(width: 28, height: 6, delay: 0.08)
-                    .frame(height: 15)
+                    .matchingLineHeight(.scoutCaption)
             }
             .padding(.top, .space10)
             .padding(.bottom, .space12)
@@ -70,12 +70,14 @@ extension ActivityView {
 
                 HStack(spacing: 0) {
                     SkeletonBar(width: 34, height: 8, delay: 0.2)
+                        .matchingLineHeight(.scoutAxis)
                     Spacer()
                     SkeletonBar(width: 34, height: 8, delay: 0.2)
+                        .matchingLineHeight(.scoutAxis)
                     Spacer()
                     SkeletonBar(width: 34, height: 8, delay: 0.2)
+                        .matchingLineHeight(.scoutAxis)
                 }
-                .frame(height: 12)
                 .padding(.top, 6)
             }
         }

@@ -43,6 +43,7 @@ extension CGFloat {
     static let sectionGap: CGFloat = 10
     static let sectionHeaderHeight: CGFloat = 56
     static let navbarHeight: CGFloat = 106
+    static let outlineChipHeight: CGFloat = 26
     static let touchTarget: CGFloat = 44
     static let controlHeight: CGFloat = 40
     static let buttonHeight: CGFloat = 50

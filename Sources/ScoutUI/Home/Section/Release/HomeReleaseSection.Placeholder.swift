@@ -27,7 +27,7 @@ extension HomeReleaseSection {
                     .padding(.top, .space8)
 
                 SkeletonBar(width: 194, height: 8, delay: 1.12)
-                    .frame(height: 18)
+                    .matchingLineHeight(.scoutCaption)
                     .padding(.top, .space10)
                     .padding(.bottom, .space6)
             }
@@ -40,10 +40,10 @@ extension HomeReleaseSection {
                         SkeletonBar(width: 7, height: 7, delay: 1.08, cornerRadius: .radiusBar)
 
                         SkeletonBar(width: 34, height: 7, delay: 1.08)
+                            .matchingLineHeight(.scoutFootnote)
                     }
                 }
             }
-            .frame(height: 14, alignment: .leading)
         }
     }
 }

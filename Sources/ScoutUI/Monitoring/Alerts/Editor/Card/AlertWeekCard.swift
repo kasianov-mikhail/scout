@@ -56,6 +56,7 @@ struct AlertWeekCard: View {
                     .font(.scoutNumberS)
             } else {
                 SkeletonBar(width: 28, height: 16, delay: 0)
+                    .matchingLineHeight(.scoutNumberS)
             }
 
             if isLoading {
@@ -92,6 +93,7 @@ struct AlertWeekCard: View {
                             .font(.scoutRowStrong)
                     } else {
                         SkeletonBar(width: 28, height: 11, delay: 0)
+                            .matchingLineHeight(.scoutRowStrong)
                     }
                 }
                 .padding(.vertical, .space8)

@@ -35,6 +35,7 @@ struct AlertNowCard: View {
                     .monospacedDigit()
             } else {
                 SkeletonBar(width: 74, height: 16, delay: 0)
+                    .matchingLineHeight(.scoutNumberS)
             }
 
             if status == nil {
@@ -76,6 +77,7 @@ struct AlertNowCard: View {
                     .foregroundStyle(color)
             } else {
                 SkeletonBar(width: 46, height: 11, delay: 0)
+                    .matchingLineHeight(.scoutRowStrong)
             }
         }
         .padding(.vertical, .space8)
