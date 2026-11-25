@@ -37,7 +37,7 @@ struct ModelDeviceRow: View {
         .lineLimit(1)
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            Separator.dashed
         }
         .frame(maxWidth: .infinity)
         .contentShape(.rect)

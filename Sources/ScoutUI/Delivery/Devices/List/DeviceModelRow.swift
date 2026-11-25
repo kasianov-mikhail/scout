@@ -51,7 +51,7 @@ struct DeviceModelRow: View {
         .lineLimit(1)
         .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            Separator.dashed
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(.rect)

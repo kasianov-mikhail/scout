@@ -97,7 +97,7 @@ extension DeviceDetailView {
                 .frame(height: .rowRegular)
                 .overlay(alignment: .bottom) {
                     if showsDivider {
-                        DashedLine()
+                        Separator.dashed
                     }
                 }
             }

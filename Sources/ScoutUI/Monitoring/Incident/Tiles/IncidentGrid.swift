@@ -33,24 +33,17 @@ struct IncidentGrid<Cell: View>: View {
                 .frame(maxWidth: .infinity, alignment: .topLeading)
                 .overlay(alignment: .trailing) {
                     if index.isMultiple(of: 2), index + 1 < count {
-                        separator(width: 0.5, height: nil)
+                        Separator(axis: .vertical)
                     }
                 }
                 .overlay(alignment: .bottom) {
                     if row < rows - 1 {
-                        separator(width: nil, height: 0.5)
+                        Separator()
                     }
                 }
         } else {
             Color.clear
                 .frame(maxWidth: .infinity)
         }
-    }
-
-    private func separator(width: CGFloat?, height: CGFloat?) -> some View {
-        Rectangle()
-            .fill(Color.separator)
-            .frame(width: width, height: height)
-            .allowsHitTesting(false)
     }
 }

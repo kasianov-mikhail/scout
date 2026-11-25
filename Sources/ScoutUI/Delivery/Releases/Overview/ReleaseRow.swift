@@ -47,7 +47,7 @@ struct ReleaseRow: View {
         .buttonStyle(.solid)
         .overlay(alignment: .bottom) {
             if !isLast {
-                DashedLine()
+                Separator.dashed
             }
         }
     }

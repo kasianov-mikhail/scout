@@ -47,7 +47,7 @@ struct NetworkEndpointRow: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: .rowChart)
         .overlay(alignment: .bottom) {
-            DashedLine()
+            Separator.dashed
         }
         .contentShape(.rect)
     }

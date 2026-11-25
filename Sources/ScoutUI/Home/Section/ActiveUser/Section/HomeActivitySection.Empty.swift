@@ -63,7 +63,7 @@ extension HomeActivitySection {
                 }
                 .frame(height: 72, alignment: .bottom)
                 .overlay(alignment: .bottom) {
-                    Separator(color: .surfaceBarIdle)
+                    Separator(color: .lineSubtle)
                 }
 
                 AxisLabelRow(

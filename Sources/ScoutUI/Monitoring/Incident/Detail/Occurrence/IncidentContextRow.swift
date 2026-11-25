@@ -53,7 +53,7 @@ struct IncidentContextRow: View {
         .contentShape(Rectangle())
         .overlay(alignment: .bottom) {
             if showsDivider {
-                DashedLine()
+                Separator.dashed
             }
         }
     }

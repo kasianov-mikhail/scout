@@ -48,7 +48,7 @@ extension ReleaseView {
             .padding(.bottom, .space16)
             .background(Color.surfaceGrey)
             .overlay(alignment: .bottom) {
-                Separator(color: .surfaceSkeleton)
+                Separator(color: .lineGap)
             }
         }
 

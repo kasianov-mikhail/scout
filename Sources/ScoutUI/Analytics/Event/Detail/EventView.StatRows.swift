@@ -180,7 +180,7 @@ extension EventView {
             }
             .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
-                DashedLine()
+                Separator.dashed
             }
         }
     }

@@ -40,7 +40,7 @@ struct ActivityDayRow: View {
         .frame(height: .rowTable)
         .overlay(alignment: .bottom) {
             if !row.isOldest {
-                DashedLine()
+                Separator.dashed
             }
         }
     }

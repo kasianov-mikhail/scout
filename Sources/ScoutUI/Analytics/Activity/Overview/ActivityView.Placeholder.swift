@@ -111,7 +111,7 @@ extension ActivityView {
             .frame(height: .rowTable)
             .overlay(alignment: .bottom) {
                 if index < 7 {
-                    DashedLine()
+                    Separator.dashed
                 }
             }
         }
