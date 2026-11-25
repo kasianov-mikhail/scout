@@ -134,7 +134,7 @@ struct NativeRetentionTests {
         let store = EntityStore(database: cloud, registry: registry)
         try await CatalogEntry.publishAll(into: store, registry: registry)
 
-        let database = NativeDatabase { store }
+        let database = NativeDatabase { .init(store: store, registry: registry) }
         for index in 0..<installs {
             for name in ["install", "day0", "day1", "crash"] {
                 try await database.write(record: makeMark(install: "\(index)", name: name, os: "iOS 18.\(index % 3)"))

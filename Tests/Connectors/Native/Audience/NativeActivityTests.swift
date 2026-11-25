@@ -177,7 +177,7 @@ private func makeDatabase(cloud: ScoutDBTesting.InMemoryDatabase, records: [Reco
 
     try await CatalogEntry.publishAll(into: store, registry: registry)
 
-    let database = NativeDatabase { store }
+    let database = NativeDatabase { .init(store: store, registry: registry) }
     try await database.write(records: records)
     return database
 }
