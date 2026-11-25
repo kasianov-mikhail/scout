@@ -9,46 +9,28 @@ import Scout
 import SwiftUI
 
 struct HomeView: View {
-    @State private var backends: [Backend]
+    @State private var backend: Backend?
 
-    @AppStorage("scout_active_backend") private var activeID = ""
     @State private var path = NavigationPath()
 
     @StateObject private var tint = Tint()
-
-    @State private var cache: RecordCache
 
     init(backends: [Backend]) {
         let storage = RecordCacheStorage()
         let cache = RecordCache(storage: storage)
 
-        self._cache = State(initialValue: cache)
-        self._backends = State(
-            initialValue: backends.map { backend in
-                var backend = backend
-                backend.database = CachingDatabase(
-                    base: backend.database,
-                    scope: backend.id,
-                    cache: cache,
-                    now: { Date() },
-                    types: [Event.recordType]
-                )
-                return backend
-            }
-        )
-    }
-
-    private var backend: Backend? {
-        // Server switching is off for now: Scout works only with CloudKit.
-        backends.first(where: \.isCloudKit) ?? backends.active(id: activeID)
-    }
-
-    private var active: Binding<String> {
-        Binding {
-            backend?.id ?? ""
-        } set: {
-            activeID = $0
+        let backend = backends.first(where: \.isCloudKit).map { backend in
+            var backend = backend
+            backend.database = CachingDatabase(
+                base: backend.database,
+                scope: backend.id,
+                cache: cache,
+                now: { Date() },
+                types: [Event.recordType]
+            )
+            return backend
         }
+        _backend = State(initialValue: backend)
     }
 
     var body: some View {
@@ -57,7 +39,7 @@ struct HomeView: View {
                 if backend != nil {
                     HomeOverview(path: $path)
                 } else {
-                    ErrorView(description: "Pass at least one backend to inspect Scout data.", retry: nil)
+                    ErrorView(description: "Pass a CloudKit backend to inspect Scout data.", retry: nil)
                 }
             }
             .toolbarBackground(.visible, for: .navigationBar)
@@ -65,7 +47,6 @@ struct HomeView: View {
             .inlineNavigationTitle(divider: nil)
             .dismissable()
             .id(backend?.id)
-            .connectionToolbar(backends: backends, activeID: active, cache: cache)
         }
         .background {
             Rectangle().fill(.background).ignoresSafeArea()
@@ -90,7 +71,7 @@ extension View {
     ///
     /// - Parameters:
     ///   - isPresented: A binding that controls whether the dashboard is shown.
-    ///   - backends: The backends to inspect.
+    ///   - backends: The dashboard uses the first CloudKit backend in this array.
     /// - Returns: A view that presents the dashboard over this view while `isPresented` is `true`.
     ///
     public func scoutHome(isPresented: Binding<Bool>, backends: [Backend]) -> some View {
@@ -106,7 +87,7 @@ extension View {
     }
 }
 
-#Preview("No Backends") {
+#Preview("No CloudKit Backend") {
     HomeView(backends: [])
 }
 

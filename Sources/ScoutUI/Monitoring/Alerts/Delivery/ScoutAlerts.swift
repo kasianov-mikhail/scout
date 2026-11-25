@@ -55,7 +55,7 @@
         }
 
         private static func refresh(engine: AlertEngine, backends: [Backend]) async {
-            guard let backend = backends.active else {
+            guard let backend = backends.first(where: \.isCloudKit) else {
                 return
             }
             do {
