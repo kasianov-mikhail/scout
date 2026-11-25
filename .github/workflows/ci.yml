@@ -199,11 +199,38 @@ jobs:
       - uses: actions/checkout@v7
 
       - uses: ./.github/actions/ios-tests
+        id: tests
+        continue-on-error: true
         with:
           ios: ${{ matrix.ios }}
           configuration: ${{ matrix.configuration }}
           device: ${{ matrix.device }}
           runtime: ${{ matrix.runtime }}
+
+      # The retry workflow reads these three names: a step inside a composite action never reaches the jobs API,
+      # and only a runner that broke mid-leg earns a re-run. A cancelled leg keeps its own conclusion.
+      - name: Report test failures
+        if: ${{ !cancelled() && steps.tests.outcome == 'failure' && steps.tests.outputs.kind == 'test' }}
+        run: |
+          echo "::error::A test failed, so a retry would only repeat it. Fix the test or the code behind it."
+          exit 1
+
+      - name: Report a build failure
+        if: ${{ !cancelled() && steps.tests.outcome == 'failure' && steps.tests.outputs.kind == 'build' }}
+        run: |
+          echo "::error::The build failed, so a retry would only repeat it."
+          exit 1
+
+      # An empty kind means the leg died before the classifier ran, which is the runner's fault too
+      - name: Report an infrastructure failure
+        if: >-
+          ${{ !cancelled()
+          && steps.tests.outcome == 'failure'
+          && steps.tests.outputs.kind != 'test'
+          && steps.tests.outputs.kind != 'build' }}
+        run: |
+          echo "::error::The runner stopped without a build or test failure, so this leg failed on the runner rather than on the code."
+          exit 1
 
   tests-gate:
     name: tests-gate

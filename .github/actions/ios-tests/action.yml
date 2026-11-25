@@ -16,6 +16,11 @@ inputs:
     required: false
     default: ""
 
+outputs:
+  kind:
+    description: What went red — build, test or infrastructure. Empty when the leg passed.
+    value: ${{ steps.classify.outputs.kind }}
+
 runs:
   using: composite
 
@@ -59,6 +64,7 @@ runs:
       uses: ./.github/actions/spm-cache
 
     - name: Build
+      id: build
       shell: bash
       run: |
         xcodebuild \
@@ -71,7 +77,6 @@ runs:
           -skipMacroValidation \
           build-for-testing
 
-    # A failing test and a dead runner both leave xcodebuild with exit 65, so the bundle below tells them apart
     - name: Test
       id: test
       continue-on-error: true
@@ -89,36 +94,37 @@ runs:
           -resultBundlePath /tmp/test.xcresult \
           test-without-building
 
-    - name: Classify the test failure
+    # A failing test and a dead runner both leave xcodebuild with exit 65, so the bundle below tells them apart.
+    # The caller fails the leg on this output, because a step inside a composite action is invisible to the jobs API.
+    - name: Classify the leg
       id: classify
-      if: steps.test.outcome == 'failure'
+      if: always()
       shell: bash
       env:
+        BUILD: ${{ steps.build.outcome }}
+        TEST: ${{ steps.test.outcome }}
         RESULT: /tmp/test.xcresult
       run: |
         set -eo pipefail
-        summary="$(xcrun xcresulttool get test-results summary --path "$RESULT" 2>/dev/null || true)"
-        [ -n "$summary" ] || summary='{}'
-        failed="$(jq -r '.failedTests // 0' <<< "$summary" 2>/dev/null || echo 0)"
-        [[ "$failed" =~ ^[0-9]+$ ]] || failed=0
-        echo "Failed tests: $failed"
-        if (( failed > 0 )); then
-          echo "kind=test" >> "$GITHUB_OUTPUT"
+        if [ "$BUILD" = success ] && [ "$TEST" = success ]; then
+          exit 0
+        fi
+        if [ "$TEST" = failure ]; then
+          summary="$(xcrun xcresulttool get test-results summary --path "$RESULT" 2>/dev/null || true)"
+          [ -n "$summary" ] || summary='{}'
+          failed="$(jq -r '.failedTests // 0' <<< "$summary" 2>/dev/null || echo 0)"
+          [[ "$failed" =~ ^[0-9]+$ ]] || failed=0
+          echo "Failed tests: $failed"
+          if (( failed > 0 )); then
+            echo "kind=test" >> "$GITHUB_OUTPUT"
+          else
+            echo "kind=infrastructure" >> "$GITHUB_OUTPUT"
+          fi
+          exit 0
+        fi
+        if [ "$BUILD" = failure ]; then
+          echo "kind=build" >> "$GITHUB_OUTPUT"
         else
           echo "kind=infrastructure" >> "$GITHUB_OUTPUT"
         fi
 
-    # CI retry reads these two names to tell a red test from a red runner
-    - name: Report test failures
-      if: steps.classify.outputs.kind == 'test'
-      shell: bash
-      run: |
-        echo "::error::A test failed, so a retry would only repeat it. Fix the test or the code behind it."
-        exit 1
-
-    - name: Report an infrastructure failure
-      if: steps.classify.outputs.kind == 'infrastructure'
-      shell: bash
-      run: |
-        echo "::error::The test runner stopped without reporting a failed test, so this leg failed on the runner rather than on the code."
-        exit 1
