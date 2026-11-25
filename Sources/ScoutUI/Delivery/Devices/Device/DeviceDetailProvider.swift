@@ -56,28 +56,23 @@ final class DeviceDetailProvider: ObservableObject, Provider {
             fields: Install.desiredKeys
         )
 
-        let sessions = try await sessionRecords.map { try Session(record: $0) }
-        let crashes = try await crashRecords.map { try Crash(record: $0) }
-        let hangs = try await hangRecords.map { try Hang(record: $0) }
-        let resources = try await resourceRecords.map { try ResourceException(record: $0) }
         let installs = try await installRecords.map { try Install(record: $0) }
-        let versionRecords = try await database.readAll(
+        async let versionRecords = database.readAll(
             type: Version.self,
             field: "install_id",
             values: installs.compactMap(\.installID).map(\.uuidString),
             fields: Version.desiredKeys
         )
-        let versions = try versionRecords.map { try Version(record: $0) }
 
-        return DeviceDetail(
+        return try await DeviceDetail(
             summary: device,
             range: range,
-            sessions: sessions,
-            crashes: crashes,
-            hangs: hangs,
-            resources: resources,
+            sessions: sessionRecords.map { try Session(record: $0) },
+            crashes: crashRecords.map { try Crash(record: $0) },
+            hangs: hangRecords.map { try Hang(record: $0) },
+            resources: resourceRecords.map { try ResourceException(record: $0) },
             installs: installs,
-            versions: versions,
+            versions: versionRecords.map { try Version(record: $0) },
             now: now
         )
     }

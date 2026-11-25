@@ -31,7 +31,9 @@ extension StabilityPoints {
             matching: LifecycleSeriesQuery(name: Crash.recordType, bucket: .hour, range: range)
         )
 
-        self.sessions = try await sessions.flatMap { $0.chartPoints() }
-        self.crashes = try await crashes.flatMap { $0.chartPoints() }
+        try await self.init(
+            sessions: sessions.flatMap { $0.chartPoints() },
+            crashes: crashes.flatMap { $0.chartPoints() }
+        )
     }
 }

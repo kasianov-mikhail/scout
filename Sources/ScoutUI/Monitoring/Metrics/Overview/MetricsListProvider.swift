@@ -64,10 +64,10 @@ final class MetricsListProvider: ObservableObject, SeriesProvider {
             )
         )
 
-        return MetricTileBuilder(
-            intSeries: try await intSeries,
-            floatingSeries: try await floatingSeries,
-            meterSeries: try await meterSeries,
+        return try await MetricTileBuilder(
+            intSeries: intSeries,
+            floatingSeries: floatingSeries,
+            meterSeries: meterSeries,
             range: selection,
             now: timestamp
         ).tiles

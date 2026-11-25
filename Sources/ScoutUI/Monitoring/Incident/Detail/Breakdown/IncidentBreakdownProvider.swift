@@ -65,8 +65,7 @@ final class IncidentBreakdownProvider: ObservableObject, RecordProvider {
         )
         .labels(ids: missingSessions, fields: ["os_version", "app_version"])
 
-        let foundModels = try await models
-        let foundSessions = try await sessions
+        let (foundModels, foundSessions) = try await (models, sessions)
 
         modelsByDevice.merge(found: foundModels)
         versionsBySession.merge(found: foundSessions["os_version"] ?? ResolvedLabels())
