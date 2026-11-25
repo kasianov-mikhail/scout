@@ -27,7 +27,7 @@ struct RetentionView: View {
                         content(cohorts: cohorts)
                             .transition(.opacity)
                     } else {
-                        RetentionViewPlaceholder(day: $day)
+                        Placeholder(day: $day)
                             .transition(.opacity)
                     }
                 }

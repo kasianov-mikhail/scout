@@ -20,7 +20,7 @@ struct HomeTelemetrySection: View {
         if let items {
             content(items: items)
         } else {
-            HomeTelemetrySectionPlaceholder()
+            Placeholder()
         }
     }
 

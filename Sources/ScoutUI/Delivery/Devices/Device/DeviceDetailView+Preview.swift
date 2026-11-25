@@ -20,7 +20,7 @@ import SwiftUI
 #Preview("Device loading") {
     NavigationStack {
         ScrollView {
-            DeviceDetailPlaceholder(range: .constant(.week))
+            DeviceDetailView.Placeholder(range: .constant(.week))
         }
         .scrollIndicators(.hidden)
     }

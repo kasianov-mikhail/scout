@@ -15,14 +15,14 @@ struct HomeAlertSection: View {
         if let history {
             Button(action: action) {
                 if history.isEmpty {
-                    HomeAlertSectionEmpty(rulesLabel: history.rulesLabel)
+                    Empty(rulesLabel: history.rulesLabel)
                 } else {
                     content(history: history)
                 }
             }
             .buttonStyle(.solid)
         } else {
-            HomeAlertSectionPlaceholder()
+            Placeholder()
         }
     }
 

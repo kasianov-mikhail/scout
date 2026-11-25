@@ -5,6 +5,7 @@
 // license that can be found in the LICENSE file or at
 // https://opensource.org/licenses/MIT.
 
+import Scout
 import SwiftUI
 
 struct ReleaseGrid: View {
@@ -26,13 +27,50 @@ struct ReleaseGrid: View {
 
     @ViewBuilder
     private func tile(_ value: ReleaseTileValue, isLeading: Bool) -> some View {
-        if let destination = value.kind.destination {
-            NavigationLink(value: destination) {
-                ReleaseTile(value: value, isLeading: isLeading, action: nil)
+        let label = ReleaseTile(value: value, isLeading: isLeading, action: nil)
+
+        switch value.kind {
+        case .crashes:
+            NavigationLink {
+                VersionIncidentsView(
+                    issuesTitle: "Top crash issues",
+                    days: detail.trend.crashes,
+                    provider: VersionIncidentProvider<Crash>(version: detail.release.id)
+                ) { group in
+                    CrashGroupDetailView(group: group)
+                }
+            } label: {
+                label
             }
             .buttonStyle(.solid)
-        } else {
-            ReleaseTile(value: value, isLeading: isLeading, action: nil)
+        case .hangs:
+            NavigationLink {
+                VersionIncidentsView(
+                    issuesTitle: "Top hang issues",
+                    days: detail.trend.hangs,
+                    provider: VersionIncidentProvider<Hang>(version: detail.release.id)
+                ) { group in
+                    HangGroupDetailView(group: group)
+                }
+            } label: {
+                label
+            }
+            .buttonStyle(.solid)
+        case .resources:
+            NavigationLink {
+                VersionIncidentsView(
+                    issuesTitle: "Top resource issues",
+                    days: detail.trend.resources,
+                    provider: VersionIncidentProvider<ResourceException>(version: detail.release.id)
+                ) { group in
+                    ResourceGroupDetailView(group: group)
+                }
+            } label: {
+                label
+            }
+            .buttonStyle(.solid)
+        case .crashFree, .adoption, .exits, .launchTime, .peakMemory:
+            label
         }
     }
 }

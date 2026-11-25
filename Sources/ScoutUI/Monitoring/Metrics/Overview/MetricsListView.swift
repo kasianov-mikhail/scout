@@ -27,7 +27,7 @@ struct MetricsListView: View {
                     SectionGap()
                         .padding(.top, .space8)
 
-                    Placeholder(
+                    ScoutUI.Placeholder(
                         text: "No metrics",
                         systemImage: "chart.bar",
                         description: "Metrics appear here once your app records data",
@@ -43,7 +43,7 @@ struct MetricsListView: View {
                         content(tiles)
                             .transition(.opacity)
                     } else {
-                        MetricsListPlaceholder(range: $provider.range)
+                        Placeholder(range: $provider.range)
                             .transition(.opacity)
                     }
                 }

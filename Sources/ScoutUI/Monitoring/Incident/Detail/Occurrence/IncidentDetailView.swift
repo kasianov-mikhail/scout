@@ -27,7 +27,7 @@ struct IncidentDetailView<Element: Incident & IncidentDetailInfo>: View {
     var body: some View {
         ScrollView {
             if backtrace.result == nil {
-                IncidentDetailPlaceholder(element: element, group: group)
+                Placeholder(element: element, group: group)
                     .transition(.opacity)
             } else {
                 detail

@@ -49,7 +49,7 @@ struct NetworkEndpointView: View {
             VStack(spacing: 0) {
                 RangeStrip(selection: $range, ranges: ranges, title: \.detailTitle)
 
-                Placeholder(
+                ScoutUI.Placeholder(
                     text: "No requests",
                     systemImage: "network",
                     description: "No requests have been recorded for this endpoint in this period"
@@ -61,7 +61,7 @@ struct NetworkEndpointView: View {
                     list(report)
                         .transition(.opacity)
                 } else {
-                    NetworkEndpointViewPlaceholder(range: $range, ranges: ranges)
+                    Placeholder(range: $range, ranges: ranges)
                         .transition(.opacity)
                 }
             }

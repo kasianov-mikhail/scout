@@ -29,7 +29,7 @@ struct ModelDetailView: View {
                 VStack(spacing: 0) {
                     RangeStrip(selection: $provider.range, ranges: IncidentRange.allCases, title: \.title)
 
-                    Placeholder(
+                    ScoutUI.Placeholder(
                         text: "No devices",
                         systemImage: "iphone.gen3",
                         description: "Devices appear here once this model reports a session"
@@ -41,7 +41,7 @@ struct ModelDetailView: View {
                         content(detail)
                             .transition(.opacity)
                     } else {
-                        ModelDetailPlaceholder(model: provider.modelName, range: $provider.range)
+                        Placeholder(model: provider.modelName, range: $provider.range)
                             .transition(.opacity)
                     }
                 }
@@ -137,7 +137,7 @@ struct ModelDetailView: View {
 #Preview("Model loading") {
     NavigationStack {
         ScrollView {
-            ModelDetailPlaceholder(model: "iPhone 15 Pro", range: .constant(.week))
+            ModelDetailView.Placeholder(model: "iPhone 15 Pro", range: .constant(.week))
         }
         .scrollIndicators(.hidden)
     }
