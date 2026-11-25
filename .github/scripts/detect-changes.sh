@@ -33,7 +33,8 @@ if [ -z "$base" ] || [ "$base" = "0000000000000000000000000000000000000000" ] \
   exit 0
 fi
 
-changed="$(git diff --name-only "$base"..."$head")"
+# Check both paths when a file moves across a filter boundary.
+changed="$(git diff --name-only --no-renames "$base"..."$head")"
 echo "$changed"
 
 if grep -qE "$PATTERN" <<<"$changed"; then
